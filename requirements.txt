@@ -1,0 +1,15 @@
+# Core LLM & Search
+openai
+tavily-python
+
+# Dataset
+datasets
+
+# Notebook & Environment
+notebook
+ipykernel
+ipywidgets
+python-dotenv
+
+# Numerical
+numpy
