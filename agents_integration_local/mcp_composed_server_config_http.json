@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "nova-brown-composed": {
-      "url": "http://localhost:8003/mcp"
-    }
-  }
-}
-
