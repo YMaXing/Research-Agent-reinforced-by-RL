@@ -83,5 +83,5 @@ You can find specialized documentation on how to install and run each project at
 
 | Project | Description | Location |
 |---------|-------------|----------|
-| **Nova Research Agent** | Research agent used in part 2. | [`lessons/research_agent_part_2/README.md`](lessons/research_agent_part_2/README.md) |
-| **Brown Writing Workflow** | All the code for the writing workflow. | [`lessons/writing_workflow/README.md`](lessons/writing_workflow/README.md) |
+| **Nova Research Agent** | Research agent used in part 2. | [`lessons/research_agent_part_2/README.md`](RL_researcher_writer_ymaxing/research_agent_local/README.md) |
+| **Brown Writing Workflow** | All the code for the writing workflow. | [`lessons/writing_workflow/README.md`]((RL_researcher_writer_ymaxing/writing_workflow/README.md) |
