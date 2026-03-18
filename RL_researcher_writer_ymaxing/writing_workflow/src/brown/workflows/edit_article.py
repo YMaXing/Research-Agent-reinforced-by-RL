@@ -112,7 +112,7 @@ async def edit_based_on_reviews(
     article_examples: ArticleExamples,
     reviews: ArticleReviews,
 ) -> Article:
-    model, _ = build_model(app_config, node="edit_article") 
+    model, _ = build_model(app_config, node="edit_article")
     article_writer = ArticleWriter(
         article_guideline=article_guideline,
         research=research,

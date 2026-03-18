@@ -37,7 +37,7 @@ mcp = FastMCP("Brown MCP Server")
 logger.info("Brown MCP Server initialized successfully")
 
 
-async def  parse_message(chunk_data: dict, ctx: Context, prefix: str = "") -> None:
+async def parse_message(chunk_data: dict, ctx: Context, prefix: str = "") -> None:
     """Parse and report workflow streaming messages to the MCP client.
 
     This function handles different types of streaming data from Brown workflows
@@ -116,7 +116,7 @@ async def generate_article(dir_path: Path, ctx: Context) -> str:
         generate_article_workflow = build_generate_article_workflow(checkpointer=checkpointer)
 
         thread_id = str(uuid.uuid4())
-        tracer = tracing.build_handler(thread_id, tags=["generate"])    
+        tracer = tracing.build_handler(thread_id, tags=["generate"])
         config: RunnableConfig = {
             "configurable": {
                 "thread_id": thread_id,
@@ -451,7 +451,7 @@ if __name__ == "__main__":
         help="Port number for HTTP transport (default: 8002)",
     )
     args = parser.parse_args()
-    
+
     # Run the server with the specified transport
     if args.transport == "streamable-http":
         mcp.run(transport=args.transport, port=args.port)

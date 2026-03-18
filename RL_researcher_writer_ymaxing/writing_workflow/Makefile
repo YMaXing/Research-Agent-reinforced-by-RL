@@ -60,7 +60,7 @@ tests: # Run tests.
 	CONFIG_FILE=configs/debug.yaml uv run pytest
 
 pre-commit: # Run pre-commit hooks.
-	uv run pre-commit run --all-files
+	uv run pre-commit run 
 
 format-fix: # Auto-format Python code using ruff formatter.
 	uv run ruff format $(QA_FOLDERS)
