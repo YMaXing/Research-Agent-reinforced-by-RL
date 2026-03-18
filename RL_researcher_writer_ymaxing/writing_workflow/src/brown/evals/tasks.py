@@ -14,11 +14,11 @@ from langchain_core.runnables.config import RunnableConfig
 from loguru import logger
 
 from brown.builders import build_short_term_memory
+from brown.config_app import get_app_config
 from brown.evals.dataset import EvalSampleDict
 from brown.observability import tracing
 from brown.utils import a
 from brown.workflows import build_generate_article_workflow
-from brown.config_app import get_app_config
 
 
 @a.as_sync
@@ -149,7 +149,7 @@ async def __run(config: RunnableConfig, inputs: Dict[str, Any], read_from_cache:
             await generate_article_workflow.ainvoke(inputs, config)
 
         logger.success(f"Successfully generated article at `{article_path}`")
-        
+
     article = article_path.read_text(encoding="utf-8")
 
     return article

@@ -1,0 +1,64 @@
+name: CI
+on:
+  pull_request:
+    branches: [main, ymaxing_dev]
+  push:
+    branches: [main]
+
+jobs:
+  qa-writing-workflow:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: RL_researcher_writer_ymaxing/writing_workflow
+    steps:
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+
+      - name: 🦾 Install the project
+        run: |
+          uv sync --dev
+
+      - name: 💅 Format Check
+        run: |
+          uv run ruff format --check $QA_FOLDERS
+
+      - name: 🔎 Lint Check
+        run: uv run ruff check $QA_FOLDERS
+    env:
+      QA_FOLDERS: "src scripts tests"
+
+  tests-writing-workflow:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: RL_researcher_writer_ymaxing/writing_workflow
+    steps:
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+
+      - name: 🦾 Install the project
+        run: |
+          uv sync
+
+      - name: 🧪 Run tests
+        run: |
+          CONFIG_FILE=configs/debug.yaml uv run pytest
+    env:
+      QA_FOLDERS: "src scripts tests"

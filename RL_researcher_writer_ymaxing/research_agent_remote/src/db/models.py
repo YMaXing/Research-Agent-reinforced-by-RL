@@ -387,7 +387,9 @@ class YouTubeTranscript(Base):
 
     def __repr__(self) -> str:
         """String representation of the YouTubeTranscript."""
-        return f"<YouTubeTranscript(id={self.id}, url={self.youtube_url[:50]}..., article_id={self.article_guideline_id})>"
+        return (
+            f"<YouTubeTranscript(id={self.id}, url={self.youtube_url[:50]}..., article_id={self.article_guideline_id})>"
+        )
 
 
 class ScrapedResearchUrl(Base):

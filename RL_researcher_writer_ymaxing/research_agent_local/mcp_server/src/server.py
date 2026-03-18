@@ -60,7 +60,7 @@ if __name__ == "__main__":
         default=8001,
         help="Port number for HTTP transport (default: 8001)",
     )
-    args = parser.parse_args()  
+    args = parser.parse_args()
 
     # Initialize Opik monitoring if configured
     if configure_opik():
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         print("[Opik] monitoring disabled (missing configuration)")
 
     mcp = create_mcp_server()
-    
+
     # Run the server with the specified transport
     if args.transport == "streamable-http":
         mcp.run(transport=args.transport, port=args.port)

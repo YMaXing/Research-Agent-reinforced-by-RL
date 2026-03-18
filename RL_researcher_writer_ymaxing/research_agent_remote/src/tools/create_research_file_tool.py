@@ -92,11 +92,15 @@ async def create_research_file_tool(article_guideline_id: str) -> Dict[str, Any]
         # Build Sources Scraped From Research Results section
         scraped_sources = [(entry.url, entry.content) for entry in scraped_research_urls]
         sources_scraped_section = build_sources_section(
-            "## Sources Scraped From Research Results", scraped_sources, "No scraped sources found for research results."
+            "## Sources Scraped From Research Results",
+            scraped_sources,
+            "No scraped sources found for research results.",
         )
 
         # Query GitHubIngest table for code sources
-        github_ingests_result = await session.execute(select(GitHubIngest).where(GitHubIngest.article_guideline_id == article_uuid))
+        github_ingests_result = await session.execute(
+            select(GitHubIngest).where(GitHubIngest.article_guideline_id == article_uuid)
+        )
         github_ingests = github_ingests_result.scalars().all()
 
         # Build Code Sources section
@@ -116,7 +120,9 @@ async def create_research_file_tool(article_guideline_id: str) -> Dict[str, Any]
         )
 
         # Query ScrapedUrl table for additional scraped sources
-        scraped_urls_result = await session.execute(select(ScrapedUrl).where(ScrapedUrl.article_guideline_id == article_uuid))
+        scraped_urls_result = await session.execute(
+            select(ScrapedUrl).where(ScrapedUrl.article_guideline_id == article_uuid)
+        )
         scraped_urls = scraped_urls_result.scalars().all()
 
         # Build Additional Sources Scraped section

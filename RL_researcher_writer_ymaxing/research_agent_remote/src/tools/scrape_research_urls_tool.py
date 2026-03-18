@@ -115,7 +115,9 @@ async def scrape_research_urls_tool(article_guideline_id: str, concurrency_limit
 
         try:
             await session.commit()
-            logger.info(f"Successfully saved {successful_scrapes} scraped research URLs to database for article {article_guideline_id}")
+            logger.info(
+                f"Successfully saved {successful_scrapes} scraped research URLs to database for article {article_guideline_id}"
+            )
         except Exception as e:
             msg = f"Error saving scraped research URLs to database: {e}"
             logger.error(msg, exc_info=True)

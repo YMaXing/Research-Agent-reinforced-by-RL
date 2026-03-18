@@ -37,7 +37,9 @@ async def process_github_url(url: str, token: str | None) -> Dict[str, Any]:
     # Regex for HTML-style base64 images: <img src="data:image/...">
     md = re.sub(r'<img[^>]+src="data:image/[^;]+;base64,[^"]+"[^>]*>', "[... base64 image removed ...]", md)
     # Regex for naked base64 image data starting with common magic numbers.
-    md = re.sub(r"(?:iVBOR|/9j/|R0lGOD|UklGR)[A-Za-z0-9+/=\s]{100,}", "[... base64 image removed ...]", md, flags=re.IGNORECASE)
+    md = re.sub(
+        r"(?:iVBOR|/9j/|R0lGOD|UklGR)[A-Za-z0-9+/=\s]{100,}", "[... base64 image removed ...]", md, flags=re.IGNORECASE
+    )
 
     # Check if content is too long and truncate if necessary
     MAX_CHARS = 65_000

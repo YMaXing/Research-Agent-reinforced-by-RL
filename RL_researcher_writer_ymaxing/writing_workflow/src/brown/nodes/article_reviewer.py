@@ -282,7 +282,7 @@ previous chain of thoughts:
 
     def _set_default_model_mocked_responses(self, model: FakeModel) -> FakeModel:
         model.responses = [
-            ArticleReviews( 
+            ArticleReviews(
                 article=self.article,
                 reviews=[
                     Review(

@@ -31,8 +31,12 @@ def resolve_python_executable(project_dir: Path) -> Path:
         project_dir / ".venv" / "bin" / "python",
     ]
     for candidate in candidates:
-        if candidate.exists():
-            return candidate
+        try:
+            if candidate.exists():
+                return candidate
+        except OSError:
+            # Mixed Windows/WSL worktrees can expose inaccessible symlink targets.
+            continue
     return Path(sys.executable)
 
 
@@ -57,17 +61,30 @@ def make_env_with_pythonpath(project_dir: Path) -> dict[str, str]:
 def wait_for_port(host: str, port: int, process: subprocess.Popen, service_name: str, timeout: int = 120) -> None:
     """Wait for TCP port to become reachable or fail early if process exits."""
     deadline = time.time() + timeout
+    hosts_to_try = [host]
+    # Some environments bind to localhost but not 127.0.0.1 (or vice versa).
+    if host == "127.0.0.1":
+        hosts_to_try.append("localhost")
+
     while time.time() < deadline:
         if process.poll() is not None:
             raise RuntimeError(f"{service_name} exited early with code {process.returncode}")
 
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.settimeout(1)
-            if sock.connect_ex((host, port)) == 0:
-                return
+        for candidate_host in hosts_to_try:
+            try:
+                addr_info = socket.getaddrinfo(candidate_host, port, type=socket.SOCK_STREAM)
+            except socket.gaierror:
+                continue
+
+            for family, socktype, proto, _, sockaddr in addr_info:
+                with socket.socket(family, socktype, proto) as sock:
+                    sock.settimeout(1)
+                    if sock.connect_ex(sockaddr) == 0:
+                        return
         time.sleep(1)
 
-    raise TimeoutError(f"Timed out waiting for {service_name} on {host}:{port}")
+    host_display = ", ".join(dict.fromkeys(hosts_to_try))
+    raise TimeoutError(f"Timed out waiting for {service_name} on {host_display}:{port}")
 
 
 def terminate_process(process: subprocess.Popen, service_name: str) -> None:
@@ -94,13 +111,13 @@ if __name__ == "__main__":
     script_dir = Path(__file__).resolve().parent
     home_dir = script_dir.parent
 
-    nova_server_dir = home_dir / "research_agent_part_local" / "mcp_server"
+    nova_server_dir = home_dir / "research_agent_local" / "mcp_server"
     brown_server_dir = home_dir / "writing_workflow"
     composed_server_dir = script_dir / "mcp_server"
     mcp_client_dir = script_dir / "mcp_client"
     composed_server_config = script_dir / "mcp_servers_config_http.json"
     composed_client_config = script_dir / "mcp_composed_server_config_http.json"
-    
+
     # Load optional shared env plus project-specific env files.
     load_env_file(script_dir / ".env")
     load_env_file(script_dir / "mcp_client" / ".env")
@@ -109,6 +126,7 @@ if __name__ == "__main__":
 
     # Ensure Opik project has a default name when key/workspace are provided.
     os.environ.setdefault("OPIK_PROJECT_NAME", "nova-brown-composed")
+    startup_timeout = int(os.environ.get("MCP_STARTUP_TIMEOUT_SECONDS", "300"))
 
     nova_python = resolve_python_executable(nova_server_dir)
     brown_python = resolve_python_executable(brown_server_dir)
@@ -133,11 +151,11 @@ if __name__ == "__main__":
 
     try:
         print("Waiting for Nova server on port 8001...")
-        wait_for_port("127.0.0.1", 8001, nova_proc, "Nova MCP server", timeout=120)
+        wait_for_port("127.0.0.1", 8001, nova_proc, "Nova MCP server", timeout=startup_timeout)
         assert_process_running(nova_proc, "Nova MCP server")
 
         print("Waiting for Brown server on port 8002...")
-        wait_for_port("127.0.0.1", 8002, brown_proc, "Brown MCP server", timeout=120)
+        wait_for_port("127.0.0.1", 8002, brown_proc, "Brown MCP server", timeout=startup_timeout)
         assert_process_running(brown_proc, "Brown MCP server")
 
         print("Nova and Brown servers are running")
@@ -160,7 +178,7 @@ if __name__ == "__main__":
         )
 
         print("Waiting for composed server on port 8003...")
-        wait_for_port("127.0.0.1", 8003, composed_proc, "Composed MCP server", timeout=120)
+        wait_for_port("127.0.0.1", 8003, composed_proc, "Composed MCP server", timeout=startup_timeout)
         assert_process_running(composed_proc, "Composed MCP server")
         print("Composed server is running on port 8003")
 

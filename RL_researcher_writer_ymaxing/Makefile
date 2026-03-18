@@ -15,7 +15,7 @@ clean:
 
 # --- Tests & QA ---
 
-QA_FOLDERS := lessons/research_agent_part_2/ lessons/writing_workflow/ lessons/utils/
+QA_FOLDERS := research_agent_local/ writing_workflow/ utils/
 
 format-fix: # Auto-format Python code using ruff formatter.
 	uv run ruff format $(QA_FOLDERS)
@@ -28,3 +28,6 @@ format-check: # Check code formatting without making changes using ruff formatte
 
 lint-check: # Check code for linting issues without fixing them using ruff linter.
 	uv run ruff check $(QA_FOLDERS)
+
+pre-commit: # Run pre-commit hooks.
+	uv run pre-commit run 

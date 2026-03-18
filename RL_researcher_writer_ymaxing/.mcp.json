@@ -4,7 +4,7 @@
             "command": "uv",
             "args": [
                 "--directory",
-                "lessons/research_agent_part_2/mcp_server",
+                "research_agent_local/mcp_server",
                 "run",
                 "-m",
                 "src.server",
@@ -12,21 +12,21 @@
                 "stdio"
             ],
             "env": {
-                "ENV_FILE_PATH": "lessons/research_agent_part_2/mcp_server/.env"
+                "ENV_FILE_PATH": "research_agent_local/mcp_server/.env"
             }
         },
         "brown": {
             "command": "uv",
             "args": [
                 "--directory",
-                "lessons/writing_workflow/",
+                "writing_workflow/",
                 "run",
                 "python",
                 "-m",
                 "brown.mcp.server"
             ],
             "env": {
-                "ENV_FILE_PATH": "lessons/writing_workflow/.env"
+                "ENV_FILE_PATH": "writing_workflow/.env"
             }
         }
     }

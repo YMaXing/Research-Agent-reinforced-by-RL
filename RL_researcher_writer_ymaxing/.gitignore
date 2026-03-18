@@ -193,8 +193,8 @@ outputs/
 .research
 
 # Lessons
-# Ignore all configs and inputs folders except those from lessons/writing_workflow
+# Ignore all configs and inputs folders except those from writing_workflow
 configs/
 inputs/
-!lessons/writing_workflow/configs/
-!lessons/writing_workflow/inputs/
+!writing_workflow/configs/
+!writing_workflow/inputs/

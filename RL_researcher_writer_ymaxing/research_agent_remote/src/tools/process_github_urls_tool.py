@@ -89,7 +89,9 @@ async def process_github_urls_tool(article_guideline_id: str) -> Dict[str, Any]:
 
         try:
             await session.commit()
-            logger.info(f"Successfully saved {successful_ingests} GitHub ingests to database for article {article_guideline_id}")
+            logger.info(
+                f"Successfully saved {successful_ingests} GitHub ingests to database for article {article_guideline_id}"
+            )
         except Exception as e:
             msg = f"Error saving GitHub ingests to database: {e}"
             logger.error(msg, exc_info=True)

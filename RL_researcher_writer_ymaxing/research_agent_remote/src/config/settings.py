@@ -18,7 +18,9 @@ class Settings(BaseSettings):
     server_name: str = Field(default="Nova Research MCP Server", description="The name of the server")
     version: str = Field(default="0.1.0", description="The version of the server")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL", description="The log level")
-    log_level_dependencies: str = Field(default="WARNING", alias="LOG_LEVEL_DEPENDENCIES", description="The log level for dependencies")
+    log_level_dependencies: str = Field(
+        default="WARNING", alias="LOG_LEVEL_DEPENDENCIES", description="The log level for dependencies"
+    )
 
     # LLM Configuration
     youtube_transcription_model: str = Field(default="gemini-2.5-flash", description="Model for YouTube transcription")
@@ -27,23 +29,41 @@ class Settings(BaseSettings):
     source_selection_model: str = Field(default="gemini-2.5-flash", description="Model for source selection")
 
     # API Keys
-    google_api_key: SecretStr | None = Field(default=None, alias="GOOGLE_API_KEY", description="The API key for the Google API")
-    openai_api_key: SecretStr | None = Field(default=None, alias="OPENAI_API_KEY", description="The API key for the OpenAI API")
-    perplexity_api_key: SecretStr | None = Field(default=None, alias="PPLX_API_KEY", description="The API key for the Perplexity API")
-    firecrawl_api_key: SecretStr | None = Field(default=None, alias="FIRECRAWL_API_KEY", description="The API key for the Firecrawl API")
+    google_api_key: SecretStr | None = Field(
+        default=None, alias="GOOGLE_API_KEY", description="The API key for the Google API"
+    )
+    openai_api_key: SecretStr | None = Field(
+        default=None, alias="OPENAI_API_KEY", description="The API key for the OpenAI API"
+    )
+    perplexity_api_key: SecretStr | None = Field(
+        default=None, alias="PPLX_API_KEY", description="The API key for the Perplexity API"
+    )
+    firecrawl_api_key: SecretStr | None = Field(
+        default=None, alias="FIRECRAWL_API_KEY", description="The API key for the Firecrawl API"
+    )
     github_token: SecretStr | None = Field(default=None, alias="GITHUB_TOKEN", description="The GitHub token")
 
     # Opik Monitoring Configuration
-    opik_api_key: SecretStr | None = Field(default=None, alias="OPIK_API_KEY", description="The API key to authenticate with Opik")
+    opik_api_key: SecretStr | None = Field(
+        default=None, alias="OPIK_API_KEY", description="The API key to authenticate with Opik"
+    )
     opik_workspace: str | None = Field(
-        default=None, alias="OPIK_WORKSPACE", description="The Opik workspace name. If not set, the default workspace will be used."
+        default=None,
+        alias="OPIK_WORKSPACE",
+        description="The Opik workspace name. If not set, the default workspace will be used.",
     )
     opik_project_name: str = Field(default="nova", alias="OPIK_PROJECT_NAME", description="Opik's project name")
 
     # Descope Authentication
-    descope_project_id: str | None = Field(default=None, alias="DESCOPE_PROJECT_ID", description="Descope project ID for authentication")
-    descope_base_url: str = Field(default="https://api.descope.com", alias="DESCOPE_BASE_URL", description="Descope API base URL")
-    server_base_url: str | None = Field(default=None, alias="SERVER_URL", description="Public URL of this MCP server for OAuth callbacks")
+    descope_project_id: str | None = Field(
+        default=None, alias="DESCOPE_PROJECT_ID", description="Descope project ID for authentication"
+    )
+    descope_base_url: str = Field(
+        default="https://api.descope.com", alias="DESCOPE_BASE_URL", description="Descope API base URL"
+    )
+    server_base_url: str | None = Field(
+        default=None, alias="SERVER_URL", description="Public URL of this MCP server for OAuth callbacks"
+    )
 
     # HTTP Server settings
     server_host: str = Field(default="localhost", alias="SERVER_HOST", description="Host to bind the HTTP server")
