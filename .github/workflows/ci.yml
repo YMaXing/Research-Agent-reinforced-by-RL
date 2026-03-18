@@ -4,6 +4,7 @@ on:
     branches: [main, ymaxing_dev]
   push:
     branches: [main]
+  workflow_dispatch: # This is enough to enable the manual button
 
 jobs:
   qa-writing-workflow:
