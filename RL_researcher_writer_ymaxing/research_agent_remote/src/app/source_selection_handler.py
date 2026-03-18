@@ -127,13 +127,17 @@ async def load_scraped_guideline_context(article_guideline_id: str) -> str:
     session_factory = await get_async_session_factory()
     async with session_factory() as session:
         # Get scraped URLs
-        scraped_urls_result = await session.execute(select(ScrapedUrl).where(ScrapedUrl.article_guideline_id == article_uuid))
+        scraped_urls_result = await session.execute(
+            select(ScrapedUrl).where(ScrapedUrl.article_guideline_id == article_uuid)
+        )
         for scraped_url in scraped_urls_result.scalars():
             if scraped_url.content:
                 ctx_parts.append(scraped_url.content)
 
         # Get GitHub ingests
-        github_ingests_result = await session.execute(select(GitHubIngest).where(GitHubIngest.article_guideline_id == article_uuid))
+        github_ingests_result = await session.execute(
+            select(GitHubIngest).where(GitHubIngest.article_guideline_id == article_uuid)
+        )
         for ingest in github_ingests_result.scalars():
             if ingest.gitingest_result:
                 ctx_parts.append(ingest.gitingest_result)
@@ -147,7 +151,9 @@ async def load_scraped_guideline_context(article_guideline_id: str) -> str:
                 ctx_parts.append(transcript.transcription)
 
         # Get local files
-        local_files_result = await session.execute(select(LocalFile).where(LocalFile.article_guideline_id == article_uuid))
+        local_files_result = await session.execute(
+            select(LocalFile).where(LocalFile.article_guideline_id == article_uuid)
+        )
         for local_file in local_files_result.scalars():
             if local_file.content:
                 ctx_parts.append(local_file.content)
@@ -155,7 +161,9 @@ async def load_scraped_guideline_context(article_guideline_id: str) -> str:
     return "\n\n".join(ctx_parts)
 
 
-async def select_top_sources(article_guidelines: str, guideline_ctx: str, md_results_selected: str, max_sources: int = 5) -> Dict[str, Any]:
+async def select_top_sources(
+    article_guidelines: str, guideline_ctx: str, md_results_selected: str, max_sources: int = 5
+) -> Dict[str, Any]:
     """Select up to max_sources top sources to scrape fully.
 
     Returns:

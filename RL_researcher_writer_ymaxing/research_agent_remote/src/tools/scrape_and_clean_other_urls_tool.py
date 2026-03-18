@@ -84,7 +84,9 @@ async def scrape_and_clean_other_urls_tool(article_guideline_id: str, concurrenc
 
         try:
             await session.commit()
-            logger.info(f"Successfully saved {successful_scrapes} scraped URLs to database for article {article_guideline_id}")
+            logger.info(
+                f"Successfully saved {successful_scrapes} scraped URLs to database for article {article_guideline_id}"
+            )
         except Exception as e:
             msg = f"Error saving scraped URLs to database: {e}"
             logger.error(msg, exc_info=True)

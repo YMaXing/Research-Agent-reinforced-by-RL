@@ -53,7 +53,7 @@ def configure_opik():
             api_key=settings.opik_api_key.get_secret_value() if settings.opik_api_key else None,
             workspace=settings.opik_workspace,
             use_local=False,
-            force=True, 
+            force=True,
             automatic_approvals=True,
         )
     except Exception:

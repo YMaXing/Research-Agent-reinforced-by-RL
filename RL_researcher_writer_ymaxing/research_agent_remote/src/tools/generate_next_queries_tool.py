@@ -75,13 +75,17 @@ async def generate_next_queries_tool(article_guideline_id: str, n_queries: int =
         scraped_parts: List[str] = []
 
         # Get scraped URLs
-        scraped_urls_result = await session.execute(select(ScrapedUrl).where(ScrapedUrl.article_guideline_id == article_uuid))
+        scraped_urls_result = await session.execute(
+            select(ScrapedUrl).where(ScrapedUrl.article_guideline_id == article_uuid)
+        )
         for scraped_url in scraped_urls_result.scalars():
             if scraped_url.content:
                 scraped_parts.append(scraped_url.content)
 
         # Get GitHub ingests
-        github_ingests_result = await session.execute(select(GitHubIngest).where(GitHubIngest.article_guideline_id == article_uuid))
+        github_ingests_result = await session.execute(
+            select(GitHubIngest).where(GitHubIngest.article_guideline_id == article_uuid)
+        )
         for ingest in github_ingests_result.scalars():
             if ingest.gitingest_result:
                 scraped_parts.append(ingest.gitingest_result)
@@ -95,7 +99,9 @@ async def generate_next_queries_tool(article_guideline_id: str, n_queries: int =
                 scraped_parts.append(transcript.transcription)
 
         # Get local files
-        local_files_result = await session.execute(select(LocalFile).where(LocalFile.article_guideline_id == article_uuid))
+        local_files_result = await session.execute(
+            select(LocalFile).where(LocalFile.article_guideline_id == article_uuid)
+        )
         for local_file in local_files_result.scalars():
             if local_file.content:
                 scraped_parts.append(local_file.content)
@@ -106,7 +112,9 @@ async def generate_next_queries_tool(article_guideline_id: str, n_queries: int =
             logger.warning(f"⚠️  Article guidelines empty for article {article_guideline_id}. Proceeding anyway.")
 
         # Generate queries with reasons
-        queries_and_reasons = await generate_queries_with_reasons(article_guidelines, past_research, scraped_ctx_str, n_queries=n_queries)
+        queries_and_reasons = await generate_queries_with_reasons(
+            article_guidelines, past_research, scraped_ctx_str, n_queries=n_queries
+        )
 
         # Create the formatted queries string for display
         queries_string = format_queries_for_display(queries_and_reasons)

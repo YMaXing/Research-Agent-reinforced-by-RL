@@ -33,6 +33,7 @@ def read_file_safe(path: Path) -> str:
         logger.error(f"Error reading file {path}: {e}")
         return ""
 
+
 def validate_research_folder(research_path: Path) -> None:
     """
     Validate that the research folder exists and is a directory.

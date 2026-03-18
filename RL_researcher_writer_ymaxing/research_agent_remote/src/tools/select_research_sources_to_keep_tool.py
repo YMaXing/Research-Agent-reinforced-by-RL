@@ -96,7 +96,9 @@ async def select_research_sources_to_keep_tool(article_guideline_id: str) -> Dic
 
         try:
             await session.commit()
-            logger.info(f"Successfully saved {len(selected_ids)} selected sources to database for article {article_guideline_id}")
+            logger.info(
+                f"Successfully saved {len(selected_ids)} selected sources to database for article {article_guideline_id}"
+            )
         except Exception as e:
             msg = f"Error saving selected sources to database: {e}"
             logger.error(msg, exc_info=True)

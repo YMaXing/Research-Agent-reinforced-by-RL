@@ -60,9 +60,13 @@ async def check_and_record_tool_call(user_id: str, tool_name: str) -> int:
     session_factory = await get_async_session_factory()
     async with session_factory() as session:
         # Count existing calls this month
-        stmt = select(func.count()).select_from(ToolCallUsage).where(
-            ToolCallUsage.user_id == user_id,
-            ToolCallUsage.year_month == year_month,
+        stmt = (
+            select(func.count())
+            .select_from(ToolCallUsage)
+            .where(
+                ToolCallUsage.user_id == user_id,
+                ToolCallUsage.year_month == year_month,
+            )
         )
         result = await session.execute(stmt)
         current_count = result.scalar() or 0

@@ -69,7 +69,9 @@ async def select_research_sources_to_scrape_tool(article_guideline_id: str, max_
 
         try:
             await session.commit()
-            logger.info(f"Successfully saved {len(top_urls)} URLs to scrape to database for article {article_guideline_id}")
+            logger.info(
+                f"Successfully saved {len(top_urls)} URLs to scrape to database for article {article_guideline_id}"
+            )
         except Exception as e:
             msg = f"Error saving URLs to scrape to database: {e}"
             logger.error(msg, exc_info=True)
