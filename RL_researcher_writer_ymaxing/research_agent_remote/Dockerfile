@@ -51,9 +51,9 @@ COPY --chown=nova:nova alembic.ini /app/alembic.ini
 COPY --chown=nova:nova alembic/ /app/alembic/
 COPY --chown=nova:nova docker-entrypoint.sh /app/docker-entrypoint.sh
 
-# Make entrypoint executable
+# Make entrypoint executable (also strip Windows CRLF line endings if present)
 USER root
-RUN chmod +x /app/docker-entrypoint.sh
+RUN sed -i 's/\r//' /app/docker-entrypoint.sh && chmod +x /app/docker-entrypoint.sh
 USER nova
 
 # Set environment variables

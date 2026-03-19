@@ -35,10 +35,10 @@ def configure_opik():
             force=True,
             automatic_approvals=True,
         )
-    except Exception:
+    except Exception as e:
         logger.warning(
-            "Couldn't configure Opik. Most likely there is a problem with your OPIK_API_KEY or other OPIK_* \
-                environment variables."
+            f"Couldn't configure Opik: {e}. Most likely there is a problem with your OPIK_API_KEY or other OPIK_* "
+            "environment variables."
         )
         return False
 

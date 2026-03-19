@@ -65,7 +65,7 @@ services:
       OPIK_PROJECT_NAME: ${OPIK_PROJECT_NAME:-nova}
 
       # Descope authentication (optional)
-      DESCOPE_PROJECT_ID: ${DESCOPE_PROJECT_ID}
+      DESCOPE_PROJECT_ID: ${DESCOPE_PROJECT_ID} 
       DESCOPE_BASE_URL: ${DESCOPE_BASE_URL:-https://api.descope.com}
       SERVER_URL: ${SERVER_URL}
     ports:

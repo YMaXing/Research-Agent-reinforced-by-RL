@@ -40,6 +40,7 @@ def create_mcp_server() -> FastMCP:
             project_id=settings.descope_project_id,
             descope_base_url=settings.descope_base_url,
             base_url=settings.server_base_url,
+            required_scopes=["mcp:read", "mcp:write"],
         )
 
     # Create the FastMCP server instance
