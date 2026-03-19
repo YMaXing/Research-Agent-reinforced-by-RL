@@ -53,7 +53,7 @@ COPY --chown=nova:nova docker-entrypoint-cloudrun.sh /app/docker-entrypoint-clou
 
 # Make entrypoint executable
 USER root
-RUN chmod +x /app/docker-entrypoint-cloudrun.sh
+RUN sed -i 's/\r//' chmod +x /app/docker-entrypoint-cloudrun.sh
 USER nova
 
 # Set environment variables
