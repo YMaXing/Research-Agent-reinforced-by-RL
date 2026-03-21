@@ -38,7 +38,7 @@ configure_logging()
 
 # Load mcp-agent config from YAML, then inject the computed server path
 _mcp_settings = get_mcp_settings()
-_mcp_settings.mcp.servers["research-agent"].args = [
+_mcp_settings.mcp.servers["research_agent"].args = [
     "--directory",
     str(settings.server_main_path),
     "run",
@@ -53,7 +53,7 @@ app = MCPApp(name="ResearchClient", settings=_mcp_settings)
 
 async def main():
     """Main function to demonstrate FastMCP client with configurable transport."""
-    parser = argparse.ArgumentParser(description="Nova MCP Client")
+    parser = argparse.ArgumentParser(description="Researcher MCP Client")
     parser.add_argument(
         "--transport",
         "-t",
@@ -82,7 +82,7 @@ async def main():
                 logging.info("🚀 Starting MCP client with in-memory transport...")
                 mcp_server = create_mcp_server()
                 await app.context.mcp_registry.register_server(
-                    name="research-agent",
+                    name="research_agent",
                     server=mcp_server,                  # ← pass the FastMCP instance directly
                     # transport="memory" is implicit when passing server object
                 )

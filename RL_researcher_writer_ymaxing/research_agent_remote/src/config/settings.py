@@ -89,7 +89,7 @@ class Settings(BaseSettings):
 
     # Rate limiting settings
     monthly_tool_call_limit: int = Field(
-        default=100,
+        default=500,
         alias="MONTHLY_TOOL_CALL_LIMIT",
         description="Maximum MCP tool calls per user per month (0 = unlimited)",
     )

@@ -5,7 +5,7 @@ logger:
 
 mcp:
   servers:
-    research-agent:
+    research_agent:
       transport: stdio
       command: uv
       args: [] # injected at runtime from settings.server_main_path in client.py
