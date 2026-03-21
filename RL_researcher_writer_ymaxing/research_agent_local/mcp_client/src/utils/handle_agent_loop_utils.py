@@ -88,6 +88,7 @@ async def handle_agent_loop(
     llm_config = provider.build_llm_config_with_tools(tools, thinking_enabled)
     llm_client = provider.LLMClient(model_id, llm_config)
 
+    iteration_count = 0
     while True:
         print()
         # Call LLM with current conversation history
@@ -100,10 +101,11 @@ async def handle_agent_loop(
                 print_colored("🤔 LLM's Thoughts:", Color.BRIGHT_MAGENTA, Style.BOLD)
                 print_colored(thoughts, Color.MAGENTA)
                 print()
-
+        
         # Check for function calls
         function_call_info = provider.extract_first_function_call(response)
-        if function_call_info:
+
+        if iteration_count < settings.max_iterations and function_call_info:
             name, args = function_call_info
 
             # Check if this is a tool call
@@ -131,8 +133,13 @@ async def handle_agent_loop(
                 error_msg = f"Unknown function call: '{name}'. Not found in tools."
                 print_colored(f"❌ {error_msg}", Color.BRIGHT_RED)
                 conversation_history.append(make_user_message(error_msg))
-
         else:
+            if function_call_info:
+                print_colored(
+                    f"⚠️ Maximum iterations ({settings.max_iterations}) reached. "
+                    "Not executing further tool calls.",
+                    Color.BRIGHT_YELLOW,
+                )
             # Extract final text response - this ends the ReAct loop
             final_text = provider.extract_final_answer(response)
             if final_text:
@@ -146,3 +153,5 @@ async def handle_agent_loop(
 
             print()
             break  # Exit the agent loop
+
+        iteration_count += 1

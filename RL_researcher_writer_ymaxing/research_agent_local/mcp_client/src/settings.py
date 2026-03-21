@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     thinking_budget: int = Field(default=1024, description="Thinking budget for latency vs. depth tradeoff")
 
     # Agent configuration
-    recursion_limit: int = Field(default=100, description="The recursion limit for the agent")
+    max_iterations: int = Field(default=15, description="Maximum number of iterations for the agent loop") 
 
     # Opik Configuration
     opik_api_key: SecretStr | None = Field(default=None, alias="OPIK_API_KEY", description="The API key for Opik")
