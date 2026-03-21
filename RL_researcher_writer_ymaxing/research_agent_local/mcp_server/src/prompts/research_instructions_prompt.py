@@ -67,10 +67,10 @@ If the user doesn't provide a research directory, you should ask for it before e
     questions, and writes them - together with a short justification for each - to the NEXT_QUERIES_FILE within
     NOVA_FOLDER.
 
-    3.2. Run the "run_perplexity_research" tool with the new queries. This tool executes the queries with
-    Perplexity and appends the results to the PERPLEXITY_RESULTS_FILE within NOVA_FOLDER.
+    3.2. Run the "run_tavily_research" tool with the new queries. This tool executes the queries with
+    Tavily and appends the results to the PERPLEXITY_RESULTS_FILE within NOVA_FOLDER.
 
-4. Filter Perplexity results by quality:
+4. Filter Tavily results by quality:
 
     4.1 Run the "select_research_sources_to_keep" tool. The tool reads the ARTICLE_GUIDELINE_FILE and the
     PERPLEXITY_RESULTS_FILE, automatically evaluates each source for trustworthiness, authority and relevance,

@@ -5,13 +5,14 @@ from typing import Any, Dict
 import opik
 from fastmcp import FastMCP
 
+
 from ..tools import (
     create_research_file_tool,
     extract_guidelines_urls_tool,
     generate_next_queries_tool,
+    run_tavily_research_tool,
     process_github_urls_tool,
     process_local_files_tool,
-    run_perplexity_research_tool,
     scrape_and_clean_other_urls_tool,
     scrape_research_urls_tool,
     select_research_sources_to_keep_tool,
@@ -196,7 +197,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         """
         Generate candidate web-search queries for the next research round.
 
-        Analyzes the article guidelines, already-scraped content, and existing Perplexity
+        Analyzes the article guidelines, already-scraped content, and existing Tavily
         results to identify knowledge gaps and propose new web-search questions.
         Each query includes a rationale explaining why it's important for the article.
         Results are saved to next_queries.md in the research directory.
@@ -221,12 +222,12 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     @opik.track(type="tool")
-    async def run_perplexity_research(research_directory: str, queries: list[str]) -> Dict[str, Any]:
+    async def run_tavily_research(research_directory: str, queries: list[str]) -> Dict[str, Any]:
         """
-        Run selected web-search queries with Perplexity and store the results.
+        Run selected web-search queries with Tavily and store the results.
 
-        Executes the provided queries using Perplexity's Sonar-Pro model and appends
-        the results to perplexity_results.md in the research directory. Each query
+        Executes the provided queries using Tavily Search enhanced with strong LLM structuring and appends
+        the results to tavily_results.md in the research directory. Each query
         result includes the answer and source citations.
 
         Args:
@@ -242,13 +243,13 @@ def register_mcp_tools(mcp: FastMCP) -> None:
                 - successful_queries_count: Number of queries successfully executed
                 - failed_queries_count: Number of queries that failed to execute
                 - total_sources: Total number of sources collected across all queries
-                - output_path: Path to the updated perplexity_results.md file
+                - output_path: Path to the updated tavily_results.md file
                 - message: Human-readable success message with processing results
         """
 
         opik_context.update_thread_id()
 
-        result = await run_perplexity_research_tool(research_directory, queries)
+        result = await run_tavily_research_tool(research_directory, queries)
         return result
 
     # ============================================================================
