@@ -2,14 +2,10 @@
 New MCP Client based on mcp-agent - Interactive MCP client with configurable transport options.
 
 Usage:
-    # In-memory transport (default - MCP server runs in same process)
-    uv run python -m src.client
-
     # Stdio transport (MCP server runs as external process)
-    uv run python -m src.client --transport stdio
+    uv run python -m mcp_client.src.client
 
 Transport Options:
-    - in-memory: MCP server runs in the same process (faster, easier debugging)
     - stdio: MCP server runs as external process with explicit configuration:
         * Transport: stdio
         * Command: uv --directory <server_path> run mcp-server --transport stdio
@@ -37,15 +33,10 @@ from .utils.parse_message_utils import parse_user_input
 configure_logging()
 
 # Load mcp-agent config from YAML, then inject the computed server path
-_mcp_settings = get_mcp_settings()
+_mcp_settings = get_mcp_settings(str(Path(__file__).parent / "mcp_agent.config.yaml"))
 _mcp_settings.mcp.servers["research_agent"].args = [
-    "--directory",
-    str(settings.server_main_path),
-    "run",
-    "-m",
-    "src.server",
-    "--transport",
-    "stdio",
+    "--directory", str(settings.server_main_path),
+    "run", "python", "-m", "src.server", "--transport", "stdio",
 ]
 
 # Create the main application object
@@ -58,9 +49,9 @@ async def main():
         "--transport",
         "-t",
         type=str,
-        choices=["in-memory", "stdio"],
-        default="in-memory",
-        help="Transport method: 'in-memory' (default) or 'stdio' for external MCP server",
+        choices=["stdio"],
+        default="stdio",
+        help="Transport method: 'stdio' for external MCP server",
     )
     args = parser.parse_args()
 
@@ -72,22 +63,7 @@ async def main():
             else:
                 logging.info("📊 Opik monitoring disabled (missing configuration)")
 
-            # Initialize MCP client based on transport mode
-            if args.transport == "in-memory":
-                # Add the project root to Python path to enable importing mcp_server
-                project_root = Path(__file__).parent.parent.parent
-                sys.path.insert(0, str(project_root))
-                from mcp_server.src.server import create_mcp_server
-
-                logging.info("🚀 Starting MCP client with in-memory transport...")
-                mcp_server = create_mcp_server()
-                await app.context.mcp_registry.register_server(
-                    name="research_agent",
-                    server=mcp_server,                  # ← pass the FastMCP instance directly
-                    # transport="memory" is implicit when passing server object
-                )
-
-            elif args.transport == "stdio":
+            if args.transport == "stdio":
                 logging.info("🚀 Starting MCP client with stdio transport...")
                 
             agent = Agent(
@@ -96,18 +72,18 @@ async def main():
                 server_names=["research_agent"],   # Must match the key in config.yaml
             )
            
-            # Print startup information about MCP server
-            tools, resources, prompts = await get_capabilities_from_mcp_client(agent)
-            print_startup_info(tools, resources, prompts)
-
             # Initialize conversation history
             conversation_history = []
 
             # Initialize thinking state (enabled by default)
             thinking_enabled = True
 
-            # Main conversation loop
+            # Main conversation loop — server starts here (only once)
             async with agent:
+                # Print startup information about MCP server
+                tools, resources, prompts = await get_capabilities_from_mcp_client(agent)
+                print_startup_info(tools, resources, prompts)
+
                 while True:
                     try:
                         # Get user input

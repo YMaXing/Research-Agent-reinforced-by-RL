@@ -1,6 +1,6 @@
 execution_engine: asyncio
 logger:
-  level: debug
+  level: warning
   path: logs/mcp-agent.jsonl # ← This saves full trajectories for RL later!
 
 mcp:

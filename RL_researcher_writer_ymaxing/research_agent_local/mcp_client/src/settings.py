@@ -13,7 +13,11 @@ logger = logging.getLogger(__name__)
 class Settings(BaseSettings):
     """Application settings for the MCP Client."""
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=str(Path(__file__).parent.parent / ".env"),
+        extra="ignore",
+        env_file_encoding="utf-8",
+    )
 
     # Server settings and paths
     project_root: Path = Field(

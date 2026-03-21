@@ -1,2 +1,4 @@
-run in-memory client:
-	uv run ./research_agent_local/research_agent_local.py --in-memory
+# run the client in different modes
+
+run-stdio:
+	uv run --project mcp_client python -m mcp_client.src.client 
