@@ -2,10 +2,10 @@
 
 from typing import List
 
-from fastmcp import Client
+from mcp_agent.agents.agent import Agent
 
 
-async def get_capabilities_from_mcp_client(client: Client) -> tuple[List, List, List]:
+async def get_capabilities_from_mcp_client(client: Agent) -> tuple[List, List, List]:
     """Get available capabilities."""
     async with client:
         tools = await client.list_tools()

@@ -1,0 +1,12 @@
+execution_engine: asyncio
+logger:
+  level: debug
+  path: logs/mcp-agent.jsonl # ← This saves full trajectories for RL later!
+
+mcp:
+  servers:
+    research-agent:
+      transport: stdio
+      command: uv
+      args: [] # injected at runtime from settings.server_main_path in client.py
+

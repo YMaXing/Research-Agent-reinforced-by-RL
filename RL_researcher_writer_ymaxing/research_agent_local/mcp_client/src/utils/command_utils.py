@@ -3,7 +3,7 @@
 import logging
 from typing import List
 
-from fastmcp import Client
+from mcp_agent.agents.agent import Agent
 
 from .print_utils import Color, print_header, print_item
 from .types import InputType, ProcessedInput
@@ -47,7 +47,7 @@ def handle_command(processed_input: ProcessedInput, tools: List, resources: List
             print_item(prompt.name, prompt.description, i, Color.BRIGHT_WHITE, Color.YELLOW)
 
 
-async def handle_prompt_command(prompt_name: str, prompts: List, client: Client) -> str | None:
+async def handle_prompt_command(prompt_name: str, prompts: List, client: Agent) -> str | None:
     """Handle /prompt/<prompt-name> command by retrieving prompt content.
 
     Returns:
@@ -78,7 +78,7 @@ async def handle_prompt_command(prompt_name: str, prompts: List, client: Client)
         return None
 
 
-async def handle_resource_command(resource_uri: str, resources: List, client: Client) -> None:
+async def handle_resource_command(resource_uri: str, resources: List, client: Agent) -> None:
     """Handle /resource/<resource-uri> command by retrieving resource content.
 
     This function prints the resource content directly and does not return a value

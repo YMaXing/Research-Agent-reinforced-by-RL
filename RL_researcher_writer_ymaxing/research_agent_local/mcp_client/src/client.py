@@ -1,5 +1,5 @@
 """
-Nova MCP Client - Interactive MCP client with configurable transport options.
+New MCP Client based on mcp-agent - Interactive MCP client with configurable transport options.
 
 Usage:
     # In-memory transport (default - MCP server runs in same process)
@@ -22,18 +22,34 @@ import logging
 import sys
 from pathlib import Path
 
-from fastmcp import Client
+from mcp_agent.app import MCPApp
+from mcp_agent.agents.agent import Agent
+from mcp_agent.config import get_settings as get_mcp_settings
 
 from .settings import settings
 from .utils.handle_message_utils import handle_user_message
 from .utils.logging_utils import configure_logging
 from .utils.mcp_startup_utils import get_capabilities_from_mcp_client, print_startup_info
-from .utils.opik_handler import configure_opik
+from .utils.opik_handler import configure_opik  
 from .utils.parse_message_utils import parse_user_input
 
 # Configure logging
 configure_logging()
 
+# Load mcp-agent config from YAML, then inject the computed server path
+_mcp_settings = get_mcp_settings()
+_mcp_settings.mcp.servers["research-agent"].args = [
+    "--directory",
+    str(settings.server_main_path),
+    "run",
+    "-m",
+    "src.server",
+    "--transport",
+    "stdio",
+]
+
+# Create the main application object
+app = MCPApp(name="ResearchClient", settings=_mcp_settings)
 
 async def main():
     """Main function to demonstrate FastMCP client with configurable transport."""
@@ -48,95 +64,86 @@ async def main():
     )
     args = parser.parse_args()
 
-    try:
-        # Initialize Opik if configured
-        if configure_opik():
-            logging.info("📊 Opik monitoring enabled")
-        else:
-            logging.info("📊 Opik monitoring disabled (missing configuration)")
+    async with app.run():
+        try:
+            # Initialize Opik if configured
+            if configure_opik():
+                logging.info("📊 Opik monitoring enabled")
+            else:
+                logging.info("📊 Opik monitoring disabled (missing configuration)")
 
-        # Initialize MCP client based on transport mode
-        if args.transport == "in-memory":
-            # Add the project root to Python path to enable importing mcp_server
-            project_root = Path(__file__).parent.parent.parent
-            sys.path.insert(0, str(project_root))
-            from mcp_server.src.server import create_mcp_server
+            # Initialize MCP client based on transport mode
+            if args.transport == "in-memory":
+                # Add the project root to Python path to enable importing mcp_server
+                project_root = Path(__file__).parent.parent.parent
+                sys.path.insert(0, str(project_root))
+                from mcp_server.src.server import create_mcp_server
 
-            logging.info("🚀 Starting MCP client with in-memory transport...")
-            mcp_server = create_mcp_server()
-            mcp_client = Client(mcp_server)
+                logging.info("🚀 Starting MCP client with in-memory transport...")
+                mcp_server = create_mcp_server()
+                await app.context.mcp_registry.register_server(
+                    name="research-agent",
+                    server=mcp_server,                  # ← pass the FastMCP instance directly
+                    # transport="memory" is implicit when passing server object
+                )
 
-        elif args.transport == "stdio":
-            # Define server configuration explicitly
-            config = {
-                "mcpServers": {
-                    "research-agent": {
-                        "transport": "stdio",
-                        "command": "uv",
-                        "args": [
-                            "--directory",
-                            str(settings.server_main_path),
-                            "run",
-                            "-m",
-                            "src.server",
-                            "--transport",
-                            "stdio",
-                        ],
-                    }
-                }
-            }
+            elif args.transport == "stdio":
+                logging.info("🚀 Starting MCP client with stdio transport...")
+                
+            agent = Agent(
+                name="research_agent",
+                instruction="You are a research agent. Use the provided tools, resources, and prompts to solve complex queries.",
+                server_names=["research_agent"],   # Must match the key in config.yaml
+            )
+           
+            # Print startup information about MCP server
+            tools, resources, prompts = await get_capabilities_from_mcp_client(agent)
+            print_startup_info(tools, resources, prompts)
 
-            logging.info("🚀 Starting MCP client with stdio transport...")
-            mcp_client = Client(config)
+            # Initialize conversation history
+            conversation_history = []
 
-        # Print startup information about MCP server
-        tools, resources, prompts = await get_capabilities_from_mcp_client(mcp_client)
-        print_startup_info(tools, resources, prompts)
+            # Initialize thinking state (enabled by default)
+            thinking_enabled = True
 
-        # Initialize conversation history
-        conversation_history = []
+            # Main conversation loop
+            async with agent:
+                while True:
+                    try:
+                        # Get user input
+                        user_input = input("👤 You: ").strip()
+                        if not user_input:
+                            continue
 
-        # Initialize thinking state (enabled by default)
-        thinking_enabled = True
+                        # Parse the user input to determine what type it is
+                        parsed_input = parse_user_input(user_input)
 
-        # Main conversation loop
-        async with mcp_client:
-            while True:
-                try:
-                    # Get user input
-                    user_input = input("👤 You: ").strip()
-                    if not user_input:
-                        continue
+                        # Handle the user message and determine if we should continue
+                        should_continue, thinking_enabled = await handle_user_message(
+                            parsed_input=parsed_input,
+                            tools=tools,
+                            resources=resources,
+                            prompts=prompts,
+                            conversation_history=conversation_history,
+                            mcp_client=agent,
+                            thinking_enabled=thinking_enabled,
+                        )
 
-                    # Parse the user input to determine what type it is
-                    parsed_input = parse_user_input(user_input)
+                        if not should_continue:
+                            break
 
-                    # Handle the user message and determine if we should continue
-                    should_continue, thinking_enabled = await handle_user_message(
-                        parsed_input=parsed_input,
-                        tools=tools,
-                        resources=resources,
-                        prompts=prompts,
-                        conversation_history=conversation_history,
-                        mcp_client=mcp_client,
-                        thinking_enabled=thinking_enabled,
-                    )
-
-                    if not should_continue:
+                    except KeyboardInterrupt:
+                        print()
+                        logging.info("👋 Interrupted by user. Goodbye!")
                         break
+                    except Exception as e:
+                        print()
+                        logging.error(f"Error: {e}")
+                        logging.info("Continuing conversation...\n")
 
-                except KeyboardInterrupt:
-                    print()
-                    logging.info("👋 Interrupted by user. Goodbye!")
-                    break
-                except Exception as e:
-                    print()
-                    logging.error(f"Error: {e}")
-                    logging.info("Continuing conversation...\n")
-
-    except Exception as e:
-        logging.error(f"Failed to initialize MCP client: {e}")
-        return
+        except Exception as e:
+            logging.error(f"Failed to initialize MCP client: {e}")
+            return
 
 
 if __name__ == "__main__":
