@@ -179,3 +179,6 @@ cython_debug/
 
 # MacOS
 .DS_Store
+
+# mcp-agent secrets
+mcp_agent.secrets.yaml

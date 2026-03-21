@@ -13,7 +13,11 @@ logger = logging.getLogger(__name__)
 class Settings(BaseSettings):
     """Application settings for the MCP Client."""
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=str(Path(__file__).parent.parent / ".env"),
+        extra="ignore",
+        env_file_encoding="utf-8",
+    )
 
     # Server settings and paths
     project_root: Path = Field(
@@ -29,20 +33,15 @@ class Settings(BaseSettings):
     )
 
     # LLM Configuration
-    orchestrator_key: str = Field(default="gemini-2.5-flash", description="Default orchestrator model key")
-    model_id: str = Field(default="gemini-2.5-flash", description="Default model ID for LLM operations")
-    thinking_budget: int = Field(default=1024, description="Thinking budget for latency vs. depth tradeoff")
+    google_api_key: SecretStr | None = Field(default=None, alias="GOOGLE_API_KEY", description="The Google API key for Gemini models")
+    xai_api_key: SecretStr | None = Field(default=None, alias="XAI_API_KEY", description="The xAI API key for Grok models")
+    xai_base_url: str = Field(default="https://api.x.ai/v1", alias="XAI_BASE_URL", description="The xAI API base URL")
+    orchestrator_key: str = Field(default="grok-4.1-fast-reasoning", description="Default orchestrator model key")
+    model_id: str = Field(default="grok-4.1-fast-reasoning", description="Default model ID for LLM operations")
+    thinking_budget: int = Field(default=1024, alias="THINKING_BUDGET", description="Thinking budget for latency vs. depth tradeoff")
 
     # Agent configuration
-    recursion_limit: int = Field(default=100, description="The recursion limit for the agent")
-
-    # API Keys
-    google_api_key: SecretStr | None = Field(
-        default=None, alias="GOOGLE_API_KEY", description="The API key for the Google API"
-    )
-    openai_api_key: SecretStr | None = Field(
-        default=None, alias="OPENAI_API_KEY", description="The API key for the OpenAI API"
-    )
+    max_iterations: int = Field(default=15, description="Maximum number of iterations for the agent loop") 
 
     # Opik Configuration
     opik_api_key: SecretStr | None = Field(default=None, alias="OPIK_API_KEY", description="The API key for Opik")
@@ -53,15 +52,6 @@ class Settings(BaseSettings):
     def orchestrator_configs(self) -> Dict[str, Dict[str, Any]]:
         """Get the orchestrator configurations."""
         return {
-            "gemini-2.5-pro": {
-                "identifier": "google_genai:gemini-2.5-pro",
-                "params": {
-                    "temperature": 0.7,
-                    "thinking_budget": 1000,
-                    "include_thoughts": True,
-                    "max_retries": 3,
-                },
-            },
             "gemini-2.5-flash": {
                 "identifier": "google_genai:gemini-2.5-flash",
                 "params": {
@@ -71,10 +61,12 @@ class Settings(BaseSettings):
                     "max_retries": 3,
                 },
             },
-            "gpt-4.1": {
-                "identifier": "openai:gpt-4.1",
+            "grok-4.1-fast-reasoning": {
+                "identifier": "xai:grok-4.1-fast-reasoning",
                 "params": {
-                    "temperature": 1.0,
+                    "temperature": 1,
+                    "thinking_budget": self.thinking_budget,
+                    "max_retries": 3,
                 },
             },
         }
