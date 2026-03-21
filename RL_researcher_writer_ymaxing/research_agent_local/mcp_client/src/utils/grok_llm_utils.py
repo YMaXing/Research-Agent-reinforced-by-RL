@@ -8,12 +8,16 @@ from ..settings import settings
 from .opik_handler import track_openai_client
 
 
-def build_llm_config_with_tools(mcp_tools: List, thinking_enabled: bool = True) -> Dict[str, Any]:
+def build_llm_config_with_tools(
+    mcp_tools: List, thinking_enabled: bool = True, thinking_budget: Optional[int] = None
+) -> Dict[str, Any]:
     """Build Grok config with all MCP tools converted to OpenAI-compatible format.
 
     Args:
         mcp_tools: List of MCP tool objects with name, description, and inputSchema.
         thinking_enabled: Whether to enable extended reasoning (Grok-3+ only).
+        thinking_budget: Token budget for the reasoning phase. Pass -1 for dynamic
+            (model decides), or a positive int to cap usage. Defaults to None (omitted).
 
     Returns:
         A dict of kwargs to spread into chat.completions.create().
@@ -35,9 +39,11 @@ def build_llm_config_with_tools(mcp_tools: List, thinking_enabled: bool = True) 
         "tool_choice": "auto",
     }
 
-    # reasoning_effort is supported on Grok-3 models when thinking is enabled
+    # reasoning_effort and thinking_budget are supported on Grok-3+ models
     if thinking_enabled:
         config["reasoning_effort"] = "high"
+        if thinking_budget is not None:
+            config["thinking_budget"] = thinking_budget
 
     return config
 

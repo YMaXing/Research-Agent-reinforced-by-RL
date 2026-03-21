@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     xai_base_url: str = Field(default="https://api.x.ai/v1", alias="XAI_BASE_URL", description="The xAI API base URL")
     orchestrator_key: str = Field(default="grok-4.1-fast-reasoning", description="Default orchestrator model key")
     model_id: str = Field(default="grok-4.1-fast-reasoning", description="Default model ID for LLM operations")
-    thinking_budget: int = Field(default=1024, description="Thinking budget for latency vs. depth tradeoff")
+    thinking_budget: int = Field(default=1024, alias="THINKING_BUDGET", description="Thinking budget for latency vs. depth tradeoff")
 
     # Agent configuration
     max_iterations: int = Field(default=15, description="Maximum number of iterations for the agent loop") 
