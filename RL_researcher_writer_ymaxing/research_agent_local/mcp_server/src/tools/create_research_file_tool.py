@@ -4,11 +4,11 @@ import logging
 from pathlib import Path
 from typing import Any, Dict
 
-from ..app.perplexity_handler import extract_perplexity_chunks, group_perplexity_by_query
+from ..app.tavily_handler import extract_tavily_chunks, group_tavily_by_query
 from ..config.constants import (
-    NOVA_FOLDER,
-    PERPLEXITY_RESULTS_FILE,
-    PERPLEXITY_RESULTS_SELECTED_FILE,
+    RESEARCH_OUTPUT_FOLDER,
+    TAVILY_RESULTS_FILE,
+    TAVILY_RESULTS_SELECTED_FILE,
     RESEARCH_MD_FILE,
     URLS_FROM_GUIDELINES_CODE_FOLDER,
     URLS_FROM_GUIDELINES_FOLDER,
@@ -30,7 +30,7 @@ def create_research_file_tool(research_directory: str) -> Dict[str, Any]:
     """
     Generate comprehensive research.md file from all research data.
 
-    Combines all research data including filtered Perplexity results, scraped guideline
+    Combines all research data including filtered Tavily results, scraped guideline
     sources, and full research sources into a comprehensive research.md file. The file
     is organized into sections with collapsible blocks for easy navigation.
 
@@ -44,36 +44,36 @@ def create_research_file_tool(research_directory: str) -> Dict[str, Any]:
 
     # Convert to Path object
     article_dir = Path(research_directory)
-    nova_dir = article_dir / NOVA_FOLDER
+    research_output_dir = article_dir / RESEARCH_OUTPUT_FOLDER
 
     # Validate research folder exists
     validate_research_folder(article_dir)
 
     # Paths
-    selected_results_file = nova_dir / PERPLEXITY_RESULTS_SELECTED_FILE
-    original_results_file = nova_dir / PERPLEXITY_RESULTS_FILE
+    selected_results_file = research_output_dir / TAVILY_RESULTS_SELECTED_FILE
+    original_results_file = research_output_dir / TAVILY_RESULTS_FILE
 
-    urls_from_research_dir = nova_dir / URLS_FROM_RESEARCH_FOLDER
-    code_sources_dir = nova_dir / URLS_FROM_GUIDELINES_CODE_FOLDER
-    additional_sources_dir = nova_dir / URLS_FROM_GUIDELINES_FOLDER
-    youtube_transcripts_dir = nova_dir / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER
+    urls_from_research_dir = research_output_dir / URLS_FROM_RESEARCH_FOLDER
+    code_sources_dir = research_output_dir / URLS_FROM_GUIDELINES_CODE_FOLDER
+    additional_sources_dir = research_output_dir / URLS_FROM_GUIDELINES_FOLDER
+    youtube_transcripts_dir = research_output_dir / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER
 
-    # Load and parse perplexity results
+    # Load and parse tavily results
     if selected_results_file.exists():
         # Use the already-filtered results directly
         results_md = read_file_safe(selected_results_file)
-        chunks = extract_perplexity_chunks(results_md)
+        chunks = extract_tavily_chunks(results_md)
         selected_ids = list(chunks.keys())  # all chunks are accepted
     else:
-        # Fallback to legacy behaviour (all sources in PERPLEXITY_RESULTS_FILE)
+        # Fallback to legacy behaviour (all sources in TAVILY_RESULTS_FILE)
         results_md = read_file_safe(original_results_file)
         if not results_md:
             logger.warning(f"File not found or empty: {original_results_file}")
-        chunks = extract_perplexity_chunks(results_md)
+        chunks = extract_tavily_chunks(results_md)
         selected_ids = list(chunks.keys())
 
     # Build Research Results section
-    grouped = group_perplexity_by_query(chunks, selected_ids)
+    grouped = group_tavily_by_query(chunks, selected_ids)
     research_results_section = build_research_results_section(grouped)
 
     # Build Sources Scraped From Research Results section

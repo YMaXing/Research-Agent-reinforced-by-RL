@@ -22,7 +22,7 @@ def get_first_line_title(markdown: str) -> str:
 
 def build_research_results_section(grouped_queries: Dict[str, List[str]]) -> str:
     """
-    Build the Research Results section from grouped perplexity query results.
+    Build the Research Results section from grouped tavily query results.
 
     Args:
         grouped_queries: Dict mapping query strings to lists of result blocks

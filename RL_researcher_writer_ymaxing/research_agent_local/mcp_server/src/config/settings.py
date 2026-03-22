@@ -23,11 +23,11 @@ class Settings(BaseSettings):
     )
 
     # LLM Configuration
-    youtube_transcription_model: str = Field(default="gemini-2.5-flash", description="Model for YouTube transcription")
-    scraping_model: str = Field(default="gemini-2.5-flash", description="Model for web scraping")
-    query_generation_model: str = Field(default="grok-reasoning", description="Model for query generation")
-    search_enhancement_model: str = Field(default="grok-fast-non-reasoning", description="Model for search enhancement")
-    source_selection_model: str = Field(default="grok-fast-reasoning", description="Model for source selection")
+    youtube_transcription_model: str = Field(default="gemini-2.5-flash", description="Model for YouTube transcription, only supported Gemini models")
+    scraping_model: str = Field(default="grok-4-1-fast-reasoning", description="Model for web scraping")
+    query_generation_model: str = Field(default="grok-4.20-reasoning", description="Model for query generation")
+    search_enhancement_model: str = Field(default="grok-4-1-fast-non-reasoning", description="Model for search enhancement")
+    source_selection_model: str = Field(default="grok-4-1-fast-reasoning", description="Model for source selection")
 
     # API Keys
     google_api_key: SecretStr | None = Field(
@@ -79,39 +79,34 @@ class Settings(BaseSettings):
                     "max_retries": 3,
                 },
             },
-            "grok-reasoning": {
-                "identifier": "xai:grok-4.20-reasoning",
-                "api_key_env_var": "XAI_API_KEY",
-                "params": {
-                    "temperature": 0.8,
-                    "thinking_budget": 1000,
-                    "include_thoughts": False,
-                    "max_retries": 3,
-                },
-            },
-            "grok-multi-agent": {
-                "identifier": "xai:grok-4.20-multi-agent",
+            "grok-4.20-reasoning": {
+                "identifier": "xai:grok-4.20-0309-reasoning",
                 "api_key_env_var": "XAI_API_KEY",
                 "params": {
                     "temperature": 0.8,
                     "max_retries": 3,
                 },
             },
-            "grok-fast-non-reasoning": {
+            "grok-4.20-multi-agent": {
+                "identifier": "xai:grok-4.20-multi-agent-0309",
+                "api_key_env_var": "XAI_API_KEY",
+                "params": {
+                    "temperature": 0.8,
+                    "max_retries": 3,
+                },
+            },
+            "grok-4-1-fast-non-reasoning": {
                 "identifier": "xai:grok-4-1-fast-non-reasoning",
                 "api_key_env_var": "XAI_API_KEY",
                 "params": {
                     "temperature": 0.0,
-                    "model_provider": "xai"   # ← important for init_chat_model
                 },
-                "api_key_env_var": "XAI_API_KEY"
             },
-            "grok-fast-reasoning": {
+            "grok-4-1-fast-reasoning": {
                 "identifier": "xai:grok-4-1-fast-reasoning",
                 "api_key_env_var": "XAI_API_KEY",
                 "params": {
-                    "temperature": 0.8,
-                    "model_provider": "xai"   # ← important for init_chat_model
+                    "temperature": 1,
                 },
             },
             "tavily": {

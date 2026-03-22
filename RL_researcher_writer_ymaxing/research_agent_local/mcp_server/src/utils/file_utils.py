@@ -97,19 +97,19 @@ def validate_guidelines_filenames_file(filenames_path: Path) -> None:
         raise ValueError(msg)
 
 
-def validate_perplexity_results_selected_file(results_selected_path: Path) -> None:
+def validate_tavily_results_selected_file(results_selected_path: Path) -> None:
     """
-    Validate that the perplexity results selected file exists and is readable.
+    Validate that the tavily results selected file exists and is readable.
 
     Args:
-        results_selected_path: Path to the perplexity results selected file to validate
+        results_selected_path: Path to the tavily results selected file to validate
 
     Raises:
-        FileNotFoundError: If the perplexity results selected file does not exist
+        FileNotFoundError: If the tavily results selected file does not exist
         ValueError: If the path is not a file
     """
     if not results_selected_path.exists():
-        msg = f"Perplexity results selected file does not exist: {results_selected_path}"
+        msg = f"Tavily results selected file does not exist: {results_selected_path}"
         logger.error(msg)
         raise FileNotFoundError(msg)
 

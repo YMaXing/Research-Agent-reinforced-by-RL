@@ -10,7 +10,7 @@ from ..app.notebook_handler import NotebookToMarkdownConverter
 from ..config.constants import (
     GUIDELINES_FILENAMES_FILE,
     LOCAL_FILES_FROM_RESEARCH_FOLDER,
-    NOVA_FOLDER,
+    RESEARCH_OUTPUT_FOLDER,
 )
 from ..utils.file_utils import validate_guidelines_filenames_file, validate_research_folder
 
@@ -89,13 +89,13 @@ def process_local_files_tool(research_directory: str) -> Dict[str, Any]:
 
     # Convert to Path object
     research_path = Path(research_directory)
-    nova_path = research_path / NOVA_FOLDER
+    research_output_path = research_path / RESEARCH_OUTPUT_FOLDER
 
     # Validate folders and files
     validate_research_folder(research_path)
 
     # Look for GUIDELINES_FILENAMES_FILE
-    metadata_path = nova_path / GUIDELINES_FILENAMES_FILE
+    metadata_path = research_output_path / GUIDELINES_FILENAMES_FILE
 
     # Validate the guidelines filenames file
     validate_guidelines_filenames_file(metadata_path)
@@ -115,7 +115,7 @@ def process_local_files_tool(research_directory: str) -> Dict[str, Any]:
         }
 
     # Create destination folder if it doesn't exist
-    dest_folder = nova_path / LOCAL_FILES_FROM_RESEARCH_FOLDER
+    dest_folder = research_output_path / LOCAL_FILES_FROM_RESEARCH_FOLDER
     dest_folder.mkdir(parents=True, exist_ok=True)
 
     processed = 0

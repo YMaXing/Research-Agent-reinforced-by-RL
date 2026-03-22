@@ -12,7 +12,7 @@ from ..app.tavily_handler import (
 )
 
 from ..config.constants import (
-    RESEARCH_FOLDER,
+    RESEARCH_OUTPUT_FOLDER,
     TAVILY_RESULTS_FILE,
 )
 from ..utils.file_utils import validate_research_folder
@@ -69,7 +69,7 @@ async def run_tavily_research_tool(research_directory: str, queries: List[str]) 
 
     # Convert to Path object
     research_path = Path(research_directory)
-    research_path = research_path / RESEARCH_FOLDER
+    research_path = research_path / RESEARCH_OUTPUT_FOLDER
 
     # Validate folders and files
     validate_research_folder(research_path)

@@ -14,7 +14,7 @@ def register_mcp_prompts(mcp: FastMCP) -> None:
     @mcp.prompt()
     @opik.track(type="general")
     async def full_research_instructions_prompt() -> str:
-        """Complete Nova research agent workflow instructions."""
+        """Complete research agent workflow instructions."""
 
         opik_context.initialize_thread_id()
 

@@ -260,12 +260,12 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     @opik.track(type="tool")
     async def select_research_sources_to_keep(research_directory: str) -> Dict[str, Any]:
         """
-        Automatically select high-quality sources from Perplexity results.
+        Automatically select high-quality sources from Tavily results.
 
-        Uses an LLM to evaluate each source in perplexity_results.md for trustworthiness,
+        Uses an LLM to evaluate each source in tavily_results.md for trustworthiness,
         authority, and relevance based on the article guidelines. Writes the comma-separated
-        IDs of accepted sources to perplexity_sources_selected.md and saves a filtered
-        markdown file perplexity_results_selected.md containing only the accepted sources.
+        IDs of accepted sources to tavily_sources_selected.md and saves a filtered
+        markdown file tavily_results_selected.md containing only the accepted sources.
 
         Args:
             research_directory: Path to the research directory (e.g., "articles/1")
@@ -275,8 +275,8 @@ def register_mcp_tools(mcp: FastMCP) -> None:
                 - status: Operation status ("success")
                 - sources_selected_count: Number of sources selected
                 - selected_source_ids: List of IDs of selected sources
-                - sources_selected_path: Path to the perplexity_sources_selected.md file
-                - results_selected_path: Path to the perplexity_results_selected.md file
+                - sources_selected_path: Path to the tavily_sources_selected.md file
+                - results_selected_path: Path to the tavily_results_selected.md file
                 - message: Human-readable success message with selection results
         """
 
@@ -291,7 +291,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         """
         Select up to max_sources priority research sources to scrape in full.
 
-        Analyzes the filtered Perplexity results together with the article guidelines and
+        Analyzes the filtered Tavily results together with the article guidelines and
         the material already scraped from guideline URLs, then chooses up to max_sources diverse,
         authoritative sources whose full content will add most value. The chosen URLs are
         written (one per line) to urls_to_scrape_from_research.md.
@@ -356,7 +356,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         """
         Generate the final comprehensive research.md file.
 
-        Combines all research data including filtered Perplexity results, scraped guideline
+        Combines all research data including filtered Tavily results, scraped guideline
         sources, and full research sources into a comprehensive research.md file. The file
         is organized into sections with collapsible blocks for easy navigation.
 

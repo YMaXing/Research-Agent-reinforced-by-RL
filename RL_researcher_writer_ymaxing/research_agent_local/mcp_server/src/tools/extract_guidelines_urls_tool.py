@@ -9,7 +9,7 @@ from ..app.guideline_extractions_handler import extract_local_paths, extract_url
 from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
     GUIDELINES_FILENAMES_FILE,
-    NOVA_FOLDER,
+    RESEARCH_OUTPUT_FOLDER,
 )
 from ..utils.file_utils import validate_guidelines_file, validate_research_folder
 
@@ -38,15 +38,15 @@ def extract_guidelines_urls_tool(research_folder: str) -> Dict[str, Any]:
 
     # Convert to Path object
     research_path = Path(research_folder)
-    nova_path = research_path / NOVA_FOLDER
+    research_output_path = research_path / RESEARCH_OUTPUT_FOLDER
     guidelines_path = research_path / ARTICLE_GUIDELINE_FILE
 
     # Validate folders and files
     validate_research_folder(research_path)
     validate_guidelines_file(guidelines_path)
 
-    # Create NOVA_FOLDER directory if it doesn't exist
-    nova_path.mkdir(parents=True, exist_ok=True)
+    # Create RESEARCH_OUTPUT_FOLDER directory if it doesn't exist
+    research_output_path.mkdir(parents=True, exist_ok=True)
 
     # Read the guidelines file
     try:
@@ -74,7 +74,7 @@ def extract_guidelines_urls_tool(research_folder: str) -> Dict[str, Any]:
     }
 
     # Write to GUIDELINES_FILENAMES_FILE in the research folder
-    output_path = nova_path / GUIDELINES_FILENAMES_FILE
+    output_path = research_output_path / GUIDELINES_FILENAMES_FILE
 
     try:
         output_path.write_text(json.dumps(data, indent=2), encoding="utf-8")

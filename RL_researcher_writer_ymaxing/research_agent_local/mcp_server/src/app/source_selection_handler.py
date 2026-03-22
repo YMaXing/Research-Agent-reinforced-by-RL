@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from ..config.constants import (
-    NOVA_FOLDER,
-    PERPLEXITY_RESULTS_FILE,
+    RESEARCH_OUTPUT_FOLDER,
+    TAVILY_RESULTS_FILE,
     URLS_FROM_GUIDELINES_FOLDER,
 )
 from ..config.prompts import (
@@ -21,7 +21,7 @@ from ..utils.llm_utils import get_chat_model
 logger = logging.getLogger(__name__)
 
 
-def parse_perplexity_results(md_text: str) -> Dict[int, Dict[str, str]]:
+def parse_tavily_results(md_text: str) -> Dict[int, Dict[str, str]]:
     """Return mapping {id: {url, query, answer}} extracted from the markdown."""
     _source_block_re = re.compile(
         r"^### Source \[(\d+)]\: (.*?)\n\nQuery: (.*?)\n\nAnswer: (.*?)\n(?:-----|\Z)",
@@ -55,9 +55,9 @@ def build_sources_data_text(parsed: Dict[int, Dict[str, str]]) -> str:
 
 async def select_sources(article_guidelines: str, md_results: str) -> List[int]:
     """Use an LLM to select the best subset of sources."""
-    parsed_results = parse_perplexity_results(md_results)
+    parsed_results = parse_tavily_results(md_results)
     if not parsed_results:
-        logger.warning(f"⚠️  No sources found in {PERPLEXITY_RESULTS_FILE} – accepting none.")
+        logger.warning(f"⚠️  No sources found in {TAVILY_RESULTS_FILE} – accepting none.")
         return []
 
     sources_data_text = build_sources_data_text(parsed_results)
@@ -110,7 +110,7 @@ def parse_results_selected(md_text: str) -> List[Dict[str, str]]:
 def load_scraped_guideline_context(research_directory: str) -> str:
     """Concatenate all markdown files from URLS_FROM_GUIDELINES_FOLDER as context."""
     ctx_parts: List[str] = []
-    dir_path = Path(research_directory) / NOVA_FOLDER / URLS_FROM_GUIDELINES_FOLDER
+    dir_path = Path(research_directory) / RESEARCH_OUTPUT_FOLDER / URLS_FROM_GUIDELINES_FOLDER
     if dir_path.exists():
         for md_file in sorted(dir_path.glob("*.md")):
             ctx_parts.append(md_file.read_text(encoding="utf-8"))
@@ -127,7 +127,7 @@ async def select_top_sources(
     """
     sources = parse_results_selected(md_results_selected)
     if not sources:
-        msg = "⚠️  No sources found in perplexity_results_selected.md. Nothing to select."
+        msg = "⚠️  No sources found in tavily_results_selected.md. Nothing to select."
         logger.warning(msg)
         return {"selected_urls": [], "reasoning": "No sources available for selection."}
 

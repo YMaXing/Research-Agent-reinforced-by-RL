@@ -8,10 +8,10 @@ from typing import Any, Dict
 from ..app.source_selection_handler import select_sources
 from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
-    NOVA_FOLDER,
-    PERPLEXITY_RESULTS_FILE,
-    PERPLEXITY_RESULTS_SELECTED_FILE,
-    PERPLEXITY_SOURCES_SELECTED_FILE,
+    RESEARCH_OUTPUT_FOLDER,
+    TAVILY_RESULTS_FILE,
+    TAVILY_RESULTS_SELECTED_FILE,
+    TAVILY_SOURCES_SELECTED_FILE,
 )
 from ..utils.file_utils import read_file_safe, validate_research_folder
 
@@ -49,12 +49,12 @@ def extract_selected_blocks_content(selected_ids: list[int], md_results: str) ->
 
 async def select_research_sources_to_keep_tool(research_directory: str) -> Dict[str, Any]:
     """
-    Automatically select high-quality sources from Perplexity results.
+    Automatically select high-quality sources from Tavily results.
 
-    Uses LLM to evaluate each source in perplexity_results.md for trustworthiness,
+    Uses LLM to evaluate each source in tavily_results.md for trustworthiness,
     authority, and relevance based on the article guidelines. Writes the comma-separated
-    IDs of accepted sources to perplexity_sources_selected.md and saves a filtered
-    markdown file perplexity_results_selected.md containing only the accepted sources.
+    IDs of accepted sources to tavily_sources_selected.md and saves a filtered
+    markdown file tavily_results_selected.md containing only the accepted sources.
 
     Args:
         research_directory: Path to the research directory containing article guidelines and research data
@@ -66,17 +66,17 @@ async def select_research_sources_to_keep_tool(research_directory: str) -> Dict[
 
     # Convert to Path object
     research_path = Path(research_directory)
-    nova_path = research_path / NOVA_FOLDER
+    research_output_path = research_path / RESEARCH_OUTPUT_FOLDER
 
     # Validate folders and files
     validate_research_folder(research_path)
 
-    # Create NOVA_FOLDER directory if it doesn't exist
-    nova_path.mkdir(parents=True, exist_ok=True)
+    # Create RESEARCH_OUTPUT_FOLDER directory if it doesn't exist
+    research_output_path.mkdir(parents=True, exist_ok=True)
 
     # Gather context from the research folder
     guidelines_path = research_path / ARTICLE_GUIDELINE_FILE
-    results_path = nova_path / PERPLEXITY_RESULTS_FILE
+    results_path = research_output_path / TAVILY_RESULTS_FILE
 
     if not results_path.exists():
         msg = f"{results_path} not found. Run the research round first."
@@ -89,12 +89,12 @@ async def select_research_sources_to_keep_tool(research_directory: str) -> Dict[
     selected_ids = await select_sources(article_guidelines, md_results)
 
     # Write the selected IDs (comma-separated) to file.
-    selected_ids_path = nova_path / PERPLEXITY_SOURCES_SELECTED_FILE
+    selected_ids_path = research_output_path / TAVILY_SOURCES_SELECTED_FILE
     with selected_ids_path.open("w", encoding="utf-8") as f:
         f.write(",".join(map(str, selected_ids)))
 
     # Extract corresponding blocks and write to results_selected file
-    results_selected_path = nova_path / PERPLEXITY_RESULTS_SELECTED_FILE
+    results_selected_path = research_output_path / TAVILY_RESULTS_SELECTED_FILE
     content_out = extract_selected_blocks_content(selected_ids, md_results)
     with results_selected_path.open("w", encoding="utf-8") as f:
         f.write(content_out)

@@ -16,8 +16,6 @@ def build_llm_config_with_tools(
     Args:
         mcp_tools: List of MCP tool objects with name, description, and inputSchema.
         thinking_enabled: Whether to enable extended reasoning (Grok-3+ only).
-        thinking_budget: Token budget for the reasoning phase. Pass -1 for dynamic
-            (model decides), or a positive int to cap usage. Defaults to None (omitted).
 
     Returns:
         A dict of kwargs to spread into chat.completions.create().
@@ -38,12 +36,6 @@ def build_llm_config_with_tools(
         "tools": grok_tools,
         "tool_choice": "auto",
     }
-
-    # reasoning_effort and thinking_budget are supported on Grok-3+ models
-    if thinking_enabled:
-        config["reasoning_effort"] = "high"
-        if thinking_budget is not None:
-            config["thinking_budget"] = thinking_budget
 
     return config
 
@@ -101,7 +93,7 @@ class LLMClient:
 
         self.model_id = model_id
         self.llm_config = llm_config
-
+        
         base_client = openai.AsyncOpenAI(
             api_key=settings.xai_api_key.get_secret_value(),
             base_url=settings.xai_base_url,

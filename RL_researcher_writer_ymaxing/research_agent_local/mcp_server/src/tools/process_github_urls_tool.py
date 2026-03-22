@@ -8,7 +8,7 @@ from typing import Any, Dict
 from ..app.github_handler import process_github_url
 from ..config.constants import (
     GUIDELINES_FILENAMES_FILE,
-    NOVA_FOLDER,
+    RESEARCH_OUTPUT_FOLDER,
     URLS_FROM_GUIDELINES_CODE_FOLDER,
 )
 from ..config.settings import settings
@@ -36,16 +36,16 @@ async def process_github_urls_tool(research_directory: str) -> Dict[str, Any]:
 
     # Convert to Path object
     research_path = Path(research_directory)
-    nova_path = research_path / NOVA_FOLDER
+    research_output_path = research_path / RESEARCH_OUTPUT_FOLDER
 
     # Validate folders and files
     validate_research_folder(research_path)
 
-    # Ensure the NOVA_FOLDER directory exists
-    nova_path.mkdir(parents=True, exist_ok=True)
+    # Ensure the RESEARCH_OUTPUT_FOLDER directory exists
+    research_output_path.mkdir(parents=True, exist_ok=True)
 
     # Look for GUIDELINES_FILENAMES_FILE file
-    metadata_path = nova_path / GUIDELINES_FILENAMES_FILE
+    metadata_path = research_output_path / GUIDELINES_FILENAMES_FILE
 
     # Validate the guidelines filenames file
     validate_guidelines_filenames_file(metadata_path)
@@ -71,7 +71,7 @@ async def process_github_urls_tool(research_directory: str) -> Dict[str, Any]:
         }
 
     # Prepare output directory
-    dest_folder = nova_path / URLS_FROM_GUIDELINES_CODE_FOLDER
+    dest_folder = research_output_path / URLS_FROM_GUIDELINES_CODE_FOLDER
     dest_folder.mkdir(parents=True, exist_ok=True)
 
     logger.debug(f"Processing {len(github_urls)} GitHub URLs...")

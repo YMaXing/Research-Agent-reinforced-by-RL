@@ -9,7 +9,7 @@ from .extract_guidelines_urls_tool import extract_guidelines_urls_tool
 from .generate_next_queries_tool import generate_next_queries_tool
 from .process_github_urls_tool import process_github_urls_tool
 from .process_local_files_tool import process_local_files_tool
-from .run_tavily_research_tool import run_perplexity_research_tool
+from .run_tavily_research_tool import run_tavily_research_tool
 
 # Web scraping and content processing tools
 from .scrape_and_clean_other_urls_tool import scrape_and_clean_other_urls_tool
