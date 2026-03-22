@@ -12,13 +12,13 @@ from .generate_queries_handler import PROMPT_GENERATE_QUERIES_AND_REASONS, gener
 from .github_handler import process_github_url
 from .guideline_extractions_handler import extract_local_paths, extract_urls
 from .notebook_handler import NotebookToMarkdownConverter
-from .perplexity_handler import (
+from .tavily_handler import (
     PROMPT_WEB_SEARCH,
-    append_perplexity_results,
+    append_tavily_results,
     compute_next_source_id,
-    extract_perplexity_chunks,
-    group_perplexity_by_query,
-    run_perplexity_search,
+    extract_tavily_chunks,
+    group_tavily_by_query,
+    run_tavily_search,
     run_queries,
 )
 from .scraping_handler import (
@@ -35,7 +35,7 @@ from .source_selection_handler import (
     PROMPT_SELECT_TOP_SOURCES,
     build_sources_data_text,
     load_scraped_guideline_context,
-    parse_perplexity_results,
+    parse_tavily_results,
     parse_results_selected,
     select_sources,
     select_top_sources,
@@ -61,13 +61,13 @@ __all__ = [
     "PROMPT_GENERATE_QUERIES_AND_REASONS",
     # Notebook processing
     "NotebookToMarkdownConverter",
-    # Perplexity operations
-    "run_perplexity_search",
+    # Tavily operations
+    "run_tavily_search",
     "compute_next_source_id",
-    "append_perplexity_results",
+    "append_tavily_results",
     "run_queries",
-    "extract_perplexity_chunks",
-    "group_perplexity_by_query",
+    "extract_tavily_chunks",
+    "group_tavily_by_query",
     "PROMPT_WEB_SEARCH",
     # Scraping utilities
     "slugify",
@@ -80,7 +80,7 @@ __all__ = [
     # GitHub utilities
     "process_github_url",
     # Source selection operations
-    "parse_perplexity_results",
+    "parse_tavily_results",
     "build_sources_data_text",
     "select_sources",
     "parse_results_selected",

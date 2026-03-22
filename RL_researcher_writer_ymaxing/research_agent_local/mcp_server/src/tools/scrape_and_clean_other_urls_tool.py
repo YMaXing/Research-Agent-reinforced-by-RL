@@ -9,7 +9,7 @@ from ..app.scraping_handler import build_filename, scrape_urls_concurrently
 from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
     GUIDELINES_FILENAMES_FILE,
-    NOVA_FOLDER,
+    RESEARCH_OUTPUT_FOLDER,
     URLS_FROM_GUIDELINES_FOLDER,
 )
 from ..utils.file_utils import (
@@ -72,13 +72,13 @@ async def scrape_and_clean_other_urls_tool(research_directory: str, concurrency_
 
     # Convert to Path object
     research_path = Path(research_directory)
-    nova_path = research_path / NOVA_FOLDER
+    research_output_path = research_path / RESEARCH_OUTPUT_FOLDER
 
     # Validate folders and files
     validate_research_folder(research_path)
 
     # Look for GUIDELINES_FILENAMES_FILE file
-    guidelines_json_path = nova_path / GUIDELINES_FILENAMES_FILE
+    guidelines_json_path = research_output_path / GUIDELINES_FILENAMES_FILE
 
     # Validate the guidelines filenames file
     validate_guidelines_filenames_file(guidelines_json_path)
@@ -119,7 +119,7 @@ async def scrape_and_clean_other_urls_tool(research_directory: str, concurrency_
         raise ValueError(msg) from e
 
     # Prepare output directory
-    output_dir = nova_path / URLS_FROM_GUIDELINES_FOLDER
+    output_dir = research_output_path / URLS_FROM_GUIDELINES_FOLDER
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Scrape URLs concurrently

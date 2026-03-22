@@ -11,7 +11,7 @@ from ..app.youtube_handler import process_youtube_url
 from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
     GUIDELINES_FILENAMES_FILE,
-    NOVA_FOLDER,
+    RESEARCH_OUTPUT_FOLDER,
     URLS_FROM_RESEARCH_FOLDER,
     URLS_TO_SCRAPE_FROM_RESEARCH_FILE,
     YOUTUBE_TRANSCRIPTION_MAX_CONCURRENT_REQUESTS,
@@ -79,7 +79,7 @@ def validate_and_read_urls_file(
     return urls, None
 
 
-def deduplicate_urls(nova_path: Path, urls: list[str]) -> tuple[list[str], int, int]:
+def deduplicate_urls(research_output_path: Path, urls: list[str]) -> tuple[list[str], int, int]:
     """
     Deduplicate URLs by checking against previously processed URLs from guidelines file.
 
@@ -87,14 +87,14 @@ def deduplicate_urls(nova_path: Path, urls: list[str]) -> tuple[list[str], int, 
     them out from the input URLs list.
 
     Args:
-        nova_path: Path to the .nova directory
+        research_output_path: Path to the research output directory
         urls: List of URLs to deduplicate
 
     Returns:
         Tuple of (filtered_urls, original_count, deduplicated_count)
     """
     # Read previously processed URLs from GUIDELINES_FILENAMES_FILE to deduplicate
-    guidelines_json_path = nova_path / GUIDELINES_FILENAMES_FILE
+    guidelines_json_path = research_output_path / GUIDELINES_FILENAMES_FILE
     already_processed_urls = set()
 
     if guidelines_json_path.exists():
@@ -241,16 +241,16 @@ async def scrape_research_urls_tool(research_directory: str, concurrency_limit: 
 
     # Convert to Path object
     research_path = Path(research_directory)
-    nova_path = research_path / NOVA_FOLDER
+    research_output_path = research_path / RESEARCH_OUTPUT_FOLDER
 
     # Validate folders and files
     validate_research_folder(research_path)
 
-    # Create NOVA_FOLDER directory if it doesn't exist
-    nova_path.mkdir(parents=True, exist_ok=True)
+    # Create RESEARCH_OUTPUT_FOLDER directory if it doesn't exist
+    research_output_path.mkdir(parents=True, exist_ok=True)
 
     # Look for urls_to_scrape_from_research.md file
-    urls_file_path = nova_path / URLS_TO_SCRAPE_FROM_RESEARCH_FILE
+    urls_file_path = research_output_path / URLS_TO_SCRAPE_FROM_RESEARCH_FILE
 
     # Validate and read URLs from file
     urls, early_return = validate_and_read_urls_file(urls_file_path, research_directory)
@@ -258,7 +258,7 @@ async def scrape_research_urls_tool(research_directory: str, concurrency_limit: 
         return early_return
 
     # Deduplicate URLs against previously processed ones
-    urls_to_process, original_count, deduplicated_count = deduplicate_urls(nova_path, urls)
+    urls_to_process, original_count, deduplicated_count = deduplicate_urls(research_output_path, urls)
 
     # Categorize URLs into YouTube and other types
     youtube_urls, other_urls = categorize_urls(urls_to_process)
@@ -286,7 +286,7 @@ async def scrape_research_urls_tool(research_directory: str, concurrency_limit: 
         logger.warning(f"{ARTICLE_GUIDELINE_FILE} not found in research folder: {research_directory}")
 
     # Prepare output directory
-    output_dir = nova_path / URLS_FROM_RESEARCH_FOLDER
+    output_dir = research_output_path / URLS_FROM_RESEARCH_FOLDER
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Process and save URLs

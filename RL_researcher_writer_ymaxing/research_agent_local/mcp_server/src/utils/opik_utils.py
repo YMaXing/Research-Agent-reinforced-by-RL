@@ -146,6 +146,38 @@ def track_langchain_model(model, model_name: str) -> TrackedLangChainModel:
     return TrackedLangChainModel(model, model_name, settings.opik_project_name)
 
 
+class TrackedTavilyTool:
+    """Wrapper for Tavily tools to enable Opik tracking (mirrors TrackedLangChainModel)."""
+
+    def __init__(self, tool, model_name: str, project_name: str):
+        self._tool = tool
+        self._model_name = model_name
+        self._project_name = project_name
+
+    def __getattr__(self, name):
+        """Delegate everything to the real tool."""
+        return getattr(self._tool, name)
+
+    def _inject_tracer(self, kwargs):
+        """Inject OpikTracer into config (prevents duplicate tracers)."""
+        config = kwargs.get("config", {}) or {}
+        callbacks = config.get("callbacks", [])
+        opik_tracer = OpikTracer(project_name=self._project_name)
+
+        if not any(isinstance(c, OpikTracer) for c in callbacks):
+            config["callbacks"] = callbacks + [opik_tracer]
+            kwargs["config"] = config
+
+        return kwargs
+
+    def invoke(self, *args, **kwargs):
+        kwargs = self._inject_tracer(kwargs)
+        return self._tool.invoke(*args, **kwargs)
+
+    async def ainvoke(self, *args, **kwargs):
+        kwargs = self._inject_tracer(kwargs)
+        return await self._tool.ainvoke(*args, **kwargs)
+
 def is_opik_enabled() -> bool:
     """Check if Opik monitoring is enabled.
 

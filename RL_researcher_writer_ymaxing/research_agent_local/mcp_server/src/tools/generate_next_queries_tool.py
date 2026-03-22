@@ -9,8 +9,8 @@ from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
     MARKDOWN_EXTENSION,
     NEXT_QUERIES_FILE,
-    NOVA_FOLDER,
-    PERPLEXITY_RESULTS_FILE,
+    RESEARCH_OUTPUT_FOLDER,
+    TAVILY_RESULTS_FILE,
     URLS_FROM_GUIDELINES_FOLDER,
 )
 from ..utils.file_utils import read_file_safe, validate_research_folder
@@ -54,7 +54,7 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
     """
     Generate candidate web-search queries for the next research round.
 
-    Analyzes the article guidelines, already-scraped content, and existing Perplexity
+    Analyzes the article guidelines, already-scraped content, and existing Tavily
     results to identify knowledge gaps and propose new web-search questions.
     Each query includes a rationale explaining why it's important for the article.
     Results are saved to next_queries.md in the research directory.
@@ -70,18 +70,18 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
 
     # Convert to Path object
     research_path = Path(research_directory)
-    nova_path = research_path / NOVA_FOLDER
+    research_output_path = research_path / RESEARCH_OUTPUT_FOLDER
 
     # Validate folders and files
     validate_research_folder(research_path)
 
-    # Create NOVA_FOLDER directory if it doesn't exist
-    nova_path.mkdir(parents=True, exist_ok=True)
+    # Create RESEARCH_OUTPUT_FOLDER directory if it doesn't exist
+    research_output_path.mkdir(parents=True, exist_ok=True)
 
     # Gather context from the research folder
     guidelines_path = research_path / ARTICLE_GUIDELINE_FILE
-    results_path = nova_path / PERPLEXITY_RESULTS_FILE
-    urls_from_guidelines_dir = nova_path / URLS_FROM_GUIDELINES_FOLDER
+    results_path = research_output_path / TAVILY_RESULTS_FILE
+    urls_from_guidelines_dir = research_output_path / URLS_FROM_GUIDELINES_FOLDER
 
     article_guidelines = read_file_safe(guidelines_path)
     past_research = read_file_safe(results_path)
@@ -100,7 +100,7 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
     )
 
     # Write to next_queries.md (overwrite)
-    next_q_path = nova_path / NEXT_QUERIES_FILE
+    next_q_path = research_output_path / NEXT_QUERIES_FILE
 
     # Write queries to file
     write_queries_to_file(next_q_path, queries_and_reasons)

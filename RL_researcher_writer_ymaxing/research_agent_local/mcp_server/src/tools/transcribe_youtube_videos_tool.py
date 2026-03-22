@@ -9,7 +9,7 @@ from typing import Any, Dict
 from ..app.youtube_handler import process_youtube_url
 from ..config.constants import (
     GUIDELINES_FILENAMES_FILE,
-    NOVA_FOLDER,
+    RESEARCH_OUTPUT_FOLDER,
     URLS_FROM_GUIDELINES_YOUTUBE_FOLDER,
     YOUTUBE_TRANSCRIPTION_MAX_CONCURRENT_REQUESTS,
 )
@@ -35,13 +35,13 @@ async def transcribe_youtube_videos_tool(research_directory: str) -> Dict[str, A
     logger.debug(f"Starting transcription of YouTube videos from {research_directory}")
 
     research_path = Path(research_directory)
-    nova_path = research_path / NOVA_FOLDER
+    research_output_path = research_path / RESEARCH_OUTPUT_FOLDER
 
     # Validate folders and files
     validate_research_folder(research_path)
 
     # Look for GUIDELINES_FILENAMES_FILE
-    metadata_path = nova_path / GUIDELINES_FILENAMES_FILE
+    metadata_path = research_output_path / GUIDELINES_FILENAMES_FILE
 
     # Validate the guidelines filenames file
     validate_guidelines_filenames_file(metadata_path)
@@ -63,7 +63,7 @@ async def transcribe_youtube_videos_tool(research_directory: str) -> Dict[str, A
             "message": f"No YouTube URLs found in {GUIDELINES_FILENAMES_FILE} in '{research_directory}'",
         }
 
-    dest_folder = nova_path / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER
+    dest_folder = research_output_path / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER
     dest_folder.mkdir(parents=True, exist_ok=True)
 
     logger.debug(f"Processing {len(youtube_urls)} YouTube URL(s)...")

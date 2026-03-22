@@ -44,7 +44,7 @@ def create_mcp_server() -> FastMCP:
 
 
 if __name__ == "__main__":
-    parser = ArgumentParser(description="MCP Server for Nova Research Agent")
+    parser = ArgumentParser(description="MCP Server for Research Agent")
     parser.add_argument(
         "--transport",
         "-t",
