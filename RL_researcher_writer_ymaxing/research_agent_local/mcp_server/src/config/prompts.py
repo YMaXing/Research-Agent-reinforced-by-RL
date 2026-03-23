@@ -48,6 +48,26 @@ Guidelines for the set of queries:
 • Never repeat or closely paraphrase any query that already appears in <full_queries>.
 • The web search queries should be natural language questions, not just keywords.
 
+**Few-shot examples:**
+
+Example 1:
+Query: What are the most widely accepted evaluation metrics and benchmarks for measuring retrieval quality and generation faithfulness in modern RAG systems?
+Reason: This directly fills a major missing section in the article guidelines on evaluation, providing authoritative sources for quantitative assessment that are currently absent from past research.
+
+Example 2:
+Query: How do hybrid sparse-dense retrieval architectures improve recall-precision tradeoffs compared to pure dense retrieval in RAG pipelines?
+Reason: This targets an important remaining architectural component in the guidelines, ensuring balanced coverage of advanced retrieval strategies not yet addressed in existing material.
+
+Example 3:
+Query: What are the primary data privacy and compliance challenges when deploying enterprise-scale RAG systems that access sensitive internal documents?
+Reason: This addresses a critical gap in the guidelines regarding production deployment considerations, supplying trustworthy sources on regulatory and security aspects.
+
+Example 4:
+Query: How do advanced reranking techniques (such as cross-encoders or LLM-based rerankers) integrate into RAG pipelines to reduce hallucination rates?
+Reason: This covers a distinct optimization technique from the guidelines that is currently underrepresented, offering high-quality sources on a specific performance improvement vector.
+
+Now generate exactly {n_queries} new queries following the same style and the rules above.
+
 """.strip()
 
 # Complementary query generation prompt
@@ -94,6 +114,26 @@ The queries, taken **as a group**, should add genuinely new value that cannot be
 For each query, provide a short reason that explicitly states:
 - whether it is primarily **Depth** or **Breadth**
 - exactly what new value it brings to the article.
+
+**Few-shot examples:**
+
+Example 1 (Depth):
+Query: What are the core mathematical and information-theoretic limitations of dense retrieval methods in RAG systems when scaling to millions of documents?
+Reason: **Depth** - This explores fundamental theoretical constraints of the core retrieval mechanism, revealing scalability bottlenecks not covered in basic guideline discussions.
+
+Example 2 (Depth):
+Query: What are the main engineering challenges and latency tradeoffs when integrating real-time knowledge updates into production RAG pipelines?
+Reason: **Depth** - This targets practical implementation difficulties and system-level tradeoffs of the core topic, providing actionable insights for real-world deployment.
+
+Example 3 (Breadth):
+Query: How have retrieval-augmented techniques originally developed for legal document analysis been adapted and applied in biomedical research and drug discovery?
+Reason: **Breadth** - This examines successful applications in adjacent high-stakes domains (biomedicine), offering powerful cross-domain analogies and lessons.
+
+Example 4 (Breadth):
+Query: How is the rise of long-context language models and memory-augmented agents changing the role and architecture of traditional RAG systems?
+Reason: **Breadth** - This explores an emerging adjacent trend (long-context + agentic systems) and how it intersects with and potentially disrupts core RAG approaches.
+
+Now generate exactly {n_queries} new queries following the same style, the exact Depth/Breadth distribution, and the rules above.
 
 """.strip()
 
