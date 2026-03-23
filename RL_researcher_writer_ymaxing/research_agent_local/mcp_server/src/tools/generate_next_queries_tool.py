@@ -13,7 +13,6 @@ from ..app.generate_queries_handler import (
 from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
     MARKDOWN_EXTENSION,
-    NEXT_COMPLEMENTARY_QUERIES_FILE,
     NEXT_QUERIES_FILE,
     FULL_QUERIES_FILE,
     RESEARCH_OUTPUT_FOLDER,
@@ -119,6 +118,7 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
         full_queries_path,
         queries_and_reasons,
         starting_id=compute_next_query_id(full_queries_path),
+        query_source="exploitation",
     )
 
     # Create the formatted queries string for display
@@ -147,7 +147,7 @@ async def generate_next_complementary_queries_tool(research_directory: str,
         to dive deeper into the content already covered in past research, and/or explore other uncovered aspects 
         that are closely related to past research and may expand the research scope, then propose new web-search questions.
         Each query includes a rationale explaining why it's important and what additional value it brings for the article.
-        Results are saved to next_complementary_queries.md in the research directory.
+        Results are saved to next_queries.md in the research directory.
 
         Args:
             research_directory: Path to the research directory containing article data
@@ -158,7 +158,7 @@ async def generate_next_complementary_queries_tool(research_directory: str,
                 - status: Operation status ("success")
                 - queries_generated: List of generated query dictionaries with 'query' and 'rationale' keys
                 - queries_count: Number of queries generated
-                - output_path: Path to the generated next_complementary_queries.md file
+                - output_path: Path to the generated next_queries.md file
                 - message: Human-readable success message with generation results
         """
         logger.debug(f"Generating complementary queries for {research_directory} "
@@ -205,8 +205,8 @@ async def generate_next_complementary_queries_tool(research_directory: str,
             article_guidelines, past_research, full_queries, scraped_ctx_str, n_queries=n_queries, depth_vs_breadth_ratio=effective_ratio
         )
 
-        # Write to next_complementary_queries.md (overwrite)
-        next_q_path = research_output_path / NEXT_COMPLEMENTARY_QUERIES_FILE
+        # Write to next_queries.md (overwrite)
+        next_q_path = research_output_path / NEXT_QUERIES_FILE
         
         # Write queries to file
         write_queries_to_file(next_q_path, queries_and_reasons)
@@ -216,6 +216,7 @@ async def generate_next_complementary_queries_tool(research_directory: str,
             full_queries_path,
             queries_and_reasons,
             starting_id=compute_next_query_id(full_queries_path),
+            query_source="complementary",
         )
 
         # Create the formatted queries string for display

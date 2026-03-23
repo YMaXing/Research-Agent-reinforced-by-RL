@@ -137,6 +137,73 @@ Now generate exactly {n_queries} new queries following the same style, the exact
 
 """.strip()
 
+# Query deduplication prompt
+PROMPT_DEDUPLICATE_QUERIES = """
+You are an expert research query deduplicator acting as the final safety net in a two-phase research system.
+
+The workflow has two distinct phases:
+- Phase 1 (Exploitation): Fixed 3 rounds that directly cover the article guidelines where the tool 'generate_next_queries_tool' is used.
+- Phase 2 (Exploration): RL-controlled complementary rounds that add depth and breadth where the tool 'generate_next_complementary_queries_tool' is used.
+
+Your task: Take a newly generated batch of queries from the current round and remove any that are semantically redundant with the entire historical set of queries created in previous rounds.
+
+Perform **two-stage deduplication** on the new queries:
+
+**Stage 1 (Same-round)**: First, remove any semantic duplicates *within* the new batch itself. Keep only the best version of each distinct research direction.
+
+**Stage 2 (Historical)**: Then, remove any surviving queries that are redundant with the full history.
+
+**Phase-specific rules for Stage 2:**
+- Exploitation round: Be strict. Prevent close duplicates with previous exploitation queries.
+- Complementary round: Strongly protect all historical exploitation queries. Only keep new queries that add genuine new depth or breadth value.
+
+**What counts as a semantic duplicate?**
+Queries that target essentially the same knowledge need, angle, or sub-topic and would produce highly overlapping search results, even if worded differently.
+
+Here is the full history of all previous queries (each tagged with its type):
+<full_queries_history>
+{full_queries_history}
+</full_queries_history>
+
+Here are the **new queries** from the current {query_source} round:
+<new_queries>
+{new_queries_list}
+</new_queries>
+
+**Few-shot examples:**
+
+Example 1 (Exploitation round):
+History contains: Query [12] [Exploitation]: What are the main limitations of RAG systems?
+New query: What are the primary failure modes and scalability issues of retrieval-augmented generation?
+→ Remove the new query (redundant with previous exploitation coverage).
+
+Example 2 (Complementary round):
+History contains: Query [12] [Exploitation]: What are the main limitations of RAG systems?
+New query: How have retrieval-augmented techniques originally developed for legal e-discovery been adapted in biomedical literature search?
+→ Keep the new query (adds meaningful cross-domain breadth without duplicating core coverage).
+
+Example 3 (Complementary round – clear duplicate):
+History contains: Query [15] [Exploitation]: How do reranking techniques improve RAG performance?
+New query: What are the best reranking methods to reduce hallucinations in RAG pipelines?
+→ Remove the new query (too close to existing exploitation material).
+
+Now analyze the new queries above.
+
+Return **only** a valid JSON object with this exact structure and nothing else:
+
+{{
+  "kept_queries": [
+    "exact text of first kept query",
+    "exact text of second kept query"
+  ],
+  "removed_queries": [
+    "exact text of removed query"
+  ],
+  "reasoning": "One or two sentences explaining your most important deduplication decisions."
+}}
+
+""".strip()
+
 # Web search prompt
 PROMPT_WEB_SEARCH = """
 Question: {query}
