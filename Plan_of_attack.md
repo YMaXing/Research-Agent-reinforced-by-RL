@@ -8,16 +8,17 @@
 ## Tools
 
 replace the fixed number of calling tools with a maximum limit
-
-- expand searching scopes 
+- exploration tool (depth + breadth) **done**
 
 - Tavily replacing Perplexity as the chosen search-RAG tool for queries **done**
 
 - LaTeX source scraping for full arXiv papers 
 
-- (Optional) immediate fact-checking for quotes and claimed facts 
+- semantic deduplication for queries **done**
 
-- (Optional) semantic deduplication 
+- semantic deduplication for final content
+
+- (Optional) immediate fact-checking for quotes and claimed facts 
 
 - (Optional) cost reporting 
 

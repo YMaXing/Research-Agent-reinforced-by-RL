@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import List, Tuple
+from typing import List, Tuple, Literal
 from pathlib import Path
 
 from ..config.prompts import PROMPT_GENERATE_QUERIES_AND_REASONS, PROMPT_GENERATE_COMPLEMENTARY_QUERIES_AND_REASONS
@@ -16,25 +16,35 @@ def append_generated_queries_with_reasons(
         full_queries_path: Path,
         queries_and_reasons: List[Tuple[str, str]],
         starting_id: int,
+        query_source: Literal["exploitation", "complementary"] = "exploitation",
     ) -> int:
-        """Append a list of queries with reasons to full queries results. Returns next available global id."""
+        """
+        Append a list of queries with reasons to full_queries.md.
+        Automatically tags each query with [Exploitation] or [Exploration].
+        Returns next available global id.
+        """
+        tag = "[Exploitation]" if query_source == "exploitation" else "[Exploration]"
         with full_queries_path.open("a", encoding="utf-8") as f:
             last_id = starting_id
             for query, reason in queries_and_reasons:
-                f.write(f"Query [{last_id}]: {query}\n\n")
+                f.write(f"Query [{last_id}] {tag}: {query}\n\n")
                 f.write(f"Reason: {reason}\n\n")
                 f.write("-----\n\n")
                 last_id += 1
         return last_id
 
 def compute_next_query_id(results_path: Path) -> int:
-    """Compute the next query ID by finding the highest existing ID."""
+    """Compute the next query ID by finding the highest existing ID.
+    Updated to support the new tagged format: "Query [42] [Exploitation]:" or "[Exploration]:"."""
     if not results_path.exists():
         return 1
-    pattern = re.compile(r"Query \[(\d+)\]:")
+    
+    # Matches: Query [42]:   OR   Query [43] [Exploitation]:   OR   Query [44] [Exploration]:
+    pattern = re.compile(r"Query \[(\d+)\](?:\s+\[(?:Exploitation|Exploration)\])?:")
+
     max_id = 0
     for line in results_path.read_text(encoding="utf-8").splitlines():
-        match = pattern.match(line)
+        match = pattern.search(line)   # Changed from .match() to .search() for robustness
         if match:
             max_id = max(max_id, int(match.group(1)))
     return max_id + 1
