@@ -16,7 +16,7 @@ Follow these instructions:
 Produce the output in Markdown format.
 """
 
-# Query generation prompt
+# Query generation prompt (exploitation)
 PROMPT_GENERATE_QUERIES_AND_REASONS = """
 You are a research assistant helping to craft an article.
 
@@ -29,6 +29,10 @@ important.
 {article_guidelines}
 </article_guidelines>
 
+<full_queries>
+{full_queries}
+</full_queries>
+
 <past_research>
 {past_research}
 </past_research>
@@ -38,12 +42,98 @@ important.
 </scraped_context>
 
 Guidelines for the set of queries:
-• Give priority to sections/topics from the article guidelines that
-  currently lack supporting sources in <past_research> and
-  <scraped_context>.
+• Give priority to sections/topics from the article guidelines that currently lack supporting sources in <past_research> and <scraped_context>.
 • Cover any remaining major sections to ensure balanced coverage.
-• Avoid duplication; each query should target a distinct aspect.
+• **Strictly avoid semantic duplication**: each query must target a truly distinct aspect. Do not generate near-equivalents (e.g. "limitations of X" and "failure modes of X").
+• Never repeat or closely paraphrase any query that already appears in <full_queries>.
 • The web search queries should be natural language questions, not just keywords.
+
+**Few-shot examples:**
+
+Example 1:
+Query: What are the most widely accepted evaluation metrics and benchmarks for measuring retrieval quality and generation faithfulness in modern RAG systems?
+Reason: This directly fills a major missing section in the article guidelines on evaluation, providing authoritative sources for quantitative assessment that are currently absent from past research.
+
+Example 2:
+Query: How do hybrid sparse-dense retrieval architectures improve recall-precision tradeoffs compared to pure dense retrieval in RAG pipelines?
+Reason: This targets an important remaining architectural component in the guidelines, ensuring balanced coverage of advanced retrieval strategies not yet addressed in existing material.
+
+Example 3:
+Query: What are the primary data privacy and compliance challenges when deploying enterprise-scale RAG systems that access sensitive internal documents?
+Reason: This addresses a critical gap in the guidelines regarding production deployment considerations, supplying trustworthy sources on regulatory and security aspects.
+
+Example 4:
+Query: How do advanced reranking techniques (such as cross-encoders or LLM-based rerankers) integrate into RAG pipelines to reduce hallucination rates?
+Reason: This covers a distinct optimization technique from the guidelines that is currently underrepresented, offering high-quality sources on a specific performance improvement vector.
+
+Now generate exactly {n_queries} new queries following the same style and the rules above.
+
+""".strip()
+
+# Complementary query generation prompt
+PROMPT_GENERATE_COMPLEMENTARY_QUERIES_AND_REASONS = """
+You are an expert research strategist whose job is to balance **exploitation** (filling direct gaps) with **exploration** (depth + breadth) to make the final article truly comprehensive.
+
+Your task: propose {n_queries} insightful, non-redundant web-search questions that will:
+- Dive deeper into topics already covered in the guidelines and past research, OR
+- Expand breadth by exploring closely related but uncovered adjacent areas.
+
+Target distribution (follow this exactly):
+- Generate approximately **{depth_percentage}% Depth** queries
+- Generate approximately **{breadth_percentage}% Breadth** queries
+
+The queries, taken **as a group**, should add genuinely new value that cannot be easily inferred from existing material.
+
+<article_guidelines>
+{article_guidelines}
+</article_guidelines>
+
+<full_queries>
+{full_queries}
+</full_queries>
+
+<past_research>
+{past_research}
+</past_research>
+
+<already_covered_context>
+{scraped_ctx}
+</already_covered_context>
+
+**Exploration strategies** (respect the {depth_percentage}% / {breadth_percentage}% distribution above):
+• **Depth**: theoretical foundations, technical nuances, alternative perspectives, latest developments, limitations/criticisms, implementation challenges, real-world case studies, future implications.
+• **Breadth**: adjacent concepts, cross-domain analogies, historical context, enabling/disrupting technologies, practical applications in other fields, emerging trends connected to the core topic.
+
+**Rules**:
+• **Strictly avoid semantic duplication**: each query must target a truly distinct aspect. Do not generate near-equivalents (e.g. "limitations of X" and "failure modes of X").
+• Never repeat or closely paraphrase any query that already appears in <full_queries>.
+• Strictly follow the requested Depth/Breadth distribution.
+• Make questions natural, specific, and optimized for high-quality search results.
+• Aim for diversity within the requested ratio.
+
+For each query, provide a short reason that explicitly states:
+- whether it is primarily **Depth** or **Breadth**
+- exactly what new value it brings to the article.
+
+**Few-shot examples:**
+
+Example 1 (Depth):
+Query: What are the core mathematical and information-theoretic limitations of dense retrieval methods in RAG systems when scaling to millions of documents?
+Reason: **Depth** - This explores fundamental theoretical constraints of the core retrieval mechanism, revealing scalability bottlenecks not covered in basic guideline discussions.
+
+Example 2 (Depth):
+Query: What are the main engineering challenges and latency tradeoffs when integrating real-time knowledge updates into production RAG pipelines?
+Reason: **Depth** - This targets practical implementation difficulties and system-level tradeoffs of the core topic, providing actionable insights for real-world deployment.
+
+Example 3 (Breadth):
+Query: How have retrieval-augmented techniques originally developed for legal document analysis been adapted and applied in biomedical research and drug discovery?
+Reason: **Breadth** - This examines successful applications in adjacent high-stakes domains (biomedicine), offering powerful cross-domain analogies and lessons.
+
+Example 4 (Breadth):
+Query: How is the rise of long-context language models and memory-augmented agents changing the role and architecture of traditional RAG systems?
+Reason: **Breadth** - This explores an emerging adjacent trend (long-context + agentic systems) and how it intersects with and potentially disrupts core RAG approaches.
+
+Now generate exactly {n_queries} new queries following the same style, the exact Depth/Breadth distribution, and the rules above.
 
 """.strip()
 
