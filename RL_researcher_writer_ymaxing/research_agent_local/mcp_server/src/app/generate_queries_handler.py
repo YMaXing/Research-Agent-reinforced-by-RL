@@ -31,7 +31,7 @@ def compute_next_query_id(results_path: Path) -> int:
     """Compute the next query ID by finding the highest existing ID."""
     if not results_path.exists():
         return 1
-    pattern = re.compile(r"### Query \[(\d+)\]:")
+    pattern = re.compile(r"Query \[(\d+)\]:")
     max_id = 0
     for line in results_path.read_text(encoding="utf-8").splitlines():
         match = pattern.match(line)

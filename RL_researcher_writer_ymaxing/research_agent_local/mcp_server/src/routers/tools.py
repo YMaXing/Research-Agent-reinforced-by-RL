@@ -1,6 +1,6 @@
 """MCP Tools registration for research operations."""
 
-from typing import Any, Dict
+from typing import Any, Dict, Literal
 
 import opik
 from fastmcp import FastMCP
@@ -255,7 +255,10 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     
     @mcp.tool()
     @opik.track(type="tool")
-    async def generate_complementary_queries(research_directory: str, n_queries: int = 5) -> Dict[str, Any]:
+    async def generate_next_complementary_queries_tool(research_directory: str, 
+                                                    n_queries: int = 5, 
+                                                    depth_vs_breadth_ratio: float = 0.5, 
+                                                    focus: Literal["balanced", "depth", "breadth"] = "balanced") -> Dict[str, Any]:
         """
         Generate complementary candidate web-search queries to explore uncovered but closely relevant aspects.
 
@@ -268,6 +271,8 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         Args:
             research_directory: Path to the research directory containing article data
             n_queries: Number of queries to generate (default: 5)
+            depth_vs_breadth_ratio: Ratio to balance depth vs breadth in query generation (default: 0.5)
+            focus: Focus of query generation, one of "balanced", "depth", or "breadth" (default: "balanced")
 
         Returns:
             Dict[str, Any]: Dictionary containing:
@@ -280,7 +285,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         opik_context.update_thread_id()
 
-        result = await generate_next_complementary_queries_tool(research_directory, n_queries)
+        result = await generate_next_complementary_queries_tool(research_directory, n_queries, depth_vs_breadth_ratio=depth_vs_breadth_ratio, focus=focus)
         return result
 
     # ============================================================================

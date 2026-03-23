@@ -4,8 +4,6 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Tuple, Literal
 
-from sympy import fu
-
 from ..app.generate_queries_handler import (
     append_generated_queries_with_reasons,
     compute_next_query_id, 
