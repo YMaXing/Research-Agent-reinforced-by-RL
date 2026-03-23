@@ -10,6 +10,7 @@ from ..tools import (
     create_research_file_tool,
     extract_guidelines_urls_tool,
     generate_next_queries_tool,
+    generate_next_complementary_queries_tool,
     run_tavily_research_tool,
     process_github_urls_tool,
     process_local_files_tool,
@@ -250,6 +251,36 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         opik_context.update_thread_id()
 
         result = await run_tavily_research_tool(research_directory, queries)
+        return result
+    
+    @mcp.tool()
+    @opik.track(type="tool")
+    async def generate_complementary_queries(research_directory: str, n_queries: int = 5) -> Dict[str, Any]:
+        """
+        Generate complementary candidate web-search queries to explore uncovered but closely relevant aspects.
+
+        Analyzes the article guidelines, already-scraped content, and existing Tavily results 
+        to dive deeper into the content already covered in past research, and/or explore other uncovered aspects 
+        that are closely related to past research and may expand the research scope, then propose new web-search questions.
+        Each query includes a rationale explaining why it's important and what additional value it brings for the article.
+        Results are saved to next_complementary_queries.md in the research directory.
+
+        Args:
+            research_directory: Path to the research directory containing article data
+            n_queries: Number of queries to generate (default: 5)
+
+        Returns:
+            Dict[str, Any]: Dictionary containing:
+                - status: Operation status ("success")
+                - queries_generated: List of generated query dictionaries with 'query' and 'rationale' keys
+                - queries_count: Number of queries generated
+                - output_path: Path to the generated next_complementary_queries.md file
+                - message: Human-readable success message with generation results
+        """
+
+        opik_context.update_thread_id()
+
+        result = await generate_next_complementary_queries_tool(research_directory, n_queries)
         return result
 
     # ============================================================================

@@ -16,7 +16,7 @@ Follow these instructions:
 Produce the output in Markdown format.
 """
 
-# Query generation prompt
+# Query generation prompt (exploitation)
 PROMPT_GENERATE_QUERIES_AND_REASONS = """
 You are a research assistant helping to craft an article.
 
@@ -29,6 +29,10 @@ important.
 {article_guidelines}
 </article_guidelines>
 
+<full_queries>
+{full_queries}
+</full_queries>
+
 <past_research>
 {past_research}
 </past_research>
@@ -38,12 +42,58 @@ important.
 </scraped_context>
 
 Guidelines for the set of queries:
-• Give priority to sections/topics from the article guidelines that
-  currently lack supporting sources in <past_research> and
-  <scraped_context>.
+• Give priority to sections/topics from the article guidelines that currently lack supporting sources in <past_research> and <scraped_context>.
 • Cover any remaining major sections to ensure balanced coverage.
-• Avoid duplication; each query should target a distinct aspect.
+• **Strictly avoid semantic duplication**: each query must target a truly distinct aspect. Do not generate near-equivalents (e.g. "limitations of X" and "failure modes of X").
+• Never repeat or closely paraphrase any query that already appears in <full_queries>.
 • The web search queries should be natural language questions, not just keywords.
+
+""".strip()
+
+# Complementary query generation prompt
+PROMPT_GENERATE_COMPLEMENTARY_QUERIES_AND_REASONS = """
+You are an expert research strategist whose job is to balance **exploitation** (filling direct gaps) with **exploration** (depth + breadth) to make the final article truly comprehensive.
+
+Your task: propose {n_queries} insightful, non-redundant web-search questions that will:
+- Dive deeper into topics already covered in the guidelines and past research, OR
+- Expand breadth by exploring closely related but uncovered adjacent areas.
+
+Target distribution (follow this exactly):
+- Generate approximately **{depth_percentage}% Depth** queries
+- Generate approximately **{breadth_percentage}% Breadth** queries
+
+The queries, taken **as a group**, should add genuinely new value that cannot be easily inferred from existing material.
+
+<article_guidelines>
+{article_guidelines}
+</article_guidelines>
+
+<full_queries>
+{full_queries}
+</full_queries>
+
+<past_research>
+{past_research}
+</past_research>
+
+<already_covered_context>
+{scraped_ctx}
+</already_covered_context>
+
+**Exploration strategies** (respect the {depth_percentage}% / {breadth_percentage}% distribution above):
+• **Depth**: theoretical foundations, technical nuances, alternative perspectives, latest developments, limitations/criticisms, implementation challenges, real-world case studies, future implications.
+• **Breadth**: adjacent concepts, cross-domain analogies, historical context, enabling/disrupting technologies, practical applications in other fields, emerging trends connected to the core topic.
+
+**Rules**:
+• **Strictly avoid semantic duplication**: each query must target a truly distinct aspect. Do not generate near-equivalents (e.g. "limitations of X" and "failure modes of X").
+• Never repeat or closely paraphrase any query that already appears in <full_queries>.
+• Strictly follow the requested Depth/Breadth distribution.
+• Make questions natural, specific, and optimized for high-quality search results.
+• Aim for diversity within the requested ratio.
+
+For each query, provide a short reason that explicitly states:
+- whether it is primarily **Depth** or **Breadth**
+- exactly what new value it brings to the article.
 
 """.strip()
 

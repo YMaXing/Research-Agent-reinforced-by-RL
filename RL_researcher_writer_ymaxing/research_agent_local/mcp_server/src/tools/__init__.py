@@ -6,7 +6,7 @@ from .create_research_file_tool import create_research_file_tool
 from .extract_guidelines_urls_tool import extract_guidelines_urls_tool
 
 # Research query and analysis tools
-from .generate_next_queries_tool import generate_next_queries_tool
+from .generate_next_queries_tool import generate_next_queries_tool, generate_next_complementary_queries_tool
 from .process_github_urls_tool import process_github_urls_tool
 from .process_local_files_tool import process_local_files_tool
 from .run_tavily_research_tool import run_tavily_research_tool
