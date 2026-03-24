@@ -102,7 +102,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     @opik.track(type="tool")
     async def scrape_and_clean_other_urls(research_directory: str, concurrency_limit: int = 4) -> Dict[str, Any]:
         """
-        Scrape and clean other URLs from GUIDELINES_FILENAMES_FILE.
+        Scrape and clean other URLs (including arxiv URLs) from GUIDELINES_FILENAMES_FILE.
 
         Reads the GUIDELINES_FILENAMES_FILE file and scrapes/cleans each URL listed
         under 'other_urls'. The cleaned markdown content is saved to the
