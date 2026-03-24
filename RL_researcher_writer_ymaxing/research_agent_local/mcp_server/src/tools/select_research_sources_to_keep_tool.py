@@ -52,7 +52,7 @@ async def select_research_sources_to_keep_tool(research_directory: str) -> Dict[
     Automatically select high-quality sources from Tavily results.
 
     Uses LLM to evaluate each source in tavily_results.md for trustworthiness,
-    authority, and relevance based on the article guidelines. Writes the comma-separated
+    authority, and relevance based on the article guidelines and explorative research. Writes the comma-separated
     IDs of accepted sources to tavily_sources_selected.md and saves a filtered
     markdown file tavily_results_selected.md containing only the accepted sources.
 

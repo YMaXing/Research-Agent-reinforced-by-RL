@@ -16,6 +16,7 @@ URLS_FROM_GUIDELINES_CODE_FOLDER = "urls_from_guidelines_code"
 URLS_FROM_GUIDELINES_YOUTUBE_FOLDER = "urls_from_guidelines_youtube_videos"
 LOCAL_FILES_FROM_RESEARCH_FOLDER = "local_files_from_research"
 URLS_FROM_RESEARCH_FOLDER = "urls_from_research"
+DEDUPLICATED_RESEARCH_FILE = "deduplicated_research.md"
 
 # File extensions
 MARKDOWN_EXTENSION = ".md"

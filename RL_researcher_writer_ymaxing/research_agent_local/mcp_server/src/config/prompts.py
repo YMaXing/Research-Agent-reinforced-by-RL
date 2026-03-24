@@ -245,13 +245,17 @@ Here is the markdown content to clean:
 # Auto source selection prompt
 PROMPT_AUTO_SOURCE_SELECTION = """
 You are a research assistant tasked with automatically selecting the most trustworthy and relevant sources
-from a collection of web search results.
+from a collection of web search results generated across multiple rounds of a two-phase research process.
+
+**Research Process Context:**
+- **Phase 1 (Exploitation)**: Fixed rounds that directly address the core topics and gaps in the article guidelines.
+- **Phase 2 (Exploration)**: Later complementary rounds that add depth and breadth through more advanced or adjacent angles.
 
 Your task is to evaluate each source based on:
-1. **Domain Authority & Trustworthiness**: Prefer reputable websites, official sources, established publications,
-academic institutions, and well-known organizations. Avoid obscure or potentially unreliable websites.
-2. **Content Quality**: Evaluate the quality and relevance of the answers obtained from each source.
+1. **Domain Authority & Trustworthiness**: Prefer reputable websites, official sources, established publications, academic institutions, and well-known organizations. Avoid obscure or potentially unreliable websites.
+2. **Content Quality**: Evaluate the depth, accuracy, and usefulness of the answers obtained from each source.
 3. **Relevance to Article Guidelines**: How well each source's content aligns with the provided article guidelines.
+4. **Query Origin & Phase Value**: Whether the source came from an exploitation query (core coverage) or a complementary exploration query (depth/breadth).
 
 Here are the article guidelines:
 <article_guidelines>
@@ -270,13 +274,11 @@ For each source, you will see:
 
 Please analyze each source and determine which ones should be ACCEPTED or REJECTED.
 
-**Selection Criteria:**
-- ACCEPT sources from trustworthy domains (e.g., .edu, .gov, established news sites,
-official documentation, reputable organizations)
-- ACCEPT sources with high-quality, relevant content that directly supports the article guidelines
-- REJECT sources from obscure, untrustworthy, or potentially biased websites
-- REJECT sources with low-quality, irrelevant, or superficial content
-- REJECT sources that seem to be marketing materials, advertisements, or self-promotional content
+**Selection Criteria (apply in strict priority order):**
+- **Strongly protect exploitation sources**: These represent essential guideline coverage. Only reject them if they are clearly low-quality, unreliable, or irrelevant.
+- **Higher bar for exploration sources**: Accept complementary sources only if they add genuine new value (theoretical foundations, deeper technical insights, limitations/criticisms, real-world case studies, cross-domain analogies, emerging trends, or important breadth not covered in Phase 1).
+- **Trustworthiness**: Prefer sources from high-authority domains (.edu, .gov, established publications, official documentation, reputable organizations).
+- **Content Quality**: Accept high-quality, detailed, relevant content. Reject superficial, promotional, biased, marketing, or low-effort material.
 
 Return your decision as a structured output with:
 1. selection_type: "none" if no sources meet the quality standards, "all" if all sources are acceptable,
@@ -286,7 +288,13 @@ or "specific" for specific source IDs
 
 # Select top sources prompt
 PROMPT_SELECT_TOP_SOURCES = """
-You are assisting with research for an upcoming article.
+You are assisting with research for an upcoming article in a two-phase research workflow.
+
+**Research Process Context:**
+- **Phase 1 (Exploitation)**: Fixed rounds that directly address the core topics and gaps in the article guidelines.
+- **Phase 2 (Exploration)**: Later complementary rounds that add depth (technical nuances, limitations, criticisms, implementation challenges, future implications) and breadth (adjacent concepts, cross-domain analogies, emerging trends, practical applications in other fields).
+
+Your task is to select the **top {top_n}** most valuable sources from the accepted Tavily web search results for full content scraping.
 
 Here is the article guidelines:
 <article_guidelines>
@@ -298,23 +306,91 @@ Here is the content of the already scraped guideline URLs:
 {scraped_guideline_ctx}
 </scraped_guideline_ctx>
 
-Here is the content from the web search results:
+Here is the content from the accepted web search results (from both exploitation and exploration phases):
 <web_search_results>
 {accepted_sources_data}
 </web_search_results>
 
-Your task is to select the most relevant and trustworthy sources from the web search results.
-You should consider:
-1. **Relevance**: How well each source addresses the article guidelines
-2. **Authority**: The credibility and reputation of the source
-3. **Quality**: The depth and accuracy of the information provided
-4. **Uniqueness**: Sources that provide unique insights not covered by the scraped guideline URLs
+**Selection Criteria (apply in strict priority order):**
+1. **Relevance & Gap Filling**: Sources that best address important sections of the article guidelines that are still under-covered.
+2. **Uniqueness**: Sources that provide new insights, data, examples, case studies, or perspectives not already present in the scraped guideline URLs or previous phases.
+3. **Phase-Aware Value**:
+   - **Exploitation sources** (Phase 1): Strongly prioritize high-quality sources that strengthen or deepen core guideline coverage.
+   - **Exploration sources** (Phase 2): Apply a **higher bar**. These sources must demonstrate **clear, non-redundant value** that cannot be easily inferred from Phase 1 material. Accept them **only if** they deliver one or more of the following:
+     - **Depth** (vertical drilling into the core topic): theoretical foundations, technical nuances, alternative perspectives, latest developments, limitations/criticisms, implementation challenges, real-world case studies, or future implications.
+     - **Breadth** (horizontal expansion): adjacent concepts, cross-domain analogies, historical context, enabling/disrupting technologies, practical applications in other fields, or emerging trends connected to the core topic.
+   - Exploration sources must meaningfully expand the article's comprehensiveness, introduce novel angles, or provide insights that Phase 1 sources alone cannot supply. Reject any exploration source that is merely a rephrasing or slight variation of existing exploitation material.
+4. **Authority & Quality**: Prefer reputable, trustworthy domains with high-depth, accurate, and well-structured content.
+5. **Diversity**: When possible, select a balanced mix across phases and topics for maximum overall research value.
 
-Please select the top {top_n} sources that would be most valuable for the article research.
+Please select the top {top_n} sources that will add the highest overall value to the final research file.
 
 Return your selection with the following structure:
-- **selected_urls**: A list of the most valuable URLs to scrape in full, ordered by priority
-- **reasoning**: A short explanation summarizing why these specific URLs were chosen and their value to the research
+- **selected_urls**: A list of the most valuable URLs to scrape in full, ordered by priority (most valuable first)
+- **reasoning**: A short explanation summarizing why these specific URLs were chosen and what unique value they bring to the research
 
-Only include sources that provide genuine value and meet high quality standards.
+Only include sources that provide genuine additional value and meet high quality standards.
+""".strip()
+
+# Content deduplication prompt
+PROMPT_CONTENT_DEDUPLICATION = """
+You are an expert research editor and knowledge consolidator working on a comprehensive article.
+
+Your task: Take a large collection of research sources (from both exploitation and exploration phases) and produce the cleanest, most authoritative, non-repetitive knowledge base possible.
+
+**Sources included:**
+- Filtered Tavily results (high-quality selected sources)
+- Golden sources explicitly mentioned in the article guidelines (stored in URLS_FROM_GUIDELINES_FOLDER)
+- Other guideline URLs
+- Fully scraped research URLs
+- GitHub code repository summaries
+- YouTube video transcripts
+
+**Phase-aware protection rules (apply the priority order strictly):**
+1. **Golden sources** (from URLS_FROM_GUIDELINES_FOLDER): HIGHEST PRIORITY, These are handpicked by the user and have the highest priority. Never remove or significantly alter content from these sources unless it is completely duplicated word-for-word with another golden source. Always preserve their core content and authority.
+2. **Exploitation phase sources** (Phase 1): HIGH PRIORITY, Strongly protect these — they represent essential guideline coverage. Only merge or remove if highly redundant with golden sources or other exploitation material.
+3. **Exploration phase sources** (Phase 2): MEDIUM PRIORITY, Higher bar — only keep if they add genuine new value (depth: theoretical foundations, technical nuances, limitations/criticisms, real-world case studies, future implications; breadth: adjacent concepts, cross-domain analogies, emerging trends, applications in other fields). Do not override or dilute golden/exploitation content.
+
+**Goals (in priority order):**
+- Preserve golden sources almost untouched
+- Identify and remove semantic duplicates / high-overlap across all sources
+- Keep the single best version of each unique idea (prefer golden > exploitation > high-authority exploration)
+- Merge complementary details only when they enrich without losing depth
+- Preserve original wording, depth, code snippets, and transcript insights — never summarize
+- Add concise source attribution at the end of each consolidated block (prefer titles/URLs when available)
+
+**Special handling:**
+- Code & GitHub summaries: Keep most complete version; merge only different aspects
+- YouTube transcripts: Convert timestamps to headings; keep key quotes/insights
+- Organize into logical topic clusters aligned with article guidelines
+
+Here are the article guidelines (use as reference for relevance and structure):
+<article_guidelines>
+{article_guidelines}
+</article_guidelines>
+
+Here is all the collected research content to deduplicate:
+<all_research_content>
+{all_content}
+</all_research_content>
+
+**Few-shot examples:**
+
+Example 1 (Golden source protection):
+Golden source says: "RAG is defined as retrieval-augmented generation..."
+Another source repeats almost the same sentence → Keep the golden version only and discard the duplicate.
+
+Example 2 (Merging complementary):
+Exploitation source: "Dense retrieval uses embeddings..."
+Exploration source: "In practice, hybrid dense-sparse retrieval improves recall by 15–20% in enterprise settings"
+→ Merge into one enriched paragraph, attribute both sources.
+
+**Output instructions:**
+- Return clean Markdown only
+- Use logical top-level headings mirroring major guideline sections
+- Use subheadings for sub-topics
+- End each consolidated block with a short attribution line
+- Do not add any extra commentary or summary outside the content
+
+Now produce the fully deduplicated research content.
 """.strip()

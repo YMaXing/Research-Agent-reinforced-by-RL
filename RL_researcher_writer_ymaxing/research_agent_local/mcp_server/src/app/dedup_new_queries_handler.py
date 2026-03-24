@@ -71,7 +71,6 @@ async def deduplicate_new_queries_against_history(
     history = read_file_safe(full_queries_path) or "<none>"
 
     prompt = format_dedup_prompt_inputs(new_queries, history, query_source)
-    # (Optional: you can extend the prompt to include a short history summary if needed)
 
     chat_llm = get_chat_model(settings.query_generation_model)
     response = await chat_llm.ainvoke(prompt)
