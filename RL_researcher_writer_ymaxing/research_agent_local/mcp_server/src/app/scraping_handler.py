@@ -134,7 +134,6 @@ async def scrape_arxiv_url(
     url: str,
     article_guidelines: str,
     chat_model,
-    firecrawl_app,          # pass the same Firecrawl instance for fallback
 ) -> dict:
     """
     Dedicated handler for arXiv URLs.

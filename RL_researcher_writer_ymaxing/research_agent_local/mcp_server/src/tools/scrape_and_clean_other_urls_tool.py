@@ -2,6 +2,7 @@
 
 import json
 import logging
+import asyncio
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
@@ -18,6 +19,9 @@ from ..utils.file_utils import (
     validate_guidelines_filenames_file,
     validate_research_folder,
 )
+from ..app.scraping_handler import scrape_arxiv_url
+from ..utils.llm_utils import get_chat_model
+from ..config.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +59,7 @@ def write_scraped_results_to_files(completed_results: List[dict], output_dir: Pa
 
 async def scrape_and_clean_other_urls_tool(research_directory: str, concurrency_limit: int = 4) -> Dict[str, Any]:
     """
-    Scrape and clean other URLs from guidelines file in the research folder.
+    Scrape and clean other URLs (including arxiv URLs) from guidelines file in the research folder.
 
     Reads the guidelines file and scrapes/cleans each URL listed
     under 'other_urls'. The cleaned markdown content is saved to the
@@ -93,9 +97,14 @@ async def scrape_and_clean_other_urls_tool(research_directory: str, concurrency_
         raise ValueError(msg) from e
 
     # Get the other_urls list
-    other_urls = guidelines_data.get("other_urls", [])
-
-    if not other_urls:
+    def is_arxiv_url(url: str) -> bool:
+        """Return True if URL is an arXiv link (abs or pdf)."""
+        return "arxiv.org" in url and ("/abs/" in url or "/pdf/" in url)
+    
+    other_urls = [url for url in guidelines_data.get("other_urls", []) if not is_arxiv_url(url)]
+    arxiv_urls = [url for url in guidelines_data.get("other_urls", []) if is_arxiv_url(url)]
+    
+    if not other_urls and not arxiv_urls:
         return {
             "status": "success",
             "message": f"No other URLs found in {GUIDELINES_FILENAMES_FILE} in '{research_directory}'",
@@ -124,6 +133,18 @@ async def scrape_and_clean_other_urls_tool(research_directory: str, concurrency_
 
     # Scrape URLs concurrently
     completed_results = await scrape_urls_concurrently(other_urls, article_guidelines, concurrency_limit)
+
+    if arxiv_urls:
+        logger.debug(f"Starting arXiv scraping of {len(arxiv_urls)} paper(s)...")
+        chat_model = get_chat_model(settings.scraping_model)   # reuse same model for cleaning
+        arxiv_tasks = [
+            scrape_arxiv_url(url, article_guidelines, chat_model) for url in arxiv_urls
+        ]
+        arxiv_results = await asyncio.gather(*arxiv_tasks, return_exceptions=True)
+
+        _, arxiv_success = write_scraped_results_to_files(arxiv_results, output_dir)
+        completed_results.extend(arxiv_results)
+        logger.debug(f"Processed {arxiv_success}/{len(arxiv_urls)} arXiv papers with arxiv2markdown.")
 
     # Write outputs
     saved_files, successful_scrapes = write_scraped_results_to_files(completed_results, output_dir)
