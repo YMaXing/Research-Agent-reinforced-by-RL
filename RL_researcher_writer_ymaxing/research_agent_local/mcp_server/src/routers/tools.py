@@ -469,3 +469,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         result = create_research_file_tool(research_directory)
         return result
+
+    # ============================================================================
+    # TRACKING TOOLS
+    # ============================================================================
