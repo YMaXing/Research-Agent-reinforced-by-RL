@@ -12,11 +12,11 @@ replace the fixed number of calling tools with a maximum limit
 
 - Tavily replacing Perplexity as the chosen search-RAG tool for queries **done**
 
-- LaTeX source scraping for full arXiv papers 
+- LaTeX source scraping for full arXiv papers **done**
 
 - semantic deduplication for queries **done**
 
-- semantic deduplication for final content
+- semantic deduplication for final content **done**
 
 - (Optional) immediate fact-checking for quotes and claimed facts 
 

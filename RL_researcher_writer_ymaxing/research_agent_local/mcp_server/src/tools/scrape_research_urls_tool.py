@@ -6,7 +6,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict
 
-from ..app.scraping_handler import build_filename, scrape_urls_concurrently
+from ..app.scraping_handler import build_filename, scrape_urls_concurrently, scrape_arxiv_url
 from ..app.youtube_handler import process_youtube_url
 from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
@@ -17,6 +17,8 @@ from ..config.constants import (
     YOUTUBE_TRANSCRIPTION_MAX_CONCURRENT_REQUESTS,
 )
 from ..utils.file_utils import read_file_safe, validate_research_folder
+from ..utils.llm_utils import get_chat_model
+from ..config.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -120,12 +122,18 @@ def deduplicate_urls(research_output_path: Path, urls: list[str]) -> tuple[list[
     return urls_to_process, original_count, deduplicated_count
 
 
-def categorize_urls(urls: list[str]) -> tuple[list[str], list[str]]:
-    """
-    Categorize URLs into YouTube and other URLs.
+def is_arxiv_url(url: str) -> bool:
+    """Return True if URL is an arXiv link (abs or pdf)."""
+    return "arxiv.org" in url and ("/abs/" in url or "/pdf/" in url)
 
-    Separates the input URLs into two categories:
+
+def categorize_urls(urls: list[str]) -> tuple[list[str], list[str], list[str]]:
+    """
+    Categorize URLs into YouTube, arXiv, and other URLs.
+
+    Separates the input URLs into three categories:
     - YouTube URLs (containing youtube.com or youtu.be)
+    - arXiv URLs (containing arxiv.org with /abs/ or /pdf/)
     - Other URLs (all remaining URLs)
 
     Args:
@@ -135,9 +143,12 @@ def categorize_urls(urls: list[str]) -> tuple[list[str], list[str]]:
         Tuple of (youtube_urls, other_urls)
     """
     youtube_urls = [url for url in urls if "youtube.com" in url or "youtu.be" in url]
-    other_urls = [url for url in urls if url not in youtube_urls]
-
-    return youtube_urls, other_urls
+    arxiv_urls = [url for url in urls if is_arxiv_url(url)]
+    other_urls = [
+            url for url in urls
+            if url not in youtube_urls and url not in arxiv_urls
+        ]
+    return youtube_urls, arxiv_urls, other_urls
 
 
 def write_scraped_results_to_files(completed_results: list[dict], output_dir: Path) -> tuple[list[str], int]:
@@ -172,13 +183,19 @@ def write_scraped_results_to_files(completed_results: list[dict], output_dir: Pa
 
 
 async def process_and_save_urls(
-    other_urls: list[str], youtube_urls: list[str], article_guidelines: str, output_dir: Path, concurrency_limit: int
+    other_urls: list[str],
+    arxiv_urls: list[str],          
+    youtube_urls: list[str],
+    article_guidelines: str,
+    output_dir: Path,
+    concurrency_limit: int,
 ) -> tuple[list[str], int, list[str]]:
     """
     Process and save both other URLs and YouTube URLs.
 
     Args:
         other_urls: List of non-YouTube URLs to scrape
+        arxiv_urls: List of arXiv URLs to scrape
         youtube_urls: List of YouTube URLs to transcribe
         article_guidelines: Guidelines content for cleaning scraped data
         output_dir: Directory to save the processed files
@@ -201,10 +218,24 @@ async def process_and_save_urls(
         completed_results = await scrape_urls_concurrently(other_urls, article_guidelines, concurrency_limit)
 
         # Write outputs
-        saved_files_batch, successful_scrapes = write_scraped_results_to_files(completed_results, output_dir)
+        saved_files_batch, successful = write_scraped_results_to_files(completed_results, output_dir)
         saved_files.extend(saved_files_batch)
+        successful_scrapes += successful
+        report_parts.append(f"Scraped {successful}/{len(other_urls)} web pages.")
 
-        report_parts.append(f"Scraped {successful_scrapes}/{len(other_urls)} web pages.")
+    # Process arXiv URLs (NEW SECTION)
+    if arxiv_urls:
+        logger.debug(f"Starting arXiv scraping of {len(arxiv_urls)} paper(s)...")
+        chat_model = get_chat_model(settings.scraping_model)   # reuse same model for cleaning
+        arxiv_tasks = [
+            scrape_arxiv_url(url, article_guidelines, chat_model) for url in arxiv_urls
+        ]
+        arxiv_results = await asyncio.gather(*arxiv_tasks, return_exceptions=True)
+
+        arxiv_saved, arxiv_success = write_scraped_results_to_files(arxiv_results, output_dir)
+        saved_files.extend(arxiv_saved)
+        successful_scrapes += arxiv_success
+        report_parts.append(f"Processed {arxiv_success}/{len(arxiv_urls)} arXiv papers with arxiv2markdown.")
 
     # Process YOUTUBE URLs
     if youtube_urls:
@@ -261,9 +292,9 @@ async def scrape_research_urls_tool(research_directory: str, concurrency_limit: 
     urls_to_process, original_count, deduplicated_count = deduplicate_urls(research_output_path, urls)
 
     # Categorize URLs into YouTube and other types
-    youtube_urls, other_urls = categorize_urls(urls_to_process)
+    youtube_urls, arxiv_urls, other_urls = categorize_urls(urls_to_process)
 
-    if not youtube_urls and not other_urls:
+    if not youtube_urls and not arxiv_urls and not other_urls:
         return {
             "status": "success",
             "message": f"All {original_count} URLs were already processed. No new URLs to scrape.",
@@ -291,7 +322,7 @@ async def scrape_research_urls_tool(research_directory: str, concurrency_limit: 
 
     # Process and save URLs
     saved_files, successful_scrapes, report_parts = await process_and_save_urls(
-        other_urls, youtube_urls, article_guidelines, output_dir, concurrency_limit
+        other_urls, arxiv_urls, youtube_urls, article_guidelines, output_dir, concurrency_limit
     )
 
     # Final Report

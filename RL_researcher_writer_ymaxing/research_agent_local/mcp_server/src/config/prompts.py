@@ -16,6 +16,34 @@ Follow these instructions:
 Produce the output in Markdown format.
 """
 
+# arXiv-specific cleanup prompt (lightweight post-processing after arxiv2markdown)
+PROMPT_CLEAN_ARXIV_MARKDOWN = """
+You are an expert Markdown editor specializing in cleaning arXiv papers.
+
+Your task: Fix any remaining LaTeX quirks in the provided Markdown while preserving **all** mathematical content, code blocks, tables, figures, and original meaning.
+
+Common fixes to apply:
+- Convert raw display math (`\\begin{equation} ... \\end{equation}`, `\\begin{align*} ... \\end{align*}`) to proper Markdown `$$ ... $$` or `\\[` ... `\\]`.
+- Expand or remove unexpanded custom macros when possible.
+- Convert inline math that still contains raw LaTeX backslashes to clean Markdown math.
+- Convert theorem/proof/definition environments to clean Markdown headings or blockquotes.
+- Fix figure/table captions and sectioning commands.
+- Remove any leftover TeX commands (`\\textit{}`, `\\ref{}`, etc.).
+- Ensure all math is properly wrapped and readable.
+
+Return **only** the cleaned Markdown. Do not summarize, shorten, or add commentary.
+
+Here is the article guidelines (for context only):
+<article_guidelines>
+{article_guidelines}
+</article_guidelines>
+
+Here is the raw arXiv Markdown to clean:
+<arxiv_markdown>
+{arxiv_markdown}
+</arxiv_markdown>
+""".strip()
+
 # Query generation prompt (exploitation)
 PROMPT_GENERATE_QUERIES_AND_REASONS = """
 You are a research assistant helping to craft an article.

@@ -8,8 +8,9 @@ from urllib.parse import urlparse
 
 from firecrawl import AsyncFirecrawl
 from langchain.chat_models.base import BaseChatModel
+from arxiv2md import ingest_paper
 
-from ..config.prompts import PROMPT_CLEAN_MARKDOWN
+from ..config.prompts import PROMPT_CLEAN_ARXIV_MARKDOWN, PROMPT_CLEAN_MARKDOWN
 from ..config.settings import settings
 from ..utils.llm_utils import get_chat_model
 
@@ -104,6 +105,92 @@ async def scrape_url(url: str, firecrawl_app: AsyncFirecrawl) -> dict:
     }
 
 
+def extract_arxiv_id(url: str) -> str | None:
+    """Extract the arXiv ID from an arXiv URL.
+
+    Examples
+    --------
+    >>> extract_arxiv_id("https://arxiv.org/abs/2501.11120v1")
+    '2501.11120v1'
+    >>> extract_arxiv_id("https://arxiv.org/pdf/2501.11120v1")
+    '2501.11120v1'
+    """
+    match = re.search(r'arxiv\.org/(?:abs|pdf|html)/(\d{4}\.\d{4,5}(?:v\d+)?)', url)
+    return match.group(1) if match else None
+
+
+# ─────────────────────────────────────────────────────────────
+# arXiv special handler (added for high-quality paper scraping)
+# ─────────────────────────────────────────────────────────────
+
+# Tiny private helper for fallback (keeps the main function clean)
+async def _fallback_firecrawl_scrape(url: str) -> dict:
+    """Fallback using a fresh Firecrawl instance."""
+    firecrawl_app = AsyncFirecrawl(api_key=settings.firecrawl_api_key.get_secret_value())
+    return await scrape_url(url, firecrawl_app)
+
+
+async def scrape_arxiv_url(
+    url: str,
+    article_guidelines: str,
+    chat_model,
+    firecrawl_app,          # pass the same Firecrawl instance for fallback
+) -> dict:
+    """
+    Dedicated handler for arXiv URLs.
+    1. Uses arxiv2markdown (best quality).
+    2. Runs a lightweight LLM cleanup to fix any remaining LaTeX quirks.
+    3. Falls back to Firecrawl if arxiv2markdown fails.
+    4. Then runs the normal clean_markdown step.
+    """
+    logger.debug(f"🔬 Detected arXiv URL, using arxiv2markdown: {url}")
+
+    try:
+        # Primary path: arxiv2markdown
+        arxiv_id = extract_arxiv_id(url)
+        if not arxiv_id:
+            raise ValueError(f"Could not extract arXiv ID from URL: {url}")
+        raw_md = ingest_paper(arxiv_id=arxiv_id, html_url=url, remove_refs=True, remove_toc=True,
+                              remove_inline_citations=True, section_filter_mode="exclude")
+        logger.info(f"✅ arxiv2markdown succeeded for {url}")
+
+        # === NEW: Automatic LLM post-processing for LaTeX quirks ===
+        if raw_md.strip():
+            logger.debug(f"🧼 Running arXiv-specific LaTeX cleanup on {url}")
+            clean_prompt = PROMPT_CLEAN_ARXIV_MARKDOWN.format(
+                article_guidelines=article_guidelines or "<none>",
+                arxiv_markdown=raw_md,
+            )
+            try:
+                response = await chat_model.ainvoke(clean_prompt)
+                cleaned_md = response.content if hasattr(response, "content") else str(response)
+                logger.debug(f"✅ arXiv LaTeX cleanup completed for {url}")
+            except Exception as e:
+                logger.warning(f"arXiv cleanup LLM failed for {url}: {e}. Using raw output.")
+                cleaned_md = raw_md
+        else:
+            cleaned_md = raw_md
+
+        scraped = {
+            "url": url,
+            "title": "arXiv Paper",   # will be refined in final clean_markdown
+            "markdown": cleaned_md,
+            "success": True,
+        }
+    except Exception as e:
+        logger.warning(f"arxiv2markdown failed for {url}: {e}. Falling back to Firecrawl.")
+        scraped = await _fallback_firecrawl_scrape(url)
+
+    # Always run the regular cleaning step (image conversion, guideline-based filtering)
+    if scraped.get("success", False):
+        final_cleaned = await clean_markdown(
+            scraped["markdown"], article_guidelines, url, chat_model
+        )
+        scraped["markdown"] = final_cleaned
+
+    return scraped
+
+
 def convert_markdown_images_to_urls(text: str) -> str:
     """Convert markdown image and link syntax to just URLs for image content."""
     # Convert markdown images ![alt](url) to just url
@@ -111,7 +198,7 @@ def convert_markdown_images_to_urls(text: str) -> str:
 
     # Convert markdown links [text](url) to just url when url appears to be an image
     # Common image extensions
-    image_extensions = r"\.(jpg|jpeg|png|gif|bmp|svg|webp|ico|tiff|tif)(\?[^)]*)?$"
+    image_extensions = r"\.(jpg|jpeg|png|gif|bmp|svg|webp|ico|tiff|tif)(\?[^)]*)?"
     text = re.sub(rf"\[([^\]]*)\]\(([^)]+{image_extensions})\)", r"\2", text, flags=re.IGNORECASE)
 
     return text
