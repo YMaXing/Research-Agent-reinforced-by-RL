@@ -28,6 +28,19 @@ async def deduplicate_new_queries_tool(
     Runs after every query generation round (exploitation or complementary).
     Deduplicates the new batch against FULL_QUERIES_FILE history.
     Writes clean next_queries.md for run_tavily_research.
+
+    Args:
+        research_directory: Path to the research directory containing the output subdirectory with next_queries.md and full_queries.md
+        query_source: Origin of the current query batch, one of "exploitation" or "complementary" (default: "exploitation")
+
+    Returns:
+        Dict[str, Any]: Dictionary containing:
+            - status: Operation status ("success" or "skipped")
+            - new_queries_count: Total number of queries in the incoming batch
+            - kept_count: Number of queries retained after deduplication
+            - removed_duplicates: Number of queries dropped as duplicates
+            - output_path: Path to the rewritten next_queries.md file
+            - message: Human-readable summary of the operation
     """
     research_path = Path(research_directory)
     output_path = research_path / RESEARCH_OUTPUT_FOLDER

@@ -19,6 +19,8 @@ from ..tools import (
     select_research_sources_to_keep_tool,
     select_research_sources_to_scrape_tool,
     transcribe_youtube_videos_tool,
+    deduplicate_new_queries_tool,
+    deduplicate_research_content_tool,
 )
 from ..utils.opik_utils import opik_context
 
@@ -255,7 +257,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     
     @mcp.tool()
     @opik.track(type="tool")
-    async def generate_next_complementary_queries_tool(research_directory: str, 
+    async def generate_next_complementary_queries(research_directory: str, 
                                                     n_queries: int = 5, 
                                                     depth_vs_breadth_ratio: float = 0.5, 
                                                     focus: Literal["balanced", "depth", "breadth"] = "balanced") -> Dict[str, Any]:
@@ -290,14 +292,27 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     
     @mcp.tool()
     @opik.track(type="tool")
-    async def deduplicate_new_queries_tool(
+    async def deduplicate_new_queries(
             research_directory: str,
             query_source: Literal["exploitation", "complementary"] = "exploitation",
         ) -> Dict[str, Any]:
         """
         Runs after every query generation round (exploitation or complementary).
-        Deduplicates the new batch against FULL_QUERIES_FILE history.
+        Deduplicates the new batch among themselves and against FULL_QUERIES_FILE history.
         Writes clean next_queries.md for run_tavily_research.
+
+        Args:
+            research_directory: Path to the research directory containing the output subdirectory with next_queries.md and full_queries.md
+            query_source: Origin of the current query batch, one of "exploitation" or "complementary" (default: "exploitation")
+
+        Returns:
+            Dict[str, Any]: Dictionary containing:
+                - status: Operation status ("success" or "skipped")
+                - new_queries_count: Total number of queries in the incoming batch
+                - kept_count: Number of queries retained after deduplication
+                - removed_duplicates: Number of queries dropped as duplicates
+                - output_path: Path to the rewritten next_queries.md file
+                - message: Human-readable summary of the operation
         """
         opik_context.update_thread_id()
 
@@ -314,10 +329,10 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         """
         Automatically select high-quality sources from Tavily results.
 
-        Uses an LLM to evaluate each source in tavily_results.md for trustworthiness,
-        authority, and relevance based on the article guidelines. Writes the comma-separated
-        IDs of accepted sources to tavily_sources_selected.md and saves a filtered
-        markdown file tavily_results_selected.md containing only the accepted sources.
+        Uses LLM to evaluate each source in tavily_results.md for trustworthiness,
+        authority, and relevance based on the article guidelines and explorative research. 
+        Writes the comma-separated IDs of accepted sources to tavily_sources_selected.md 
+        and saves a filtered markdown file tavily_results_selected.md containing only the accepted sources.
 
         Args:
             research_directory: Path to the research directory (e.g., "articles/1")
@@ -339,7 +354,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     @opik.track(type="tool")
-    async def select_research_sources_to_scrape(research_directory: str, max_sources: int = 5) -> Dict[str, Any]:
+    async def select_research_sources_to_scrape(research_directory: str, max_sources: int = 8) -> Dict[str, Any]:
         """
         Select up to max_sources priority research sources to scrape in full.
 
@@ -350,7 +365,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         Args:
             research_directory: Path to the research directory (e.g., "articles/1")
-            max_sources: Maximum number of sources to select (default: 5)
+            max_sources: Maximum number of sources to select (default: 8)
 
         Returns:
             Dict[str, Any]: Dictionary containing:
@@ -402,6 +417,29 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     # FINAL RESEARCH COMPILATION TOOLS
     # ============================================================================
 
+    @mcp.tool()
+    @opik.track(type="tool")
+    async def deduplicate_research_content(research_directory: str) -> Dict[str, Any]:
+        """
+        Deduplicates ALL research sources as a whole (Tavily + Guidelines + Research URLs + Code + YouTube).
+        Produces a single clean, concise deduplicated_research.md file.
+
+        Args:
+            research_directory: Path to the research directory containing all source subfolders and the output directory
+
+        Returns:
+            Dict[str, Any]: Dictionary containing:
+                - status: Operation status ("success" or "error")
+                - deduplicated_path: Absolute path to the generated deduplicated_research.md file
+                - source_counts: Dictionary mapping each source category to the number of files collected
+                - total_parts_collected: Total number of content parts fed into deduplication
+                - message: Human-readable summary of the operation
+        """
+
+        opik_context.update_thread_id()
+        result = await deduplicate_research_content_tool(research_directory)
+        return result
+    
     @mcp.tool()
     @opik.track(type="tool")
     async def create_research_file(research_directory: str) -> Dict[str, Any]:

@@ -16,7 +16,7 @@ from ..utils.file_utils import read_file_safe, validate_tavily_results_selected_
 logger = logging.getLogger(__name__)
 
 
-async def select_research_sources_to_scrape_tool(research_directory: str, max_sources: int = 5) -> Dict[str, Any]:
+async def select_research_sources_to_scrape_tool(research_directory: str, max_sources: int = 8) -> Dict[str, Any]:
     """
     Select up to max_sources priority research sources to scrape in full.
 
@@ -27,7 +27,7 @@ async def select_research_sources_to_scrape_tool(research_directory: str, max_so
 
     Args:
         research_directory: Path to the research directory containing all research data
-        max_sources: Maximum number of sources to select (default: 5)
+        max_sources: Maximum number of sources to select (default: 8)
 
     Returns:
         Dict with status, selection results, file paths, and reasoning for the selection
