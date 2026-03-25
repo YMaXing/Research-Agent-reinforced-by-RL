@@ -5,13 +5,16 @@ import json
 import logging
 from pathlib import Path
 from typing import Any, Dict
+from urllib.parse import urlparse
 
+from ..app.github_handler import process_github_url
 from ..app.scraping_handler import build_filename, scrape_urls_concurrently, scrape_arxiv_url
-from ..app.youtube_handler import process_youtube_url
+from ..app.youtube_handler import get_video_id, process_youtube_url
 from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
     GUIDELINES_FILENAMES_FILE,
     RESEARCH_OUTPUT_FOLDER,
+    URL_PHASES_FILE,
     URLS_FROM_RESEARCH_FOLDER,
     URLS_TO_SCRAPE_FROM_RESEARCH_FILE,
     YOUTUBE_TRANSCRIPTION_MAX_CONCURRENT_REQUESTS,
@@ -127,37 +130,49 @@ def is_arxiv_url(url: str) -> bool:
     return "arxiv.org" in url and ("/abs/" in url or "/pdf/" in url)
 
 
-def categorize_urls(urls: list[str]) -> tuple[list[str], list[str], list[str]]:
-    """
-    Categorize URLs into YouTube, arXiv, and other URLs.
+def is_github_url(url: str) -> bool:
+    """Return True if URL is a GitHub link."""
+    return "github.com" in url
 
-    Separates the input URLs into three categories:
+
+def categorize_urls(urls: list[str]) -> tuple[list[str], list[str], list[str], list[str]]:
+    """
+    Categorize URLs into YouTube, arXiv, GitHub, and other URLs.
+
+    Separates the input URLs into four categories:
     - YouTube URLs (containing youtube.com or youtu.be)
     - arXiv URLs (containing arxiv.org with /abs/ or /pdf/)
+    - GitHub URLs (containing github.com)
     - Other URLs (all remaining URLs)
 
     Args:
         urls: List of URLs to categorize
 
     Returns:
-        Tuple of (youtube_urls, other_urls)
+        Tuple of (youtube_urls, arxiv_urls, github_urls, other_urls)
     """
     youtube_urls = [url for url in urls if "youtube.com" in url or "youtu.be" in url]
     arxiv_urls = [url for url in urls if is_arxiv_url(url)]
+    github_urls = [url for url in urls if is_github_url(url)]
     other_urls = [
             url for url in urls
-            if url not in youtube_urls and url not in arxiv_urls
+            if url not in youtube_urls and url not in arxiv_urls and url not in github_urls
         ]
-    return youtube_urls, arxiv_urls, other_urls
+    return youtube_urls, arxiv_urls, github_urls, other_urls
 
 
-def write_scraped_results_to_files(completed_results: list[dict], output_dir: Path) -> tuple[list[str], int]:
+def write_scraped_results_to_files(
+    completed_results: list[dict],
+    output_dir: Path,
+    url_to_phase: dict[str, str] | None = None,
+) -> tuple[list[str], int]:
     """
     Write scraped results to markdown files and return statistics.
 
     Args:
         completed_results: List of scraping results from scrape_urls_concurrently
         output_dir: Directory to write the markdown files to
+        url_to_phase: Optional mapping of URL → phase label for tagging
 
     Returns:
         Tuple of (saved_files_list, successful_scrapes_count)
@@ -174,6 +189,10 @@ def write_scraped_results_to_files(completed_results: list[dict], output_dir: Pa
         if res.get("success", False):
             successful_scrapes += 1
 
+        if url_to_phase:
+            phase = url_to_phase.get(url, "[EXPLOITATION]")
+            cleaned_markdown = f"Phase: {phase}\n\n" + (cleaned_markdown or "")
+
         filename = build_filename(title, url, existing_names)
         output_path = output_dir / filename
         output_path.write_text(cleaned_markdown or "", encoding="utf-8")
@@ -184,22 +203,26 @@ def write_scraped_results_to_files(completed_results: list[dict], output_dir: Pa
 
 async def process_and_save_urls(
     other_urls: list[str],
-    arxiv_urls: list[str],          
+    arxiv_urls: list[str],
+    github_urls: list[str],
     youtube_urls: list[str],
     article_guidelines: str,
     output_dir: Path,
     concurrency_limit: int,
+    url_to_phase: dict[str, str] | None = None,
 ) -> tuple[list[str], int, list[str]]:
     """
-    Process and save both other URLs and YouTube URLs.
+    Process and save other URLs, arXiv, GitHub, and YouTube URLs.
 
     Args:
-        other_urls: List of non-YouTube URLs to scrape
+        other_urls: List of non-special URLs to scrape
         arxiv_urls: List of arXiv URLs to scrape
+        github_urls: List of GitHub URLs to process with gitingest
         youtube_urls: List of YouTube URLs to transcribe
         article_guidelines: Guidelines content for cleaning scraped data
         output_dir: Directory to save the processed files
         concurrency_limit: Maximum number of concurrent tasks
+        url_to_phase: Optional mapping of URL → phase label for tagging saved files
 
     Returns:
         Tuple of (saved_files_list, successful_scrapes_count, report_parts_list)
@@ -218,24 +241,52 @@ async def process_and_save_urls(
         completed_results = await scrape_urls_concurrently(other_urls, article_guidelines, concurrency_limit)
 
         # Write outputs
-        saved_files_batch, successful = write_scraped_results_to_files(completed_results, output_dir)
+        saved_files_batch, successful = write_scraped_results_to_files(completed_results, output_dir, url_to_phase)
         saved_files.extend(saved_files_batch)
         successful_scrapes += successful
         report_parts.append(f"Scraped {successful}/{len(other_urls)} web pages.")
 
-    # Process arXiv URLs (NEW SECTION)
+    # Process arXiv URLs
     if arxiv_urls:
         logger.debug(f"Starting arXiv scraping of {len(arxiv_urls)} paper(s)...")
-        chat_model = get_chat_model(settings.scraping_model)   # reuse same model for cleaning
+        chat_model = get_chat_model(settings.scraping_model)
         arxiv_tasks = [
             scrape_arxiv_url(url, article_guidelines, chat_model) for url in arxiv_urls
         ]
         arxiv_results = await asyncio.gather(*arxiv_tasks, return_exceptions=True)
 
-        arxiv_saved, arxiv_success = write_scraped_results_to_files(arxiv_results, output_dir)
+        arxiv_saved, arxiv_success = write_scraped_results_to_files(arxiv_results, output_dir, url_to_phase)
         saved_files.extend(arxiv_saved)
         successful_scrapes += arxiv_success
         report_parts.append(f"Processed {arxiv_success}/{len(arxiv_urls)} arXiv papers with arxiv2markdown.")
+
+    # Process GITHUB URLs
+    if github_urls:
+        logger.debug(f"Starting gitingest processing of {len(github_urls)} GitHub repo(s)...")
+        github_success = 0
+        for url in github_urls:
+            try:
+                result = await process_github_url(url, output_dir, settings.github_token.get_secret_value())
+                if result:
+                    github_success += 1
+                # Determine the filename that process_github_url wrote
+                parsed = urlparse(url)
+                parts = [p for p in parsed.path.strip("/").split("/") if p]
+                if len(parts) >= 2:
+                    dest_name = f"{parts[0]}_{parts[1]}.md"
+                else:
+                    dest_name = url.replace("https://", "").replace("http://", "").replace("/", "_") + ".md"
+                saved_files.append(dest_name)
+                # Prepend phase header
+                if url_to_phase:
+                    gh_file = output_dir / dest_name
+                    if gh_file.exists():
+                        phase = url_to_phase.get(url, "[EXPLOITATION]")
+                        existing = gh_file.read_text(encoding="utf-8")
+                        gh_file.write_text(f"Phase: {phase}\n\n" + existing, encoding="utf-8")
+            except Exception as e:
+                logger.error(f"Error processing GitHub URL {url}: {e}", exc_info=True)
+        report_parts.append(f"Processed {github_success}/{len(github_urls)} GitHub repositories with gitingest.")
 
     # Process YOUTUBE URLs
     if youtube_urls:
@@ -245,6 +296,20 @@ async def process_and_save_urls(
 
             yt_tasks = [process_youtube_url(url, output_dir, yt_semaphore) for url in youtube_urls]
             await asyncio.gather(*yt_tasks)
+
+            # Prepend phase header to each YouTube transcription file
+            if url_to_phase:
+                for url in youtube_urls:
+                    video_id = get_video_id(url)
+                    if not video_id:
+                        sanitized = url.replace("https://", "").replace("http://", "").replace("/", "_")
+                        video_id = sanitized
+                    yt_file = output_dir / f"{video_id}.md"
+                    if yt_file.exists():
+                        phase = url_to_phase.get(url, "[EXPLOITATION]")
+                        existing = yt_file.read_text(encoding="utf-8")
+                        yt_file.write_text(f"Phase: {phase}\n\n" + existing, encoding="utf-8")
+
             report_parts.append(f"Transcribed {len(youtube_urls)} YouTube videos.")
         except Exception as e:
             logger.error(f"Failed to initialize or run YouTube transcription: {e}", exc_info=True)
@@ -291,10 +356,10 @@ async def scrape_research_urls_tool(research_directory: str, concurrency_limit: 
     # Deduplicate URLs against previously processed ones
     urls_to_process, original_count, deduplicated_count = deduplicate_urls(research_output_path, urls)
 
-    # Categorize URLs into YouTube and other types
-    youtube_urls, arxiv_urls, other_urls = categorize_urls(urls_to_process)
+    # Categorize URLs into YouTube, arXiv, GitHub, and other types
+    youtube_urls, arxiv_urls, github_urls, other_urls = categorize_urls(urls_to_process)
 
-    if not youtube_urls and not arxiv_urls and not other_urls:
+    if not youtube_urls and not arxiv_urls and not github_urls and not other_urls:
         return {
             "status": "success",
             "message": f"All {original_count} URLs were already processed. No new URLs to scrape.",
@@ -320,18 +385,29 @@ async def scrape_research_urls_tool(research_directory: str, concurrency_limit: 
     output_dir = research_output_path / URLS_FROM_RESEARCH_FOLDER
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    # Load phase mapping written by select_research_sources_to_scrape (best-effort)
+    url_phases_path = research_output_path / URL_PHASES_FILE
+    url_to_phase: dict[str, str] = {}
+    if url_phases_path.exists():
+        try:
+            with url_phases_path.open("r", encoding="utf-8") as _f:
+                url_to_phase = json.load(_f)
+        except (json.JSONDecodeError, OSError) as _e:
+            logger.warning(f"Could not read {URL_PHASES_FILE}: {_e}. Phase tagging will be skipped.")
+
     # Process and save URLs
     saved_files, successful_scrapes, report_parts = await process_and_save_urls(
-        other_urls, arxiv_urls, youtube_urls, article_guidelines, output_dir, concurrency_limit
+        other_urls, arxiv_urls, github_urls, youtube_urls, article_guidelines, output_dir, concurrency_limit,
+        url_to_phase=url_to_phase or None,
     )
 
     # Final Report
+    total_urls_processed = len(youtube_urls) + len(other_urls) + len(github_urls) + len(arxiv_urls)
     base_message = (
-        f"Processed {len(youtube_urls) + len(other_urls)} new URLs "
+        f"Processed {total_urls_processed} new URLs "
         f"from {URLS_TO_SCRAPE_FROM_RESEARCH_FILE} in '{research_directory}'."
     )
 
-    total_urls_processed = len(youtube_urls) + len(other_urls)
     return {
         "status": "success" if len(report_parts) > 0 else "warning",
         "urls_processed": successful_scrapes,

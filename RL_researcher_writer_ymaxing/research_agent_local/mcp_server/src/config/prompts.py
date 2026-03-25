@@ -210,7 +210,7 @@ History contains: Query [12] [Exploitation]: What are the main limitations of RA
 New query: How have retrieval-augmented techniques originally developed for legal e-discovery been adapted in biomedical literature search?
 → Keep the new query (adds meaningful cross-domain breadth without duplicating core coverage).
 
-Example 3 (Complementary round – clear duplicate):
+Example 3 (Complementary round - clear duplicate):
 History contains: Query [15] [Exploitation]: How do reranking techniques improve RAG performance?
 New query: What are the best reranking methods to reduce hallucinations in RAG pipelines?
 → Remove the new query (too close to existing exploitation material).
@@ -296,6 +296,7 @@ Here are the sources to evaluate:
 </sources_to_evaluate>
 
 For each source, you will see:
+- The research phase it originated from ([EXPLOITATION] or [EXPLORATION])
 - The URL of the source
 - The queries that led to this source
 - The answers/content obtained from this source
@@ -339,6 +340,12 @@ Here is the content from the accepted web search results (from both exploitation
 {accepted_sources_data}
 </web_search_results>
 
+For each accepted source, you will see:
+- The research phase it originated from ([EXPLOITATION] or [EXPLORATION])
+- The URL of the source
+- The queries that led to this source
+- The answers/content obtained from this source
+
 **Selection Criteria (apply in strict priority order):**
 1. **Relevance & Gap Filling**: Sources that best address important sections of the article guidelines that are still under-covered.
 2. **Uniqueness**: Sources that provide new insights, data, examples, case studies, or perspectives not already present in the scraped guideline URLs or previous phases.
@@ -364,20 +371,26 @@ Only include sources that provide genuine additional value and meet high quality
 PROMPT_CONTENT_DEDUPLICATION = """
 You are an expert research editor and knowledge consolidator working on a comprehensive article.
 
-Your task: Take a large collection of research sources (from both exploitation and exploration phases) and produce the cleanest, most authoritative, non-repetitive knowledge base possible.
+Your task: Take a large collection of research sources (from golden sources included in article guideline file to both exploitation and exploration phases) and produce the cleanest, most authoritative, non-repetitive knowledge base possible.
 
-**Sources included:**
-- Filtered Tavily results (high-quality selected sources)
-- Golden sources explicitly mentioned in the article guidelines (stored in URLS_FROM_GUIDELINES_FOLDER)
-- Other guideline URLs
-- Fully scraped research URLs
-- GitHub code repository summaries
-- YouTube video transcripts
+**Sources included** (each item is wrapped in an XML tag that identifies its source category and research phase):
+- `<golden_source type="guideline_url">` — URLs explicitly listed in the article guidelines (HIGHEST PRIORITY)
+- `<golden_source type="local_files">` — Local files referenced in the article guidelines (HIGHEST PRIORITY)
+- `<golden_source type="code_summaries">` — GitHub/code repository summaries from the guidelines (HIGHEST PRIORITY)
+- `<golden_source type="youtube_transcripts">` — YouTube transcripts from the guidelines (HIGHEST PRIORITY)
+- `<research_source phase="exploitation">` — Fully scraped research URLs, exploitation phase (HIGH PRIORITY)
+- `<research_source phase="exploration">` — Fully scraped research URLs, exploration phase (MEDIUM PRIORITY)
+- `<tavily_results phase="exploitation">` — Tavily web search results, exploitation phase (HIGH PRIORITY)
+- `<tavily_results phase="exploration">` — Tavily web search results, exploration phase (MEDIUM PRIORITY)
 
-**Phase-aware protection rules (apply the priority order strictly):**
-1. **Golden sources** (from URLS_FROM_GUIDELINES_FOLDER): HIGHEST PRIORITY, These are handpicked by the user and have the highest priority. Never remove or significantly alter content from these sources unless it is completely duplicated word-for-word with another golden source. Always preserve their core content and authority.
-2. **Exploitation phase sources** (Phase 1): HIGH PRIORITY, Strongly protect these — they represent essential guideline coverage. Only merge or remove if highly redundant with golden sources or other exploitation material.
-3. **Exploration phase sources** (Phase 2): MEDIUM PRIORITY, Higher bar — only keep if they add genuine new value (depth: theoretical foundations, technical nuances, limitations/criticisms, real-world case studies, future implications; breadth: adjacent concepts, cross-domain analogies, emerging trends, applications in other fields). Do not override or dilute golden/exploitation content.
+Each tag carries a `file` attribute for source attribution. Tavily chunks inside `<tavily_results>` also contain inline `Phase:` headers per source block.
+
+**Note:** Not all source types are guaranteed to be present. If the user's article guidelines contain no URLs or local files, there will be no `<golden_source>` tags in the content — this is normal. In that case, treat `<research_source phase="exploitation">` and `<tavily_results phase="exploitation">` as the highest-priority sources and apply the same protection rules to them accordingly.
+
+**Phase-aware protection rules** — use the XML tags to identify each item's priority tier (apply strictly):
+1. **Golden sources** (`<golden_source ...>`): HIGHEST PRIORITY. Handpicked by the user. Never remove or significantly alter their content unless it is completely duplicated word-for-word with another golden source. Always preserve their core content and authority.
+2. **Exploitation phase sources** (`<research_source phase="exploitation">`, `<tavily_results phase="exploitation">`): HIGH PRIORITY. Strongly protect these — they represent essential guideline coverage. Only merge or remove if highly redundant with golden sources or other exploitation material.
+3. **Exploration phase sources** (`<research_source phase="exploration">`, `<tavily_results phase="exploration">`): MEDIUM PRIORITY. Apply a higher bar — only keep if they add genuine new value (depth: theoretical foundations, technical nuances, limitations/criticisms, real-world case studies, future implications; breadth: adjacent concepts, cross-domain analogies, emerging trends, applications in other fields). Do not override or dilute golden/exploitation content.
 
 **Goals (in priority order):**
 - Preserve golden sources almost untouched
@@ -397,21 +410,85 @@ Here are the article guidelines (use as reference for relevance and structure):
 {article_guidelines}
 </article_guidelines>
 
-Here is all the collected research content to deduplicate:
+Here is all the collected research content to deduplicate. Each item is wrapped in a typed XML tag that encodes its source category and research phase — use these tags to apply the priority rules above:
 <all_research_content>
 {all_content}
 </all_research_content>
 
 **Few-shot examples:**
 
-Example 1 (Golden source protection):
-Golden source says: "RAG is defined as retrieval-augmented generation..."
-Another source repeats almost the same sentence → Keep the golden version only and discard the duplicate.
+Example 1 — Golden source overrides non-golden duplicate:
+  Input:
+    <golden_source type="guideline_url" file="rag_overview.md">
+    RAG (Retrieval-Augmented Generation) augments an LLM's parametric knowledge with non-parametric documents retrieved dynamically at inference time.
+    </golden_source>
+    <research_source phase="exploitation" file="blog_rag_intro.md">
+    Phase: [EXPLOITATION]
+    RAG, or Retrieval-Augmented Generation, enhances language models by fetching relevant documents before generating a response.
+    </research_source>
+  → Keep the golden source verbatim. The exploitation source conveys the same definition — discard it.
+  Output block: "RAG (Retrieval-Augmented Generation) augments an LLM's parametric knowledge with non-parametric documents retrieved dynamically at inference time.  *Source: rag_overview.md*"
 
-Example 2 (Merging complementary):
-Exploitation source: "Dense retrieval uses embeddings..."
-Exploration source: "In practice, hybrid dense-sparse retrieval improves recall by 15–20% in enterprise settings"
-→ Merge into one enriched paragraph, attribute both sources.
+Example 2 — Exploitation core kept; exploration merged for genuine added depth:
+  Input:
+    <research_source phase="exploitation" file="dense_retrieval.md">
+    Phase: [EXPLOITATION]
+    Dense retrieval encodes queries and documents into a shared embedding space and retrieves by nearest-neighbour search.
+    </research_source>
+    <research_source phase="exploration" file="hybrid_retrieval_study.md">
+    Phase: [EXPLORATION]
+    In enterprise benchmarks, hybrid dense-sparse retrieval improves recall@10 by 15-20% over pure dense retrieval, particularly on long-tail queries.
+    </research_source>
+  → Keep the exploitation sentence as the base. Append the exploration finding as a new sentence — it adds a concrete, quantified insight not present in the exploitation source.
+  Output block: "Dense retrieval encodes queries and documents into a shared embedding space and retrieves by nearest-neighbour search. In enterprise benchmarks, hybrid dense-sparse retrieval improves recall@10 by 15-20% over pure dense retrieval, particularly on long-tail queries.  *Sources: dense_retrieval.md, hybrid_retrieval_study.md*"
+
+Example 3 — Exploration source rejected (mere rephrasing, no new value):
+  Input:
+    <research_source phase="exploitation" file="chunking_strategies.md">
+    Phase: [EXPLOITATION]
+    Chunking strategies critically affect RAG retrieval quality: fixed-size chunks risk cutting mid-sentence; semantic chunking respects natural topic boundaries.
+    </research_source>
+    <research_source phase="exploration" file="text_splitting_blog.md">
+    Phase: [EXPLORATION]
+    How you split your text matters a lot for RAG — splitting in the wrong place can hurt retrieval performance significantly.
+    </research_source>
+  → The exploration source is a superficial rephrasing of the exploitation content with no added depth, data, or new angle. Discard it entirely. Keep only the exploitation block.
+
+Example 4 — Two golden sources with word-for-word overlap (only case to trim a golden):
+  Input:
+    <golden_source type="guideline_url" file="paper_a.md">
+    The attention mechanism computes a weighted sum of values, where weights are derived from query-key dot products scaled by √d_k.
+    </golden_source>
+    <golden_source type="local_files" file="paper_b.md">
+    The attention mechanism computes a weighted sum of values, where weights are derived from query-key dot products scaled by √d_k.
+    </golden_source>
+  → Identical word-for-word. Keep one copy (prefer the first encountered). This is the only situation where a golden source may be dropped.
+  Output block: "The attention mechanism computes a weighted sum of values, where weights are derived from query-key dot products scaled by √d_k.  *Source: paper_a.md*"
+
+Example 5 — Code summary takes precedence over shallower exploitation paraphrase:
+  Input:
+    <golden_source type="code_summaries" file="langchain_repo.md">
+    LangChain's RetrieverChain wires together: (1) a BaseRetriever calling vector-store similarity search, (2) a StuffDocumentsChain that concatenates retrieved docs, (3) an LLMChain that formats the final prompt.
+    </golden_source>
+    <research_source phase="exploitation" file="langchain_blog.md">
+    Phase: [EXPLOITATION]
+    LangChain provides a RetrieverChain for RAG. It retrieves documents and passes them to an LLM.
+    </research_source>
+  → The golden code summary is more complete and precise. Keep it; discard the shallower exploitation paraphrase.
+  Output block: "LangChain's RetrieverChain wires together: (1) a BaseRetriever calling vector-store similarity search, (2) a StuffDocumentsChain that concatenates retrieved docs, (3) an LLMChain that formats the final prompt.  *Source: langchain_repo.md*"
+
+Example 6 — YouTube transcript: convert timestamps to subheading, preserve direct quotes verbatim:
+  Input:
+    <golden_source type="youtube_transcripts" file="karpathy_lecture.md">
+    [12:45] "The problem with naive RAG is that your retriever and your generator are completely decoupled — they don't know about each other's failure modes."
+    [13:10] (Slide shown: diagram of retrieval errors propagating to the generator)
+    [13:30] "What you really want is some form of end-to-end signal that lets the retriever learn from generation errors."
+    </golden_source>
+  → Convert the timestamp block into a subheading. Preserve the direct quotes and visual description exactly — never paraphrase or summarize.
+  Output block:
+    ### Karpathy on Retriever-Generator Coupling
+    "The problem with naive RAG is that your retriever and your generator are completely decoupled — they don't know about each other's failure modes." *(A diagram shows retrieval errors propagating to the generator.)* "What you really want is some form of end-to-end signal that lets the retriever learn from generation errors."
+    *Source: karpathy_lecture.md*
 
 **Output instructions:**
 - Return clean Markdown only

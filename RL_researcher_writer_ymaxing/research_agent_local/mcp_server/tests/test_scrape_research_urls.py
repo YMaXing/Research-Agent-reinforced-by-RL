@@ -436,7 +436,6 @@ class TestScrapeArxivUrl:
                 "https://arxiv.org/abs/2312.05678",
                 "guidelines",
                 fake_llm,
-                fake_fc,
             )
         assert result["success"] is True
         # LLM cleaned the output; result should not be empty
@@ -452,7 +451,6 @@ class TestScrapeArxivUrl:
                 "https://arxiv.org/abs/2312.05678",
                 "",
                 fake_llm,
-                fake_fc_instance,
             )
         assert result["success"] is True
 
@@ -465,7 +463,6 @@ class TestScrapeArxivUrl:
                 "https://arxiv.org/search/invalid",  # no /abs/ or /pdf/
                 "",
                 fake_llm,
-                fake_fc,
             )
         # Fallback succeeded
         assert result["success"] is True
@@ -479,7 +476,6 @@ class TestScrapeArxivUrl:
                 "https://arxiv.org/abs/2312.05678",
                 "",
                 fake_llm,
-                fake_fc,
             )
         # success=True comes from ingest_paper path succeeding
         assert result["success"] is True
@@ -510,23 +506,23 @@ class TestIsArxivUrl:
 
 class TestCategorizeUrls:
     def test_youtube_com_classified_correctly(self):
-        yt, arxiv, other = categorize_urls(["https://youtube.com/watch?v=abc"])
+        yt, arxiv, github, other = categorize_urls(["https://youtube.com/watch?v=abc"])
         assert "https://youtube.com/watch?v=abc" in yt
         assert not arxiv
         assert not other
 
     def test_youtu_be_classified_as_youtube(self):
-        yt, arxiv, other = categorize_urls(["https://youtu.be/xyz"])
+        yt, arxiv, github, other = categorize_urls(["https://youtu.be/xyz"])
         assert len(yt) == 1
 
     def test_arxiv_abs_classified_correctly(self):
-        yt, arxiv, other = categorize_urls(["https://arxiv.org/abs/2312.05678"])
+        yt, arxiv, github, other = categorize_urls(["https://arxiv.org/abs/2312.05678"])
         assert not yt
         assert len(arxiv) == 1
         assert not other
 
     def test_regular_url_classified_as_other(self):
-        yt, arxiv, other = categorize_urls(["https://blog.example.com/post"])
+        yt, arxiv, github, other = categorize_urls(["https://blog.example.com/post"])
         assert not yt
         assert not arxiv
         assert len(other) == 1
@@ -537,19 +533,19 @@ class TestCategorizeUrls:
             "https://arxiv.org/abs/1234.5678",
             "https://docs.python.org",
         ]
-        yt, arxiv, other = categorize_urls(urls)
+        yt, arxiv, github, other = categorize_urls(urls)
         assert len(yt) == 1
         assert len(arxiv) == 1
         assert len(other) == 1
 
     def test_empty_list_returns_all_empty(self):
-        yt, arxiv, other = categorize_urls([])
-        assert yt == arxiv == other == []
+        yt, arxiv, github, other = categorize_urls([])
+        assert yt == arxiv == github == other == []
 
     def test_no_url_counted_twice(self):
         urls = ["https://arxiv.org/abs/2312.05678"]
-        yt, arxiv, other = categorize_urls(urls)
-        total = len(yt) + len(arxiv) + len(other)
+        yt, arxiv, github, other = categorize_urls(urls)
+        total = len(yt) + len(arxiv) + len(github) + len(other)
         assert total == len(urls)
 
 

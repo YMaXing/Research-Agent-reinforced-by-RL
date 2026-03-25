@@ -5,10 +5,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple, Literal
 
 from ..app.generate_queries_handler import (
-    append_generated_queries_with_reasons,
-    compute_next_query_id, 
-    generate_complementary_queries_with_reasons, 
-    generate_queries_with_reasons
+    generate_complementary_queries_with_reasons,
+    generate_queries_with_reasons,
 )
 from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
@@ -113,14 +111,6 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
     # Write queries to file
     write_queries_to_file(next_q_path, queries_and_reasons)
 
-    # Append all generated queries with reasons to full_queries.md
-    append_generated_queries_with_reasons(
-        full_queries_path,
-        queries_and_reasons,
-        starting_id=compute_next_query_id(full_queries_path),
-        query_source="exploitation",
-    )
-
     # Create the formatted queries string for display
     queries_string = format_queries_for_display(queries_and_reasons)
 
@@ -135,6 +125,7 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
             f"{next_q_path.relative_to(research_path)}\n\nGenerated Queries:\n\n{queries_string}"
         ),
     }
+
 
 async def generate_next_complementary_queries_tool(research_directory: str, 
                                                    n_queries: int = 5, 
@@ -210,14 +201,6 @@ async def generate_next_complementary_queries_tool(research_directory: str,
         
         # Write queries to file
         write_queries_to_file(next_q_path, queries_and_reasons)
-
-        # Append all generated queries with reasons to full_queries.md
-        append_generated_queries_with_reasons(
-            full_queries_path,
-            queries_and_reasons,
-            starting_id=compute_next_query_id(full_queries_path),
-            query_source="complementary",
-        )
 
         # Create the formatted queries string for display
         queries_string = format_queries_for_display(queries_and_reasons)

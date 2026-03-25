@@ -3,7 +3,7 @@
 import asyncio
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Literal, Tuple
 
 from ..app.tavily_handler import (
     run_tavily_search,
@@ -19,8 +19,18 @@ from ..utils.file_utils import validate_research_folder
 
 logger = logging.getLogger(__name__)
 
+_PHASE_LABELS: Dict[str, str] = {
+    "exploitation": "[EXPLOITATION]",
+    "complementary": "[EXPLORATION]",
+}
 
-def append_search_results_to_file(results_path: Path, queries: List[str], search_results: List[Tuple]) -> int:
+
+def append_search_results_to_file(
+    results_path: Path,
+    queries: List[str],
+    search_results: List[Tuple],
+    phase: str = "[EXPLOITATION]",
+) -> int:
     """
     Process search results and append them to the results file.
 
@@ -28,6 +38,7 @@ def append_search_results_to_file(results_path: Path, queries: List[str], search
         results_path: Path to the results file
         queries: List of search queries
         search_results: List of search results from run_tavily_search
+        phase: Phase label to tag each source ("[EXPLOITATION]" or "[EXPLORATION]")
 
     Returns:
         Total number of sources added
@@ -43,6 +54,7 @@ def append_search_results_to_file(results_path: Path, queries: List[str], search
                 answer_by_source,
                 citations,
                 next_global_id,
+                phase=phase,
             )
             total_sources += len(citations)
             logger.debug(f"Appended results for query: '{query}' (added {len(citations)} source section(s)).")
@@ -50,17 +62,24 @@ def append_search_results_to_file(results_path: Path, queries: List[str], search
     return total_sources
 
 
-async def run_tavily_research_tool(research_directory: str, queries: List[str]) -> Dict[str, Any]:
+async def run_tavily_research_tool(
+    research_directory: str,
+    queries: List[str],
+    query_source: Literal["exploitation", "complementary"] = "exploitation",
+) -> Dict[str, Any]:
     """
     Run Tavily research queries for the research folder.
 
     Executes the provided queries using Tavily and appends
     the results to tavily_results.md in the research directory. Each query
-    result includes the answer and source citations.
+    result includes the answer and source citations tagged with the research phase
+    ("[EXPLOITATION]" for core queries, "[EXPLORATION]" for complementary queries).
 
     Args:
         research_directory: Path to the research directory where results will be saved
         queries: List of web-search queries to execute
+        query_source: Origin of queries - "exploitation" (default) or "complementary".
+            Controls the Phase tag written to tavily_results.md.
 
     Returns:
         Dict with status, processing results, and file paths
@@ -88,13 +107,14 @@ async def run_tavily_research_tool(research_directory: str, queries: List[str]) 
     # Ensure output file exists
     results_path.touch(exist_ok=True)
 
-    logger.debug(f"Executing {len(queries)} Tavily queries...")
+    phase = _PHASE_LABELS.get(query_source, "Exploitation")
+    logger.debug(f"Executing {len(queries)} Tavily queries (phase={phase})...")
     tasks = [run_tavily_search(query) for query in queries]
     search_results = await asyncio.gather(*tasks)
     logger.debug("All Tavily queries finished. Appending results.")
 
     # Process and append search results to file
-    total_sources = append_search_results_to_file(results_path, queries, search_results)
+    total_sources = append_search_results_to_file(results_path, queries, search_results, phase=phase)
 
     processed_queries_count = len(queries)
     return {

@@ -70,7 +70,7 @@ class NotebookToMarkdownConverter:
             markdown_lines.append(f"# {notebook.metadata.title}\n")
 
         for cell_idx, cell in enumerate(notebook.cells):
-            if self.include_metadata and cell.metadata:
+            if self.include_metadata:
                 markdown_lines.append(f"<!-- Cell {cell_idx} metadata: {json.dumps(cell.metadata)} -->\n")
 
             if cell.cell_type == "markdown":

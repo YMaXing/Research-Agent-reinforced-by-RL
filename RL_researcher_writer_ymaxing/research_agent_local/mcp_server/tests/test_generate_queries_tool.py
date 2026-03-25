@@ -89,44 +89,12 @@ class TestGenerateNextQueriesTool:
         )
         assert "What is RAG?" in content
 
-    async def test_creates_full_queries_file(self, fake_structured_model, tmp_research_dir):
+    async def test_does_not_create_full_queries_file(self, fake_structured_model, tmp_research_dir):
+        """generate_next_queries_tool only writes next_queries.md; full_queries.md is handled by deduplicate_new_queries_tool."""
         with patch(_LLM_PATCH, return_value=fake_structured_model):
             await generate_next_queries_tool(str(tmp_research_dir))
 
-        assert (tmp_research_dir / RESEARCH_OUTPUT_FOLDER / FULL_QUERIES_FILE).exists()
-
-    async def test_full_queries_file_uses_exploitation_tag(self, fake_structured_model, tmp_research_dir):
-        with patch(_LLM_PATCH, return_value=fake_structured_model):
-            await generate_next_queries_tool(str(tmp_research_dir))
-
-        content = (tmp_research_dir / RESEARCH_OUTPUT_FOLDER / FULL_QUERIES_FILE).read_text(
-            encoding="utf-8"
-        )
-        assert "[Exploitation]" in content
-
-    async def test_full_queries_ids_start_at_1_for_new_directory(
-        self, fake_structured_model, tmp_research_dir
-    ):
-        with patch(_LLM_PATCH, return_value=fake_structured_model):
-            await generate_next_queries_tool(str(tmp_research_dir))
-
-        content = (tmp_research_dir / RESEARCH_OUTPUT_FOLDER / FULL_QUERIES_FILE).read_text(
-            encoding="utf-8"
-        )
-        assert "Query [1]" in content
-
-    async def test_second_call_increments_ids(self, fake_structured_model, tmp_research_dir):
-        """Running the tool twice on the same directory should assign ids 1-5, then 6-10."""
-        model = FakeStructuredModel(FAKE_QUERIES_5)
-        with patch(_LLM_PATCH, return_value=model):
-            await generate_next_queries_tool(str(tmp_research_dir))
-        with patch(_LLM_PATCH, return_value=model):
-            await generate_next_queries_tool(str(tmp_research_dir))
-
-        content = (tmp_research_dir / RESEARCH_OUTPUT_FOLDER / FULL_QUERIES_FILE).read_text(
-            encoding="utf-8"
-        )
-        assert "Query [6]" in content
+        assert not (tmp_research_dir / RESEARCH_OUTPUT_FOLDER / FULL_QUERIES_FILE).exists()
 
     async def test_next_queries_file_is_overwritten_on_second_call(
         self, fake_structured_model, tmp_research_dir
@@ -189,14 +157,12 @@ class TestGenerateNextComplementaryQueriesTool:
 
         assert result["queries_count"] == 5
 
-    async def test_full_queries_uses_exploration_tag(self, fake_structured_model, tmp_research_dir):
+    async def test_does_not_create_full_queries_file(self, fake_structured_model, tmp_research_dir):
+        """generate_next_complementary_queries_tool only writes next_queries.md; full_queries.md is handled by deduplicate_new_queries_tool."""
         with patch(_LLM_PATCH, return_value=fake_structured_model):
             await generate_next_complementary_queries_tool(str(tmp_research_dir))
 
-        content = (tmp_research_dir / RESEARCH_OUTPUT_FOLDER / FULL_QUERIES_FILE).read_text(
-            encoding="utf-8"
-        )
-        assert "[Exploration]" in content
+        assert not (tmp_research_dir / RESEARCH_OUTPUT_FOLDER / FULL_QUERIES_FILE).exists()
 
     async def test_focus_depth_sends_80_percent_to_prompt(self, tmp_research_dir):
         """focus='depth' overrides ratio to 0.80 → prompt must contain '80'."""
