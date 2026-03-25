@@ -1,4 +1,4 @@
-"""Tavily research handler – exact drop-in compatibility with your existing pipeline."""
+"""Tavily research handler - exact drop-in compatibility with your existing pipeline."""
 
 import asyncio
 import logging
@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 class SourceAnswer(BaseModel):
     """A single source answer with URL and content."""
     url: str = Field(description="The URL of the source")
+    queries: List[str] = Field(description="The queries that led to this source")
+    phase: str = Field(description="The research phase this source originated from (Exploitation or Exploration)")
     answer: str = Field(description="The detailed answer extracted from that source")
 
 
@@ -83,6 +85,7 @@ def append_tavily_results(
     answer_by_source: Dict[int, str],
     citations: Dict[int, str],
     starting_id: int,
+    phase: str = "[EXPLOITATION]",
 ) -> int:
     """Append results for a single query. Returns next available global id."""
     with results_path.open("a", encoding="utf-8") as f:
@@ -91,6 +94,7 @@ def append_tavily_results(
             content = answer_by_source.get(local_id, "").strip()
             if not content:
                 continue
+            f.write(f"Phase: {phase}\n\n")
             f.write(f"### Source [{last_id}]: {url}\n\n")
             f.write(f"Query: {query}\n\n")
             f.write(f"Answer: {content}\n\n")
@@ -135,11 +139,14 @@ async def run_queries(article_id: str, queries: List[str]) -> None:
 def extract_tavily_chunks(markdown: str) -> Dict[int, str]:
     """Return a map {source_id: markdown_block} for each source block in the file.
 
-    Each block starts with a heading like:
-    `### Source [<id>]: <url>`
-    and ends before the next "### Source [" or EOF.
+    Each block starts with an optional ``Phase: [...]`` line followed by
+    ``### Source [<id>]: <url>`` and ends before the next block or EOF.
+    Backward compatible with the old format where Phase appeared after Query.
     """
-    pattern = re.compile(r"^### Source \[(\d+)]:(?:.*)$", re.MULTILINE)
+    # Match the optional Phase line that precedes ### Source, or ### Source alone
+    # (backward compat for old format where Phase was not at the top of each block).
+    # The optional group is non-capturing so group(1) is always the source ID.
+    pattern = re.compile(r"^(?:Phase: [^\n]+\n\n)?### Source \[(\d+)]\:", re.MULTILINE)
     chunks: Dict[int, str] = {}
 
     matches = list(pattern.finditer(markdown))

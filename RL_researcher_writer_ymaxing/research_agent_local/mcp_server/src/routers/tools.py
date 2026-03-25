@@ -225,17 +225,25 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     @opik.track(type="tool")
-    async def run_tavily_research(research_directory: str, queries: list[str]) -> Dict[str, Any]:
+    async def run_tavily_research(
+        research_directory: str,
+        queries: list[str],
+        query_source: Literal["exploitation", "complementary"] = "exploitation",
+    ) -> Dict[str, Any]:
         """
         Run selected web-search queries with Tavily and store the results.
 
         Executes the provided queries using Tavily Search enhanced with strong LLM structuring and appends
         the results to tavily_results.md in the research directory. Each query
-        result includes the answer and source citations.
+        result includes the answer and source citations, tagged with the research phase
+        ("[EXPLOITATION]" for core queries, "[EXPLORATION]" for complementary queries).
 
         Args:
             research_directory: Path to the research directory where results will be saved
             queries: List of web-search queries to execute
+            query_source: Origin of the current query batch – "exploitation" (default) for
+                core exploitation rounds, or "complementary" for exploration rounds.
+                Controls the Phase tag written to tavily_results.md.
 
         Returns:
             Dict[str, Any]: Dictionary containing:
@@ -252,7 +260,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         opik_context.update_thread_id()
 
-        result = await run_tavily_research_tool(research_directory, queries)
+        result = await run_tavily_research_tool(research_directory, queries, query_source=query_source)
         return result
     
     @mcp.tool()
@@ -354,7 +362,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     @opik.track(type="tool")
-    async def select_research_sources_to_scrape(research_directory: str, max_sources: int = 8) -> Dict[str, Any]:
+    async def select_research_sources_to_scrape(research_directory: str, max_sources: int = 7) -> Dict[str, Any]:
         """
         Select up to max_sources priority research sources to scrape in full.
 
@@ -365,7 +373,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         Args:
             research_directory: Path to the research directory (e.g., "articles/1")
-            max_sources: Maximum number of sources to select (default: 8)
+            max_sources: Maximum number of sources to select (default: 7)
 
         Returns:
             Dict[str, Any]: Dictionary containing:

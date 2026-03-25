@@ -9,6 +9,11 @@ from ..app.dedup_new_queries_handler import (
     deduplicate_new_queries_against_history,
     parse_queries_from_file,
 )
+from ..app.generate_queries_handler import(
+    append_generated_queries_with_reasons,
+    compute_next_query_id,
+)
+
 from generate_next_queries_tool import write_queries_to_file
 from ..utils.file_utils import validate_research_folder
 from ..config.settings import settings
@@ -61,6 +66,14 @@ async def deduplicate_new_queries_tool(
 
     # Write clean file for Tavily (overwrite)
     write_queries_to_file(next_queries_path, deduplicated)
+
+    # Append all generated queries with reasons to full_queries.md
+    append_generated_queries_with_reasons(
+            full_queries_path,
+            deduplicated,
+            starting_id=compute_next_query_id(full_queries_path),
+            query_source=query_source,
+    )
 
     removed_count = len(new_queries) - len(deduplicated)
 

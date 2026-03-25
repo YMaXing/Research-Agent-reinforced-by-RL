@@ -34,8 +34,11 @@ def extract_selected_blocks_content(selected_ids: list[int], md_results: str) ->
         str: Filtered markdown content containing only selected source blocks
     """
     if selected_ids:
-        # Split original results into blocks by source
-        block_pattern = re.compile(r"(### Source \[(\d+)]:[\s\S]*?)(?=### Source \[|\Z)")
+        # Split original results into blocks. Each block may start with an optional
+        # "Phase: [...]" line (new format) or directly with "### Source [N]:" (old).
+        block_pattern = re.compile(
+            r"((?:Phase: [^\n]+\n\n)?### Source \[(\d+)][:\s\S]*?)(?=(?:Phase: [^\n]+\n\n)?### Source \[|\Z)"
+        )
         selected_blocks: list[str] = []
         for block, sid_str in block_pattern.findall(md_results):
             if int(sid_str) in selected_ids:

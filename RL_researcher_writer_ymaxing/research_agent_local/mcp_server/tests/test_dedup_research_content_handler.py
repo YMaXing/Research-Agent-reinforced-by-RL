@@ -34,9 +34,9 @@ def _write_source_files(output_path: Path) -> None:
     (golden / "g2.md").write_text("Guideline content B", encoding="utf-8")
     (code / "c1.md").write_text("Code summary content", encoding="utf-8")
     (youtube / "y1.md").write_text("Transcript content", encoding="utf-8")
-    (output_path / URLS_FROM_RESEARCH_FOLDER).write_text(
-        "Research URL extraction content", encoding="utf-8"
-    )
+    research_urls = output_path / URLS_FROM_RESEARCH_FOLDER
+    research_urls.mkdir(parents=True, exist_ok=True)
+    (research_urls / "r1.md").write_text("Research URL extraction content", encoding="utf-8")
 
 
 class TestDeduplicateResearchContent:
@@ -88,7 +88,9 @@ class TestDeduplicateResearchContent:
         research_path = tmp_path
         output_path = research_path / RESEARCH_OUTPUT_FOLDER
         output_path.mkdir(parents=True, exist_ok=True)
-        (output_path / URLS_FROM_RESEARCH_FOLDER).write_text("Only content", encoding="utf-8")
+        research_urls_dir = output_path / URLS_FROM_RESEARCH_FOLDER
+        research_urls_dir.mkdir(parents=True, exist_ok=True)
+        (research_urls_dir / "r1.md").write_text("Only content", encoding="utf-8")
 
         prompts_seen = []
         model = fake_plain_model_factory("# dedup")
@@ -117,7 +119,9 @@ class TestDeduplicateResearchContent:
     async def test_raises_runtime_error_when_llm_call_fails(self, tmp_research_dir):
         output_path = tmp_research_dir / RESEARCH_OUTPUT_FOLDER
         output_path.mkdir(parents=True, exist_ok=True)
-        (output_path / URLS_FROM_RESEARCH_FOLDER).write_text("Only content", encoding="utf-8")
+        research_urls_dir = output_path / URLS_FROM_RESEARCH_FOLDER
+        research_urls_dir.mkdir(parents=True, exist_ok=True)
+        (research_urls_dir / "r1.md").write_text("Only content", encoding="utf-8")
 
         class FailingModel:
             async def ainvoke(self, prompt, **kwargs):
@@ -132,7 +136,9 @@ class TestDeduplicateResearchContent:
     ):
         output_path = tmp_research_dir / RESEARCH_OUTPUT_FOLDER
         output_path.mkdir(parents=True, exist_ok=True)
-        (output_path / URLS_FROM_RESEARCH_FOLDER).write_text("Only content", encoding="utf-8")
+        research_urls_dir = output_path / URLS_FROM_RESEARCH_FOLDER
+        research_urls_dir.mkdir(parents=True, exist_ok=True)
+        (research_urls_dir / "r1.md").write_text("Only content", encoding="utf-8")
 
         model = fake_plain_model_factory("   ")
         with patch(_PATCH_TARGET, return_value=model):

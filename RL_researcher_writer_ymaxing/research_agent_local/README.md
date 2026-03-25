@@ -1,3 +1,5 @@
+# PENDING FUTURE CHANGES
+
 ## Nova Research Agent
 
 This folder contains a full research agent implemented as two projects:

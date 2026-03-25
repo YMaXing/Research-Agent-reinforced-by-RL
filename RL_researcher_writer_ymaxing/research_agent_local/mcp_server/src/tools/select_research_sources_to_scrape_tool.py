@@ -1,5 +1,6 @@
 """Research sources to scrape selection tool implementation."""
 
+import json
 import logging
 from pathlib import Path
 from typing import Any, Dict
@@ -9,6 +10,7 @@ from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
     RESEARCH_OUTPUT_FOLDER,
     TAVILY_RESULTS_SELECTED_FILE,
+    URL_PHASES_FILE,
     URLS_TO_SCRAPE_FROM_RESEARCH_FILE,
 )
 from ..utils.file_utils import read_file_safe, validate_tavily_results_selected_file, validate_research_folder
@@ -16,7 +18,7 @@ from ..utils.file_utils import read_file_safe, validate_tavily_results_selected_
 logger = logging.getLogger(__name__)
 
 
-async def select_research_sources_to_scrape_tool(research_directory: str, max_sources: int = 8) -> Dict[str, Any]:
+async def select_research_sources_to_scrape_tool(research_directory: str, max_sources: int = 7) -> Dict[str, Any]:
     """
     Select up to max_sources priority research sources to scrape in full.
 
@@ -27,7 +29,7 @@ async def select_research_sources_to_scrape_tool(research_directory: str, max_so
 
     Args:
         research_directory: Path to the research directory containing all research data
-        max_sources: Maximum number of sources to select (default: 8)
+        max_sources: Maximum number of sources to select (default: 7)
 
     Returns:
         Dict with status, selection results, file paths, and reasoning for the selection
@@ -57,13 +59,19 @@ async def select_research_sources_to_scrape_tool(research_directory: str, max_so
 
     selection_result = await select_top_sources(article_guidelines, guideline_ctx, md_results_selected, max_sources)
     top_urls = selection_result["selected_urls"]
+    url_to_phase = selection_result["url_to_phase"]
     reasoning = selection_result["reasoning"]
 
-    # Write URLs one per line
+    # Write URLs one per line (overwrite existing file)
     urls_out_path.parent.mkdir(parents=True, exist_ok=True)
     with urls_out_path.open("w", encoding="utf-8") as f:
         for url in top_urls:
             f.write(url + "\n")
+
+    # Write companion phase mapping so downstream tools can tag scraped files
+    url_phases_path = research_output_path / URL_PHASES_FILE
+    with url_phases_path.open("w", encoding="utf-8") as f:
+        json.dump(url_to_phase, f, indent=2, ensure_ascii=False)
 
     return {
         "status": "success",

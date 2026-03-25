@@ -22,19 +22,27 @@ logger = logging.getLogger(__name__)
 
 
 def parse_tavily_results(md_text: str) -> Dict[int, Dict[str, str]]:
-    """Return mapping {id: {url, query, answer}} extracted from the markdown."""
+    """Return mapping {id: {url, query, phase, answer}} extracted from the markdown.
+
+    The Phase field is optional for backward compatibility with files written before
+    phase tagging was introduced; it defaults to "[EXPLOITATION]" when absent.
+    """
+    # Handles both formats:
+    #   New: Phase: [EXPLOITATION]\n\n### Source [N]: URL\n\nQuery: ...\n\nAnswer: ...
+    #   Old: ### Source [N]: URL\n\nQuery: ...\n\nPhase: ...\n\nAnswer: ...
     _source_block_re = re.compile(
-        r"^### Source \[(\d+)]\: (.*?)\n\nQuery: (.*?)\n\nAnswer: (.*?)\n(?:-----|\Z)",
+        r"^(?:Phase: (.*?)\n\n)?### Source \[(\d+)]\: (.*?)\n\nQuery: (.*?)\n\n(?:Phase: (.*?)\n\n)?Answer: (.*?)\n(?:-----|\Z)",
         re.S | re.M,
     )
 
     results: Dict[int, Dict[str, str]] = {}
     for match in _source_block_re.finditer(md_text):
-        src_id = int(match.group(1))
-        url = match.group(2).strip()
-        query = match.group(3).strip()
-        answer = match.group(4).strip()
-        results[src_id] = {"url": url, "query": query, "answer": answer}
+        phase = (match.group(1) or match.group(5) or "[EXPLOITATION]").strip()
+        src_id = int(match.group(2))
+        url = match.group(3).strip()
+        query = match.group(4).strip()
+        answer = match.group(6).strip()
+        results[src_id] = {"url": url, "query": query, "phase": phase, "answer": answer}
     return results
 
 
@@ -43,6 +51,8 @@ def build_sources_data_text(parsed: Dict[int, Dict[str, str]]) -> str:
     lines: List[str] = []
     for src_id in sorted(parsed):
         entry = parsed[src_id]
+        lines.append(f"**Phase:** {entry.get('phase', '[EXPLOITATION]')}")
+        lines.append("")
         lines.append(f"### Source ID {src_id}: {entry['url']}")
         lines.append("")
         lines.append(f"**Query:** {entry['query']}")
@@ -92,18 +102,25 @@ async def select_sources(article_guidelines: str, md_results: str) -> List[int]:
 
 
 def parse_results_selected(md_text: str) -> List[Dict[str, str]]:
-    """Return list of dicts with keys url, query, answer from selected results file."""
+    """Return list of dicts with keys url, query, phase, answer from selected results file.
+
+    The Phase field is optional for backward compatibility with pre-tagging files.
+    """
+    # Handles both formats:
+    #   New: Phase: [EXPLOITATION]\n\n### Source [N]: URL\n\nQuery: ...\n\nAnswer: ...
+    #   Old: ### Source [N]: URL\n\nQuery: ...\n\nPhase: ...\n\nAnswer: ...
     _source_block_re = re.compile(
-        r"^### Source \[(\d+)]\: (.*?)\n\nQuery: (.*?)\n\nAnswer: (.*?)\n(?:-----|\Z)",
+        r"^(?:Phase: (.*?)\n\n)?### Source \[(\d+)]\: (.*?)\n\nQuery: (.*?)\n\n(?:Phase: (.*?)\n\n)?Answer: (.*?)\n(?:-----|\Z)",
         re.S | re.M,
     )
 
     sources: List[Dict[str, str]] = []
     for match in _source_block_re.finditer(md_text):
-        url = match.group(2).strip()
-        query = match.group(3).strip()
-        answer = match.group(4).strip()
-        sources.append({"url": url, "query": query, "answer": answer})
+        phase = (match.group(1) or match.group(5) or "[EXPLOITATION]").strip()
+        url = match.group(3).strip()
+        query = match.group(4).strip()
+        answer = match.group(6).strip()
+        sources.append({"url": url, "query": query, "phase": phase, "answer": answer})
     return sources
 
 
@@ -123,17 +140,22 @@ async def select_top_sources(
     """Select up to max_sources top sources to scrape fully.
 
     Returns:
-        dict: Contains 'selected_urls' (List[str]) and 'reasoning' (str)
+        dict: Contains 'selected_urls' (List[str]), 'url_to_phase' (Dict[str, str]),
+              and 'reasoning' (str)
     """
     sources = parse_results_selected(md_results_selected)
     if not sources:
         msg = "⚠️  No sources found in tavily_results_selected.md. Nothing to select."
         logger.warning(msg)
-        return {"selected_urls": [], "reasoning": "No sources available for selection."}
+        return {"selected_urls": [], "url_to_phase": {}, "reasoning": "No sources available for selection."}
+
+    # Build URL → phase lookup from parsed sources
+    url_to_phase: Dict[str, str] = {s["url"]: s.get("phase", "[EXPLOITATION]") for s in sources}
 
     # Build sources data text for prompt
     lines: List[str] = []
     for idx, src in enumerate(sources, 1):
+        lines.append(f"Phase: {src['phase']}")
         lines.append(f"### Source {idx}: {src['url']}")
         lines.append(f"Query: {src['query']}")
         lines.append(f"Snippet: {src['answer']}")
@@ -154,18 +176,27 @@ async def select_top_sources(
     except Exception as exc:
         msg = f"⚠️  LLM selection failed ({exc}). Returning first {max_sources} sources by default."
         logger.warning(msg)
+        fallback_urls = [s["url"] for s in sources[:max_sources]]
         return {
-            "selected_urls": [s["url"] for s in sources[:max_sources]],
+            "selected_urls": fallback_urls,
+            "url_to_phase": {url: url_to_phase.get(url, "[EXPLOITATION]") for url in fallback_urls},
             "reasoning": f"LLM selection failed, falling back to first {max_sources} sources.",
         }
 
     if not isinstance(response, TopSourceSelection):
         logger.error(f"⚠️ LLM call returned unexpected type: {type(response)}")
+        fallback_urls = [s["url"] for s in sources[:max_sources]]
         return {
-            "selected_urls": [s["url"] for s in sources[:max_sources]],
+            "selected_urls": fallback_urls,
+            "url_to_phase": {url: url_to_phase.get(url, "[EXPLOITATION]") for url in fallback_urls},
             "reasoning": f"LLM returned unexpected response type, falling back to first {max_sources} sources.",
         }
 
     # Ensure max sources limit
-    logger.info(f"👍 {len(response.selected_urls)} sources selected to scrape.")
-    return {"selected_urls": response.selected_urls[:max_sources], "reasoning": response.reasoning}
+    selected = response.selected_urls[:max_sources]
+    logger.info(f"👍 {len(selected)} sources selected to scrape.")
+    return {
+        "selected_urls": selected,
+        "url_to_phase": {url: url_to_phase.get(url, "[EXPLOITATION]") for url in selected},
+        "reasoning": response.reasoning,
+    }
