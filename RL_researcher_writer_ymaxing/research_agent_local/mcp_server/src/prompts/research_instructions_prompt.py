@@ -126,11 +126,34 @@ If the user doesn't provide a research directory, you should ask for it before e
 
 8. Write final research file:
 
-    8.1 Run the "create_research_file" tool. It will automatically prefer the deduplicated content when available and copy-paste the DEDUPLICATED_RESEARCH_FILE
-    into the final RESEARCH_MD_FILE. If the deduplicated content is not available, then as a fallback, the tool combines all research data including filtered Tavily results
-    from TAVILY_RESULTS_SELECTED_FILE, scraped guideline sources from URLS_FROM_GUIDELINES_FOLDER, URLS_FROM_GUIDELINES_CODE_FOLDER, and URLS_FROM_GUIDELINES_YOUTUBE_FOLDER, 
-    and full research sources from URLS_FROM_RESEARCH_FOLDER into a comprehensive RESEARCH_MD_FILE organized into sections with collapsible blocks for easy navigation. 
-    The final RESEARCH_MD_FILE is saved in the root of the research directory.
+    8.1 Run the "create_research_file" tool. The tool always assembles all source content into XML-tagged sections
+    that clearly distinguish golden sources (material referenced in the article guideline) from research sources
+    (material discovered through Tavily exploitation and exploration rounds):
+    
+    • Golden sources are wrapped in <golden_source type="..."> tags, where the type attribute identifies the
+      specific guideline-referenced category:
+        - type="guideline_urls"   — web pages scraped from URLs listed in the article guideline
+        - type="guideline_code"   — GitHub repositories referenced in the article guideline
+        - type="guideline_youtube" — YouTube videos referenced in the article guideline
+        - type="local_files"      — local files referenced in the article guideline
+    
+    • Research sources (Tavily results and URLs scraped from Tavily-discovered links) are wrapped in
+      <research_source type="..."> tags. Importantly, even if a Tavily-discovered URL is a GitHub repo
+      or YouTube video, it is still a research source (not golden) because it was not referenced in the
+      article guideline.
+    
+    When DEDUPLICATED_RESEARCH_FILE is available (i.e. step 7.1 was run), the tool produces a RESEARCH_MD_FILE
+    that contains:
+      (a) A primary body section with the clean deduplicated content.
+      (b) A "Golden Source Reference" appendix containing the full XML-tagged section assembly described above.
+          This appendix exists so that downstream LLM metric judges evaluating the generated article can
+          identify which parts of the research came from golden sources versus Tavily research, supporting
+          the GoldenSourcePriority evaluation criterion.
+    
+    If DEDUPLICATED_RESEARCH_FILE is not available (step 7.1 was skipped), the tool falls back to writing
+    the XML-tagged section assembly directly as the RESEARCH_MD_FILE.
+    
+    In both cases, the final RESEARCH_MD_FILE is saved in the root of the research directory.
 
 Depending on the results of previous steps, you may want to skip running a tool if not necessary.
 

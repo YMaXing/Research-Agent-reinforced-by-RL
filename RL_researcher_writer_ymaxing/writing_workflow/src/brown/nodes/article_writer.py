@@ -270,7 +270,7 @@ Here is the new chain of thoughts logic you will follow when reviewing the selec
 previous chain of thoughts in the system prompt:
 
 1. Place the selected text in the context of the full article.
-2. Analyze the reviews to understand what needs to be changed.
+2. Analyze the reviews to understand what needs to be changed.  
 3. Priotize the reviews based on the importance ranking.
 4. Based on the reviews, apply in order, the necessary edits to the selected text, while still 
 following all the necessary instructions from the profiles and guidelines above.

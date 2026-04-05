@@ -66,6 +66,7 @@ def combine_research_sections(
     code_sources_section: str,
     youtube_transcripts_section: str,
     additional_sources_section: str,
+    local_files_section: str = "",
 ) -> str:
     """
     Combine all research sections into a single markdown document.
@@ -76,17 +77,19 @@ def combine_research_sections(
         code_sources_section: Code sources section markdown
         youtube_transcripts_section: YouTube transcripts section markdown
         additional_sources_section: Additional sources section markdown
+        local_files_section: Local files section markdown (optional)
 
     Returns:
         Complete markdown document as a single string
     """
-    return "\n\n".join(
-        [
-            "# Research",  # Title of the document
-            research_results_section,
-            sources_scraped_section,
-            code_sources_section,
-            youtube_transcripts_section,
-            additional_sources_section,
-        ]
-    )
+    sections = [
+        "# Research",  # Title of the document
+        research_results_section,
+        sources_scraped_section,
+        code_sources_section,
+        youtube_transcripts_section,
+        additional_sources_section,
+    ]
+    if local_files_section:
+        sections.append(local_files_section)
+    return "\n\n".join(sections)

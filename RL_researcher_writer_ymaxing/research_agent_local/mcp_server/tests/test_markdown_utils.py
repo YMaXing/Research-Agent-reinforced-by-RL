@@ -174,3 +174,17 @@ class TestCombineResearchSections:
     def test_returns_string(self):
         result = combine_research_sections("a", "b", "c", "d", "e")
         assert isinstance(result, str)
+
+    def test_local_files_section_included_when_provided(self):
+        result = combine_research_sections("S1", "S2", "S3", "S4", "S5", local_files_section="Local Files Content")
+        assert "Local Files Content" in result
+
+    def test_local_files_section_omitted_when_empty(self):
+        result = combine_research_sections("S1", "S2", "S3", "S4", "S5", local_files_section="")
+        assert result == combine_research_sections("S1", "S2", "S3", "S4", "S5")
+
+    def test_default_local_files_section_is_empty(self):
+        """Calling without local_files_section should behave like the original 5-section version."""
+        result = combine_research_sections("A", "B", "C", "D", "E")
+        # Should have exactly 6 parts joined (title + 5 sections)
+        assert result.count("\n\n") == 5
