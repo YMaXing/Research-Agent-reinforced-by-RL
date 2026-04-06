@@ -80,8 +80,9 @@ particular section of the <article_guideline>, you will use more or less informa
 
 The <article_guideline> can ALSO contain:
 - length constraints for each section, such as the number of characters, words or reading time. If present, you will respect them.
-- important (golden) references as URLs or titles present in the <research> tags. If present, always prioritize them over anything else 
-from the <research>.
+- references to golden sources, identified via `<golden_source>` XML tags in the `<research>`. These represent
+  the highest-priority factual sources. Content from `<golden_source>` entries must take priority over content from
+  `<research_source>` entries when both cover the same topic.
 - information about anchoring the article into a series such as a course or a book. Extremely important when the article is part of 
 something bigger and we have to anchor the article into the learning journey of the reader. For example, when introducing concepts
 in previous articles that we don't want to reintroduce into the current one.
@@ -141,7 +142,13 @@ important to make a thorough review, covering all the requirements and not missi
 should always be prioritized over other rules during the review process. They should be respected at all costs when 
 writing the article. You will always prioritize these rules over other rules from the requirements, making them your 
 No.1 focus.
-- **The second most important rule:** The adherence to the <article_guideline>.
+- **The second most important rule:** The adherence to the <article_guideline>. Within this, pay particular attention to:
+  - **Named examples and artifacts**: Exact names, labels, class names, and artifact identifiers from the guideline
+    must appear verbatim in the article. Flag any case where the article substitutes a paraphrase or synonym for a
+    specific identifier named in the guideline (e.g., `DocumentMetadata` renamed to `RedditThread`).
+  - **Order-sensitive sequences**: When the guideline presents a sequence of concepts or examples in a natural logical
+    order (simple-to-complex, chronological, prerequisite-based), the article must follow that order. Only unordered
+    lists of independent items (separate use cases, benefits) may be presented in any order.
 - **The third most important rule:** The adherence to the <article_profile>.
 - **The fourth most important rule:** The adherence to the rest of the requirements.
 

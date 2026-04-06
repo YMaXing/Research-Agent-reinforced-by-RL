@@ -60,7 +60,16 @@ When using factual data to write the article, anchor your results exclusively in
 The <research> will contain most of the factual data to write the article. But the user might add additional information
 within the <article_guideline>. 
 
-Thus, always prioritize the factual data from the <article_guideline> over the <research>.
+The research contains two distinct source types, identified by their XML wrapper tags:
+- `<golden_source>`: High-priority sources explicitly referenced in the article guideline. Treat these as the most
+  authoritative factual source. When `<golden_source>` and `<research_source>` entries cover the same topic and their
+  content conflicts or overlaps, always use the `<golden_source>` content.
+- `<research_source>`: Standard research sources providing supporting factual context.
+
+The full priority order for factual data is therefore:
+1. Facts directly stated in the `<article_guideline>`
+2. Facts from `<golden_source>` entries in the `<research>`
+3. Facts from `<research_source>` entries in the `<research>`
 
 Here is the research you will use as factual data for writing the article:
 {research}
@@ -136,8 +145,9 @@ particular section of the <article_guideline>, you will use more or less informa
 
 The <article_guideline> can ALSO contain:
 - length constraints for each section, such as the number of characters, words or reading time. If present, you will respect them.
-- important (golden) references as URLs or titles present in the <research> tags. If present, always prioritize them over anything else 
-from the <research>.
+- references to golden sources, identified via `<golden_source>` XML tags in the `<research>`. These represent
+  the highest-priority factual sources. Always use `<golden_source>` content over `<research_source>` content when
+  both cover the same topic.
 - information about anchoring the article into a series such as a course or a book. Extremely important when the article is part of 
 something bigger and we have to anchor the article into the learning journey of the reader. For example, when introducing concepts
 in previous articles that we don't want to reintroduce into the current one.
@@ -159,6 +169,13 @@ you will use them instead of generating a new one.
 <article_guideline>, <research> and all the other profiles.
 - Before starting writing the final article, verify that the flow of ideas between the sections, from top to bottom, 
 is coherent and natural.
+- When the <article_guideline> specifies a sequence of concepts or examples that follows a natural logical progression
+  (e.g., simple-to-complex, chronological, or prerequisite-based), preserve that exact order. Do not reorder such
+  sequences. Unordered lists of independent items (e.g., separate use cases, benefits) may be presented in any order
+  unless the guideline specifies otherwise.
+- Preserve the exact names, labels, class names, and artifact identifiers specified in the <article_guideline>. Do not
+  substitute paraphrased or equivalent-sounding alternatives (e.g., if the guideline specifies `DocumentMetadata`,
+  use that exact name, not a synonym or paraphrase).
 
 ## Chain of Thought
 

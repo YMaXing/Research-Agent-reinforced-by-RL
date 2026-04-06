@@ -57,28 +57,61 @@ def _build_tagged_sections(research_output_dir: Path) -> str:
     youtube_transcripts_dir = research_output_dir / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER
     local_files_dir = research_output_dir / LOCAL_FILES_FROM_RESEARCH_FOLDER
 
-    # --- Tavily research results (non-golden) ---
+    # --- Tavily research results (non-golden) — one block per phase ---
     if selected_results_file.exists():
         results_md = read_file_safe(selected_results_file)
-        chunks = extract_tavily_chunks(results_md)
     else:
         results_md = read_file_safe(original_results_file)
-        chunks = extract_tavily_chunks(results_md)
+    chunks = extract_tavily_chunks(results_md)
 
-    grouped = group_tavily_by_query(chunks, list(chunks.keys()))
-    research_results_section = _wrap_xml(
-        "research_source", 'type="tavily_results"',
-        build_research_results_section(grouped),
-    )
+    exploitation_ids: list[int] = []
+    exploration_ids: list[int] = []
+    for src_id, chunk in chunks.items():
+        first_line = chunk.split("\n", 1)[0] if chunk else ""
+        if first_line.startswith("Phase:") and "[EXPLORATION]" in first_line:
+            exploration_ids.append(src_id)
+        else:
+            exploitation_ids.append(src_id)
 
-    # --- Scraped research URLs (non-golden — may include code, YouTube, web) ---
-    scraped_sources = collect_directory_markdowns_with_titles(urls_from_research_dir)
-    sources_scraped_section = _wrap_xml(
-        "research_source", 'type="scraped_from_research"',
-        build_sources_section(
-            "## Sources Scraped From Research Results", scraped_sources,
-            "No scraped sources found for research results.",
-        ),
+    tavily_parts: list[str] = []
+    for phase_label, ids in [("exploitation", exploitation_ids), ("exploration", exploration_ids)]:
+        if ids:
+            grouped = group_tavily_by_query(chunks, ids)
+            tavily_parts.append(_wrap_xml(
+                "research_source", f'type="tavily_results" phase="{phase_label}"',
+                build_research_results_section(grouped),
+            ))
+    if not tavily_parts:
+        tavily_parts.append(_wrap_xml(
+            "research_source", 'type="tavily_results" phase="exploitation"',
+            "## Research Results\n\n_No accepted research results found._\n",
+        ))
+    research_results_section = "\n\n".join(tavily_parts)
+
+    # --- Scraped research URLs (non-golden) — one block per file with phase attribute ---
+    scraped_parts: list[str] = []
+    if urls_from_research_dir.exists():
+        for f in sorted(urls_from_research_dir.glob("*.md")):
+            content = read_file_safe(f)
+            if content:
+                first_line = content.split("\n", 1)[0]
+                phase = (
+                    "exploration"
+                    if first_line.startswith("Phase:") and "[EXPLORATION]" in first_line
+                    else "exploitation"
+                )
+                scraped_parts.append(_wrap_xml(
+                    "research_source",
+                    f'type="scraped_from_research" phase="{phase}" file="{f.name}"',
+                    content,
+                ))
+    sources_scraped_section = (
+        "\n\n".join(scraped_parts)
+        if scraped_parts
+        else _wrap_xml(
+            "research_source", 'type="scraped_from_research"',
+            "## Sources Scraped From Research Results\n\n_No scraped sources found for research results._\n",
+        )
     )
 
     # --- Code sources from guidelines (golden) ---
@@ -131,8 +164,8 @@ def _build_tagged_sections(research_output_dir: Path) -> str:
     )
 
     counts = {
-        "research_results_count": len(grouped),
-        "scraped_sources_count": len(scraped_sources),
+        "research_results_count": len(chunks),
+        "scraped_sources_count": len(scraped_parts),
         "code_sources_count": len(code_sources),
         "youtube_transcripts_count": len(youtube_sources),
         "additional_sources_count": len(additional_sources),

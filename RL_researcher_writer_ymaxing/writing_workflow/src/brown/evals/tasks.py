@@ -123,7 +123,6 @@ async def __run(config: RunnableConfig, inputs: Dict[str, Any], read_from_cache:
     generated article content from the output directory.
 
     Args:
-        graph: The compiled state graph for article generation.
         config: Runnable configuration containing thread_id, debug settings, etc.
         inputs: Input parameters for the workflow including file paths and settings.
         read_from_cache: Whether to read from cache instead of running the workflow.

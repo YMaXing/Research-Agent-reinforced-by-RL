@@ -168,18 +168,53 @@ class TestCreateResearchFileToolFallback:
         assert '<golden_source type="local_files">' in content
 
     def test_fallback_marks_tavily_as_research(self, tmp_path):
+        """Tavily blocks carry type='tavily_results' with a phase attribute."""
         research_dir = self._setup_fallback(tmp_path)
         create_research_file_tool(str(research_dir))
 
         content = (research_dir / RESEARCH_MD_FILE).read_text(encoding="utf-8")
-        assert '<research_source type="tavily_results">' in content
+        assert 'type="tavily_results"' in content
+        assert 'phase=' in content
 
     def test_fallback_marks_scraped_research_as_research(self, tmp_path):
+        """Scraped research blocks carry type='scraped_from_research' with phase and file attributes."""
         research_dir = self._setup_fallback(tmp_path)
         create_research_file_tool(str(research_dir))
 
         content = (research_dir / RESEARCH_MD_FILE).read_text(encoding="utf-8")
-        assert '<research_source type="scraped_from_research">' in content
+        assert 'type="scraped_from_research"' in content
+        assert 'phase=' in content
+        assert 'file=' in content
+
+    def test_fallback_tavily_defaults_to_exploitation_phase(self, tmp_path):
+        """Tavily results with no Phase prefix are wrapped with phase='exploitation'."""
+        research_dir = self._setup_fallback(tmp_path)
+        create_research_file_tool(str(research_dir))
+
+        content = (research_dir / RESEARCH_MD_FILE).read_text(encoding="utf-8")
+        assert 'type="tavily_results" phase="exploitation"' in content
+
+    def test_fallback_scraped_exploration_file_gets_exploration_phase(self, tmp_path):
+        """A scraped file with a Phase: [EXPLORATION] header gets phase='exploration'."""
+        research_dir = self._setup_fallback(tmp_path)
+        output_dir = research_dir / RESEARCH_OUTPUT_FOLDER
+        exploration_file = output_dir / URLS_FROM_RESEARCH_FOLDER / "exploration_source.md"
+        exploration_file.write_text(
+            "Phase: [EXPLORATION]\n\n# Exploration Source\n\nContent.", encoding="utf-8"
+        )
+
+        create_research_file_tool(str(research_dir))
+
+        content = (research_dir / RESEARCH_MD_FILE).read_text(encoding="utf-8")
+        assert 'type="scraped_from_research" phase="exploration" file="exploration_source.md"' in content
+
+    def test_fallback_scraped_per_file_wrapping(self, tmp_path):
+        """Each scraped file gets its own <research_source> wrapper with a file attribute."""
+        research_dir = self._setup_fallback(tmp_path)
+        create_research_file_tool(str(research_dir))
+
+        content = (research_dir / RESEARCH_MD_FILE).read_text(encoding="utf-8")
+        assert 'file="sample.md"' in content
 
     def test_fallback_includes_local_files_section(self, tmp_path):
         """Local files should appear in the fallback output."""
@@ -207,8 +242,8 @@ class TestCreateResearchFileToolFallback:
 
         content = (research_dir / RESEARCH_MD_FILE).read_text(encoding="utf-8")
         # Tavily and scraped-from-research should be <research_source>, not <golden_source>
-        assert '<research_source type="tavily_results">' in content
-        assert '<research_source type="scraped_from_research">' in content
+        assert 'type="tavily_results"' in content
+        assert 'type="scraped_from_research"' in content
         # These types must not appear as golden
         assert '<golden_source type="tavily_results">' not in content
         assert '<golden_source type="scraped_from_research">' not in content
