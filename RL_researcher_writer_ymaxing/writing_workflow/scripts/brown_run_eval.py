@@ -99,7 +99,7 @@ def main(
     )
 
     model = SupportedModels.GOOGLE_GEMINI_25_PRO
-    model_config = ModelConfig(temperature=0.0, thinking_budget=1024 * 1, include_thoughts=False, max_retries=3)
+    model_config = ModelConfig(temperature=0.0, thinking_budget=1024 * 4, include_thoughts=False, max_retries=3)
     evaluation_metrics = build_evaluation_metrics(metrics, model, model_config)
 
     try:

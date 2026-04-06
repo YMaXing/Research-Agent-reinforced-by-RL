@@ -29,7 +29,7 @@ async def evaluation_task(
     clean_cache: bool = False,
     debug: bool = False,
 ) -> Dict[str, Any]:
-    """Generate an article using the Brown agent for a single evaluation sample.
+    """Generate an article using the Brown agent for a SINGLE evaluation sample.
 
     This function calls the Brown agent to generate an article based on the provided
     evaluation sample data, using the same workflow as the main article generation script.
