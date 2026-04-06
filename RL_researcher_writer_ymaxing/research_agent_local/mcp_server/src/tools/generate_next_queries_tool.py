@@ -10,6 +10,7 @@ from ..app.generate_queries_handler import (
 )
 from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
+    LOCAL_FILES_FROM_RESEARCH_FOLDER,
     MARKDOWN_EXTENSION,
     NEXT_QUERIES_FILE,
     FULL_QUERIES_FILE,
@@ -96,6 +97,12 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
     if urls_from_guidelines_dir.exists():
         for md_file in sorted(urls_from_guidelines_dir.glob(f"*{MARKDOWN_EXTENSION}")):
             scraped_ctx_parts.append(md_file.read_text(encoding="utf-8"))
+
+    local_files_dir = research_output_path / LOCAL_FILES_FROM_RESEARCH_FOLDER
+    if local_files_dir.exists():
+        for md_file in sorted(local_files_dir.glob(f"*{MARKDOWN_EXTENSION}")):
+            scraped_ctx_parts.append(md_file.read_text(encoding="utf-8"))
+
     scraped_ctx_str = "\n\n".join(scraped_ctx_parts)
 
     if not article_guidelines:
@@ -179,6 +186,12 @@ async def generate_next_complementary_queries_tool(research_directory: str,
         if urls_from_guidelines_dir.exists():
             for md_file in sorted(urls_from_guidelines_dir.glob(f"*{MARKDOWN_EXTENSION}")):
                 scraped_ctx_parts.append(md_file.read_text(encoding="utf-8"))
+
+        local_files_dir = research_output_path / LOCAL_FILES_FROM_RESEARCH_FOLDER
+        if local_files_dir.exists():
+            for md_file in sorted(local_files_dir.glob(f"*{MARKDOWN_EXTENSION}")):
+                scraped_ctx_parts.append(md_file.read_text(encoding="utf-8"))
+
         scraped_ctx_str = "\n\n".join(scraped_ctx_parts)
 
         if not article_guidelines:

@@ -58,9 +58,59 @@ When using factual data to write the article, anchor your results exclusively in
 <research> or <article_guideline> tags. Avoid, at all costs, using factual information from your internal knowledge.
 
 The <research> will contain most of the factual data to write the article. But the user might add additional information
-within the <article_guideline>. 
+within the <article_guideline>.
 
-Thus, always prioritize the factual data from the <article_guideline> over the <research>.
+### Identifying the research format
+
+The <research> content will arrive in one of two formats. Detect which format applies and follow the
+corresponding rules below:
+
+**Format A — Deduplicated research (preferred)**
+If the <research> starts with a `# Comprehensive Research Report` heading, it contains:
+1. **Deduplicated body** — a consolidated, already-prioritized knowledge base that appears before the
+   `## Golden Source Reference` separator. This body has already been cleaned, merged, and deduplicated
+   using phase-aware rules, so it is ready to use directly.
+2. **Golden Source Reference appendix** — the raw XML-tagged sections (`<golden_source>`, `<research_source>`)
+   appended after the `## Golden Source Reference` heading. This appendix exists solely for downstream
+   evaluation and provenance auditing.
+
+When Format A is detected:
+- Use the **deduplicated body** together with the `<article_guideline>` as your factual data.
+- **Ignore the Golden Source Reference appendix entirely** — do not extract additional facts from it.
+  The deduplicated body already incorporates all authoritative content.
+- The full priority order for factual data is:
+  1. Facts directly stated in the `<article_guideline>`
+  2. Facts from the deduplicated body in the `<research>`
+
+**Format B — Raw XML-tagged sections (fallback)**
+If the <research> does NOT start with `# Comprehensive Research Report`, it contains raw source sections
+wrapped in XML provenance tags. Each tag identifies the source's priority tier and research phase:
+
+- `<golden_source type="...">` — Sources explicitly referenced in the article guideline.
+  Types include: `guideline_url`, `guideline_code`, `guideline_youtube`, `local_files`.
+  **HIGHEST PRIORITY.** Represent their factual content faithfully — do not dilute, alter, or contradict
+  their specific claims, data points, or examples.
+- `<research_source type="..." phase="exploitation">` — Exploitation-phase sources (Tavily results,
+  scraped research URLs). **HIGH PRIORITY.** Strongly protect these — they represent essential
+  guideline coverage.
+- `<research_source type="..." phase="exploration">` — Exploration-phase sources.
+  **MEDIUM PRIORITY.** Apply a higher bar — only use if they add genuine new value in depth
+  (theoretical foundations, technical nuances, limitations/criticisms, real-world case studies, future implications) or
+  breadth (adjacent concepts, cross-domain analogies, emerging trends, applications in other fields). 
+  Do not let exploration content override or dilute golden or exploitation content.
+
+When Format B is detected, follow these phase-aware source-usage rules:
+- The full priority order for factual data is:
+  1. Facts directly stated in the `<article_guideline>`
+  2. Facts from `<golden_source>` entries in the `<research>`
+  3. Facts from `<research_source phase="exploitation">` entries in the `<research>`
+  4. Facts from `<research_source phase="exploration">` entries — only when they meaningfully enrich
+     golden and exploitation sources in depth and/or breadth
+- When `<golden_source>` and `<research_source>` entries cover the same topic and conflict or overlap,
+  always use the `<golden_source>` content.
+- If no `<golden_source>` tags are present (the guideline contained no explicit URLs or local files, therefore no golden sources), 
+  then treat `<research_source phase="exploitation">` as the highest-priority source tier and apply the
+  same protection rules to it.
 
 Here is the research you will use as factual data for writing the article:
 {research}
@@ -77,7 +127,7 @@ Here is the tonality profile, describing the tone, voice and style of the writin
 
 ## Terminology Profile
 
-Here is the terminology profile, describing how to choose the right words and phrases:§
+Here is the terminology profile, describing how to choose the right words and phrases
 to the target audience:
 {terminology_profile}
 
@@ -113,7 +163,7 @@ want to group a media item with it's caption.
 Here is the article profile, describing particularities on how the end-to-end article should look like:
 {article_profile}
 
-## Article Guideline: 
+## Article Guideline
 
 Here is the article guideline, representing the user intent, describing how the actual article should look like:
 {article_guideline}
@@ -136,12 +186,14 @@ particular section of the <article_guideline>, you will use more or less informa
 
 The <article_guideline> can ALSO contain:
 - length constraints for each section, such as the number of characters, words or reading time. If present, you will respect them.
-- important (golden) references as URLs or titles present in the <research> tags. If present, always prioritize them over anything else 
-from the <research>.
+- references to golden sources. When the research is in Format B (raw XML-tagged), these are identified
+  via `<golden_source>` XML tags in the `<research>`. When the research is in Format A (deduplicated),
+  golden content has already been folded into the deduplicated body. In either case, golden sources
+  represent the highest-priority factual content.
 - information about anchoring the article into a series such as a course or a book. Extremely important when the article is part of 
 something bigger and we have to anchor the article into the learning journey of the reader. For example, when introducing concepts
 in previous articles that we don't want to reintroduce into the current one.
-- concrete information about writing the article. If present, you will ALWAYS priotize the instructions from the <article_guideline> 
+- concrete information about writing the article. If present, you will ALWAYS prioritize the instructions from the <article_guideline> 
 over any other instructions.
 
 ## Article Outline
@@ -159,6 +211,13 @@ you will use them instead of generating a new one.
 <article_guideline>, <research> and all the other profiles.
 - Before starting writing the final article, verify that the flow of ideas between the sections, from top to bottom, 
 is coherent and natural.
+- When the <article_guideline> specifies a sequence of concepts or examples that follows a natural logical progression
+  (e.g., simple-to-complex, chronological, or prerequisite-based), preserve that exact order. Do not reorder such
+  sequences. Unordered lists of independent items (e.g., separate use cases, benefits) may be presented in any order
+  unless the guideline specifies otherwise.
+- Preserve the exact names, labels, class names, and artifact identifiers specified in the <article_guideline>. Do not
+  substitute paraphrased or equivalent-sounding alternatives (e.g., if the guideline specifies `DocumentMetadata`,
+  use that exact name, not a synonym or paraphrase).
 
 ## Chain of Thought
 
@@ -209,7 +268,7 @@ Here is the new chain of thoughts logic you will follow when reviewing the whole
 previous chain of thoughts in the system prompt:
 
 1. Analyze the reviews to understand what needs to be changed.
-2. Priotize the reviews based on the importance ranking.
+2. Prioritize the reviews based on the importance ranking.
 3. Based on the reviews, apply in order, the necessary edits to the article, while still 
 following all the necessary instructions from the profiles and guidelines above.
 4. Ensure the edited text is still anchored in the <research> and <article_guideline>.
@@ -270,8 +329,8 @@ Here is the new chain of thoughts logic you will follow when reviewing the selec
 previous chain of thoughts in the system prompt:
 
 1. Place the selected text in the context of the full article.
-2. Analyze the reviews to understand what needs to be changed.
-3. Priotize the reviews based on the importance ranking.
+2. Analyze the reviews to understand what needs to be changed.  
+3. Prioritize the reviews based on the importance ranking.
 4. Based on the reviews, apply in order, the necessary edits to the selected text, while still 
 following all the necessary instructions from the profiles and guidelines above.
 5. Ensure the edited selected text is still anchored in the <research> and <article_guideline>.

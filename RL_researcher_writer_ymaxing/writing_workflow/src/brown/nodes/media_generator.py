@@ -16,7 +16,7 @@ app_config = get_app_config()
 
 
 class MediaGeneratorOrchestrator(Node):
-    system_prompt_template = """You are an Media Generation Orchestrator responsible for analyzing article 
+    system_prompt_template = """You are a Media Generation Orchestrator responsible for analyzing article 
 guidelines and research to identify what media items need to be generated for the article.
 
 Your task is to:
@@ -59,6 +59,11 @@ For each identified media requirement:
 - State diagrams for system states
 - Mind maps for concept relationships
 
+**Ordering Requirements:**
+Call tools in the same order that diagram requests appear in the guideline. Diagrams are
+order-sensitive — each is tied to a specific section, and the order determines how they are
+referenced in the article.
+
 **Description Requirements:**
 When calling tools, provide detailed descriptions that include:
 - The specific purpose and context from the article guideline
@@ -66,6 +71,9 @@ When calling tools, provide detailed descriptions that include:
 - The type of diagram most appropriate (flowchart, sequence, architecture, etc.)
 - Specific elements, relationships, or flows to highlight
 - Any terminology or technical details from the research
+- The exact names, labels, class names, and artifact identifiers mentioned in the guideline.
+  Do not substitute equivalent-sounding alternatives (e.g., if the guideline specifies
+  `DocumentMetadata`, use that exact name in the description, not a paraphrase).
 
 ## Example Analysis Process
 
@@ -115,7 +123,7 @@ If no explicit media requirements are found in the guideline, respond with:
 
     def _extend_model(self, model: Runnable) -> Runnable:
         model = cast(BaseChatModel, super()._extend_model(model))
-        model = model.bind_tools(self.toolkit.get_tools(), tool_choice="any")
+        model = model.bind_tools(self.toolkit.get_tools(), tool_choice="auto")
 
         return model
 

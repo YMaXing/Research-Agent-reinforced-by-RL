@@ -8,8 +8,8 @@ from opik.evaluation.metrics import base_metric
 
 from brown.models import ModelConfig, SupportedModels
 
-from .follows_gt import FollowsGTMetric
-from .user_intent import UserIntentMetric
+from .new_follows_gt import FollowsGTMetric
+from .new_user_intent import UserIntentMetric
 
 __all__ = ["UserIntentMetric", "FollowsGTMetric", "build_evaluation_metrics"]
 

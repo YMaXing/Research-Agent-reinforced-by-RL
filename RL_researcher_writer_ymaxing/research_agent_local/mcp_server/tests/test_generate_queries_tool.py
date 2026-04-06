@@ -32,6 +32,7 @@ from src.tools.generate_next_queries_tool import (
 from src.config.constants import (
     ARTICLE_GUIDELINE_FILE,
     FULL_QUERIES_FILE,
+    LOCAL_FILES_FROM_RESEARCH_FOLDER,
     NEXT_QUERIES_FILE,
     RESEARCH_OUTPUT_FOLDER,
 )
@@ -138,6 +139,19 @@ class TestGenerateNextQueriesTool:
             await generate_next_queries_tool(str(tmp_research_dir))
 
         assert "Content from the web." in recording.last_prompt
+
+    async def test_local_files_context_collected(self, tmp_research_dir):
+        """If local_files_from_research folder contains .md files, content is included in context."""
+        local_dir = tmp_research_dir / RESEARCH_OUTPUT_FOLDER / LOCAL_FILES_FROM_RESEARCH_FOLDER
+        local_dir.mkdir(parents=True, exist_ok=True)
+        (local_dir / "notebook.md").write_text(
+            "# Local Notebook\nImportant local content.", encoding="utf-8"
+        )
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_LLM_PATCH, return_value=recording):
+            await generate_next_queries_tool(str(tmp_research_dir))
+
+        assert "Important local content." in recording.last_prompt
 
 
 # ---------------------------------------------------------------------------
@@ -249,3 +263,16 @@ class TestGenerateNextComplementaryQueriesTool:
             )
 
         assert "50" in recording.last_prompt
+
+    async def test_local_files_context_collected(self, tmp_research_dir):
+        """If local_files_from_research folder contains .md files, content is included in context."""
+        local_dir = tmp_research_dir / RESEARCH_OUTPUT_FOLDER / LOCAL_FILES_FROM_RESEARCH_FOLDER
+        local_dir.mkdir(parents=True, exist_ok=True)
+        (local_dir / "local_doc.md").write_text(
+            "# Local Doc\nCritical local information.", encoding="utf-8"
+        )
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_LLM_PATCH, return_value=recording):
+            await generate_next_complementary_queries_tool(str(tmp_research_dir))
+
+        assert "Critical local information." in recording.last_prompt
