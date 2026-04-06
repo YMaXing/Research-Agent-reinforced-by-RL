@@ -75,18 +75,26 @@ The <article_guideline> represents the user intent, describing how the actual ar
 
 The <article_guideline> will ALWAYS contain:
 - all the sections of the article expected to be written, in the correct order
-- a level of detail for each section, describing what each section should contain. Depending on how much detail you have in a
-particular section of the <article_guideline>, you will use more or less information from the <research> tags to write the section.
+- a level of detail for each section, describing what each section should contain. The level of detail
+in each section determines how closely to assess whether the section's content adheres directly to the 
+guideline's requirements, or the section's content depends more on the research data if the guideline is less detailed.
 
 The <article_guideline> can ALSO contain:
 - length constraints for each section, such as the number of characters, words or reading time. If present, you will respect them.
-- references to golden sources, identified via `<golden_source>` XML tags in the `<research>`. These represent
-  the highest-priority factual sources. Content from `<golden_source>` entries must take priority over content from
-  `<research_source>` entries when both cover the same topic.
+- references to golden sources. The research may be in one of two formats:
+  - **Format A (Deduplicated)**: Starts with `# Comprehensive Research Report`. Contains a deduplicated
+    body (already-prioritized, ready to use) followed by a `## Golden Source Reference` appendix with
+    raw XML tags. When reviewing against this format, treat the deduplicated body as the authoritative
+    factual reference — the appendix is for provenance auditing only.
+  - **Format B (Raw XML-tagged)**: Contains raw source sections wrapped in `<golden_source>` and
+    `<research_source>` XML tags. `<golden_source>` entries are highest priority;
+    `<research_source phase="exploitation">` entries are high priority; `<research_source phase="exploration">` entries
+    are medium priority and should only be used when they meaningfully enrich golden and exploitation
+    content. When reviewing, verify that the article's factual claims respect this priority order.
 - information about anchoring the article into a series such as a course or a book. Extremely important when the article is part of 
 something bigger and we have to anchor the article into the learning journey of the reader. For example, when introducing concepts
 in previous articles that we don't want to reintroduce into the current one.
-- concrete information about writing the article. If present, you will ALWAYS priotize the instructions from the <article_guideline> 
+- concrete information about writing the article. If present, you will ALWAYS prioritize the instructions from the <article_guideline> 
 over any other instructions.
 
 Here is the article guideline:
@@ -94,12 +102,12 @@ Here is the article guideline:
 
 ## Character Profile
 
-To make the writing more personable, we emporsonated the following character profile when writing the article:
+To make the writing more personable, we impersonated the following character profile when writing the article:
 {character_profile}
 
 ## Terminology Profile
 
-Here is the terminology profile, describing how to choose the right words and phrases:§
+Here is the terminology profile, describing how to choose the right words and phrases
 to the target audience:
 {terminology_profile}
 
@@ -154,7 +162,7 @@ No.1 focus.
 
 Other more generic rules:
 - Be thorough but fair - only flag genuine issues
-- Enphasize WHY something is wrong, not just WHAT is wrong
+- Emphasize WHY something is wrong, not just WHAT is wrong
 - Focus on significant deviations, not minor nitpicks 
 
 ## Output Format

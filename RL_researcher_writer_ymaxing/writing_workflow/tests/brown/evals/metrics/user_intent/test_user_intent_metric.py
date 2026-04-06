@@ -1,8 +1,8 @@
 import pytest
 
 from brown.evals.metrics.base import CriterionScore, SectionCriteriaScores
-from brown.evals.metrics.user_intent.metric import UserIntentMetric
-from brown.evals.metrics.user_intent.types import (
+from brown.evals.metrics.new_user_intent.metric import UserIntentMetric
+from brown.evals.metrics.new_user_intent.types import (
     UserIntentArticleScores,
     UserIntentCriteriaScores,
     UserIntentMetricFewShotExamples,
@@ -22,6 +22,7 @@ def mock_user_intent_scores_perfect() -> UserIntentArticleScores:
                 scores=UserIntentCriteriaScores(
                     guideline_adherence=CriterionScore(score=1, reason="Perfect adherence to guidelines."),
                     research_anchoring=CriterionScore(score=1, reason="Perfect research anchoring."),
+                    golden_source_priority=CriterionScore(score=1, reason="Perfect golden source priority."),
                 ),
             ),
             SectionCriteriaScores(
@@ -29,6 +30,7 @@ def mock_user_intent_scores_perfect() -> UserIntentArticleScores:
                 scores=UserIntentCriteriaScores(
                     guideline_adherence=CriterionScore(score=1, reason="Perfect adherence to guidelines."),
                     research_anchoring=CriterionScore(score=1, reason="Perfect research anchoring."),
+                    golden_source_priority=CriterionScore(score=1, reason="Perfect golden source priority."),
                 ),
             ),
         ]
@@ -47,6 +49,7 @@ def mock_user_intent_scores_mixed() -> UserIntentArticleScores:
                 scores=UserIntentCriteriaScores(
                     guideline_adherence=CriterionScore(score=0, reason="Poor adherence to guidelines."),
                     research_anchoring=CriterionScore(score=1, reason="Good research anchoring."),
+                    golden_source_priority=CriterionScore(score=0, reason="Poor golden source priority."),
                 ),
             ),
             SectionCriteriaScores(
@@ -54,6 +57,7 @@ def mock_user_intent_scores_mixed() -> UserIntentArticleScores:
                 scores=UserIntentCriteriaScores(
                     guideline_adherence=CriterionScore(score=1, reason="Good adherence to guidelines."),
                     research_anchoring=CriterionScore(score=0, reason="Poor research anchoring."),
+                    golden_source_priority=CriterionScore(score=1, reason="Good golden source priority."),
                 ),
             ),
         ]
@@ -72,6 +76,7 @@ def mock_user_intent_scores_poor() -> UserIntentArticleScores:
                 scores=UserIntentCriteriaScores(
                     guideline_adherence=CriterionScore(score=0, reason="Poor adherence to guidelines."),
                     research_anchoring=CriterionScore(score=0, reason="Poor research anchoring."),
+                    golden_source_priority=CriterionScore(score=0, reason="Poor golden source priority."),
                 ),
             ),
         ]
@@ -134,15 +139,16 @@ def test_user_intent_metric_perfect_score(mock_user_intent_metric: UserIntentMet
 
     results = mock_user_intent_metric.score(input=input_guideline, context=context, output=output)
 
-    assert isinstance(results, list) and len(results) == 2
+    assert isinstance(results, list) and len(results) == 3
     for result in results:
         assert result.value == 1.0
         assert result.name.startswith("user_intent_")
 
-    # Check that we have both expected dimensions
+    # Check that we have all expected dimensions
     result_names = {result.name for result in results}
     assert "user_intent_guideline_adherence" in result_names
     assert "user_intent_research_anchoring" in result_names
+    assert "user_intent_golden_source_priority" in result_names
 
 
 def test_user_intent_metric_mixed_scores(mock_user_intent_metric_mixed: UserIntentMetric) -> None:
@@ -155,7 +161,7 @@ def test_user_intent_metric_mixed_scores(mock_user_intent_metric_mixed: UserInte
 
     results = mock_user_intent_metric_mixed.score(input=input_guideline, context=context, output=output)
 
-    assert isinstance(results, list) and len(results) == 2
+    assert isinstance(results, list) and len(results) == 3
 
     # Expected averages for mixed scores (0, 1) per section
     # (0+1)/2 = 0.5
@@ -174,7 +180,7 @@ def test_user_intent_metric_poor_scores(mock_user_intent_metric_poor: UserIntent
 
     results = mock_user_intent_metric_poor.score(input=input_guideline, context=context, output=output)
 
-    assert isinstance(results, list) and len(results) == 2
+    assert isinstance(results, list) and len(results) == 3
 
     # Expected averages for poor scores (all 0s)
     for result in results:
@@ -261,12 +267,13 @@ def test_user_intent_metric_score_result_structure(mock_user_intent_metric: User
 
     results = mock_user_intent_metric.score(input=input_guideline, context=context, output=output)
 
-    assert isinstance(results, list) and len(results) == 2
+    assert isinstance(results, list) and len(results) == 3
 
     # Verify we have exactly the expected metric names
     result_dict = {result.name: result for result in results}
     assert "user_intent_guideline_adherence" in result_dict
     assert "user_intent_research_anchoring" in result_dict
+    assert "user_intent_golden_source_priority" in result_dict
 
     # Verify each result has the expected attributes
     for result in results:
@@ -288,7 +295,7 @@ async def test_user_intent_metric_async_score(mock_user_intent_metric: UserInten
 
     results = await mock_user_intent_metric.ascore(input=input_guideline, context=context, output=output)
 
-    assert isinstance(results, list) and len(results) == 2
+    assert isinstance(results, list) and len(results) == 3
     for result in results:
         assert result.value == 1.0  # Perfect scores from the mock
         assert result.name.startswith("user_intent_")
@@ -303,6 +310,7 @@ def test_user_intent_scores_to_context() -> None:
         scores=UserIntentCriteriaScores(
             guideline_adherence=CriterionScore(score=1, reason="Good adherence"),
             research_anchoring=CriterionScore(score=0, reason="Poor anchoring"),
+            golden_source_priority=CriterionScore(score=1, reason="Good golden source priority"),
         ),
     )
 
@@ -329,6 +337,7 @@ def test_user_intent_article_scores_to_context() -> None:
                 scores=UserIntentCriteriaScores(
                     guideline_adherence=CriterionScore(score=1, reason="Good"),
                     research_anchoring=CriterionScore(score=0, reason="Poor"),
+                    golden_source_priority=CriterionScore(score=1, reason="Good"),
                 ),
             ),
         ]

@@ -1,10 +1,10 @@
 import pytest
 
 from brown.evals.metrics.base import CriterionScore, SectionCriteriaScores
-from brown.evals.metrics.follows_gt.metric import FollowsGTMetric
-from brown.evals.metrics.follows_gt.types import (
+from brown.evals.metrics.new_follows_gt.metric import FollowsGTMetric
+from brown.evals.metrics.new_follows_gt.types import (
     FollowsGTArticleScores,
-    FollowsGTCriterionScores,
+    FollowsGTCriteriaScores,
 )
 from brown.models import ModelConfig, SupportedModels
 
@@ -18,20 +18,24 @@ def mock_article_scores_perfect() -> FollowsGTArticleScores:
         sections=[
             SectionCriteriaScores(
                 title="Introduction",
-                scores=FollowsGTCriterionScores(
-                    content=CriterionScore(score=1, reason="Perfect content."),
+                scores=FollowsGTCriteriaScores(
+                    core_content=CriterionScore(score=1, reason="Perfect core content."),
                     flow=CriterionScore(score=1, reason="Perfect flow."),
                     structure=CriterionScore(score=1, reason="Perfect structure."),
-                    mechanics=CriterionScore(score=1, reason="Perfect mechanics."),
+                    depth_enhancement=CriterionScore(score=1, reason="Perfect depth enhancement."),
+                    breadth_enhancement=CriterionScore(score=1, reason="Perfect breadth enhancement."),
+                    core_preservation=CriterionScore(score=1, reason="Perfect core preservation."),
                 ),
             ),
             SectionCriteriaScores(
                 title="Body",
-                scores=FollowsGTCriterionScores(
-                    content=CriterionScore(score=1, reason="Perfect content."),
+                scores=FollowsGTCriteriaScores(
+                    core_content=CriterionScore(score=1, reason="Perfect core content."),
                     flow=CriterionScore(score=1, reason="Perfect flow."),
                     structure=CriterionScore(score=1, reason="Perfect structure."),
-                    mechanics=CriterionScore(score=1, reason="Perfect mechanics."),
+                    depth_enhancement=CriterionScore(score=1, reason="Perfect depth enhancement."),
+                    breadth_enhancement=CriterionScore(score=1, reason="Perfect breadth enhancement."),
+                    core_preservation=CriterionScore(score=1, reason="Perfect core preservation."),
                 ),
             ),
         ]
@@ -47,20 +51,24 @@ def mock_article_scores_mixed() -> FollowsGTArticleScores:
         sections=[
             SectionCriteriaScores(
                 title="Introduction",
-                scores=FollowsGTCriterionScores(
-                    content=CriterionScore(score=0, reason="Bad content."),
+                scores=FollowsGTCriteriaScores(
+                    core_content=CriterionScore(score=0, reason="Bad core content."),
                     flow=CriterionScore(score=1, reason="Good flow."),
                     structure=CriterionScore(score=0, reason="Bad structure."),
-                    mechanics=CriterionScore(score=1, reason="Good mechanics."),
+                    depth_enhancement=CriterionScore(score=1, reason="Good depth enhancement."),
+                    breadth_enhancement=CriterionScore(score=0, reason="Bad breadth enhancement."),
+                    core_preservation=CriterionScore(score=1, reason="Good core preservation."),
                 ),
             ),
             SectionCriteriaScores(
                 title="Body",
-                scores=FollowsGTCriterionScores(
-                    content=CriterionScore(score=1, reason="Good content."),
+                scores=FollowsGTCriteriaScores(
+                    core_content=CriterionScore(score=1, reason="Good core content."),
                     flow=CriterionScore(score=0, reason="Bad flow."),
                     structure=CriterionScore(score=1, reason="Good structure."),
-                    mechanics=CriterionScore(score=0, reason="Bad mechanics."),
+                    depth_enhancement=CriterionScore(score=0, reason="Bad depth enhancement."),
+                    breadth_enhancement=CriterionScore(score=1, reason="Good breadth enhancement."),
+                    core_preservation=CriterionScore(score=0, reason="Bad core preservation."),
                 ),
             ),
         ]
@@ -111,10 +119,10 @@ def test_article_metric_perfect_score(mock_article_metric: FollowsGTMetric) -> N
 
     results = mock_article_metric.score(output=output, expected_output=expected_output)
 
-    assert isinstance(results, list) and len(results) == 4
+    assert isinstance(results, list) and len(results) == 6
     for result in results:
         assert result.value == 1.0
-        assert result.name.startswith("follows_gt_")
+        assert result.name.startswith("ground_truth_")
 
 
 def test_article_metric_mixed_scores(mock_article_metric_mixed: FollowsGTMetric) -> None:
@@ -126,13 +134,13 @@ def test_article_metric_mixed_scores(mock_article_metric_mixed: FollowsGTMetric)
 
     results = mock_article_metric_mixed.score(output=output, expected_output=expected_output)
 
-    assert isinstance(results, list) and len(results) == 4
+    assert isinstance(results, list) and len(results) == 6
 
     # Expected averages for mixed scores (0, 1) per section
     # (0+1)/2 = 0.5
     for result in results:
         assert result.value == 0.5
-        assert result.name.startswith("follows_gt_")
+        assert result.name.startswith("ground_truth_")
 
 
 def test_article_metric_empty_sections(mock_article_metric_empty_sections: FollowsGTMetric) -> None:
