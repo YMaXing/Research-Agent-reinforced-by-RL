@@ -2,7 +2,6 @@
 
 import logging
 
-from sympy import n_order
 from ..config.settings import settings
 
 logger = logging.getLogger(__name__)
