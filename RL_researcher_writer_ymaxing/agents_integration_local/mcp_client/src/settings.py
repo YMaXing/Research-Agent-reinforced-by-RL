@@ -37,7 +37,11 @@ class Settings(BaseSettings):
     thinking_budget: int = Field(default=1024, alias="THINKING_BUDGET", description="Thinking budget for latency vs. depth tradeoff")
 
     # Agent configuration
-    recursion_limit: int = Field(default=15, description="The recursion limit for the agent")
+    recursion_limit: int = Field(default=100, description="The recursion limit for the agent")
+
+    # Research settings
+    maximum_exploration_rounds: int = Field(default=3, alias="MAXIMUM_EXPLORATION_ROUNDS", description="Maximum number of exploration rounds in the research loop")
+    maximum_sources_to_scrape: int = Field(default=5, alias="MAXIMUM_SOURCES_TO_SCRAPE", description="Maximum number of sources to scrape fully during research")
 
     # Opik Configuration
     opik_api_key: SecretStr | None = Field(default=None, alias="OPIK_API_KEY", description="The API key for Opik")
