@@ -25,7 +25,8 @@ class Settings(BaseSettings):
 
     # Research settings
     maximum_exploration_rounds: int = Field(default=3, alias="MAXIMUM_EXPLORATION_ROUNDS", description="Maximum number of exploration rounds in the research loop")
-    maximum_sources_to_scrape: int = Field(default=5, alias="MAXIMUM_SOURCES_TO_SCRAPE", description="Maximum number of sources to scrape fully during research")
+    n_exploration_queries_per_round: int = Field(default=4, alias="N_EXPLORATION_QUERIES_PER_ROUND", description="Number of exploration queries to generate per exploration round. Only applicable if maximum_exploration_rounds > 0.")
+    maximum_sources_to_scrape: int = Field(default=6, alias="MAXIMUM_SOURCES_TO_SCRAPE", description="Maximum number of sources to scrape fully during research")
     enable_content_dedup: bool = Field(default=False, alias="ENABLE_CONTENT_DEDUP", description="Whether to run the content deduplication step (step 7). Set to false to feed the full raw research into the final file.")
     
     # LLM Configuration

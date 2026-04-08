@@ -16,6 +16,25 @@ async def full_research_instructions_prompt() -> str:
     """
     dedup_enabled = settings.enable_content_dedup
 
+    dedup_step_number = 7   # step number assigned to dedup when enabled
+    # Paragraph shown inside the write step describing how DEDUPLICATED_RESEARCH_FILE is used
+    dedup_available_block = f"""
+    When DEDUPLICATED_RESEARCH_FILE is available (i.e. step {dedup_step_number}.1 was run), the tool produces a RESEARCH_MD_FILE
+    that contains:
+      (a) A primary body section with the clean deduplicated content.
+      (b) A "Golden Source Reference" appendix containing the full XML-tagged section assembly described above.
+          This appendix exists so that downstream LLM metric judges evaluating the generated article can
+          identify which parts of the research came from golden sources versus Tavily research, supporting
+          the GoldenSourcePriority evaluation criterion.
+    
+    If DEDUPLICATED_RESEARCH_FILE is not available (step {dedup_step_number}.1 was skipped), the tool falls back to writing
+    the XML-tagged section assembly directly as the RESEARCH_MD_FILE.
+""" if dedup_enabled else """
+    Since content deduplication is disabled, DEDUPLICATED_RESEARCH_FILE will not be present.
+    Do NOT run the "deduplicate_research_content" tool. Go to the next step where the "create_research_file" tool will write the RESEARCH_MD_FILE with 
+    the full XML-tagged section assembly directly, without a separate deduplicated content section.
+"""
+
     dedup_step_block = """
 7. Content-level deduplication:
 
@@ -148,18 +167,8 @@ If the user doesn't provide a research directory, you should ask for it before e
       or YouTube video, it is still a research source (not golden) because it was not referenced in the
       article guideline.
     
-    When DEDUPLICATED_RESEARCH_FILE is available (i.e. step 7.1 was run), the tool produces a RESEARCH_MD_FILE
-    that contains:
-      (a) A primary body section with the clean deduplicated content.
-      (b) A "Golden Source Reference" appendix containing the full XML-tagged section assembly described above.
-          This appendix exists so that downstream LLM metric judges evaluating the generated article can
-          identify which parts of the research came from golden sources versus Tavily research, supporting
-          the GoldenSourcePriority evaluation criterion.
-    
-    If DEDUPLICATED_RESEARCH_FILE is not available (step 7.1 was skipped), the tool falls back to writing
-    the XML-tagged section assembly directly as the RESEARCH_MD_FILE.
-    
-    In both cases, the final RESEARCH_MD_FILE is saved in the root of the research directory.
+{dedup_available_block}
+    The final RESEARCH_MD_FILE is saved in the root of the research directory.
 
 Depending on the results of previous steps, you may want to skip running a tool if not necessary.
 

@@ -119,6 +119,11 @@ def extract_arxiv_id(url: str) -> str | None:
     return match.group(1) if match else None
 
 
+def arxiv_html_url(arxiv_id: str) -> str:
+    """Return the canonical arxiv.org HTML URL for a given arXiv ID."""
+    return f"https://arxiv.org/html/{arxiv_id}"
+
+
 # ─────────────────────────────────────────────────────────────
 # arXiv special handler (added for high-quality paper scraping)
 # ─────────────────────────────────────────────────────────────
@@ -149,8 +154,20 @@ async def scrape_arxiv_url(
         arxiv_id = extract_arxiv_id(url)
         if not arxiv_id:
             raise ValueError(f"Could not extract arXiv ID from URL: {url}")
-        raw_md = ingest_paper(arxiv_id=arxiv_id, html_url=url, remove_refs=True, remove_toc=True,
-                              remove_inline_citations=True, section_filter_mode="exclude")
+        version_match = re.search(r"(v\d+)$", arxiv_id)
+        version = version_match.group(1) if version_match else None
+        html_url = arxiv_html_url(arxiv_id)
+        result, metadata = await ingest_paper(
+            arxiv_id=arxiv_id,
+            version=version,
+            html_url=html_url,
+            remove_refs=True,
+            remove_toc=True,
+            remove_inline_citations=True,
+            section_filter_mode="exclude",
+            sections=[],
+        )
+        raw_md = result.content
         logger.info(f"✅ arxiv2markdown succeeded for {url}")
 
         # === NEW: Automatic LLM post-processing for LaTeX quirks ===
@@ -172,7 +189,7 @@ async def scrape_arxiv_url(
 
         scraped = {
             "url": url,
-            "title": "arXiv Paper",   # will be refined in final clean_markdown
+            "title": metadata.get("title") or "arXiv Paper",
             "markdown": cleaned_md,
             "success": True,
         }

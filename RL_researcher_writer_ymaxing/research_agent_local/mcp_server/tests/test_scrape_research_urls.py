@@ -431,7 +431,8 @@ class TestScrapeArxivUrl:
     async def test_success_path_uses_ingest_paper(self):
         fake_llm = FakeLLM("arxiv cleaned")
         fake_fc = FakeFirecrawlApp()
-        with patch(self._INGEST_PATCH, return_value="# Paper content"):
+        fake_ingest_result = MagicMock(content="# Paper content")
+        with patch(self._INGEST_PATCH, new=AsyncMock(return_value=(fake_ingest_result, {"title": "Test Paper"}))):
             result = await scraping_handler.scrape_arxiv_url(
                 "https://arxiv.org/abs/2312.05678",
                 "guidelines",
@@ -445,7 +446,7 @@ class TestScrapeArxivUrl:
         fake_llm = FakeLLM("firecrawl cleaned")
         # Make the firecrawl fallback succeed
         fake_fc_instance = FakeFirecrawlApp(FakeFirecrawlResult("FallbackTitle", "fallback body"))
-        with patch(self._INGEST_PATCH, side_effect=RuntimeError("ingest failed")), \
+        with patch(self._INGEST_PATCH, new=AsyncMock(side_effect=RuntimeError("ingest failed"))), \
              patch(self._FC_INSTANCE_PATCH, return_value=fake_fc_instance):
             result = await scraping_handler.scrape_arxiv_url(
                 "https://arxiv.org/abs/2312.05678",
@@ -471,7 +472,8 @@ class TestScrapeArxivUrl:
         """Empty ingest_paper output should skip LaTeX cleanup but still call clean_markdown."""
         fake_llm = FakeLLM("final cleaned")
         fake_fc = FakeFirecrawlApp()
-        with patch(self._INGEST_PATCH, return_value="   "):  # whitespace-only
+        fake_ingest_result = MagicMock(content="   ")
+        with patch(self._INGEST_PATCH, new=AsyncMock(return_value=(fake_ingest_result, {"title": "Test Paper"}))):  # whitespace-only
             result = await scraping_handler.scrape_arxiv_url(
                 "https://arxiv.org/abs/2312.05678",
                 "",

@@ -267,7 +267,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     @mcp.tool()
     @opik.track(type="tool", project_name=settings.opik_project_name)
     async def generate_next_complementary_queries(research_directory: str, 
-                                                    n_queries: int = 5, 
+                                                    n_queries: int = settings.n_exploration_queries_per_round, 
                                                     focus: Literal["balanced", "depth", "breadth"] = "balanced") -> Dict[str, Any]:
         """
         Generate complementary candidate web-search queries to explore uncovered but closely relevant aspects.
@@ -280,8 +280,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         Args:
             research_directory: Path to the research directory containing article data
-            n_queries: Number of queries to generate (default: 5)
-            depth_vs_breadth_ratio: Ratio to balance depth vs breadth in query generation (default: 0.5)
+            n_queries: Number of queries to generate (default: settings.n_exploration_queries_per_round)
             focus: Focus of query generation, one of "balanced", "depth", or "breadth" (default: "balanced")
 
         Returns:
@@ -362,7 +361,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     @opik.track(type="tool", project_name=settings.opik_project_name)
-    async def select_research_sources_to_scrape(research_directory: str, max_sources: int = 7) -> Dict[str, Any]:
+    async def select_research_sources_to_scrape(research_directory: str, max_sources: int = settings.maximum_sources_to_scrape) -> Dict[str, Any]:
         """
         Select up to max_sources priority research sources to scrape in full.
 
@@ -373,7 +372,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         Args:
             research_directory: Path to the research directory (e.g., "articles/1")
-            max_sources: Maximum number of sources to select (default: 7)
+            max_sources: Maximum number of sources to select (default: settings.maximum_sources_to_scrape)
 
         Returns:
             Dict[str, Any]: Dictionary containing:
