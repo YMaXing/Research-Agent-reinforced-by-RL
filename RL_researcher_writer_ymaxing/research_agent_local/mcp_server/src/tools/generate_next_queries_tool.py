@@ -22,6 +22,18 @@ from ..utils.file_utils import read_file_safe, validate_research_folder
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# Per-input character budgets for query-generation prompts.
+# past_research grows unboundedly across rounds (every Tavily answer appended);
+# scraped_ctx concatenates full scraped pages.  Capping keeps the prompt well
+# inside any model's context window regardless of how many rounds have run.
+# past_research is tail-truncated (most-recent content is most useful for
+# deduplication); other inputs are head-truncated.
+# ---------------------------------------------------------------------------
+_PAST_RESEARCH_CHAR_LIMIT = 60_000   # ~15 K tokens; tail (most recent)
+_SCRAPED_CTX_CHAR_LIMIT   = 40_000   # ~10 K tokens
+_FULL_QUERIES_CHAR_LIMIT  = 20_000   # ~5 K tokens
+
 
 def write_queries_to_file(next_q_path: Path, queries_and_reasons: List[Tuple[str, str]]) -> None:
     """
@@ -107,6 +119,18 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
 
     if not article_guidelines:
         logger.warning(f"⚠️  Article guidelines not found at {guidelines_path}. Proceeding anyway.")
+
+    # Apply character caps before building the prompt.
+    # past_research is tail-truncated so the most recent Tavily results are kept.
+    if len(past_research) > _PAST_RESEARCH_CHAR_LIMIT:
+        logger.debug(f"Truncating past_research from {len(past_research)} to {_PAST_RESEARCH_CHAR_LIMIT} chars (tail).")
+        past_research = past_research[-_PAST_RESEARCH_CHAR_LIMIT:]
+    if len(scraped_ctx_str) > _SCRAPED_CTX_CHAR_LIMIT:
+        logger.debug(f"Truncating scraped_ctx from {len(scraped_ctx_str)} to {_SCRAPED_CTX_CHAR_LIMIT} chars.")
+        scraped_ctx_str = scraped_ctx_str[:_SCRAPED_CTX_CHAR_LIMIT]
+    if len(full_queries) > _FULL_QUERIES_CHAR_LIMIT:
+        logger.debug(f"Truncating full_queries from {len(full_queries)} to {_FULL_QUERIES_CHAR_LIMIT} chars.")
+        full_queries = full_queries[-_FULL_QUERIES_CHAR_LIMIT:]
 
     queries_and_reasons = await generate_queries_with_reasons(
         article_guidelines, past_research, full_queries, scraped_ctx_str, n_queries=n_queries
@@ -196,6 +220,18 @@ async def generate_next_complementary_queries_tool(research_directory: str,
 
         if not article_guidelines:
             logger.warning(f"⚠️  Article guidelines not found at {guidelines_path}. Proceeding anyway.")
+
+        # Apply character caps before building the prompt.
+        # past_research is tail-truncated so the most recent Tavily results are kept.
+        if len(past_research) > _PAST_RESEARCH_CHAR_LIMIT:
+            logger.debug(f"Truncating past_research from {len(past_research)} to {_PAST_RESEARCH_CHAR_LIMIT} chars (tail).")
+            past_research = past_research[-_PAST_RESEARCH_CHAR_LIMIT:]
+        if len(scraped_ctx_str) > _SCRAPED_CTX_CHAR_LIMIT:
+            logger.debug(f"Truncating scraped_ctx from {len(scraped_ctx_str)} to {_SCRAPED_CTX_CHAR_LIMIT} chars.")
+            scraped_ctx_str = scraped_ctx_str[:_SCRAPED_CTX_CHAR_LIMIT]
+        if len(full_queries) > _FULL_QUERIES_CHAR_LIMIT:
+            logger.debug(f"Truncating full_queries from {len(full_queries)} to {_FULL_QUERIES_CHAR_LIMIT} chars.")
+            full_queries = full_queries[-_FULL_QUERIES_CHAR_LIMIT:]
 
         # === Resolve effective ratio based on focus knob ===
         if focus == "depth":

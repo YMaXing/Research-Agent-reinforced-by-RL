@@ -14,7 +14,25 @@ async def full_research_instructions_prompt() -> str:
     Returns:
         The complete research instructions as a string
     """
-    instructions_content = """
+    dedup_enabled = settings.enable_content_dedup
+
+    dedup_step_block = """
+7. Content-level deduplication:
+
+    7.1 Run the "deduplicate_research_content" tool. The tool reads all research content available in the scraped guideline sources 
+    from URLS_FROM_GUIDELINES_FOLDER, URLS_FROM_RESEARCH_FOLDER, URLS_FROM_GUIDELINES_CODE_FOLDER, and URLS_FROM_GUIDELINES_YOUTUBE_FOLDER.
+    The tool takes a large collection of research sources (from golden sources provided by the article guideline file to both exploitation and exploration phases) 
+    and produce the cleanest, most authoritative, non-repetitive knowledge base possible following phase-aware protection rules and hierarchical deduplication goals.
+    The tool will automatically remove redundant information while preserving important unique insights, and cluster similar concepts together even if they come from different sources.
+    You will be able to see the hierarchy of the sources in the content structure, with clear XML-like tags indicating the source of each content block. 
+    Overall, the tool prefers golden > exploitation > high-authority exploration > other exploration sources, but it also applies more complex rules to protect unique insights 
+    from lower-tier sources and to ensure that the final content is comprehensive and non-repetitive. The deduplicated content is saved to the DEDUPLICATED_RESEARCH_FILE within RESEARCH_OUTPUT_DIRECTORY.
+
+""" if dedup_enabled else ""
+
+    write_step_number = 8 if dedup_enabled else 7
+
+    instructions_content = f"""
 Your job is to execute the workflow below.
 
 All the tools require a research directory as input.
@@ -77,9 +95,9 @@ If the user doesn't provide a research directory, you should ask for it before e
     3.3. Run the "run_tavily_research" tool with the new queries in NEXT_QUERIES_FILE. This tool executes the queries with
     Tavily and appends the results to the TAVILY_RESULTS_FILE within RESEARCH_OUTPUT_DIRECTORY.
 
-4. Exploration Phase, repeat the following research loop for an indefinite number of rounds with a configurable maximum number of {n_max_round} rounds:
+4. Exploration Phase, repeat the following research loop for an indefinite number of rounds with a configurable maximum number of {settings.maximum_exploration_rounds} rounds:
 
-    For each of the {n_max_round} exploitation rounds:
+    For each of the {settings.maximum_exploration_rounds} exploitation rounds:
 
     4.1. Run "generate_next_complementary_queries_tool" (where you should choose the value for the arguments "focus" and/or "depth_vs_breadth_ratio") 
         to analyzes the article guidelines, already-scraped content, and existing Tavily results. The tool dives deeper into the content already covered 
@@ -104,28 +122,17 @@ If the user doesn't provide a research directory, you should ask for it before e
 6. Identify which of the accepted sources deserve a *full* scrape:
 
     6.1 Run the "select_research_sources_to_scrape" tool. It analyses the TAVILY_RESULTS_SELECTED_FILE together
-    with the ARTICLE_GUIDELINE_FILE and the material already scraped from guideline URLs, then chooses up to {n_max_sources_to_scrape} diverse,
+    with the ARTICLE_GUIDELINE_FILE and the material already scraped from guideline URLs, then chooses up to {settings.maximum_sources_to_scrape} diverse,
     authoritative sources whose full content will add most value. The chosen URLs are written (one per line) to the
     URLS_TO_SCRAPE_FROM_RESEARCH_FILE within RESEARCH_OUTPUT_DIRECTORY.
 
     6.2 Run the "scrape_research_urls" tool. The tool reads the URLs from URLS_TO_SCRAPE_FROM_RESEARCH_FILE and
     scrapes/cleans each URL's full content, including special high-quality handling for arXiv papers. The cleaned markdown files are saved to the
     URLS_FROM_RESEARCH_FOLDER subfolder within RESEARCH_OUTPUT_DIRECTORY with appropriate filenames.
+{dedup_step_block}
+{write_step_number}. Write final research file:
 
-7. Content-level deduplication:
-
-    7.1 Run the "deduplicate_research_content" tool. The tool reads all research content available in the scraped guideline sources 
-    from URLS_FROM_GUIDELINES_FOLDER, URLS_FROM_RESEARCH_FOLDER, URLS_FROM_GUIDELINES_CODE_FOLDER, and URLS_FROM_GUIDELINES_YOUTUBE_FOLDER.
-    The tool takes a large collection of research sources (from golden sources provided by the article guideline file to both exploitation and exploration phases) 
-    and produce the cleanest, most authoritative, non-repetitive knowledge base possible following phase-aware protection rules and hierarchical deduplication goals.
-    The tool will automatically remove redundant information while preserving important unique insights, and cluster similar concepts together even if they come from different sources.
-    You will be able to see the hierarchy of the sources in the content structure, with clear XML-like tags indicating the source of each content block. 
-    Overall, the tool prefers golden > exploitation > high-authority exploration > other exploration sources, but it also applies more complex rules to protect unique insights 
-    from lower-tier sources and to ensure that the final content is comprehensive and non-repetitive. The deduplicated content is saved to the DEDUPLICATED_RESEARCH_FILE within RESEARCH_OUTPUT_DIRECTORY.
-
-8. Write final research file:
-
-    8.1 Run the "create_research_file" tool. The tool always assembles all source content into XML-tagged sections
+    {write_step_number}.1 Run the "create_research_file" tool. The tool always assembles all source content into XML-tagged sections
     that clearly distinguish golden sources (material referenced in the article guideline) from research sources
     (material discovered through Tavily exploitation and exploration rounds):
     
@@ -192,12 +199,12 @@ research_directory/
 │   ├── URL_PHASES_FILE                                 # Step 6.1 — URL → phase mapping (exploitation / exploration)
 │   ├── URLS_FROM_RESEARCH_FOLDER/                      # Step 6.2 — Fully scraped content from selected research URLs
 │   │   └── [full_research_sources...]
-│   └── DEDUPLICATED_RESEARCH_FILE                      # Step 7.1 — Phase-aware deduplicated knowledge base
-└── RESEARCH_MD_FILE                                    # Step 8.1 — Final comprehensive research compilation
+    │   └── DEDUPLICATED_RESEARCH_FILE                      # Step 7.1 — Phase-aware deduplicated knowledge base (omitted when dedup disabled)
+└── RESEARCH_MD_FILE                                    # Step {write_step_number}.1 — Final comprehensive research compilation
 ```
 
 This organized structure ensures all research artifacts are systematically collected, processed, and made easily
 accessible for article writing and future reference.
     """.strip()
 
-    return instructions_content.format(n_max_round=settings.maximum_exploration_rounds, n_max_sources_to_scrape=settings.maximum_sources_to_scrape)
+    return instructions_content
