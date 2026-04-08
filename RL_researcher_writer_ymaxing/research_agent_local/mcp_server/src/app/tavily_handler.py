@@ -38,8 +38,21 @@ async def run_tavily_search(query: str) -> Tuple[str, Dict[int, str], Dict[int, 
     logger.debug(f"🔍 Running Tavily search for: {query}")
     tavily_results = await tavily_tool.ainvoke({"query": query})   # returns List[dict] with raw_content
 
+    # Truncate raw_content per result to stay well within the model's context window.
+    # 5 results × 8 000 chars ≈ 40 000 chars (~10 K tokens) — generous but bounded.
+    _RAW_CONTENT_CHAR_LIMIT = 8_000
+    if isinstance(tavily_results, list):
+        for result in tavily_results:
+            if isinstance(result, dict) and isinstance(result.get("raw_content"), str):
+                result["raw_content"] = result["raw_content"][:_RAW_CONTENT_CHAR_LIMIT]
+
     # 2. Strong LLM synthesis (better than Sonar for technical content)
-    struct_llm = get_chat_model(settings.search_enhancement_model, SearchResponse) 
+    # Use include_raw=True so we can inspect what the model actually returned if parsing fails.
+    # PydanticToolsParser (used internally by with_structured_output) returns parsed=None when the
+    # model emits plain text instead of a tool call — this is guarded against by the raw_content
+    # truncation above, which keeps the total prompt within the model's context window.
+    base_llm = get_chat_model(settings.search_enhancement_model)
+    struct_llm = base_llm.with_structured_output(SearchResponse, include_raw=True)
 
     # Optional: enhance the prompt with Tavily results
     enhanced_prompt = (
@@ -47,7 +60,23 @@ async def run_tavily_search(query: str) -> Tuple[str, Dict[int, str], Dict[int, 
         + f"\n\nUse the following high-quality search results as source material:\n{tavily_results}"
     )
 
-    response = await struct_llm.ainvoke(enhanced_prompt)
+    raw_result = await struct_llm.ainvoke(enhanced_prompt)
+    response = raw_result.get("parsed") if isinstance(raw_result, dict) else raw_result
+
+    if response is None or not hasattr(response, "sources") or response.sources is None:
+        parsing_error = raw_result.get("parsing_error") if isinstance(raw_result, dict) else None
+        raw_output = raw_result.get("raw") if isinstance(raw_result, dict) else None
+        # Extract the actual text the model emitted instead of a tool call
+        raw_text = getattr(raw_output, "content", None) if raw_output is not None else None
+        tool_calls = getattr(raw_output, "tool_calls", None) if raw_output is not None else None
+        logger.warning(
+            f"⚠️ LLM returned no structured response for query: {query!r}.\n"
+            f"  parsing_error : {parsing_error!r}\n"
+            f"  prompt_length : {len(enhanced_prompt)}\n"
+            f"  tool_calls    : {tool_calls!r}\n"
+            f"  raw_content   : {raw_text!r}"
+        )
+        return "", {}, {}
 
     # 3. Convert to the exact format your append function expects
     answer_by_source: Dict[int, str] = {}

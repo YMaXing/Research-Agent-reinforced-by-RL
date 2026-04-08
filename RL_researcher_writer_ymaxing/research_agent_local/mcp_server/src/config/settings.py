@@ -119,7 +119,7 @@ class Settings(BaseSettings):
                 "identifier": "tavily",    
                 "api_key_env_var": "TAVILY_API_KEY",       # ignored for tools, kept for config consistency
                 "params": {
-                    "max_results": 6,
+                    "max_results": 5,
                     "search_depth": "advanced",
                     "include_raw_content": True,
                     "include_answer": True,

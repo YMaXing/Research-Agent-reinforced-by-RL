@@ -148,16 +148,19 @@ async def _run_variant(
     kickoff_suffix: str,
     thinking_enabled: bool,
     label: str,
+    context_history: list | None = None,
 ) -> bool:
     """
     Run the research workflow for one variant of a sample directory.
 
-    A brand-new conversation_history is created for every call so that
-    no LLM context leaks between variants or between samples.
+    Each call starts with a copy of context_history (the pre-batch conversation
+    established between the user and the agent), then appends the sample-specific
+    kickoff message.  This lets any natural-language instructions the user gave
+    before the batch take effect without any special encoding.
 
     Returns True on success, False on failure.
     """
-    conversation_history: list = []
+    conversation_history: list = list(context_history or [])
     kickoff_message = (
         f"{prompt_content}\n\n"
         f"The research directory is: {sample_dir.resolve()}\n"
@@ -180,6 +183,7 @@ async def run_single_sample(
     prompt_content: str,
     thinking_enabled: bool,
     two_variants: bool = False,
+    context_history: list | None = None,
 ) -> bool:
     """
     Run the research workflow for one sample directory.
@@ -191,12 +195,16 @@ async def run_single_sample(
       3. Run exploration-only (starts at step 4, reuses existing intermediates)
          which re-executes steps 5-8 and writes the final research.md.
 
+    context_history is forwarded to every _run_variant call as a conversation
+    prefix (see _run_variant for details).
+
     Returns True only if all required variant runs succeed.
     """
     if not two_variants:
         return await _run_variant(
             sample_dir, agent, tools, prompt_content,
             _KICKOFF_FULL, thinking_enabled, label="full",
+            context_history=context_history,
         )
 
     # --- Variant 1: exploitation only ---
@@ -204,6 +212,7 @@ async def run_single_sample(
     ok1 = await _run_variant(
         sample_dir, agent, tools, prompt_content,
         _KICKOFF_NO_EXPLORATION, thinking_enabled, label="no-exploration",
+        context_history=context_history,
     )
     if not ok1:
         return False
@@ -215,6 +224,7 @@ async def run_single_sample(
     ok2 = await _run_variant(
         sample_dir, agent, tools, prompt_content,
         _KICKOFF_EXPLORATION_ONLY, thinking_enabled, label="with-exploration",
+        context_history=context_history,
     )
     return ok2
 
@@ -242,6 +252,7 @@ async def _run_batch(
     prompt_content: str,
     thinking_enabled: bool,
     two_variants: bool,
+    context_history: list | None = None,
 ) -> List[Tuple[Path, str, float]]:
     """Process a list of sample directories and return (path, status, elapsed) tuples."""
     results: List[Tuple[Path, str, float]] = []
@@ -257,6 +268,7 @@ async def _run_batch(
             prompt_content=prompt_content,
             thinking_enabled=thinking_enabled,
             two_variants=two_variants,
+            context_history=context_history,
         )
         elapsed = time.time() - t0
         status = "OK" if success else "FAILED"
@@ -280,28 +292,33 @@ def _print_batch_summary(results: List[Tuple[Path, str, float]]) -> None:
 # Interactive REPL helpers
 # --------------------------------------------------------------------------- #
 
-def _resolve_paths_to_samples(tokens: List[str]) -> List[Path]:
+def _resolve_paths_to_samples(tokens: List[str], quiet: bool = False) -> List[Path]:
     """
     Resolve a list of path strings into sample directories.
 
     - If the path itself contains article_guideline.md → treat as a sample dir.
     - Otherwise if it is a directory → auto-discover samples within it.
+
+    quiet=True suppresses all warnings, used when probing whether input is
+    path-like before falling back to NORMAL_MESSAGE handling.
     """
     sample_dirs: List[Path] = []
     for token in tokens:
         p = Path(token)
         if not p.exists():
-            print(f"  ⚠  Path not found, skipping: {p}")
+            if not quiet:
+                print(f"  ⚠  Path not found, skipping: {p}")
             continue
         if (p / ARTICLE_GUIDELINE_FILENAME).exists():
             sample_dirs.append(p)
         elif p.is_dir():
             discovered = discover_samples(p)
-            if not discovered:
+            if not discovered and not quiet:
                 print(f"  ⚠  No samples found in: {p}")
             sample_dirs.extend(discovered)
         else:
-            print(f"  ⚠  Not a directory, skipping: {p}")
+            if not quiet:
+                print(f"  ⚠  Not a directory, skipping: {p}")
     return sample_dirs
 
 
@@ -309,6 +326,7 @@ def _parse_interactive_input(
     line: str,
     current_two_variants: bool,
     current_thinking: bool,
+    quiet: bool = False,
 ) -> Tuple[List[Path], bool, bool, bool]:
     """
     Parse a line of interactive input.
@@ -316,11 +334,15 @@ def _parse_interactive_input(
     Returns (sample_dirs, two_variants, thinking_enabled, should_quit).
     Flags (--two-variants etc.) update the sticky settings for the session;
     paths are resolved to sample directories.
+
+    quiet=True suppresses path-not-found warnings; used when probing input
+    to decide whether to treat it as a batch or a NORMAL_MESSAGE.
     """
     try:
         tokens = shlex.split(line)
     except ValueError as exc:
-        print(f"  ⚠  Parse error: {exc}")
+        if not quiet:
+            print(f"  ⚠  Parse error: {exc}")
         return [], current_two_variants, current_thinking, False
 
     if not tokens:
@@ -345,7 +367,7 @@ def _parse_interactive_input(
         else:
             path_tokens.append(tok)
 
-    sample_dirs = _resolve_paths_to_samples(path_tokens)
+    sample_dirs = _resolve_paths_to_samples(path_tokens, quiet=quiet)
     return sample_dirs, two_variants, thinking, False
 
 
@@ -367,31 +389,38 @@ async def _interactive_loop(
     Sticky flags (--two-variants, --no-thinking, etc.) persist across prompts
     within the session until explicitly changed.
     """
-    print(f"\n{'='*60}")
-    print("  Interactive mode — agent is running, server stays alive.")
-    print("  Specify the next batch at the prompt, or use a command.")
-    print()
-    print("  Batch input formats:")
-    print("    /path/to/parent_dir            → auto-discover samples inside")
-    print("    /path/A /path/B                → explicit sample dirs")
-    print("    --two-variants /path/to/dir    → enable two-variant mode")
-    print("    --no-two-variants /path/to/dir → disable two-variant mode")
-    print("    --no-thinking /path/to/dir     → disable LLM thinking")
-    print("    --thinking /path/to/dir        → re-enable LLM thinking")
-    print()
-    print("  Info commands:")
-    print("    /tools                         → list available tools")
-    print("    /resources                     → list available resources")
-    print("    /prompts                       → list available prompts")
-    print("    /resource/<uri>                → print resource content")
-    print("    /prompt/<name>                 → print prompt content")
-    print("    /quit                          → shut down")
-    print(f"{'='*60}\n")
 
     current_two_variants = two_variants
     current_thinking = thinking_enabled
+    repl_conversation_history: list = []
 
     while True:
+
+        print(f"\n{'='*60}")
+        print("  Interactive mode — agent is running, server stays alive.")
+        print("  Specify the next batch, chat with the agent, or use a command.")
+        print()
+        print("  Batch input formats:")
+        print("    /path/to/parent_dir            → auto-discover samples inside")
+        print("    /path/A /path/B                → explicit sample dirs")
+        print("    --two-variants /path/to/dir    → enable two-variant mode")
+        print("    --no-two-variants /path/to/dir → disable two-variant mode")
+        print("    --no-thinking /path/to/dir     → disable LLM thinking")
+        print("    --thinking /path/to/dir        → re-enable LLM thinking")
+        print()
+        print("  Natural language:")
+        print("    Any other text is sent to the agent as a normal message")
+        print("    and the reply is shown here.")
+        print()
+        print("  Info commands:")
+        print("    /tools                         → list available tools")
+        print("    /resources                     → list available resources")
+        print("    /prompts                       → list available prompts")
+        print("    /resource/<uri>                → print resource content")
+        print("    /prompt/<name>                 → print prompt content")
+        print("    /quit                          → shut down")
+        print(f"{'='*60}\n")
+
         indicators = []
         if current_two_variants:
             indicators.append("two-variants")
@@ -400,7 +429,7 @@ async def _interactive_loop(
         indicator_str = f" [{', '.join(indicators)}]" if indicators else ""
 
         try:
-            line = input(f"📂 Next batch{indicator_str}: ").strip()
+            line = input(f"Please enter either 📂 Next batch, or 🤖 commands{indicator_str}: ").strip()
         except (EOFError, KeyboardInterrupt):
             print()
             logging.info("Interrupted. Goodbye!")
@@ -443,17 +472,27 @@ async def _interactive_loop(
             )
             continue
 
-        # --- Not a slash-command: treat as batch path input ---
-        sample_dirs, current_two_variants, current_thinking, should_quit = \
-            _parse_interactive_input(line, current_two_variants, current_thinking)
+        # --- Not a slash-command: probe as batch path input first ---
+        sample_dirs, new_two_variants, new_thinking, should_quit = \
+            _parse_interactive_input(line, current_two_variants, current_thinking, quiet=True)
 
         if should_quit:
             logging.info("Shutting down. Goodbye!")
             break
 
         if not sample_dirs:
-            print("  No valid sample directories found. Try again.")
+            # Nothing resolved to valid sample dirs → treat as NORMAL_MESSAGE
+            repl_conversation_history.append(make_user_message(line))
+            try:
+                await handle_agent_loop(
+                    repl_conversation_history, tools, agent, current_thinking
+                )
+            except KeyboardInterrupt:
+                print("\n  Interrupted.\n")
             continue
+
+        # Batch input confirmed — apply any flag changes now
+        current_two_variants, current_thinking = new_two_variants, new_thinking
 
         sample_dirs = _dedup_paths(sample_dirs)
         print(f"\n  Queued {len(sample_dirs)} sample(s):")
@@ -461,10 +500,28 @@ async def _interactive_loop(
             print(f"    {i:>3}. {d}")
         print()
 
+        # --- Optional pre-batch message to the agent ---
+        batch_context: list = []
+        try:
+            pre_msg = input(
+                "💬 Message to agent before batch to apply to the next batch (Enter to skip): "
+            ).strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            logging.info("Interrupted. Goodbye!")
+            break
+        if pre_msg:
+            batch_context.append(make_user_message(pre_msg))
+            try:
+                await handle_agent_loop(batch_context, tools, agent, current_thinking)
+            except KeyboardInterrupt:
+                print("\n  Interrupted.\n")
+
         try:
             results = await _run_batch(
                 sample_dirs, agent, tools, prompt_content,
                 current_thinking, current_two_variants,
+                context_history=batch_context or None,
             )
             _print_batch_summary(results)
         except KeyboardInterrupt:
