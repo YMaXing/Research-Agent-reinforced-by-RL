@@ -107,6 +107,7 @@ class TestRunTavilyResearchTool:
 
         assert result["status"] == "success"
         assert result["queries_processed"] == 1
+        assert result["queries_failed"] == 0
         assert result["sources_added"] == 1
 
         # Verify file was created
@@ -142,7 +143,54 @@ class TestRunTavilyResearchTool:
             result = await run_tavily_research_tool(str(research_dir), ["q1", "q2", "q3"])
 
         assert result["queries_processed"] == 3
+        assert result["queries_failed"] == 0
         assert result["sources_added"] == 3
+
+    async def test_partial_failure_skips_bad_queries(self, tmp_path):
+        """When some queries raise exceptions the others are still saved."""
+        research_dir = _setup_dir(tmp_path)
+        good_result = ("full", {1: "answer"}, {1: "https://a.com"})
+
+        call_count = 0
+
+        async def _flaky_search(query):
+            nonlocal call_count
+            call_count += 1
+            if call_count == 2:  # second query fails
+                raise RuntimeError("simulated 503")
+            return good_result
+
+        with patch(_PATCH_SEARCH, side_effect=_flaky_search):
+            result = await run_tavily_research_tool(
+                str(research_dir), ["q1", "q2", "q3"]
+            )
+
+        assert result["status"] == "partial"
+        assert result["queries_processed"] == 2  # q1 and q3 succeeded
+        assert result["queries_failed"] == 1
+        assert result["sources_added"] == 2
+
+        # Successful results must still have been written to disk
+        results_path = research_dir / RESEARCH_OUTPUT_FOLDER / TAVILY_RESULTS_FILE
+        content = results_path.read_text(encoding="utf-8")
+        assert "### Source [1]:" in content
+
+    async def test_all_queries_fail_returns_error(self, tmp_path):
+        """When every query raises, status is 'error' and no file content is written."""
+        research_dir = _setup_dir(tmp_path)
+
+        with patch(
+            _PATCH_SEARCH,
+            new_callable=AsyncMock,
+            side_effect=RuntimeError("all failed"),
+        ):
+            result = await run_tavily_research_tool(
+                str(research_dir), ["q1", "q2"]
+            )
+
+        assert result["status"] == "error"
+        assert result["queries_processed"] == 0
+        assert result["sources_added"] == 0
 
     async def test_raises_for_missing_output_folder(self, tmp_path):
         """Tool validates that research_path / RESEARCH_OUTPUT_FOLDER exists."""

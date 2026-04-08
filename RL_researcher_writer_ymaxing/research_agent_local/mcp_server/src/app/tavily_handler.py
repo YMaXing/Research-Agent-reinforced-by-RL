@@ -6,6 +6,7 @@ import re
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+from openai import InternalServerError, RateLimitError
 from pydantic import BaseModel, Field
 
 from ..config.constants import TAVILY_RESULTS_FILE
@@ -60,7 +61,29 @@ async def run_tavily_search(query: str) -> Tuple[str, Dict[int, str], Dict[int, 
         + f"\n\nUse the following high-quality search results as source material:\n{tavily_results}"
     )
 
-    raw_result = await struct_llm.ainvoke(enhanced_prompt)
+    # Retry with exponential back-off on transient 503 / rate-limit errors.
+    _MAX_RETRIES = 4
+    _BASE_DELAY = 5.0  # seconds
+    last_exc: Exception | None = None
+    for attempt in range(_MAX_RETRIES):
+        try:
+            raw_result = await struct_llm.ainvoke(enhanced_prompt)
+            break
+        except (InternalServerError, RateLimitError) as exc:
+            last_exc = exc
+            status = getattr(exc, "status_code", None)
+            if status not in (429, 503) and not isinstance(exc, RateLimitError):
+                raise
+            delay = _BASE_DELAY * (2 ** attempt)
+            logger.warning(
+                f"⚠️ LLM returned {status} for query {query!r} "
+                f"(attempt {attempt + 1}/{_MAX_RETRIES}). "
+                f"Retrying in {delay:.0f}s…"
+            )
+            await asyncio.sleep(delay)
+    else:
+        raise last_exc  # all retries exhausted
+
     response = raw_result.get("parsed") if isinstance(raw_result, dict) else raw_result
 
     if response is None or not hasattr(response, "sources") or response.sources is None:

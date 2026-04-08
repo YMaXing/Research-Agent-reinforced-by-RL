@@ -268,7 +268,6 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     @opik.track(type="tool", project_name=settings.opik_project_name)
     async def generate_next_complementary_queries(research_directory: str, 
                                                     n_queries: int = 5, 
-                                                    depth_vs_breadth_ratio: float = 0.5, 
                                                     focus: Literal["balanced", "depth", "breadth"] = "balanced") -> Dict[str, Any]:
         """
         Generate complementary candidate web-search queries to explore uncovered but closely relevant aspects.

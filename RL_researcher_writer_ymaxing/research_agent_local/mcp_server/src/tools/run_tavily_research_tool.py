@@ -110,21 +110,49 @@ async def run_tavily_research_tool(
     phase = _PHASE_LABELS.get(query_source, "Exploitation")
     logger.debug(f"Executing {len(queries)} Tavily queries (phase={phase})...")
     tasks = [run_tavily_search(query) for query in queries]
-    search_results = await asyncio.gather(*tasks)
+    raw_results = await asyncio.gather(*tasks, return_exceptions=True)
     logger.debug("All Tavily queries finished. Appending results.")
 
-    # Process and append search results to file
-    total_sources = append_search_results_to_file(results_path, queries, search_results, phase=phase)
+    # Filter out failed queries so the rest of the batch still saves.
+    search_results: list = []
+    good_queries: list = []
+    for query, result in zip(queries, raw_results):
+        if isinstance(result, BaseException):
+            logger.error(
+                f"❌ Tavily query failed (skipped): {query!r} — {result}"
+            )
+        else:
+            good_queries.append(query)
+            search_results.append(result)
 
-    processed_queries_count = len(queries)
+    if not search_results:
+        return {
+            "status": "error",
+            "message": (
+                f"All {len(queries)} Tavily queries failed for research folder "
+                f"'{research_directory}'. Last error: {raw_results[-1]}"
+            ),
+            "queries_processed": 0,
+            "sources_added": 0,
+            "queries": queries,
+        }
+
+    # Process and append search results to file
+    total_sources = append_search_results_to_file(results_path, good_queries, search_results, phase=phase)
+
+    failed_count = len(queries) - len(good_queries)
+    processed_queries_count = len(good_queries)
+    status = "partial" if failed_count else "success"
     return {
-        "status": "success",
+        "status": status,
         "queries_processed": processed_queries_count,
+        "queries_failed": failed_count,
         "sources_added": total_sources,
         "output_path": str(results_path.resolve()),
         "message": (
-            f"Successfully completed Tavily research round for research folder '{research_directory}'. "
-            f"Processed {processed_queries_count} queries and added {total_sources} "
-            f"source sections to {TAVILY_RESULTS_FILE}"
+            f"Completed Tavily research for '{research_directory}'. "
+            f"Processed {processed_queries_count}/{len(queries)} queries"
+            + (f" ({failed_count} failed — see server logs)" if failed_count else "")
+            + f" and added {total_sources} source sections to {TAVILY_RESULTS_FILE}."
         ),
     }

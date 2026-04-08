@@ -6,18 +6,24 @@ Pure-function tests (no LLM/API calls) for:
   - ``extract_tavily_chunks``
   - ``group_tavily_by_query``
 
-``run_tavily_search`` involves a real LLM + Tavily and is tested at the tool
-layer with full mocking; here we only test the deterministic helpers.
+``run_tavily_search`` retry logic is tested with full mocking so that no
+real LLM / Tavily calls are made.
 """
 
 import pytest
 from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock, patch, call
+
+from openai import InternalServerError, RateLimitError
 
 from src.app.tavily_handler import (
     append_tavily_results,
     compute_next_source_id,
     extract_tavily_chunks,
     group_tavily_by_query,
+    run_tavily_search,
+    SearchResponse,
+    SourceAnswer,
 )
 
 
@@ -199,3 +205,184 @@ class TestGroupTavilyByQuery:
         chunks = extract_tavily_chunks(_SAMPLE_MD)
         grouped = group_tavily_by_query(chunks, [999])
         assert len(grouped) == 0
+
+
+# ---------------------------------------------------------------------------
+# run_tavily_search – retry behaviour
+# ---------------------------------------------------------------------------
+
+_PATCH_TAVILY_TOOL = "src.app.tavily_handler.get_tavily_tool"
+_PATCH_CHAT_MODEL = "src.app.tavily_handler.get_chat_model"
+_PATCH_SLEEP = "src.app.tavily_handler.asyncio.sleep"
+
+_FAKE_TAVILY_RESULTS = [
+    {"url": "https://a.com", "raw_content": "Some content about the topic."}
+]
+
+_FAKE_SEARCH_RESPONSE = SearchResponse(
+    sources=[
+        SourceAnswer(
+            url="https://a.com",
+            queries=["test query"],
+            phase="Exploitation",
+            answer="A detailed answer.",
+        )
+    ]
+)
+
+
+def _make_tavily_tool_mock():
+    tool = MagicMock()
+    tool.ainvoke = AsyncMock(return_value=_FAKE_TAVILY_RESULTS)
+    return tool
+
+
+def _make_struct_llm_mock(side_effect=None, return_value=None):
+    """Return a mock that behaves like base_llm.with_structured_output(...)."""
+    struct_llm = MagicMock()
+    if side_effect is not None:
+        struct_llm.ainvoke = AsyncMock(side_effect=side_effect)
+    else:
+        struct_llm.ainvoke = AsyncMock(return_value={"parsed": return_value or _FAKE_SEARCH_RESPONSE})
+    base_llm = MagicMock()
+    base_llm.with_structured_output.return_value = struct_llm
+    return base_llm, struct_llm
+
+
+def _make_503_error():
+    response = MagicMock()
+    response.status_code = 503
+    response.headers = {}
+    response.json.return_value = {"error": "Service temporarily unavailable"}
+    return InternalServerError(
+        "Error code: 503 - Service temporarily unavailable",
+        response=response,
+        body={"error": "Service temporarily unavailable"},
+    )
+
+
+def _make_429_error():
+    response = MagicMock()
+    response.status_code = 429
+    response.headers = {}
+    response.json.return_value = {"error": "rate limit"}
+    return RateLimitError(
+        "Error code: 429 - rate limit",
+        response=response,
+        body={"error": "rate limit"},
+    )
+
+
+def _make_500_error():
+    response = MagicMock()
+    response.status_code = 500
+    response.headers = {}
+    response.json.return_value = {"error": "Internal server error"}
+    return InternalServerError(
+        "Error code: 500 - Internal server error",
+        response=response,
+        body={"error": "Internal server error"},
+    )
+
+
+class TestRunTavilySearchRetry:
+    async def test_success_on_first_attempt(self):
+        base_llm, struct_llm = _make_struct_llm_mock()
+
+        with (
+            patch(_PATCH_TAVILY_TOOL, return_value=_make_tavily_tool_mock()),
+            patch(_PATCH_CHAT_MODEL, return_value=base_llm),
+            patch(_PATCH_SLEEP, new_callable=AsyncMock) as mock_sleep,
+        ):
+            full_answer, answer_by_source, citations = await run_tavily_search("test query")
+
+        assert citations
+        assert "https://a.com" in citations.values()
+        mock_sleep.assert_not_called()
+        assert struct_llm.ainvoke.call_count == 1
+
+    async def test_retries_on_503_then_succeeds(self):
+        err = _make_503_error()
+        base_llm, struct_llm = _make_struct_llm_mock(
+            side_effect=[err, {"parsed": _FAKE_SEARCH_RESPONSE}]
+        )
+
+        with (
+            patch(_PATCH_TAVILY_TOOL, return_value=_make_tavily_tool_mock()),
+            patch(_PATCH_CHAT_MODEL, return_value=base_llm),
+            patch(_PATCH_SLEEP, new_callable=AsyncMock) as mock_sleep,
+        ):
+            full_answer, answer_by_source, citations = await run_tavily_search("test query")
+
+        assert citations
+        assert struct_llm.ainvoke.call_count == 2
+        mock_sleep.assert_called_once()  # slept once between attempt 1 and 2
+
+    async def test_retries_on_rate_limit_then_succeeds(self):
+        err = _make_429_error()
+        base_llm, struct_llm = _make_struct_llm_mock(
+            side_effect=[err, {"parsed": _FAKE_SEARCH_RESPONSE}]
+        )
+
+        with (
+            patch(_PATCH_TAVILY_TOOL, return_value=_make_tavily_tool_mock()),
+            patch(_PATCH_CHAT_MODEL, return_value=base_llm),
+            patch(_PATCH_SLEEP, new_callable=AsyncMock) as mock_sleep,
+        ):
+            full_answer, answer_by_source, citations = await run_tavily_search("test query")
+
+        assert citations
+        assert struct_llm.ainvoke.call_count == 2
+        mock_sleep.assert_called_once()
+
+    async def test_exponential_backoff_delays(self):
+        err = _make_503_error()
+        # Fail 3 times, then succeed
+        base_llm, struct_llm = _make_struct_llm_mock(
+            side_effect=[err, err, err, {"parsed": _FAKE_SEARCH_RESPONSE}]
+        )
+
+        with (
+            patch(_PATCH_TAVILY_TOOL, return_value=_make_tavily_tool_mock()),
+            patch(_PATCH_CHAT_MODEL, return_value=base_llm),
+            patch(_PATCH_SLEEP, new_callable=AsyncMock) as mock_sleep,
+        ):
+            await run_tavily_search("test query")
+
+        assert mock_sleep.call_count == 3
+        delays = [c.args[0] for c in mock_sleep.call_args_list]
+        # Each delay must be strictly greater than the previous (exponential back-off)
+        assert delays[1] > delays[0]
+        assert delays[2] > delays[1]
+
+    async def test_raises_after_all_retries_exhausted(self):
+        err = _make_503_error()
+        base_llm, struct_llm = _make_struct_llm_mock(side_effect=[err] * 10)
+
+        with (
+            patch(_PATCH_TAVILY_TOOL, return_value=_make_tavily_tool_mock()),
+            patch(_PATCH_CHAT_MODEL, return_value=base_llm),
+            patch(_PATCH_SLEEP, new_callable=AsyncMock),
+        ):
+            with pytest.raises(InternalServerError):
+                await run_tavily_search("test query")
+
+        # Should have tried exactly _MAX_RETRIES=4 times
+        assert struct_llm.ainvoke.call_count == 4
+
+    async def test_non_503_internal_error_not_retried(self):
+        """A 500 Internal Server Error must be re-raised immediately."""
+        err = _make_500_error()
+        base_llm, struct_llm = _make_struct_llm_mock(side_effect=[err])
+
+        with (
+            patch(_PATCH_TAVILY_TOOL, return_value=_make_tavily_tool_mock()),
+            patch(_PATCH_CHAT_MODEL, return_value=base_llm),
+            patch(_PATCH_SLEEP, new_callable=AsyncMock) as mock_sleep,
+        ):
+            with pytest.raises(InternalServerError):
+                await run_tavily_search("test query")
+
+        assert struct_llm.ainvoke.call_count == 1
+        mock_sleep.assert_not_called()
+

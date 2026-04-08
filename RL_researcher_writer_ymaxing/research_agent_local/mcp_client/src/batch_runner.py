@@ -429,7 +429,7 @@ async def _interactive_loop(
         indicator_str = f" [{', '.join(indicators)}]" if indicators else ""
 
         try:
-            line = input(f"Please enter either 📂 Next batch, or 🤖 commands{indicator_str}: ").strip()
+            line = input(f"Please enter the directory 📂 of the next batch, or a command 🤖, or natural language message 💬 {indicator_str}: ").strip()
         except (EOFError, KeyboardInterrupt):
             print()
             logging.info("Interrupted. Goodbye!")
@@ -504,18 +504,19 @@ async def _interactive_loop(
         batch_context: list = []
         try:
             pre_msg = input(
-                "💬 Message to agent before batch to apply to the incoming batch (Enter to skip): "
+                "🔧 Add an optional message to agent if you want to change the workflow for the incoming batch (Enter to skip): "
             ).strip()
         except (EOFError, KeyboardInterrupt):
             print()
             logging.info("Interrupted. Goodbye!")
             break
         if pre_msg:
+            # Store as context only — do NOT run the agent loop here.
+            # The agent has no research directory yet at this point, so
+            # triggering handle_agent_loop would cause it to hallucinate
+            # one.  The message is forwarded as a prefix in every sample's
+            # conversation history via context_history=batch_context below.
             batch_context.append(make_user_message(pre_msg))
-            try:
-                await handle_agent_loop(batch_context, tools, agent, current_thinking)
-            except KeyboardInterrupt:
-                print("\n  Interrupted.\n")
 
         try:
             results = await _run_batch(
