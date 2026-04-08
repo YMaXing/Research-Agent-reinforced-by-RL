@@ -504,7 +504,7 @@ async def _interactive_loop(
         batch_context: list = []
         try:
             pre_msg = input(
-                "💬 Message to agent before batch to apply to the next batch (Enter to skip): "
+                "💬 Message to agent before batch to apply to the incoming batch (Enter to skip): "
             ).strip()
         except (EOFError, KeyboardInterrupt):
             print()

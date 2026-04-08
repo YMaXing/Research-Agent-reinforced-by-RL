@@ -22,18 +22,6 @@ from ..utils.file_utils import read_file_safe, validate_research_folder
 
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
-# Per-input character budgets for query-generation prompts.
-# past_research grows unboundedly across rounds (every Tavily answer appended);
-# scraped_ctx concatenates full scraped pages.  Capping keeps the prompt well
-# inside any model's context window regardless of how many rounds have run.
-# past_research is tail-truncated (most-recent content is most useful for
-# deduplication); other inputs are head-truncated.
-# ---------------------------------------------------------------------------
-_PAST_RESEARCH_CHAR_LIMIT = 60_000   # ~15 K tokens; tail (most recent)
-_SCRAPED_CTX_CHAR_LIMIT   = 40_000   # ~10 K tokens
-_FULL_QUERIES_CHAR_LIMIT  = 20_000   # ~5 K tokens
-
 
 def write_queries_to_file(next_q_path: Path, queries_and_reasons: List[Tuple[str, str]]) -> None:
     """
@@ -120,18 +108,6 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
     if not article_guidelines:
         logger.warning(f"⚠️  Article guidelines not found at {guidelines_path}. Proceeding anyway.")
 
-    # Apply character caps before building the prompt.
-    # past_research is tail-truncated so the most recent Tavily results are kept.
-    if len(past_research) > _PAST_RESEARCH_CHAR_LIMIT:
-        logger.debug(f"Truncating past_research from {len(past_research)} to {_PAST_RESEARCH_CHAR_LIMIT} chars (tail).")
-        past_research = past_research[-_PAST_RESEARCH_CHAR_LIMIT:]
-    if len(scraped_ctx_str) > _SCRAPED_CTX_CHAR_LIMIT:
-        logger.debug(f"Truncating scraped_ctx from {len(scraped_ctx_str)} to {_SCRAPED_CTX_CHAR_LIMIT} chars.")
-        scraped_ctx_str = scraped_ctx_str[:_SCRAPED_CTX_CHAR_LIMIT]
-    if len(full_queries) > _FULL_QUERIES_CHAR_LIMIT:
-        logger.debug(f"Truncating full_queries from {len(full_queries)} to {_FULL_QUERIES_CHAR_LIMIT} chars.")
-        full_queries = full_queries[-_FULL_QUERIES_CHAR_LIMIT:]
-
     queries_and_reasons = await generate_queries_with_reasons(
         article_guidelines, past_research, full_queries, scraped_ctx_str, n_queries=n_queries
     )
@@ -159,8 +135,7 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
 
 
 async def generate_next_complementary_queries_tool(research_directory: str, 
-                                                   n_queries: int = 5, 
-                                                   depth_vs_breadth_ratio: float = 0.5, 
+                                                   n_queries: int = 4, 
                                                    focus: Literal["balanced", "depth", "breadth"] = "balanced") -> Dict[str, Any]:
         """
         Generate complementary candidate web-search queries to explore uncovered but closely relevant aspects.
@@ -173,7 +148,8 @@ async def generate_next_complementary_queries_tool(research_directory: str,
 
         Args:
             research_directory: Path to the research directory containing article data
-            n_queries: Number of queries to generate (default: 5)
+            n_queries: Number of queries to generate (default: 4)
+            focus: Query focus mode — "depth" (all depth), "breadth" (all breadth), or "balanced" (50/50)
 
         Returns:
             Dict[str, Any]: Dictionary containing:
@@ -183,8 +159,7 @@ async def generate_next_complementary_queries_tool(research_directory: str,
                 - output_path: Path to the generated next_queries.md file
                 - message: Human-readable success message with generation results
         """
-        logger.debug(f"Generating complementary queries for {research_directory} "
-                 f"(focus={focus}, ratio={depth_vs_breadth_ratio})")
+        logger.debug(f"Generating complementary queries for {research_directory} (focus={focus})")
 
         # Convert to Path object
         research_path = Path(research_directory)
@@ -221,25 +196,13 @@ async def generate_next_complementary_queries_tool(research_directory: str,
         if not article_guidelines:
             logger.warning(f"⚠️  Article guidelines not found at {guidelines_path}. Proceeding anyway.")
 
-        # Apply character caps before building the prompt.
-        # past_research is tail-truncated so the most recent Tavily results are kept.
-        if len(past_research) > _PAST_RESEARCH_CHAR_LIMIT:
-            logger.debug(f"Truncating past_research from {len(past_research)} to {_PAST_RESEARCH_CHAR_LIMIT} chars (tail).")
-            past_research = past_research[-_PAST_RESEARCH_CHAR_LIMIT:]
-        if len(scraped_ctx_str) > _SCRAPED_CTX_CHAR_LIMIT:
-            logger.debug(f"Truncating scraped_ctx from {len(scraped_ctx_str)} to {_SCRAPED_CTX_CHAR_LIMIT} chars.")
-            scraped_ctx_str = scraped_ctx_str[:_SCRAPED_CTX_CHAR_LIMIT]
-        if len(full_queries) > _FULL_QUERIES_CHAR_LIMIT:
-            logger.debug(f"Truncating full_queries from {len(full_queries)} to {_FULL_QUERIES_CHAR_LIMIT} chars.")
-            full_queries = full_queries[-_FULL_QUERIES_CHAR_LIMIT:]
-
         # === Resolve effective ratio based on focus knob ===
         if focus == "depth":
-            effective_ratio = 0.80
+            effective_ratio = 1.0
         elif focus == "breadth":
-            effective_ratio = 0.20
+            effective_ratio = 0.0
         else:  # balanced
-            effective_ratio = max(0.0, min(1.0, depth_vs_breadth_ratio))
+            effective_ratio = 0.5
         
         queries_and_reasons = await generate_complementary_queries_with_reasons(
             article_guidelines, past_research, full_queries, scraped_ctx_str, n_queries=n_queries, depth_vs_breadth_ratio=effective_ratio

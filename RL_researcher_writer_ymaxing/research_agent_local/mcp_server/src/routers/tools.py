@@ -296,7 +296,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         opik_context.update_thread_id()
 
-        result = await generate_next_complementary_queries_tool(research_directory, n_queries, depth_vs_breadth_ratio=depth_vs_breadth_ratio, focus=focus)
+        result = await generate_next_complementary_queries_tool(research_directory, n_queries, focus=focus)
         return result
     
     @mcp.tool()
