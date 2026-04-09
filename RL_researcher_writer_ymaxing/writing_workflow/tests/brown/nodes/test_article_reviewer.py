@@ -15,6 +15,7 @@ from brown.entities.profiles import (
     TerminologyProfile,
     TonalityProfile,
 )
+from brown.entities.research import Research
 from brown.entities.reviews import ArticleReviews, HumanFeedback, Review, SelectedTextReviews
 from brown.nodes.article_reviewer import ArticleReviewer
 
@@ -383,6 +384,72 @@ class TestArticleReviewer:
         human_feedback_reviews = [r for r in result.reviews if r.profile == "human_feedback"]
         assert len(human_feedback_reviews) == 1
         assert "technical details" in human_feedback_reviews[0].comment
+
+    def test_article_reviewer_initialization_with_research(self) -> None:
+        """Test that reviewer stores research when provided."""
+        app_config = get_app_config()
+        model, _ = build_model(app_config, node="review_article")
+
+        article = Article(content="# Test Article\n\nContent here.")
+        article_guideline = ArticleGuideline(content="Write a test article.")
+        article_profiles = ArticleProfiles(
+            character=CharacterProfile(name="test", content="Test character"),
+            article=ArticleProfile(name="test", content="Test article"),
+            structure=StructureProfile(name="test", content="Test structure"),
+            mechanics=MechanicsProfile(name="test", content="Test mechanics"),
+            terminology=TerminologyProfile(name="test", content="Test terminology"),
+            tonality=TonalityProfile(name="test", content="Test tonality"),
+        )
+        research = Research(content='<golden_source>Core</golden_source>\n\n<research_source phase="exploration">Insight</research_source>')
+
+        reviewer = ArticleReviewer(
+            to_review=article,
+            article_guideline=article_guideline,
+            article_profiles=article_profiles,
+            research=research,
+            model=model,
+        )
+
+        assert reviewer.research == research
+
+    @pytest.mark.asyncio
+    async def test_article_reviewer_ainvoke_with_research(self) -> None:
+        """Test that ainvoke completes successfully when research is provided with Format B exploration sources."""
+        from brown.nodes.article_reviewer import ReviewsOutput
+
+        mock_response = ReviewsOutput(
+            reviews=[Review(profile="test_profile", location="test_location", comment="Exploration sources are well-integrated.")]
+        )
+
+        app_config = get_app_config()
+        model, _ = build_model(app_config, node="review_article")
+        model.responses = [mock_response.model_dump_json()]
+
+        article = Article(content="# Test Article\n\nContent here.")
+        article_guideline = ArticleGuideline(content="Write a test article.")
+        article_profiles = ArticleProfiles(
+            character=CharacterProfile(name="test", content="Test character"),
+            article=ArticleProfile(name="test", content="Test article"),
+            structure=StructureProfile(name="test", content="Test structure"),
+            mechanics=MechanicsProfile(name="test", content="Test mechanics"),
+            terminology=TerminologyProfile(name="test", content="Test terminology"),
+            tonality=TonalityProfile(name="test", content="Test tonality"),
+        )
+        research = Research(content='<golden_source>Core</golden_source>\n\n<research_source phase="exploration">Insight</research_source>')
+
+        reviewer = ArticleReviewer(
+            to_review=article,
+            article_guideline=article_guideline,
+            article_profiles=article_profiles,
+            research=research,
+            model=model,
+        )
+
+        result = await reviewer.ainvoke()
+
+        assert isinstance(result, ArticleReviews)
+        assert len(result.reviews) == 1
+        assert result.reviews[0].comment == "Exploration sources are well-integrated."
 
     def test_article_reviewer_article_property(self) -> None:
         """Test that article property returns correct article for both Article and SelectedText inputs."""
