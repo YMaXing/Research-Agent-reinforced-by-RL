@@ -31,6 +31,54 @@ class Research(BaseModel, ContextMixin):
 
         return urls
 
+    @property
+    def is_format_a(self) -> bool:
+        return self.content.lstrip().startswith("# Comprehensive Research Report")
+
+    @property
+    def _exploration_sources(self) -> str:
+        """Extract all <research_source phase="exploration"> blocks from Format B content."""
+        if self.is_format_a:
+            return ""
+        matches = re.findall(
+            r'<research_source[^>]*phase=["\']exploration["\'][^>]*>.*?</research_source>',
+            self.content,
+            re.DOTALL | re.IGNORECASE,
+        )
+        return "\n\n".join(matches)
+
+    def to_reviewer_context(self) -> str:
+        """Return a compact research context for the article reviewer.
+
+        Tells the reviewer the detected format and — for Format B — provides the
+        exploration-phase source blocks so it can cross-reference article content
+        against the actual source material when checking exploration integration rules.
+        """
+        if self.is_format_a:
+            return (
+                "Research format: **Format A** (deduplicated). "
+                "Exploration-phase content was pre-filtered upstream before the writer received the research. "
+                "Skip all exploration integration checks — they do not apply to Format A articles."
+            )
+        sources = self._exploration_sources
+        if not sources:
+            return (
+                "Research format: **Format B** (raw XML-tagged). "
+                'No `<research_source phase="exploration">` blocks were found in the research. '
+                "Skip all exploration integration checks — no exploration sources were available to the writer."
+            )
+        return (
+            "Research format: **Format B** (raw XML-tagged). "
+            "The following exploration-phase sources were available to the writer. "
+            "Use them to check exploration integration compliance: verify that their content "
+            "appears in the article only where it genuinely enriches a core paragraph, "
+            "follows the core point (never leads), does not dominate any section's narrative, "
+            "and does not introduce concepts the article then structurally depends on elsewhere.\n\n"
+            "<exploration_sources>\n"
+            f"{sources}\n"
+            "</exploration_sources>"
+        )
+
     def to_context(self) -> str:
         return f"""
 <{self.xml_tag}>

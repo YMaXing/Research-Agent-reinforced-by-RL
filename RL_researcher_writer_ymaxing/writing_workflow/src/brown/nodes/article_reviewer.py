@@ -8,6 +8,7 @@ from brown.entities.articles import Article, SelectedText
 from brown.entities.exceptions import InvalidOutputTypeException
 from brown.entities.guidelines import ArticleGuideline
 from brown.entities.profiles import ArticleProfiles
+from brown.entities.research import Research
 from brown.entities.reviews import ArticleReviews, HumanFeedback, Review, SelectedTextReviews
 from brown.models import FakeModel
 
@@ -90,7 +91,8 @@ The <article_guideline> can ALSO contain:
     `<research_source>` XML tags. `<golden_source>` entries are highest priority;
     `<research_source phase="exploitation">` entries are high priority; `<research_source phase="exploration">` entries
     are medium priority and should only be used when they meaningfully enrich golden and exploitation
-    content. When reviewing, verify that the article's factual claims respect this priority order.
+    content. When reviewing, verify that the article's factual claims respect this priority order, and
+    that exploration-phase content is correctly integrated per the rules described in ## Reviewing Rules below.
 - information about anchoring the article into a series such as a course or a book. Extremely important when the article is part of 
 something bigger and we have to anchor the article into the learning journey of the reader. For example, when introducing concepts
 in previous articles that we don't want to reintroduce into the current one.
@@ -132,6 +134,13 @@ code blocks, or media items:
 Here is the article profile, describing particularities on how the end-to-end article should look like:
 {article_profile}
 
+## Research Context
+
+The following information about the research used to write the article is provided to help you
+check exploration-phase source integration:
+
+{research_context}
+
 ## Reviewing Process
 
 You will review the article against all the requirements above, creating a one-to-many relationship between each requirement and the 
@@ -157,6 +166,24 @@ No.1 focus.
   - **Order-sensitive sequences**: When the guideline presents a sequence of concepts or examples in a natural logical
     order (simple-to-complex, chronological, prerequisite-based), the article must follow that order. Only unordered
     lists of independent items (separate use cases, benefits) may be presented in any order.
+  - **Exploration integration (Format B only):** When the research is in Format B, the `## Research
+    Context` section above provides the actual `<exploration_sources>` that were available to the writer.
+    Use these sources to perform a direct cross-reference between source content and article content.
+    For each exploration source, check whether its content appears in the article and, if so, whether
+    it satisfies all of the following integration rules:
+    - **Narrative primacy:** Each section's core argument must be driven by the guideline, golden, and
+      exploitation content. Flag any section where an exploration source's content appears to dominate
+      the narrative flow rather than enrich it — i.e., where the section's argument would be lost or
+      significantly weakened if that source's content were removed.
+    - **Placement:** Exploration content must follow the core point it enriches, never precede it. Flag
+      any paragraph where exploration source content leads before the primary claim is established by
+      core sources.
+    - **Self-contained integration:** No exploration addition may introduce a concept that the article
+      then structurally depends on elsewhere. Flag any case where removing an exploration source's
+      contribution would leave a later paragraph or section incoherent or with a dangling reference.
+    - **Cumulative focus:** Compare each section's overall content against what the `<article_guideline>`
+      specifies for that section. Flag any section whose focus has visibly shifted away from the
+      guideline's stated intent as a result of the combined weight of exploration additions.
 - **The third most important rule:** The adherence to the <article_profile>.
 - **The fourth most important rule:** The adherence to the rest of the requirements.
 
@@ -179,9 +206,14 @@ or "Implementing GraphRAG - Third paragraph"
 1. Read and analyze the article.
 2. Read and analyze the <human_feedback>.
 3. Read and analyze all the requirements considering the <human_feedback> as a guiding force.
-4. Carefully compare the article against the requirements as instructed by the rules above.
-5. For each requirement, create 0 to N reviews
-6. Return the reviews of the article.
+4. Check the `## Research Context` section to determine the research format and whether exploration
+   sources are available.
+5. Carefully compare the article against the requirements as instructed by the rules above.
+6. If the research is in Format B and exploration sources are provided, cross-reference each
+   exploration source against the article: check narrative primacy, placement, self-contained
+   integration, and cumulative focus for every section where exploration content appears.
+7. For each requirement, create 0 to N reviews.
+8. Return the reviews of the article.
 """
 
     selected_text_system_prompt_template = """
@@ -210,9 +242,14 @@ previous chain of thoughts:
 2. Locate the <selected_text> within the <article> based on the <first_line_number> and <last_line_number>.
 3. Read and analyze the <human_feedback>.
 4. Read and analyze all the requirements considering the <human_feedback> as a guiding force.
-5. Carefully compare the selected text against the requirements as instructed by the rules above.
-6. For each requirement, create 0 to N reviews
-7. Return the reviews of the selected text.
+5. Check the `## Research Context` section to determine the research format and whether exploration
+   sources are available.
+6. Carefully compare the selected text against the requirements as instructed by the rules above.
+7. If the research is in Format B and exploration sources are provided, cross-reference each exploration
+   source against the selected text: check narrative primacy, placement, self-contained integration,
+   and cumulative focus for the section(s) covered by the selected text.
+8. For each requirement, create 0 to N reviews.
+9. Return the reviews of the selected text.
 """
 
     def __init__(
@@ -222,11 +259,13 @@ previous chain of thoughts:
         model: Runnable,
         article_profiles: ArticleProfiles,
         human_feedback: HumanFeedback | None = None,
+        research: Research | None = None,
     ) -> None:
         self.to_review = to_review
         self.article_guideline = article_guideline
         self.article_profiles = article_profiles
         self.human_feedback = human_feedback
+        self.research = research
 
         super().__init__(model, toolkit=Toolkit(tools=[]))
 
@@ -262,6 +301,9 @@ previous chain of thoughts:
             mechanics_profile=self.article_profiles.mechanics.to_context(),
             terminology_profile=self.article_profiles.terminology.to_context(),
             tonality_profile=self.article_profiles.tonality.to_context(),
+            research_context=self.research.to_reviewer_context()
+            if self.research
+            else "Research was not provided to the reviewer. Skip all exploration integration checks.",
         )
         user_input_content = self.build_user_input_content(inputs=[system_prompt])
         inputs = [
