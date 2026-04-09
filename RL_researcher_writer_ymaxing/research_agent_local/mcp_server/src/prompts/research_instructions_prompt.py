@@ -133,10 +133,20 @@ If the user doesn't provide a research directory, you should ask for it before e
 5. Filter Tavily results by quality:
 
     5.1 Run the "select_research_sources_to_keep" tool. The tool reads the ARTICLE_GUIDELINE_FILE and the
-    TAVILY_RESULTS_FILE (including queries in both exploitation and exploration phases), automatically evaluates 
-    each source for trustworthiness, authority and relevance, writes the comma-separated IDs of the accepted sources 
-    to the TAVILY_SOURCES_SELECTED_FILE **and** saves a filtered markdown file TAVILY_RESULTS_SELECTED_FILE that contains 
-    only the full content blocks of the accepted sources. Both files are saved within RESEARCH_OUTPUT_DIRECTORY.
+    TAVILY_RESULTS_FILE and applies a two-stage evaluation process:
+    - **Stage 1 — Exploitation sources**: Each [EXPLOITATION] source is evaluated on domain authority &
+      trustworthiness, relevance to the article guidelines, and content quality. Exploitation sources are
+      strongly protected and only rejected if clearly low-quality, unreliable, or irrelevant.
+    - **Stage 2 — Exploration sources**: Each [EXPLORATION] source is evaluated on the same three dimensions,
+      but with a higher bar. The tool scans through the article guidelines section by section and only accepts
+      an exploration source if it can identify at least one specific section where the source adds genuine new
+      value in depth (theoretical foundations, technical nuances, alternative perspectives, latest developments,
+      limitations/criticisms, implementation challenges, real-world case studies, future implications) or
+      breadth (adjacent concepts, cross-domain analogies, historical context, enabling/disrupting technologies,
+      practical applications in other fields, emerging trends). Sources that cannot satisfy this criterion are rejected.
+    The tool writes the comma-separated IDs of the accepted sources to the TAVILY_SOURCES_SELECTED_FILE **and**
+    saves a filtered markdown file TAVILY_RESULTS_SELECTED_FILE that contains only the full content blocks of
+    the accepted sources. Both files are saved within RESEARCH_OUTPUT_DIRECTORY.
 
 6. Identify which of the accepted sources deserve a *full* scrape:
 

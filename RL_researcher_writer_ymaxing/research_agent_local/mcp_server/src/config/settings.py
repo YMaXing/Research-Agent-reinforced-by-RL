@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     scraping_model: str = Field(default="grok-4-1-fast-reasoning", description="Model for web scraping")
     query_generation_model: str = Field(default="grok-4.20-reasoning", description="Model for query generation")
     search_enhancement_model: str = Field(default="grok-4-1-fast-non-reasoning", description="Model for search enhancement")
-    source_selection_model: str = Field(default="grok-4-1-fast-reasoning", description="Model for source selection")
+    source_selection_model: str = Field(default="grok-4.20-reasoning", description="Model for source selection")
     content_dedup_model: str = Field(default="grok-4-1-fast-reasoning", description="Model for content deduplication")
 
     # API Keys

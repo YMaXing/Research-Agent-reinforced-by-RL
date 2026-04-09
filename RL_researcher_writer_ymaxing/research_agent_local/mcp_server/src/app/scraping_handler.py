@@ -173,9 +173,13 @@ async def scrape_arxiv_url(
         # === NEW: Automatic LLM post-processing for LaTeX quirks ===
         if raw_md.strip():
             logger.debug(f"🧼 Running arXiv-specific LaTeX cleanup on {url}")
-            clean_prompt = PROMPT_CLEAN_ARXIV_MARKDOWN.format(
-                article_guidelines=article_guidelines or "<none>",
-                arxiv_markdown=raw_md,
+            # Use .replace() instead of .format() to avoid KeyError when the
+            # paper content itself contains {…} patterns (e.g. LaTeX environments
+            # like "{equation}" rendered by arxiv2markdown).
+            clean_prompt = (
+                PROMPT_CLEAN_ARXIV_MARKDOWN
+                .replace("{article_guidelines}", article_guidelines or "<none>")
+                .replace("{arxiv_markdown}", raw_md)
             )
             try:
                 response = await chat_model.ainvoke(clean_prompt)
@@ -227,7 +231,11 @@ async def clean_markdown(
     if not markdown_content.strip():
         return markdown_content
 
-    prompt_text = PROMPT_CLEAN_MARKDOWN.format(article_guidelines=article_guidelines, markdown_content=markdown_content)
+    prompt_text = (
+        PROMPT_CLEAN_MARKDOWN
+        .replace("{article_guidelines}", article_guidelines)
+        .replace("{markdown_content}", markdown_content)
+    )
     timeout_seconds = 180  # 3 minutes timeout for LLM call
 
     try:

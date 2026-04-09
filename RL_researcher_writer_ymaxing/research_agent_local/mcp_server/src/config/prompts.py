@@ -279,12 +279,6 @@ from a collection of web search results generated across multiple rounds of a tw
 - **Phase 1 (Exploitation)**: Fixed rounds that directly address the core topics and gaps in the article guidelines.
 - **Phase 2 (Exploration)**: Later complementary rounds that add depth and breadth through more advanced or adjacent angles.
 
-Your task is to evaluate each source based on:
-1. **Domain Authority & Trustworthiness**: Prefer reputable websites, official sources, established publications, academic institutions, and well-known organizations. Avoid obscure or potentially unreliable websites.
-2. **Content Quality**: Evaluate the depth, accuracy, and usefulness of the answers obtained from each source.
-3. **Relevance to Article Guidelines**: How well each source's content aligns with the provided article guidelines.
-4. **Query Origin & Phase Value**: Whether the source came from an exploitation query (core coverage) or a complementary exploration query (depth/breadth).
-
 Here are the article guidelines:
 <article_guidelines>
 {article_guidelines}
@@ -301,13 +295,39 @@ For each source, you will see:
 - The queries that led to this source
 - The answers/content obtained from this source
 
-Please analyze each source and determine which ones should be ACCEPTED or REJECTED.
+---
 
-**Selection Criteria (apply in strict priority order):**
+## Stage 1 — Exploitation Sources
+
+Evaluate every source tagged [EXPLOITATION] on the following dimensions:
+1. **Relevance to Article Guidelines**: How well each source's content aligns with the sections and topics defined in the article guidelines.
+2. **Domain Authority & Trustworthiness**: Prefer reputable websites, official sources, established publications, academic institutions, and well-known organizations. Avoid obscure or potentially unreliable websites.
+3. **Content Quality**: Evaluate the depth, accuracy, and usefulness of the answers obtained from each source.
+
+Apply these criteria (in strict priority order):
 - **Strongly protect exploitation sources**: These represent essential guideline coverage. Only reject them if they are clearly low-quality, unreliable, or irrelevant.
-- **Higher bar for exploration sources**: Accept complementary sources only if they add genuine new value (theoretical foundations, deeper technical insights, limitations/criticisms, real-world case studies, cross-domain analogies, emerging trends, or important breadth not covered in Phase 1).
 - **Trustworthiness**: Prefer sources from high-authority domains (.edu, .gov, established publications, official documentation, reputable organizations).
 - **Content Quality**: Accept high-quality, detailed, relevant content. Reject superficial, promotional, biased, marketing, or low-effort material.
+
+---
+
+## Stage 2 — Exploration Sources
+
+Evaluate every source tagged [EXPLORATION] on the following dimensions:
+1. **Relevance to Article Guidelines**: How well each source's content aligns with the sections and topics defined in the article guidelines.
+2. **Domain Authority & Trustworthiness**: Prefer reputable websites, official sources, established publications, academic institutions, and well-known organizations. Avoid obscure or potentially unreliable websites.
+3. **Content Quality**: Evaluate the depth, accuracy, and usefulness of the answers obtained from each source.
+
+Apply these criteria (in strict priority order):
+- **Higher bar for exploration sources**: For each exploration source, scan through the article guidelines section by section and check whether this source adds genuine new value — in depth or breadth — to **at least one** section. 
+  This criterion is satisfied only if you can identify at least one specific guideline section that the source meaningfully enriches through one or more of the following:
+  - **Depth**: theoretical foundations, technical nuances, alternative perspectives, latest developments, limitations/criticisms, implementation challenges, real-world case studies, future implications.
+  - **Breadth**: adjacent concepts, cross-domain analogies, historical context, enabling/disrupting technologies, practical applications in other fields, emerging trends connected to the core topic.
+  If no such section can be identified, reject the source.
+- **Trustworthiness**: Prefer sources from high-authority domains (.edu, .gov, established publications, official documentation, reputable organizations).
+- **Content Quality**: Accept high-quality, detailed, relevant content. Reject superficial, promotional, biased, marketing, or low-effort material.
+
+---
 
 Return your decision as a structured output with:
 1. selection_type: "none" if no sources meet the quality standards, "all" if all sources are acceptable,

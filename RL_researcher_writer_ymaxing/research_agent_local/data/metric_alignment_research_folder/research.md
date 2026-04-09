@@ -8,42 +8,6 @@
 
 Phase: [EXPLOITATION]
 
-### Source [1]: https://www.emerge.haus/blog/long-context-windows-in-generative-ai
-
-Query: What real-world challenges did developers face when building personal AI companions using only context windows of 8k to 16k tokens, and how did they begin implementing external memory systems?
-
-Answer: Early large language models like GPT-3 were limited to around 2K tokens context, with traditional transformers facing quadratic computation and memory blow-up, keeping context windows short at a few thousand tokens. This historically constrained capabilities for extended conversations and persistent memory in personal assistants. In chatbot or personal assistant use-cases, short context windows cause the AI to forget important details from earlier in a conversation, like a person's name, preventing coherent, personalized dialog over long sessions. For AI agents with persistent memory, early short contexts couldn't carry a memory log of user preferences or past sessions. Developers faced scaling challenges with positional embeddings and hardware memory limits, making training on 8K instead of 2K require 16× more compute. To address this, innovations included memory tokens or layers in models like Recurrent Memory Transformers (RMT), which use special memory tokens passed between segments for effectively unbounded context. Compressive transformers compress old activations, and dedicated memory components store information from earlier context for later recall, merging with external memory systems. Future directions emphasize memorization tokens, learned vectors, or external memory for personal AI agents to maintain lifelong memory of interactions via distilled summaries.
-
------
-
------
-
-Phase: [EXPLOITATION]
-
-### Source [2]: https://factory.ai/news/context-window-problem
-
-Query: What real-world challenges did developers face when building personal AI companions using only context windows of 8k to 16k tokens, and how did they begin implementing external memory systems?
-
-Answer: LLMs have limited context windows up to 1-2 million tokens, but enterprise needs exceed this; even larger windows fail for agents. Challenges include not big enough for full codebases, quality degradation ('Context Rot' where performance declines with length), and high monetary costs from token pricing. For agents like Factory's Droids, LLMs lacked persistent memory, repeatedly asking for user preferences each session, causing friction. They implemented hierarchical memory as external systems: User Memory for individual facts (dev environment, past work, preferences) and Org Memory for shared knowledge (style guides, checklists). This provides continuity across sessions without stuffing into context. Additional scaffolding like repository overviews, semantic search, file operations, and integrations (Notion, Slack) curate context efficiently. Future needs external memory for durable long-term project state and user preferences across thousands of interactions.
-
------
-
------
-
-Phase: [EXPLOITATION]
-
-### Source [3]: https://aishwaryasrinivasan.substack.com/p/building-a-personal-ai-agent-that
-
-Query: What real-world challenges did developers face when building personal AI companions using only context windows of 8k to 16k tokens, and how did they begin implementing external memory systems?
-
-Answer: The primary constraint for personal AI is the context window token bottleneck: LLMs forget after interactions, bundling history into new prompts hits limits causing cost, latency, and 'Lost in the Middle' degradation where models ignore buried info. For power users building personal agents, this means constantly re-priming with preferences, projects, documents—crippling inefficiency like a goldfish memory. To build personal AI companions, cannot rely on stuffing everything into prompts. Developers began implementing externalized memory architecture evolving to Agents with Tools and Memory: Short-Term (Ephemera) for current conversation, Long-Term (Semantic) via RAG with Vector Database for persistent facts about user, projects, preferences—retrievable without full load. Uses LangChain framework for this persistent short/long-term memory dedicated to personal data.
-
------
-
------
-
-Phase: [EXPLOITATION]
-
 ### Source [4]: https://community.cisco.com/t5/devnet-general-blogs/agent-memory-systems-beyond-context-windows/ba-p/5352003
 
 Query: What real-world challenges did developers face when building personal AI companions using only context windows of 8k to 16k tokens, and how did they begin implementing external memory systems?
@@ -56,18 +20,6 @@ Answer: Context windows remain a bottleneck even at 200K-400K tokens (e.g., GPT-
 
 <details>
 <summary>How can concepts from human episodic memory, such as timestamped events and contextual narratives, be practically applied to improve empathy and continuity in LLM-based personal assistant agents?</summary>
-
-Phase: [EXPLOITATION]
-
-### Source [5]: https://skymod.tech/why-memory-matters-in-llm-agents-short-term-vs-long-term-memory-architectures/
-
-Query: How can concepts from human episodic memory, such as timestamped events and contextual narratives, be practically applied to improve empathy and continuity in LLM-based personal assistant agents?
-
-Answer: Episodic memory in LLM-based agents pertains to maintaining a history of past interactions, similar to human memory of specific events. For conversational agents, it stores previous interactions or problem-solving steps, ensuring context continuity. This allows the agent to recall previous user queries or responses, enabling more fluent and relevant dialogues. Implemented through few-shot prompting or summarizing past interactions, it guides agent behavior by providing examples from successful sequences. Episodic memory intertwines with short-term memory but supports long-term continuity. In practice, summarization condenses conversation histories into shorter summaries for inclusion in context, preserving essential details while reducing token usage. This enhances personalization by recalling user-specific details across sessions, improving empathy through context-aware responses that reference past experiences, and maintaining continuity in multi-turn or multi-session interactions. For personal assistants, storing timestamped interactions (e.g., birthdays via memory tools) enables empathetic responses like personalized birthday wishes, demonstrating continuity and user understanding.
-
------
-
------
 
 Phase: [EXPLOITATION]
 
@@ -108,34 +60,6 @@ Disadvantages include cold-start problem: graphs start empty, requiring labor-in
 
 -----
 
------
-
-Phase: [EXPLOITATION]
-
-### Source [9]: https://machinelearningmastery.com/vector-databases-vs-graph-rag-for-agent-memory-when-to-use-which/
-
-Query: What are the advantages and disadvantages of using knowledge graphs for modeling relationships and temporal changes in agent memory compared to simpler structured data approaches?
-
-Answer: Graph RAG (knowledge graphs with LLMs) excels at modeling relationships via discrete entities as nodes and explicit relationships as edges (e.g., 'works at', 'uses'), enabling structured world models that agents update by extracting entities/relationships. Advantages over simpler vector databases: precision in retrieval following explicit paths reduces error risk; complex reasoning via graph traversal (e.g., direct reports of a manager via org/approval chains); explainability with auditable node/edge paths vs. opaque similarity scores; ideal for structured questions in dense, interconnected facts like software dependencies or org charts.
-
-Disadvantages: high implementation complexity with entity-extraction pipelines, ontology/schema design/maintenance (rigid, hard to evolve); prominent cold-start problem requiring substantial upfront population vs. immediate vector usefulness; not suited for purely unstructured data or broad similarity matching where vectors offer fast setup, fuzzy matching, and low overhead.
-
------
-
------
-
-Phase: [EXPLOITATION]
-
-### Source [10]: https://zbrain.ai/knowledge-graphs-for-agentic-ai/
-
-Query: What are the advantages and disadvantages of using knowledge graphs for modeling relationships and temporal changes in agent memory compared to simpler structured data approaches?
-
-Answer: Knowledge graphs (KGs) model relationships as nodes (entities) and typed edges, enabling multi-hop reasoning (e.g., compliance: Project → governedBy → Policy → applicableRegion), disambiguation (e.g., 'Apple' as company vs. fruit), long-term persistent memory, and collaboration in multi-agent systems via shared state. They complement simpler vector stores in hybrid Graph-RAG: vectors for semantic similarity, KGs for structured queries/logical joins, improving accuracy/efficiency.
-
-Challenges/disadvantages vs. simpler approaches: scalability for enterprise-size graphs (millions of nodes/edges) requires high-performance DBs, indexing, caching; ontology/schema evolution in dynamic environments demands governance vs. agility; data freshness via continuous ingestion pipelines; high operational overhead (integration, maintenance, expertise in Cypher/SPARQL); latency from traversals (mitigated by optimization). Vectors handle unstructured fuzzy recall better; KGs add complexity but enable precise relational/temporal modeling.
-
------
-
 </details>
 
 <details>
@@ -148,18 +72,6 @@ Phase: [EXPLOITATION]
 Query: How does the mem0 library handle the creation, storage, and hybrid retrieval of semantic, episodic, and procedural memories in agent applications?
 
 Answer: Mem0 provides comprehensive memory management for long-term, short-term, semantic, and episodic memories for individual users, agents, and sessions through robust APIs. It uses a hybrid database approach combining vector, key-value, and graph databases to efficiently store and retrieve different types of information. Memories are associated with unique identifiers like user_id. When storing, Mem0 extracts relevant facts and preferences. Retrieval uses a sophisticated process considering relevance, importance, and recency. Creation involves adding conversation messages via memory.add(messages=conversation, user_id="customer_service_bot"), which stores the entire conversation history. Retrieval is done via memory.search(data, user_id="customer_service_bot"), fetching relevant memories which are then flattened and injected into agent prompts for context-aware responses. This enables maintaining context across sessions, adaptive personalization, and dynamic updates in agent applications like customer service chatbots and multi-agent conversations.
-
------
-
------
-
-Phase: [EXPLOITATION]
-
-### Source [14]: https://atlan.com/know/types-of-ai-agent-memory/
-
-Query: How does the mem0 library handle the creation, storage, and hybrid retrieval of semantic, episodic, and procedural memories in agent applications?
-
-Answer: Mem0 handles semantic memory via its Semantic Memory API, storing and retrieving facts through hybrid vector plus graph traversal for semantic search over stored facts. For episodic memory, Mem0’s Episodic Memory API stores events with timestamps using hybrid vector plus graph retrieval, enabling agents to persist cross-session information by writing to external memory stores and retrieving relevant entries. Procedural memory is mentioned as part of agents persisting updated instructions. Frameworks like Mem0 provide APIs for episodic, semantic, and procedural memories. The Mem0 research paper benchmarks its memory layer at 91% lower p95 latency and 90% token cost savings versus naive context stuffing, with 26% improvement over OpenAI’s default memory. Retrieval architecture uses hybrid vector plus graph for efficient access in agent applications.
 
 -----
 
@@ -252,21 +164,6 @@ Answer: Amazon Bedrock AgentCore Memory provides production best practices:
 </details>
 
 <details>
-<summary>What are the advantages and limitations of using raw unstructured text for agent memory storage compared to structured data formats in practical implementations?</summary>
-
-Phase: [EXPLOITATION]
-
-### Source [23]: https://blogs.oracle.com/developers/comparing-file-systems-and-databases-for-effective-ai-agent-memory-management
-
-Query: What are the advantages and limitations of using raw unstructured text for agent memory storage compared to structured data formats in practical implementations?
-
-Answer: Filesystem (raw unstructured text like markdown files) advantages for agent memory: pretraining-native interface (LLMs know folders/files), simple primitives (list/read/write/search), token efficiency via progressive disclosure (grep + range reads), natural for artifacts/transcripts, debuggable/portable, low overhead for prototypes. Disadvantages: weak concurrency (overwrites), no ACID transactions, brittle keyword search (misses semantics), scaling issues (directory bloat), DIY indexing, metadata drift, poor multi-user coordination, coarse security. Databases (structured) win for production: concurrency/auditability/semantic search, unified storage. Filesystems attractive until needing correctness under concurrency/semantic retrieval/structured guarantees; then adopt database. Benchmarks show databases faster/better quality at scale/concurrency due to semantic retrieval vs keyword.
-
------
-
-</details>
-
-<details>
 <summary>How can developers design effective LLM prompts to extract and structure semantic facts from conversations for long-term agent memory?</summary>
 
 Phase: [EXPLOITATION]
@@ -291,26 +188,6 @@ Subconscious formation: Prompt LLM post-conversation to extract insights without
 
 -----
 
------
-
-Phase: [EXPLOITATION]
-
-### Source [28]: https://aws.amazon.com/blogs/machine-learning/building-smarter-ai-agents-agentcore-long-term-memory-deep-dive/
-
-Query: How can developers design effective LLM prompts to extract and structure semantic facts from conversations for long-term agent memory?
-
-Answer: AgentCore Memory uses asynchronous extraction with LLMs to identify meaningful information from conversations for long-term storage. Configure Memory strategies: Semantic memory extracts facts/knowledge (e.g., "The customer's company has 500 employees across Seattle, Austin, and Boston"); User preferences (structured with categories/context); Summary memory (XML narratives).
-
-Extraction processes incoming messages with timestamps, prior context, generating records in predefined schema. Multiple memories per event; strategies independent/parallel.
-
-Consolidation: Retrieve similar memories, send to LLM with prompt like: "You are an expert in managing data... decide which operation: ADD/UPDATE/NO-OP." Preserves semantics (e.g., 'loves pizza' == 'likes pizza'), resolves conflicts prioritizing recency.
-
-Custom strategies: Override built-in prompts for extraction/consolidation, custom models. Self-managed for full control.
-
-Best practices: Choose strategies for use case; design namespaces; monitor consolidation.
-
------
-
 </details>
 
 <details>
@@ -330,11 +207,23 @@ Answer: Larger context windows do not solve the fundamental constraint of finite
 
 Phase: [EXPLOITATION]
 
-### Source [34]: https://arxiv.org/pdf/2509.21361?
+### Source [33]: https://research.ibm.com/blog/larger-context-window
 
 Query: In what ways do larger context windows in modern LLMs change the role and implementation of external long-term memory systems in agent design?
 
-Answer: Large context windows degrade performance; Maximum Effective Context Window (MECW) much smaller than MCW, task-dependent, models fail at 100-1000 tokens despite million-token MCW. RAG improves hallucination rates under MECW (e.g., GPT-5 0% hallucination <500 tokens), but large inputs increase hallucinations to 99% at 2000 tokens, worsening performance. Agentic systems chaining LLMs with large contexts for RAG cause cascading failures due to degraded accuracy. Shift to optimal context sizes per model/task prevents failures, reduces hallucinations for reliable chaining. Developers should limit tokens in RAG to MECW to improve accuracy, avoid relying on near-limitless windows.
+Answer: Larger context windows allow feeding LLM more details directly via 'prompt stuffing', essentially replicating what RAG provides without external retrieval. With larger windows, can throw in all books/enterprise documents, potentially making RAG obsolete as no information loss from retrieval. However, RAG remains relevant for current-events, evaluating contradictory info (policy updates), cost efficiency (scanning thousands of docs per query inefficient; filter first). Larger windows best for less common queries after filtering extraneous details. IBM extended Granite models to 128k tokens for better coding by ingesting more docs internally.
+
+-----
+
+-----
+
+Phase: [EXPLOITATION]
+
+### Source [35]: https://redis.io/blog/llm-context-windows/
+
+Query: In what ways do larger context windows in modern LLMs change the role and implementation of external long-term memory systems in agent design?
+
+Answer: Large context windows (128k-2M) degrade accuracy past 32k tokens ('lost-in-the-middle'), high cost/latency; small windows (<32k) consistent for focused tasks. Production uses RAG for stable accuracy as data scales (retrieves relevant sections vs. stuffing), agent memory: short-term (conversation history, eviction), long-term (vector embeddings for semantic retrieval across sessions). Redis Agent Memory Server combines layers with vector search/caching, extending context beyond single limits. Optimal: combine large windows for full-doc reasoning, RAG for scaling, caching for repeats—external memory essential despite larger windows.
 
 -----
 
@@ -350,6 +239,21 @@ Phase: [EXPLOITATION]
 Query: What real-world case studies demonstrate the benefits of tailoring memory architecture to specific agent use cases like personal companions versus automation tasks?
 
 Answer: The paper discusses memory and context management in AI agent architectures, distinguishing between types like working memory (task-relevant during execution), episodic memory (specific interactions), semantic memory (conceptual knowledge), and procedural memory (action sequences). Microsoft's deputy CTO Sam Schillace notes effective memory systems are essential for agent autonomy to carry context across actions. Cross-session personalization uses memory for consistent, adaptive experiences maintaining user profiles for preferences and history, balancing accuracy, appropriateness, and privacy. Chunking and chaining divide interactions for storage and relevance-based access. In real-world applications, Section 5.2 Personal Assistance and Productivity highlights memory for task management, information retrieval, creative collaboration, personalized learning, communication assistance, where agents like Microsoft Copilot use memory for continuity (e.g., drafting emails, recapping meetings). Users report saving 1.5 hours/week on tasks. Section 5.1 Enterprise Applications shows automation benefits like Vodafone's AI agent handling 70% inquiries reducing resolution time 47%, logistics reducing errors 83%, using memory for context in customer service, process automation. Section 5 contrasts personal (continuity, personalization) vs enterprise automation (scalable task execution). Challenges include scalability, retrieval accuracy for complex tasks.
+
+-----
+
+</details>
+
+<details>
+<summary>How are rapidly expanding LLM context windows from thousands to millions of tokens altering the balance between in-context history and external long-term memory systems in agent design?</summary>
+
+Phase: [EXPLOITATION]
+
+### Source [42]: https://aiagentmemory.org/articles/context-window-llm-comparison-2025/
+
+Query: How are rapidly expanding LLM context windows from thousands to millions of tokens altering the balance between in-context history and external long-term memory systems in agent design?
+
+Answer: For years, LLM context windows were measured in mere thousands of tokens, creating significant limitations for AI agents. Tasks requiring long conversations or analysis of extensive documents were challenging, often necessitating complex AI agent memory systems or retrieval-augmented generation (RAG) to bridge the gap. However, rapid advancements in LLM memory system architectures and attention mechanisms have drastically altered this landscape. By 2025, models with context windows exceeding 100,000 tokens are becoming commonplace, with some pushing towards the million-token mark. This leap fundamentally changes how we think about AI agent long-term memory and its reliance on external storage. The size of an LLM’s context window directly impacts its ability to perform complex tasks, allowing agents to maintain conversational coherence, process large documents, execute multi-step instructions, and improve reasoning capabilities. This shift influences the design of AI agent architecture patterns, potentially reducing the reliance on sophisticated episodic memory in AI agents for immediate recall, though long-term storage remains vital. Large context windows offer a form of 'short-term' or 'working' memory for AI agents, but they don’t replace the need for persistent long-term memory AI agents. Context Window acts like an agent’s immediate scratchpad, volatile and resets with each session, excellent for immediate recall within a single interaction. Persistent Memory stores information across sessions, including episodic memory (specific events) and semantic memory (general knowledge). Systems like Hindsight complement the LLM’s built-in context. Large context windows can enhance existing AI memory systems and RAG pipelines: richer prompts with more retrieved information, reduced retrieval needs for tasks that previously required frequent external knowledge base access, better reasoning over retrieved data. The FAQ notes that large context windows reduce the need for external memory systems for short-term recall, but differ from traditional AI memory systems which provide persistent, long-term storage across sessions.
 
 -----
 
@@ -388,6 +292,21 @@ Answer: Atkinson-Shiffrin's Modal Model (sensory/short-term/long-term stores wit
 ## Research Results
 
 <details>
+<summary>What emerging techniques are being developed to enable agents to perform online updates to their internal (parametric) knowledge without full retraining, bridging the gap to true continual learning?</summary>
+
+Phase: [EXPLORATION]
+
+### Source [57]: https://arxiv.org/html/2511.01093v1
+
+Query: What emerging techniques are being developed to enable agents to perform online updates to their internal (parametric) knowledge without full retraining, bridging the gap to true continual learning?
+
+Answer: The paper introduces ATLAS, a dual-agent architecture for gradient-free continual learning that enables online adaptation without retraining model parameters. It decouples reasoning (Teacher model) from execution (Student model) and uses a Persistent Learning Memory (PLM) to store distilled guidance from experiences. The orchestration layer dynamically adjusts strategies like supervision level or plan selection at inference time based on retrieved learning history and rewards from Teacher-Student interactions. This shifts adaptation from model weights to system-level orchestration, achieving immediate behavioral modification without gradients, specialized hardware, or datasets. On ExCyTIn-Bench (cyber-threat benchmark), ATLAS boosts GPT-5-mini success from 33.7% to 54.1%, outperforms larger GPT-5 by 13%, reduces tokens by 45% (78k vs 142k), and shows progressive efficiency (tokens drop from 101k to 67k over 98 tasks). Cross-incident transfer improves accuracy 28% to 41% with frozen pamphlets, no retraining. Contrasts with training-based (LoRA, QLoRA, DoRA), prompt optimization, retrieval systems, and passive memory mechanisms, which rely on gradients or lack active skill synthesis. Rewards use two-tier ensemble judges for auditable scores. Generates causally annotated traces for world-model training.
+
+-----
+
+</details>
+
+<details>
 <summary>In what ways do different temporal granularities for episodic memory storage impact an agent's temporal reasoning capabilities and personalization quality?</summary>
 
 Phase: [EXPLORATION]
@@ -415,6 +334,66 @@ Answer: PREMem structures episodic memory at fine-grained fragment level from co
 </details>
 
 <details>
+<summary>What applications of agent memory systems in scientific research, such as laboratory notebooks or hypothesis tracking, demonstrate the value of procedural and episodic memory types?</summary>
+
+Phase: [EXPLORATION]
+
+### Source [76]: https://pmc.ncbi.nlm.nih.gov/articles/PMC11449156/
+
+Query: What applications of agent memory systems in scientific research, such as laboratory notebooks or hypothesis tracking, demonstrate the value of procedural and episodic memory types?
+
+Answer: The Soar architecture comprises multiple memory systems, including modules for procedural memory (if-then rules for virtual actions), working memory (current state, sensing, potential actions), and episodic memory (stores past states from working memory, retrievable by cueing). In scientific research contexts, these systems highlight episodic memory's role in directing research by identifying novel or neglected hypotheses as pursuit-worthy, such as its independent role in planning and contributions to fast learning in novel, sparse-reward environments. Event memory (episodic-inspired) aids strategic decision-making, fast learning (e.g., one-shot learning in Labyrinth), exploration, navigation (constructing cognitive maps), and acting over temporal distance, demonstrating value in hypothesis generation and testing. Procedural memory automates actions via rules, complementing episodic recall for informed decisions. No direct laboratory notebooks or hypothesis tracking mentioned, but systems propose evaluating episodic memory theories via AI, isolating memory contributions to behavior through ablation studies, advancing scientific understanding of memory functions.
+
+-----
+
+</details>
+
+<details>
+<summary>In what ways have memory patterns from collaborative software tools like wikis or version control systems informed the design of shared semantic memory in multi-user AI agents?</summary>
+
+Phase: [EXPLORATION]
+
+### Source [85]: https://machinelearningmastery.com/7-steps-to-mastering-memory-in-agentic-ai-systems/
+
+Query: In what ways have memory patterns from collaborative software tools like wikis or version control systems informed the design of shared semantic memory in multi-user AI agents?
+
+Answer: For multi-agent systems, shared memory introduces additional complexity. Agents can read stale data written by a peer or overwrite each other’s episodic records. Design shared memory with explicit ownership and versioning: [...] Semantic memory holds structured factual knowledge: user preferences, domain facts, entity relationships, and general world knowledge relevant to the agent’s scope. A customer service agent that knows a user prefers concise answers and operates in the legal industry is drawing on semantic memory. This is often implemented as entity profiles updated incrementally over time, combining relational storage for structured fields with vector storage for fuzzy retrieval. [...] Memory is fundamentally a systems architecture problem: deciding what to store, where to store it, when to retrieve it, and, more importantly, what to forget. None of those decisions can be delegated to the model itself without explicit design. The practical implication is to design your memory layer the way you’d design any production data system. Think about write paths, read paths, indexes, eviction policies, and consistency guarantees before writing a single line of agent code.
+
+-----
+
+</details>
+
+<details>
+<summary>What are the specific cognitive load and error propagation challenges when dynamically updating procedural memory through user-taught workflows in production agent systems?</summary>
+
+Phase: [EXPLORATION]
+
+### Source [96]: https://arxiv.org/html/2508.06433v2
+
+Query: What are the specific cognitive load and error propagation challenges when dynamically updating procedural memory through user-taught workflows in production agent systems?
+
+Answer: Mem^p framework distills trajectories into procedural memory (step-by-step instructions, script-like abstractions) with Build, Retrieval, Update strategies. Dynamic updates via Vanilla (append all), Validation (only successes), Adjustment (revise failed executions). Challenges: Existing frameworks (LangGraph, AutoGPT, Memory Bank) provide coarse abstractions without optimizing procedural memory lifecycle (build, index, patch, prune), no principled quantification of efficiency or guarantee new experiences improve vs. erode performance. Cognitive load: Without optimization, agents restart exploration on similar tasks, high test-time cost in steps/tokens; procedural memory reduces fruitless exploration. Error propagation: Appending flawed trajectories without validation introduces errors; Adjustment combines erroneous trajectory with original and revises, but unexamined patching risks propagating failures if revisions inadequate. Vanilla updates all trajectories, including failures, potentially eroding performance.
+
+-----
+
+</details>
+
+<details>
+<summary>How do different temporal aggregation strategies for episodic memories (per-turn, per-day, per-week) quantitatively affect an agent's ability to perform narrative reconstruction and relationship dynamics modeling?</summary>
+
+Phase: [EXPLORATION]
+
+### Source [99]: https://arxiv.org/html/2501.13121v1
+
+Query: How do different temporal aggregation strategies for episodic memories (per-turn, per-day, per-week) quantitatively affect an agent's ability to perform narrative reconstruction and relationship dynamics modeling?
+
+Answer: The paper introduces a benchmark for episodic memory in LLMs, modeling episodic events with temporal (t), spatial (s), entity (ent), and content (c) attributes. Events are generated using a truncated geometric distribution for dates, ensuring varying frequencies (rare to frequent occurrences). Tasks include cue-based recall varying specificity, e.g., (t,*,*,*) retrieves events at specific time t, testing temporal granularity. Performance degrades with cue overload (multiple matching events), particularly for time cues (lowest F1 scores). Chronological tracking (latest state, chrono lists) shows low exact matches (≤36% latest, ≤18% all events), poor ordering (low Kendall τ). No explicit per-turn/day/week aggregation, but geometric sampling creates temporal clustering mimicking aggregation levels, affecting multi-event retrieval and narrative coherence. Finer temporal cues (specific t) better for single events but overload for multiples; coarser (no t) worse overall. Supports narrative reconstruction via entity/time tracking, relationship modeling via multi-event cues.
+
+-----
+
+</details>
+
+<details>
 <summary>What engineering tradeoffs arise when implementing autonomous memory consolidation processes that resolve contradictions between raw string, entity, and graph storage layers without human oversight?</summary>
 
 Phase: [EXPLORATION]
@@ -429,186 +408,53 @@ Answer: The paper presents 'memory enzymes' as six autonomous maintenance proces
 
 </details>
 
+<details>
+<summary>In what ways do hybrid vector-graph indexing schemas in tools like mem0 impact retrieval precision for entity-linked semantic memories compared to pure vector approaches under high update frequency?</summary>
+
+Phase: [EXPLORATION]
+
+### Source [109]: https://sparkco.ai/blog/ai-agent-memory-in-2026-comparing-rag-vector-stores-and-graph-based-approaches
+
+Query: In what ways do hybrid vector-graph indexing schemas in tools like mem0 impact retrieval precision for entity-linked semantic memories compared to pure vector approaches under high update frequency?
+
+Answer: Hybrid vector-graph indexing schemas, such as Hybrid GraphRAG, improve retrieval precision for entity-linked semantic memories by combining vector retrieval for broad semantic search with graph traversal for precise relational navigation and refinement. This achieves 80% accuracy vs. 50% for vanilla RAG, with 35%+ precision gains in benchmarks, particularly for tasks demanding high precision like multi-hop reasoning in R&D assistants (80% multi-hop success, 35% reduced innovation cycle). Under high update frequency, pure vector approaches suffer from stale embeddings and retrieval noise (dimensionality curse), while hybrids balance costs (1.5x vector + graph) but face increased maintenance complexity (schema updates, 3-4 person-months/year for graphs). Graphs demand completeness checks and edge density management, with indexing 2-5x vector time, yet provide sophisticated entity linking (90% partial accuracy). 2024 benchmarks show 35% precision gains for hybrids in precise retrieval scenarios influenced by IP protections.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [110]: https://mem0.ai/blog/long-term-memory-ai-agents
+
+Query: In what ways do hybrid vector-graph indexing schemas in tools like mem0 impact retrieval precision for entity-linked semantic memories compared to pure vector approaches under high update frequency?
+
+Answer: Mem0 uses a hybrid vector-graph indexing schema for long-term memory in AI agents, balancing performance and structure. Vector embeddings enable fast semantic retrieval (1536D, ANN search with HNSW), while graph storage provides relational integrity, preventing drift and improving multi-hop reasoning accuracy. Retrieval pipeline: embed query, fetch top-k=20 candidates via vector search, score by relevance × recency × type_weight (semantic 0.6, episodic 0.3, procedural 0.1), hybrid reranking with LLM boosts multi-hop J-score by 15%. Compared to pure vector (excels in speed but falters on relations), hybrid fuses scores (0.7 × vector similarity + 0.3 × graph confidence), significantly improving multi-hop accuracy for entity-linked memories connecting preferences, events, rules. Under high update frequency, vectors support async upsert with versioning; graphs enable incremental edge addition with temporal versioning; hybrids handle concurrent updates via ACID transactions, outperforming pure vectors which lack structural resolution for dynamic relational data.
+
+-----
+
+</details>
+
 </research_source>
 
-<research_source type="scraped_from_research" phase="exploitation" file="agent-with-memory-using-mem0-ag2.md">
+<research_source type="scraped_from_research" phase="exploitation" file="agent-memory-systems-beyond-context-windows-cisco-community.md">
 Phase: [EXPLOITATION]
 
-```
-import os
+## Agent Memory Systems: Beyond Context Windows
 
-from mem0 import MemoryClient
+### Key Takeaways
 
-from autogen import ConversableAgent
+- **Context Limitations** Even with advancements like 400K token context windows, traditional LLMs struggle with memory retention across interactions, leading to repeated token costs.
 
-os.environ["OPENAI_API_KEY"] = "your_api_key"
-os.environ["MEM0_API_KEY"] = "your_api_key"
-```
+- **Persistent Memory** Implementing persistent memory architectures allows agents to remember information across sessions, enhancing their ability to provide consistent and informed responses.
 
-```
-agent = ConversableAgent(
-    "chatbot",
-    llm_config={"config_list": [{"model": "gpt-5", "api_key": os.environ.get("OPENAI_API_KEY")}]},
-    code_execution_config=False,
-    function_map=None,
-    human_input_mode="NEVER",
-)
+- **Database Integration** Utilizing various types of databases (vector, episodic, network) allows agents to efficiently store and retrieve contextual information, improving their operational capabilities.
 
-memory = MemoryClient()
-```
+- **Agent Evolution** Agents can learn and adapt over time by tracking their experiences, leading to improved capabilities and more efficient problem-solving methods.
 
-```
-conversation = [\
-    {\
-        "role": "assistant",\
-        "content": "Hi, I'm Best Buy's chatbot!\n\nThanks for being a My Best Buy TotalTM member.\n\nWhat can I help you with?",\
-    },\
-    {\
-        "role": "user",\
-        "content": 'Seeing horizontal lines on our tv. TV model: Sony - 77" Class BRAVIA XR A80K OLED 4K UHD Smart Google TV',\
-    },\
-    {\
-        "role": "assistant",\
-        "content": "Thanks for being a My Best Buy Total™ member. I can connect you to an expert immediately - just one perk of your membership!\n\nSelect the button below when you're ready to chat.",\
-    },\
-    {\
-        "role": "assistant",\
-        "content": "Good evening, thank you for choosing Best Buy, Fnu. My name is Lovely. I hope you are doing well. I'm sorry to hear that you're seeing horizontal lines on your TV.\n\nI'm absolutely committed to exploring all possible ways to assist you to fix this issue.\n\nTo ensure that we are on the right account, may I please have your email address registered with your Best Buy account?",\
-    },\
-    {"role": "user", "content": "dd@gmail.com"},\
-    {\
-        "role": "assistant",\
-        "content": "Perfect! Thank you for providing all the details, surely you have made my job easier by doing this. I really appreciate it.\n\nI also want to take a moment to express our heartfelt appreciation for your trust and loyalty. Thank you for being an amazing customer of BestBuy Total.\n\nCould you please help me with the order number or product's details to check it quickly?\n\nSamsung - 49\" Odyssey OLED G9 (G95SC) DQHD 240Hz 0.03ms G-Sync Compatible Curved Smart Gaming Monitor - Silver - just to confirm this is the item, right?",\
-    },\
-    {"role": "user", "content": "Order number: 112217629"},\
-    {\
-        "role": "assistant",\
-        "content": "Superb! Thank you for confirmation.\n\nThank you for your patience. After exploring all possible solutions, I can help you to arrange a home repair appointment for your device. Our Geek Squad experts will visit your home to inspect and fix your device.\n\nIt's great that you have a protection plan - rest assured, we've got your back! As a valued Total member, you can avail this service at a minimal service fee. This fee, applicable to all repairs, covers the cost of diagnosing the issue and any small parts needed for the repair. It's part of our 24-month free protection plan.\n\nPlease click here to review the service fee and plan coverage details -\n\nhttps://www.bestbuy.com/site/best-buy-membership/best-buy-protection/pcmcat1608643232014.c?id=pcmcat1608643232014#jl-servicefees\n\nFnu - just to confirm shall I proceed to schedule the appointment?",\
-    },\
-    {"role": "user", "content": "Yes please"},\
-    {"role": "assistant", "content": "When should I schedule the appointment?"},\
-    {"role": "user", "content": "Schedule it for tomorrow please"},\
-]
+Video transcript (click here):
 
-memory.add(messages=conversation, user_id="customer_service_bot")
-```
-
-```
-data = "I forgot the order number, can you quickly tell me?"
-
-relevant_memories = memory.search(data, user_id="customer_service_bot")
-flatten_relevant_memories = "\n".join([m["memory"] for m in relevant_memories])
-
-prompt = f"""Answer the user question considering the memories. Keep answers clear and concise.
-Memories:
-{flatten_relevant_memories}
-\n\n
-Question: {data}
-"""
-
-reply = agent.generate_reply(messages=[{"content": prompt, "role": "user"}])
-print(reply)
-```
-
-```
-manager = ConversableAgent(
-    "manager",
-    system_message="You are a manager who helps in resolving customer issues.",
-    llm_config={"config_list": [{"model": "gpt-4", "temperature": 0, "api_key": os.environ.get("OPENAI_API_KEY")}]},
-    human_input_mode="NEVER",
-)
-
-customer_bot = ConversableAgent(
-    "customer_bot",
-    system_message="You are a customer service bot who gathers information on issues customers are facing. Keep answers clear and concise.",
-    llm_config={"config_list": [{"model": "gpt-4", "temperature": 0, "api_key": os.environ.get("OPENAI_API_KEY")}]},
-    human_input_mode="NEVER",
-)
-```
-
-```
-data = "When is the appointment?"
-
-relevant_memories = memory.search(data, user_id="customer_service_bot")
-flatten_relevant_memories = "\n".join([m["memory"] for m in relevant_memories])
-
-prompt = f"""
-Context:
-{flatten_relevant_memories}
-\n\n
-Question: {data}
-"""
-```
-
-```
-result = manager.send(prompt, customer_bot, request_reply=True)
-```
-</research_source>
-
-<research_source type="scraped_from_research" phase="exploitation" file="building-a-personal-ai-agent-that-handles-context-so-you-don.md">
-Phase: [EXPLOITATION]
-
-# Building a Personal AI Agent That Handles Context So You Don’t Have To
-
-### Step-by-Step Guide using LangChain
-
-We live in the golden age of large language models (LLMs). We have access to alien intelligences like GPT-5 series and Claude Opus 4.6 that can code websites, write poetry, and debug complex systems. Yet, interacting with them often feels like the movie _Groundhog Day_.
-
-Every time you open a new chat window, the model is a blank slate. It doesn’t remember that you prefer Python over Javascript, that you are currently working on an e-commerce migration project, or that you define “urgent” differently than most people. You spend the first few paragraphs of every interaction “priming” the model, re-uploading necessary documents, and re-establishing context.
-
-This is the “statelessness” problem of raw LLMs. They are brilliant, but they have the memory of a goldfish.
-
-For a casual user, this is a minor annoyance. For a power user or developer trying to integrate AI into their daily workflow, it’s a crippling inefficiency. We don’t just need smarter models; we need models that “know” us. We need to move from using passive AI chatbots to building active **Personal AI Agents**.
-
-This article is a technical roadmap for building such an agent. We will explore why context is so difficult for standard LLMs to manage and detailing how to use the LangChain framework to build an agent with persistent short-term and long-term memory dedicated to _your_ personal data.
-
-For more clarity, building on our [earlier blog around](https://open.substack.com/pub/aishwaryasrinivasan/p/context-engineering-for-llm-apps?utm_campaign=post-expanded-share&utm_medium=web) **[Context Engineering](https://open.substack.com/pub/aishwaryasrinivasan/p/context-engineering-for-llm-apps?utm_campaign=post-expanded-share&utm_medium=web)** [(sharing the blog here for reference.](https://open.substack.com/pub/aishwaryasrinivasan/p/context-engineering-for-llm-apps?utm_campaign=post-expanded-share&utm_medium=web)
-
-### Part 1: The Technical Challenge of Context
-
-Why can’t ChatGPT just “remember” me? It seems simple enough.
-
-The primary constraint is technical limitation known as the **Context Window**.
-
-An LLM doesn’t actually “remember” anything from a previous interaction once it’s finished generating text. When you send a follow-up prompt, the application (like ChatGPT’s web interface) secretly bundles your new prompt _plus_ the entire previous conversation history and sends it all back to the model as a single giant input block.
-
-#### The Token Bottleneck
-
-LLMs process text in chunks called tokens. Every model has a hard limit on how many tokens it can process at once (the context window). While these windows are growing (e.g., Gemini 3.5 Pro’s 1M+ tokens), they are not infinite, and crucially, they are not free.
-
-1. **Cost:** Sending your entire project history with every simple question becomes prohibitively expensive with commercial APIs.
-
-2. **Latency:** Processing massive context windows takes time, slowing down interactions.
-
-3. **Degradation (”Lost in the Middle”):** Studies show that as context grows very large, LLMs tend to forget information buried in the middle of the prompt, prioritizing the beginning and the very end.
-
-
-To build a personal agent, we cannot rely on simply stuffing everything into the prompt every time. We need an externalized memory architecture
-
-### Part 2: Defining the Personal AI Agent Architecture
-
-To solve the context problem, we must evolve from a simple chatbot to an **Agent**.
-
-In AI nomenclature, an “agent” is an LLM powered by two additional capabilities:
-
-1. **Tools:** The ability to execute external actions (searching the web, reading a file, running code).
-
-2. **Memory (State):** The ability to persist information outside of the immediate conversation thread.
-
-
-For a _Personal_ AI Agent, the architecture needs two distinct types of memory, mimicking human cognition:
-
-#### 1\. Short-Term (Ephemera) Memory
-
-This is the “working memory.” It handles the immediate “back-and-forth” of the current conversation. If I ask, “What’s the weather in Tokyo?” and follow up with “And what about Kyoto?”, the agent needs short-term memory to know “what” refers to the weather.
-
-#### 2\. Long-Term (Semantic) Memory
-
-This is the crucial differentiator. This is where the agent stores facts about _you_, your projects, and your preferences. This memory must be persisted indefinitely and be retrievable _without_ loading the entire database into the context window.
-
-We achieve long-term memory through **RAG (Retrieval-Augmented Generation)** using a Vector Database.
-
-**High-Level Agent Architecture**
+Welcome to Agentic Impressions, where we'll be discussing various topics across the agentic AI landscape. Our first season will be covering the basics of agentic AI. Today, we'll be discussing the role of context windows as the second episode in our series. Hi everyone, my name is Shereen Bellamy. I'm a Senior Developer Advocate at Cisco, focusing on AI, security, and quantum. I'm here to share my findings and discuss with you all. And today, as promised, we're going to be discussing agent memory systems. In our last episode, we proved that architecture beats raw power. But here's a problem that everyone's still hitting, context windows. Context windows are still a bottleneck in the industry. Even with clods like 200,000 total tokens, and even GPT-5 is like up to 400K tokens now, you're still constrained by what fits into one single conversation. Let's tackle this specific problem for today. We'll call it the token triangle problem. Let's say we want to work with an LLM that has a context window of 128K tokens. Seems like a large enough number, but we're hitting the limit after analyzing 85 configs, way less than our goal. This is a result of high cost through expensive token usage. You pay per token, and when we access the LLMs, it's processing our query using those tokens. Everything you send to the LLM gets converted into tokens. Whatever it sends back is also composed of tokens. This is also due to the inability to continue interacting with the LLM due to the limit on how much it can actually digest. How many tokens you can send are defined by the LLM's ability, and sometimes by your plan. And LLMs will naturally forget between API calls. So a scenario on what this would look like is you would send 50K tokens of context, like configs, logs, topology, to the LLM. The cost might be arbitrarily like 50 cents. Now you're gonna wait for your LLM to respond with advice. That's 500 tokens. And then five minutes later, you would ask a follow-up question to get more clarification, the answer you need, maybe get more data. But your LLM, your natural standalone LLM, has forgotten everything. So you have to send all 50K tokens again, which would cost another 50 cents. And this would happen about 10 times in a troubleshooting session, right? While you try through trial and error to fix it. Now your total cost may come up to like $5. The total token sent can be up to 500,000 now. But you can have massive duplication in this dataset. And at the same time, you're constantly hitting context limits, which you have to wait to refresh to get your next output. Through the concept of persistent memory, we can see today how databases can help us overcome that problem and what specifically put inside of those databases that we can build on in the future. So again, if we look at this issue from a critical thinking perspective, what if agents had persistent memory that worked across sessions, learned from every interaction and has the ability to get better over time? That's what we're focused on today. Today, we're going to be building memory architectures. I'll show you persistent memory systems, benchmark different approaches and demonstrate the concept of agent self-registration. This is where agents have the ability to remember who they are and what they've learned. Again, when we look at the concept of architecture, especially looking at the design of something like the memory, then we're able to optimize what makes the agent so special, right? Their skills. So let's build it. So let's start by running this persistent agent Python file and see what it does. Then I'll show you how the code works. In these lines, the agent is storing network events, router interface down, switch CPU high, interface backup, and it's remembering the device configurations. Instead of keeping everything in AI's temporary memory, we're using a database, just like how your routers are storing their config in NVRAM instead of regular RAM. We have three types of databases, vector, episodic and network. SQLite is just a file-based database. Think of it like a really smart spreadsheet that never forgets, and we're using three of them. We have our VectorDB. This is for searching by meaning. So if you search something like interface problems, it would find related events, even if they don't have those exact words. We have an episodic database. This stores things in time order, like your syslog from oldest to newest. Then we have our network database. This is our custom database for network-specific stuff, like device IDs and IP addresses. So what happens when it remembers something? When you call the remember function, like when we remembered what routers R1 interface went down, it writes all three databases. That's three different ways to find that information later. It's like documenting an incident in your ticketing system, your runbook, and your network diagram. It's a little redundant, but it's powerful. So here we integrate the AI portion by calling an OpenAI API key. When we analyze the network issue, we're not just searching the database. We're asking a real AI to look at the problem and suggest fixes. So let me run it again and show you the AI-powered analysis. For this analysis, this is coming from GPT-4 looking at the network issue, saying that router interface flapped, switch has high CPU, and giving real troubleshooting steps. It's like having a senior network engineer on call 24-7. So when we mix AI's intelligence with their permanent database memory, AI is able to provide the analysis and the database is able to provide the history. So try closing the terminal and then run it again. Those .db files are still there. The agent's still able to remember everything from last time, making it persistent. Okay, so we can store things in a database. Let's do a memory benchmark to see why. This benchmark is going to create 100 network devices. So imagine a medium-sized enterprise network, and then we'll test two approaches. One, our persistent database approach that we just discussed, and two, the traditional context window approach, which is what most AI tools use. Watch what happens. This for loop is able to create 100 fake network devices, dev one, dev two, up to dev 100. Each has a host name, IP address, type, and status, just like your real network inventory. For the results, we can see that persistent memory gave us 100% accuracy in two seconds. Meanwhile, context windows gave us 40% accuracy in 0.8 seconds. We can say our database approach remembers every device perfectly. You can ask it about dev one, and it can give you dev one's info every single time. We also know that our context window approach only remembers about 40% of devices. Why? That's because it's trying to remember 100 devices in its temporary memory. It's like trying to memorize the entire network topology during a phone call. You'll most likely forget most of it, and you might be able to recall some of it. Also, the database lookup is 40 times faster. That's the difference between querying a well-indexed database and searching through notes. And in terms of five times more devices, context windows max out around 20 devices most of the time, so our approach handles 100, which could handle 10,000 just as easily. But with 10,000 examples, grouping things together can really help, and that's where event correlation comes in. So for this section, we can track that dev one has had three related events. It's had interface flapping detected, packet loss increased, and the interface went down. These events all happen to be these events all happen to different times, but we can correlate them because they're all stored permanently with timestamps and device IDs. That's how you do the root cause analysis, which will be helpful for us to see our patterns over time. Context windows don't have the ability to do that because they forget the first event by the time that the third one happens. Finally, we're going to get into our self-registering agent. So this agent can track its own capabilities and learn new ones from experience. So let's run it and see what it says. The agent just created itself with a unique ID. It starts with three basic capabilities, device monitoring, configuration management, and event logging. Now watch what happens when we log a critical network event. We log that the router R1 interface went down as a critical event. And then when we look at the next line, we can see that the agent automatically learned a new capability called incident troubleshooting. This is possible through our log network event function. Our function is saying that if the severity is critical and we haven't learned troubleshooting yet, then please learn it. Just like humans can build new skills based on experience, this agent is learning incident response by doing it. So let's see how it does with four more capabilities. Now our agent knows BGP troubleshooting, automated failover, security analysis, and performance optimization. That's eight total capabilities up from three. And these capabilities will be stored in those databases that we created earlier. This is a database table that tracks what the agent knows and when it learned it. If you restart the agent, then it will still know all eight capabilities. This matters for network operations because you can track what has this agent handled before? When did it learn to handle BGP issues? And what evidence do we have of what it can do? So similar to episode one, the conclusion here is that structure matters. Just like you wouldn't store your entire network config into one single text file, you shouldn't store all of your agent's knowledge in temporary memory. You should use the right tool for each job. So database for persistence, vector search for semantic similarity, graphs for relationships, and timelines for chronological events. So what next? How do you implement this? First, take a look at the GitHub in the description and try to implement what we did today. When you go to the GitHub repo, you'll see an additional file called agencymemoryimplementation.py. I won't be running it here today. It contains a full agency SDK implementation demo, including its Corto and Longo protocols named after coffee. Corto is agency's memory coordination protocol, which is how agents share and synchronize their memories across a distributed system. And Longo is the self-registration protocol. It's how agents discover each other and register their capabilities in a directory. It also shows you what a production-ready environment looks like with all of the databases working together. When you look at this in the context of the real world, you can have customer service agents that remember every interaction across months. In terms of research, you can have assistants that build knowledge graphs for all your documents. In terms of coding, you can have software development agents that learn your coding patterns, your preferences. And in terms of business, you can have business-specific agents that maintain context across projects and teams. We're moving from stateless interactions to persistent AI relationships. These aren't just tools. They're collaborative partners that have the ability to grow and grow smarter through every interaction. Coming up next week, we're going to focus mainly on multi-agent teams. For deeper information on agency-specific implementations, please feel free to check out that YouTube channel as well. Please subscribe for updates on when we release episode three and drop a comment on what type of agent team you'd most likely want to build. Memory architecture is important to look at, but building a team with what we learned might yield some pretty cool results. As usual, thanks everyone for joining, and I'll see you next time.
 </research_source>
 
 <research_source type="scraped_from_research" phase="exploitation" file="building-smarter-ai-agents-agentcore-long-term-memory-deep-d.md">
@@ -617,6 +463,8 @@ Phase: [EXPLOITATION]
 # Building smarter AI agents: AgentCore long-term memory deep dive
 
 Building AI agents that remember user interactions requires more than just storing raw conversations. While Amazon Bedrock AgentCore short-term memory captures immediate context, the real challenge lies in transforming these interactions into persistent, actionable knowledge that spans across sessions. This is the information that transforms fleeting interactions into meaningful, continuous relationships between users and AI agents. In this post, we’re pulling back the curtain on how the [Amazon Bedrock AgentCore](https://aws.amazon.com/bedrock/agentcore/) Memory long-term memory system works.
+
+If you’re new to AgentCore Memory, we recommend reading our introductory blog post first: [Amazon Bedrock AgentCore Memory: Building context-aware agents](https://aws.amazon.com/blogs/machine-learning/amazon-bedrock-agentcore-memory-building-context-aware-agents/). In brief, AgentCore Memory is a fully managed service that enables developers to build context-aware AI agents by providing both short-term working memory and long-term intelligent memory capabilities.
 
 ## The challenge of persistent memory
 
@@ -707,7 +555,7 @@ Result: New active memory with \$750, previous memory marked inactive
 
 While built-in memory strategies cover common use cases, AgentCore Memory recognizes that different domains require tailored approaches for memory extraction and consolidation. The system supports [built-in strategies with overrides](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-custom-strategy.html) for custom prompts that extend the built-in extraction and consolidation logic, letting teams adapt memory handling to their specific requirements. To maintain system compatibility and focus on criteria and logic rather than output formats, custom prompts help developers customize what information gets extracted or filtered out, how memories should be consolidated, and how to resolve conflicts between contradictory information.
 
-AgentCore Memory also supports custom model selection for memory extraction and consolidation. This flexibility helps developers balance accuracy and latency based on their specific needs.
+AgentCore Memory also supports custom model selection for memory extraction and consolidation. This flexibility helps developers balance accuracy and latency based on their specific needs. You can define them via the APIs when you create the _memory\_resource_ as a strategy override or via the console (as shown below in the console screenshot).
 
 Apart from override functionality, we also offer [self-managed strategies](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-self-managed-strategies.html) that provide complete control over your memory processing pipeline. With self-managed strategies, you can implement custom extraction and consolidation algorithms using any models or prompts while leveraging AgentCore Memory for storage and retrieval. Also, using the Batch APIs, you can directly ingest extracted records into AgentCore Memory while maintaining full ownership of the processing logic.
 
@@ -761,194 +609,324 @@ The Amazon Bedrock AgentCore Memory long-term memory system represents a signifi
 The science behind this system, from research-backed prompts to innovative consolidation workflow, makes sure that your agents don’t just remember, but understand. This transforms one-time interactions into continuous learning experiences, creating AI agents that become more helpful and personalized with every conversation.
 </research_source>
 
-<research_source type="scraped_from_research" phase="exploitation" file="long-term-memory-for-ai-agents-the-what-why-and-how.md">
+<research_source type="scraped_from_research" phase="exploitation" file="context-engineering-llm-memory-and-retrieval-for-ai-agents-w.md">
 Phase: [EXPLOITATION]
 
-# Long-Term Memory for AI Agents: The What, Why and How
+## But What Is a Context Window?
 
-Long-term memory stores, consolidates, and retrieves data across sessions, turning stateless AI agents into stateful knowledge accumulators. Unlike token-limited buffers, long-term persistence survives resets, scales with storage, and is required architecture for production agents.
+The context window is the model's active workspace, where it holds instructions and information for a current task. Every word, number, and piece of punctuation consumes space in this window. Think of it like a whiteboard: once it fills up, older information must be erased to make room for the new, causing important past details to be lost.
+In more technical terms, a context window refers to the maximum amount of input data a language model can consider at one time when generating responses, measured in [tokens](https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them). This window includes all your inputs, model's outputs, tool calls, and retrieved documents, acting as the model’s short-term memory. Every token placed in the context window directly influences what the model can "see" and how it responds.
 
-## What's the Difference Between Short-Term and Long-Term Memory in AI Agents?
+## Context Engineering vs. Prompt Engineering
 
-[AI agent memory](https://mem0.ai/blog/memory-in-agents-what-why-and-how) refers to an AI system's ability to retain, recall, and utilize information from past interactions to enable continuity and adaptive behavior across sessions. It integrates short-term memory (for immediate context like recent conversation turns, akin to a context window) with long-term memory (for persistent storage of facts, user preferences, workflows, or procedural knowledge).
+Prompt engineering focuses on how you phrase and structure instructions for the LLM to generate the best results, such as writing clear/clever prompts, adding examples, or asking the model to "think step-by-step.” While important, prompt engineering alone cannot fix the fundamental limitation of a disconnected model.
 
-The differences between short-term and long-term memory come down to five variables:
+Context engineering, on the other hand, is the discipline of designing the architecture that feeds an LLM the right information at the right time. It's about building the bridges that connect a disconnected model to the outside world, retrieving external data, using tools, and giving it a memory to ground its responses in facts, not just training data.
 
-| **Category** | **Short-term memory** | **Long-term memory** |
-| --- | --- | --- |
-| Storage mechanism | Context window tokens | External storage with embeddings or graphs |
-| Lifespan | Single session | Cross-session and long-lived |
-| Capacity | Limited by token window | Scales with storage backend |
-| Retrieval method | Linear prompt inclusion | Memory retrieval via search and ranking |
-| Use case | Immediate reasoning | Personalization and continuity |
+In practice, context engineering is how you build LLM memory: deciding what stays in the context window, what gets stored as long-term memory, and what gets retrieved later.
 
-## Why Don't Bigger Context Windows Solve the Memory Problem?
+## The Context Window Challenge
 
-Large context windows delay but do not fix memory failures. Models handle 128K to 1M tokens, yet stuffing full history spikes costs, latency, and unreliability.
+The LLM context window can only hold so much information at once. This fundamental constraint shapes what agents and agentic systems are currently capable of. Every time an agent processes information, it must decide what remains active, what can be summarized/compressed/deleted, what should be stored externally, and how much space to reserve for reasoning. It's tempting to assume that shoving everything into bigger context windows solves this problem, but this is generally not the case. This is why production agents need deliberate memory architecture—not just bigger windows.
 
-[Liu et al.'s 2023 "Lost in the Middle"](https://arxiv.org/pdf/2307.03172) study shows accuracy crashes when facts sit mid-prompt. At 32K tokens, models ignore 70% of middle info. Needle-in-haystack tests confirm drops beyond 10 to 20% depth.
+Here are the critical failure modes that emerge as context grows:
 
-More tokens do not equal better memory.
+- **Context Poisoning**: Incorrect or hallucinated information enters the context. Because agents reuse and build upon that context, these errors continue and compound.
+- **Context Distraction**: The agent becomes burdened by too much past information; history, tool outputs, summaries, and over-relies on repeating past behavior rather than reasoning fresh.
+- **Context Confusion**: Irrelevant tools or documents crowd the context, distracting the model and causing it to use the wrong tool or instructions.
+- **Context Clash**: Contradictory information within the context misleads the agent, leaving it stuck between conflicting assumptions.
 
-The paper [_Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory_](https://mem0.ai/blog/graph-memory-solutions-ai-agents) demonstrates that structured memory pipelines outperform full-context baselines. Results show:
+These aren't just technical limitations, these are core design challenges of any modern AI app. You can't fix this fundamental limitation by simply writing better prompts or increasing the maximum size of the context window. You have to build a system around the model.
 
-- 91% lower p95 latency
+That is what Context Engineering is all about!
 
-- 90%+ token savings
+## Memory
 
-- LOCOMO multi-hop J-score 0.51 vs 0.22 for full-context
+This is what most people mean when they search for LLM memory or agent memory: a system that combines the context window with retrieval and long-term storage so the agent can stay consistent over time.
 
+A stateless LLM can answer a single question well, but it has no idea what happened five minutes ago or why that matters for the next decision. Memory transforms the model into something that feels more dynamic and, dare we say, more ‘human’, that’s capable of holding onto context, learning from the past, and adapting on the fly. For context engineering, the core challenge is not “how much can we store?” but “what deserves a spot in front of the model right now, and what can safely live elsewhere?
 
-Full-history prompting is not just inefficient; it is unreliable at scale.
+**The Architecture of Agent Memory**
 
-### Cost and Latency
+Memory in an AI agent is all about retaining information to navigate changing tasks, remember what worked (or didn't), and think ahead. To build robust agents, we need to think in layers, often blending different types of memory for the best results.
 
-Token pricing scales linearly. A 200K-token request at $5 per 1M tokens costs roughly $1 per call. At 1,000 daily users running 10 sessions each, monthly spend exceeds $30,000 just for input tokens.
+**Short‑term memory** is the live context window: recent turns/reasoning, tool outputs, and retrieved documents that the model needs to reason about the current step. This space is brutally finite, so it should stay lean, just enough conversation history to keep the thread coherent and decisions grounded.
 
-Latency also grows with context size: 4K tokens produces sub-second responses, 200K tokens takes 5 to 10 seconds, and high concurrency creates GPU memory pressure and queue backlogs.
+**Long-term memory**, by contrast, lives outside the model, usually in vector databases for quick retrieval ( [RAG](https://weaviate.io/blog/introduction-to-rag)). These stores keep information permanently, and can hold:
 
-Long-term memory AI agents avoid rereading irrelevant history. Instead, they retrieve only what matters.
+- Episodic Data: past events, user interactions, preferences
+- Semantic Data: general and domain knowledge
+- Procedural Data: routines, workflows, decision steps
 
-Mem0 benchmarks show 1.44s p95 latency at high volume, where full-context approaches often time out. At scale, structured memory is not optional; it is economically required.
+Because it’s external, this memory can grow, update, and persist beyond the model’s context window.
 
-### Context Windows Don't Learn
+Most modern systems usually implement a hybrid memory setup, i.e., blending short-term memory with long-term for depth. Some architectures also add a _working memory_: a temporary space for information needed during a multi-step task. For example, while booking a trip, an agent might keep the destination, dates, and budget in working memory until the task is done, without storing it permanently. This is often called persistent memory or agent long-term memory.
 
-Context windows store raw, contradictory inputs like "User likes Python" then "switched to Rust" with no deduplication, timestamps, or relevance scoring.
+**Designing Memory That Doesn’t Pollute Context**
 
-Active systems extract facts, overwrite stale entries, and update scores by usage. The 2024 survey "Memory in the Age of AI Agents" notes passive buffers lose 30 to 50% accuracy on temporal tasks. Managed memory ensures coherence over 100+ sessions.
+The worst memory system is the one that faithfully stores everything. Old, low‑quality, or noisy entries eventually come back through retrieval and start to contaminate the context with stale assumptions or irrelevant details. Effective agents are selective: they filter which interactions get promoted into long‑term storage, often by letting the model “reflect” on an event and assign an importance or usefulness score before saving it.
 
-## What Types of Long-Term Memory Do AI Agents Need?
+Once in storage, memories need maintenance. Periodic pruning, merging duplicates, deleting outdated facts, and replacing long transcripts with compact summaries keep retrieval sharp and prevent the context window from being filled with historical clutter. Criteria like recency and retrieval frequency are simple but powerful signals for what to keep and what to retire.
 
-AI agents need three types of long-term memory: semantic, episodic, and procedural. Each serves a distinct cognitive function. Tulving (1972) distinguishes episodic memory (personal events) from semantic memory (facts). The CoALA framework adds procedural memory for agent behaviors. For a deeper look at each type, see our [guide to memory in AI agents](https://mem0.ai/blog/memory-in-agents-what-why-and-how).
+Our eBook’s memory section goes deeper into more of these memory management strategies, including mastering the art of retrieval, being selective about what you store, and pruning and refining memories. It also highlights the key principle: always tailor the memory architecture to the task because there’s no one-size-fits-all solution (at least not yet).
 
-### Semantic Memory (Facts and Preferences)
+Terminology
 
-Semantic memory stores what an agent knows about a user — facts, preferences, and constraints that hold across time. A CRM agent that remembers "Budget cap $50K" and "Preferred channel: email" doesn't need the user to repeat themselves every session. When new information contradicts the old — "Budget raised to $75K" — the entry is updated rather than duplicated. This is the foundation of personalization.
+If you're searching for **LLM memory** or **agent memory**, you're usually looking for the systems behind context engineering: **retrieval**, **long-term memory storage**, and **rules for what enters the context window** at each step.
+</research_source>
 
-### Episodic Memory (Past Experiences)
+<research_source type="scraped_from_research" phase="exploitation" file="core-concepts.md">
+Phase: [EXPLOITATION]
 
-Episodic memory stores what happened — specific interactions logged with enough context to be useful later. When a user says "Docker issue again?", the agent can surface the relevant history: "Last December you optimized Docker on ECS. Try pruning images first." This is how support agents cut repeat ticket volume; they already know what was tried and what worked.
+# Long-term Memory in LLM Applications
 
-### Procedural Memory (Learned Behaviors)
+Long-term memory allows agents to remember important information across conversations. LangMem provides ways to extract meaningful details from chats, store them, and use them to improve future interactions. At its core, each memory operation in LangMem follows the same pattern:
 
-Procedural memory stores how an agent should behave — communication styles, formatting preferences, and workflow rules built up from feedback over time. A coding copilot that learns "Team uses Black formatter, 120-char lines" applies that rule to every subsequent response. Negative feedback sharpens the pattern. Over 50+ interactions, the agent's defaults begin to match the team's actual expectations.
+1. Accept conversation(s) and current memory state
+2. Prompt an LLM to determine how to expand or consolidate the memory state
+3. Respond with the updated memory state
 
-## How Does Long-Term Memory Work Under the Hood?
+The best memory systems are often application-specific. In designing yours, the following questions can serve as a useful guide:
 
-Production pipelines process raw input through extraction, consolidation, storage, and retrieval. MemGPT (2023) introduces paging to swap memory in and out of context. HippoRAG (2024) adds hierarchical retrieval for long-tail accuracy. The sections below cover each stage in detail.
+1. **What** type of content should your agent learn: facts/knowledge? summary of past events? Rules and style?
+2. **When** should the memories be formed (and **who** should form the memories)
+3. **Where** should memories be stored? (in the prompt? Semantic store?). This largely determines how they will be recalled.
 
-### Memory Extraction and Consolidation
+## Types of Memory
 
-Raw conversations are noisy. In most real-world agent logs, 60 to 70% of tokens are small talk, repetition, or transient reasoning. Storing that verbatim leads to memory bloat, degraded retrieval precision, and rising storage costs. Long-term memory systems must distill signals from conversational noise.
+Memory in LLM applications can reflect some of the structure of human memory, with each type serving a distinct purpose in building adaptive, context-aware systems:
 
-LLMs parse chat turns: "User: I prefer Python. No JS." Extraction yields:
+| Memory Type | Purpose | Agent Example | Human Example | Typical Storage Pattern |
+| --- | --- | --- | --- | --- |
+| Semantic | Facts & Knowledge | User preferences; knowledge triplets | Knowing Python is a programming language | Profile or Collection |
+| Episodic | Past Experiences | Few-shot examples; Summaries of past conversations | Remembering your first day at work | Collection |
+| Procedural | System Behavior | Core personality and response patterns | Knowing how to ride a bicycle | Prompt rules or Collection |
+
+### Semantic Memory: Facts and Knowledge
+
+Semantic memory stores the essential facts and other information that ground an agent's responses. Two common representations of semantic memory are collections (to record an unbounded amount of knowledge to be searched at runtime) and profiles (to record task-specific information that follows a strict schema that is easily looked up by user or agent).
+
+#### Collection
+
+Collections are what most people think of when they imagine agent long-term memory. In this type, memories are stored as individual documents or records. For each new conversation, the memory system can decide to insert new memories to the store.
+
+Using a collection-type memory adds some complexity to the process of updating your memory state. The system must reconcile new information with previous beliefs, either _deleting_/ _invalidating_ or _updating_/ _consolidating_ existing memories. If the system over-extracts, this could lead to reduced precision of memories when your agent needs to search the store. If it under-extracts, this could lead to low recall. LangMem uses a memory enrichment process that strives to balance memory creation and consolidation, while letting you, the developer, customize the instructions to further shift the strength of each.
+
+Finally, memory relevance is more than just semantic similarity. Recall should combine similarity with "importance" of the memory, as well as the memory's "strength", which is a function of how recently/frequently it was used.
+
+Extracting semantic memories as collectionsSetup
 
 ```
-[{"fact": "prefers Python", "negated": "JavaScript", "user_id": "u123", "timestamp": "2026-02-13"}]
+from langmem import create_memory_manager
+
+manager = create_memory_manager(
+    "anthropic:claude-3-5-sonnet-latest",
+    instructions="Extract all noteworthy facts, events, and relationships. Indicate their importance.",
+    enable_inserts=True,
+)
+
+# Process a conversation to extract semantic memories
+conversation = [\
+    {"role": "user", "content": "I work at Acme Corp in the ML team"},\
+    {"role": "assistant", "content": "I'll remember that. What kind of ML work do you do?"},\
+    {"role": "user", "content": "Mostly NLP and large language models"}\
+]
 ```
 
-Consolidation periodically scans existing memory stores: embeddings with similarity above 0.85 trigger merges via averaged vectors and LLM-based conflict resolution (e.g., "Python overrides JS? Yes"), followed by deduplication of clusters within a 0.9 threshold, while relevance scores are updated from usage patterns (query matches boost +0.1).
-
-This outperforms RAG chunking, which dumps raw text. Consolidation cuts storage by 60% and raises retrieval precision 22%.
-
-### Storage Patterns: Vectors, Graphs, or Both
-
-Once memory units are extracted and consolidated, they must be indexed for retrieval. The two dominant approaches are vector stores and graph databases. In advanced systems, they are combined.
-
-#### Vector Storage
-
-Vector databases store embeddings and enable Approximate Nearest Neighbor (ANN) search. Each memory unit is converted into a high-dimensional vector representation, often 1536 dimensions when using OpenAI's embedding models. These vectors are indexed using structures such as HNSW, which allows sub-linear search over millions of entries.
-
-In a typical production setup, you might configure: 1536-dimensional embeddings, HNSW indexing, top-k retrieval set to 20, and sub-50ms latency even at multi-million scale.
-
-Vectors excel at semantic similarity, allowing the system to retrieve memory based on meaning rather than keyword matching. A well-configured vector index can scale beyond 100 million entries while maintaining acceptable recall and latency.
-
-However, vectors have important limitations. They do not inherently encode relationships between memory units and struggle with structured dependencies and multi-hop reasoning. For example, if you store "User prefers Python" and "Python is used for backend services," a vector store may retrieve both independently, but it cannot reason about their relationship without additional logic. Vectors answer "what is similar?" They do not answer "how are these related?"
-
-#### Graph Storage
-
-Graph databases approach memory from a structural perspective. Instead of embedding text into dense vectors, graphs encode explicit relationships between entities.
-
-In a graph representation, you might model:
-
-- Node: `user_u123`
-
-- Node: `pref_python`
-
-- Edge: `has_preference` (weight 0.95, updated\_at timestamp)
-
-
-This structure enables direct traversal queries. If a user asks "What language does u123 prefer for backend services?" the graph traverses: user → preference → language → Python.
-
-Graphs are particularly effective for relationship traversal, entity disambiguation, dependency resolution, and structured queries. However, graph systems require careful schema design, edge weighting logic, and traversal optimization. They also lack the fuzzy semantic flexibility of vector embeddings unless paired with text-based indexing.
-
-#### Hybrid Approach
-
-In practice, [high-performance long-term AI memory systems](https://mem0.ai/) combine both models. A hybrid architecture uses vector search for fast semantic retrieval and graph traversal for relational grounding:
-
-1. Perform vector search to retrieve top-k candidate memories
-
-2. Apply graph traversal to validate structural relationships
-
-3. Fuse scores using a weighted model
-
-
-A common scoring fusion:
-
-Final score = 0.7 × vector similarity + 0.3 × graph traversal confidence
-
-Vectors provide semantic flexibility while graphs provide relational integrity. This hybrid model significantly improves multi-hop reasoning accuracy in scenarios where agents must connect preferences, historical events, and procedural rules.
-
-Mem0 implements this hybrid design to balance performance and structure. Vector embeddings ensure fast search, while graph memory prevents relational drift and improves multi-hop reasoning.
-
-#### Retrieval at Inference Time
-
-Retrieval is where memory becomes useful. The retrieval pipeline embeds the incoming query to a 1536D vector, searches the top k=20 candidates, scores by relevance × recency × type\_weight (semantic: 0.6, episodic: 0.3, procedural: 0.1), and injects the top-5 results under 200 tokens into the prompt.
-
-Retrieval is dynamic per user: u123 sees personalized facts, u456 sees generic context. Hybrid reranking via an LLM pass boosts multi-hop J-score by 15%. RAG searches static documents; memory retrieval adapts live.
-
-#### Architectural Implications
-
-For senior developers, the storage decision determines how well your agent handles multi-hop reasoning, whether contradictions can be resolved structurally, how scalable your indexing strategy becomes, and how easily you can incorporate ranking logic.
-
-Vectors excel in speed for simple queries but falter on relations. Graphs shine in expressiveness but add schema management overhead. Hybrids increase complexity while improving reasoning power.
-
-Choose based on expected cognitive demands: vectors for preference retrieval, hybrids for entity and time-based reasoning.
-
-## How Does Mem0 Handle Long-Term Memory for Agents?
-
-[Mem0](https://mem0.ai/), which [raised $24M to build the memory layer for AI,](https://mem0.ai/series-a) automates the full pipeline from input chat text to injected memories. Extraction uses lightweight LLM calls with minimal token overhead. Consolidation handles 10K memories per user with sub-100ms updates.
-
-Graph memory (Mem0ᵍ) links entities for relational queries. Benchmarks on ECAI and LOCOMO show a 26% LLM-as-Judge gain over OpenAI Memory, 91% latency reduction, and 90% token savings.
-
-Python quickstart:
-
 ```
-from mem0 import Memory
-m = Memory()
-m.add("User likes Python", user_id="u123")
-results = m.search(query="language pref", user_id="u123")
+memories = manager.invoke({"messages": conversation})
 ```
 
-## Where Does Long-Term Memory Matter the Most?
+#### Profiles
 
-Personal assistants maintain routines across time. "Gym Tuesdays, no dairy" persists across 90-day plans without requiring re-entry. Sessions that carry forward prior context build user trust faster than those that start fresh.
+**Profiles** on the other hand are well-scoped for a particular task. Profiles are a single document that represents the current state, like a user's main goals with using an app, their preferred name and response style, etc. When new information arrives, it updates the existing document rather than creating a new one. This approach is ideal when you only care about the latest state and want to avoid remembering extraneous information.
 
-Customer support agents shorten resolutions. Recurring "login fail" queries pull "Prior fix: clear cache" directly from episodic memory. Repeat ticket volume drops by 40%.
+Managing user preferences with profilesSetup
 
-Coding copilots adapt to team conventions. "Use pytest, not unittest" learned from 20 sessions shapes every subsequent suggestion. Debug history surfaces "Fixed similar OOM March" when relevant.
+```
+from langmem import create_memory_manager
+from pydantic import BaseModel
 
-Over time, agents accumulate working knowledge across sessions, functioning as persistent collaborators rather than session-scoped tools.
+class UserProfile(BaseModel):
+    """Save the user's preferences."""
+    name: str
+    preferred_name: str
+    response_style_preference: str
+    special_skills: list[str]
+    other_preferences: list[str]
 
-_Also read:_ [_Context Engineering Guide for AI Agents_](https://mem0.ai/blog/context-engineering-ai-agents-guide)
+manager = create_memory_manager(
+    "anthropic:claude-3-5-sonnet-latest",
+    schemas=[UserProfile],
+    instructions="Extract user preferences and settings",
+    enable_inserts=False,
+)
 
-## Wrapping Up
+# Extract user preferences from a conversation
+conversation = [\
+    {"role": "user", "content": "Hi! I'm Alex but please call me Lex. I'm a wizard at Python and love making AI systems that don't sound like boring corporate robots 🤖"},\
+    {"role": "assistant", "content": "Nice to meet you, Lex! Love the anti-corporate-robot stance. How would you like me to communicate with you?"},\
+    {"role": "user", "content": "Keep it casual and witty - and maybe throw in some relevant emojis when it feels right ✨ Also, besides AI, I do competitive speedcubing!"},\
+]
+```
 
-For senior developers, long-term memory turns AI agents into stateful systems, not just bigger context windows. It demands pipelines to extract, consolidate, and index conversation signals via vectors, graphs, or hybrids, balancing latency, token costs, and relational fidelity.
+```
+profile = manager.invoke({"messages": conversation})[0]
+```
 
-Episodic memory anchors interactions, semantic memory stores facts and preferences, and procedural memory tracks behaviors. The result is persistent agents that accumulate knowledge across sessions, reducing token costs, improving retrieval precision, and enabling scalable multi-hop reasoning under production concurrency.
+Choose between profiles and collections based on how you'll use the data: profiles excel when you need quick access to current state and when you have data requirements about what type of information you can store. They are also easy to present to a user for manual editing. Collections are useful when you want to track knowledge across many interactions without loss of information, and when you want to recall certain information contextually rather than every time.
 
-This is the required infrastructure for reliable, efficient, and personalized AI.
+### Episodic Memory: Past Experiences
+
+Episodic memory preserves successful interactions as learning examples that guide future behavior. Unlike semantic memory which stores facts, episodic memory captures the full context of an interaction—the situation, the thought process that led to success, and why that approach worked. These memories help the agent learn from experience, adapting its responses based on what has worked before.
+
+Defining and extracting episodesSetup
+
+```
+from pydantic import BaseModel, Field
+from langmem import create_memory_manager
+
+class Episode(BaseModel):
+    """An episode captures how to handle a specific situation, including the reasoning process
+    and what made it successful."""
+
+    observation: str = Field(
+        ...,
+        description="The situation and relevant context"
+    )
+    thoughts: str = Field(
+        ...,
+        description="Key considerations and reasoning process"
+    )
+    action: str = Field(
+        ...,
+        description="What was done in response"
+    )
+    result: str = Field(
+        ...,
+        description="What happened and why it worked"
+    )
+
+manager = create_memory_manager(
+    "anthropic:claude-3-5-sonnet-latest",
+    schemas=[Episode],
+    instructions="Extract examples of successful interactions. Include the context, thought process, and why the approach worked.",
+    enable_inserts=True,
+)
+
+# Example conversation
+conversation = [\
+    {"role": "user", "content": "What's a binary tree? I work with family trees if that helps"},\
+    {"role": "assistant", "content": "A binary tree is like a family tree, but each parent has at most 2 children. Here's a simple example:\n   Bob\n  /  \\\nAmy  Carl\n\nJust like in family trees, we call Bob the 'parent' and Amy and Carl the 'children'."},\
+    {"role": "user", "content": "Oh that makes sense! So in a binary search tree, would it be like organizing a family by age?"},\
+]
+```
+
+```
+# Extract episode(s)
+episodes = manager.invoke({"messages": conversation})
+```
+
+### Procedural Memory: System Instructions
+
+Procedural memory encodes how an agent should behave and respond. It starts with system prompts that define core behavior, then evolves through feedback and experience. As the agent interacts with users, it refines these instructions, learning which approaches work best for different situations.
+
+Optimizing prompts based on feedbackSetup
+
+```
+from langmem import create_prompt_optimizer
+
+optimizer = create_prompt_optimizer(
+    "anthropic:claude-3-5-sonnet-latest",
+    kind="metaprompt",
+    config={"max_reflection_steps": 3}
+)
+```
+
+```
+prompt = "You are a helpful assistant."
+trajectory = [\
+    {"role": "user", "content": "Explain inheritance in Python"},\
+    {"role": "assistant", "content": "Here's a detailed theoretical explanation..."},\
+    {"role": "user", "content": "Show me a practical example instead"},\
+]
+optimized = optimizer.invoke({
+    "trajectories": [(trajectory, {"user_score": 0})],
+    "prompt": prompt
+})
+```
+
+## Writing memories
+
+Memories can form in two ways, each suited for different needs. Active formation happens during conversations, enabling immediate updates when critical context emerges. Background formation occurs between interactions, allowing deeper pattern analysis without impacting response time. This dual approach lets you balance responsiveness with thorough learning.
+
+| Formation Type | Latency Impact | Update Speed | Processing Load | Use Case |
+| --- | --- | --- | --- | --- |
+| Active | Higher | Immediate | During Response | Critical Context Updates |
+| Background | None | Delayed | Between/After Calls | Pattern Analysis, Summaries |
+
+### Conscious Formation
+
+You may want your agent to save memories "in the hot path". This active memory formation happens during the conversation, enabling immediate updates when critical context emerges. This approach is easy to implement and lets the agent itself choose how to store and update its memory. However, it adds perceptible latency to user interactions, and it adds one more obstacle to the agent's ability to satisfy the user's needs.
+
+### Subconscious Formation
+
+"Subconscious" memory formation refers to the technique of prompting an LLM to reflect on a conversation after it occurs (or after it has been inactive for some period), finding patterns and extracting insights without slowing down the immediate interaction or adding complexity to the agent's tool choice decisions. This approach is perfect for ensuring higher recall of extracted information.
+
+## Integration Patterns
+
+LangMem's memory utilities are organized in two layers of integration patterns:
+
+### 1. Core API
+
+At its heart, LangMem provides functions that transform memory state without side effects. These primitives are the building blocks for memory operations:
+
+- **Memory Managers**: Extract new memories, update or remove outdated memories, and consolidate and generalize from existing memories based on new conversation information
+- **Prompt Optimizers**: Update prompt rules and core behavior based on conversation information (with optional feedback)
+
+These core functions do not depend on any particular database or storage system. You can use them in any application.
+
+### 2. Stateful Integration
+
+The next layer up depends on LangGraph's long-term memory store. These components use the core API above to transform memories that exist in the store and upsert/delete them as needed when new conversation information comes in:
+
+- **Store Managers**: Automatically persist extracted memories
+- **Memory Management Tools**: Give agents direct access to memory operations
+
+Use these if you're using LangGraph Platform or LangGraph OSS, since it's an easy way to add memory capabilities to your agents.
+
+## Storage System
+
+Storage is optional
+
+Remember that LangMem's core functionality is built around that don't require any specific storage layer. The storage features described here are part of LangMem's higher-level integration with LangGraph, useful when you want built-in persistence.
+
+When using LangMem's stateful operators or platform services, the storage system is built on LangGraph's storage primitives, providing a flexible and powerful way to organize and access memories. The storage system is designed around two concepts:
+
+### Memory Namespaces
+
+Memories are organized into namespaces that allow for natural segmentation of data:
+
+- **Multi-Level Namespaces**: Group memories by organization, user, application, or any other hierarchical structure
+- **Contextual Keys**: Identify memories uniquely within their namespace
+- **Structured Content**: Store rich, structured data with metadata for better organization
+
+Organizing memories hierarchically
+
+```
+# Organize memories by organization -> configurable user -> context
+namespace = ("acme_corp", "{user_id}", "code_assistant")
+```
+
+Namespaces can include template variables (such as `"{user_id}"`) to be populated at runtime from `configurable` fields in the `RunnableConfig`.
+
+### Flexible Retrieval
+
+If you use one of the managed APIs, LangMem will integrate directly with LangGraph's BaseStore interface for memory storage and retrieval. The storage system supports multiple ways to retrieve memories:
+
+- **Direct Access**: Get a specific memory by key
+- **Semantic Search**: Find memories by semantic similarity
+- **Metadata Filtering**: Filter memories by their attributes
 </research_source>
 
 <research_source type="scraped_from_research" phase="exploitation" file="memory-for-autonomous-llm-agents-mechanisms-evaluation-and-e.md">
@@ -1024,7 +1002,9 @@ At each discrete step $t$, an agent receives input $x_{t}$—a user message, a 
 Between these two events, it consults its accumulated memory.
 We write:
 
-$$ $\displaystyle a_{t}$ $\displaystyle=\pi_{\theta}\!\bigl(x_{t},\;\mathcal{R}(M_{t},x_{t}),\;g_{t}\bigr),$ (1) $\displaystyle M_{t+1}$ $\displaystyle=\mathcal{U}\!\bigl(M_{t},x_{t},a_{t},o_{t},r_{t}\bigr),$ (2) $$
+$$a_{t}=\pi_{\theta}\!\bigl(x_{t},\;\mathcal{R}(M_{t},x_{t}),\;g_{t}\bigr),\quad\text{(1)}$$
+
+$$M_{t+1}=\mathcal{U}\!\bigl(M_{t},x_{t},a_{t},o_{t},r_{t}\bigr),\quad\text{(2)}$$
 
 where $\pi_{\theta}$ is the policy (typically a prompted or partially fine-tuned LLM), $\mathcal{R}$ reads from memory, $\mathcal{U}$ writes to and manages memory, $g_{t}$ encodes active goals, $o_{t}$ is environment feedback, and $r_{t}$ is any reward-like signal.
 
@@ -1688,52 +1668,227 @@ The authors declare no conflict of interest.
 
 No primary data were generated in this study.
 All referenced works are publicly available as cited.
+
 </research_source>
 
-<research_source type="scraped_from_research" phase="exploitation" file="the-context-window-problem-scaling-agents-beyond-token-limit.md">
+<research_source type="scraped_from_research" phase="exploitation" file="position-episodic-memory-is-the-missing-piece-for-long-term-.md">
 Phase: [EXPLOITATION]
 
-## The Context Window Problem: Scaling Agents Beyond Token Limits
+## Abstract
 
-Large language models have limited context windows - approximately 1 million tokens. In contrast, a typical enterprise monorepo can span thousands of files and several million tokens. There are also millions of tokens worth of information relevant to an engineering organization that lives outside of the codebase. This massive gap between the context that models can hold and the context required to work with real systems is a major bottleneck to deploying agentic workflows at scale.
+Abstract As Large Language Models (LLMs) evolve from text-completion tools into fully fledged agents operating in dynamic environments, they must address the challenge of continuous learning and long-term knowledge retention. Many biological systems solve these challenges with episodic memory, which supports single-shot learning of instance-specific contexts. Inspired by this, we present a framework for LLM agents, centered around five key properties of episodic memory that underlie adaptive and context-sensitive behavior. With various research efforts already covering portions of these properties, this position paper argues that now is the right time for an explicit, integrated focus on episodic memory to catalyze the development of long-term agents. To this end, we outline a roadmap that unites several research directions under the goal to support all five properties of episodic memory for more efficient long-term LLM agents.
 
-At Factory, we've addressed these limitations by building multiple layers of scaffolding, such as structured repository overviews, semantic search, targeted file operations, and integrations with enterprise context sources that go beyond just the code, like Datadog, Slack, and Notion. This architecture treats context as a scarce, high-value resource, carefully allocating and curating it with the same rigor one might apply to managing CPU time or memory. The result is a system where every byte of context serves a purpose, directly supporting more reliable, and efficient agentic workflows.
+## 1 Introduction
 
-## Critical context for effective agents
+Large Language Models (LLMs) are rapidly expanding beyond their origins as text-completion engines. Instead, they are evolving into agentic systems capable of taking meaningful actions in complex environments . This transformation can enable a range of real-world applications, including autonomous research assistance , aiding in literature reviews, data analysis, and hypothesis generation; personalized customer support , where they can recall prior interactions to provide consistent and tailored assistance; and interactive tutoring systems , which track learning progress, and revisit challenging concepts to ensure effective and personalized education.
+These diverse applications hint at a vast potential of LLMs to enable intelligent agents capable of meaningful and context-sensitive interaction.
 
-Human developers don't write code in isolation. They require many sources of context to create software that integrates with an existing system. For example:
+Operating and reasoning over extended timescales in dynamic interactive contexts demands that an agent not only recalls what happened, but also when, how, why, and involving whom. Such rich traces of past events, motivations, and outcomes form the basis of context-sensitive behavior—especially crucial in large-scale projects involving human stakeholders and multiple actors. For example, a future long-term LLM agent that is supposed to assist in the ongoing development of a massive software project such as Linux—which has spanned decades, encompasses over 40 million lines of code, and additionally involves countless past contributions, issues, comments, notes, and feature requests—would need to continuously integrate and reason about a vast, evolving historical context while adapting to new requirements.
+Core necessities for this kind of system are constant computational cost per new token and a stable or improving performance over time.
 
-1. **Task Descriptions:** What needs to be accomplished, such as "implement a new API endpoint," "fix bug #123," or "refactor the login module." This defines the concrete goal or assignment that initiates the workflow.
-2. **Tools:** Details about the resources, tools, and systems available to the developer or agent. Knowing what tools are accessible is crucial for determining how the task can be completed.
-3. **Developer Persona:** Information about the developer, including their environment, user name, and role. This helps tailor the workflow to the individual's needs and circumstances.
-4. **Code:** The files, functions, and variables currently being modified form the foundation of any code change. This includes syntax requirements, function signatures, and the specific data structures being manipulated. Without this context, even simple changes become impossible to implement correctly.
-5. **Semantic Structure:** These are the higher-level patterns and constraints that give meaning to the code. They include architectural and design patterns, business rules that may not be explicitly documented. This knowledge is essential for maintaining system coherence.
-6. **Historical Context:** Previous refactoring efforts, bug fixes, and design decisions captured in commit messages or documentation provide crucial insights into why the code evolved as it did. Understanding this history prevents developers from reintroducing resolved issues or contradicting established patterns.
-7. **Collaborative Context:** The social and organizational dimensions of software development include coding standards, style guides, and team conventions. These ensure code changes will be accepted by peers and integrate smoothly with the team's workflow.
+Ongoing research directions attack the problem of long-term retention and adaptation from different angles and have made impressive progress.
+However, we are still lacking approaches that maintain relevant contextualized information over long time frames at a constant cost without degrading performance—necessities for a widespread adoption of LLM agents in many long-term settings.
 
-When humans lack any of these critical contexts, the quality of their output deteriorates. The same is true for LLMs. It is unfair to throw a codebase at an LLM and expect human-level results when the human has far more context. Without a clear task description, they optimize for the wrong objective or mis-scope the work. Without tool context, they propose steps that rely on unavailable capabilities or miss faster or safer paths. Without developer persona context, they produce outputs that do not fit the user's environment, permissions, or conventions. Without code context, they produce syntactically invalid code. Without semantic context, they generate solutions that violate architectural principles. Without historical context, they reintroduce problems that were previously resolved. And without collaborative context, they produce code that doesn't align with team standards. The result is an agent that generates unusable code that fails to address the underlying requirements.
+Meanwhile, many biological systems solve the demands for acting in a continually evolving environment with a dedicated memory system that allows for both fast and slow learning: episodic memory . In this position paper, we argue that the growing demand for LLM agents to operate effectively over extended timescales, alongside ongoing advances in long-context models, external memory systems, and efficient fine-tuning methods, makes episodic memory a timely framework to unify efforts for enabling truly long-term LLM agents.
 
-## Why existing approaches fail
+Figure: Figure 1: LLM-Agents with an Episodic Memory system. The LLM agent acts on and gets feedback from an environment. Feedback can come in the form of outputs from programs (E1), from other agents (E2), humans (E3), as well as external real-world data (E4). Actions can modify parts of the environment, and provide feedback for humans or other agents in the environment. Within the agent, an external memory system acts as a bridge between parametric and in-context memory while allowing for fast *encoding* of and *retrieval* into in-context memory (the LLM’s context window). (a) *Consolidation*: Episodes in the external memory are consolidated into a model’s broader parametric memory to avoid capacity limitations and allow for generalization to new semantic knowledge and procedural skills based on specific instances. (b) *Encoding*: Limited in-context memory can offload its content into external memory. (c) *Retrieval*: Stored episodes can later be retrieved and used to reinstate representations into in-context memory.
+Refer to caption: x1.png
 
-#### Naive vector retrieval
+To lay out the argument for this position, we proceed as follows: In Section 2, we operationalize the concept of episodic memory for LLM agents by highlighting five key properties that distinguish it from other biological types of memory that are also desirable for LLM agents. We proceed to argue in Section 3 for episodic memory as a unifying goal by showing how various existing approaches to improve LLM memory target different properties that are united in episodic memory. In Section 4, we highlight how unifying these threads under a common goal can spur more holistic progress and outline a roadmap toward implementing episodic memory. Lastly, in Section 5, we discuss alternative views under which episodic memory would not be necessary for long-term LLM agents.
 
-By naive vector retrieval we mean splitting up code files into chunks, embedding those chunks, taking top-k nearest neighbors, and stuffing the corresponding code files into context. This allows agents to find multiple files that are similar to the user's query in a single tool call. This empirically works for a surprisingly large number of user queries, but it is worth examining where this fails.
+## 2 Operationalizing EM for LLMs
 
-How does a developer actually search through a codebase? They start with a small set of files that may be relevant, then take advantage of the code structure to systematically traverse the codebase, following references, imports, definitions, and call graphs to find the entire set of relevant files. This iterative, multi-hop exploration is essential for understanding how different parts of the system interact.
+To transfer the concept of episodic memory from cognitive science to the context of LLM agents, we highlight five properties of episodic memory that are useful for LLM agents, and that distinguish episodic memory from other memory types in animals and humans. These five properties naturally cluster into two categories: properties that concern the way that the system operates with the memory—namely, long-term storage, explicit reasoning, and single-shot learning, and properties that concern the content of the stored memory—namely, instance-specific and contextualized memories. We first discuss how the combination of these five properties distinguishes episodic memory from other types of memories in animals and humans, and then detail each property and its utility for LLM agents.
 
-1. **Lack of structural encoding:** Code is not merely text. It is a web of dependencies, inheritance hierarchies, and architectural patterns. Vector embeddings flatten this rich structure into undifferentiated chunks, destroying critical relationships between components.
-2. **Multi-hop reasoning failure:** When an agent needs to understand how multiple parts of a system interact (eg. tracing from an API endpoint through middleware to a database model) vector search often retrieves disconnected fragments without the connective tissue.
-3. **Reasoning degradation:** Vector search queries often return irrelevant files along with the relevant ones. Flooding an LLM with dozens of irrelevant files actively harms its reasoning capabilities. The model must now sift through noise while attempting to solve the original problem.
+### 2.1 Unique Combination of EM Properties
 
-The fundamental issue is that vector retrieval was designed as a general-purpose memory augmentation technique, not as a specialized tool for navigating the structured, hierarchical nature of software.
+Episodic memory is one of multiple memory systems that exist in animals and humans, distinguished by its unique combination of properties (Table 1). Other biological memory systems that share some, but not all, properties of episodic memory are 1) procedural memory , which allows for long-term storage of memories for implicit operations or task behaviors, such as producing a sequence of a particular type, rather than reasoning about the sequence; 2) semantic memory , which allows for long-term storage of factual knowledge and explicit reasoning with these stored memories, but lacks specificity to single instances of acquired information and its context; and 3) working memory , which can share many of the highlighted properties of episodic memory except for the important fact that it does not allow for long-term storage. The unique combination of important properties in episodic memory makes it a promising candidate for translation to AI systems.
 
-#### Will bigger windows solve it?
+### 2.2 Importance of EM Properties for LLM Agents
 
-Recently, LLMs have started to come with larger context windows, allowing users to fit in a lot more files, potentially everything into the LLMs' context. While that may sound like a cure all, in practice, it does not yield the results that one might expect:
+**Table 1: Properties of episodic memory in comparison to other relevant forms of memory in animals and humans.**
+| Memory Type | Long-term | Explicit | Single-shot | Instance-specific | Contextual  relations |
+| --- | --- | --- | --- | --- | --- |
+| Episodic | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Procedural | ✓ | $\times$ | $\times$ | $\times$ | $\times$ |
+| Semantic | ✓ | ✓ | $\times$ | $\times$ | $\times$ |
+| Working | $\times$ | ✓ | ✓ | ✓ | ✓ |
 
-1. **Not Big Enough:** Today, frontier models offer context windows that are no more than 1-2 million tokens. That amounts to a few thousand code files, which is still less than most production codebases of our enterprise customers. So any workflow that relies on simply adding everything to context still collides with a hard wall.
-2. **Quality Degradation:** Model attention is also not uniform across long sequences of context. Chroma's research report on [Context Rot](https://research.trychroma.com/context-rot) (Hong et al., 2025) measured 18 LLMs and found that "models do not use their context uniformly; instead, their performance grows increasingly unreliable as input length grows." will actually use or even attend to the relevant information. Simply providing more information does not ensure comprehension. In fact, it can degrade quality by overwhelming the model with noise and diluting the signal needed to solve the task at hand.
-3. **Monetary Costs:** Token pricing turns naive "just stuff more code" strategies into untenable OpEx for organizations with large engineering teams. Every additional token processed by an LLM incurs a direct cost, and as context windows grow, so too does the cost of inference. For large repositories or complex tasks, the difference between a curated, targeted prompt and a brute-force full-context approach can mean orders of magnitude in operational expenses. When multiplied by the volume of daily queries from dozens or hundreds of
+#### 2.2.1 Episodic Memory Operations
+
+Long-term storage.
+In humans and other animals, episodic memory functions as a form of long-term memory, capable of storing knowledge throughout an individual’s lifetime . This distinguishes it from working memory, which is transient. For LLM agents, an effective episodic memory system must similarly support memory retrieval across any number of tokens. This requires mechanisms for long-term memory that maintain an agent’s performance throughout a continual interaction with an environment. An adaptive long-term agent should not only prevent a degradation in performance over time-it should also be able to improve by learning new general knowledge and skills.
+
+Explicit reasoning.
+In classical theories of human memory, episodic memory is described as a subset of declarative or explicit memory . A defining feature of explicit memory is the ability to reflect and reason about the memory content. In the context of LLM agents, the explicitness of memory is necessary as agents need to be able to answer direct queries about stored information or use this information in explicit internal reasoning processes.
+
+Single-shot learning.
+A key characteristic of episodic memory, as emphasized in complementary learning systems theory, is its ability to be acquired based on a single exposure . This fast learning enables the rapid encoding of unique experiences or events. For LLM agents, this capability is particularly crucial in environments where continual deployment may not provide multiple variations or repetitions of specific events. Certain occurrences in an environment may happen only once, necessitating an episodic memory system that is capable of effectively capturing and utilizing information from single exposures.
+
+#### 2.2.2 Episodic Memory Content
+
+Instance-specific memories.
+Episodic memory stores information specific to an individual sequence of events along with their distinct temporal contexts . This specificity allows episodic memory to capture details unique to a particular occurrence, enabling its application in agentic environments where reasoning about specific past actions and their consequences matters. This can include past lines of reasoning that were associated with a decision to be made by an LLM agent.
+
+Contextual memories. Episodic memory binds context to its memory content, such as when, where, and why an event was encountered . The ability to store many contextual relations associated with a specific event enables retrieval based on contextual cues as well as explicit recall of context. For LLM agents, this property is important to not only remember that a specific event happened in the past, but also when, why, and in which broader context it happened.
+
+## 3 Current Approaches
+
+While many methods currently exist to modify and augment LLM memory, we argue that they fall short of the memory properties that would enable effective, long-term LLM agents. We group existing methods that seek to improve the memory of LLMs into three categories that are relevant to episodic memory:
+
+- 1.
+In-Context Memory methods extend the effective context length by optimizing computational efficiency and length generalization;
+- 2.
+External Memory methods augment a model’s in-context memory capacity with a separate module, often with reduced GPU memory requirements and/or computational cost;
+- 3.
+Parametric Memory methods modify the LLM parameters that encode memories (primarily learned from the language modeling training data).
+
+In this section, we discuss examples in each category that capture different properties of episodic memory (Table 2). More importantly, we highlight their shortcomings in supporting episodic memory for LLM agents in isolation.
+
+**Table 2: Methods for in-context, external, and parametric memory do not cover all features of episodic memory. $\sim$ is used for cases where it is unclear whether an aspect of episodic memory is properly satisfied by a method.**
+| Memory Approach | Long-term | Explicit | Single-shot | Inst.-specific | Contextual rel. |  |
+| --- | --- | --- | --- | --- | --- | --- |
+| In-Context | KV-Compression | $\times$ | ✓ | ✓ | ✓ | ✓ |
+| State-space-model | $\times$ | ✓ | ✓ | ✓ | ✓ |  |
+| External | RAG | ✓ | ✓ | $\sim$ | $\sim$ | $\times$ |
+| GraphRAG | ✓ | ✓ | $\sim$ | $\sim$ | $\sim$ |  |
+| Parametric | Efficient Fine-tuning | ✓ | ✓ | $\times$ | $\times$ | $\times$ |
+| Knowledge Editing | ✓ | $\sim$ | $\times$ | $\sim$ | $\times$ |  |
+| Context Distillation | ✓ | ✓ | $\times$ | ✓ | $\times$ |  |
+
+### 3.1 In-Context Memory
+
+In-context memory (ICM) allows LLMs to perform single-shot, instance-specific, and contextualized learning by enabling them to directly attend to representations of encountered sequences (Table 2). ICM capacity is either tightly limited or extensible but expensive to scale, often requiring sequence parallelization. Recent works seek to extend it by increasing the context window, but models struggle with length generalization beyond training exposures. We review existing methods and their limitations in addressing these challenges.
+
+One active research direction focuses on extending the in-context window to handle significantly longer sequences, enabling LLMs to perform reasoning over extended contexts. This advancement brings LLMs closer to mimicking episodic memory, as it allows models to retain and utilize information across longer contexts. However, transformer-based LLMs face significant challenges, including the high computational cost of processing long sequences and limitations in length generalization.
+Recent research has sought to address these challenges by reducing memory usage, optimizing inference time, and improving long-sequence generation. Despite these advancements, current methods have yet to achieve robust, persistent memory capabilities necessary for long-term, open-ended, and context-aware reasoning. Below, we briefly review existing methods and their limitations.
+
+Memory reduction.
+For transformer-based LLMs, several methods aim to reduce memory and computation costs.
+
+Sparsification and compression methods selectively retain relevant information to optimize memory usage. Sparsification strategies optimize memory by restricting attention computations to the most relevant parts of the sequence , reducing both storage and computational overhead. Similarly, forgetting mechanisms remove less useful tokens to maintain efficiency . Other compression-based approaches dynamically reduce KV cache size by storing only the most important tokens and key-value pairs . Adaptive strategies further refine compression across layers  or merge similar states to minimize redundancy .
+
+Quantization methods reduce memory footprints by lowering precision or selectively storing information. Quantization techniques store key-value pairs at reduced precision , allowing for larger context windows with a relatively minimal performance degradation.
+
+Inference time reduction.
+Efficiency improvements during inference focus on optimizing KV cache management and parallelization. Techniques such as paged caching  dynamically allocate memory to accommodate longer sequences without excessive overhead. Other methods leverage GPU memory pooling and adaptive chunking  to process extended contexts efficiently while maintaining fast retrieval and computation speeds.
+Other strategies improve efficiency by reusing KV tensors across layers
+
+Recent work has aimed to introduce episodic memory in LLMs by structuring token sequences into retrievable events , enhancing long-context reasoning and outperforming retrieval-based models. However, a fundamental challenge remain the increasing memory and retrieval costs: maintaining the full KV-Cache for an entire interaction history can quickly become impractical, especially in large-scale, long-duration, and multimodal applications. This limitation is inherent to KV-Cache management systems, which must retain the entire cache, leading to significant storage and computational overhead.
+
+Transformer alternatives to reduce both memory and inference time.
+In addition to optimizing KV cache storage and management, alternative architectures have been proposed to address the limitations of standard transformers in both memory and inference time.
+
+Linear attention  approximates full self-attention using kernel-based or low-rank transformations, significantly reducing computational complexity and improving efficiency for long-sequence processing.
+State-space models (SSMs)  further achieve linear scaling for sequence handling by maintaining a fixed-size representation, making them inherently memory-efficient. Hybrid architectures  combine these techniques with transformers to compress KV-cache sizes while preserving strong performance.
+Other alternatives restructure the transformer architecture itself to enhance efficiency. Some models  modify the decoder structure to reduce memory usage and latency, while others  compress sequence information into compact representations to improve inference speed and scalability.
+
+These methods enhance ICM efficiency, but their reliance on compression, approximation, and selective retention comes with limited support for long-term reasoning with episodic memory. This limitation highlights the need for an external memory structure that retains past information. Methods of KV-cache optimization can also discard older context, leading to irreversible information loss and different model behavior .
+Generally, methods with a constant cost, like SSMs, struggle to handle a continually expanding interaction history in dynamic environments, while methods with an increasing state representation increase in both inference time and GPU memory requirements.
+
+Length Generalization.
+Length generalization refers to a model’s ability to maintain understanding over long sequences, preventing degradation of performance such as forgetting or losing context midway through processing . In essence, humans avoid SSMs’ trade-offs by storing compressed representations and retrieving knowledge adaptively, allowing us to manage expanding information effortlessly.
+
+To address this, lightweight solutions  create adapters to process and retrieve long inputs before passing the content to the LLM.
+Other approaches  refine attention patterns and positional encodings to enhance long-context comprehension.
+Alternative architectures  improve long-context learning through mechanisms like differential attention and segment-level recurrence.
+Another promising approach embeds test-time information into the model’s parameters, creating a form of long-term memory , combining attention with neural memory modules, enabling adaptability for long contexts but at the cost of increased inference overhead. These approaches have limited capacity and still face eventual forgetting over very long sequences.
+
+### 3.2 External Memory
+
+Many methods propose a separate memory module that stores information when it exceeds the effective operating span of the model. These augmented memory models are usually evaluated on tasks which require using that stored information. As such, these methods typically have long-term and explicit memory (Table 2). However, they often lack information that relates the stored memories to one another—especially contextual details on how the model acquired the memory, or details to help differentiate specific instances. They are typically not evaluated for single-shot learning, especially for specific instances. And finally, there is a lack of proposals to generalize information from these instances and update parametric memory (Figure 1a). Below we review some relevant external memory methods and elaborate on key examples to illustrate these shortcomings.
+
+Slot-based memory with recurrent controllers. A key advance in memory augmentation in the pre-transformer era was the formulation of learnable memory modules external to the main neural network . External memories were stored in individual slots and updated via a recurrent memory controller. These models were shown to retain longer-term information than vanilla long-short term memory (LSTM) networks. Similar memory augmentation methods have been adapted for transformers . However, these methods lack a way to store contextual details that LLM agents would need in an episodic memory, as they strongly depend on the details available in the input data. One exception devised a method to record temporal relationships between memories , but this has yet to be seen in augmented LLMs.
+
+Distributed vs. slot memory. An issue with slot-based memory modules is that they are capacity-limited, both by the number of slots and the dimensionality of each slot representation. While these models adopt forgetting mechanisms to mitigate this, the capacity limit still affects how long memories can be stored. Another approach addresses this downside by storing external memories in a sparse, distributed fashion instead of in slots. Recent work integrated distributed memory in an LLM, and showed that the model can recall a greater number of facts over longer contexts, compared to baseline LLMs. While they demonstrate how they can perform one-shot memory updates (fact-editing), they do not evaluate single-shot learning of novel facts.
+
+RAG and GraphRAG methods. Retrieval Augmented Generation (RAG) methods maintain an external database of information that is added to the input data to augment LLM generation. Naive RAG implementations encode chunks of text using embedding models , typically without much metadata or contextual detail about the original text. (One exception is work that preserves the order of retrieved text from the database .) And while text embedding models can capture some similarity relationships between embeddings, they do not encompass the rich set of relationships that LLM agents will likely need for most applications. GraphRAG models replace the vector embedding database with a structured graph that explicitly encodes relationships as connections between nodes . Still, these graphs encode a limited number of relationship types, even when researchers branch out beyond pre-existing datasets and learn to build the graphs directly from the input text . As such, they also lack rich contextual detail.
+
+External storage of past LLM inputs and outputs. Another type of approach maintains a database of pasts LLM inputs to avoid recomputing predictions to similar future inputs . Here, contextual information (e.g. details that differentiate specific instances) will only be stored when explicitly given in the LLM input text. That is, the memory is much more dependent on input data, limiting test-time generalization. One proposal to mitigate this formulates a long-term memory module for context that is updated with LLM activations based on the current inputs . Other approaches additionally store LLM outputs, such as generated text , summarizations , chain-of-thought steps , and extracted relation triples . One approach specialized for chat interactions stores timestamps and user personality profiles as context . These modifications enable storage of contextual details useful for LLM agents. However, specifying the type of contextual detail is restrictive, so it is preferable to combine this with a more learnable and flexible mechanism for storing context.
+
+Learning to interact with external memory. The approaches described above may fine-tune or instruct the LLM to interact with and update external memory. That is, the LLM learns the functions of a memory controller. For example, several RAG approaches fine-tune the LLM to make better use of the retrieved content . Other approaches define how LLMs should interact with memory, requiring them to learn specific API calls or memory hierarchies . These provide possible mechanisms to add information to external memory, such as contextual details and specific instances. However, most current work does not consider how to modify the LLM to generalize across specific instances to store new knowledge in LLM parameters (Figure 1a). propose one way to generalize across instances by adding a data-independent memory system (a.k.a. meta-memory, persistent memory) in addition to a more data-dependent memory module. However, the data-independent memory is considered to be closer to task memory than knowledge distillation, and the meta-memory parameters are kept separate from the LLM itself.
+
+### 3.3 Parametric Memory
+
+This type of memory allows LLMs to process the information in the input to obtain well-suited output. Parametric memory values are initially learned through back-propagation with a pretraining dataset.
+During this process, the parametric memory tends to capture general knowledge and rules ranging from syntax to common sense and factual knowledge.
+Due to the sheer size of the parametric memory, the amount of data needed for pre-training is usually very large, following power laws .
+Generally, parametric memory is fixed after training, i.e., does not change with the input at inference time.
+
+A relevant research direction in parametric memory focuses on adapting LLM parameters to specific domains, tasks, or applications when given limited resources. Efficient fine-tuning methods have been developed in recent years to tackle the runtime and memory consumption of this process. Alternatively, distillation techniques have been proposed to update knowledge and propagate it through a model. A key challenge is the need for updating specific factual knowledge without interfering with other knowledge. Some facts may change over time, requiring surgical precision to update the parameters of a model. The line of work that proposes these updates is known as knowledge editing.
+
+Efficient Fine-tuning. Various works have been proposed to reduce the computational needs (hardware memory) of updating a model to a specific domain. Among these, Low-Rank Adaptation (LoRA) applies additive low-rank approximation updates to shift the model parameters.
+Several methods proposed other ways to further improve efficiency by reducing and localizing updates . Other work learned modifications on representations instead of parameters .
+In all cases, fine-tuning methods require a dataset to adapt a model for a specific task or domain, i.e. they are not capable of single-shot learning or capturing instance-specific and contextually rich information.
+On the other hand, additional fine-tuned adapter parameters are often frozen after the fine-tuning process, supporting the long term storage of information. Moreover, these methods tend to preserve the reasoning capabilities while updating the model with newly captured information .
+
+Knowledge Editing. As the environment evolves over time, some factual knowledge becomes outdated (e.g., the president of a country may change after the elections). Knowledge editing methods aim to make modifications to the factual knowledge in parametric memory with targeted updates while avoiding interference with other facts. In ROME and MEM-IT , the first step is to find relevant parameters (in MLPs) that influence the specific fact through causal interventions and then update the related parameters with low-rank model edits. An alternative research direction proposes to train a hyper-network that predicts the amount of change for each parameter given the knowledge to be edited. A different method, SERAC, stores the set of edits in an external memory, combined with a scope detector and a counter-factual model to decide when and how to apply the edits. All knowledge editing methods work on facts which are inherently context-free, making it impossible to contextualize the edited knowledge in the history of the agent-environment interaction. However, they mimic the episodic memory traits of learning from a single instance, while enabling long-term retention.
+
+The problem of knowledge editing has been extended to a continual learning setting, where edits are required sequentially over time to correct a model. This leads to the sequential editing problem: hyper-network prediction quality decreases because they fail to reflect the updated model, and low-rank parameter updates interfere with one another causing catastrophic forgetting .
+MELO adapts dynamic LoRA to this problem and introduces a vector database to search the selections of the blocks to be dynamically activated within the LoRA matrices for each layer. WISE adds duplicates of the MLP’s output parameters for some layers in the network, and updates them with each new edit set. A routing mechanism decides whether to use the original layer or the updated one. It further uses sharding and merging to distribute the edits into random subspaces to improve generalization and parameter utilization.
+
+While continual learning-based knowledge editing allows models to integrate updates over time, it has fundamental limitations. Edited knowledge often lacks generalization, struggling with inferring new relationships or reasoning over multiple steps . This highlights a key challenge—knowledge editing methods can introduce updates but do not always ensure deeper understanding or adaptability.
+
+Context Distillation. The idea behind these techniques is to transfer in-context learned information, abilities, and task-understanding by distilling them into model parameters.
+proposed to use distillation when the teacher and the student are in the same model, but less in-context information is given to the student. This would enable the student to learn skills and express knowledge that would otherwise depend on including information and instances in costly and limited in-context memory. Further, proposes to exploit context distillation to inject and propagate knowledge through a model. The original model is provided with new definitions and continuations. The distillation process updates a copy of the model with only the generated continuation, conditioning the updated model to the new entities implicitly. This helps to propagate the information into the parameters (i.e., consolidating it) and thus improving inference with such entities.
+
+## 4 Episodic Memory as a Unifying Framework
+
+Although current work has advanced context-sensitive LLMs that are capable of handling longer sequences, it does not yet deliver efficient learning that could support long-term LLM agents. Existing methods—which extend in-context (working) memory, integrate external memory, or update parametric memory—only address subsets of episodic memory’s five essential properties, as discussed in Section 3. These approaches remain fragmented, impeding the immediate assimilation of new experiences and gradual improvement over time.
+
+We propose that enabling episodic memory offers a unifying perspective that will combine and extend existing methods to advance the capabilities of LLM agents. By incorporating long in-context memory, external memory, and mechanisms for updating parametric memory, agents can more seamlessly adapt to new information, consolidate it, and prevent escalating costs or performance degradation during extended interactions with an environment. This view is based on Complementary Learning Systems Theory , in which episodic memory is part of a fast-learning system that stores information from individual instances. Over time, that information is consolidated into a slow-learning system that stores more stable, durable knowledge.
+
+In Figure 1, we present a general architecture and framework that combines these elements under the overarching goal of enabling all five key features of episodic memory for LLM agents as detailed in Section 2. As a roadmap to enable episodic memory in LLM agents, we specifically call for four main research directions (encoding, retrieval, consolidation, and benchmarks), and formulate six research questions under these areas below.
+
+### 4.1 Encoding
+
+RQ1: *How to store information from in-context memory in a long-term external memory store?*
+
+An external memory store is essential for retaining experience in a structured way that preserves the context of individual instances (Fig.1, arrow (b)). A straightforward approach is to store text chunks or embeddings in a non-parametric RAG-like database, potentially augmented with metadata for context . More structured representations, such as GraphRAG, could also facilitate context-sensitive retrieval. However, capacity constraints on these types of databases may make it necessary to rely on more compressed parametric representations.
+
+RQ2: *How to segment continuous input into discrete episodes, and when to store them in an external memory?*
+
+A major design question is *when and how to segment* a continuous stream of agent experience into episodes to be encoded into an external memory. LLMs have already been shown to be capable of segmenting text into meaningful events, in a way that is similar to humans , and recent approaches show that further bundling related segments based on model surprise can improve long-term modeling .
+
+*Leveraging long-context advances* can further improve encoding by providing a space in which new episodes can be equipped with a rich contextualization. Large hidden states or extended attention windows help capture high-fidelity contextual information, which can then be encoded into an external memory in a compressed format for future retrieval.
+
+### 4.2 Retrieval
+
+RQ3: *Given an external memory, how to select relevant past episodes for retrieval and reinstatement into in-context memory for the purpose of explicit reasoning?*
+
+To employ past experiences in current tasks, an agent must *retrieve* relevant episodes at the right time and *reintegrate* them into its in-context memory with an adequate mechanism (Fig.1, arrow (c)). Common strategies include prepending retrieved text tokens to the input sequence (as in RAG), manipulating representational states within the transformer (e.g., memory tokens ), or adapting internal representations .
+
+RQ4: *How can retrieval mechanisms in long-context LLMs improve and accelerate the optimization of external memory retrieval and reinstatement?*
+
+*Long-context advances* can be leveraged to inform when and what to retrieve at sequence lengths that are still feasible. Future research could explore tight integration of external memory with the model’s forward pass and adopt cross-architecture distillation to accelerate the development of external memory structures that retain many of the desirable properties of in-context memory while reducing the resource cost.
+
+### 4.3 Consolidation
+
+RQ5: *How to periodically consolidate external memory contents into the LLM’s base parameters without forgetting previous knowledge?*
+
+Eventually, merging external memory contents into the model’s parameters (Fig.1, arrow (a)) promises to allow new generalized knowledge to be used without explicit retrieval. This process both prevents external memory overflow and supports continuous adaptation of the agent’s semantic and procedural backbone to the environment. Relevant techniques include context distillation, parametric knowledge editing, and localized fine-tuning methods that capture newly encountered information without catastrophic interference with other knowledge. Open questions remain about how to decide when to consolidate and how to compress many episodic instances into more abstract parametric knowledge while also retaining previous knowledge and skills.
+
+### 4.4 Benchmarks
+
+RQ6: *What new types of benchmarks are needed to assess episodic memory in LLM agents?*
+
+Finally, *evaluating* episodic memory effectiveness requires new tasks and metrics. Studies should test the recall of contextualized events after long delays, assessing how well agents remember when, where, and how events occurred. An example of such a study is the testing of instance-specific temporal order memory proposed by . Beyond controlled probes, benchmarks must incorporate real-world complexities: agents should demonstrate an improving task performance that is linked to encoding, retrieval, and consolidation of past experiences over extended timescales.
+
+## 5 Alternative Views
+
+While we argue that an explicit episodic memory framework is necessary for effective long-term and context-sensitive behavior, there are alternative perspectives suggesting that current or emerging methods might suffice in the future without the need for the concept of episodic memory to provide guidance.
+
+Scaling in-context memory will be sufficient. One view suggests that advances in long-context methods—such as improved transformers, state-space models, or other architectures with extended context windows—will enable practically unlimited access to past information. Proponents claim that better positional encodings, modified attention mechanisms, and other in-context memory extensions will cover most relevant applications for LLM-based agents.
+
+Contextualized external memory will be sufficient.
+A second view holds that external memory structures—such as knowledge graphs or retrieval-augmented generation (RAG) systems—could eliminate the need for an episodic memory framework. By contextualizing data chunks and storing them in structured graphs, these systems aim to incorporate past context into current tasks effectively.
+
+“Infinite” in-context memory remains a speculative prospect. Extending limited context windows to include all information needed by an agent requires foreknowledge of the maximum timespan of relevant information. For very long timespans, this will either incur prohibitive computational costs or require compression methods that may lose key details. Only relying on external memory will still incur high storage costs, and require forgetting mechanisms. An episodic memory framework addresses these constraints by periodically consolidating information into high-capacity parametric memory (Figure 1, arrow (a)). This has the added benefit of enabling LLM agents to slowly improve over time, as they continue to learn from the past before they forget it.
+
+## 6 Conclusion
+
+This position paper argues that to fully realize efficient long-term LLM agents, we must endow LLM agents with episodic memory. We operationalize episodic memory—a term borrowed from cognitive science—for LLMs by highlighting five key characteristics that distinguish episodic memory from other types of memory in biological systems, and argue for why each property is also important for LLM agents. We position the call for episodic memory in LLM agents in the current literature and discuss how episodic memory can serve as a unifying goal for existing research directions. Lastly, we provide a roadmap of research questions towards implementing episodic memory in LLMs. By describing the potential of this research direction, we aim to spark a community-wide shift in how we conceive and engineer long-term memory in the move towards agentic AI—one that more deeply integrates lessons from cognitive science and brings together existing approaches in ML under a unifying goal with strong promise.
+
 </research_source>
 
 <research_source type="scraped_from_research" phase="exploitation" file="vector-database-vs-knowledge-graph-for-ai-agent-memory.md">
@@ -1746,9 +1901,10 @@ Phase: [EXPLOITATION]
 | What it is | Embedding index for semantic similarity search | Graph of typed entity relationships and traversal |
 | Primary retrieval method | Approximate nearest-neighbor (ANN) on vector embeddings | Cypher/SPARQL graph traversal; multi-hop path following |
 | Best for | Fuzzy recall of unstructured content; conversational grounding | Multi-hop relational reasoning; explicit ontology queries |
-| Key strength | Sub-millisecond retrieval; zero cold-start; any content type | Explicit relationships; deterministic paths; temporal edges (Zep/Graphiti) |
-| Key weakness | Flat semantics; no multi-hop; no governance primitives | Cold-start cost; ontology maintenance burden; no native permissions |
+| Key strength | Sub-millisecond retrieval; zero cold-start; any content type | Explicit relationships; deterministic paths; temporal edges |
+| Key weakness | Flat semantics; no multi-hop; no governance primitives | Cold-start cost; ontology maintenance burden |
 | Hallucination risk | High: stale vectors produce fluent but incorrect answers | Lower: deterministic traversal; explicit relationships |
+| Representative tools | Pinecone, Weaviate, pgvector, Qdrant, ChromaDB | Neo4j, Amazon Neptune, FalkorDB, Zep/Graphiti |
 
 ## How vector databases work for AI agent memory
 
@@ -1780,19 +1936,19 @@ At query time, the agent embeds the query, runs ANN search to return the K most 
 
 **Invisible freshness failures.** VentureBeat (2025) documents how enterprises measure the wrong part of RAG: “freshness failures emerge when source systems change continuously while embedding pipelines update asynchronously.” The agent keeps answering, fluently and incorrectly.
 
-**Opaque retrieval.** Similarity scores cannot explain why a fact was retrieved. In regulated industries, similarity-score-as-explanation fails audit requirements entirely.
+**Opaque retrieval.** Similarity scores cannot explain why a fact was retrieved.
 
 ## How knowledge graphs work for AI agent memory
 
-Knowledge graphs model the world as typed nodes and edges: entities connected by explicit, named relationships. Agents traverse these graphs using languages like Cypher (Neo4j) or SPARQL, following relationship chains that vector search cannot infer. Temporal knowledge graphs like Zep/Graphiti extend this with validity intervals on every edge, achieving 18.5% higher accuracy on temporal reasoning tasks over baseline implementations [(arXiv 2501.13956)](https://arxiv.org/abs/2501.13956).
+Knowledge graphs model the world as typed nodes and edges: entities connected by explicit, named relationships. Agents traverse these graphs using languages like Cypher (Neo4j) or SPARQL, following relationship chains that vector search cannot infer. Temporal knowledge graphs like Zep/Graphiti extend this with validity intervals on every edge, achieving 18.5% higher accuracy on temporal reasoning tasks over baseline implementations.
 
 ### How Graph Traversal Works
 
 Entities (people, datasets, concepts, events) are modeled as nodes. Relationships between them are typed, directed edges: “governs,” “transforms,” “owns,” “derived_from.” Agents query via graph traversal using Cypher in Neo4j, SPARQL in RDF stores, or Gremlin in Amazon Neptune.
 
-Multi-hop queries explicitly follow chains: `Customer -> Contract -> Product -> Team -> Owner`. [Microsoft GraphRAG (arXiv 2404.16130)](https://arxiv.org/abs/2404.16130) extracts a knowledge graph from a text corpus, builds a community hierarchy and summaries, and enables both local (entity-level) and global (dataset-wide) queries.
+Multi-hop queries explicitly follow chains: `Customer -> Contract -> Product -> Team -> Owner`. Microsoft GraphRAG extracts a knowledge graph from a text corpus, builds a community hierarchy and summaries, and enables both local (entity-level) and global (dataset-wide) queries.
 
-Temporal knowledge graphs go further. Zep/Graphiti’s bi-temporal model attaches validity intervals (`t_valid`, `t_invalid`) to every edge. Facts are invalidated, not deleted, giving agents full time-travel support. [Neo4j’s multi-hop reasoning guide](https://neo4j.com/blog/genai/knowledge-graph-llm-multi-hop-reasoning/) documents why this traversal capability closes a gap that vector search cannot address.
+Temporal knowledge graphs go further. Zep/Graphiti’s bi-temporal model attaches validity intervals (`t_valid`, `t_invalid`) to every edge. Facts are invalidated, not deleted, giving agents full time-travel support.
 
 ### Where Knowledge Graphs Excel
 
@@ -1802,11 +1958,11 @@ Temporal knowledge graphs go further. Zep/Graphiti’s bi-temporal model attache
 
 **Deterministic traversal.** Every answer traces back to specific graph nodes. This explainability matters for regulated industries and complex compliance workflows where a similarity score is not an acceptable explanation.
 
-**Temporal graph support.** Zep/Graphiti’s bi-temporal model achieves 18.5% accuracy improvement on LongMemEval temporal reasoning tasks and 90% response latency reduction versus baseline implementations [(arXiv 2501.13956)](https://arxiv.org/abs/2501.13956).
+**Temporal graph support.** Zep/Graphiti’s bi-temporal model achieves 18.5% accuracy improvement on LongMemEval temporal reasoning tasks and 90% response latency reduction versus baseline implementations.
 
-**GraphRAG global queries.** Knowledge graph-based retrieval strongly outperforms standard vector RAG on holistic, dataset-wide questions; standard vector RAG fails entirely on query-focused summarization [(arXiv 2404.16130)](https://arxiv.org/abs/2404.16130).
+**GraphRAG global queries.** Knowledge graph-based retrieval strongly outperforms standard vector RAG on holistic, dataset-wide questions; standard vector RAG fails entirely on query-focused summarization.
 
-**Measurable accuracy gains.** Knowledge graph augmentation produces 54.2% higher accuracy versus standalone LLMs (Gartner) and reduces hallucination rates by 40%+ [(PMC, NAACL 2024)](https://pmc.ncbi.nlm.nih.gov/articles/PMC12540348/).
+**Measurable accuracy gains.** Knowledge graph augmentation produces 54.2% higher accuracy versus standalone LLMs (Gartner) and reduces hallucination rates by 40%+.
 
 ### Where Knowledge Graphs Fall Short
 
@@ -1814,7 +1970,7 @@ Temporal knowledge graphs go further. Zep/Graphiti’s bi-temporal model attache
 
 **Ontology maintenance burden.** Schema evolution as the business changes requires expert curation. Practitioners on Hacker News consistently note: “the graph is only as good as your ontology, and ontologies are expensive to build and maintain.”
 
-**GraphRAG refresh cost.** LLM-based entity extraction incurs significant GPU costs. Refresh latency limits usefulness with dynamic content [(arXiv 2507.03226)](https://arxiv.org/abs/2507.03226). Community variants like LazyGraphRAG and LightRAG exist specifically to reduce extraction overhead.
+**GraphRAG refresh cost.** LLM-based entity extraction incurs significant GPU costs. Refresh latency limits usefulness with dynamic content. Community variants like LazyGraphRAG and LightRAG exist specifically to reduce extraction overhead.
 
 **Query complexity.** Cypher and SPARQL expertise is required. Most product engineering teams do not have it. This creates a practical barrier to adoption outside specialized domains.
 
@@ -1830,7 +1986,7 @@ The standard architecture, documented across MachineLearningMastery, Vectorize, 
 2. **Graph traversal.** Starting from those entry nodes, traversal follows typed relationships for relational depth.
 3. **Context assembly.** Combined vector and graph context is injected into the LLM context window.
 
-This pattern captures vector breadth and graph depth simultaneously. A comprehensive survey of 28 Graph RAG integration methods [(arXiv 2408.08921)](https://arxiv.org/abs/2408.08921) confirms that hybrid approaches consistently achieve better results for complex enterprise use cases than either architecture alone.
+This pattern captures vector breadth and graph depth simultaneously. A comprehensive survey of 28 Graph RAG integration methods confirms that hybrid approaches consistently achieve better results for complex enterprise use cases than either architecture alone.
 
 ### Microsoft GraphRAG
 
@@ -1840,27 +1996,23 @@ GraphRAG extracts a knowledge graph from a text corpus, builds a community hiera
 
 **Local Search** handles specific entity queries via graph neighborhood traversal. This is faster but produces answers bounded by what was extracted.
 
-The benchmark evidence is strong: GraphRAG strongly outperforms standard vector RAG on global and holistic questions [(arXiv 2404.16130)](https://arxiv.org/abs/2404.16130). The community caveat is equally consistent: high LLM extraction cost, significant GPU overhead, and slow refresh for dynamic content limit practical deployment.
+The benchmark evidence is strong: GraphRAG strongly outperforms standard vector RAG on global and holistic questions. The community caveat is equally consistent: high LLM extraction cost, significant GPU overhead, and slow refresh for dynamic content limit practical deployment.
 
 ### Zep and Graphiti: Temporal Knowledge Graph
 
 Zep’s Graphiti framework implements a temporal knowledge graph with a bi-temporal model. Every edge carries validity intervals. Facts are invalidated, not deleted, enabling full time-travel queries. A three-tier hierarchy (episode subgraph, semantic entity subgraph, community subgraph) organizes information at the appropriate level of abstraction.
 
-The independent benchmark from [Vectorize.io](http://vectorize.io/) shows Zep at 63.8% versus Mem0’s 49.0% on LongMemEval, a significant gap from some vendor-reported figures. Zep’s own benchmark reports 18.5% accuracy improvement on LongMemEval temporal reasoning tasks and 90% response latency reduction versus baseline implementations [(arXiv 2501.13956)](https://arxiv.org/abs/2501.13956).
-
-Zep addresses the freshness problem at the conversation and agent memory level better than any pure vector approach. The `t_valid`/`t_invalid` model makes staleness explicit rather than invisible.
+Zep’s benchmark reports 18.5% accuracy improvement on LongMemEval temporal reasoning tasks and 90% response latency reduction versus baseline implementations.
 
 ### Neo4j: Native Vector Index Plus Property Graph
 
-Neo4j’s native vector index sits alongside the property graph, enabling hybrid Cypher queries that combine vector similarity with graph traversal in a single query. This is widely adopted in production and requires no separate vector infrastructure. For teams already running Neo4j, it is the lowest-friction path to hybrid retrieval.
+Neo4j’s native vector index sits alongside the property graph, enabling hybrid Cypher queries that combine vector similarity with graph traversal in a single query. This is widely adopted in production and requires no separate vector infrastructure.
 
 ### Mem0 with an Optional Graph Layer
 
-Mem0 defaults to vector retrieval, with an optional graph tier (Mem0g, available on the $249/month Pro plan) for temporal reasoning use cases. Default vector mode scores 49.0% on LongMemEval; graph mode reaches 58.13% on time-sensitive questions versus OpenAI’s 21.71% on the same benchmark [(Vectorize.io)](https://vectorize.io/articles/mem0-vs-zep).
+Mem0 defaults to vector retrieval, with an optional graph tier (Mem0g) for temporal reasoning use cases. Default vector mode scores on LongMemEval; graph mode reaches higher on time-sensitive questions versus OpenAI’s benchmark on the same benchmark.
 
 ## Vector database vs knowledge graph vs governed metadata graph: detailed comparison
-
-The sharpest differences across these three architectures appear in governance support, freshness model, coverage ceiling, and retrieval explainability. Vector databases and knowledge graphs diverge primarily on retrieval semantics (fuzzy versus relational) but converge on a shared characteristic: both are store-and-retrieve systems that cannot structurally enforce access policies or guarantee organizational completeness.
 
 ### Detailed Head-to-Head: 10 Dimensions
 
@@ -1869,24 +2021,13 @@ The sharpest differences across these three architectures appear in governance s
 | Retrieval model | Approximate nearest-neighbor (semantic similarity) | Deterministic graph traversal (typed relationships) |
 | Multi-hop reasoning | Not supported (flat embedding space) | Core capability: explicit relationship chains |
 | Freshness model | Async embedding pipeline; stale vectors coexist silently | KG extraction pipeline; invalidation model (Zep) helps at conversation level |
-| Governance and access control | None native; application-layer only | None native; application-layer only |
 | Cold-start cost | Zero: useful immediately after embedding | High: ontology engineering and entity extraction required |
 | Coverage ceiling | Bounded by what has been embedded | Bounded by what has been extracted into the KG |
 | Explainability | Similarity score only (opaque) | Explicit reasoning path (auditable) |
 | Failure mode | Silent staleness: fluent answers on outdated data | Ontology drift: queries fail or mislead as schema changes |
 | Query language | Natural language via vector embed and ANN | Cypher, SPARQL, Gremlin (requires expertise) |
 
-### Real-World Example: Compliance Agent
-
-Consider an enterprise compliance agent answering: “Is this dataset approved for use in the Q1 revenue model?”
-
-A vector store returns chunks most semantically similar to “revenue model dataset approval.” It may retrieve the right document, a stale one, or an unrelated one with similar language. It cannot verify whether the dataset is currently certified, who owns it, or what governance policy applies.
-
-A knowledge graph, if populated, can traverse `Dataset -> Certification -> Policy -> Owner`, but only if those relationships have been extracted and ingested. New certifications issued since the last extraction cycle are invisible.
-
 ## How to choose: routing matrix for AI agent memory
-
-The choice between vector databases, knowledge graphs, and hybrid approaches maps to agent type, reasoning requirements, and organizational context. Most agent use cases start with vector memory and graduate to graph or hybrid architectures as multi-hop reasoning or temporal accuracy requirements grow.
 
 ### Choose Vector Databases When
 
@@ -1896,47 +2037,17 @@ Example agents: customer support bots, personal assistants, document Q&A, code s
 
 ### Choose Knowledge Graphs When
 
-Your agent needs to traverse explicit entity relationships, such as “what contracts reference this product and who owns them?” Deterministic, auditable reasoning paths are required (fraud detection, compliance review, supply chain). The domain is well-defined enough to support ontology construction and maintenance. Temporal reasoning is critical; Zep/Graphiti’s invalidation model is the strongest available for conversation-level memory with temporal precision.
+Your agent needs to traverse explicit entity relationships, such as “what contracts reference this product and who owns them?” Deterministic, auditable reasoning paths are required. The domain is well-defined enough to support ontology construction and maintenance. Temporal reasoning is critical; Zep/Graphiti’s invalidation model is the strongest available for conversation-level memory with temporal precision.
 
 Example agents: financial compliance agents, medical knowledge agents, legal document analysis.
 
 ### Choose Hybrid Approaches When
 
-You need both broad semantic retrieval and deep relational reasoning. Your corpus is static or semi-static enough to support knowledge graph extraction without prohibitive refresh cost. The domain is document-heavy and global holistic queries matter: legal archives, compliance repositories, research collections.
+You need both broad semantic retrieval and deep relational reasoning. Your corpus is static or semi-static enough to support knowledge graph extraction without prohibitive refresh cost. The domain is document-heavy and global holistic queries matter.
 
 Hybrid options to evaluate: Microsoft GraphRAG, Zep/Graphiti, Neo4j vector index plus property graph.
 
-## FAQs: vector database vs knowledge graph for AI agent memory
-
-### 1. What is the difference between a vector database and a knowledge graph for AI agent memory?
-
-A vector database stores content as numerical embeddings and retrieves similar content via approximate nearest-neighbor search: fast, fuzzy, and works on any unstructured data. A knowledge graph models entities and typed relationships explicitly, enabling multi-hop traversal and deterministic reasoning paths. Vector databases answer “what is similar to this?” Knowledge graphs answer “what is related to this and how?” Most production agent systems use both together.
-
-### 2. Can vector databases and knowledge graphs be used together for AI agents?
-
-Yes. Hybrid architectures combining vector retrieval with graph traversal are the current community standard for complex agent memory. The pattern: embed the query to retrieve semantically relevant entry nodes via vector search, then traverse the knowledge graph from those nodes for relational context. Microsoft GraphRAG and Zep’s temporal knowledge graph are the two most widely adopted hybrid implementations in production as of 2026.
-
-### 3. What is GraphRAG and how does it work for AI agent memory?
-
-GraphRAG (Microsoft, arXiv 2404.16130) extracts a knowledge graph from a text corpus, builds a community hierarchy, and generates summaries at each level. It enables two query modes: Local Search for specific entity queries via graph neighborhood traversal, and Global Search for holistic, dataset-wide questions via community summaries. GraphRAG strongly outperforms standard vector RAG on global queries, the specific capability where pure vector retrieval fails entirely on query-focused summarization tasks.
-
-### 4. When should AI agents use a knowledge graph instead of a vector database?
-
-Use a knowledge graph when your agent needs to traverse explicit entity relationships across multiple hops, such as “what pipelines derive from this certified dataset and who owns each one?” Vector databases cannot follow typed relationship chains. Knowledge graphs also outperform vector RAG on dataset-wide reasoning questions (GraphRAG). The practical trigger: if your agent’s failures trace back to the inability to follow relationship chains, not the inability to find similar content.
-
-### 5. What are the limitations of vector databases for enterprise AI agents?
-
-Vector databases have flat semantics: no entity model, no relationship traversal, no governance primitives. They have no native notion of data ownership, access policies, or certification status. Most critically for enterprise use: stale vectors coexist with fresh ones silently, producing fluent but incorrect answers with no staleness signal. They also cannot explain retrieval; similarity scores are opaque, which fails audit requirements in regulated industries.
-
-### 6. What is a temporal knowledge graph and how does Zep use it for agent memory?
-
-A temporal knowledge graph attaches validity intervals to every edge; each relationship records when it became true (`t_valid`) and when it was invalidated (`t_invalid`). Facts are invalidated rather than deleted, enabling time-travel queries. Zep’s Graphiti framework implements this architecture, achieving 18.5% higher accuracy on LongMemEval temporal reasoning tasks and 90% response latency reduction versus baseline. It is currently the strongest available architecture for conversation-level agent memory requiring temporal precision.
-
-### 8. How do I choose between Pinecone and Neo4j for AI agent memory?
-
-Start with your agent’s retrieval requirement. If it needs fast fuzzy recall of unstructured content with zero cold-start, Pinecone or pgvector is the pragmatic choice. If it needs to traverse typed entity relationships, follow multi-hop chains, or answer dataset-wide reasoning questions, Neo4j or a temporal graph like Zep is necessary. Most complex agents use both: Pinecone for semantic entry-point retrieval, Neo4j for relational depth.
-
-_Sources: [arXiv 2404.16130](https://arxiv.org/abs/2404.16130) | [arXiv 2501.13956](https://arxiv.org/abs/2501.13956) | [arXiv 2408.08921](https://arxiv.org/abs/2408.08921) | [PMC KG Hallucination Study](https://pmc.ncbi.nlm.nih.gov/articles/PMC12540348/) | [VentureBeat RAG Failures](https://venturebeat.com/orchestration/enterprises-are-measuring-the-wrong-part-of-rag) | [Neo4j Multi-Hop Reasoning](https://neo4j.com/blog/genai/knowledge-graph-llm-multi-hop-reasoning/) | [Vectorize LongMemEval Benchmark](https://vectorize.io/articles/mem0-vs-zep)_
+_Sources: [arXiv 2404.16130](https://arxiv.org/abs/2404.16130) \| [arXiv 2501.13956](https://arxiv.org/abs/2501
 </research_source>
 
 <golden_source type="guideline_code">
@@ -3055,3 +3166,5 @@ Additionally, [Hugging Face](https://huggingface.co/) offers pretrained models t
 _No local file sources found._
 
 </golden_source>
+
+---

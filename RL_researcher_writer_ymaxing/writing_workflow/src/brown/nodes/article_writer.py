@@ -54,10 +54,12 @@ Here is the character profile:
 
 ## Research
 
-When using factual data to write the article, anchor your results exclusively in information from the given 
-<research> or <article_guideline> tags. Avoid, at all costs, using factual information from your internal knowledge.
+Every fact, claim, and piece of information in the article must be traceable to the provided <research> or
+<article_guideline>. Never use internal knowledge, speculate, extrapolate from partial source information, or
+retrieve external information by any means including tools. When a point would require going beyond what the
+provided sources explicitly support, write only what those sources support and no more.
 
-The <research> will contain most of the factual data to write the article. But the user might add additional information
+The <research> will contain most of the factual data to write the article. The user might add additional information
 within the <article_guideline>.
 
 ### Identifying the research format
@@ -78,6 +80,10 @@ When Format A is detected:
 - Use the **deduplicated body** together with the `<article_guideline>` as your factual data.
 - **Ignore the Golden Source Reference appendix entirely** — do not extract additional facts from it.
   The deduplicated body already incorporates all authoritative content.
+- The deduplicated body has already applied phase-aware filtering upstream: exploration-phase content that
+  did not add genuine depth or breadth has been excluded before reaching you. Trust the deduplicated body
+  as the authoritative, already-filtered source — do not attempt to re-introduce or second-guess what was
+  filtered out.
 - The full priority order for factual data is:
   1. Facts directly stated in the `<article_guideline>`
   2. Facts from the deduplicated body in the `<research>`
@@ -95,9 +101,32 @@ wrapped in XML provenance tags. Each tag identifies the source's priority tier a
   guideline coverage.
 - `<research_source type="..." phase="exploration">` — Exploration-phase sources.
   **MEDIUM PRIORITY.** Apply a higher bar — only use if they add genuine new value in depth
-  (theoretical foundations, technical nuances, limitations/criticisms, real-world case studies, future implications) or
-  breadth (adjacent concepts, cross-domain analogies, emerging trends, applications in other fields). 
-  Do not let exploration content override or dilute golden or exploitation content.
+  (e.g., theoretical foundations, technical nuances, alternative perspectives, latest developments,
+  limitations/criticisms, implementation challenges, real-world case studies, or future implications)
+  or breadth (e.g., adjacent concepts, cross-domain analogies, historical context, enabling/disrupting
+  technologies, practical applications in other fields, or emerging trends connected to the core topic).
+  If an exploration source does not meet this bar, omit it entirely — do not include it.
+  When exploration content does qualify, apply these integration rules:
+  - **Narrative primacy:** The core narrative thread of each section must remain driven by the guideline,
+    golden, and exploitation sources. Exploration content enriches that thread but never becomes it. Even
+    lengthy exploration material (e.g., equations, detailed case studies) is acceptable as long as it reads
+    as enrichment, not as a detour that loses the main logic.
+  - **Placement:** Insert exploration content immediately after the specific paragraph or point it enriches,
+    never before that point is established by the core sources. Do not batch exploration additions at the
+    end of a section.
+  - **Multi-section use:** A single exploration source may qualify for and be used across more than one
+    section. Each integration must be independently tailored to what that specific section needs from the
+    source — not a repetition of the same passage.
+  - **Multiple sources per section:** When more than one exploration source qualifies for the same section,
+    place each at the paragraph it most directly enriches. Deduplicate overlapping content; in case of
+    conflict between exploration sources, prefer the one best aligned with golden or exploitation content.
+    Check that the combined weight of all exploration additions does not shift the section's focus away from
+    what the guideline, golden, and exploitation sources establish.
+  - **Self-contained integration:** Each exploration addition must stand on its own — do not introduce
+    concepts via exploration content that then need to be carried forward as structural elements elsewhere
+    in the article. The article must remain coherent if any exploration addition were removed.
+  Never restructure a section around exploration content, and never let it override or dilute golden or
+  exploitation content.
 
 When Format B is detected, follow these phase-aware source-usage rules:
 - The full priority order for factual data is:
@@ -219,12 +248,40 @@ is coherent and natural.
   substitute paraphrased or equivalent-sounding alternatives (e.g., if the guideline specifies `DocumentMetadata`,
   use that exact name, not a synonym or paraphrase).
 
-## Chain of Thought
+## Writing Requirements
 
-1. Plan the article outline
-2. Write the article following the article outline and all the other constraints.
-3. Check if all the constraints are respected. Edit the article if not.
-4. Return ONLY the final version of the article.
+Your output must satisfy all of the following:
+
+- **Article outline:** Plan an article outline internally following all rules in ## Article Outline above.
+  Use it as your reference throughout writing.
+- **First pass — core draft:** Write the complete article using only the `<article_guideline>`, golden
+  sources, and exploitation sources as your factual content. All profiles, guidelines, length limits,
+  section order, and exact identifiers must already be respected in this pass. This core draft establishes
+  the complete narrative spine — every section, every paragraph — that exploration sources will be assessed
+  against in the next pass.
+- **(Format B only) Second pass — exploration integration:** With the core draft in hand, assess each
+  `<research_source phase="exploration">` source against the actual written paragraphs, section by section:
+  - For each paragraph, ask: does this exploration source add genuine depth or breadth to what this
+    paragraph already says, using the depth and breadth criteria defined above?
+  - If yes, the source qualifies at that specific paragraph. Insert it immediately after that paragraph —
+    never before the core point is established (**Placement**). Verify it does not introduce concepts the
+    article then structurally depends on elsewhere (**Self-contained integration**). Confirm the paragraph's
+    narrative thread, driven by guideline/golden/exploitation content, still reads as the primary content
+    and the exploration material reads as enrichment, not as the main point (**Narrative primacy**).
+  - A source may qualify at multiple insertion points across different sections — handle each insertion
+    independently, tailored to what that specific section and paragraph need from the source (**Multi-section use**).
+  - When more than one exploration source qualifies in the same section, place each at the paragraph it
+    most directly enriches, deduplicate overlapping content, and in case of conflict prefer the source
+    better aligned with golden or exploitation content (**Multiple sources per section**).
+  - If a source adds nothing beyond what is already written anywhere in the article, omit it entirely.
+  - After all insertions, perform a **cumulative weight check** per section: if any section's narrative
+    focus has shifted away from the core draft's narrative as a result of the combined exploration
+    additions, identify the insertion(s) contributing most to that shift and trim or remove them until
+    the section's focus is fully restored to the core draft's narrative. Prefer trimming over full
+    removal unless the insertion is the sole cause of the shift.
+- **Verification:** Before returning, verify that all profile constraints, length limits, section order,
+  and exact identifiers from the `<article_guideline>` are still respected after exploration integration.
+- **Output:** Return only the final article. No preamble, no meta-commentary.
 
 With that in mind, based on the <article_guideline>, you will write an in-depth and high-quality article following all 
 the <research>, guidelines and profiles.
@@ -271,7 +328,14 @@ previous chain of thoughts in the system prompt:
 2. Prioritize the reviews based on the importance ranking.
 3. Based on the reviews, apply in order, the necessary edits to the article, while still 
 following all the necessary instructions from the profiles and guidelines above.
-4. Ensure the edited text is still anchored in the <research> and <article_guideline>.
+4. Ensure the edited text is still anchored in the <research> and <article_guideline>. Every fact added
+   or changed must be traceable to the provided sources — do not speculate, extrapolate, or use internal
+   knowledge to fill gaps. When pulling additional factual detail from `<research>` to address a review,
+   apply the same phase-aware source rules as in the system prompt: exploration-phase sources may only be
+   introduced if they add genuine depth or breadth not covered by golden or exploitation sources, and must
+   follow all integration rules (placement after the core point, reconciliation with other sources,
+   self-contained, no cumulative focus shift). If the review can be addressed without exploration content,
+   do not introduce it.
 5. Ensure the edited text still flows naturally with the surrounding content and overall article.
 6. Return the fully edited article.
 """
@@ -333,7 +397,14 @@ previous chain of thoughts in the system prompt:
 3. Prioritize the reviews based on the importance ranking.
 4. Based on the reviews, apply in order, the necessary edits to the selected text, while still 
 following all the necessary instructions from the profiles and guidelines above.
-5. Ensure the edited selected text is still anchored in the <research> and <article_guideline>.
+5. Ensure the edited selected text is still anchored in the <research> and <article_guideline>. Every
+   fact added or changed must be traceable to the provided sources — do not speculate, extrapolate, or
+   use internal knowledge to fill gaps. When pulling additional factual detail from `<research>` to
+   address a review, apply the same phase-aware source rules as in the system prompt: exploration-phase
+   sources may only be introduced if they add genuine depth or breadth not covered by golden or
+   exploitation sources, and must follow all integration rules (placement after the core point,
+   reconciliation with other sources, self-contained, no cumulative focus shift). If the review can be
+   addressed without exploration content, do not introduce it.
 6. Ensure the edited selected text still flows naturally with the surrounding content and overall article.
 7. Return the fully edited selected text.
 """

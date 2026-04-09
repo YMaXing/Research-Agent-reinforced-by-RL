@@ -118,9 +118,10 @@ async def deduplicate_research_content(research_path:Path, output_path:Path) -> 
     article_guidelines = read_file_safe(guidelines_path) or "<none>"
 
     # Deduplicate
-    prompt = PROMPT_CONTENT_DEDUPLICATION.format(
-        article_guidelines=article_guidelines,
-        all_content=full_content,
+    prompt = (
+        PROMPT_CONTENT_DEDUPLICATION
+        .replace("{article_guidelines}", article_guidelines)
+        .replace("{all_content}", full_content)
     )
 
     try:

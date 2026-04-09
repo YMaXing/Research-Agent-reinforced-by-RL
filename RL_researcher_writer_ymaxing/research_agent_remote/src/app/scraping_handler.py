@@ -124,7 +124,11 @@ async def clean_markdown(
     if not markdown_content.strip():
         return markdown_content
 
-    prompt_text = PROMPT_CLEAN_MARKDOWN.format(article_guidelines=article_guidelines, markdown_content=markdown_content)
+    prompt_text = (
+        PROMPT_CLEAN_MARKDOWN
+        .replace("{article_guidelines}", article_guidelines)
+        .replace("{markdown_content}", markdown_content)
+    )
     timeout_seconds = 180  # 3 minutes timeout for LLM call
 
     try:
