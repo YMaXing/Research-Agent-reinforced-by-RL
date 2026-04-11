@@ -26,8 +26,8 @@ from src.brown.observability.evaluation import evaluate
     "--metrics",
     type=str,
     multiple=True,
-    default=["follows_gt"],
-    help="Metrics to use for evaluation. Available metrics: 'follows_gt' (evaluates agains ground truth),"
+    default=["follows_gt", "user_intent"],
+    help="Metrics to use for evaluation. Available metrics: 'follows_gt' (evaluates against ground truth),"
     "'user_intent' (evaluates guideline adherence and research anchoring).",
 )
 @click.option(
@@ -110,14 +110,14 @@ def main(
             llm_judge_config={"model": model, **model_config.model_dump()},
             workers=workers,
             nb_samples=nb_samples,
-            dataset_item_names=[
-                "Lesson 3: Context Engineering",
-                "Lesson 5: Workflow Patterns",
-                "Lesson 9: Retrieval-Augmented Generation (RAG)",
-                "Lesson 11: Multimodal Data",
-                # "Lesson 4: Structured Outputs",
-                # "Lesson 7: Planning and Reasoning",
-            ],
+            # dataset_item_names=[
+            #     "Lesson 3: Context Engineering",
+            #     "Lesson 5: Workflow Patterns",
+            #     "Lesson 9: Retrieval-Augmented Generation (RAG)",
+            #     "Lesson 11: Multimodal Data",
+            #     # "Lesson 4: Structured Outputs",
+            #     # "Lesson 7: Planning and Reasoning",
+            # ],
         )
 
         logger.success("Evaluation completed successfully!")

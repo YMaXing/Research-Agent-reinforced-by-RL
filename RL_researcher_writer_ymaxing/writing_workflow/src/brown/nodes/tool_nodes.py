@@ -38,17 +38,53 @@ Return ONLY the Mermaid code block in this exact format:
 
 ## Diagram Types & Examples
 
-### Process Flow
+### Process Flow / Data Flow (Gold Standard)
+Use `flowchart LR` for left-to-right data flows and pipelines. Include ALL major actors
+end-to-end — never stop at an intermediate node. Group related components with subgraphs.
+Use edge labels to describe the nature of each relationship. Use dotted arrows (`-.->`) for
+indirect or supporting relationships. Use `classDef`/`class` to visually differentiate node
+groups. Use `%%` comments to annotate sections. Use `<br/>` for multi-line labels.
 ```mermaid
-graph LR
-    A["Input"] --> B["Process"] --> C["Output"]
-    B --> D["Validation"]
-    D -->|"Valid"| C
-    D -->|"Invalid"| A
+flowchart LR
+  %% External sources
+  subgraph Sources["External Sources"]
+    DB["Knowledge Base<br/>(Vector DB)"]
+    API["External APIs"]
+  end
+
+  %% Agent memory
+  subgraph Memory["Agent Memory"]
+    LTM["Long-Term Memory<br/>(Persistent Storage)"]
+    STM["Short-Term Memory<br/>(Context Window)"]
+    IK["Internal Knowledge<br/>(Model Weights)"]
+  end
+
+  %% Reasoning and output
+  subgraph Execution["Reasoning & Action"]
+    R["Reasoning Process"]
+    ACT["Output / Action<br/>(response or tool call)"]
+  end
+
+  %% Primary data flows
+  DB -- "ingest" --> LTM
+  API -- "fetch" --> LTM
+  LTM -- "retrieve" --> STM
+  STM --> R
+  IK --> R
+  R --> ACT
+
+  %% Indirect / supporting relationships
+  IK -. "guides retrieval" .-> LTM
+
+  %% Visual grouping
+  classDef store stroke-dasharray: 3 3;
+  classDef exec stroke-width:2;
+  class LTM,STM,IK store;
+  class R,ACT exec;
 ```
 
 
-### Flowcharts (Most Common)
+### Simple Decision Flowchart
 ```mermaid
 graph TD
     A["Start"] --> B{{"Decision"}}
@@ -171,13 +207,17 @@ classDiagram
 3. **Databases**: Use `[(Label)]` for cylindrical database shapes
 4. **Circles**: Use `((Label))` for circular nodes
 5. **Arrows**: Use `-->` for solid arrows, `-.->` for dotted arrows
-6. **Labels on Arrows**: Use `-->|Label|` for labeled connections
+6. **Labels on Arrows**: Use `-->|Label|` or `-- "label" -->` for labeled connections
 7. **Subgraphs**: Use `subgraph "Title"` and `end` to group elements
-8. **Comments**: Use `%%` for comments
+8. **Comments**: Use `%%` for comments that annotate diagram sections
 9. **ERD Entities**: Use `ENTITY_NAME {{ field_type field_name }}` format
 10. **ERD Relationships**: Use `||--o{{`, `||--||`, `}}o--||` for different cardinalities
 11. **Class Definitions**: Use `class ClassName {{ +type attribute +method() }}` format
 12. **Class Relationships**: Use `<|--` (inheritance), `-->` (association), `--*` (composition)
+13. **Multi-line Labels**: Use `<br/>` inside labels for a second line of context: `A["Long-Term Memory<br/>(External DB)"]`
+14. **Named-edge Arrows**: Prefer `-- "label" -->` over `-->|"label"|` in flowcharts for readability
+15. **Node Style Classes**: Use `classDef name properties;` at the bottom to define visual groups, 
+    then `class node1,node2 name;` to apply — differentiates related nodes visually
 
 ## Formatting Rules
 **ALWAYS wrap node labels in double quotes `"..."` to prevent parsing errors:**
@@ -207,20 +247,42 @@ graph TD
 - Focus on structure and clarity, not visual customization
 
 ## Key Guidelines
-- Keep node labels concise (avoid parentheses and special characters in labels)
-- Use clear, logical flow from top to bottom or left to right
-- Keep the diagram simple and easy to understand
-- Group related elements with subgraphs when helpful
-- Maintain consistent spacing and formatting
-- Choose the appropriate diagram type for the concept being illustrated
+- **Orientation:** Use `flowchart LR` for data flows, pipelines, and processes where information
+  moves through stages (most technical diagrams). Use `graph TD` only for vertical hierarchies,
+  decision trees, or top-down classification structures. Never default to `graph TD` for flow diagrams.
+- **Completeness:** Always include the complete end-to-end flow. If the diagram shows a memory or
+  data system, include not just the storage components but also what the data feeds into (reasoning)
+  and what that produces (action/output/response). A diagram that stops at an intermediate node is
+  incomplete.
+- **Subgraph grouping:** Group logically related nodes using `subgraph "Title"` blocks whenever
+  2+ nodes belong to the same layer, tier, or category.
+- **Edge labels:** Add descriptive labels on arrows to explain the relationship type
+  (e.g., `-- "retrieve" -->`, `-- "summarize" -->`, `-- "triggers" -->`). Label all primary flows.
+- **Visual differentiation:** Use `classDef` and `class` to distinguish major categories of nodes
+  (e.g., storage nodes vs. execution nodes vs. external sources).
+- **Multi-line labels:** Use `<br/>` when a label's technical type or role adds important context:
+  `A["Long-Term Memory<br/>(External DB)"]`.
+- **Indirect relationships:** Use `-.->` with an edge label for supporting, enabling, or indirect
+  relationships that are not primary data flows.
+- **Comments:** Use `%%` comment lines to label sections of the diagram code.
+- Keep node labels concise — avoid special characters outside of quoted strings.
+- Choose the appropriate diagram type for the concept being illustrated.
 
 ## Common Mistakes to Avoid
-- **NEVER use unquoted labels** - always wrap in double quotes: `A["Label"]`
+- **NEVER use unquoted labels** — always wrap in double quotes: `A["Label"]`
 - **NEVER use semicolons** at the end of lines (causes parsing issues)
-- **NEVER put parentheses `()` in unquoted labels** - parser treats them as shape tokens
+- **NEVER put parentheses `()` in unquoted labels** — parser treats them as shape tokens
+- **NEVER truncate the flow** — a memory/pipeline diagram without a final "Reasoning" and
+  "Output/Action" node is incomplete; always follow data to its endpoint
+- **NEVER default `graph TD` for data flows** — use `flowchart LR` when information moves
+  horizontally through a pipeline or system
+- **NEVER omit edge labels on primary flows** — unlabeled arrows leave the diagram semantically
+  ambiguous; the reader cannot tell what the relationship means
+- **NEVER produce shallow diagrams** — a diagram with only 3–4 nodes for a system with 7+
+  meaningful components misses key relationships and provides little value
 - Don't create overly complex diagrams with too many connections
 - Avoid extremely long labels that break the visual flow
-- **Never use custom colors or styling** - stick to Mermaid's default appearance
+- **Never use custom colors or styling** — stick to Mermaid's default appearance
 
 Generate a clean, professional diagram that clearly illustrates the described concept using only default Mermaid 
 styling. Remember: ALWAYS use double quotes around ALL labels and NEVER use semicolons.

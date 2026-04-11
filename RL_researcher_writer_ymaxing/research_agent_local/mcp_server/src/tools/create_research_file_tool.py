@@ -18,12 +18,11 @@ from ..config.constants import (
     URLS_FROM_RESEARCH_FOLDER,
 )
 from ..utils.file_utils import (
-    collect_directory_markdowns,
     collect_directory_markdowns_with_titles,
     read_file_safe,
     validate_research_folder,
 )
-from ..utils.markdown_utils import build_research_results_section, build_sources_section, combine_research_sections
+from ..utils.markdown_utils import build_research_results_section, build_sources_section, combine_research_sections, markdown_collapsible
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +30,15 @@ logger = logging.getLogger(__name__)
 def _wrap_xml(tag: str, attrs: str, content: str) -> str:
     """Wrap *content* in an XML element for downstream LLM provenance detection."""
     return f"<{tag} {attrs}>\n{content}\n</{tag}>"
+
+
+def _extract_page_heading(content: str, fallback: str) -> str:
+    """Return the text of the first markdown heading found in *content*."""
+    for line in content.split("\n"):
+        stripped = line.strip()
+        if stripped.startswith("#"):
+            return stripped.lstrip("#").strip()
+    return fallback
 
 
 def _build_tagged_sections(research_output_dir: Path) -> str:
@@ -100,10 +108,11 @@ def _build_tagged_sections(research_output_dir: Path) -> str:
                     if first_line.startswith("Phase:") and "[EXPLORATION]" in first_line
                     else "exploitation"
                 )
+                title = _extract_page_heading(content, f.stem)
                 scraped_parts.append(_wrap_xml(
                     "research_source",
                     f'type="scraped_from_research" phase="{phase}" file="{f.name}"',
-                    content,
+                    markdown_collapsible(title, content),
                 ))
     sources_scraped_section = (
         "\n\n".join(scraped_parts)
@@ -135,7 +144,7 @@ def _build_tagged_sections(research_output_dir: Path) -> str:
     )
 
     # --- Additional scraped guideline URLs (golden) ---
-    additional_sources = collect_directory_markdowns(additional_sources_dir)
+    additional_sources = collect_directory_markdowns_with_titles(additional_sources_dir)
     additional_sources_section = _wrap_xml(
         "golden_source", 'type="guideline_urls"',
         build_sources_section(

@@ -189,9 +189,12 @@ def write_scraped_results_to_files(
         if res.get("success", False):
             successful_scrapes += 1
 
+        url_header = f"**Source URL:** <{url}>\n\n" if url else ""
         if url_to_phase:
             phase = url_to_phase.get(url, "[EXPLOITATION]")
-            cleaned_markdown = f"Phase: {phase}\n\n" + (cleaned_markdown or "")
+            cleaned_markdown = f"Phase: {phase}\n\n{url_header}" + (cleaned_markdown or "")
+        else:
+            cleaned_markdown = url_header + (cleaned_markdown or "")
 
         filename = build_filename(title, url, existing_names)
         output_path = output_dir / filename

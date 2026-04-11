@@ -49,9 +49,10 @@ def write_scraped_results_to_files(completed_results: List[dict], output_dir: Pa
         if res.get("success", False):
             successful_scrapes += 1
 
+        url_header = f"**Source URL:** <{url}>\n\n" if url else ""
         filename = build_filename(title, url, existing_names)
         output_path = output_dir / filename
-        output_path.write_text(cleaned_markdown or "", encoding="utf-8")
+        output_path.write_text(url_header + (cleaned_markdown or ""), encoding="utf-8")
         saved_files.append(filename)
 
     return saved_files, successful_scrapes

@@ -42,16 +42,10 @@ async def evaluation_task(
             - research: Research content
             - ground_truth_article: Ground truth article content
             - is_few_shot_example: Whether this is a few-shot example
-        style_guideline_dir: Directory containing style guidelines.
-        examples_dir: Directory containing example articles.
-        evaluation_rules_path: Path to evaluation rules file.
-        writer_profile_path: Path to writer profile file.
         cache_dir: Cache directory for generated articles.
         read_from_cache: Whether to read from cache instead of generating.
         clean_cache: Whether to clean up cache after processing.
         debug: Whether to enable debug mode.
-        online_human_review: Whether to enable online human review.
-        skip_to_stage_3: Whether to skip to stage 3 of the workflow.
 
     Returns:
         Dictionary containing evaluation results with keys:

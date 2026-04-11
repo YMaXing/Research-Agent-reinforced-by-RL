@@ -82,6 +82,17 @@ guideline's requirements, or the section's content depends more on the research 
 
 The <article_guideline> can ALSO contain:
 - length constraints for each section, such as the number of characters, words or reading time. If present, you will respect them.
+  When counting words toward any section length requirement, count **only prose text** —
+  the natural-language sentences and paragraphs that form the body of the section.
+  Exclude from the word count:
+  - All content inside Mermaid diagram code blocks (` ```mermaid ... ``` `)
+  - All content inside any other code blocks (` ```...``` ` or indented code)
+  - The text of Markdown table cells and table rows
+  - Captions for diagrams, images, or tables (e.g., `Image N: ...`, `Table N: ...`)
+  These elements provide visual or technical support and should not count as prose words. A section
+  whose prose body meets the word limit is compliant even if it also contains code blocks, tables,
+  or Mermaid diagrams. Do not raise a length-violation review if the section's non-prose content
+  (media, code, captions) is the reason the total word count appears to exceed the guideline limit.
 - references to golden sources. The research may be in one of two formats:
   - **Format A (Deduplicated)**: Starts with `# Comprehensive Research Report`. Contains a deduplicated
     body (already-prioritized, ready to use) followed by a `## Golden Source Reference` appendix with
@@ -184,6 +195,13 @@ No.1 focus.
     - **Cumulative focus:** Compare each section's overall content against what the `<article_guideline>`
       specifies for that section. Flag any section whose focus has visibly shifted away from the
       guideline's stated intent as a result of the combined weight of exploration additions.
+    - **Missing integration:** For each exploration source that qualifies by the depth/breadth criteria
+      (theoretical foundations, technical nuances, alternative perspectives, limitations, case studies,
+      adjacent concepts, historical context, or emerging trends), check whether its content appears
+      anywhere in the article. If a qualifying source is entirely absent, flag a review citing the
+      specific section(s) where integration would have been appropriate and briefly describe what the
+      source would have added. Do not flag absence for sources whose content merely duplicates what
+      golden or exploitation sources already cover in the article.
 - **The third most important rule:** The adherence to the <article_profile>.
 - **The fourth most important rule:** The adherence to the rest of the requirements.
 
@@ -209,9 +227,13 @@ or "Implementing GraphRAG - Third paragraph"
 4. Check the `## Research Context` section to determine the research format and whether exploration
    sources are available.
 5. Carefully compare the article against the requirements as instructed by the rules above.
-6. If the research is in Format B and exploration sources are provided, cross-reference each
-   exploration source against the article: check narrative primacy, placement, self-contained
-   integration, and cumulative focus for every section where exploration content appears.
+6. If the research is in Format B and exploration sources are provided, perform two passes:
+   a. **Coverage check:** For each exploration source, assess whether it qualifies by the depth/breadth
+      criteria. If it qualifies and its content does not appear anywhere in the article, flag the
+      specific section(s) where integration would have been appropriate.
+   b. **Quality check:** For every section where exploration content does appear, cross-reference against
+      the source and verify narrative primacy, placement, self-contained integration, and cumulative
+      focus.
 7. For each requirement, create 0 to N reviews.
 8. Return the reviews of the article.
 """
@@ -244,11 +266,16 @@ previous chain of thoughts:
 4. Read and analyze all the requirements considering the <human_feedback> as a guiding force.
 5. Check the `## Research Context` section to determine the research format and whether exploration
    sources are available.
-6. Carefully compare the selected text against the requirements as instructed by the rules above.
-7. If the research is in Format B and exploration sources are provided, cross-reference each exploration
-   source against the selected text: check narrative primacy, placement, self-contained integration,
-   and cumulative focus for the section(s) covered by the selected text.
-8. For each requirement, create 0 to N reviews.
+6. If the research is in Format B and exploration sources are provided, perform two passes scoped to
+   the selected text's section(s):
+   a. **Coverage check:** For each exploration source, assess whether it qualifies by the depth/breadth
+      criteria. If it qualifies and its content does not appear in the selected text's section(s),
+      flag the specific location where integration would have been appropriate.
+   b. **Quality check:** For any exploration content that does appear in the selected text, cross-reference
+      against the source and verify narrative primacy, placement, self-contained integration, and
+      cumulative focus.
+7. For each requirement, create 0 to N reviews.
+8. Carefully compare the selected text against the requirements as instructed by the rules above.
 9. Return the reviews of the selected text.
 """
 

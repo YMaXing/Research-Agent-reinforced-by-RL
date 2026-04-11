@@ -31,7 +31,7 @@ async def full_research_instructions_prompt() -> str:
     the XML-tagged section assembly directly as the RESEARCH_MD_FILE.
 """ if dedup_enabled else """
     Since content deduplication is disabled, DEDUPLICATED_RESEARCH_FILE will not be present.
-    Do NOT run the "deduplicate_research_content" tool. Go to the next step where the "create_research_file" tool will write the RESEARCH_MD_FILE with 
+    The "create_research_file" tool will write the RESEARCH_MD_FILE with
     the full XML-tagged section assembly directly, without a separate deduplicated content section.
 """
 

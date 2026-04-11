@@ -11,6 +11,7 @@ context:
   character_profile: "paul_iusztin.md"
   examples_loader: "markdown"
   examples_uri: "inputs/examples/debug"
+  exploration_examples_uri: "inputs/examples/exploration_integration"
 memory:
   checkpointer: "in_memory"
 num_reviews: 1
@@ -34,6 +35,12 @@ nodes:
       temperature: 0.7
       include_thoughts: false
       thinking_budget: 6144
+  integrate_exploration:
+    model_id: "fake"
+    model_config:
+      temperature: 1.0
+      include_thoughts: true
+      thinking_budget: 8192
   review_article:
     model_id: "fake"
     model_config:

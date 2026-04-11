@@ -53,7 +53,7 @@ async def _generate_article_workflow(inputs: GenerateArticleInput, config: Runna
     writer(WorkflowProgress(progress=0, message="Loading context").model_dump(mode="json"))
     context = {}
     loaders = build_loaders(app_config)
-    for context_name in ["article_guideline", "research", "profiles", "examples"]:
+    for context_name in ["article_guideline", "research", "profiles", "examples", "exploration_examples"]:
         loader = cast(Loader, loaders[context_name])
         context[context_name] = loader.load(working_uri=dir_path)
     writer(WorkflowProgress(progress=2, message="Loaded context").model_dump(mode="json"))
@@ -65,6 +65,13 @@ async def _generate_article_workflow(inputs: GenerateArticleInput, config: Runna
     writer(WorkflowProgress(progress=15, message="Writing article").model_dump(mode="json"))
     article = await write_article(context["article_guideline"], context["research"], context["profiles"], media_items, context["examples"])
     writer(WorkflowProgress(progress=20, message="Written raw article").model_dump(mode="json"))
+
+    if context["research"].has_exploration_sources:
+        writer(WorkflowProgress(progress=22, message="Integrating exploration sources").model_dump(mode="json"))
+        article = await integrate_exploration(
+            article, context["article_guideline"], context["research"], context["profiles"], media_items, context["exploration_examples"]
+        )
+        writer(WorkflowProgress(progress=24, message="Integrated exploration sources").model_dump(mode="json"))
 
     article_path = dir_path / app_config.context.build_article_uri(0)
     article_renderer = build_article_renderer(app_config)
@@ -171,6 +178,30 @@ async def write_article(
     article = await article_writer.ainvoke()
 
     return cast(Article, article)
+
+
+@task(retry_policy=retry_policy)
+async def integrate_exploration(
+    core_article: Article,
+    article_guideline: ArticleGuideline,
+    research: Research,
+    article_profiles: ArticleProfiles,
+    media_items: MediaItems,
+    exploration_examples: ArticleExamples,
+) -> Article:
+    model, _ = build_model(app_config, node="integrate_exploration")
+    article_writer = ArticleWriter(
+        article_guideline=article_guideline,
+        research=research,
+        article_profiles=article_profiles,
+        media_items=media_items,
+        article_examples=ArticleExamples(examples=[]),
+        exploration_examples=exploration_examples,
+        model=model,
+    )
+    article = await article_writer.ainvoke_exploration_integration(core_article)
+
+    return article
 
 
 @task(retry_policy=retry_policy)

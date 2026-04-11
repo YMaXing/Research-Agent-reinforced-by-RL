@@ -47,6 +47,23 @@ class Research(BaseModel, ContextMixin):
         )
         return "\n\n".join(matches)
 
+    @property
+    def has_exploration_sources(self) -> bool:
+        """Check if Format B research contains exploration-phase sources."""
+        return not self.is_format_a and bool(self._exploration_sources)
+
+    def to_core_context(self) -> str:
+        """Return research context without exploration-phase sources (for core draft pass)."""
+        if self.is_format_a:
+            return self.to_context()
+        stripped = re.sub(
+            r'<research_source[^>]*phase=["\']exploration["\'][^>]*>.*?</research_source>',
+            "",
+            self.content,
+            flags=re.DOTALL | re.IGNORECASE,
+        )
+        return f"\n<{self.xml_tag}>\n    {stripped}\n</{self.xml_tag}>\n"
+
     def to_reviewer_context(self) -> str:
         """Return a compact research context for the article reviewer.
 
@@ -69,11 +86,19 @@ class Research(BaseModel, ContextMixin):
             )
         return (
             "Research format: **Format B** (raw XML-tagged). "
-            "The following exploration-phase sources were available to the writer. "
-            "Use them to check exploration integration compliance: verify that their content "
-            "appears in the article only where it genuinely enriches a core paragraph, "
-            "follows the core point (never leads), does not dominate any section's narrative, "
-            "and does not introduce concepts the article then structurally depends on elsewhere.\n\n"
+            "The following exploration-phase sources were available to the writer during the integration pass. "
+            "Use them for two sequential checks:\n\n"
+            "1. **Coverage check (missing integration):** For each source, assess whether it contains "
+            "content that meets the depth/breadth integration bar — e.g. theoretical foundations, technical "
+            "nuances, alternative perspectives, limitations, real-world case studies, adjacent concepts, "
+            "historical context, or emerging trends. If a source qualifies and its content does not appear "
+            "anywhere in the article, flag a review citing the specific section(s) where integration would "
+            "have been appropriate and briefly describe what the source would have added.\n\n"
+            "2. **Quality check (present integration):** For any exploration content that does appear in "
+            "the article, verify it satisfies all integration rules: follows the core point it enriches "
+            "(never leads), does not dominate any section's narrative, does not introduce concepts the "
+            "article then structurally depends on elsewhere, and has not shifted the section's focus away "
+            "from what the article guideline specifies for that section.\n\n"
             "<exploration_sources>\n"
             f"{sources}\n"
             "</exploration_sources>"

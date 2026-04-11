@@ -99,42 +99,12 @@ wrapped in XML provenance tags. Each tag identifies the source's priority tier a
 - `<research_source type="..." phase="exploitation">` — Exploitation-phase sources (Tavily results,
   scraped research URLs). **HIGH PRIORITY.** Strongly protect these — they represent essential
   guideline coverage.
-- `<research_source type="..." phase="exploration">` — Exploration-phase sources.
-  **MEDIUM PRIORITY.** Apply a higher bar — only use if they add genuine new value in depth
-  (e.g., theoretical foundations, technical nuances, alternative perspectives, latest developments,
-  limitations/criticisms, implementation challenges, real-world case studies, or future implications)
-  or breadth (e.g., adjacent concepts, cross-domain analogies, historical context, enabling/disrupting
-  technologies, practical applications in other fields, or emerging trends connected to the core topic).
-  If an exploration source does not meet this bar, omit it entirely — do not include it.
-  When exploration content does qualify, apply these integration rules:
-  - **Narrative primacy:** The core narrative thread of each section must remain driven by the guideline,
-    golden, and exploitation sources. Exploration content enriches that thread but never becomes it. Even
-    lengthy exploration material (e.g., equations, detailed case studies) is acceptable as long as it reads
-    as enrichment, not as a detour that loses the main logic.
-  - **Placement:** Insert exploration content immediately after the specific paragraph or point it enriches,
-    never before that point is established by the core sources. Do not batch exploration additions at the
-    end of a section.
-  - **Multi-section use:** A single exploration source may qualify for and be used across more than one
-    section. Each integration must be independently tailored to what that specific section needs from the
-    source — not a repetition of the same passage.
-  - **Multiple sources per section:** When more than one exploration source qualifies for the same section,
-    place each at the paragraph it most directly enriches. Deduplicate overlapping content; in case of
-    conflict between exploration sources, prefer the one best aligned with golden or exploitation content.
-    Check that the combined weight of all exploration additions does not shift the section's focus away from
-    what the guideline, golden, and exploitation sources establish.
-  - **Self-contained integration:** Each exploration addition must stand on its own — do not introduce
-    concepts via exploration content that then need to be carried forward as structural elements elsewhere
-    in the article. The article must remain coherent if any exploration addition were removed.
-  Never restructure a section around exploration content, and never let it override or dilute golden or
-  exploitation content.
 
 When Format B is detected, follow these phase-aware source-usage rules:
 - The full priority order for factual data is:
   1. Facts directly stated in the `<article_guideline>`
   2. Facts from `<golden_source>` entries in the `<research>`
   3. Facts from `<research_source phase="exploitation">` entries in the `<research>`
-  4. Facts from `<research_source phase="exploration">` entries — only when they meaningfully enrich
-     golden and exploitation sources in depth and/or breadth
 - When `<golden_source>` and `<research_source>` entries cover the same topic and conflict or overlap,
   always use the `<golden_source>` content.
 - If no `<golden_source>` tags are present (the guideline contained no explicit URLs or local files, therefore no golden sources), 
@@ -187,6 +157,17 @@ and use it as is when writing the article.
 Replace the media item requirements from the <article_guideline> with the generated media item and it's caption. We always
 want to group a media item with it's caption.
 
+For any visualization request in the <article_guideline> that does **not** have a matching pre-generated
+media item in the list above (i.e., no `<location>` matches that section), you must handle it inline:
+- If the guideline requests a comparison of N options or approaches across multiple attributes (pros,
+  cons, use cases, complexity, trade-offs, etc.), produce a Markdown table following the `Table N`
+  caption format from the `<structure_profile>`. Do **not** produce a Mermaid diagram for structured
+  2D comparison data — a table is always clearer and is what the `<structure_profile>` prescribes for
+  tabular content.
+- If the guideline requests a flow, architecture, hierarchy, or process and no pre-generated diagram
+  exists for that location, reproduce the best Mermaid diagram you can inline following the
+  `<structure_profile>` caption format (`Image N: ...`).
+
 ## Article Profile
 
 Here is the article profile, describing particularities on how the end-to-end article should look like:
@@ -202,6 +183,16 @@ You will always start to understand what to write by reading the <article_guidel
 As the <article_guideline> represents the user intent, it will always have priority over anything else. If any information
 contradicts between the <article_guideline> and other rules, you will always pick the one from the <article_guideline>.
 
+The <article_guideline> is a set of instructions describing what to write, not a template to reproduce. When the
+guideline provides bullet points, numbered items, or outline-style notes, treat them as content directives
+that describe what ideas to cover. Expand each point into flowing, well-developed prose — as the
+<article_profile> requires ("write the description of ideas as fluid as possible, everything should flow
+naturally, without too many bullet points or subheaders") and the <structure_profile> enforces ("write in
+detail and in full paragraphs, avoiding bullet points or listicles when possible"). Never reproduce the
+guideline's structural artifacts (e.g., bullet lists previewing topics to cover, labeled sub-items like
+"**The Challenge:** ...", "**Best Practice:** ...") in the final article unless the <structure_profile>
+explicitly requires that format.
+
 Avoid using the whole <research> when writing the article. Extract from the <research> only what is useful to respect the 
 user intent from the <article_guideline>. Still, always anchor your content based on the facts from the <research> or <article_guideline>.
 
@@ -215,6 +206,16 @@ particular section of the <article_guideline>, you will use more or less informa
 
 The <article_guideline> can ALSO contain:
 - length constraints for each section, such as the number of characters, words or reading time. If present, you will respect them.
+  When counting words toward any section length requirement, count **only prose text** —
+  the natural-language sentences and paragraphs that form the body of the section.
+  Exclude from the word count:
+  - All content inside Mermaid diagram code blocks (` ```mermaid ... ``` `)
+  - All content inside any other code blocks (` ```...``` ` or indented code)
+  - The text of Markdown table cells and table rows
+  - Captions for diagrams, images, or tables (e.g., `Image N: ...`, `Table N: ...`)
+  These elements provide visual or technical support and should not count as prose words. A section
+  whose prose body meets the word limit is compliant even if it also contains code blocks, tables,
+  or Mermaid diagrams.
 - references to golden sources. When the research is in Format B (raw XML-tagged), these are identified
   via `<golden_source>` XML tags in the `<research>`. When the research is in Format A (deduplicated),
   golden content has already been folded into the deduplicated body. In either case, golden sources
@@ -224,6 +225,14 @@ something bigger and we have to anchor the article into the learning journey of 
 in previous articles that we don't want to reintroduce into the current one.
 - concrete information about writing the article. If present, you will ALWAYS prioritize the instructions from the <article_guideline> 
 over any other instructions.
+- **section transition directives**, written as "Transition to Section N: ...". These are mandatory
+  content requirements: the substance of each transition directive must be expressed as a written
+  sentence placed either at the end of the preceding section or at the beginning of the following
+  section (whichever fits the narrative better). They are not optional metadata — every section that
+  has a "Transition to Section N" line in the guideline must produce a corresponding transition
+  sentence in the final article. This is aligned with the <article_profile>'s <transition_rules>,
+  which require that "the transition between two sections is smooth" and that a sentence connects
+  the two sections by explaining why the new section is needed.
 
 ## Article Outline
 
@@ -247,6 +256,15 @@ is coherent and natural.
 - Preserve the exact names, labels, class names, and artifact identifiers specified in the <article_guideline>. Do not
   substitute paraphrased or equivalent-sounding alternatives (e.g., if the guideline specifies `DocumentMetadata`,
   use that exact name, not a synonym or paraphrase).
+- Every numbered or bulleted item in the <article_guideline> represents content that must appear in the
+  article. Do not skip any item. If the guideline lists items 0, 1, 2, 3 within a section, all of them
+  must be addressed in the final article.
+- When the <article_guideline> enumerates multiple major topics within a single section—each with its own
+  substantial content such as multiple paragraphs, pros/cons, or distinct subtopics—render each
+  enumerated topic as an H3 subsection (`###`), not as a numbered list item. The numbered format in the
+  guideline indicates separate topics that each deserve their own subsection heading. Both the
+  <structure_profile> ("use H3 sub-headers to split multiple topics within a section") and the
+  <article_profile> ("every subsection should be written using `###` H3 headers") require this.
 
 ## Writing Requirements
 
@@ -254,37 +272,178 @@ Your output must satisfy all of the following:
 
 - **Article outline:** Plan an article outline internally following all rules in ## Article Outline above.
   Use it as your reference throughout writing.
-- **First pass — core draft:** Write the complete article using only the `<article_guideline>`, golden
-  sources, and exploitation sources as your factual content. All profiles, guidelines, length limits,
-  section order, and exact identifiers must already be respected in this pass. This core draft establishes
-  the complete narrative spine — every section, every paragraph — that exploration sources will be assessed
-  against in the next pass.
-- **(Format B only) Second pass — exploration integration:** With the core draft in hand, assess each
-  `<research_source phase="exploration">` source against the actual written paragraphs, section by section:
-  - For each paragraph, ask: does this exploration source add genuine depth or breadth to what this
-    paragraph already says, using the depth and breadth criteria defined above?
-  - If yes, the source qualifies at that specific paragraph. Insert it immediately after that paragraph —
-    never before the core point is established (**Placement**). Verify it does not introduce concepts the
-    article then structurally depends on elsewhere (**Self-contained integration**). Confirm the paragraph's
-    narrative thread, driven by guideline/golden/exploitation content, still reads as the primary content
-    and the exploration material reads as enrichment, not as the main point (**Narrative primacy**).
-  - A source may qualify at multiple insertion points across different sections — handle each insertion
-    independently, tailored to what that specific section and paragraph need from the source (**Multi-section use**).
-  - When more than one exploration source qualifies in the same section, place each at the paragraph it
-    most directly enriches, deduplicate overlapping content, and in case of conflict prefer the source
-    better aligned with golden or exploitation content (**Multiple sources per section**).
-  - If a source adds nothing beyond what is already written anywhere in the article, omit it entirely.
-  - After all insertions, perform a **cumulative weight check** per section: if any section's narrative
-    focus has shifted away from the core draft's narrative as a result of the combined exploration
-    additions, identify the insertion(s) contributing most to that shift and trim or remove them until
-    the section's focus is fully restored to the core draft's narrative. Prefer trimming over full
-    removal unless the insertion is the sole cause of the shift.
+- **Write the article:** Write the complete article using the `<article_guideline>`, golden sources, and
+  exploitation sources as your factual content. All profiles, guidelines, length limits, section order,
+  and exact identifiers must be respected.
+- **Content expansion:** The guideline provides directives, not prose to copy. Expand every guideline
+  point into fully developed paragraphs. No section should read like an outline, a summary, or a
+  bulleted preview of topics. This is consistent with the <article_profile> rule to "write the
+  description of ideas as fluid as possible" and the <structure_profile> rule to "write in detail and
+  in full paragraphs, avoiding bullet points or listicles when possible." Specifically:
+  - When wrapping up the introduction with an overview of what will be covered (as required by the
+    <article_profile>'s "concise, itemized overview"), express it as an inline, sentence-level
+    enumeration woven into a closing paragraph — not as a separate bulleted or numbered list.
+  - Do not use labeled bullet points (e.g., "**The Old Challenge:** ...", "**Best Practice:** ...")
+    to structure a subsection's narrative. Write flowing paragraphs with natural transitions.
+- **Citations:** Every factual claim drawn from the `<research>` must be cited following the citation
+  rules in the `<structure_profile>`. Common-knowledge statements may be left uncited, but any claim
+  a reader would want to verify — or that derives directly from a golden, exploitation, or exploration
+  source — must carry a `[[N]](url)` reference. This applies equally to all research tiers. Err on
+  the side of citing rather than omitting when a claim is clearly traceable to a provided source.
+- **Transitions:** Every pair of adjacent sections must have a transition. For each section that carries
+  a "Transition to Section N" directive in the `<article_guideline>`, write the connecting sentence
+  at the end of that section or at the start of the next one. For any pair that lacks an explicit
+  directive, supply your own transition sentence following the <article_profile>'s <transition_rules>:
+  explain *why* the next section follows and *what* it will cover, so the reader is never left with
+  an abrupt section break.
 - **Verification:** Before returning, verify that all profile constraints, length limits, section order,
-  and exact identifiers from the `<article_guideline>` are still respected after exploration integration.
+  and exact identifiers from the `<article_guideline>` are still respected. As part of this check,
+  confirm that every adjacent section pair has a transition sentence present, and that every factual
+  claim traceable to a research source carries a citation.
 - **Output:** Return only the final article. No preamble, no meta-commentary.
 
 With that in mind, based on the <article_guideline>, you will write an in-depth and high-quality article following all 
 the <research>, guidelines and profiles.
+"""
+
+    exploration_integration_prompt_template = """
+You are Brown, a professional human writer specialized in writing technical, educative and informational articles
+about AI.
+
+A complete article has already been written using the article guideline, golden sources, and exploitation sources.
+Your task now is to assess each exploration-phase source and integrate qualifying content into the existing article
+where it adds genuine depth or breadth — without altering the core narrative, structure, or style established
+by the core draft.
+
+## Character Profile
+
+{character_profile}
+
+## Article Guideline
+
+Here is the article guideline that was used to write the core article:
+{article_guideline}
+
+## Core Article
+
+Here is the article that was written in the core draft pass. This is your starting point — preserve its
+full structure, all existing content, and all references:
+{core_article}
+
+## Exploration Sources
+
+The following are exploration-phase research sources (`<research_source phase="exploration">`).
+Assess each one for potential integration into the core article:
+
+<exploration_sources>
+{exploration_sources}
+</exploration_sources>
+
+## Exploration Source Assessment Criteria
+
+An exploration source qualifies for integration only if it adds genuine new value in **depth** or **breadth**:
+- **Depth** examples: theoretical foundations, technical nuances, alternative perspectives, latest developments,
+  limitations/criticisms, implementation challenges, real-world case studies, or future implications.
+- **Breadth** examples: adjacent concepts, cross-domain analogies, historical context, enabling/disrupting
+  technologies, practical applications in other fields, or emerging trends connected to the core topic.
+
+If an exploration source does not meet this bar, omit it entirely — do not include it.
+
+**IMPORTANT**: Exploration sources that genuinely meet the depth/breadth criteria should be actively integrated — their
+contribution makes the article richer and more informative for the reader. The goal is thoughtful inclusion,
+not blanket exclusion.
+
+## Exploration Integration Examples
+
+Here is a set of examples demonstrating correct assessment and integration decisions. Each example shows
+an exploration source, whether it qualifies, and how the article section looks before and after integration:
+{exploration_examples}
+
+## Tonality Profile
+
+{tonality_profile}
+
+## Terminology Profile
+
+{terminology_profile}
+
+## Mechanics Profile
+
+{mechanics_profile}
+
+## Structure Profile
+
+{structure_profile}
+
+## Article Profile
+
+{article_profile}
+
+## Integration Rules
+
+When exploration content qualifies, apply these integration rules:
+- **Narrative primacy:** The core narrative thread of each section must remain driven by the guideline,
+  golden, and exploitation sources. Exploration content enriches that thread but never becomes it. Even
+  lengthy exploration material (e.g., equations, detailed case studies) is acceptable as long as it reads
+  as enrichment, not as a detour that loses the main logic.
+- **Placement:** Insert exploration content immediately after the specific paragraph or point it enriches,
+  never before that point is established by the core sources. Do not batch exploration additions at the
+  end of a section.
+- **Multi-section use:** A single exploration source may qualify for and be used across more than one
+  section. Each integration must be independently tailored to what that specific section needs from the
+  source — not a repetition of the same passage.
+- **Multiple sources per section:** When more than one exploration source qualifies for the same section,
+  place each at the paragraph it most directly enriches. Deduplicate overlapping content; in case of
+  conflict between exploration sources, prefer the one best aligned with golden or exploitation content.
+  Check that the combined weight of all exploration additions does not shift the section's focus away from
+  what the guideline, golden, and exploitation sources establish.
+- **Self-contained integration:** Each exploration addition must stand on its own — do not introduce
+  concepts via exploration content that then need to be carried forward as structural elements elsewhere
+  in the article. The article must remain coherent if any exploration addition were removed.
+- **Citations (mandatory):** Every piece of content integrated from an exploration source must include
+  an inline citation to that source using the `[[N]](url)` format from the `<structure_profile>`
+  Citation Rules, where `url` is the exploration source's URL. If the source has not yet been cited
+  anywhere in the article, assign it the next available citation identifier (continuing from the last
+  reference number already used in the article) and add a corresponding entry to the References section
+  at the end of the article. If the source has already been cited, reuse its existing identifier.
+  Never integrate exploration content without a citation — uncited exploration additions are
+  indistinguishable from hallucinated content and will be rejected. Fabricating or paraphrasing
+  source content beyond what the source explicitly states is also forbidden; only integrate what the
+  source directly supports.
+Never restructure a section around exploration content, and never let it override or dilute golden or
+exploitation content.
+
+## Integration Process
+
+Assess each exploration source against the actual written paragraphs of the core article, section by section:
+
+1. For each section and paragraph, ask: does this exploration source add genuine depth or breadth to what
+   this paragraph already says, using the criteria defined above?
+2. If yes, the source qualifies at that specific paragraph. Insert it immediately after that paragraph —
+   never before the core point is established (**Placement**). Verify it does not introduce concepts the
+   article then structurally depends on elsewhere (**Self-contained integration**). Confirm the paragraph's
+   narrative thread still reads as the primary content and the exploration material reads as enrichment,
+   not as the main point (**Narrative primacy**). Immediately add an inline citation `[[N]](url)` for
+   the exploration source at the end of the integrated content, and ensure the source appears in the
+   References section (**Citations**).
+3. A source may qualify at multiple insertion points across different sections — handle each insertion
+   independently, tailored to what that specific section and paragraph need from the source (**Multi-section use**).
+4. When more than one exploration source qualifies in the same section, place each at the paragraph it
+   most directly enriches, deduplicate overlapping content, and in case of conflict prefer the source
+   better aligned with golden or exploitation content (**Multiple sources per section**).
+5. If a source adds nothing beyond what is already written anywhere in the article, omit it entirely.
+6. After all insertions, perform a **cumulative weight check** per section: if any section's narrative
+   focus has shifted away from the core article's narrative as a result of the combined exploration
+   additions, identify the insertion(s) contributing most to that shift and trim or remove them until
+   the section's focus is fully restored to the core article's narrative. Prefer trimming over full
+   removal unless the insertion is the sole cause of the shift.
+7. Verify that all profile constraints, length limits, section order, and exact identifiers from the
+   article guideline are still respected after exploration integration.
+
+## Output
+
+Return the FULL article with all exploration integrations applied. Preserve the complete article structure,
+formatting, and all existing content. No preamble, no meta-commentary.
 """
 
     article_reviews_prompt_template = """
@@ -331,11 +490,9 @@ following all the necessary instructions from the profiles and guidelines above.
 4. Ensure the edited text is still anchored in the <research> and <article_guideline>. Every fact added
    or changed must be traceable to the provided sources — do not speculate, extrapolate, or use internal
    knowledge to fill gaps. When pulling additional factual detail from `<research>` to address a review,
-   apply the same phase-aware source rules as in the system prompt: exploration-phase sources may only be
-   introduced if they add genuine depth or breadth not covered by golden or exploitation sources, and must
-   follow all integration rules (placement after the core point, reconciliation with other sources,
-   self-contained, no cumulative focus shift). If the review can be addressed without exploration content,
-   do not introduce it.
+   Prefer addressing reviews using golden or exploitation sources. Only draw on exploration content —
+   applying all integration rules (placement after the core point, self-contained, no cumulative focus
+   shift) — when a review specifically flags a missing or misintegrated exploration source.
 5. Ensure the edited text still flows naturally with the surrounding content and overall article.
 6. Return the fully edited article.
 """
@@ -400,11 +557,9 @@ following all the necessary instructions from the profiles and guidelines above.
 5. Ensure the edited selected text is still anchored in the <research> and <article_guideline>. Every
    fact added or changed must be traceable to the provided sources — do not speculate, extrapolate, or
    use internal knowledge to fill gaps. When pulling additional factual detail from `<research>` to
-   address a review, apply the same phase-aware source rules as in the system prompt: exploration-phase
-   sources may only be introduced if they add genuine depth or breadth not covered by golden or
-   exploitation sources, and must follow all integration rules (placement after the core point,
-   reconciliation with other sources, self-contained, no cumulative focus shift). If the review can be
-   addressed without exploration content, do not introduce it.
+   Prefer addressing reviews using golden or exploitation sources. Only draw on exploration content —
+   applying all integration rules (placement after the core point, self-contained, no cumulative focus
+   shift) — when a review specifically flags a missing or misintegrated exploration source.
 6. Ensure the edited selected text still flows naturally with the surrounding content and overall article.
 7. Return the fully edited selected text.
 """
@@ -418,6 +573,7 @@ following all the necessary instructions from the profiles and guidelines above.
         article_examples: ArticleExamples,
         model: Runnable,
         reviews: ArticleReviews | SelectedTextReviews | None = None,
+        exploration_examples: ArticleExamples | None = None,
     ) -> None:
         super().__init__(model, toolkit=Toolkit(tools=[]))
 
@@ -427,11 +583,12 @@ following all the necessary instructions from the profiles and guidelines above.
         self.media_items = media_items
         self.article_examples = article_examples
         self.reviews = reviews
+        self.exploration_examples = exploration_examples
 
     async def ainvoke(self) -> Article | SelectedText:
         system_prompt = self.system_prompt_template.format(
             article_guideline=self.article_guideline.to_context(),
-            research=self.research.to_context(),
+            research=self.research.to_core_context() if not self.reviews else self.research.to_context(),
             article_profile=self.article_profiles.article.to_context(),
             character_profile=self.article_profiles.character.to_context(),
             mechanics_profile=self.article_profiles.mechanics.to_context(),
@@ -488,6 +645,34 @@ following all the necessary instructions from the profiles and guidelines above.
             return Article(
                 content=written_output,
             )
+
+    async def ainvoke_exploration_integration(self, core_article: Article) -> Article:
+        """Integrate exploration-phase sources into a core article draft (second pass)."""
+        system_prompt = self.exploration_integration_prompt_template.format(
+            character_profile=self.article_profiles.character.to_context(),
+            tonality_profile=self.article_profiles.tonality.to_context(),
+            terminology_profile=self.article_profiles.terminology.to_context(),
+            mechanics_profile=self.article_profiles.mechanics.to_context(),
+            structure_profile=self.article_profiles.structure.to_context(),
+            article_profile=self.article_profiles.article.to_context(),
+            article_guideline=self.article_guideline.to_context(),
+            core_article=core_article.to_context(),
+            exploration_sources=self.research._exploration_sources,
+            exploration_examples=self.exploration_examples.to_context() if self.exploration_examples else "No examples provided.",
+        )
+        user_input_content = self.build_user_input_content(inputs=[system_prompt])
+        inputs = [
+            {
+                "role": "user",
+                "content": user_input_content,
+            }
+        ]
+        written_output = await self.model.ainvoke(inputs)
+        if not isinstance(written_output, AIMessage):
+            raise InvalidOutputTypeException(AIMessage, type(written_output))
+        written_output = cast(str, written_output.text)
+
+        return Article(content=written_output)
 
     def _set_default_model_mocked_responses(self, model: FakeModel) -> FakeModel:
         model.responses = [

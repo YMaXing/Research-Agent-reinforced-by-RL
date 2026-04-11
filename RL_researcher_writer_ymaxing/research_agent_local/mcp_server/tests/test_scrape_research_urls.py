@@ -654,7 +654,7 @@ class TestWriteScrapedResultsToFiles:
         assert len(saved) == 1
         written_file = tmp_path / saved[0]
         assert written_file.exists()
-        assert written_file.read_text(encoding="utf-8") == "# A"
+        assert written_file.read_text(encoding="utf-8") == "**Source URL:** <https://a.com>\n\n# A"
 
     def test_failed_result_still_written_but_not_counted(self, tmp_path):
         results = [{"url": "https://b.com", "title": "Fail", "markdown": "error msg", "success": False}]
@@ -679,11 +679,11 @@ class TestWriteScrapedResultsToFiles:
         saved, _ = write_scraped_results_to_files(results, tmp_path)
         assert len(set(saved)) == 2  # unique filenames
 
-    def test_empty_markdown_written_as_empty_file(self, tmp_path):
+    def test_empty_markdown_written_with_url_header(self, tmp_path):
         results = [{"url": "https://a.com", "title": "Empty", "markdown": "", "success": True}]
         saved, _ = write_scraped_results_to_files(results, tmp_path)
         written_file = tmp_path / saved[0]
-        assert written_file.read_text(encoding="utf-8") == ""
+        assert written_file.read_text(encoding="utf-8") == "**Source URL:** <https://a.com>\n\n"
 
 
 # ===========================================================================

@@ -31,7 +31,8 @@ from .scraping_handler import (
     slugify,
 )
 from .source_selection_handler import (
-    PROMPT_AUTO_SOURCE_SELECTION,
+    PROMPT_AUTO_SOURCE_SELECTION_EXPLOITATION,
+    PROMPT_AUTO_SOURCE_SELECTION_EXPLORATION,
     PROMPT_SELECT_TOP_SOURCES,
     build_sources_data_text,
     load_scraped_guideline_context,
@@ -86,7 +87,8 @@ __all__ = [
     "parse_results_selected",
     "load_scraped_guideline_context",
     "select_top_sources",
-    "PROMPT_AUTO_SOURCE_SELECTION",
+    "PROMPT_AUTO_SOURCE_SELECTION_EXPLOITATION",
+    "PROMPT_AUTO_SOURCE_SELECTION_EXPLORATION",
     "PROMPT_SELECT_TOP_SOURCES",
     # YouTube operations
     "transcribe_youtube",

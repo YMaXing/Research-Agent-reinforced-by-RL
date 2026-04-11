@@ -27,6 +27,7 @@ class Context(BaseModel):
 
     examples_loader: Literal["markdown"]
     examples_uri: Annotated[DirectoryPath, Field(description="URI to the examples directory.")]
+    exploration_examples_uri: Annotated[DirectoryPath, Field(description="URI to the exploration integration examples directory.")]
 
     def build_article_uri(self, iteration: int) -> Path:
         return self.article_uri.with_stem(f"{self.article_uri.stem}_{iteration:03d}")

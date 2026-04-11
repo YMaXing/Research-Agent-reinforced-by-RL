@@ -31,14 +31,46 @@ Your task is to:
 - Direct mentions: "Render a Mermaid diagram", "Draw a diagram", "Create a visual", "Illustrate with", etc.
 - Visual requirements: "diagram visually explaining", "chart showing", "figure depicting", "visual representation"
 - Process flows: descriptions of workflows, architectures, data flows, or system interactions
-- Structural elements: hierarchies, relationships, comparisons, or step-by-step processes
+- Structural elements: hierarchies, relationships, or step-by-step processes
 
 **Key places to look:**
 - Section requirements and descriptions  
 - Specific instructions mentioning visual elements
-- Complex concepts that would benefit from visual explanation
 - Architecture or system descriptions
 - Process flows or workflows
+
+## Media Type Decision
+
+Before calling any tool, you must decide whether the requested visual is a **diagram** (call a tool)
+or a **comparison table** (do NOT call any tool — leave it for the writer).
+
+**Produce a Markdown table (skip all tools) when the guideline's visualization request involves:**
+- A structured comparison of N options or approaches across multiple named attributes
+  (e.g., pros, cons, use cases, complexity, trade-offs, features).
+  Examples of guideline phrasings that signal a table despite using the word "diagram" or "visual":
+  - "visualize / diagram the three approaches" where each approach has explicit pros/cons listed
+  - "compare N methods", "summarize the trade-offs", "show the pros and cons of each"
+  - "create a summary / overview table of ..."
+- The underlying data is inherently 2-dimensional: N rows (items) x M columns (attributes).
+  Such data is always clearer as a table than as a graph with nodes and edges.
+
+**Lesson from past failure:** A guideline that said "Provide a mermaid diagram to visualize the
+three approaches" (for a section comparing Raw Strings vs. Structured Entities vs. Knowledge
+Graph, each with their own Pros/Cons/Use-cases) was incorrectly routed to MermaidDiagramGenerator.
+The result was an inferior graph with nested subgraphs reproducing tabular data. The correct output
+was a Markdown table (as in the ground truth). When content is a 2D comparison matrix, do not
+call any tool — the writer will produce the table inline.
+
+**Produce a Mermaid diagram (call MermaidDiagramGenerator) when the guideline involves:**
+- Flows where information or control moves through a sequence of steps or components
+- Architectures showing how systems, modules, or layers are connected (e.g., memory layers → retrieval pipeline → reasoning → action)
+  retrieval pipeline → reasoning → action)
+- Hierarchies or taxonomies (parent→child relationships)
+- Decision trees / flowcharts (yes/no branches)
+- Interaction sequences between participants
+- State transitions
+- Entity-relationship structures and class/inheritance diagrams
+- Mind maps of concept relationships
 
 ## Tool Usage Instructions
 
@@ -48,16 +80,10 @@ generating.
 For each identified media requirement:
 
 **When to use MermaidDiagramGenerator:**
-- Explicit requests for Mermaid diagrams
-- System architectures and workflows
-- Process flows and data pipelines  
-- Organizational structures or hierarchies
-- Flowcharts for decision-making processes
-- Sequence diagrams for interactions
-- Entity-relationship diagrams
-- Class diagrams for software structures
-- State diagrams for system states
-- Mind maps for concept relationships
+- Explicit requests that describe a flow, architecture, hierarchy, sequence, or state machine
+  (see "Produce a Mermaid diagram" criteria above)
+- Note: the word "diagram" or "mermaid" in the guideline alone is NOT sufficient — first check
+  whether the content is 2D tabular comparison data. If it is, skip the tool call entirely.
 
 **Ordering Requirements:**
 Call tools in the same order that diagram requests appear in the guideline. Diagrams are

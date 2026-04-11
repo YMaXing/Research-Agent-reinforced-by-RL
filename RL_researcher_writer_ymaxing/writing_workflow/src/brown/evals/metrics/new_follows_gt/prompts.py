@@ -86,7 +86,7 @@ another criterion.
       However, we expect the same ideas and concepts to be discussed in the same way, order, and storyline.
       - Assign a score of 0 if anything is missing from the generated section relative to the expected section, such as missing
       topics, ideas, or media.
-      - Accepted differences between the expected and generated section:
+      - Accepted differences between the expected and generated section:    
          - Addtional complementary ideas in the generated section that enrich the content in depth and/or breadth without breaking the flow 
          of the main ideas in the expected section. For example, if the expected section introduces RAG and its main components, while the 
          generated section also includes additional relevant information about the latest advancements in RAG, it's valid. 
@@ -111,10 +111,10 @@ another criterion.
    3. **Structure:** Evaluate whether the generated section follows the same structure as the expected section. By 
    structure, we mean:
       - [USE ONLY IN MULTI-SECTION MODE] H3/H4/H5/H6 sub-heading structure and formatting
-      - Mismatches in headers formatting and presence. For example, if the expected section doesn't has a header,
+      - Mismatches in headers formatting and presence. For example, if the expected section doesn't have a header,
       while the generated section has one, it's invalid. It's valid only if there is a one on one match between the headers
       formatting and presence.
-      - Paragraph lenground truthh patterns
+      - Paragraph length and structure patterns
       - Use of bulleted lists, numbered lists, callouts, notes, or other layout elements
       - Division of the section when guiding readers through code blocks or diagrams
       - Use of bolding, italicizing, quotes, backticks, or other formatting elements

@@ -157,7 +157,7 @@ class TestWriteScrapedResultsToFiles:
         saved, success_count = write_scraped_results_to_files(results, tmp_path)
         assert success_count == 1
         assert len(saved) == 1
-        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == "# Content for https://a.com"
+        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == "**Source URL:** <https://a.com>\n\n# Content for https://a.com"
 
     def test_failed_result_still_written_but_not_counted(self, tmp_path):
         results = [_fake_result("https://b.com", success=False)]
@@ -182,15 +182,15 @@ class TestWriteScrapedResultsToFiles:
         saved, _ = write_scraped_results_to_files(results, tmp_path)
         assert len(set(saved)) == 2
 
-    def test_empty_markdown_written_as_empty_file(self, tmp_path):
+    def test_empty_markdown_written_with_url_header(self, tmp_path):
         results = [{"url": "https://a.com", "title": "Empty", "markdown": "", "success": True}]
         saved, _ = write_scraped_results_to_files(results, tmp_path)
-        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == ""
+        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == "**Source URL:** <https://a.com>\n\n"
 
-    def test_none_markdown_written_as_empty_file(self, tmp_path):
+    def test_none_markdown_written_with_url_header(self, tmp_path):
         results = [{"url": "https://a.com", "title": "NoMd", "markdown": None, "success": True}]
         saved, _ = write_scraped_results_to_files(results, tmp_path)
-        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == ""
+        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == "**Source URL:** <https://a.com>\n\n"
 
     def test_empty_results_list(self, tmp_path):
         saved, success_count = write_scraped_results_to_files([], tmp_path)
@@ -201,7 +201,7 @@ class TestWriteScrapedResultsToFiles:
         emoji_content = "# Résumé 🚀"
         results = [{"url": "https://a.com", "title": "Unicode", "markdown": emoji_content, "success": True}]
         saved, _ = write_scraped_results_to_files(results, tmp_path)
-        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == emoji_content
+        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == f"**Source URL:** <https://a.com>\n\n{emoji_content}"
 
     def test_filename_ends_with_md_extension(self, tmp_path):
         results = [_fake_result("https://a.com")]

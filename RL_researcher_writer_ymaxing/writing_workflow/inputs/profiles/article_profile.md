@@ -111,7 +111,6 @@ Here is the structure article template you will use to generate every article:
 <article_structure_template>
 
 # Title
-### Subtitle
 
 Introduction text...
 

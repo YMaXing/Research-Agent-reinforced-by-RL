@@ -134,8 +134,9 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
     }
 
 
-async def generate_next_complementary_queries_tool(research_directory: str, 
-                                                   n_queries: int = 4, 
+async def generate_next_complementary_queries_tool(research_directory: str,
+                                                   n_queries: int = 5,
+                                                   depth_vs_breadth_ratio: float = 0.5,
                                                    focus: Literal["balanced", "depth", "breadth"] = "balanced") -> Dict[str, Any]:
         """
         Generate complementary candidate web-search queries to explore uncovered but closely relevant aspects.
@@ -198,11 +199,11 @@ async def generate_next_complementary_queries_tool(research_directory: str,
 
         # === Resolve effective ratio based on focus knob ===
         if focus == "depth":
-            effective_ratio = 1.0
+            effective_ratio = 0.80
         elif focus == "breadth":
-            effective_ratio = 0.0
-        else:  # balanced
-            effective_ratio = 0.5
+            effective_ratio = 0.20
+        else:  # balanced — honour provided ratio, clamped to [0, 1]
+            effective_ratio = max(0.0, min(1.0, depth_vs_breadth_ratio))
         
         queries_and_reasons = await generate_complementary_queries_with_reasons(
             article_guidelines, past_research, full_queries, scraped_ctx_str, n_queries=n_queries, depth_vs_breadth_ratio=effective_ratio
