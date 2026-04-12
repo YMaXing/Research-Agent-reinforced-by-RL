@@ -113,6 +113,7 @@ _SETTINGS_PATH = "src.config.settings"
 import importlib
 
 from src.app import scraping_handler  # noqa: E402
+from src.config.settings import settings  # noqa: E402
 
 # src/tools/__init__.py shadows the submodule name with the exported function,
 # so `import src.tools.scrape_research_urls_tool as sru_mod` resolves to the
@@ -374,24 +375,26 @@ class TestScrapeAndClean:
         # LLM should not have been called
         assert fake_llm.prompts_received == []
 
-    async def test_large_content_skips_llm_uses_image_conversion(self):
-        """>MAX_TOKENS_FOR_LLM_CLEANING: LLM is bypassed; only image conversion is applied."""
+    async def test_large_content_uses_large_model_for_cleaning(self):
+        """>MAX_TOKENS_FOR_LLM_CLEANING: large model is used via get_chat_model()."""
         raw_content = "![logo](https://example.com/img.png) body text"
         fake_fc = FakeFirecrawlApp(FakeFirecrawlResult("Title", raw_content))
-        fake_llm = FakeLLM("should not appear")
+        fake_small_llm = FakeLLM("should not appear")
         # Override token counter to always exceed the threshold
-        fake_llm.get_num_tokens = lambda text: 9999
+        fake_small_llm.get_num_tokens = lambda text: 9999
+        fake_large_llm = FakeLLM("large model cleaned output")
 
-        result = await scraping_handler.scrape_and_clean(
-            "https://example.com", "guidelines", fake_fc, fake_llm
-        )
+        with patch("src.app.scraping_handler.get_chat_model", return_value=fake_large_llm) as mock_get_model:
+            result = await scraping_handler.scrape_and_clean(
+                "https://example.com", "guidelines", fake_fc, fake_small_llm
+            )
 
         assert result["success"] is True
-        # LLM must not have been invoked
-        assert fake_llm.prompts_received == []
-        # Image markdown syntax should be converted to plain URL
-        assert "https://example.com/img.png" in result["markdown"]
-        assert "![logo]" not in result["markdown"]
+        assert result["markdown"] == "large model cleaned output"
+        # The small (default scraping) model must not have been used for cleaning
+        assert fake_small_llm.prompts_received == []
+        # get_chat_model must have been called with the large-article model name
+        mock_get_model.assert_called_once_with(settings.large_article_scraping_model)
 
     async def test_small_content_calls_llm_cleaning(self):
         """≤MAX_TOKENS_FOR_LLM_CLEANING: LLM is invoked for content cleaning."""
@@ -517,24 +520,29 @@ class TestScrapeArxivUrl:
         # success=True comes from ingest_paper path succeeding
         assert result["success"] is True
 
-    async def test_large_raw_md_skips_llm_cleanup(self):
-        """>MAX_TOKENS_FOR_LLM_CLEANING: LLM not called, raw arxiv2markdown output is kept."""
-        fake_llm = FakeLLM("should not appear")
+    async def test_large_raw_md_uses_large_model_for_cleanup(self):
+        """>MAX_TOKENS_FOR_LLM_CLEANING: large model is used for arXiv LaTeX cleanup."""
+        fake_small_llm = FakeLLM("should not appear")
         # Override token counter to always exceed the threshold
-        fake_llm.get_num_tokens = lambda text: 9999
+        fake_small_llm.get_num_tokens = lambda text: 9999
         raw_content = "# Full Paper\n\nVery long paper body..."
         fake_ingest_result = MagicMock(content=raw_content)
+        fake_large_llm = FakeLLM("large model arxiv cleaned")
 
-        with patch(self._INGEST_PATCH, new=AsyncMock(return_value=(fake_ingest_result, {"title": "Big Paper"}))):
+        with patch(self._INGEST_PATCH, new=AsyncMock(return_value=(fake_ingest_result, {"title": "Big Paper"}))), \
+             patch("src.app.scraping_handler.get_chat_model", return_value=fake_large_llm) as mock_get_model:
             result = await scraping_handler.scrape_arxiv_url(
                 "https://arxiv.org/abs/2309.02427",
                 "guidelines",
-                fake_llm,
+                fake_small_llm,
             )
 
         assert result["success"] is True
-        assert result["markdown"] == raw_content
-        assert fake_llm.prompts_received == []
+        assert result["markdown"] == "large model arxiv cleaned"
+        # The small (default scraping) model must not have been used for cleanup
+        assert fake_small_llm.prompts_received == []
+        # get_chat_model must have been called with the large-article model name
+        mock_get_model.assert_called_once_with(settings.large_article_scraping_model)
 
     async def test_small_raw_md_calls_llm_cleanup(self):
         """≤MAX_TOKENS_FOR_LLM_CLEANING: LLM is called for LaTeX cleanup."""
