@@ -13,6 +13,7 @@ from ..config.constants import (
     TAVILY_RESULTS_FILE,
     TAVILY_RESULTS_SELECTED_FILE,
     URLS_FROM_GUIDELINES_CODE_FOLDER,
+    URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER,
     URLS_FROM_GUIDELINES_FOLDER,
     URLS_FROM_GUIDELINES_YOUTUBE_FOLDER,
     URLS_FROM_RESEARCH_FOLDER,
@@ -68,6 +69,7 @@ def _build_tagged_sections(research_output_dir: Path) -> str:
     additional_sources_dir = research_output_dir / URLS_FROM_GUIDELINES_FOLDER
     youtube_transcripts_dir = research_output_dir / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER
     local_files_dir = research_output_dir / LOCAL_FILES_FROM_RESEARCH_FOLDER
+    exploitation_guideline_dir = research_output_dir / URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER
 
     # --- Tavily research results (non-golden) — one block per phase ---
     if selected_results_file.exists():
@@ -167,6 +169,29 @@ def _build_tagged_sections(research_output_dir: Path) -> str:
         ),
     )
 
+    # --- Exploitation sources from guidelines "Other Sources" section (non-golden) ---
+    # One block per file, matching the scraped_from_research pattern so each file carries
+    # its own phase="exploitation" attribute and "Phase: [EXPLOITATION]" content header.
+    exploitation_guideline_parts: list[str] = []
+    if exploitation_guideline_dir.exists():
+        for f in sorted(exploitation_guideline_dir.glob("*.md")):
+            content = read_file_safe(f)
+            if content:
+                title = _extract_page_heading(content, f.stem)
+                exploitation_guideline_parts.append(_wrap_xml(
+                    "research_source",
+                    f'type="guideline_exploitation" phase="exploitation" file="{f.name}"',
+                    markdown_collapsible(title, content),
+                ))
+    exploitation_guideline_section = (
+        "\n\n".join(exploitation_guideline_parts)
+        if exploitation_guideline_parts
+        else _wrap_xml(
+            "research_source", 'type="guideline_exploitation" phase="exploitation"',
+            "## Exploitation Sources (from Article Guidelines — Other Sources)\n\n_No exploitation guideline sources found._\n",
+        )
+    )
+
     final_md = combine_research_sections(
         research_results_section,
         sources_scraped_section,
@@ -174,11 +199,13 @@ def _build_tagged_sections(research_output_dir: Path) -> str:
         youtube_transcripts_section,
         additional_sources_section,
         local_files_section,
+        exploitation_guideline_section,
     )
 
     counts = {
         "research_results_count": len(chunks),
         "scraped_sources_count": len(scraped_parts),
+        "exploitation_guideline_sources_count": len(exploitation_guideline_parts),
         "code_sources_count": len(code_sources),
         "youtube_transcripts_count": len(youtube_sources),
         "additional_sources_count": len(additional_sources),

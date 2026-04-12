@@ -107,11 +107,17 @@ def deduplicate_urls(research_output_path: Path, urls: list[str]) -> tuple[list[
             with open(guidelines_json_path, "r", encoding="utf-8") as f:
                 guidelines_data = json.load(f)
 
-            # Collect URLs from steps 2.2 and 2.3 (other_urls and github_urls)
+            # Collect URLs from golden other_urls, github_urls, and exploitation URLs
             other_urls_guidelines = guidelines_data.get("other_urls", [])
             github_urls_guidelines = guidelines_data.get("github_urls", [])
+            exploitation_other = guidelines_data.get("exploitation_other_urls", [])
+            exploitation_github = guidelines_data.get("exploitation_github_urls", [])
+            exploitation_youtube = guidelines_data.get("exploitation_youtube_videos_urls", [])
             already_processed_urls.update(other_urls_guidelines)
             already_processed_urls.update(github_urls_guidelines)
+            already_processed_urls.update(exploitation_other)
+            already_processed_urls.update(exploitation_github)
+            already_processed_urls.update(exploitation_youtube)
 
         except (IOError, OSError, json.JSONDecodeError) as e:
             msg = f"⚠️ Warning: Could not read {GUIDELINES_FILENAMES_FILE} for deduplication: {e}"

@@ -15,6 +15,7 @@ from ..tools import (
     process_github_urls_tool,
     process_local_files_tool,
     scrape_and_clean_other_urls_tool,
+    scrape_exploitation_guideline_urls_tool,
     scrape_research_urls_tool,
     select_research_sources_to_keep_tool,
     select_research_sources_to_scrape_tool,
@@ -128,6 +129,44 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         opik_context.update_thread_id()
 
         result = await scrape_and_clean_other_urls_tool(research_directory, concurrency_limit)
+        return result
+
+    @mcp.tool()
+    @opik.track(type="tool", project_name=settings.opik_project_name)
+    async def scrape_exploitation_guideline_urls(
+        research_directory: str, concurrency_limit: int = 4
+    ) -> Dict[str, Any]:
+        """
+        Scrape URLs from the "Other Sources" section of the article guidelines (exploitation sources).
+
+        Reads ``exploitation_github_urls``, ``exploitation_youtube_videos_urls``, and
+        ``exploitation_other_urls`` from GUIDELINES_FILENAMES_FILE and processes each with
+        its dedicated handler:
+        - GitHub URLs → gitingest summary (process_github_urls)
+        - YouTube URLs → transcript (transcribe_youtube_urls)
+        - arXiv URLs → arxiv2markdown scrape
+        - Other web URLs → firecrawl scrape + LLM clean
+
+        All output is saved to URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER and tagged as
+        ``<research_source type="guideline_exploitation">`` in the final research file.
+
+        Args:
+            research_directory: Path to the research directory containing GUIDELINES_FILENAMES_FILE.
+            concurrency_limit: Maximum number of concurrent web scraping tasks (default: 4).
+
+        Returns:
+            Dict[str, Any]: Dictionary containing:
+                - status: Operation status ("success" or "warning")
+                - github_processed: Number of GitHub URLs processed
+                - youtube_processed: Number of YouTube URLs processed
+                - arxiv_processed: Number of arXiv papers processed
+                - web_processed: Number of web URLs processed
+                - urls_total: Total number of exploitation URLs attempted
+                - output_directory: Path to URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER
+                - message: Human-readable summary
+        """
+        opik_context.update_thread_id()
+        result = await scrape_exploitation_guideline_urls_tool(research_directory, concurrency_limit)
         return result
 
     @mcp.tool()

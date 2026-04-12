@@ -9,6 +9,7 @@ from ..config.constants import (
     TAVILY_RESULTS_FILE,
     URLS_FROM_GUIDELINES_FOLDER,
     URLS_FROM_GUIDELINES_CODE_FOLDER,
+    URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER,
     URLS_FROM_GUIDELINES_YOUTUBE_FOLDER,
     URLS_FROM_RESEARCH_FOLDER,
     LOCAL_FILES_FROM_RESEARCH_FOLDER,)
@@ -60,7 +61,22 @@ async def deduplicate_research_content(research_path:Path, output_path:Path) -> 
                 else:
                     logger.warning(f"Empty or failed to read {folder_name} source: {f}")
 
-    # 3. Research URLs (scraped files in urls_from_research/ directory)
+    # 3. Exploitation sources from guidelines ("Other Sources" section — non-golden)
+    exploitation_guideline_dir = output_path / URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER
+    if exploitation_guideline_dir.exists():
+        files = list(exploitation_guideline_dir.glob("*.md"))
+        source_counts["exploitation/guideline"] = len(files)
+        for f in files:
+            content = read_file_safe(f)
+            if content:
+                sources_collected.append(
+                    f'<research_source type="guideline_exploitation" phase="exploitation" file="{f.name}">\n{content}\n</research_source>'
+                )
+                logger.info(f"Added exploitation guideline source: {f.name}")
+            else:
+                logger.warning(f"Empty or failed to read exploitation guideline source: {f}")
+
+    # 4. Research URLs (scraped files in urls_from_research/ directory)
     research_urls_dir = output_path / URLS_FROM_RESEARCH_FOLDER
     if research_urls_dir.exists():
         files = list(research_urls_dir.glob("*.md"))

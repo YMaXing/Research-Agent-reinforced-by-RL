@@ -39,7 +39,8 @@ async def full_research_instructions_prompt() -> str:
 7. Content-level deduplication:
 
     7.1 Run the "deduplicate_research_content" tool. The tool reads all research content available in the scraped guideline sources 
-    from URLS_FROM_GUIDELINES_FOLDER, URLS_FROM_RESEARCH_FOLDER, URLS_FROM_GUIDELINES_CODE_FOLDER, and URLS_FROM_GUIDELINES_YOUTUBE_FOLDER.
+    from URLS_FROM_GUIDELINES_FOLDER, URLS_FROM_RESEARCH_FOLDER, URLS_FROM_GUIDELINES_CODE_FOLDER, URLS_FROM_GUIDELINES_YOUTUBE_FOLDER,
+    and URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER.
     The tool takes a large collection of research sources (from golden sources provided by the article guideline file to both exploitation and exploration phases) 
     and produce the cleanest, most authoritative, non-repetitive knowledge base possible following phase-aware protection rules and hierarchical deduplication goals.
     The tool will automatically remove redundant information while preserving important unique insights, and cluster similar concepts together even if they come from different sources.
@@ -68,36 +69,56 @@ If the user doesn't provide a research directory, you should ask for it before e
     workflow (e.g. running from a specific step, adding user feedback to specific steps, or changing parameters such as the number of exploration rounds).
 
     1.3 Extract the URLs from the ARTICLE_GUIDELINE_FILE with the "extract_guidelines_urls" tool. This tool reads the
-    ARTICLE_GUIDELINE_FILE and extracts three groups of references from the guidelines:
-    • "github_urls" - all GitHub links;
-    • "youtube_videos_urls" - all YouTube video links;
-    • "other_urls" - all remaining HTTP/HTTPS links, including arxiv papers;
-    • "local_files" - relative paths to local files mentioned in the guidelines (e.g. "code.py", "src/main.py").
-    Only extensions allowed are: ".py", ".ipynb", and ".md".
+    ARTICLE_GUIDELINE_FILE and categorises all references by the H2 section they appear in:
+
+    **Golden sources** (from "Golden Sources", "Article Code", "Lesson Code", or any other section):
+    • "github_urls" - GitHub links that are golden sources;
+    • "youtube_videos_urls" - YouTube video links that are golden sources;
+    • "other_urls" - all other HTTP/HTTPS links (including arXiv papers) that are golden sources;
+    • "local_files" - relative paths to local files mentioned in the guidelines.
+
+    **Exploitation sources** (from "Other Sources" section only):
+    • "exploitation_github_urls" - GitHub links listed under "Other Sources";
+    • "exploitation_youtube_videos_urls" - YouTube links listed under "Other Sources";
+    • "exploitation_other_urls" - all other HTTP/HTTPS links (including arXiv papers) listed under "Other Sources".
+
+    Only extensions allowed for local files are: ".py", ".ipynb", and ".md".
     The extracted data is saved to the GUIDELINES_FILENAMES_FILE within the RESEARCH_OUTPUT_DIRECTORY directory.
 
 2. Process the extracted resources in parallel:
 
-    You can run the following sub-steps (2.1 to 2.4) in parallel. In a single turn, you can call all the
+    You can run the following sub-steps (2.1 to 2.5) in parallel. In a single turn, you can call all the
     necessary tools for these steps.
 
     2.1 Local files - run the "process_local_files" tool to read every file path listed under "local_files" in the
     GUIDELINES_FILENAMES_FILE and copy its content into the LOCAL_FILES_FROM_RESEARCH_FOLDER subfolder within
     RESEARCH_OUTPUT_DIRECTORY, giving each copy an appropriate filename (path separators are replaced with underscores).
 
-    2.2 Other URL links (including arXiv papers) - run the "scrape_and_clean_other_urls" tool to read the `other_urls` list from the
-    GUIDELINES_FILENAMES_FILE and scrape/clean them. The tool writes the cleaned markdown files inside the
+    2.2 Golden other URL links (including arXiv papers) - run the "scrape_and_clean_other_urls" tool to read the
+    `other_urls` list (golden sources from "Golden Sources", "Article Code", and "Lesson Code" sections) from
+    GUIDELINES_FILENAMES_FILE and scrape/clean them. ArXiv papers are automatically scraped with arxiv2markdown
+    for higher-quality extraction. The tool writes the cleaned markdown files inside the
     URLS_FROM_GUIDELINES_FOLDER subfolder within RESEARCH_OUTPUT_DIRECTORY.
 
-    2.3 GitHub URLs - run the "process_github_urls" tool to process the `github_urls` list from the
-    GUIDELINES_FILENAMES_FILE with gitingest and save a Markdown summary for each URL inside the
+    2.3 Golden GitHub URLs - run the "process_github_urls" tool to process the `github_urls` list (golden sources)
+    from the GUIDELINES_FILENAMES_FILE with gitingest and save a Markdown summary for each URL inside the
     URLS_FROM_GUIDELINES_CODE_FOLDER subfolder within RESEARCH_OUTPUT_DIRECTORY.
 
-    2.4 YouTube URLs - run the "transcribe_youtube_urls" tool to process the `youtube_videos_urls` list from the
-    GUIDELINES_FILENAMES_FILE, transcribe each video, and save the transcript as a Markdown file inside the
-    URLS_FROM_GUIDELINES_YOUTUBE_FOLDER subfolder within RESEARCH_OUTPUT_DIRECTORY.
+    2.4 Golden YouTube URLs - run the "transcribe_youtube_urls" tool to process the `youtube_videos_urls` list
+    (golden sources) from the GUIDELINES_FILENAMES_FILE, transcribe each video, and save the transcript as a
+    Markdown file inside the URLS_FROM_GUIDELINES_YOUTUBE_FOLDER subfolder within RESEARCH_OUTPUT_DIRECTORY.
         Note: Please be aware that video transcription can be a time-consuming process. For reference,
         transcribing a 39-minute video can take approximately 4.5 minutes.
+
+    2.5 Exploitation guideline URLs ("Other Sources") - run the "scrape_exploitation_guideline_urls" tool to
+    process all URLs listed under the `exploitation_github_urls`, `exploitation_youtube_videos_urls`, and
+    `exploitation_other_urls` keys. Each URL type is routed to its dedicated handler:
+    - GitHub URLs → gitingest repository summary (same as step 2.3 but non-golden)
+    - YouTube URLs → video transcript (same as step 2.4 but non-golden)
+    - ArXiv URLs → arxiv2markdown scrape (same high-quality extraction as step 2.2 but non-golden)
+    - Other web URLs → firecrawl scrape + LLM clean (same as step 2.2 but non-golden)
+    All output files are saved to the URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER subfolder. In the final
+    research file these sources are tagged <research_source type="guideline_exploitation">, not <golden_source>.
 
 3. Exploitation Phase, repeat the following research loop for 3 rounds:
 
@@ -167,11 +188,16 @@ If the user doesn't provide a research directory, you should ask for it before e
     
     • Golden sources are wrapped in <golden_source type="..."> tags, where the type attribute identifies the
       specific guideline-referenced category:
-        - type="guideline_urls"   — web pages scraped from URLs listed in the article guideline
-        - type="guideline_code"   — GitHub repositories referenced in the article guideline
-        - type="guideline_youtube" — YouTube videos referenced in the article guideline
+        - type="guideline_urls"   — web pages scraped from golden URLs listed in the article guideline
+        - type="guideline_code"   — GitHub repositories referenced in the golden sources of the article guideline
+        - type="guideline_youtube" — YouTube videos referenced in the golden sources of the article guideline
         - type="local_files"      — local files referenced in the article guideline
     
+    • Exploitation sources from the article guideline ("Other Sources" section) are wrapped in
+      <research_source type="guideline_exploitation"> tags. These sources were explicitly listed
+      in the guidelines but are treated as exploitation (not golden) because they are supplementary
+      references rather than primary authoritative sources.
+
     • Research sources (Tavily results and URLs scraped from Tavily-discovered links) are wrapped in
       <research_source type="..."> tags. Importantly, even if a Tavily-discovered URL is a GitHub repo
       or YouTube video, it is still a research source (not golden) because it was not referenced in the
@@ -203,12 +229,14 @@ research_directory/
 │   ├── GUIDELINES_FILENAMES_FILE                       # Step 1.3 — Extracted URLs and local files from guidelines
 │   ├── LOCAL_FILES_FROM_RESEARCH_FOLDER/               # Step 2.1 — Copied local files referenced in guidelines
 │   │   └── [processed_local_files...]
-│   ├── URLS_FROM_GUIDELINES_FOLDER/                    # Step 2.2 — Scraped content from other URLs in guidelines
+│   ├── URLS_FROM_GUIDELINES_FOLDER/                    # Step 2.2 — Scraped content from golden other URLs in guidelines
 │   │   └── [scraped_web_pages...]
-│   ├── URLS_FROM_GUIDELINES_CODE_FOLDER/               # Step 2.3 — GitHub repository summaries and code analysis
+│   ├── URLS_FROM_GUIDELINES_CODE_FOLDER/               # Step 2.3 — GitHub repository summaries (golden sources)
 │   │   └── [github_repo_summaries...]
-│   ├── URLS_FROM_GUIDELINES_YOUTUBE_FOLDER/            # Step 2.4 — YouTube video transcripts
+│   ├── URLS_FROM_GUIDELINES_YOUTUBE_FOLDER/            # Step 2.4 — YouTube video transcripts (golden sources)
 │   │   └── [youtube_transcripts...]
+│   ├── URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER/       # Step 2.5 — Scraped "Other Sources" (exploitation, non-golden)
+│   │   └── [exploitation_sources...]
 │   ├── FULL_QUERIES_FILE                               # Steps 3.2 / 4.2 — Cumulative history of all deduplicated queries
 │   ├── NEXT_QUERIES_FILE                               # Steps 3.1 / 4.1 — Proposed queries for the current round
 │   ├── TAVILY_RESULTS_FILE                             # Steps 3.3 / 4.3 — Complete results from all Tavily rounds

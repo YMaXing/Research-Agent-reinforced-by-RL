@@ -15,6 +15,7 @@ from .dedup_research_content_tool import deduplicate_research_content_tool
 
 # Web scraping and content processing tools
 from .scrape_and_clean_other_urls_tool import scrape_and_clean_other_urls_tool
+from .scrape_exploitation_guideline_urls_tool import scrape_exploitation_guideline_urls_tool
 from .scrape_research_urls_tool import scrape_research_urls_tool
 
 # Source selection and curation tools
@@ -29,6 +30,7 @@ __all__ = [
     "process_local_files_tool",
     # Web scraping and content processing
     "scrape_and_clean_other_urls_tool",
+    "scrape_exploitation_guideline_urls_tool",
     "scrape_research_urls_tool",
     "process_github_urls_tool",
     "transcribe_youtube_videos_tool",
