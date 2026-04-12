@@ -490,3 +490,13 @@ class TestArticleReviewer:
             model=model,
         )
         assert selected_text_reviewer.article == article
+
+    def test_article_reviewer_prompt_contains_word_count_exclusion_rule(self) -> None:
+        """Reviewer prompt specifies that only prose text counts toward section word limits."""
+        assert "count **only prose text**" in ArticleReviewer.system_prompt_template
+        assert "Mermaid diagram code blocks" in ArticleReviewer.system_prompt_template
+        assert "code blocks" in ArticleReviewer.system_prompt_template
+
+    def test_article_reviewer_prompt_no_length_violation_for_code_heavy_sections(self) -> None:
+        """Reviewer prompt instructs not to flag length violations caused by code, media, or captions."""
+        assert "Do not raise a length-violation review" in ArticleReviewer.system_prompt_template

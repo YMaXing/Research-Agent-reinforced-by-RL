@@ -94,6 +94,28 @@ class TestMermaidDiagramGenerator:
         # Verify it was created successfully
         assert generator.model == model
 
+    def test_mermaid_diagram_generator_prompt_contains_gold_standard_example(self) -> None:
+        """Gold Standard flowchart LR example is present in the prompt to guide quality."""
+        assert "Gold Standard" in MermaidDiagramGenerator.prompt_template
+        assert "flowchart LR" in MermaidDiagramGenerator.prompt_template
+
+    def test_mermaid_diagram_generator_prompt_contains_orientation_rule(self) -> None:
+        """Prompt instructs to use flowchart LR for data flows instead of defaulting to graph TD."""
+        assert "NEVER default" in MermaidDiagramGenerator.prompt_template
+        assert "Orientation" in MermaidDiagramGenerator.prompt_template
+
+    def test_mermaid_diagram_generator_prompt_contains_completeness_rule(self) -> None:
+        """Prompt forbids truncated flows that stop at intermediate nodes."""
+        assert "NEVER truncate the flow" in MermaidDiagramGenerator.prompt_template
+
+    def test_mermaid_diagram_generator_prompt_contains_edge_label_rule(self) -> None:
+        """Prompt requires descriptive labels on primary arrows."""
+        assert "NEVER omit edge labels on primary flows" in MermaidDiagramGenerator.prompt_template
+
+    def test_mermaid_diagram_generator_prompt_contains_shallow_diagram_rule(self) -> None:
+        """Prompt forbids shallow diagrams with too few nodes."""
+        assert "NEVER produce shallow diagrams" in MermaidDiagramGenerator.prompt_template
+
 
 class TestMediaGeneratorOrchestrator:
     """Test the MediaGeneratorOrchestrator class."""
@@ -194,3 +216,21 @@ class TestMediaGeneratorOrchestrator:
         # Verify it was created successfully
         assert orchestrator.model == model
         assert orchestrator.toolkit == toolkit
+
+    def test_orchestrator_prompt_contains_media_type_decision_section(self) -> None:
+        """Prompt has a Media Type Decision section that gates tool calls."""
+        assert "Media Type Decision" in MediaGeneratorOrchestrator.system_prompt_template
+        assert "comparison table" in MediaGeneratorOrchestrator.system_prompt_template
+
+    def test_orchestrator_prompt_skips_tool_calls_for_tabular_comparison_content(self) -> None:
+        """Prompt explicitly instructs to skip tool calls for 2D comparison data."""
+        assert "do NOT call any tool" in MediaGeneratorOrchestrator.system_prompt_template
+        assert "2-dimensional" in MediaGeneratorOrchestrator.system_prompt_template
+
+    def test_orchestrator_prompt_contains_lesson_from_past_failure(self) -> None:
+        """Prompt encodes the concrete past failure as a cautionary example for the LLM."""
+        assert "Lesson from past failure" in MediaGeneratorOrchestrator.system_prompt_template
+
+    def test_orchestrator_prompt_word_mermaid_alone_not_sufficient(self) -> None:
+        """Prompt warns that the word 'mermaid' in the guideline is not sufficient to trigger a tool call."""
+        assert 'word "diagram" or "mermaid" in the guideline alone is NOT sufficient' in MediaGeneratorOrchestrator.system_prompt_template

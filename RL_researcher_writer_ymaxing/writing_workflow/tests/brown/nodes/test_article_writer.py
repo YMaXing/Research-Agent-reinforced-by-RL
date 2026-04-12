@@ -219,6 +219,32 @@ Mock references.
 
         assert writer.model == model
 
+    def test_article_writer_prompt_contains_word_count_exclusion_rule(self) -> None:
+        """Prompt specifies that only prose text counts toward section word limits."""
+        assert "count **only prose text**" in ArticleWriter.system_prompt_template
+        assert "Mermaid diagram code blocks" in ArticleWriter.system_prompt_template
+        assert "code blocks" in ArticleWriter.system_prompt_template
+        assert "Captions for diagrams" in ArticleWriter.system_prompt_template
+
+    def test_article_writer_prompt_contains_inline_table_fallback_rule(self) -> None:
+        """Prompt instructs writer to produce a Markdown table inline for comparison content
+        when no pre-generated media item covers that section."""
+        assert "produce a Markdown table" in ArticleWriter.system_prompt_template
+
+    def test_article_writer_prompt_no_mermaid_for_comparison_data(self) -> None:
+        """Prompt explicitly forbids Mermaid diagrams for structured 2D comparison data."""
+        assert "Do **not** produce a Mermaid diagram for structured" in ArticleWriter.system_prompt_template
+
+    def test_article_writer_prompt_contains_citation_rule(self) -> None:
+        """Writing Requirements section includes a mandatory citation rule."""
+        assert "**Citations:**" in ArticleWriter.system_prompt_template
+        assert "[[N]](url)" in ArticleWriter.system_prompt_template
+
+    def test_article_writer_exploration_prompt_contains_mandatory_citation_rule(self) -> None:
+        """Exploration integration prompt contains the mandatory citation rule for exploration sources."""
+        assert "Citations (mandatory)" in ArticleWriter.exploration_integration_prompt_template
+        assert "[[N]](url)" in ArticleWriter.exploration_integration_prompt_template
+
     @pytest.mark.asyncio
     async def test_article_writer_with_selected_text_reviews(
         self,

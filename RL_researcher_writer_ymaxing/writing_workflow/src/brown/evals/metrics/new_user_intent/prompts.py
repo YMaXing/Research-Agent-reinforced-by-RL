@@ -67,7 +67,10 @@ three criteria:
         - We expect a perfect match between the expected section and the generated section. Intuitively, you can
         think of the section guideline as a sketch, a compressed version of the generated section.
         - Less: If any topic from the expected article guideline is missing from the generated article, you will assign 
-        a score of 0.
+        a score of 0. This includes explicitly required section transitions: if the article guideline specifies a 
+        transition at the end of a section (e.g., via a "Transition to Section X: [text]" instruction), check that the 
+        generated section ends with such a closing transition sentence or paragraph. A missing section-closing transition that is 
+        explicitly required by the guideline scores 0.
         - More: If the generated section has additional topics that are NOT related to the expected main idea or topic 
         of that section in the article guideline, you will assign a score of 0. However, if the additional topics are 
         complementary information closely related to the expected main idea or topic of that section (e.g., depth or 

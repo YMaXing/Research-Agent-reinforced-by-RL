@@ -77,7 +77,11 @@ another criterion.
    2.**Flow:** Evaluate whether the generated section follows the same order of ideas as the expected section, such as 
    the flow of:
       - [USE ONLY IN MULTI-SECTION MODE] Main ideas covered starting with the beginning, until the end of the section. With special 
-      emphasis on the beginning and end of the section as they reflect the transition between the previous and next sections
+      emphasis on the beginning and end of the section as they reflect the transition between the previous and next sections.
+      Specifically, look at the last paragraph of the expected section and ask: does the expected section end with  
+      closing transition sentences that explicitly bridge to the next section (e.g., "Now that we understand X, let's look at Y")? 
+      If yes, check whether the generated section also ends with such a closing transition. Missing closing transition sentence(s) 
+      that are present in the expected section but absent from the generated section are a missing element and score 0.
       - Internal transitions between the main points within the section. We expect a smooth flow of ideas, 
       without any abrupt jumps or breaks.
       - Placement of notes, images, tables, code blocks, or any other media elements within the generated section, 
