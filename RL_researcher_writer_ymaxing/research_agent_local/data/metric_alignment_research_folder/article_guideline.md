@@ -17,7 +17,7 @@ Memory is one of the components that transforms a simple stateless chat applicat
 
 ### Expected Length of the Lesson
 
-**2000-2500 words** (without the titles and references), where we assume that 200-250 words ≈ 1 minute of reading time.
+**3200-3600 words** (without the titles and references), where we assume that 200-250 words ≈ 1 minute of reading time.
 
 ### Theory / Practice Ratio
 
@@ -173,7 +173,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
 
 - Transition to Section 4: Now that we have an idea of what to save, the benefits of specific types of memories. How should they be saved/stored? What are the three approaches we can experiment with?
 
--  **Section length:** 400 words
+-  **Section length:** 700 words
 
 ## Section 4 - Storing Memories: Pros and Cons of Different Approaches
 
@@ -214,7 +214,7 @@ Tip: the choice of memory storage should be guided by your product's core needs.
 
 - Transition to Section 5: Now that we know what to save and how to store the memories, let's provide some code examples, using available "memory" tools, like mem0.
 
--  **Section length:** 400 words
+-  **Section length:** 700 words
 
 ## Section 5 - Memory implementations with code examples
 This section goes into more details (with code, using the mem0 library) on how to implement the different types of memories. While Retrieval-Augmented Generation (RAG) is the mechanism for retrieving information, the creation of high-quality memories is an equally important, preceding step. RAG is a method that will be covered in the next lesson. Before the retrieval phase, an agent must first form the memory. This process of creation and retrieval is distinct for each memory type, and of course use-case. To focus on the benefits of each 'category' of memory, and not on the type of storage architecture, we will use the simplistic "storing memories as raw strings" approach. 
@@ -280,7 +280,7 @@ This section goes into more details (with code, using the mem0 library) on how t
 
 - Transition to Section 6: We've seen how to implement the different types of memories with mem0, now let's talk about some additional considerations when building a memory system.
 
--  **Section length:** 500 words
+-  **Section length:** 800 words
 
 ## Section 6 - Real-World Lessons: Challenges and Best Practices
 

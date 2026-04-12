@@ -59,7 +59,7 @@ def _normalize_github_url(url: str) -> str:
         new_path = f"/{owner_repo}"
 
     normalized = parsed._replace(path=new_path).geturl()
-    logger.debug(f"Normalised GitHub URL: {url!r} → {normalized!r}")
+    logger.info(f"Normalised GitHub URL: {url!r} → {normalized!r}")
     return normalized
 
 
@@ -106,6 +106,6 @@ async def process_github_url(url: str, dest_folder: Path, token: str | None) -> 
     dest_path = dest_folder / dest_name
     dest_path.write_text(md, encoding="utf-8")
     if ingestion_succeeded:
-        logger.debug(f"Successfully processed repository {url} and wrote  {dest_path}")
+        logger.info(f"Successfully processed repository {url} and wrote  {dest_path}")
 
     return ingestion_succeeded

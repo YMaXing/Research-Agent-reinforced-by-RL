@@ -36,7 +36,7 @@ async def run_tavily_search(query: str) -> Tuple[str, Dict[int, str], Dict[int, 
     
     # 1. Tavily retrieval (rich raw_content + advanced depth)
     tavily_tool = get_tavily_tool("tavily")
-    logger.debug(f"🔍 Running Tavily search for: {query}")
+    logger.info(f"🔍 Running Tavily search for: {query}")
     tavily_results = await tavily_tool.ainvoke({"query": query})   # returns List[dict] with raw_content
 
     # Truncate raw_content per result to stay well within the model's context window.
@@ -169,10 +169,10 @@ async def run_queries(article_id: str, queries: List[str]) -> None:
 
     next_global_id = compute_next_source_id(results_path)
 
-    logger.debug(f"Executing {len(queries)} Tavily queries concurrently...")
+    logger.info(f"Executing {len(queries)} Tavily queries concurrently...")
     tasks = [run_tavily_search(query) for query in queries]
     search_results = await asyncio.gather(*tasks)
-    logger.debug("...all Tavily queries finished. Appending results.")
+    logger.info("...all Tavily queries finished. Appending results.")
 
     for query, (_, answer_by_source, citations) in zip(queries, search_results):
         if citations:
@@ -183,9 +183,9 @@ async def run_queries(article_id: str, queries: List[str]) -> None:
                 citations,
                 next_global_id,
             )
-            logger.debug(f"Appended results for query: '{query}' (added {len(citations)} source section(s)).")
+            logger.info(f"Appended results for query: '{query}' (added {len(citations)} source section(s)).")
 
-    logger.debug(f"\n✅ Completed Tavily research round. Results saved to {results_path}.")
+    logger.info(f"\n✅ Completed Tavily research round. Results saved to {results_path}.")
 
 
 def extract_tavily_chunks(markdown: str) -> Dict[int, str]:

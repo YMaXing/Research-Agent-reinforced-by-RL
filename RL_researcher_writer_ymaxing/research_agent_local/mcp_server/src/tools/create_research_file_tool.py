@@ -33,10 +33,14 @@ def _wrap_xml(tag: str, attrs: str, content: str) -> str:
 
 
 def _extract_page_heading(content: str, fallback: str) -> str:
-    """Return the text of the first markdown heading found in *content*."""
+    """Return the text of the first markdown heading found in *content*, outside code blocks."""
+    in_code_block = False
     for line in content.split("\n"):
         stripped = line.strip()
-        if stripped.startswith("#"):
+        if stripped.startswith("```"):
+            in_code_block = not in_code_block
+            continue
+        if not in_code_block and stripped.startswith("#"):
             return stripped.lstrip("#").strip()
     return fallback
 
@@ -196,7 +200,7 @@ def create_research_file_tool(research_directory: str) -> Dict[str, Any]:
     Falls back to the tagged multi-section assembly alone when no
     deduplicated file is present.
     """
-    logger.debug(f"Creating research files for directory: {research_directory}")
+    logger.info(f"Creating research files for directory: {research_directory}")
 
     article_dir = Path(research_directory)
     research_output_dir = article_dir / RESEARCH_OUTPUT_FOLDER

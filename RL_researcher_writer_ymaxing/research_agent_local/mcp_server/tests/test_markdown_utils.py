@@ -50,6 +50,22 @@ class TestMarkdownCollapsible:
         assert "Line 1" in result
         assert "Line 3" in result
 
+    def test_unclosed_code_fence_is_balanced(self):
+        """A body with an odd number of ``` fences must have a closing fence added
+        so that </details> is not swallowed inside a preformatted block."""
+        body = "```markdown\n## 1 Introduction\nSome content"
+        result = markdown_collapsible("Title", body)
+        # The closing ``` must appear before </details>
+        assert result.index("```\n\n</details>") > 0
+        assert "</details>" in result
+
+    def test_balanced_code_fences_not_modified(self):
+        """A body with an even number of ``` fences should not gain an extra one."""
+        body = "```python\nprint('hi')\n```"
+        result = markdown_collapsible("Title", body)
+        # Exactly two ``` occurrences from the body, plus none added
+        assert result.count("```") == 2
+
 
 # ---------------------------------------------------------------------------
 # get_first_line_title

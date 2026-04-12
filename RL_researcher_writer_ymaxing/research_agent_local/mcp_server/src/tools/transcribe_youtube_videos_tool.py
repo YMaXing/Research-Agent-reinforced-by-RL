@@ -32,7 +32,7 @@ async def transcribe_youtube_videos_tool(research_directory: str) -> Dict[str, A
     Returns:
         Dict with status, processing results, and file paths
     """
-    logger.debug(f"Starting transcription of YouTube videos from {research_directory}")
+    logger.info(f"Starting transcription of YouTube videos from {research_directory}")
 
     research_path = Path(research_directory)
     research_output_path = research_path / RESEARCH_OUTPUT_FOLDER
@@ -66,7 +66,7 @@ async def transcribe_youtube_videos_tool(research_directory: str) -> Dict[str, A
     dest_folder = research_output_path / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER
     dest_folder.mkdir(parents=True, exist_ok=True)
 
-    logger.debug(f"Processing {len(youtube_urls)} YouTube URL(s)...")
+    logger.info(f"Processing {len(youtube_urls)} YouTube URL(s)...")
 
     semaphore = asyncio.Semaphore(YOUTUBE_TRANSCRIPTION_MAX_CONCURRENT_REQUESTS)
     tasks = [process_youtube_url(url, dest_folder, semaphore) for url in youtube_urls]

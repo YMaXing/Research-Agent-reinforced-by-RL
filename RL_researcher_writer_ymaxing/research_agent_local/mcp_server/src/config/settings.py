@@ -1,10 +1,10 @@
 """Server configuration settings."""
 
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
 from numpy import maximum
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger(__name__)
@@ -18,17 +18,28 @@ class Settings(BaseSettings):
     # Server settings
     server_name: str = Field(default="Research MCP Server", description="The name of the server")
     version: str = Field(default="0.1.0", description="The version of the server")
-    log_level: int = Field(default=logging.INFO, alias="LOG_LEVEL", description="The log level")
-    log_level_dependencies: int = Field(
+    log_level: Union[int, str] = Field(default=logging.INFO, alias="LOG_LEVEL", description="The log level")
+    log_level_dependencies: Union[int, str] = Field(
         default=logging.WARNING, alias="LOG_LEVEL_DEPENDENCIES", description="The log level for dependencies"
     )
+
+    @field_validator("log_level", "log_level_dependencies", mode="before")
+    @classmethod
+    def _parse_log_level(cls, v: Any) -> int:
+        if isinstance(v, str):
+            level = logging.getLevelName(v.upper())
+            if not isinstance(level, int):
+                raise ValueError(f"Invalid log level: {v!r}")
+            return level
+        return v
 
     # Research settings
     maximum_exploration_rounds: int = Field(default=3, alias="MAXIMUM_EXPLORATION_ROUNDS", description="Maximum number of exploration rounds in the research loop")
     n_exploration_queries_per_round: int = Field(default=4, alias="N_EXPLORATION_QUERIES_PER_ROUND", description="Number of exploration queries to generate per exploration round. Only applicable if maximum_exploration_rounds > 0.")
     maximum_sources_to_scrape: int = Field(default=6, alias="MAXIMUM_SOURCES_TO_SCRAPE", description="Maximum number of sources to scrape fully during research")
     enable_content_dedup: bool = Field(default=False, alias="ENABLE_CONTENT_DEDUP", description="Whether to run the content deduplication step (step 7). Set to false to feed the full raw research into the final file.")
-    
+    max_tokens_for_llm_cleaning: int = Field(default=5000, alias="MAX_TOKENS_FOR_LLM_CLEANING", description="Maximum number of tokens for LLM cleaning. Articles exceeding this token count will skip LLM cleaning.")
+
     # LLM Configuration
     youtube_transcription_model: str = Field(default="gemini-2.5-flash", description="Model for YouTube transcription, only supported Gemini models")
     scraping_model: str = Field(default="grok-4-1-fast-reasoning", description="Model for web scraping")

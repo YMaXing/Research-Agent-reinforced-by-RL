@@ -72,7 +72,7 @@ async def _select_sources_for_phase(
 ) -> List[int]:
     """Run source selection for a single phase subset."""
     if not parsed_phase:
-        logger.debug(f"No {phase_label} sources to evaluate.")
+        logger.info(f"No {phase_label} sources to evaluate.")
         return []
 
     sources_data_text = build_sources_data_text(parsed_phase)
@@ -83,7 +83,7 @@ async def _select_sources_for_phase(
     )
 
     chat_llm = get_chat_model(settings.source_selection_model, SourceSelection)
-    logger.debug(f"Selecting {phase_label} sources to keep ({len(parsed_phase)} candidates)")
+    logger.info(f"Selecting {phase_label} sources to keep ({len(parsed_phase)} candidates)")
 
     try:
         response = await chat_llm.ainvoke(prompt_text)
@@ -99,7 +99,7 @@ async def _select_sources_for_phase(
         return sorted(parsed_phase.keys())
 
     if response.selection_type == "none":
-        logger.debug(f"No {phase_label} sources accepted.")
+        logger.info(f"No {phase_label} sources accepted.")
         return []
     if response.selection_type == "all":
         logger.info(f"👍 All {phase_label} sources accepted ({len(parsed_phase)}).")
@@ -150,7 +150,7 @@ async def select_sources(article_guidelines: str, md_results: str) -> List[int]:
             "exploration",
         )
     else:
-        logger.debug("No exploration sources present; skipping exploration selection call.")
+        logger.info("No exploration sources present; skipping exploration selection call.")
         exploration_ids = []
 
     # Merge and sort
@@ -231,7 +231,7 @@ async def select_top_sources(
     )
 
     chat_llm = get_chat_model(settings.source_selection_model, TopSourceSelection)
-    logger.debug("Selecting top sources to scrape")
+    logger.info("Selecting top sources to scrape")
     try:
         response = await chat_llm.ainvoke(prompt)
     except Exception as exc:

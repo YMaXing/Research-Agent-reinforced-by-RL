@@ -32,7 +32,7 @@ async def process_github_urls_tool(research_directory: str) -> Dict[str, Any]:
     Returns:
         Dict with status, processing results, and file paths
     """
-    logger.debug(f"Processing GitHub URLs from research folder: {research_directory}")
+    logger.info(f"Processing GitHub URLs from research folder: {research_directory}")
 
     # Convert to Path object
     research_path = Path(research_directory)
@@ -74,7 +74,7 @@ async def process_github_urls_tool(research_directory: str) -> Dict[str, Any]:
     dest_folder = research_output_path / URLS_FROM_GUIDELINES_CODE_FOLDER
     dest_folder.mkdir(parents=True, exist_ok=True)
 
-    logger.debug(f"Processing {len(github_urls)} GitHub URLs...")
+    logger.info(f"Processing {len(github_urls)} GitHub URLs...")
 
     # Process GitHub URLs sequentially
     success_count = 0

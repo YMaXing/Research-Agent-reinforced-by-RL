@@ -94,7 +94,7 @@ async def transcribe_youtube(
         return
 
     output_path.write_text(response.text, encoding="utf-8")
-    logger.debug(f"📄 Transcription saved to {output_path}")
+    logger.info(f"📄 Transcription saved to {output_path}")
 
 
 def get_video_id(url: str) -> str | None:

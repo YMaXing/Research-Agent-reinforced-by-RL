@@ -5,7 +5,11 @@ from typing import Dict, List, Tuple
 
 def markdown_collapsible(title: str, body: str) -> str:
     """Return a Markdown collapsible block using <details> / <summary>."""
-    return f"<details>\n<summary>{title}</summary>\n\n{body.strip()}\n\n</details>\n"
+    stripped_body = body.strip()
+    # Balance any unclosed code fence so </details> is not swallowed into a <pre> block.
+    if stripped_body.count("```") % 2 != 0:
+        stripped_body += "\n```"
+    return f"<details>\n<summary>{title}</summary>\n\n{stripped_body}\n\n</details>\n"
 
 
 def get_first_line_title(markdown: str) -> str:

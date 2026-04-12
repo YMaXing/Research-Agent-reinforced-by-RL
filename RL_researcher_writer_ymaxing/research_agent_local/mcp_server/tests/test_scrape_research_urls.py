@@ -374,6 +374,41 @@ class TestScrapeAndClean:
         # LLM should not have been called
         assert fake_llm.prompts_received == []
 
+    async def test_large_content_skips_llm_uses_image_conversion(self):
+        """>MAX_TOKENS_FOR_LLM_CLEANING: LLM is bypassed; only image conversion is applied."""
+        raw_content = "![logo](https://example.com/img.png) body text"
+        fake_fc = FakeFirecrawlApp(FakeFirecrawlResult("Title", raw_content))
+        fake_llm = FakeLLM("should not appear")
+        # Override token counter to always exceed the threshold
+        fake_llm.get_num_tokens = lambda text: 9999
+
+        result = await scraping_handler.scrape_and_clean(
+            "https://example.com", "guidelines", fake_fc, fake_llm
+        )
+
+        assert result["success"] is True
+        # LLM must not have been invoked
+        assert fake_llm.prompts_received == []
+        # Image markdown syntax should be converted to plain URL
+        assert "https://example.com/img.png" in result["markdown"]
+        assert "![logo]" not in result["markdown"]
+
+    async def test_small_content_calls_llm_cleaning(self):
+        """≤MAX_TOKENS_FOR_LLM_CLEANING: LLM is invoked for content cleaning."""
+        raw_content = "short body"
+        fake_fc = FakeFirecrawlApp(FakeFirecrawlResult("Title", raw_content))
+        fake_llm = FakeLLM("llm cleaned output")
+        # Override token counter to stay well below the threshold
+        fake_llm.get_num_tokens = lambda text: 10
+
+        result = await scraping_handler.scrape_and_clean(
+            "https://example.com", "guidelines", fake_fc, fake_llm
+        )
+
+        assert result["success"] is True
+        assert result["markdown"] == "llm cleaned output"
+        assert len(fake_llm.prompts_received) >= 1
+
 
 class TestScrapeUrlsConcurrently:
     """
@@ -481,6 +516,44 @@ class TestScrapeArxivUrl:
             )
         # success=True comes from ingest_paper path succeeding
         assert result["success"] is True
+
+    async def test_large_raw_md_skips_llm_cleanup(self):
+        """>MAX_TOKENS_FOR_LLM_CLEANING: LLM not called, raw arxiv2markdown output is kept."""
+        fake_llm = FakeLLM("should not appear")
+        # Override token counter to always exceed the threshold
+        fake_llm.get_num_tokens = lambda text: 9999
+        raw_content = "# Full Paper\n\nVery long paper body..."
+        fake_ingest_result = MagicMock(content=raw_content)
+
+        with patch(self._INGEST_PATCH, new=AsyncMock(return_value=(fake_ingest_result, {"title": "Big Paper"}))):
+            result = await scraping_handler.scrape_arxiv_url(
+                "https://arxiv.org/abs/2309.02427",
+                "guidelines",
+                fake_llm,
+            )
+
+        assert result["success"] is True
+        assert result["markdown"] == raw_content
+        assert fake_llm.prompts_received == []
+
+    async def test_small_raw_md_calls_llm_cleanup(self):
+        """≤MAX_TOKENS_FOR_LLM_CLEANING: LLM is called for LaTeX cleanup."""
+        fake_llm = FakeLLM("latex cleaned output")
+        # Override token counter to stay well below the threshold
+        fake_llm.get_num_tokens = lambda text: 10
+        raw_content = "# Short Paper with $\\LaTeX$"
+        fake_ingest_result = MagicMock(content=raw_content)
+
+        with patch(self._INGEST_PATCH, new=AsyncMock(return_value=(fake_ingest_result, {"title": "Short Paper"}))):
+            result = await scraping_handler.scrape_arxiv_url(
+                "https://arxiv.org/abs/2312.05678",
+                "guidelines",
+                fake_llm,
+            )
+
+        assert result["success"] is True
+        assert result["markdown"] == "latex cleaned output"
+        assert len(fake_llm.prompts_received) == 1
 
 
 # ===========================================================================

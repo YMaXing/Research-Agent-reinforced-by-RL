@@ -251,15 +251,18 @@ Return a list of objects, where each object represents a source and has the foll
 
 # Markdown cleaning prompt
 PROMPT_CLEAN_MARKDOWN = """
-Your task is to clean markdown content scraped from a webpage by *only removing* all irrelevant sections such as
-headers, footers, navigation bars, advertisements, sidebars, self-promotion, call-to-actions, etc.
-Focus on keeping only the core textual content (and code content if there are code sections) that is pertinent to
-the article guidelines provided below.
-Return *only* the cleaned markdown.
-Do not summarize or rewrite the original content. This task is only about *removing* irrelevant content.
-Good content should be kept as is, do not touch it.
+Your task is to clean markdown content scraped from a webpage by removing **only web-page boilerplate** such as:
+site headers, footers, navigation menus, cookie banners, advertisements, sidebars, subscription prompts,
+self-promotion blocks, social-media share buttons, "related articles" sections, and call-to-action elements.
 
-Here are the article guidelines:
+**Critical rules:**
+- Keep ALL substantive article content: paragraphs, headings, code blocks, tables, lists, images, diagrams, and any explanatory text — even if some sections seem tangential.
+- Do NOT filter or remove sections based on topic relevance. Your job is boilerplate removal, not content curation.
+- Do NOT summarize, condense, paraphrase, or rewrite any kept content. Return it verbatim.
+- When in doubt, **keep** the content. Err on the side of preserving too much rather than too little.
+
+The article guidelines below are provided only so you can confirm the page is on-topic (i.e., not a completely unrelated page). Do NOT use them to decide which sections of the article to keep or remove.
+
 <article_guidelines>
 {article_guidelines}
 </article_guidelines>

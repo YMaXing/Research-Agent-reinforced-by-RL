@@ -42,6 +42,11 @@ def write_scraped_results_to_files(completed_results: List[dict], output_dir: Pa
     existing_names: set[str] = set()
 
     for res in completed_results:
+        # asyncio.gather(return_exceptions=True) can return exception objects;
+        # skip them gracefully instead of crashing on .get().
+        if isinstance(res, BaseException):
+            logger.warning(f"Skipping failed scrape result (exception): {res}")
+            continue
         cleaned_markdown = res.get("markdown", "")
         title = res.get("title", "")
         url = res.get("url", "")
@@ -73,7 +78,7 @@ async def scrape_and_clean_other_urls_tool(research_directory: str, concurrency_
     Returns:
         Dict with status, processing results, and file paths
     """
-    logger.debug(f"Scraping and cleaning other URLs from research folder: {research_directory}")
+    logger.info(f"Scraping and cleaning other URLs from research folder: {research_directory}")
 
     # Convert to Path object
     research_path = Path(research_directory)
@@ -99,8 +104,8 @@ async def scrape_and_clean_other_urls_tool(research_directory: str, concurrency_
 
     # Get the other_urls list
     def is_arxiv_url(url: str) -> bool:
-        """Return True if URL is an arXiv link (abs or pdf)."""
-        return "arxiv.org" in url and ("/abs/" in url or "/pdf/" in url)
+        """Return True if URL is an arXiv link (abs, pdf, or html)."""
+        return "arxiv.org" in url and ("/abs/" in url or "/pdf/" in url or "/html/" in url)
     
     other_urls = [url for url in guidelines_data.get("other_urls", []) if not is_arxiv_url(url)]
     arxiv_urls = [url for url in guidelines_data.get("other_urls", []) if is_arxiv_url(url)]
@@ -136,21 +141,21 @@ async def scrape_and_clean_other_urls_tool(research_directory: str, concurrency_
     completed_results = await scrape_urls_concurrently(other_urls, article_guidelines, concurrency_limit)
 
     if arxiv_urls:
-        logger.debug(f"Starting arXiv scraping of {len(arxiv_urls)} paper(s)...")
-        chat_model = get_chat_model(settings.scraping_model)   # reuse same model for cleaning
+        logger.info(f"Starting arXiv scraping of {len(arxiv_urls)} paper(s)...")
+        chat_model = get_chat_model(settings.scraping_model)
         arxiv_tasks = [
             scrape_arxiv_url(url, article_guidelines, chat_model) for url in arxiv_urls
         ]
         arxiv_results = await asyncio.gather(*arxiv_tasks, return_exceptions=True)
-
-        _, arxiv_success = write_scraped_results_to_files(arxiv_results, output_dir)
         completed_results.extend(arxiv_results)
-        logger.debug(f"Processed {arxiv_success}/{len(arxiv_urls)} arXiv papers with arxiv2markdown.")
+        arxiv_success = sum(1 for r in arxiv_results if not isinstance(r, BaseException) and r.get("success", False))
+        logger.info(f"Processed {arxiv_success}/{len(arxiv_urls)} arXiv papers with arxiv2markdown.")
 
-    # Write outputs
+    # Write all results (other URLs + arxiv) in a single pass so filenames are
+    # deduplicated correctly and files are not written twice.
     saved_files, successful_scrapes = write_scraped_results_to_files(completed_results, output_dir)
 
-    total_attempted = len(other_urls)
+    total_attempted = len(other_urls) + len(arxiv_urls)
     return {
         "status": "success" if successful_scrapes > 0 else "warning",
         "urls_processed": successful_scrapes,
@@ -159,7 +164,7 @@ async def scrape_and_clean_other_urls_tool(research_directory: str, concurrency_
         "output_directory": str(output_dir.resolve()),
         "saved_files": saved_files,
         "message": (
-            f"Scraped and cleaned {successful_scrapes}/{total_attempted} other URLs from {GUIDELINES_FILENAMES_FILE} "
+            f"Scraped and cleaned {successful_scrapes}/{total_attempted} URLs from {GUIDELINES_FILENAMES_FILE} "
             f"in '{research_directory}'.\nSaved {len(saved_files)} files to {URLS_FROM_GUIDELINES_FOLDER} folder: "
             f"{', '.join(saved_files)}"
         ),

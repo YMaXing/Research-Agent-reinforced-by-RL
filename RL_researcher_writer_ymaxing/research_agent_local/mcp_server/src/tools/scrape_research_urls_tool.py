@@ -236,7 +236,7 @@ async def process_and_save_urls(
 
     # Process OTHER URLs
     if other_urls:
-        logger.debug(
+        logger.info(
             f"Starting scraping of {len(other_urls)} web pages with a concurrency limit of {concurrency_limit}..."
         )
 
@@ -251,7 +251,7 @@ async def process_and_save_urls(
 
     # Process arXiv URLs
     if arxiv_urls:
-        logger.debug(f"Starting arXiv scraping of {len(arxiv_urls)} paper(s)...")
+        logger.info(f"Starting arXiv scraping of {len(arxiv_urls)} paper(s)...")
         chat_model = get_chat_model(settings.scraping_model)
         arxiv_tasks = [
             scrape_arxiv_url(url, article_guidelines, chat_model) for url in arxiv_urls
@@ -265,7 +265,7 @@ async def process_and_save_urls(
 
     # Process GITHUB URLs
     if github_urls:
-        logger.debug(f"Starting gitingest processing of {len(github_urls)} GitHub repo(s)...")
+        logger.info(f"Starting gitingest processing of {len(github_urls)} GitHub repo(s)...")
         github_success = 0
         for url in github_urls:
             try:
@@ -293,7 +293,7 @@ async def process_and_save_urls(
 
     # Process YOUTUBE URLs
     if youtube_urls:
-        logger.debug(f"Starting transcription of {len(youtube_urls)} YouTube video(s)...")
+        logger.info(f"Starting transcription of {len(youtube_urls)} YouTube video(s)...")
         try:
             yt_semaphore = asyncio.Semaphore(YOUTUBE_TRANSCRIPTION_MAX_CONCURRENT_REQUESTS)
 
@@ -336,7 +336,7 @@ async def scrape_research_urls_tool(research_directory: str, concurrency_limit: 
     Returns:
         Dict with status, processing results, and file paths
     """
-    logger.debug(f"Scraping research URLs from directory: {research_directory}")
+    logger.info(f"Scraping research URLs from directory: {research_directory}")
 
     # Convert to Path object
     research_path = Path(research_directory)

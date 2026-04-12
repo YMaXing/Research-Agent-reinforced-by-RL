@@ -71,7 +71,7 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
     Returns:
         Dict with status, generated queries, and output file path
     """
-    logger.debug(f"Generating candidate web-search queries for {research_directory}")
+    logger.info(f"Generating candidate web-search queries for {research_directory}")
 
     # Convert to Path object
     research_path = Path(research_directory)
@@ -160,7 +160,7 @@ async def generate_next_complementary_queries_tool(research_directory: str,
                 - output_path: Path to the generated next_queries.md file
                 - message: Human-readable success message with generation results
         """
-        logger.debug(f"Generating complementary queries for {research_directory} (focus={focus})")
+        logger.info(f"Generating complementary queries for {research_directory} (focus={focus})")
 
         # Convert to Path object
         research_path = Path(research_directory)

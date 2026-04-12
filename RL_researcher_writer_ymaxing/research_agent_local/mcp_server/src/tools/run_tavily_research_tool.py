@@ -57,7 +57,7 @@ def append_search_results_to_file(
                 phase=phase,
             )
             total_sources += len(citations)
-            logger.debug(f"Appended results for query: '{query}' (added {len(citations)} source section(s)).")
+            logger.info(f"Appended results for query: '{query}' (added {len(citations)} source section(s)).")
 
     return total_sources
 
@@ -84,7 +84,7 @@ async def run_tavily_research_tool(
     Returns:
         Dict with status, processing results, and file paths
     """
-    logger.debug(f"Running Tavily research for directory: {research_directory}")
+    logger.info(f"Running Tavily research for directory: {research_directory}")
 
     # Convert to Path object
     research_path = Path(research_directory)
@@ -108,10 +108,10 @@ async def run_tavily_research_tool(
     results_path.touch(exist_ok=True)
 
     phase = _PHASE_LABELS.get(query_source, "Exploitation")
-    logger.debug(f"Executing {len(queries)} Tavily queries (phase={phase})...")
+    logger.info(f"Executing {len(queries)} Tavily queries (phase={phase})...")
     tasks = [run_tavily_search(query) for query in queries]
     raw_results = await asyncio.gather(*tasks, return_exceptions=True)
-    logger.debug("All Tavily queries finished. Appending results.")
+    logger.info("All Tavily queries finished. Appending results.")
 
     # Filter out failed queries so the rest of the batch still saves.
     search_results: list = []

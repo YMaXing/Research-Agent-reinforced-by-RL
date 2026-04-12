@@ -208,6 +208,23 @@ class TestWriteScrapedResultsToFiles:
         saved, _ = write_scraped_results_to_files(results, tmp_path)
         assert saved[0].endswith(".md")
 
+    def test_exception_in_results_is_skipped_gracefully(self, tmp_path):
+        """asyncio.gather(return_exceptions=True) may yield exception objects; they must be skipped."""
+        exc = RuntimeError("simulated scrape failure")
+        valid = _fake_result("https://a.com", success=True)
+        saved, success_count = write_scraped_results_to_files([exc, valid], tmp_path)
+        assert success_count == 1
+        assert len(saved) == 1
+        assert (tmp_path / saved[0]).exists()
+
+    def test_only_exception_in_results_yields_empty(self, tmp_path):
+        """When all results are exceptions, nothing is written."""
+        saved, success_count = write_scraped_results_to_files(
+            [RuntimeError("all failed")], tmp_path
+        )
+        assert saved == []
+        assert success_count == 0
+
 
 # ===========================================================================
 # ── Tool validation / error paths ───────────────────────────────────────────
@@ -473,6 +490,24 @@ class TestScrapeAndCleanOtherUrlsToolArxivUrls:
         called_guidelines = mock_arxiv.call_args[0][1]
         assert called_guidelines == guideline_text
 
+    async def test_html_arxiv_url_routed_to_scrape_arxiv_url(self, tmp_path):
+        """/html/ arXiv URLs must route to scrape_arxiv_url, not scrape_urls_concurrently."""
+        html_url = "https://arxiv.org/html/2309.02427"
+        research_path = _make_valid_dir(tmp_path, all_urls=[html_url])
+        fake_arxiv_result = _fake_result(html_url)
+
+        with patch(_SCRAPE_CONCURRENTLY_PATCH, AsyncMock(return_value=[])) as mock_sc, \
+             patch(_SCRAPE_ARXIV_PATCH, AsyncMock(return_value=fake_arxiv_result)) as mock_ax, \
+             patch(_GET_CHAT_MODEL_PATCH, return_value=FakeLLM()):
+            result = await sacoU_mod.scrape_and_clean_other_urls_tool(str(research_path))
+
+        mock_ax.assert_awaited_once()
+        assert mock_ax.call_args[0][0] == html_url
+        # scrape_urls_concurrently must receive an empty non-arxiv list
+        called_other_urls = mock_sc.call_args[0][0]
+        assert html_url not in called_other_urls
+        assert result["files_saved"] == 1
+
 
 # ===========================================================================
 # ── Mixed URL types ──────────────────────────────────────────────────────────
@@ -505,8 +540,8 @@ class TestScrapeAndCleanOtherUrlsToolMixed:
 
         assert result["status"] == "success"
 
-    async def test_urls_total_reflects_only_other_urls(self, tmp_path):
-        """urls_total in the return dict counts non-arxiv URLs attempted."""
+    async def test_urls_total_includes_arxiv_and_other_urls(self, tmp_path):
+        """urls_total in the return dict counts all attempted URLs (arxiv + non-arxiv)."""
         research_path = _make_valid_dir(tmp_path, all_urls=[OTHER_URL, ARXIV_URL])
 
         with patch(_SCRAPE_CONCURRENTLY_PATCH, AsyncMock(return_value=[_fake_result(OTHER_URL)])), \
@@ -514,8 +549,8 @@ class TestScrapeAndCleanOtherUrlsToolMixed:
              patch(_GET_CHAT_MODEL_PATCH, return_value=FakeLLM()):
             result = await sacoU_mod.scrape_and_clean_other_urls_tool(str(research_path))
 
-        # urls_total = len(other_urls) = 1 (just the non-arxiv URL)
-        assert result["urls_total"] == 1
+        # urls_total = len(other_urls) + len(arxiv_urls) = 1 + 1 = 2
+        assert result["urls_total"] == 2
 
     async def test_output_dir_holds_files_for_both_types(self, tmp_path):
         research_path = _make_valid_dir(tmp_path, all_urls=[OTHER_URL, ARXIV_URL])

@@ -34,7 +34,7 @@ def extract_guidelines_urls_tool(research_folder: str) -> Dict[str, Any]:
     Returns:
         Dict with status, extraction results, and output file path
     """
-    logger.debug(f"Extracting URLs from article guidelines in: {research_folder}")
+    logger.info(f"Extracting URLs from article guidelines in: {research_folder}")
 
     # Convert to Path object
     research_path = Path(research_folder)

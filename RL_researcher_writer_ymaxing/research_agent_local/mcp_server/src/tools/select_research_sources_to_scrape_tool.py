@@ -34,7 +34,7 @@ async def select_research_sources_to_scrape_tool(research_directory: str, max_so
     Returns:
         Dict with status, selection results, file paths, and reasoning for the selection
     """
-    logger.debug(f"Selecting research sources to scrape from: {research_directory}")
+    logger.info(f"Selecting research sources to scrape from: {research_directory}")
 
     # Convert to Path object
     research_path = Path(research_directory)

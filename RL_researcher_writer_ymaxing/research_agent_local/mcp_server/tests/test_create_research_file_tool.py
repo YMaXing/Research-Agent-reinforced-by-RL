@@ -216,6 +216,46 @@ class TestCreateResearchFileToolFallback:
         content = (research_dir / RESEARCH_MD_FILE).read_text(encoding="utf-8")
         assert 'file="sample.md"' in content
 
+    def test_scraped_file_with_heading_in_code_fence_uses_fallback_title(self, tmp_path):
+        """A scraped file whose only heading is inside a code fence should use the
+        filename stem as the collapsible title, not the fenced heading."""
+        research_dir = self._setup_fallback(tmp_path)
+        output_dir = research_dir / RESEARCH_OUTPUT_FOLDER
+        fenced_file = output_dir / URLS_FROM_RESEARCH_FOLDER / "arxiv-article.md"
+        fenced_file.write_text(
+            "Phase: [EXPLOITATION]\n\n"
+            "```markdown\n## 1 Introduction\nFenced content\n```\n",
+            encoding="utf-8",
+        )
+
+        create_research_file_tool(str(research_dir))
+
+        content = (research_dir / RESEARCH_MD_FILE).read_text(encoding="utf-8")
+        # The title should be the filename stem, not '1 Introduction'
+        assert "<summary>arxiv-article</summary>" in content
+        assert "<summary>1 Introduction</summary>" not in content
+
+    def test_scraped_file_with_unclosed_code_fence_closes_before_details(self, tmp_path):
+        """A scraped file with an unclosed code fence must have it closed before
+        </details> so that subsequent sections are not swallowed."""
+        research_dir = self._setup_fallback(tmp_path)
+        output_dir = research_dir / RESEARCH_OUTPUT_FOLDER
+        unclosed_file = output_dir / URLS_FROM_RESEARCH_FOLDER / "unclosed.md"
+        unclosed_file.write_text(
+            "# Real Heading\n\n```markdown\n## Section\nContent without closing fence",
+            encoding="utf-8",
+        )
+
+        create_research_file_tool(str(research_dir))
+
+        content = (research_dir / RESEARCH_MD_FILE).read_text(encoding="utf-8")
+        # The closing ``` must appear before </details> for this block
+        unclosed_block_start = content.index('file="unclosed.md"')
+        block_slice = content[unclosed_block_start:]
+        fence_close_pos = block_slice.index("```\n\n</details>")
+        details_pos = block_slice.index("</details>")
+        assert fence_close_pos < details_pos
+
     def test_fallback_includes_local_files_section(self, tmp_path):
         """Local files should appear in the fallback output."""
         research_dir = self._setup_fallback(tmp_path)

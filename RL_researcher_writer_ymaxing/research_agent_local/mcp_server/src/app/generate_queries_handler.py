@@ -67,7 +67,7 @@ async def generate_queries_with_reasons(
     )
 
     chat_llm = get_chat_model(settings.query_generation_model, GeneratedQueries)
-    logger.debug("Generating candidate queries")
+    logger.info("Generating candidate queries")
 
     try:
         response = await chat_llm.ainvoke(prompt)
@@ -115,7 +115,7 @@ async def generate_complementary_queries_with_reasons(
     )
 
     chat_llm = get_chat_model(settings.query_generation_model, GeneratedQueries)
-    logger.debug(f"Generating complementary queries (Depth {depth_pct}% / Breadth {breadth_pct}%)")
+    logger.info(f"Generating complementary queries (Depth {depth_pct}% / Breadth {breadth_pct}%)")
 
     try:
         response = await chat_llm.ainvoke(prompt)

@@ -21,6 +21,14 @@ logger = logging.getLogger(__name__)
 # 5 minutes: 300000, 1 hour: 3600000, 1 day: 86400000, 1 week: 604800000
 MAX_AGE_ONE_WEEK = 604800000  # 1 week in milliseconds for 500% faster scraping
 
+# LLM cleaning is skipped above this token count.
+# grok-4-1-fast-reasoning has a limited combined context window: once the input
+# (article + guidelines + prompt template) exceeds ~11K tokens, there is almost
+# no room left for the output, causing the model to truncate mid-sentence.
+# Firecrawl already strips most boilerplate for large articles, so skipping
+# LLM cleaning and applying only the image-URL conversion is safe.
+MAX_TOKENS_FOR_LLM_CLEANING = settings.max_tokens_for_llm_cleaning
+
 
 def slugify(text: str, max_length: int = 60) -> str:
     """Convert text to a filesystem-friendly slug."""
@@ -147,7 +155,7 @@ async def scrape_arxiv_url(
     3. Falls back to Firecrawl if arxiv2markdown fails.
     4. Then runs the normal clean_markdown step.
     """
-    logger.debug(f"🔬 Detected arXiv URL, using arxiv2markdown: {url}")
+    logger.info(f"🔬 Detected arXiv URL, using arxiv2markdown: {url}")
 
     try:
         # Primary path: arxiv2markdown
@@ -170,9 +178,15 @@ async def scrape_arxiv_url(
         raw_md = result.content
         logger.info(f"✅ arxiv2markdown succeeded for {url}")
 
-        # === NEW: Automatic LLM post-processing for LaTeX quirks ===
-        if raw_md.strip():
-            logger.debug(f"🧼 Running arXiv-specific LaTeX cleanup on {url}")
+        # Automatic LLM post-processing for LaTeX quirks — skipped for large papers.
+        # arxiv2markdown output for long papers (e.g. 50K+ tokens) already exceeds
+        # the model's combined context window, causing the output to be truncated
+        # mid-sentence. arxiv2markdown already produces clean Markdown for large
+        # papers, so skipping the LLM pass and keeping the raw output is the right
+        # trade-off.
+        raw_token_count = chat_model.get_num_tokens(raw_md) if raw_md.strip() else 0
+        if raw_md.strip() and raw_token_count <= MAX_TOKENS_FOR_LLM_CLEANING:
+            logger.info(f"🧼 Running arXiv-specific LaTeX cleanup on {url}")
             # Use .replace() instead of .format() to avoid KeyError when the
             # paper content itself contains {…} patterns (e.g. LaTeX environments
             # like "{equation}" rendered by arxiv2markdown).
@@ -184,11 +198,13 @@ async def scrape_arxiv_url(
             try:
                 response = await chat_model.ainvoke(clean_prompt)
                 cleaned_md = response.content if hasattr(response, "content") else str(response)
-                logger.debug(f"✅ arXiv LaTeX cleanup completed for {url}")
+                logger.info(f"✅ arXiv LaTeX cleanup completed for {url}")
             except Exception as e:
                 logger.warning(f"arXiv cleanup LLM failed for {url}: {e}. Using raw output.")
                 cleaned_md = raw_md
         else:
+            if raw_token_count > MAX_TOKENS_FOR_LLM_CLEANING:
+                logger.info(f"⏭️ Skipping LLM cleanup for {url} ({raw_token_count} tokens > {MAX_TOKENS_FOR_LLM_CLEANING} threshold). Using raw arxiv2markdown output.")
             cleaned_md = raw_md
 
         scraped = {
@@ -200,13 +216,16 @@ async def scrape_arxiv_url(
     except Exception as e:
         logger.warning(f"arxiv2markdown failed for {url}: {e}. Falling back to Firecrawl.")
         scraped = await _fallback_firecrawl_scrape(url)
-
-    # Always run the regular cleaning step (image conversion, guideline-based filtering)
-    if scraped.get("success", False):
-        final_cleaned = await clean_markdown(
-            scraped["markdown"], article_guidelines, url, chat_model
-        )
-        scraped["markdown"] = final_cleaned
+        # Run the regular web-page cleaning step only for the Firecrawl fallback path,
+        # since arxiv2markdown output does not contain web-page boilerplate and the
+        # PROMPT_CLEAN_ARXIV_MARKDOWN step already handled all necessary cleanup.
+        # Skipping this for the primary path prevents a second full-paper LLM pass
+        # that would truncate long articles due to output-token limits.
+        if scraped.get("success", False):
+            final_cleaned = await clean_markdown(
+                scraped["markdown"], article_guidelines, url, chat_model
+            )
+            scraped["markdown"] = final_cleaned
 
     return scraped
 
@@ -264,13 +283,21 @@ async def scrape_and_clean(url: str, article_guidelines: str, firecrawl_app: Asy
     status_marker = "✓" if scraped["success"] else "✗"
     number_of_tokens = chat_model.get_num_tokens(scraped["markdown"])
     token_info = f" ({number_of_tokens} tokens)"
-    logger.debug(f"📥 Scraped: {url} {status_marker}{token_info}")
+    logger.info(f"📥 Scraped: {url} {status_marker}{token_info}")
     if scraped["success"]:
-        cleaned_md = await clean_markdown(scraped["markdown"], article_guidelines, url, chat_model)
+        if number_of_tokens > MAX_TOKENS_FOR_LLM_CLEANING:
+            # Skip LLM cleaning: article is too large for the model's combined
+            # context window — the output would be truncated mid-content.
+            # Firecrawl already removes most boilerplate, so just apply the
+            # image-URL conversion and keep everything else verbatim.
+            logger.info(f"⏭️ Skipping LLM cleaning for {url} ({number_of_tokens} tokens > {MAX_TOKENS_FOR_LLM_CLEANING} threshold)")
+            cleaned_md = convert_markdown_images_to_urls(scraped["markdown"])
+        else:
+            cleaned_md = await clean_markdown(scraped["markdown"], article_guidelines, url, chat_model)
         scraped["markdown"] = cleaned_md
         number_of_tokens = chat_model.get_num_tokens(scraped["markdown"])
-        token_info = f" (tokens reduced to {number_of_tokens})"
-        logger.debug(f"🧼 Cleaned: {url} {token_info}")
+        token_info = f" (tokens: {number_of_tokens})"
+        logger.info(f"🧼 Cleaned: {url} {token_info}")
     return scraped
 
 
@@ -291,7 +318,7 @@ async def scrape_urls_concurrently(
     # Initialize clients
     firecrawl_app = AsyncFirecrawl(api_key=settings.firecrawl_api_key.get_secret_value())
     chat_model = get_chat_model(settings.scraping_model)
-    logger.debug(f"Starting scraping of {len(other_urls)} URL(s) with a concurrency limit of {concurrency_limit}...")
+    logger.info(f"Starting scraping of {len(other_urls)} URL(s) with a concurrency limit of {concurrency_limit}...")
 
     semaphore = asyncio.Semaphore(concurrency_limit)
 

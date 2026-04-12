@@ -38,7 +38,7 @@ async def deduplicate_research_content(research_path:Path, output_path:Path) -> 
             content = read_file_safe(f)
             if content:
                 sources_collected.append(f'<golden_source type="guideline_url" file="{f.name}">\n{content}\n</golden_source>')
-                logger.debug(f"Added guideline source: {f.name}")
+                logger.info(f"Added guideline source: {f.name}")
             else:
                 logger.warning(f"Empty or failed to read guideline source: {f}")
 
@@ -56,7 +56,7 @@ async def deduplicate_research_content(research_path:Path, output_path:Path) -> 
                 content = read_file_safe(f)
                 if content:
                     sources_collected.append(f'<golden_source type="{xml_type}" file="{f.name}">\n{content}\n</golden_source>')
-                    logger.debug(f"Added {folder_name} source: {f.name}")
+                    logger.info(f"Added {folder_name} source: {f.name}")
                 else:
                     logger.warning(f"Empty or failed to read {folder_name} source: {f}")
 
@@ -71,7 +71,7 @@ async def deduplicate_research_content(research_path:Path, output_path:Path) -> 
                 first_line = content.split("\n", 1)[0]
                 phase = "exploration" if (first_line.startswith("Phase:") and "[EXPLORATION]" in first_line) else "exploitation"
                 sources_collected.append(f'<research_source phase="{phase}" file="{f.name}">\n{content}\n</research_source>')
-                logger.debug(f"Added research URL source: {f.name} (phase: {phase})")
+                logger.info(f"Added research URL source: {f.name} (phase: {phase})")
             else:
                 logger.warning(f"Empty or failed to read research URL source: {f}")
 
