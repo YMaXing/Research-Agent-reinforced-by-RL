@@ -21,16 +21,8 @@ logger = logging.getLogger(__name__)
 # 5 minutes: 300000, 1 hour: 3600000, 1 day: 86400000, 1 week: 604800000
 MAX_AGE_ONE_WEEK = 604800000  # 1 week in milliseconds for 500% faster scraping
 
-# LLM cleaning uses two models depending on article size:
-# - Small articles (≤ MAX_TOKENS_FOR_LLM_CLEANING): cleaned by settings.scraping_model
-#   (e.g. grok-4-1-fast-reasoning), which has a limited combined context window.
-#   Once the input (article + guidelines + prompt) exceeds ~11K tokens there is
-#   almost no room for the output, causing truncation mid-sentence.
-# - Large articles (> MAX_TOKENS_FOR_LLM_CLEANING): cleaned by
-#   settings.large_article_scraping_model (default: gemini-2.5-flash), which
-#   supports a 1M token input context window and can handle full articles in
-#   a single pass without truncation.
-MAX_TOKENS_FOR_LLM_CLEANING = settings.max_tokens_for_llm_cleaning
+# LLM cleaning uses settings.scraping_model (default: gemini-2.5-flash) which has a
+# 1M token context window and handles all article sizes in a single pass.
 
 
 def slugify(text: str, max_length: int = 60) -> str:
@@ -187,8 +179,7 @@ async def scrape_arxiv_url(
         # mid-sentence. arxiv2markdown already produces clean Markdown for large
         # papers, so skipping the LLM pass and keeping the raw output is the right
         # trade-off.
-        raw_token_count = chat_model.get_num_tokens(raw_md) if raw_md.strip() else 0
-        if raw_md.strip() and raw_token_count <= MAX_TOKENS_FOR_LLM_CLEANING:
+        if raw_md.strip():
             logger.info(f"🧼 Running arXiv-specific LaTeX cleanup on {url}")
             # Use .replace() instead of .format() to avoid KeyError when the
             # paper content itself contains {…} patterns (e.g. LaTeX environments
@@ -206,27 +197,7 @@ async def scrape_arxiv_url(
                 logger.warning(f"arXiv cleanup LLM failed for {url}: {e}. Using raw output.")
                 cleaned_md = raw_md
         else:
-            if raw_token_count > MAX_TOKENS_FOR_LLM_CLEANING:
-                logger.info(
-                    f"🔄 arXiv paper too large for {settings.scraping_model} "
-                    f"({raw_token_count} tokens > {MAX_TOKENS_FOR_LLM_CLEANING} threshold). "
-                    f"Using {settings.large_article_scraping_model} for cleanup."
-                )
-                large_chat_model = get_chat_model(settings.large_article_scraping_model)
-                large_clean_prompt = (
-                    PROMPT_CLEAN_ARXIV_MARKDOWN
-                    .replace("{article_guidelines}", article_guidelines or "<none>")
-                    .replace("{arxiv_markdown}", raw_md)
-                )
-                try:
-                    response = await large_chat_model.ainvoke(large_clean_prompt)
-                    cleaned_md = response.content if hasattr(response, "content") else str(response)
-                    logger.info(f"✅ arXiv LaTeX cleanup (large model) completed for {url}")
-                except Exception as e:
-                    logger.warning(f"arXiv cleanup (large model) failed for {url}: {e}. Using raw output.")
-                    cleaned_md = raw_md
-            else:
-                cleaned_md = raw_md
+            cleaned_md = raw_md
 
         scraped = {
             "url": url,
@@ -306,19 +277,7 @@ async def scrape_and_clean(url: str, article_guidelines: str, firecrawl_app: Asy
     token_info = f" ({number_of_tokens} tokens)"
     logger.info(f"📥 Scraped: {url} {status_marker}{token_info}")
     if scraped["success"]:
-        if number_of_tokens > MAX_TOKENS_FOR_LLM_CLEANING:
-            # Article exceeds the default scraping model's context window.
-            # Route to the large-article model (e.g. gemini-2.5-flash, 1M tokens)
-            # so the full content is cleaned in a single pass without truncation.
-            logger.info(
-                f"🔄 Article too large for {settings.scraping_model} "
-                f"({number_of_tokens} tokens > {MAX_TOKENS_FOR_LLM_CLEANING} threshold). "
-                f"Using {settings.large_article_scraping_model} for cleaning."
-            )
-            large_chat_model = get_chat_model(settings.large_article_scraping_model)
-            cleaned_md = await clean_markdown(scraped["markdown"], article_guidelines, url, large_chat_model)
-        else:
-            cleaned_md = await clean_markdown(scraped["markdown"], article_guidelines, url, chat_model)
+        cleaned_md = await clean_markdown(scraped["markdown"], article_guidelines, url, chat_model)
         scraped["markdown"] = cleaned_md
         number_of_tokens = chat_model.get_num_tokens(scraped["markdown"])
         token_info = f" (tokens: {number_of_tokens})"

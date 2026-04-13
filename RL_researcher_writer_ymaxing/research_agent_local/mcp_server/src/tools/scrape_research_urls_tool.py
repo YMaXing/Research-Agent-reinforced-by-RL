@@ -195,12 +195,20 @@ def write_scraped_results_to_files(
         if res.get("success", False):
             successful_scrapes += 1
 
+        md_body = cleaned_markdown or ""
+        # Inject H1 title so _extract_page_heading() has a readable collapsible
+        # summary even when LLM cleaning removed the article's heading.
+        if title and title.lower() not in {"n/a", "scraping timeout", "scraping failed", ""} and not any(
+            ln.strip().startswith("#") for ln in md_body.splitlines()
+        ):
+            md_body = f"# {title}\n\n{md_body}"
+
         url_header = f"**Source URL:** <{url}>\n\n" if url else ""
         if url_to_phase:
             phase = url_to_phase.get(url, "[EXPLOITATION]")
-            cleaned_markdown = f"Phase: {phase}\n\n{url_header}" + (cleaned_markdown or "")
+            cleaned_markdown = f"Phase: {phase}\n\n{url_header}{md_body}"
         else:
-            cleaned_markdown = url_header + (cleaned_markdown or "")
+            cleaned_markdown = url_header + md_body
 
         filename = build_filename(title, url, existing_names)
         output_path = output_dir / filename

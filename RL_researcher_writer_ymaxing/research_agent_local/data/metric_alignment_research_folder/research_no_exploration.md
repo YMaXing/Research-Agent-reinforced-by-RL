@@ -2314,13 +2314,11 @@ Phase: [EXPLOITATION]
 
 **Source URL:** <https://www.emotionmachine.com/blog/how-memory-works>
 
-```
 This is a walkthrough of how we built memory at Emotion Machine, from our first pgvector-backed semantic memory through a ChatGPT-style scratchpad to a full filesystem-based context system for agentic workflows. Three versions, each one a response to the limitations of the last, each one shaped by a different mental model of what "memory" should mean for an AI companion.
 
 I'm writing this partly to document what we've built and partly because the broader field is moving fast and I want to have our own reference point for where we stand relative to it. The memory problem in AI companions is, in my view, the single hardest product problem in this space. The question that matters most is what to remember, when to remember it, and how to surface it without making the companion feel like it's reading from a dossier.
 
 * * *
-```
 
 ## The landscape
 
@@ -2358,7 +2356,236 @@ The knowledge base (document retrieval for PDFs, FAQs, reference material) runs 
 
 ```
                               V1: pgvector memory
+
+  Conversation Turn
+        │
+        ▼
+  ┌─────────────┐    no     ┌──────────────────┐
+  │ Gate check: │───────────│  Skip retrieval,  │
+  │ should we   │           │  respond directly │
+  │ retrieve?   │           └──────────────────┘
+  └─────┬───────┘
+        │ yes
+        ▼
+  ┌─────────────┐           ┌──────────────────┐
+  │  Embed      │──────────▶│  pgvector HNSW   │
+  │  query      │           │  ~300 candidates  │
+  └─────────────┘           └────────┬─────────┘
+                                     │
+                                     ▼
+                            ┌──────────────────┐
+                            │  Re-rank:        │
+                            │  sim × importance │
+                            │  × weight × decay│
+                            └────────┬─────────┘
+                                     │
+                                     ▼
+                            ┌──────────────────┐
+                            │  Top-k memories  │
+                            │  → system prompt │
+                            └──────────────────┘
+
+  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─
+
+  Async Ingestion (background, never blocks user)
+
+  User/Assistant message
+        │
+        ▼
+  ┌─────────────┐           ┌──────────────────┐
+  │ LLM scores  │──────────▶│  Heuristic floor  │
+  │ importance  │           │  (identity: 0.85  │
+  │ (1-10)      │           │   goals: 0.75...) │
+  └─────────────┘           └────────┬─────────┘
+                                     │ above threshold?
+                                     ▼
+                            ┌──────────────────┐
+                            │  Embed + store   │
+                            │  in pgvector     │
+                            └──────────────────┘
 ```
+
+V1 works. It's been in production, it handles the basics of "remember what the user told you" competently. But it has real limitations:
+
+1. Selective retrieval means the companion can miss things that are important but don't match the current query embedding well. You can crank up top\_k, but then you're injecting a lot of marginal memories into the context window.
+2. The importance scoring adds latency and cost to ingestion, and the rubric doesn't always map to what matters for a specific companion use case, it needs to be adjusted.
+
+* * *
+
+## V2: the scratchpad
+
+V2 was inspired by ChatGPT's memory. The core insight: instead of selectively retrieving from a large pool via vector search, just maintain a small, curated list of semantic entries and inject the entire thing into the system prompt every turn.
+
+V2's bigger shift was moving from "companions and conversations" to "relationships." A Relationship is the unit of persistent state: one user paired with one companion, surviving across sessions, devices, and time. Each relationship carries three buckets of state: a developer-owned Profile (structured data that persists forever), Memory (the scratchpad, semantic entries, also forever), and Session State (temporary, cleared when session ends).
+
+The scratchpad itself is a flat list of typed entries. Each entry has content, a type (identity, preference, goal, event, relationship, other), and timestamps. After every conversation turn, an async Modal worker runs: it fetches the current entries, feeds them along with the latest user/assistant messages to an LLM (default: gemini-2.0-flash), and the LLM returns a JSON blob of operations: add new entries, update existing ones, delete stale ones. The whole thing runs in the background, never blocking the user response.
+
+Retrieval is simple: load all entries, format as a bulleted list, inject into the system prompt. No gating, no vector search, no relevance scoring. The entire scratchpad is always visible to the companion. This trades off scalability (you can't have 10,000 entries in the scratchpad) for simplicity and full context visibility.
+
+Developer customization is straightforward. You can override the ingestion prompt to control what gets stored, when, and how. You can specify entry types with examples: "Memory type: personal relation → Mark has a happy friendship with his sister, Ana." "Memory type: major event → Mark got into college at MIT." Users can also directly ADD, UPDATE, DELETE entries through the API or UI.
+
+Context assembly in V2 became a layered system. Bottom up: core system prompt, priority behavior injections, memory context (V1 retrieved or V2 full scratchpad), knowledge context (if relevant), profile, session state, recent messages, current user message. Each layer is independently pluggable. The orchestrator runs them in parallel and composes the final prompt.
+
+V2 also introduced the behavior system (priority behaviors that inject into prompt before LLM runs, async behaviors that fire after), auto-summarization (incremental summaries at 200/400/600 messages), and a config cascade (turn > relationship > companion). These aren't memory per se, but they're part of the same context engineering problem.
+
+```
+                            V2: scratchpad memory
+
+  Every Conversation Turn
+        │
+        ├───────────────────────────────────────┐
+        │                                       │
+        ▼                                       ▼
+  ┌─────────────┐                     ┌──────────────────┐
+  │ Load full   │                     │ Async worker     │
+  │ scratchpad  │                     │ (background)     │
+  │ (cached 30s)│                     │                  │
+  └──────┬──────┘                     │ Feeds turn to LLM│
+         │                            │        │         │
+         ▼                            │        ▼         │
+  ┌──────────────┐                    │ ┌──────────────┐ │
+  │ Format as    │                    │ │ LLM returns  │ │
+  │ bullet list  │                    │ │ operations:  │ │
+  │              │                    │ │  ADD / UPDATE│ │
+  │ Inject into  │                    │ │  / DELETE    │ │
+  │ system prompt│                    │ └──────┬───────┘ │
+  │ (all entries)│                    │        │         │
+  └──────┬──────┘                     │        ▼         │
+         │                            │ ┌──────────────┐ │
+         ▼                            │ │ Apply ops    │ │
+  ┌──────────────┐                    │ │ to DB        │ │
+  │ LLM responds │                    │ └──────────────┘ │
+  │ with full    │                    └──────────────────┘
+  │ memory       │
+  │ visibility   │
+  └──────────────┘
+
+  Scratchpad entries: [ identity | preference | goal | event | relationship | other ]
+  Sorted by: last modified (newest first)
+```
+
+The trade-offs of V2 vs V1:
+
+- V2 is simpler, gives full visibility, and makes it easy to reason about what the companion "knows" at any given moment. V1 is better for large memory stores where you can't inject everything.
+- V2's LLM-managed ADD/UPDATE/DELETE is more intuitive than V1's importance scoring. The LLM decides what's worth keeping, not a rubric.
+- V2 is per-relationship (correct abstraction). V1 was per-companion (wrong abstraction, fixed later).
+- V2's weakness is scale. If a relationship generates hundreds of entries, you're burning tokens on the full list every turn. But given how much context is fed to agents context window already, this might not be an issue. V1 only scales better here because it's selective but it will be noisy.
+
+* * *
+
+## V3: the filesystem
+
+V3 is a different animal. It emerged from the shift to agent mode, where the companion autonomously performs complex tasks (research, tool use, multi-step workflows) inside a sandboxed environment. The memory system had to change because the interaction model changed. Agents need to navigate information on demand.
+
+The core idea: materialize all context as real files in a Modal Volume mounted at `/em/`. Actual files on disk that the agent browses with bash. `ls /em/memory/`, `grep "preference" /em/profile/user.yaml`, `cat /em/tools/weather_api/spec.yaml`. This works because LLMs are post-trained extensively on code and CLI operations. They know how to navigate filesystems. Letta's benchmarks confirmed this: `grep` and `ls` outperform specialized memory/retrieval tools.
+
+The filesystem structure:
+
+```
+/em/
+├── memory/
+│   ├── hot_context.md      # agent-curated relationship summary
+│   └── scratchpad.md       # session working notes
+├── knowledge/documents/    # uploaded PDFs, docs
+├── profile/user.yaml       # user profile
+├── workspace/
+│   ├── AGENTS.md           # developer-defined guidelines
+│   └── outputs/            # agent-generated files
+├── tools/                  # em-provided, developer, agent-created
+├── .claude/skills/         # Claude Code SDK skills
+├── .git/                   # version control
+└── .locks/                 # concurrency control
+```
+
+The most important file in this structure is `hot_context.md`. It's an agent-curated summary of the relationship state (user profile, recent context, key preferences, active tasks, important facts) kept to around 500 words. After each agent session, a curation step runs: the agent reads the current hot\_context, looks at what just happened in the session, and updates the file with new learnings. This gets synced to a database cache (`relationship_context_cache` table), so chat mode can read it in ~1ms without touching the volume.
+
+```
+                     V3: hot_context lifecycle
+
+  ┌──────────────────────────────────────────────────────────┐
+  │                    Modal Volume /em/                      │
+  │                                                          │
+  │  memory/hot_context.md    profile/user.yaml   tools/     │
+  │  memory/scratchpad.md     workspace/AGENTS.md  .claude/  │
+  └────────────┬──────────────────────┬──────────────────────┘
+               │                      │
+       ┌───────┴───────┐      ┌───────┴───────┐
+       │  Agent Mode   │      │  Chat Mode    │
+       │               │      │               │
+       │  Agent reads  │      │  Reads from   │
+       │  /em/ with    │      │  DB cache     │
+       │  bash (ls,    │      │  (~1ms)       │
+       │  grep, cat)   │      │               │
+       │       │       │      └───────────────┘
+       │       ▼       │              ▲
+       │  Does work,   │              │
+       │  updates files│              │
+       │       │       │              │
+       │       ▼       │              │
+       │ ┌───────────┐ │     ┌────────┴────────┐
+       │ │ Curation  │ │     │  DB cache:      │
+       │ │ step:     │─┼────▶│  relationship_  │
+       │ │ update    │ │     │  context_cache  │
+       │ │ hot_ctx   │ │     │  (sync on end)  │
+       │ └───────────┘ │     └─────────────────┘
+       └───────────────┘
+
+  Pre-hydrate:  DB → Volume (before sandbox)
+  Sandbox exec: Agent in /em/, tools via Gateway
+  Post-sync:    Volume → DB (after sandbox, conflict detection)
+```
+
+The curation pattern is the key innovation of V3's memory approach. Instead of a scoring rubric (V1) or an LLM-managed entry list (V2), the agent itself decides what's important enough to surface in the global context. This is the "structured note-taking" pattern.
+
+The lifecycle of an agent session follows this pattern: pre-hydrate (DB → Volume, load hot\_context, profile, AGENTS.md, track start versions), execute in sandboxes (agent operates in dedicated directory, no DB calls inside, tools via em-tool CLI → Gateway HTTPS) and finally sync with databases.
+
+Concurrency was a real concern. What happens when multiple agent sessions run for the same relationship? Git worktrees. Each session gets its own branch and worktree under `/em/.worktrees/session-{'{id}'}/`. On completion, the branch merges back to main with conflict resolution. File-based locks prevent race conditions. It works and it's well-understood.
+
+Conflict resolution between chat updates and agent sessions is handled by the curation step. If the DB version of hot\_context is newer than the start version (meaning chat updated it while the agent was running), the curation prompt includes both versions and the LLM naturally merges them.
+
+* * *
+
+## What coexists
+
+These systems don't replace each other cleanly. They serve different purposes and coexist:
+
+- **Memory V1/V2**: personal memory about the user. Facts, preferences, goals, life events. V1 for large stores with selective retrieval, V2 for simpler full-visibility scratchpads.
+- **Knowledge Base** (OpenAI Vector Store): document retrieval. PDFs, FAQs, reference material. Classic RAG, separate from personal memory.
+- **Hot Context** (V3): agent-curated relationship summary for fast chat reads. The "working memory" of the relationship.
+- **Conversation Summaries**: incremental summarization at message count thresholds (200, 400, 600). Compaction for long-running relationships.
+
+All memory ingestion is async and never blocks the user response. Context assembly is layered and pluggable. Each source of context (core prompt, memory, knowledge, tools, behaviors) is an independently enabling layer that runs in parallel.
+
+* * *
+
+## What's still open
+
+1. **Consolidation and forgetting**: scratchpad entries accumulate over time. We don't have a great mechanism for merging related entries into higher-level summaries, and forgetting is arguably the hardest unsolved challenge in agent memory right now. That said, we intentionally kept the scratchpad open and extensible so developers can implement their own summarization and forgetting strategies on top of it. The primitives are there. The right policies will vary by use case.
+2. **Fuzzy retrieval and temporal reasoning**: two ideas we think are promising but haven't implemented yet. Fuzzy retrieval would let the companion simulate imperfect memory ("Hmm, that rings a bell but I can't quite remember the details..."). Temporal reasoning would let the companion say things like "I know we talked about this previously and you might not have had the time to reflect on it" or "don't fret, we can come back to it another time." Both require reasoning about time intervals at different resolutions, from seconds to days.
+3. **Cross-relationship search**: V3 is per-relationship, which is correct for privacy. But there are use cases where patterns across relationships (at the companion level) would be valuable. This might need pgvector at the V3 level.
+4. **Checkpoint restore**: Modal's `snapshot_filesystem()` doesn't capture mounted volumes, so we can't restore agent sessions to previous checkpoints. Git-based checkpoints or S3 tarballs are options, but neither is great.
+
+* * *
+
+## Where I think this is going
+
+I see the filesystem approach as the right abstraction for agent-mode memory. Models understand files natively, the developer experience is intuitive (just put an AGENTS.md in the right place), and the approach scales naturally. The agent loads what it needs rather than everything getting injected upfront.
+
+For most companion use cases, V2 is probably what you want. A scratchpad that the LLM manages, injected fully into every turn, with developer-customizable ingestion prompts to shape what gets stored. It's simple, it's fast, and it gives full visibility into what the companion knows. If you're building a coaching bot, a customer support companion, a language tutor, or any conversational product where the user comes back regularly, V2 handles it well. You don't need a filesystem or an agent sandbox for that.
+
+V3 and the hot\_context pattern become relevant when the companion needs to do real work: research tasks, multi-step tool use, file manipulation, things that require a sandboxed execution environment. In that world, hot\_context.md is the bridge. The agent curates it after each session, and chat mode reads it from a database cache in ~1ms. So you get the rich filesystem world of agent mode and the low-latency requirement of real-time chat working together.
+
+The hardest remaining problem is taste. What should a companion remember? What should it surface, and when? These are product questions that require deep understanding of the relationship between user and companion, and getting the "what to remember" question right matters more than any retrieval algorithm. I think the ingestion prompt customization in V2 and the AGENTS.md in V3 are our best current answers, giving companion developers the tools to shape memory behavior for their specific use case. But there's a lot more to figure out here.
+
+* * *
+
+## References
+
+1. Packer, C., Fang, V., Patil, S., Lin, K., Wooders, S., & Gonzalez, J. (2023). _MemGPT: Towards LLMs as Operating Systems_. [https://arxiv.org/pdf/2310.08560](https://arxiv.org/pdf/2310.08560)
+2. Xu, X., Gu, X., Mao, R., Li, Y., Bai, Q., & Zhu, L. _Everything is Context: Agentic File System Abstraction for Context Engineering_. [https://ar5iv.labs.arxiv.org/html/2512.05470](https://ar5iv.labs.arxiv.org/html/2512.05470)
+3. Anthropic. _Effective Context Engineering for AI Agents_. [https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) (Sep 2025)
+4. Letta (formerly MemGPT): [https://www.letta.com/](https://www.letta.com/)
+5. OpenAI Vector Stores API: [https://platform.openai.com/docs/assistants/tools/file-search](https://platform.openai.com/docs/assistants/tools/file-search)
 
 </details>
 

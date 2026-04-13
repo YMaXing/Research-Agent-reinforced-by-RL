@@ -57,7 +57,16 @@ def write_scraped_results_to_files(completed_results: List[dict], output_dir: Pa
         url_header = f"**Source URL:** <{url}>\n\n" if url else ""
         filename = build_filename(title, url, existing_names)
         output_path = output_dir / filename
-        output_path.write_text(url_header + (cleaned_markdown or ""), encoding="utf-8")
+        md_body = cleaned_markdown or ""
+        # Inject H1 title before the URL header so get_first_line_title() picks it up
+        # as the collapsible <summary> text when LLM cleaning removed the article H1.
+        if title and title.lower() not in {"n/a", "scraping timeout", "scraping failed", ""} and not any(
+            ln.strip().startswith("#") for ln in md_body.splitlines()
+        ):
+            file_content = f"# {title}\n\n{url_header}{md_body}"
+        else:
+            file_content = url_header + md_body
+        output_path.write_text(file_content, encoding="utf-8")
         saved_files.append(filename)
 
     return saved_files, successful_scrapes

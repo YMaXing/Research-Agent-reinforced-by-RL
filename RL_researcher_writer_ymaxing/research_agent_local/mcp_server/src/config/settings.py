@@ -38,16 +38,14 @@ class Settings(BaseSettings):
     n_exploration_queries_per_round: int = Field(default=4, alias="N_EXPLORATION_QUERIES_PER_ROUND", description="Number of exploration queries to generate per exploration round. Only applicable if maximum_exploration_rounds > 0.")
     maximum_sources_to_scrape: int = Field(default=6, alias="MAXIMUM_SOURCES_TO_SCRAPE", description="Maximum number of sources to scrape fully during research")
     enable_content_dedup: bool = Field(default=False, alias="ENABLE_CONTENT_DEDUP", description="Whether to run the content deduplication step (step 7). Set to false to feed the full raw research into the final file.")
-    max_tokens_for_llm_cleaning: int = Field(default=5000, alias="MAX_TOKENS_FOR_LLM_CLEANING", description="Maximum number of tokens for LLM cleaning. Articles exceeding this token count will be cleaned by large_article_scraping_model instead.")
     
     # LLM Configuration
     youtube_transcription_model: str = Field(default="gemini-2.5-flash", description="Model for YouTube transcription, only supported Gemini models")
-    scraping_model: str = Field(default="grok-4-1-fast-reasoning", description="Model for web scraping")
+    scraping_model: str = Field(default="gemini-2.5-flash", description="Model for web scraping")
     query_generation_model: str = Field(default="grok-4.20-reasoning", description="Model for query generation")
     search_enhancement_model: str = Field(default="grok-4-1-fast-non-reasoning", description="Model for search enhancement")
     source_selection_model: str = Field(default="grok-4.20-reasoning", description="Model for source selection")
     content_dedup_model: str = Field(default="grok-4-1-fast-reasoning", description="Model for content deduplication")
-    large_article_scraping_model: str = Field(default="gemini-2.5-flash", alias="LARGE_ARTICLE_SCRAPING_MODEL", description="Model used to clean articles exceeding MAX_TOKENS_FOR_LLM_CLEANING. Must have a large context window (e.g. gemini-2.5-flash with 1M token input).")
     
     # API Keys
     google_api_key: SecretStr | None = Field(

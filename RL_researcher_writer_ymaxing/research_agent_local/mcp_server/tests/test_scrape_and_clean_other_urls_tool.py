@@ -185,12 +185,14 @@ class TestWriteScrapedResultsToFiles:
     def test_empty_markdown_written_with_url_header(self, tmp_path):
         results = [{"url": "https://a.com", "title": "Empty", "markdown": "", "success": True}]
         saved, _ = write_scraped_results_to_files(results, tmp_path)
-        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == "**Source URL:** <https://a.com>\n\n"
+        # Title is injected as H1 before the URL header so get_first_line_title() captures it.
+        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == "# Empty\n\n**Source URL:** <https://a.com>\n\n"
 
     def test_none_markdown_written_with_url_header(self, tmp_path):
         results = [{"url": "https://a.com", "title": "NoMd", "markdown": None, "success": True}]
         saved, _ = write_scraped_results_to_files(results, tmp_path)
-        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == "**Source URL:** <https://a.com>\n\n"
+        # Title is injected as H1 before the URL header so get_first_line_title() captures it.
+        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == "# NoMd\n\n**Source URL:** <https://a.com>\n\n"
 
     def test_empty_results_list(self, tmp_path):
         saved, success_count = write_scraped_results_to_files([], tmp_path)
@@ -224,6 +226,21 @@ class TestWriteScrapedResultsToFiles:
         )
         assert saved == []
         assert success_count == 0
+
+    def test_missing_h1_injects_metadata_title(self, tmp_path):
+        """When cleaned markdown has no heading, the Firecrawl metadata title is injected as H1."""
+        results = [{"url": "https://a.com", "title": "My Article", "markdown": "Some body text.", "success": True}]
+        saved, _ = write_scraped_results_to_files(results, tmp_path)
+        content = (tmp_path / saved[0]).read_text(encoding="utf-8")
+        assert content.startswith("# My Article\n\n")
+
+    def test_existing_h1_not_duplicated(self, tmp_path):
+        """When cleaned markdown already has a heading, no extra H1 is injected."""
+        results = [{"url": "https://a.com", "title": "My Article", "markdown": "# Existing Title\n\nBody.", "success": True}]
+        saved, _ = write_scraped_results_to_files(results, tmp_path)
+        content = (tmp_path / saved[0]).read_text(encoding="utf-8")
+        assert "# My Article" not in content
+        assert "# Existing Title" in content
 
 
 # ===========================================================================
