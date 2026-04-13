@@ -14,14 +14,25 @@ def markdown_collapsible(title: str, body: str) -> str:
 
 def get_first_line_title(markdown: str) -> str:
     """
-    Get the first non-empty line of markdown, remove leading '#' and whitespace.
-    If not found, return 'Untitled'.
+    Get the title from markdown content.
+
+    Prefers the first markdown heading (any level, outside code blocks).
+    Falls back to the first non-empty line with leading '#' stripped.
+    If neither is found, returns 'Untitled'.
     """
+    in_code_block = False
+    first_non_empty: str | None = None
     for line in markdown.splitlines():
-        line = line.strip()
-        if line:
-            return line.lstrip("#").strip() or "Untitled"
-    return "Untitled"
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_code_block = not in_code_block
+            continue
+        if not in_code_block and stripped:
+            if first_non_empty is None:
+                first_non_empty = stripped.lstrip("#").strip()
+            if stripped.startswith("#"):
+                return stripped.lstrip("#").strip() or "Untitled"
+    return first_non_empty or "Untitled"
 
 
 def build_research_results_section(grouped_queries: Dict[str, List[str]]) -> str:

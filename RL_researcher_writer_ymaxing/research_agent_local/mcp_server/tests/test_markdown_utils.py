@@ -101,6 +101,16 @@ class TestGetFirstLineTitle:
         result = get_first_line_title("# Title With Spaces   ")
         assert result == "Title With Spaces"
 
+    def test_heading_not_on_first_line_is_still_found(self):
+        """A '#' heading deeper in the file is preferred over the first non-heading line."""
+        result = get_first_line_title("**Source URL:** <https://a.com>\n\n# Article Title\n\ncontent")
+        assert result == "Article Title"
+
+    def test_subheading_not_on_first_line_is_still_found(self):
+        """A subheading deeper in the file is returned when first line is plain text."""
+        result = get_first_line_title("**Source URL:** <https://a.com>\n\n## Section Heading\n\ncontent")
+        assert result == "Section Heading"
+
 
 # ---------------------------------------------------------------------------
 # build_research_results_section

@@ -63,15 +63,16 @@ def _normalize_github_url(url: str) -> str:
     return normalized
 
 
-async def process_github_url(url: str, dest_folder: Path, token: str | None) -> bool:
+async def process_github_url(url: str, dest_folder: Path, token: str | None, title: str = "") -> bool:
     """Fetch a GitHub repository (or file) with gitingest and write a Markdown report."""
     ingestion_succeeded = False
     ingest_url = _normalize_github_url(url)
     try:
         summary, tree, content = await ingest_async(ingest_url, exclude_patterns="*.lock", token=token)
         ingestion_succeeded = True
+        heading = title if title else f"Repository analysis for {url}"
         md = (
-            f"# Repository analysis for {url}\n\n"
+            f"# {heading}\n\n"
             f"## Summary\n{summary}\n\n"
             f"## File tree\n```{tree}\n```\n\n"
             f"## Extracted content\n{content}"

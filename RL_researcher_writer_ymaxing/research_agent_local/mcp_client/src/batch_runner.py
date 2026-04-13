@@ -79,6 +79,7 @@ ARTICLE_GUIDELINE_FILENAME = "article_guideline.md"
 _RESEARCH_OUTPUT_FOLDER = ".research"
 _RESEARCH_MD_FILE = "research.md"
 _DEDUPLICATED_RESEARCH_FILE = "deduplicated_research.md"
+_URLS_FROM_RESEARCH_FOLDER = "urls_from_research"
 _NO_EXPLORATION_SUFFIX = "_no_exploration"
 
 # Kickoff suffix injected for each variant
@@ -118,12 +119,19 @@ def discover_samples(samples_dir: Path) -> List[Path]:
 
 def _rename_no_exploration_outputs(sample_dir: Path) -> None:
     """
-    After the exploitation-only run, rename the two output files so that the
+    After the exploitation-only run, rename output files/folders so that the
     subsequent exploration run can write fresh versions with the default names.
 
     Renames:
-        research.md                         → research_no_exploration.md
-        .research/deduplicated_research.md  → .research/deduplicated_research_no_exploration.md
+        research.md                              → research_no_exploration.md
+        .research/deduplicated_research.md       → .research/deduplicated_research_no_exploration.md
+        .research/urls_from_research/            → .research/urls_from_research_no_exploration/
+
+    The urls_from_research directory must be renamed so that the exploration
+    variant starts with an empty scrape folder.  Without this, variant 2 would
+    accumulate exploitation + exploration scraped files in the same directory,
+    causing create_research_file / deduplicate_research_content to include more
+    sources than MAXIMUM_SOURCES_TO_SCRAPE.
     """
     research_md = sample_dir / _RESEARCH_MD_FILE
     if research_md.exists():
@@ -138,6 +146,12 @@ def _rename_no_exploration_outputs(sample_dir: Path) -> None:
         )
         dedup_md.rename(dest)
         logging.info(f"Renamed {dedup_md.name} → {dest.name}")
+
+    urls_from_research_dir = sample_dir / _RESEARCH_OUTPUT_FOLDER / _URLS_FROM_RESEARCH_FOLDER
+    if urls_from_research_dir.exists():
+        dest = urls_from_research_dir.parent / f"{_URLS_FROM_RESEARCH_FOLDER}{_NO_EXPLORATION_SUFFIX}"
+        urls_from_research_dir.rename(dest)
+        logging.info(f"Renamed {urls_from_research_dir.name}/ → {dest.name}/")
 
 
 async def _run_variant(

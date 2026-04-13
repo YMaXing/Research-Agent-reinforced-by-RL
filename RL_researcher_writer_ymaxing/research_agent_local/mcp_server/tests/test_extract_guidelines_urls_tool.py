@@ -54,6 +54,7 @@ class TestExtractGuidelinesUrlsTool:
         assert "exploitation_github_urls" in data
         assert "exploitation_youtube_videos_urls" in data
         assert "exploitation_other_urls" in data
+        assert "url_titles" in data
 
     def test_golden_and_exploitation_sections_separated(self, tmp_path):
         text = (
@@ -94,6 +95,13 @@ class TestExtractGuidelinesUrlsTool:
         assert "https://arxiv.org/abs/9999.00001" in data["exploitation_other_urls"]
         assert "https://github.com/other/repo" in data["exploitation_github_urls"]
         assert "https://youtube.com/watch?v=other" in data["exploitation_youtube_videos_urls"]
+
+        # url_titles captures link text from all markdown links
+        assert "url_titles" in data
+        assert data["url_titles"].get("https://youtube.com/watch?v=gold") == "Gold YT"
+        assert data["url_titles"].get("https://github.com/gold/repo") == "Gold GH"
+        assert data["url_titles"].get("https://github.com/other/repo") == "Other GH"
+        assert data["url_titles"].get("https://youtube.com/watch?v=other") == "Other YT"
 
     def test_no_urls_no_files(self, tmp_path):
         research_dir = _setup_dir(tmp_path, "Just plain text, nothing to extract.")

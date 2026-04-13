@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict
 
-from ..app.guideline_extractions_handler import extract_local_paths, extract_urls_by_section
+from ..app.guideline_extractions_handler import extract_local_paths, extract_url_titles, extract_urls_by_section
 from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
     GUIDELINES_FILENAMES_FILE,
@@ -74,6 +74,9 @@ def extract_guidelines_urls_tool(research_folder: str) -> Dict[str, Any]:
     # Extract local file references
     local_file_paths = extract_local_paths(text)
 
+    # Extract {url: title} mapping from markdown links [title](url)
+    url_titles = extract_url_titles(text)
+
     # Prepare the data structure - use keys that match what processing tools expect
     data = {
         # Golden sources (processed in step 2.1-2.4 and tagged <golden_source>)
@@ -81,6 +84,8 @@ def extract_guidelines_urls_tool(research_folder: str) -> Dict[str, Any]:
         "youtube_videos_urls": youtube_source_urls,
         "other_urls": web_source_urls,
         "local_file_paths": local_file_paths,
+        # URL→title mapping extracted from markdown links in the guideline
+        "url_titles": url_titles,
         # Exploitation sources from "Other Sources" section (processed in step 2.5
         # and tagged <research_source type="guideline_exploitation">)
         "exploitation_github_urls": exploitation_github_urls,

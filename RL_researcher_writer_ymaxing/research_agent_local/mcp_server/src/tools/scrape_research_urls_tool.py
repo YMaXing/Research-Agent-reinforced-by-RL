@@ -198,8 +198,10 @@ def write_scraped_results_to_files(
         md_body = cleaned_markdown or ""
         # Inject H1 title so _extract_page_heading() has a readable collapsible
         # summary even when LLM cleaning removed the article's heading.
+        # Check for H1 only ("# ") so that articles where only H2/H3 subheadings
+        # survived cleaning also get the Firecrawl page title injected.
         if title and title.lower() not in {"n/a", "scraping timeout", "scraping failed", ""} and not any(
-            ln.strip().startswith("#") for ln in md_body.splitlines()
+            ln.strip().startswith("# ") for ln in md_body.splitlines()
         ):
             md_body = f"# {title}\n\n{md_body}"
 

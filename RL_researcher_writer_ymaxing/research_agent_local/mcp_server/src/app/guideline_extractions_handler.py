@@ -67,6 +67,12 @@ def extract_urls(text: str) -> list[str]:
     return url_pattern.findall(text)
 
 
+def extract_url_titles(text: str) -> dict[str, str]:
+    """Extract {url: title} mapping from markdown links [title](url) in text."""
+    pattern = re.compile(r'\[([^\]]+)\]\((https?://[^\)]+)\)')
+    return {url: title.strip() for title, url in pattern.findall(text)}
+
+
 def extract_local_paths(text: str) -> list[str]:
     """Extract local file paths that are referenced inside double quotes or as standalone filenames.
 

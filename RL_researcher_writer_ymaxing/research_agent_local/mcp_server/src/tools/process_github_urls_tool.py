@@ -58,8 +58,9 @@ async def process_github_urls_tool(research_directory: str) -> Dict[str, Any]:
         logger.error(msg, exc_info=True)
         raise ValueError(msg) from e
 
-    # Get the github_urls list
+    # Get the github_urls list and optional title mapping
     github_urls: list[str] = data.get("github_urls", [])
+    url_titles: dict[str, str] = data.get("url_titles", {})
 
     if not github_urls:
         return {
@@ -80,7 +81,7 @@ async def process_github_urls_tool(research_directory: str) -> Dict[str, Any]:
     success_count = 0
     for url in github_urls:
         try:
-            result = await process_github_url(url, dest_folder, settings.github_token.get_secret_value())
+            result = await process_github_url(url, dest_folder, settings.github_token.get_secret_value(), title=url_titles.get(url, ""))
             if result:
                 success_count += 1
         except Exception as e:

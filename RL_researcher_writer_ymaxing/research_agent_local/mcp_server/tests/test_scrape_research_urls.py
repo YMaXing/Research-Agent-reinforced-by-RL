@@ -772,12 +772,19 @@ class TestWriteScrapedResultsToFiles:
         assert "# My Article" in content
 
     def test_existing_h1_not_duplicated(self, tmp_path):
-        """When cleaned markdown already has a heading, no extra H1 is injected."""
+        """When cleaned markdown already has an H1, no extra H1 is injected."""
         results = [{"url": "https://a.com", "title": "My Article", "markdown": "# Existing Title\n\nBody.", "success": True}]
         saved, _ = write_scraped_results_to_files(results, tmp_path)
         content = (tmp_path / saved[0]).read_text(encoding="utf-8")
         assert "# My Article" not in content
         assert "# Existing Title" in content
+
+    def test_h2_without_h1_injects_metadata_title(self, tmp_path):
+        """When body has subheadings but no H1, the Firecrawl title is injected as H1."""
+        results = [{"url": "https://a.com", "title": "My Article", "markdown": "## Section\n\nContent.", "success": True}]
+        saved, _ = write_scraped_results_to_files(results, tmp_path)
+        content = (tmp_path / saved[0]).read_text(encoding="utf-8")
+        assert "# My Article" in content
 
 
 # ===========================================================================
