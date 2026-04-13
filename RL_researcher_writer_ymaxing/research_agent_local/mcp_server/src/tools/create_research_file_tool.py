@@ -34,14 +34,14 @@ def _wrap_xml(tag: str, attrs: str, content: str) -> str:
 
 
 def _extract_page_heading(content: str, fallback: str) -> str:
-    """Return the text of the first markdown heading found in *content*, outside code blocks."""
+    """Return the text of the first H1 heading found in *content*, outside code blocks."""
     in_code_block = False
     for line in content.split("\n"):
         stripped = line.strip()
         if stripped.startswith("```"):
             in_code_block = not in_code_block
             continue
-        if not in_code_block and stripped.startswith("#"):
+        if not in_code_block and stripped.startswith("# "):
             return stripped.lstrip("#").strip()
     return fallback
 
@@ -170,8 +170,7 @@ def _build_tagged_sections(research_output_dir: Path) -> str:
     )
 
     # --- Exploitation sources from guidelines "Other Sources" section (non-golden) ---
-    # One block per file, matching the scraped_from_research pattern so each file carries
-    # its own phase="exploitation" attribute and "Phase: [EXPLOITATION]" content header.
+    # Placed immediately after the golden guideline_urls section in the final document.
     exploitation_guideline_parts: list[str] = []
     if exploitation_guideline_dir.exists():
         for f in sorted(exploitation_guideline_dir.glob("*.md")):

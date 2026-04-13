@@ -192,6 +192,7 @@ async def scrape_arxiv_url(
             try:
                 response = await chat_model.ainvoke(clean_prompt)
                 cleaned_md = response.content if hasattr(response, "content") else str(response)
+                cleaned_md = _strip_outer_code_fence(cleaned_md)
                 logger.info(f"✅ arXiv LaTeX cleanup completed for {url}")
             except Exception as e:
                 logger.warning(f"arXiv cleanup LLM failed for {url}: {e}. Using raw output.")
@@ -220,6 +221,24 @@ async def scrape_arxiv_url(
             scraped["markdown"] = final_cleaned
 
     return scraped
+
+
+def _strip_outer_code_fence(text: str) -> str:
+    """Strip a single wrapping code fence that LLMs sometimes add around their output.
+
+    Handles both ```markdown\n...\n``` and ```\n...\n``` patterns.
+    Only strips when the *entire* response is wrapped; leaves internal fences untouched.
+    """
+    stripped = text.strip()
+    if not stripped.startswith("```"):
+        return text
+    first_newline = stripped.find("\n")
+    if first_newline == -1:
+        return text
+    inner = stripped[first_newline + 1:]
+    if inner.endswith("```"):
+        return inner[:-3].strip()
+    return text
 
 
 def convert_markdown_images_to_urls(text: str) -> str:
@@ -256,6 +275,9 @@ async def clean_markdown(
 
         if isinstance(cleaned_content, list):
             cleaned_content = "".join(str(part) for part in cleaned_content)
+
+        # Strip outer code fence if the LLM wrapped its output (e.g. ```markdown\n...\n```)
+        cleaned_content = _strip_outer_code_fence(cleaned_content)
 
         # Post-process: convert markdown images to just URLs
         cleaned_content = convert_markdown_images_to_urls(cleaned_content)

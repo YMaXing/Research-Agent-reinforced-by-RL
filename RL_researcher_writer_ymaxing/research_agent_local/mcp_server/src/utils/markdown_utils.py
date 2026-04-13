@@ -107,8 +107,8 @@ def combine_research_sections(
         youtube_transcripts_section,
         additional_sources_section,
     ]
-    if local_files_section:
-        sections.append(local_files_section)
     if exploitation_guideline_section:
         sections.append(exploitation_guideline_section)
+    if local_files_section:
+        sections.append(local_files_section)
     return "\n\n".join(sections)

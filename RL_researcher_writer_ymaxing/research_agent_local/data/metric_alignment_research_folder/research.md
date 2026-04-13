@@ -1473,11 +1473,13 @@ The science behind this system, from research-backed prompts to innovative conso
 
 <research_source type="scraped_from_research" phase="exploitation" file="how-does-memory-for-ai-agents-work-by-paul-iusztin.md">
 <details>
-<summary>[https://substackcdn.com/image/fetch/$s_!XBIw!,e_trim:10:white/e_trim:10:transparent/h_72,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F85e4cd45-ca39-48d4-941c-86dc67ba9848_1344x325.png](https://www.decodingai.com/)</summary>
+<summary>How Does Memory for AI Agents Work?</summary>
 
 Phase: [EXPLOITATION]
 
 **Source URL:** <https://www.decodingai.com/p/how-does-memory-for-ai-agents-work>
+
+# How Does Memory for AI Agents Work?
 
 [https://substackcdn.com/image/fetch/$s_!k2ig!,w_40,h_40,c_fill,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F00bc74e0-3601-49ce-8ab9-4c7b499ce597_1280x1280.png](https://www.decodingai.com/)
 
@@ -2085,11 +2087,13 @@ Subscribe
 
 <research_source type="scraped_from_research" phase="exploitation" file="how-to-design-efficient-memory-architectures-for-agentic-ai-.md">
 <details>
-<summary>Frequently Used, Contextual References</summary>
+<summary>How to Design Efficient Memory Architectures for Agentic AI Systems</summary>
 
 Phase: [EXPLOITATION]
 
 **Source URL:** <https://towardsai.net/p/machine-learning/how-to-design-efficient-memory-architectures-for-agentic-ai-systems>
+
+# How to Design Efficient Memory Architectures for Agentic AI Systems
 
 Name: Towards AI
 Legal Name: Towards AI, Inc.
@@ -2513,11 +2517,13 @@ In order for Towards AI to work properly, we log user data. By using Towards AI,
 
 <research_source type="scraped_from_research" phase="exploitation" file="memory-systems-for-ai-agents-what-the-research-says-and-what.md">
 <details>
-<summary>Further Reading</summary>
+<summary>Memory Systems for AI Agents: What the Research Says and What You Can Actually Build</summary>
 
 Phase: [EXPLOITATION]
 
 **Source URL:** <https://stevekinney.com/writing/agent-memory-systems>
+
+# Memory Systems for AI Agents: What the Research Says and What You Can Actually Build
 
 [siGithub](https://github.com/stevekinney) [siInstagram](https://instagram.com/stevekinney) [siX](https://twitter.com/stevekinney) [Visit LinkedIn profile](https://linkedin.com/in/stevekinney) [siYoutube](https://www.youtube.com/channel/UChXe-1_Jh91Z_CM3ppH39Xg)
 
@@ -2844,11 +2850,13 @@ Last modified on April 8, 2026.
 
 <research_source type="scraped_from_research" phase="exploitation" file="the-three-memory-systems-every-production-ai-agent-needs.md">
 <details>
-<summary>the-three-memory-systems-every-production-ai-agent-needs</summary>
+<summary>The Three Memory Systems Every Production AI Agent Needs</summary>
 
 Phase: [EXPLOITATION]
 
 **Source URL:** <https://tianpan.co/blog/long-term-memory-types-ai-agents>
+
+# The Three Memory Systems Every Production AI Agent Needs
 
 ```markdown
 Most AI agents fail the same way: they work perfectly in demos and fall apart after the tenth real conversation. The agent that helped a user configure a billing integration last Tuesday has no idea who that user is today. It asks for their company name again. Then their plan tier. Then re-explains concepts the user already knows. The experience degrades from "useful assistant" to "chatbot with amnesia."
@@ -2967,11 +2975,13 @@ The three-memory framework is not the only way to think about this problem, but 
 
 <research_source type="scraped_from_research" phase="exploitation" file="three-memory-architectures-for-ai-companions-pgvector-scratc.md">
 <details>
-<summary>The landscape</summary>
+<summary>Three Memory Architectures for AI Companions (pgvector, Scratchpad, Filesystem)</summary>
 
 Phase: [EXPLOITATION]
 
 **Source URL:** <https://www.emotionmachine.com/blog/how-memory-works>
+
+# Three Memory Architectures for AI Companions (pgvector, Scratchpad, Filesystem)
 
 This is a walkthrough of how we built memory at Emotion Machine, from our first pgvector-backed semantic memory through a ChatGPT-style scratchpad to a full filesystem-based context system for agentic workflows. Three versions, each one a response to the limitations of the last, each one shaped by a different mental model of what "memory" should mean for an AI companion.
 
@@ -3305,9 +3315,9 @@ Targeted retrieval solves both the lost-in-the-middle problem and the token cost
 ## Code Sources (from Article Guidelines)
 
 <details>
-<summary>Repository analysis for https://github.com/towardsai/agentic-ai-engineering-course/blob/main/lessons/10_memory_knowledge_access/notebook.ipynb</summary>
+<summary>Notebook 1</summary>
 
-# Repository analysis for https://github.com/towardsai/agentic-ai-engineering-course/blob/main/lessons/10_memory_knowledge_access/notebook.ipynb
+# Notebook 1
 
 ## Summary
 Repository: towardsai/agentic-ai-engineering-course
@@ -3653,128 +3663,83 @@ if results:
 ## YouTube Video Transcripts (from Article Guidelines)
 
 <details>
-<summary>[00:00] (Video shows various shots of a bustling tech conference with people networking, listening to presentations, and talking to each other. The atmosphere is vibrant and engaging)</summary>
+<summary>What is the perfect memory architecture?</summary>
 
-[00:00] (Video shows various shots of a bustling tech conference with people networking, listening to presentations, and talking to each other. The atmosphere is vibrant and engaging)
+# What is the perfect memory architecture?
 
-[00:09] (The screen transitions to a title slide for the presentation)
-AI Memory
-SAN FRANCISCO
-JUNE 18, 2025
-BUILDING AI TO REMEMBER
-(On the right side of the slide is a picture of a smiling woman, identified as)
-SAM WHITMORE
-FOUNDER @ NEW COMPUTER
+[00:00] (Video shows various quick cuts of an event with many people, some standing, some sitting, some speaking on stage. There are banners in the background for "LangGraph" and "LangSmith").
+[00:02] (Bright pink and white light flashes across the screen).
+[00:05] (More shots of people mingling at the event).
+[00:08] (A banner reads: "LangSmith: Get your LLM app from prototype to production").
+[00:09] (Screen transitions to a title slide with a speaker's photo).
+[00:10] Thank you Nicole, and thank you, um, Harrison and LangChain and Greg for organizing and hosting.
 
-[00:12] Speaker 1: Thank you Nicole, and thank you, um, Harrison and LangChain, and Greg for organizing and hosting. Actually, one of the first things I did with memory was with Harrison on the original memory implementation in LangChain, so very full circle. Um, cool. So for those of you who do not know New Computer and what we do, we have Dot, which is a conversational journal. It's in the app store.
+[00:13] (A woman, Speaker 1, with a name tag "SAM" is on stage, holding a microphone and a remote clicker, speaking to an audience. A large white screen is behind her).
+[00:15] Actually, one of the first things I did with memory was with Harrison on the original memory implantation in LangChain. So, very full circle. Um, cool. So for those of you who do not know New Computer and what we do, we have dot, which is a conversational journal. It's in the app store. You can use it now. We launched this last year. So we've been working on memory in AI applications since 2023.
+[00:30] (Screen transitions to a black slide with white text: "From Dot to Dots Evolution of Memory at New Computer Sam Whitmore, CEO". A small video of Speaker 1 continues in the bottom right corner).
+[00:41] Um, cool. So take us back to 2023. At the time GPT-4 was state of the art. We have 8,000 one length token, uh, prompt, very slow and very expensive. So, I want to walk you through some of the things that we tried initially, lessons we learned along the way, and how we kind of evolve as underlying technology evolves.
+[00:54] (Screen shows: "GPT-4 was state of the art 8192 token context length 196ms per generated token $30.00 / 1 million prompt tokens $60.00 / 1 million sampled tokens").
+[01:06] So, when we started, our general goal was to build a personal AI that got to know you. It was pretty unstructured. Um, and so we knew that if it was going to learn about you as you used it, it needed memory. So we're like, okay, let's just build the first, build the perfect memory architecture and then the product after that.
+[01:20] (Screen shows a phone screen displaying a chat conversation, then transitions to a black slide with white text: "What is the perfect memory architecture?").
+[01:29] Um, so we started out being like, okay, maybe we can just extract facts as a user talks to Dot and search across them, you know, use some different techniques, and we'll have great memory performance. So, we learned pretty quickly that this wasn't really going to work for us. So, imagine a user saying, "I have a dog. His name is Poppy. Walking him is the best part of my day."
+[01:40] (Screen transitions to a black slide with white text: "Memory == Facts...?").
+[01:50] (Screen transitions to a black slide with white text: "'I have a dog! His name is Poppy. Walking him is the best part of my day'").
+[01:55] So, early extraction, we'd get things like, "User has dog. User's dog is named Poppy. User likes taking Poppy for walks." There's a lot of nuance missing. So, like, you can tell a lot about a person from reading that sentence that you can't tell from those facts. That was pretty quick realization for us.
+[02:10] (Screen transitions to a black slide with white text: "User has a dog. User's dog is named Poppy. User likes taking his dog for walks.").
+[02:11] (Screen transitions to a black slide with white text: "Memory != Facts").
+[02:16] We then moved on. So, we're like, maybe if we try to summarize everything about Poppy in one place, then it's going to perform better. We decided that we're going to make this universal memory architecture with entities and schemas that were linked to each other.
+[02:29] (Screen transitions to a black slide with white text: "Memory == Schemas?").
+[02:30] (Screen shows a blank phone screen, then transitions to a screen showing "Recipes" in an app, displaying several recipe cards with images and titles. Then it shows a chat interface with a user message "my friend's bachelorette is coming up!" and the AI's response including "Created event for Meredith's Bachelorette", "Added Meredith as a friend of Zack's", and "Added the Airbnb location for Meredith's bachelorette party").
+[02:40] This was a UI representation of it. Um, so users could actually browse the things that were created, um, and they had different types, and on the back end, there was different form factors with JSON blobs. This is real example from our product at the time. So, I sent it a bachelorette flyer and it made like a whole bunch of different memory types with schemas associated.
+[02:53] (The screen updates to show details of the extracted memories in JSON-like format for "Created event for Meredith's Bachelorette", "Added Meredith as a friend of Zack's", and "Added the Airbnb location for Meredith's bachelorette party", with various fields like Name, End time, Location, Description, Relationship, Address).
+[03:09] Um, so you can see here that like this is what the back-end data looked like. There's different fields and we had a router architecture that would kind of generate queries that would search across all of these, um, in parallel. And what we found was that it worked okay, but there was kind of some base functionality that was still missing.
+[03:22] (Screen shows a Twitter-like post from "Jason 'Mars' Yuan" saying "not dot calling me out w its dynamic memory schemas". Below it is a list: "Routines 8", "Ice Cream Flavors 1", "Drunk Texts 2", "Webpages 29". The "Drunk Texts" item is highlighted).
+[03:28] Um, oh, this was a funny example. Um, Jason, my co-founder, was sending it, uh, pictures and it made him a Drunk Text category as a schema. Um, which we were like, that feels like a heavy read. Um, but anyway. So the schemas were kind of fun.
+[03:32] (Screen transitions to a black slide with white text: "Funny & cool to see, but didn't work that well in practice as a single system").
+[03:33] But yes. So basically, we also saw that when we exposed this to users, it was like too much cognitive overhead for them to garden their, their database. Like there was a lot of overlapping concepts and people got stressed by actually just monitoring their memory base.
+[03:49] (Screen shows two phone screenshots. The left one is an app interface with memory cards like "Bouldering with Luca", "Clara", "Ask Clara about bouldering", "Poetry slam event". The right one shows a chat conversation with an AI, displaying extracted memories related to a restaurant and a person named Brandon. The top of the slide has text: "(Also, users got stressed trying to garden their memories)").
+[03:50] (Screen transitions to a black slide with green text: "Learning: The perfect memory architecture doesn't exist").
+[03:52] So, again, we were like, okay, let's just go back to basics here and figure out like, what do we want our product to be doing? And let's re-examine how we want to build memory from that. So, we looked again at like what a thought partner should have to do to actually be really good as a listener for you.
+[03:57] (Screen transitions to a black slide with white text: "The architecture of memory depends entirely on the goals of the product").
+[04:00] (Screen shows a phone screen with a chat conversation, then transitions to a black slide with white text: "What would a thought partner need to learn about you to do a good job?").
+[04:06] So, we realized like, it should always know who you are and your core values. It should know basically like, you know, what you talked about yesterday, what you talked about last week. And again, like who Poppy is, if Poppy is your dog, who your co-founder is, stuff like that. And it also needs to know about like your behavior preferences and how it should adapt to you as you use it.
+[04:28] (Screen transitions to a black slide with a numbered list: "1. It needs to know my general bio & core values 2. It needs to know the things that happen in my life and also when they happened 3. It needs to know about the people, places, and the various nouns important to me 4. It needs to know the best way to work with me").
+[04:30] So, we ended up making four kind of parallel memory systems. So the schemas that you saw didn't really go away, they just became one of the memory systems, the entities. And it's funny seeing Will kind of say some of the same ones. So it's like an example of convergent evolution because we kind of made these up ourselves.
+[04:39] (Screen transitions to a black slide with white text: "Holistic theory of mind to have a sense of who I am holistically Episodic memory to know the things that happen in my life and when they happened Entities to know about the people, places, and the various nouns important to me Procedural memory to know the best way to work with me").
+[04:47] But basically like Holistic theory of mind, um, here's mine. It's kind of just like, who am I? What's important to me? What am I working on? What's top of mind for me right now?
+[04:57] (Screen shows a black slide with white text: "Holistic Theory of Mind" followed by a bulleted list of Speaker 1's family, career, interests/passions, and current focus).
+[04:58] Episodic memory is kind of like what happened on a specific day. Here's kind of like a actual real example soon after I had my baby last year.
+[05:07] (Screen shows a black slide with white text: "Episodic Memory" followed by a dated entry describing Samantha's experience with her newborn son, Alexander).
+[05:08] Here's like another entity example. We ended up stripping away a lot of the JSON because it turned out to actually not improve performance in retrieval across the entity schema. So, we kept things like the categories if we wanted to do tag filtering, but, um, a lot of the extra structure just ended up being like way too much overhead for the model to output.
+[05:27] (Screen shows a black slide with white text: "Entities" followed by a paragraph describing Alexander, the newborn son, and Samantha's motherhood experience).
+[05:28] And finally, we made this thing called procedural memory. Um, which is basically like triggered by, uh, conversational and situational similarity. So what you're looking at here is this intent, and if you're a Dot user, you'll probably recognize this behavior. It says, "Choose this if you have sensed a hidden or implied emotion or motivation that the user is not expressing in their language, and see a chance to share an insight or probe the user deeper on this matter."
+[05:51] (Screen shows a black slide with white text: "Procedural Memory" followed by Python-like code defining a "ReflectionQuestionIntent" class, with a description and instructions).
+[06:04] And then what if it detects that this is happening, it says like, "share an insight, you know, ask a question, issue a statement that encourages the behavior." And so basically like the trigger here is not semantic similarity but situational similarity. I see a lot of overlap here for people building agents where if you have a workflow that the agent needs to perform, it can identify that it, that it encountered that situation before and kind of pull up some learning it had from the past running of the workflow.
+[06:25] (Screen shows a complex flow chart titled "Retrieval pipeline 2024").
+[06:26] So this is kind of our way our retrieval pipeline worked in 2024, which is like parallelized retrieval across all of these systems. So, if here's a query which is very hard to read, so maybe these slides will be accessible separately. Um, what restaurant should I take my brother to for his birthday? And in this sense, in each of our four systems, we detect if a query is necessary across the system. For holistic stuff, we always load the, load the whole theory of mind. Episodic is only triggered if it's like what did we talk about last week or what did we talk about yesterday.
+[07:00] (Speaker 1 uses a remote to highlight different sections of the flow chart as she speaks).
+[07:07] And then here there's two, like different types of entity queries detected, like brother and restaurants. And then we would do kind of a hybrid search thing where like, we mix together BM25, semantic keyword, basically like no attachment to any particular approach, just like whatever improved recall for specific entities. Um, and then the procedural memory, here if there's a behavioral module loading like restaurant selection or planning, then that would get loaded into the final prompt.
+[07:30] So funny thing also is when we launched people tried to prompt inject us, but because we have so many different behavioral modules and different things going on, we called it like Franken-prompt. And like, if people did prompt inject us, they'd be like, wait, I think this prompt changes every time, which it did.
+[07:47] (Screen transitions to a black slide with white text: "The formation of these memories are distinct per system").
+[07:48] Um, okay. So for the formation for these, again, really distinct per system. So, holistic theory of mind, you don't need to update that frequently. Episodic is like periodic summarization. So like, if you want to have it be per week, you might update across daily summaries once per week, per day, once per day, etc. Entities, we did per line of conversation. And then we would run kind of cron jobs that we called dream sequences where they'd identify possible duplicates and potentially merge them. And procedural memory also updated per line of conversation.
+[08:24] (Screen transitions to a black slide with two white, interlocking, yin-yang like shapes).
+[08:26] So, um, along the past year, our product trajectory has changed. We're now building Dots, which is a Hivemind. So it's like, instead of remembering just one person that it meets, it actually remembers, um, an entire group of people.
+[08:43] (Screen transitions to a black slide with white text: "Hivemind").
+[08:47] And yeah, so you basically some of the added challenges we're dealing with now are representing, um, different people's opinion of each other, how they're connected, and how information should flow between them. In addition to understanding all of the systems I just mentioned above.
+[09:05] (Screen transitions to a black slide with white text: "June, 2025").
+[09:09] So, one other thing I'll share that has evolved in terms of how, like the world has changed a lot since 2023. So, we keep re-evaluating how we should be building things constantly. And now we have a million token input context window. We have prompts that are really cheap, and they're also really, really fast.
+[09:21] (Screen shows: "Gemini flash 2.5 - Maximum input tokens: 1,048,576 Maximum output tokens: 65,535 $0.30 / 1 million input $2.50 / 1 million output").
+[09:37] So, some of the things that we held true in terms of compressing knowledge and context, we no longer hold true. Here's an example. So, if you look back at this pipeline I shared before, um, here's an updated version that we're experimenting with now, which is getting rid of episodic and entity level compression in favor of real-time Q&A.
+[09:42] (Screen shows the "Retrieval pipeline 2024" flow chart again, then transitions to a similar but updated "Retrieval pipeline 2025" flow chart, with some sections removed and new connections/modules).
+[09:55] So, that means that like, depending on your system, maybe you don't need to be compressing context at all. Because again, like I said at the beginning, the raw data is always the best source of truth. So it's like, why would you create a secondary artifact as a stepping point between you and what the user's asking? Ideally, you just want to examine the context. And so we do that pretty frequently depending on how much data we're dealing with. We try basically not to do, to do the minimal amount of engineering possible.
+[11:03] (Screen transitions to a black slide with white text: "Design for where the technology is heading").
+[11:04] And our theory kind of going forward is like, this trend will only continue. So we think the procedural memory and, like basically the insights, the interpretation and analysis that the thing does, is the important part of memory. It's like the record of its thoughts about you and kind of its notes to itself is the important part. You can almost separate that from retrieval as a problem. You can say like, okay, maybe there'll be an infinite log of like my interactions and model notes will be interpolated in in the in the future. And so maybe we don't even have to deal with retrieval and context compression at all. So, I guess if I want you guys to take away one thing, it's like the perfect memory architecture doesn't exist. And start with kind of what your product is supposed to do and then think from first principles about how to make it work, and do that all the time because the world is changing and you might not need to invest that much in memory infrastructure. That's it. So, you can follow us at Twitter, New Computer.
+[11:23] (Screen transitions to a black slide with white text: "The perfect memory architecture doesn't exist Know what function memory serves in your product, & think from first principles about how to make it work...constantly!").
+[11:24] (Screen transitions to a black slide with white text: "Sam Whitmore, CEO @sjwhitmore New Computer @newcomputer").
+[11:27] Thank you.
+[11:28] (Audience applauds enthusiastically. Screen transitions back to the title slide for a moment, then to black, and the video ends.)
 
-[00:30] (The screen transitions to a new title slide)
-From Dot to Dots
-Evolution of Memory
-at New Computer
-Sam Whitmore, CEO
-[00:30] You can use it now. We launched this last year. So we've been working on memory in AI applications since 2023. Um, cool. So take us back to 2023. The time GPT-4 was state of the art. We have 8,000, uh, length token, uh, prompt, very slow and very expensive.
-
-[01:00] (The slide displays text:
-GPT-4 was state of the art
-8192 token context length
-196ms per generated token
-$30.00 / 1 million prompt tokens
-$60.00 / 1 million sampled tokens)
-[01:00] So I want to walk you through some of the things that we tried initially, lessons we learned along the way, and how we kind of evolve as underlying technology evolves. So when we started, our general goal was to build a personal AI that got to know you.
-
-[01:30] (The slide transitions to text: "What is the perfect memory architecture?" followed by "Memory == Facts...?")
-[01:30] It was pretty unstructured. Um, and so we knew that if it was going to learn about you as you used it, it needed memory. So we're like, okay, let's just build the first, build the perfect memory architecture and then the product after that. Um, so we started out being like, okay, maybe we can just extract facts as a user talks to Dot. And search across them, you know, use some different techniques, and we'll have great memory performance. So we learned pretty quickly that this wasn't really gonna work for us.
-
-[01:59] (The slide displays a user message: "I have a dog! His name is Poppy. Walking him is the best part of my day". Below it, the extracted facts are shown: "User has a dog. User's dog is named Poppy. User likes taking his dog for walks.")
-[01:59] So, imagine a user saying, "I have a dog, his name is Poppy, walking him is the best part of my day." So early extraction, we'd get things like, "User has dog. User's dog is named Poppy. User likes taking Poppy for walks." There's a lot of nuance missing. So, like, you can tell a lot about a person from reading that sentence that you can't tell from those facts.
-
-[02:29] (The slide transitions to text: "Memory != Facts" then "Memory == Schemas?")
-[02:29] That was a pretty quick realization for us. We then moved on. So we're like, maybe if we try to summarize everything about Poppy in one place, then it's going to perform better. We decided that we're going to make this universal memory architecture with entities and schemas that were linked to each other.
-
-[02:59] (The screen shows a phone UI with a "Recipes" screen, then transitions to a chat interface showing Dot interpreting a bachelorette party flyer and creating structured memories for an event, a person, and a location)
-[02:59] This was a UI representation of it. Um, so users could actually browse the things that were created, um, and they had different types, and on the back end, there were different form factors with JSON blobs. This is a real example from our product at the time. So I sent it a bachelorette flyer and it made like a whole bunch of different memory types with schemas associated.
-
-[03:29] (The screen shows a detailed view of the structured data created from the bachelorette flyer, with fields like Name, End time, Location, Description, Relationship for Meredith, and Address for the Airbnb location. It then shows a screenshot of an X post by Jason "Mars" Yuan: "not dot calling me out w its dynamic memory schemas" with a list including "Drunk Texts: 2")
-[03:29] Um, so you can see here that like this is what the back end data looked like. There's different fields. And we had a router architecture that would kind of generate queries that would search across all of these, um, in parallel. And what we found was that it worked okay, but there was kind of some base functionality that was still missing. Um, oh, this was a funny example. Um, Jason, my co-founder, was sending it, uh, pictures and it made him a drunk text category as a schema, which we were like, that feels like a heavy read. Um, but anyway.
-
-[03:59] (The slide displays text: "Funny & cool to see, but didn't work that well in practice as a single system" followed by "(Also, users got stressed trying to garden their memories)" and examples of memory cards for activities, people, reminders, and events, along with a chat UI on the right.)
-[03:59] So the schemas were kind of fun. Um, but yes. So basically, we also saw that when we exposed this to users, it was like too much cognitive overhead for them to garden their, their database. Like there's a lot of overlapping concepts, and people got stressed by actually just monitoring their memory base. So, again, we were like, okay, let's just go back to basics here and figure out like what do we want our product to be doing, and let's re-examine how we want to build memory from that. So, we looked again at like what a thought partner should have to do to actually be really good as a listener for you.
-
-[04:29] (The slide transitions to text: "Learning: The perfect memory architecture doesn't exist" followed by "The architecture of memory depends entirely on the goals of the product". Then, a question: "What would a thought partner need to learn about you to do a good job?")
-[04:29] So we realized like it should always know who you are and your core values. It should know basically like, you know, what you talked about yesterday, what you talked about last week, and again, like who Poppy is if Poppy is your dog, who your co-founder is, stuff like that. And it also needs to know about like your behavior preferences and how it should adapt to you as you use it. So we ended up making four kind of parallel memory systems.
-
-[04:59] (The slide lists four points:
-1. It needs to know my general bio & core values
-2. It needs to know the things that happen in my life and also when they happened
-3. It needs to know about the people, places, and the various nouns important to me
-4. It needs to know the best way to work with me)
-[04:59] So the schemas that you saw didn't really go away, they just became one of the memory systems, the entities. And it's funny seeing Will kind of say some of the same ones. So it's like an example of convergent evolution because we kind of made these up ourselves. But basically like, Holistic theory of mind, here's mine.
-
-[05:29] (The slide lists the four memory types with their corresponding functions:
-Holistic theory of mind: to have a sense of who I am holistically
-Episodic memory: to know the things that happen in my life when they happened
-Entities: to know about the people, places, and the various nouns important to me
-Procedural memory: to know the best way to work with me)
-[05:29] It's kind of just like, who am I, what's important to me, what am I working on, what's top of mind for me right now. Episodic memory is kind of like what happened on a specific day. Here's kind of like a actual real example soon after I had my baby last year.
-
-[05:59] (The slide shows an example of "Episodic Memory" describing an event related to Samantha and her newborn son. Then, an example of "Entities" describing Alexander, Samantha's newborn son. Finally, a Python code snippet for "Procedural Memory" named "REFLECTION_QUESTION_Intent".)
-[05:59] Um, here's like another entity example. We ended up stripping away a lot of the JSON because it turned out to actually not improve performance in retrieval across the entity schema. So we kept things like the categories if we wanted to do tag filtering, but, um, a lot of the extra structure just ended up being like way too much overhead for the model to output. And finally we made this thing called procedural memory, um, which is basically like triggered by, uh, conversational and situational similarity. So what you're looking at here is this intent, and if you're a Dot user, you'll probably recognize this behavior. Says, "Choose this if you have sensed a hidden or implied emotion or motivation that the user is not expressing in their language, and see a chance to share an insight or probe the user deeper on this matter." And then, when it detects that this is happening, it says like, "Share an insight, you know, ask a question, issue a statement that encourages the behavior." And so basically, like the trigger here is not semantic similarity but situational similarity.
-
-[06:29] (The slide shows a flowchart titled "Retrieval pipeline 2024" depicting a complex process from user query to response generation, involving parallel searches across Theory of Mind, Episodic History, and Entity/Behavioral Models.)
-[06:29] I see a lot of overlap here for people building agents where if you have a workflow that the agent needs to perform, it can identify that it, it encountered that situation before and kind of pull up some learning it had from the past running of the workflow. So this is kind of our way our retrieval pipeline worked in 2024, which is like parallelized retrieval across all of these systems. So if here's a query, which is very hard to read, so maybe these slides will be accessible separately. Um, what restaurant should I take my brother to for his birthday?
-
-[07:00] (Speaker 1 points to different parts of the complex flowchart.)
-[07:00] And in this sense, in each of our four systems, we detect if a query is necessary across the system. For holistic stuff, we always load the, load the whole theory of mind. Episodic is only triggered if it's like, what did we talk about last week or what did we talk about yesterday? And then here, there's two, like different types of entity queries detected, like brother and restaurants. And then we would do kind of a hybrid search thing where like, we mix together BM25, semantic, keyword, basically like no attachment to any particular approach, just like whatever improved recall for specific entities. Um, and then the procedural memory, here, if there's a behavioral module loading, like restaurant selection or planning, then that would get loaded into the final prompt. So funny thing also is when we launch, people tried to prompt inject us, but because we have so many different behavioral modules and different things going on, we called it like FrankenPrompt.
-
-[07:30] (Speaker 1 gestures broadly, then points to the slide again.)
-[07:30] And like if people did prompt inject us, they'd be like, wait, I think this prompt changes every time, which it did. Um, okay. So for the formation for these, again, really distinct per system. So, Holistic theory of mind, you don't need to update that frequently. Episodic is like periodic summarization.
-
-[08:00] (The slide shows the formation frequency for each memory system:
-Holistic theory of mind: Updated once a day
-Episodic memory: Periodic summarization, multiple levels of precision
-Entities: Per line of conversation (with dream sequences for consolidation)
-Procedural memory: Per line of conversation)
-[08:00] So like, if you want to have it be per week, you might update across daily summaries once per week, per day, once per day, etc. Entities we did per line of conversation, and then we would run kind of cron jobs that we called dream sequences where they'd identify possible duplicates and potentially merge them. And procedural memory also updated per line of conversation.
-
-[08:30] (The screen shows a white, minimalist logo resembling two yin-yang symbols intertwined. It then transitions to a new title: "Hivemind")
-[08:30] So, um, along the past year, our product trajectory has changed. We're now building Dots, which is a hivemind. So it's like instead of remembering just one person that it meets, it actually remembers, um, an entire group of people. And yeah. So you, basically, some of the added challenges we're dealing with now are representing, um, different people's opinion of each other, how they're connected, and how information should flow between them.
-
-[09:00] (The screen shows an animated 3D sphere made of smaller, interconnected bubbles. Some of the bubbles have text like "Jason introduces and validates the design leadership of", "Ian admires artistic approach to Huang", "Huang sees as proportional to computational art of", and "Sean plans strategic discussions with" with connecting lines between them)
-[09:00] In addition to understanding all of the systems I just mentioned above. So one other thing I'll share that has evolved in terms of how, like the world has changed a lot since 2023.
-
-[09:30] (The screen transitions to a new title: "June, 2025" then displays text:
-Gemini flash 2.5 - Maximum input
-tokens: 1,048,576
-Maximum output tokens: 65,535
-$0.30 / 1 million input
-$2.50 / 1 million output)
-[09:30] So we keep re-evaluating how we should be building things constantly. And now we have a million token input context window. We have prompts that are really cheap, and they're also really, really fast. So some of the things that we held true in terms of compressing knowledge and context, we no longer hold true.
-
-[10:00] (Speaker 1 gestures to the new text, then transitions to a flowchart titled "Retrieval pipeline 2025" which appears simpler than the 2024 version, with fewer parallel branches and more direct paths)
-[10:00] Here's an example. So if you look back at this pipeline I shared before, um, here's an updated version that we're experimenting with now, which is getting rid of episodic and entity level compression in favor of real-time Q&A. So that means that like, depending on your system, maybe you don't need to be compressing context at all. Because again, like I said at the beginning, the raw data is always the best source of truth. So it's like why would you create a secondary artifact as a stepping point between you and what the user's asking? Ideally you just want to examine the context. And so we do that pretty frequently depending on how much data we're dealing with. We try basically not to do, to do the minimal amount of engineering possible.
-
-[10:30] (The slide transitions to text: "Design for where the technology is heading")
-[10:30] And our theory kind of going forward is like, this trend will only continue. So we think the procedural memory and, like basically the insights, the interpretation and analysis that the thing does, is the important part of memory. It's like the record of its thoughts about you, and kind of its notes to itself is the important part. You can almost separate that from retrieval as a problem. You can say like, okay, maybe there'll be an infinite log of like my interactions and model notes will be interpolated in the, in the future. And so maybe we don't even have to deal with retrieval and context compression at all.
-
-[11:00] (The screen transitions to a summary slide)
-The perfect memory
-architecture doesn't exist
-Know what function memory serves
-in your product, & think from first
-principles about how to make it
-work...constantly!
-[11:00] So, I guess if I want you guys to take away one thing, it's like the perfect memory architecture doesn't exist. And start with kind of what your product is supposed to do, and then think from first principles about how to make it work, and do that all the time, because the world is changing and you might not need to invest that much in memory infrastructure.
-
-[11:24] (The screen shows a final slide with Sam Whitmore's and New Computer's Twitter handles)
-Sam Whitmore, CEO
-@sjwhitmore
-New Computer
-@newcomputer
-[11:24] That's it. So you, you can follow us at Twitter. New Computer. Thank you.
-(Audience applauds)
-
-*Sam Whitmore, CEO of New Computer, discusses the evolution of AI memory architectures from basic fact extraction to more complex schema-based and parallel memory systems, emphasizing that the "perfect" architecture doesn't exist and the design should constantly adapt to both product goals and evolving technology, including the increasing context windows and reduced costs of LLMs.*
+*Speaker 1 concludes by emphasizing that there is no perfect memory architecture; rather, it should be constantly re-evaluated based on product goals and evolving technology, with a focus on core functionality and minimal engineering.*
 
 </details>
 
@@ -3784,82 +3749,74 @@ New Computer
 ## Additional Sources Scraped (from Article Guidelines)
 
 <details>
-<summary>**Source URL:** <https://arxiv.org/html/2504.19413></summary>
+<summary>Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory</summary>
+
+# Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory
 
 **Source URL:** <https://arxiv.org/html/2504.19413>
 
 ## Abstract
 
-Abstract Large Language Models (LLMs) have demonstrated remarkable prowess in generating contextually coherent responses, yet their fixed context windows pose fundamental challenges for maintaining consistency over prolonged multi-session dialogues. We introduce Mem0 , a scalable memory-centric architecture that addresses this issue by dynamically extracting, consolidating, and retrieving salient information from ongoing conversations. Building on this foundation, we further propose an enhanced variant that leverages graph-based memory representations to capture complex relational structures among conversational elements.
-Through comprehensive evaluations on the LOCOMO benchmark, we systematically compare our approaches against six baseline categories: (i) established memory-augmented systems, (ii) retrieval-augmented generation (RAG) with varying chunk sizes and k 𝑘 k italic_k -values, (iii) a full-context approach that processes the entire conversation history, (iv) an open-source memory solution, (v) a proprietary model system, and (vi) a dedicated memory management platform.
-Empirical results demonstrate that our methods consistently outperform all existing memory systems across four question categories: single-hop, temporal, multi-hop, and open-domain.
-Notably, Mem0 achieves 26% relative improvements in the LLM-as-a-Judge metric over OpenAI, while Mem0 with graph memory achieves around 2% higher overall score than the base Mem0 configuration.
-Beyond accuracy gains, we also markedly reduce computational overhead compared to the full-context approach. In particular, Mem0 attains a 91% lower p95 latency and saves more than 90% token cost, thereby offering a compelling balance between advanced reasoning capabilities and practical deployment constraints.
-Our findings highlight the critical role of structured, persistent memory mechanisms for long-term conversational coherence, paving the way for more reliable and efficient LLM-driven AI agents. Code can be found at : https://mem0.ai/research
+Large Language Models (LLMs) have demonstrated remarkable prowess in generating contextually coherent responses, yet their fixed context windows pose fundamental challenges for maintaining consistency over prolonged multi-session dialogues. We introduce Mem0, a scalable memory-centric architecture that addresses this issue by dynamically extracting, consolidating, and retrieving salient information from ongoing conversations. Building on this foundation, we further propose an enhanced variant that leverages graph-based memory representations to capture complex relational structures among conversational elements.
+
+Through comprehensive evaluations on the LOCOMO benchmark, we systematically compare our approaches against six baseline categories: (i) established memory-augmented systems, (ii) retrieval-augmented generation (RAG) with varying chunk sizes and $k$-values, (iii) a full-context approach that processes the entire conversation history, (iv) an open-source memory solution, (v) a proprietary model system, and (vi) a dedicated memory management platform.
+
+Empirical results demonstrate that our methods consistently outperform all existing memory systems across four question categories: single-hop, temporal, multi-hop, and open-domain. Notably, Mem0 achieves 26% relative improvements in the LLM-as-a-Judge metric over OpenAI, while Mem0 with graph memory ($\texttt{Mem0}^{\tiny g}$) achieves around 2% higher overall score than the base Mem0 configuration. Beyond accuracy gains, we also markedly reduce computational overhead compared to the full-context approach. In particular, Mem0 attains a 91% lower p95 latency and saves more than 90% token cost, thereby offering a compelling balance between advanced reasoning capabilities and practical deployment constraints. Our findings highlight the critical role of structured, persistent memory mechanisms for long-term conversational coherence, paving the way for more reliable and efficient LLM-driven AI agents. Code can be found at: [https://mem0.ai/research](https://mem0.ai/research)
 
 ## 1 Introduction
 
-Human memory is a *foundation of intelligence*—it shapes our identity, guides decision-making, and enables us to learn, adapt, and form meaningful relationships . Among its many roles, memory is essential for communication: we recall past interactions, infer preferences, and construct evolving mental models of those we engage with . This ability to retain and retrieve information over extended periods enables coherent, contextually rich exchanges that span days, weeks, or even months. AI agents, powered by large language models (LLMs), have made remarkable progress in generating fluent, contextually appropriate responses . However, these systems are fundamentally limited by their reliance on fixed context windows, which severely restrict their ability to maintain coherence over extended interactions .
-This limitation stems from LLMs’ lack of persistent memory mechanisms that can extend beyond their finite context windows. While humans naturally accumulate and organize experiences over time, forming a continuous narrative of interactions, AI systems cannot inherently persist information across separate sessions or after context overflow.
-The absence of persistent memory creates a fundamental disconnect in human-AI interaction. Without memory, AI agents forget user preferences, repeat questions, and contradict previously established facts.
-Consider a simple example illustrated in Figure 1, where a user mentions being vegetarian and avoiding dairy products in an initial conversation.
-In a subsequent session, when the user asks about dinner recommendations, a system without persistent memory might suggest chicken, completely contradicting the established dietary preferences. In contrast, a system with persistent memory would maintain this critical user information across sessions and suggest appropriate vegetarian, dairy-free options. This common scenario highlights how memory failures can fundamentally undermine user experience and trust.
+Human memory is a *foundation of intelligence*—it shapes our identity, guides decision-making, and enables us to learn, adapt, and form meaningful relationships. Among its many roles, memory is essential for communication: we recall past interactions, infer preferences, and construct evolving mental models of those we engage with. This ability to retain and retrieve information over extended periods enables coherent, contextually rich exchanges that span days, weeks, or even months. AI agents, powered by large language models (LLMs), have made remarkable progress in generating fluent, contextually appropriate responses. However, these systems are fundamentally limited by their reliance on fixed context windows, which severely restrict their ability to maintain coherence over extended interactions.
 
-Beyond conversational settings, memory mechanisms have been shown to dramatically enhance agent performance in interactive environments . Agents equipped with memory of past experiences can better anticipate user needs, learn from previous mistakes, and generalize knowledge across tasks . Research demonstrates that memory-augmented agents improve decision-making by leveraging causal relationships between actions and outcomes, leading to more effective adaptation in dynamic scenarios . Hierarchical memory architectures and agentic memory systems capable of autonomous evolution have further shown that memory enables more coherent, long-term reasoning across multiple dialogue sessions.
+This limitation stems from LLMs’ lack of persistent memory mechanisms that can extend beyond their finite context windows. While humans naturally accumulate and organize experiences over time, forming a continuous narrative of interactions, AI systems cannot inherently persist information across separate sessions or after context overflow. The absence of persistent memory creates a fundamental disconnect in human-AI interaction. Without memory, AI agents forget user preferences, repeat questions, and contradict previously established facts. Consider a simple example illustrated in Figure 1, where a user mentions being vegetarian and avoiding dairy products in an initial conversation. In a subsequent session, when the user asks about dinner recommendations, a system without persistent memory might suggest chicken, completely contradicting the established dietary preferences. In contrast, a system with persistent memory would maintain this critical user information across sessions and suggest appropriate vegetarian, dairy-free options. This common scenario highlights how memory failures can fundamentally undermine user experience and trust.
 
-Figure: Figure 1: Illustration of memory importance in AI agents. Left: Without persistent memory, the system forgets critical user information (vegetarian, dairy-free preferences) between sessions, resulting in inappropriate recommendations. Right: With effective memory, the system maintains these dietary preferences across interactions, enabling contextually appropriate suggestions that align with previously established constraints.
-Refer to caption: extracted/6393986/figures/main_figure.png
+Beyond conversational settings, memory mechanisms have been shown to dramatically enhance agent performance in interactive environments. Agents equipped with memory of past experiences can better anticipate user needs, learn from previous mistakes, and generalize knowledge across tasks. Research demonstrates that memory-augmented agents improve decision-making by leveraging causal relationships between actions and outcomes, leading to more effective adaptation in dynamic scenarios. Hierarchical memory architectures and agentic memory systems capable of autonomous evolution have further shown that memory enables more coherent, long-term reasoning across multiple dialogue sessions.
 
-Unlike humans, who dynamically integrate new information and revise outdated beliefs, LLMs effectively “reset" once information falls outside their context window .
-Even as models like OpenAI’s GPT-4 (128K tokens) , o1 (200K context) , Anthropic’s Claude 3.7 Sonnet (200K tokens) , and Google’s Gemini (at least 10M tokens) push the boundaries of context length, these improvements merely delay rather than solve the fundamental limitation.
-In practical applications, even these extended context windows prove insufficient for two critical reasons. First, as meaningful human-AI relationships develop over weeks or months, conversation history inevitably exceeds even the most generous context limits. Second, and perhaps more importantly, real-world conversations rarely maintain thematic continuity. A user might mention dietary preferences (being vegetarian), then engage in hours of unrelated discussion about programming tasks, before returning to food-related queries about dinner options. In such scenarios, a full-context approach would need to reason through mountains of irrelevant information, with the critical dietary preferences potentially buried among thousands of tokens of coding discussions. Moreover, simply presenting longer contexts does not ensure effective retrieval or utilization of past information, as attention mechanisms degrade over distant tokens .
-This limitation is particularly problematic in high-stakes domains such as healthcare, education, and enterprise support, where maintaining continuity and trust is crucial . To address these challenges, AI agents must adopt memory systems that go beyond static context extension. A robust AI memory should selectively store important information, consolidate related concepts, and retrieve relevant details when needed—*mirroring human cognitive processes* . By integrating such mechanisms, we can develop AI agents that maintain consistent personas, track evolving user preferences, and build upon prior exchanges. This shift will transform AI from transient, forgetful responders into reliable, long-term collaborators, fundamentally redefining the future of conversational intelligence.
+![Illustration of memory importance in AI agents. Left: Without persistent memory, the system forgets critical user information (vegetarian, dairy-free preferences) between sessions, resulting in inappropriate recommendations. Right: With effective memory, the system maintains these dietary preferences across interactions, enabling contextually appropriate suggestions that align with previously established constraints.](extracted/6393986/figures/main_figure.png "Figure 1: Illustration of memory importance in AI agents. Left: Without persistent memory, the system forgets critical user information (vegetarian, dairy-free preferences) between sessions, resulting in inappropriate recommendations. Right: With effective memory, the system maintains these dietary preferences across interactions, enabling contextually appropriate suggestions that align with previously established constraints.")
 
-In this paper, we address a fundamental limitation in AI systems: their inability to maintain coherent reasoning across extended conversations across different sessions, which severely restricts meaningful long-term interactions with users. We introduce Mem0 (pronounced as *mem-zero*), a novel memory architecture that dynamically captures, organizes, and retrieves salient information from ongoing conversations. Building on this foundation, we develop $\texttt{Mem0}^{\tiny g}$, which enhances the base architecture with graph-based memory representations to better model complex relationships between conversational elements.
-Our experimental results on the LOCOMO benchmark demonstrate that our approaches consistently outperform existing memory systems—including memory-augmented architectures, retrieval-augmented generation (RAG) methods, and both open-source and proprietary solutions—across diverse question types, while simultaneously requiring significantly lower computational resources.
-Latency measurements further reveal that Mem0 operates with 91% lower response times than full-context approaches, striking an optimal balance between sophisticated reasoning capabilities and practical deployment constraints. These contributions represent a meaningful step toward AI systems that can maintain coherent, context-aware conversations over extended durations—mirroring human communication patterns and opening new possibilities for applications in personal tutoring, healthcare, and personalized assistance.
+Unlike humans, who dynamically integrate new information and revise outdated beliefs, LLMs effectively “reset" once information falls outside their context window. Even as models like OpenAI’s GPT-4 (128K tokens), o1 (200K context), Anthropic’s Claude 3.7 Sonnet (200K tokens), and Google’s Gemini (at least 10M tokens) push the boundaries of context length, these improvements merely delay rather than solve the fundamental limitation. In practical applications, even these extended context windows prove insufficient for two critical reasons. First, as meaningful human-AI relationships develop over weeks or months, conversation history inevitably exceeds even the most generous context limits. Second, and perhaps more importantly, real-world conversations rarely maintain thematic continuity. A user might mention dietary preferences (being vegetarian), then engage in hours of unrelated discussion about programming tasks, before returning to food-related queries about dinner options. In such scenarios, a full-context approach would need to reason through mountains of irrelevant information, with the critical dietary preferences potentially buried among thousands of tokens of coding discussions. Moreover, simply presenting longer contexts does not ensure effective retrieval or utilization of past information, as attention mechanisms degrade over distant tokens.
+
+This limitation is particularly problematic in high-stakes domains such as healthcare, education, and enterprise support, where maintaining continuity and trust is crucial. To address these challenges, AI agents must adopt memory systems that go beyond static context extension. A robust AI memory should selectively store important information, consolidate related concepts, and retrieve relevant details when needed—*mirroring human cognitive processes*. By integrating such mechanisms, we can develop AI agents that maintain consistent personas, track evolving user preferences, and build upon prior exchanges. This shift will transform AI from transient, forgetful responders into reliable, long-term collaborators, fundamentally redefining the future of conversational intelligence.
+
+In this paper, we address a fundamental limitation in AI systems: their inability to maintain coherent reasoning across extended conversations across different sessions, which severely restricts meaningful long-term interactions with users. We introduce Mem0 (pronounced as *mem-zero*), a novel memory architecture that dynamically captures, organizes, and retrieves salient information from ongoing conversations. Building on this foundation, we develop $\texttt{Mem0}^{\tiny g}$, which enhances the base architecture with graph-based memory representations to better model complex relationships between conversational elements. Our experimental results on the LOCOMO benchmark demonstrate that our approaches consistently outperform existing memory systems—including memory-augmented architectures, retrieval-augmented generation (RAG) methods, and both open-source and proprietary solutions—across diverse question types, while simultaneously requiring significantly lower computational resources. Latency measurements further reveal that Mem0 operates with 91% lower response times than full-context approaches, striking an optimal balance between sophisticated reasoning capabilities and practical deployment constraints. These contributions represent a meaningful step toward AI systems that can maintain coherent, context-aware conversations over extended durations—mirroring human communication patterns and opening new possibilities for applications in personal tutoring, healthcare, and personalized assistance.
 
 ## 2 Proposed Methods
 
-We introduce two memory architectures for AI agents. (1) Mem0 implements a novel paradigm that extracts, evaluates, and manages salient information from conversations through dedicated modules for memory extraction and updation. The system processes a pair of messages between either two user participants or a user and an assistant. (2) $\texttt{Mem0}^{\tiny g}$ extends this foundation by incorporating graph-based memory representations, where memories are stored as directed labeled graphs with entities as nodes and relationships as edges. This structure enables a deeper understanding of the connections between entities. By explicitly modeling both entities and their relationships, $\texttt{Mem0}^{\tiny g}$ supports more advanced reasoning across interconnected facts, especially for queries that require navigating complex relational paths across multiple memories.
+We introduce two memory architectures for AI agents. (1) Mem0 implements a novel paradigm that extracts, evaluates, and manages salient information from conversations through dedicated modules for memory extraction and updation. The system processes a pair of messages between either two user participants or a user and an assistant. (2) $\texttt{Mem0}^{\tiny g}$ extends this foundation by incorporating graph-based memory representations, where memories are stored as directed labeled graphs with entities as nodes and relationships as edges. This structure enables a deeper understanding of the connections between entities. By explicitly modeling both entities and their relationships, $\texttt{Mem0}^{\tiny g}$ supports more advanced reasoning across interconnected facts, especially for queries that require navigating complex relational paths across multiple memories.
 
 ### 2.1 Mem0
 
 Our architecture follows an incremental processing paradigm, enabling it to operate seamlessly within ongoing conversations. As illustrated in Figure 2, the complete pipeline architecture consists of two phases: extraction and update.
 
-Figure: Figure 2: Architectural overview of the Mem0 system showing extraction and update phase. The extraction phase processes messages and historical context to create new memories. The update phase evaluates these extracted memories against similar existing ones, applying appropriate operations through a Tool Call mechanism. The database serves as the central repository, providing context for processing and storing updated memories.
-Refer to caption: extracted/6393986/figures/mem0_pipeline.png
+![Architectural overview of the Mem0 system showing extraction and update phase. The extraction phase processes messages and historical context to create new memories. The update phase evaluates these extracted memories against similar existing ones, applying appropriate operations through a Tool Call mechanism. The database serves as the central repository, providing context for processing and storing updated memories.](extracted/6393986/figures/mem0_pipeline.png "Figure 2: Architectural overview of the Mem0 system showing extraction and update phase. The extraction phase processes messages and historical context to create new memories. The update phase evaluates these extracted memories against similar existing ones, applying appropriate operations through a Tool Call mechanism. The database serves as the central repository, providing context for processing and storing updated memories.")
 
-The extraction phase initiates upon ingestion of a new message pair $(m_{t-1},m_{t})$, where $m_{t}$ represents the current message and $m_{t-1}$ the preceding one. This pair typically consists of a user message and an assistant response, capturing a complete interaction unit. To establish appropriate context for memory extraction, the system employs two complementary sources: (1) a conversation summary $S$ retrieved from the database that encapsulates the semantic content of the entire conversation history, and (2) a sequence of recent messages $\{m_{t-m},m_{t-m+1},...,m_{t-2}\}$ from the conversation history, where $m$ is a hyperparameter controlling the recency window. To support context-aware memory extraction, we implement an asynchronous summary generation module that periodically refreshes the conversation summary. This component operates independently of the main processing pipeline, ensuring that memory extraction consistently benefits from up-to-date contextual information without introducing processing delays. While $S$ provides global thematic understanding across the entire conversation, the recent message sequence offers granular temporal context that may contain relevant details not consolidated in the summary. This dual contextual information, combined with the new message pair, forms a comprehensive prompt $P=(S,\{m_{t-m},...,m_{t-2}\},m_{t-1},m_{t})$ for an extraction function $\phi$ implemented via an LLM. The function $\phi(P)$ then extracts a set of salient memories $\Omega=\{\omega_{1},\omega_{2},...,\omega_{n}\}$ specifically from the new exchange while maintaining awareness of the conversation’s broader context, resulting in candidate facts for potential inclusion in the knowledge base.
+The extraction phase initiates upon ingestion of a new message pair $(m_{t-1}, m_{t})$, where $m_{t}$ represents the current message and $m_{t-1}$ the preceding one. This pair typically consists of a user message and an assistant response, capturing a complete interaction unit. To establish appropriate context for memory extraction, the system employs two complementary sources: (1) a conversation summary $S$ retrieved from the database that encapsulates the semantic content of the entire conversation history, and (2) a sequence of recent messages $\{m_{t-m}, m_{t-m+1}, ..., m_{t-2}\}$ from the conversation history, where $m$ is a hyperparameter controlling the recency window. To support context-aware memory extraction, we implement an asynchronous summary generation module that periodically refreshes the conversation summary. This component operates independently of the main processing pipeline, ensuring that memory extraction consistently benefits from up-to-date contextual information without introducing processing delays. While $S$ provides global thematic understanding across the entire conversation, the recent message sequence offers granular temporal context that may contain relevant details not consolidated in the summary. This dual contextual information, combined with the new message pair, forms a comprehensive prompt $P=(S,\{m_{t-m},...,m_{t-2}\},m_{t-1},m_{t})$ for an extraction function $\phi$ implemented via an LLM. The function $\phi(P)$ then extracts a set of salient memories $\Omega=\{\omega_{1},\omega_{2},...,\omega_{n}\}$ specifically from the new exchange while maintaining awareness of the conversation’s broader context, resulting in candidate facts for potential inclusion in the knowledge base.
 
 Following extraction, the update phase evaluates each candidate fact against existing memories to maintain consistency and avoid redundancy. This phase determines the appropriate memory management operation for each extracted fact $\omega_{i}\in\Omega$. Algorithm 1, mentioned in Appendix B, illustrates this process. For each fact, the system first retrieves the top $s$ semantically similar memories using vector embeddings from the database. These retrieved memories, along with the candidate fact, are then presented to the LLM through a function-calling interface we refer to as a ‘tool call.’ The LLM itself determines which of four distinct operations to execute: ADD for creation of new memories when no semantically equivalent memory exists; UPDATE for augmentation of existing memories with complementary information; DELETE for removal of memories contradicted by new information; and NOOP when the candidate fact requires no modification to the knowledge base. Rather than using a separate classifier, we leverage the LLM’s reasoning capabilities to directly select the appropriate operation based on the semantic relationship between the candidate fact and existing memories. Following this determination, the system executes the provided operations, thereby maintaining knowledge base coherence and temporal consistency.
 
 In our experimental evaluation, we configured the system with ‘$m$’ = 10 previous messages for contextual reference and ‘$s$’ = 10 similar memories for comparative analysis. All language model operations utilized GPT-4o-mini as the inference engine. The vector database employs dense embeddings to facilitate efficient similarity search during the update phase.
 
-### 2.2 Mem0 g superscript Mem0 𝑔 \texttt{Mem0}^{\tiny g} Mem0 start_POSTSUPERSCRIPT italic_g end_POSTSUPERSCRIPT
+### 2.2 $\texttt{Mem0}^{\tiny g}$
 
-The $\texttt{Mem0}^{\tiny g}$ pipeline, illustrated in Figure 3, implements a graph-based memory approach that effectively captures, stores, and retrieves contextual information from natural language interactions . In this framework, memories are represented as a directed labeled graph $G=(V,E,L)$, where:
+The $\texttt{Mem0}^{\tiny g}$ pipeline, illustrated in Figure 3, implements a graph-based memory approach that effectively captures, stores, and retrieves contextual information from natural language interactions. In this framework, memories are represented as a directed labeled graph $G=(V,E,L)$, where:
 
-- •
-Nodes $V$ represent entities (e.g., Alice, San_Francisco)
-- •
-Edges $E$ represent relationships between entities (e.g., lives_in)
-- •
-Labels $L$ assign semantic types to nodes (e.g., Alice - Person, San_Francisco - City)
+*   Nodes $V$ represent entities (e.g., Alice, San_Francisco)
+*   Edges $E$ represent relationships between entities (e.g., lives_in)
+*   Labels $L$ assign semantic types to nodes (e.g., Alice - Person, San_Francisco - City)
 
 Each entity node $v\in V$ contains three components: (1) an entity type classification that categorizes the entity (e.g., Person, Location, Event), (2) an embedding vector $e_{v}$ that captures the entity’s semantic meaning, and (3) metadata including a creation timestamp $t_{v}$. Relationships in our system are structured as triplets in the form $(v_{s},r,v_{d})$, where $v_{s}$ and $v_{d}$ are source and destination entity nodes, respectively, and $r$ is the labeled edge connecting them.
 
-Figure: Figure 3: Graph-based memory architecture of $\texttt{Mem0}^{\tiny g}$ illustrating entity extraction and update phase. The extraction phase uses LLMs to convert conversation messages into entities and relation triplets. The update phase employs conflict detection and resolution mechanisms when integrating new information into the existing knowledge graph.
-Refer to caption: extracted/6393986/figures/mem0p_pipeline.png
+![Graph-based memory architecture of $\texttt{Mem0}^{\tiny g}$ illustrating entity extraction and update phase. The extraction phase uses LLMs to convert conversation messages into entities and relation triplets. The update phase employs conflict detection and resolution mechanisms when integrating new information into the existing knowledge graph.](extracted/6393986/figures/mem0p_pipeline.png "Figure 3: Graph-based memory architecture of $\texttt{Mem0}^{\tiny g}$ illustrating entity extraction and update phase. The extraction phase uses LLMs to convert conversation messages into entities and relation triplets. The update phase employs conflict detection and resolution mechanisms when integrating new information into the existing knowledge graph.")
 
 The extraction process employs a two-stage pipeline leveraging LLMs to transform unstructured text into structured graph representations. First, an entity extractor module processes the input text to identify a set of entities along with their corresponding types. In our framework, entities represent the key information elements in conversations—including people, locations, objects, concepts, events, and attributes that merit representation in the memory graph. The entity extractor identifies these diverse information units by analyzing the semantic importance, uniqueness, and persistence of elements in the conversation. For instance, in a conversation about travel plans, entities might include destinations (cities, countries), transportation modes, dates, activities, and participant preferences—essentially any discrete information that could be relevant for future reference or reasoning.
 
 Next, a relationship generator component derives meaningful connections between these entities, establishing a set of relationship triplets that capture the semantic structure of the information. This LLM-based module analyzes the extracted entities and their context within the conversation to identify semantically significant connections. It works by examining linguistic patterns, contextual cues, and domain knowledge to determine how entities relate to one another. For each potential entity pair, the generator evaluates whether a meaningful relationship exists and, if so, classifies this relationship with an appropriate label (e.g., ‘lives_in’, ‘prefers’, ‘owns’, ‘happened_on’). The module employs prompt engineering techniques that guide the LLM to reason about both explicit statements and implicit information in the dialogue, resulting in relationship triplets that form the edges in our memory graph and enable complex reasoning across interconnected information.
-When integrating new information, $\texttt{Mem0}^{\tiny g}$ employs a sophisticated storage and update strategy. For each new relationship triple, we compute embeddings for both source and destination entities, then search for existing nodes with semantic similarity above a defined threshold ‘$t$’. Based on node existence, the system may create both nodes, create only one node, or use existing nodes before establishing the relationship with appropriate metadata. To maintain a consistent knowledge graph, we implement a conflict detection mechanism that identifies potentially conflicting existing relationships when new information arrives. An LLM-based update resolver determines if certain relationships should be obsolete, marking them as invalid rather than physically removing them to enable temporal reasoning.
+When integrating new information, $\texttt{Mem0}^{\tiny g}$ employs a sophisticated storage and update strategy. For each new relationship triple, we compute embeddings for both source and destination entities, then search for existing nodes with semantic similarity above a defined threshold ‘$t$’. Based on node existence, the system may create both nodes, create only one node, or use existing nodes before establishing the relationship with appropriate metadata. To maintain a consistent knowledge graph, we implement a conflict detection mechanism that identifies potentially conflicting existing relationships when new information arrives. An LLM-based update resolver determines if certain relationships should be obsolete, marking them as invalid rather than physically removing them to enable temporal reasoning.
 
-The memory retrieval functionality in $\texttt{Mem0}^{\tiny g}$ implements a dual-approach strategy for optimal information access. The entity-centric method first identifies key entities within a query, then leverages semantic similarity to locate corresponding nodes in the knowledge graph. It systematically explores both incoming and outgoing relationships from these anchor nodes, constructing a comprehensive subgraph that captures relevant contextual information. Complementing this, the semantic triplet approach takes a more holistic view by encoding the entire query as a dense embedding vector. This query representation is then matched against textual encodings of each relationship triplet in the knowledge graph. The system calculates fine-grained similarity scores between the query and all available triplets, returning only those that exceed a configurable relevance threshold, ranked in order of decreasing similarity. This dual retrieval mechanism enables $\texttt{Mem0}^{\tiny g}$ to handle both targeted entity-focused questions and broader conceptual queries with equal effectiveness.
+The memory retrieval functionality in $\texttt{Mem0}^{\tiny g}$ implements a dual-approach strategy for optimal information access. The entity-centric method first identifies key entities within a query, then leverages semantic similarity to locate corresponding nodes in the knowledge graph. It systematically explores both incoming and outgoing relationships from these anchor nodes, constructing a comprehensive subgraph that captures relevant contextual information. Complementing this, the semantic triplet approach takes a more holistic view by encoding the entire query as a dense embedding vector. This query representation is then matched against textual encodings of each relationship triplet in the knowledge graph. The system calculates fine-grained similarity scores between the query and all available triplets, returning only those that exceed a configurable relevance threshold, ranked in order of decreasing similarity. This dual retrieval mechanism enables $\texttt{Mem0}^{\tiny g}$ to handle both targeted entity-focused questions and broader conceptual queries with equal effectiveness.
 
-From an implementation perspective, the system utilizes Neo4j(^1^11[https://neo4j.com/](https://neo4j.com/)) as the underlying graph database. LLM-based extractors and update module leverage GPT-4o-mini with function calling capabilities, allowing for structured extraction of information from unstructured text. By combining graph-based representations with semantic embeddings and LLM-based information extraction, $\texttt{Mem0}^{\tiny g}$ achieves both the structural richness needed for complex reasoning and the semantic flexibility required for natural language understanding.
+From an implementation perspective, the system utilizes Neo4j[^1] as the underlying graph database. LLM-based extractors and update module leverage GPT-4o-mini with function calling capabilities, allowing for structured extraction of information from unstructured text. By combining graph-based representations with semantic embeddings and LLM-based information extraction, $\texttt{Mem0}^{\tiny g}$ achieves both the structural richness needed for complex reasoning and the semantic flexibility required for natural language understanding.
+
+[^1]: [https://neo4j.com/](https://neo4j.com/)
 
 ## 3 Experimental Setup
 
@@ -3874,7 +3831,7 @@ Our evaluation framework implements a comprehensive approach to assess long-term
 #### (1) Performance Metrics
 
 Previous research in conversational AI has predominantly relied on lexical similarity metrics such as F1 Score (F1) and BLEU-1 (B1). However, these metrics exhibit significant limitations when evaluating factual accuracy in conversational contexts. Consider a scenario where the ground truth answer is ‘Alice was born in March’ and a system generates ‘Alice is born in July.’ Despite containing a critical factual error regarding the birth month, traditional metrics would assign relatively high scores due to lexical overlap in the remaining tokens (‘Alice,’ ‘born,’ etc.). This fundamental limitation can lead to misleading evaluations that fail to capture semantic correctness.
-To address these shortcomings, we use LLM-as-a-Judge (J) as a complementary evaluation metric. This approach leverages a separate, more capable LLM to assess response quality across multiple dimensions, including factual accuracy, relevance, completeness, and contextual appropriateness. The judge model analyzes the question, ground truth answer and the generated answer, providing a more nuanced evaluation that aligns better with human judgment. Due to the stochastic nature of J evaluations, we conducted 10 independent runs for each method on the entire dataset and report the mean scores along with $\pm$1 standard deviation. More details about the J is present in Appendix A.
+To address these shortcomings, we use LLM-as-a-Judge (J) as a complementary evaluation metric. This approach leverages a separate, more capable LLM to assess response quality across multiple dimensions, including factual accuracy, relevance, completeness, and contextual appropriateness. The judge model analyzes the question, ground truth answer and the generated answer, providing a more nuanced evaluation that aligns better with human judgment. Due to the stochastic nature of J evaluations, we conducted 10 independent runs for each method on the entire dataset and report the mean scores along with $\pm$1 standard deviation. More details about the J is present in Appendix A.
 
 #### (2) Deployment Metrics
 
@@ -3888,11 +3845,13 @@ To comprehensively evaluate our approach, we compare against six distinct catego
 
 #### Established LOCOMO Benchmarks
 
-We first establish a comparative foundation by evaluating previously benchmarked methods on the LOCOMO dataset. These include five established approaches: LoCoMo , ReadAgent , MemoryBank , MemGPT , and A-Mem . These established benchmarks not only provide direct comparison points with published results but also represent the evolution of conversational memory architectures across different algorithmic paradigms. For our evaluation, we select the metrics where gpt-4o-mini was used for the evaluation. More details about these benchmarks are mentioned in Appendix C.
+We first establish a comparative foundation by evaluating previously benchmarked methods on the LOCOMO dataset. These include five established approaches: LoCoMo, ReadAgent, MemoryBank, MemGPT, and A-Mem. These established benchmarks not only provide direct comparison points with published results but also represent the evolution of conversational memory architectures across different algorithmic paradigms. For our evaluation, we select the metrics where gpt-4o-mini was used for the evaluation. More details about these benchmarks are mentioned in Appendix C.
 
 #### Open-Source Memory Solutions
 
-Our second category consists of promising open-source memory architectures such as LangMem(^2^22[https://langchain-ai.github.io/langmem/](https://langchain-ai.github.io/langmem/)) (Hot Path) that have demonstrated effectiveness in related conversational tasks but have not yet been evaluated on the LOCOMO dataset. By adapting these systems to our evaluation framework, we broaden the comparative landscape and identify potential alternative approaches that may offer competitive performance. We initialized the LLM with gpt-4o-mini and used text-embedding-small-3 as the embedding model.
+Our second category consists of promising open-source memory architectures such as LangMem[^2] (Hot Path) that have demonstrated effectiveness in related conversational tasks but have not yet been evaluated on the LOCOMO dataset. By adapting these systems to our evaluation framework, we broaden the comparative landscape and identify potential alternative approaches that may offer competitive performance. We initialized the LLM with gpt-4o-mini and used text-embedding-small-3 as the embedding model.
+
+[^2]: [https://langchain-ai.github.io/langmem/](https://langchain-ai.github.io/langmem/)
 
 #### Retrieval-Augmented Generation (RAG)
 
@@ -3904,117 +3863,113 @@ We adopt a straightforward approach by passing the entire conversation history w
 
 #### Proprietary Models
 
-We evaluate OpenAI’s memory(^3^33[https://openai.com/index/memory-and-new-controls-for-chatgpt/](https://openai.com/index/memory-and-new-controls-for-chatgpt/)) feature available in their ChatGPT interface, specifically using gpt-4o-mini for consistency. We ingest entire LOCOMO conversations with a prompt (see Appendix A) into single chat sessions, prompting memory generation with timestamps, participant names, and conversation text. These generated memories are then used as complete context for answering questions about each conversation, intentionally granting the OpenAI approach privileged access to all memories rather than only question-relevant ones. This methodology accommodates the lack of external API access for selective memory retrieval in OpenAI’s system for benchmarking.
+We evaluate OpenAI’s memory[^3] feature available in their ChatGPT interface, specifically using gpt-4o-mini for consistency. We ingest entire LOCOMO conversations with a prompt (see Appendix A) into single chat sessions, prompting memory generation with timestamps, participant names, and conversation text. These generated memories are then used as complete context for answering questions about each conversation, intentionally granting the OpenAI approach privileged access to all memories rather than only question-relevant ones. This methodology accommodates the lack of external API access for selective memory retrieval in OpenAI’s system for benchmarking.
+
+[^3]: [https://openai.com/index/memory-and-new-controls-for-chatgpt/](https://openai.com/index/memory-and-new-controls-for-chatgpt/)
 
 #### Memory Providers
 
-We incorporate Zep , a memory management platform designed for AI agents. Using their platform version, we conduct systematic evaluations across the LOCOMO dataset, maintaining temporal fidelity by preserving timestamp information alongside conversational content. This temporal anchoring ensures that time-sensitive queries can be addressed through appropriately contextualized memory retrieval, particularly important for evaluating questions that require chronological awareness. This baseline represents an important commercial implementation of memory management specifically engineered for AI agents.
+We incorporate Zep, a memory management platform designed for AI agents. Using their platform version, we conduct systematic evaluations across the LOCOMO dataset, maintaining temporal fidelity by preserving timestamp information alongside conversational content. This temporal anchoring ensures that time-sensitive queries can be addressed through appropriately contextualized memory retrieval, particularly important for evaluating questions that require chronological awareness. This baseline represents an important commercial implementation of memory management specifically engineered for AI agents.
 
 **Table 1: Performance comparison of memory-enabled systems across different question types in the LOCOMO dataset. Evaluation metrics include F1 score (F1), BLEU-1 (B1), and LLM-as-a-Judge score (J), with higher values indicating better performance. $\text{A-Mem}^{*}$ represents results from our re-run of A-Mem to generate LLM-as-a-Judge scores by setting temperature as 0. $\texttt{Mem0}^{\tiny g}$ indicates our proposed architecture enhanced with graph memory. Bold denotes the best performance for each metric across all methods. ($\uparrow$) represents higher score is better.**
-| Method | Single Hop | Multi-Hop | Open Domain | Temporal |  |  |  |  |  |  |  |  |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| F1 $\uparrow$ | B1 $\uparrow$ | J $\uparrow$ | F1 $\uparrow$ | B1 $\uparrow$ | J $\uparrow$ | F1 $\uparrow$ | B1 $\uparrow$ | J $\uparrow$ | F1 $\uparrow$ | B1 $\uparrow$ | J $\uparrow$ |  |
+
+| Method | Single Hop | | | Multi-Hop | | | Open Domain | | | Temporal | | |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| | F1 $\uparrow$ | B1 $\uparrow$ | J $\uparrow$ | F1 $\uparrow$ | B1 $\uparrow$ | J $\uparrow$ | F1 $\uparrow$ | B1 $\uparrow$ | J $\uparrow$ | F1 $\uparrow$ | B1 $\uparrow$ | J $\uparrow$ |
 | LoCoMo | 25.02 | 19.75 | – | 12.04 | 11.16 | – | 40.36 | 29.05 | – | 18.41 | 14.77 | – |
 | ReadAgent | 9.15 | 6.48 | – | 5.31 | 5.12 | – | 9.67 | 7.66 | – | 12.60 | 8.87 | – |
 | MemoryBank | 5.00 | 4.77 | – | 5.56 | 5.94 | – | 6.61 | 5.16 | – | 9.68 | 6.99 | – |
 | MemGPT | 26.65 | 17.72 | – | 9.15 | 7.44 | – | 41.04 | 34.34 | – | 25.52 | 19.44 | – |
 | A-Mem | 27.02 | 20.09 | – | 12.14 | 12.00 | – | 44.65 | 37.06 | – | 45.85 | 36.67 | – |
-| A-Mem* | 20.76 | 14.90 | 39.79 ± 0.38 | 9.22 | 8.81 | 18.85 ± 0.31 | 33.34 | 27.58 | 54.05 ± 0.22 | 35.40 | 31.08 | 49.91 ± 0.31 |
-| LangMem | 35.51 | 26.86 | 62.23 ± 0.75 | 26.04 | 22.32 | 47.92 ± 0.47 | 40.91 | 33.63 | 71.12 ± 0.20 | 30.75 | 25.84 | 23.43 ± 0.39 |
-| Zep | 35.74 | 23.30 | 61.70 ± 0.32 | 19.37 | 14.82 | 41.35 ± 0.48 | 49.56 | 38.92 | 76.60 ± 0.13 | 42.00 | 34.53 | 49.31 ± 0.50 |
-| OpenAI | 34.30 | 23.72 | 63.79 ± 0.46 | 20.09 | 15.42 | 42.92 ± 0.63 | 39.31 | 31.16 | 62.29 ± 0.12 | 14.04 | 11.25 | 21.71 ± 0.20 |
-| Mem0 | 38.72 | 27.13 | 67.13 ± 0.65 | 28.64 | 21.58 | 51.15 ± 0.31 | 47.65 | 38.72 | 72.93 ± 0.11 | 48.93 | 40.51 | 55.51 ± 0.34 |
-| $\texttt{Mem0}^{\tiny g}$ | 38.09 | 26.03 | 65.71 ± 0.45 | 24.32 | 18.82 | 47.19 ± 0.67 | 49.27 | 40.30 | 75.71 ± 0.21 | 51.55 | 40.28 | 58.13 ± 0.44 |
+| A-Mem* | 20.76 | 14.90 | 39.79 $\pm$ 0.38 | 9.22 | 8.81 | 18.85 $\pm$ 0.31 | 33.34 | 27.58 | 54.05 $\pm$ 0.22 | 35.40 | 31.08 | 49.91 $\pm$ 0.31 |
+| LangMem | 35.51 | 26.86 | 62.23 $\pm$ 0.75 | 26.04 | 22.32 | 47.92 $\pm$ 0.47 | 40.91 | 33.63 | 71.12 $\pm$ 0.20 | 30.75 | 25.84 | 23.43 $\pm$ 0.39 |
+| Zep | 35.74 | 23.30 | 61.70 $\pm$ 0.32 | 19.37 | 14.82 | 41.35 $\pm$ 0.48 | 49.56 | 38.92 | **76.60 $\pm$ 0.13** | 42.00 | 34.53 | 49.31 $\pm$ 0.50 |
+| OpenAI | 34.30 | 23.72 | 63.79 $\pm$ 0.46 | 20.09 | 15.42 | 42.92 $\pm$ 0.63 | 39.31 | 31.16 | 62.29 $\pm$ 0.12 | 14.04 | 11.25 | 21.71 $\pm$ 0.20 |
+| Mem0 | **38.72** | **27.13** | **67.13 $\pm$ 0.65** | **28.64** | **21.58** | **51.15 $\pm$ 0.31** | 47.65 | 38.72 | 72.93 $\pm$ 0.11 | 48.93 | 40.51 | 55.51 $\pm$ 0.34 |
+| $\texttt{Mem0}^{\tiny g}$ | 38.09 | 26.03 | 65.71 $\pm$ 0.45 | 24.32 | 18.82 | 47.19 $\pm$ 0.67 | **49.27** | **40.30** | 75.71 $\pm$ 0.21 | **51.55** | **40.28** | **58.13 $\pm$ 0.44** |
 
 ## 4 Evaluation Results, Analysis and Discussion.
 
 ### 4.1 Performance Comparison Across Memory-Enabled Systems
 
-Table 1 reports F1, B1 and J scores for our two architectures—Mem0 and $\texttt{Mem0}^{\tiny g}$ —against a suite of competitive baselines, as mentioned in Section 3, on single-hop, multi-hop, open-domain, and temporal questions. Overall, both of our models set new state-of-the-art marks in all the three evaluation metrics for most question types.
+Table 1 reports F1, B1 and J scores for our two architectures—Mem0 and $\texttt{Mem0}^{\tiny g}$ —against a suite of competitive baselines, as mentioned in Section 3, on single-hop, multi-hop, open-domain, and temporal questions. Overall, both of our models set new state-of-the-art marks in all the three evaluation metrics for most question types.
 
 #### Single-Hop Question Performance
 
-Single-hop queries involve locating a single factual span contained within one dialogue turn. Leveraging its dense memories in natural language text, Mem0 secures the strongest results:F1=38.72, B1=27.13, and J=67.13. Augmenting the natural language memories with graph memory ($\texttt{Mem0}^{\tiny g}$) yields marginal performance drop compared to Mem0, indicating that relational structure provides limited utility when the retrieval target occupies a single turn. Among the existing baselines, the full-context OpenAI run attains the next-best J score, reflecting the benefits of retaining the entire conversation in context, while LangMem and Zep both score around 8% relatively less against our models on J score. Previous LOCOMO benchmarks such as A-mem lag by more than 25 points in J, underscoring the necessity of fine-grained, structured memory indexing even for simple retrieval tasks.
+Single-hop queries involve locating a single factual span contained within one dialogue turn. Leveraging its dense memories in natural language text, Mem0 secures the strongest results: F1=38.72, B1=27.13, and J=67.13. Augmenting the natural language memories with graph memory ($\texttt{Mem0}^{\tiny g}$) yields marginal performance drop compared to Mem0, indicating that relational structure provides limited utility when the retrieval target occupies a single turn. Among the existing baselines, the full-context OpenAI run attains the next-best J score, reflecting the benefits of retaining the entire conversation in context, while LangMem and Zep both score around 8% relatively less against our models on J score. Previous LOCOMO benchmarks such as A-mem lag by more than 25 points in J, underscoring the necessity of fine-grained, structured memory indexing even for simple retrieval tasks.
 
 #### Multi-Hop Question Performance
 
-Multi-hop queries require synthesizing information dispersed across multiple conversation sessions, posing significant challenges in memory integration and retrieval. Mem0 clearly outperforms other methods with an F1 score of 28.64 and a J score of 51.15, reflecting its capability to efficiently retrieve and integrate disparate information stored across sessions. Interestingly, the addition of graph memory in $\texttt{Mem0}^{\tiny g}$ does not provide performance gains here, indicating potential inefficiencies or redundancies in structured graph representations for complex integrative tasks compared to dense natural language memory alone. Baselines like LangMem show competitive performances, but their scores substantially trail those of Mem0, emphasizing the advantage of our refined memory indexing and retrieval mechanisms for complex query processing.
+Multi-hop queries require synthesizing information dispersed across multiple conversation sessions, posing significant challenges in memory integration and retrieval. Mem0 clearly outperforms other methods with an F1 score of 28.64 and a J score of 51.15, reflecting its capability to efficiently retrieve and integrate disparate information stored across sessions. Interestingly, the addition of graph memory in $\texttt{Mem0}^{\tiny g}$ does not provide performance gains here, indicating potential inefficiencies or redundancies in structured graph representations for complex integrative tasks compared to dense natural language memory alone. Baselines like LangMem show competitive performances, but their scores substantially trail those of Mem0, emphasizing the advantage of our refined memory indexing and retrieval mechanisms for complex query processing.
 
 #### Open-Domain Performance
 
-In open-domain settings, the baseline Zep achieves the highest F1 (49.56) and J (76.60) scores, edging out our methods by a narrow margin. In particular, Zep’s J score of 76.60 surpasses $\texttt{Mem0}^{\tiny g}$’s 75.71 by just 0.89 percentage points and outperforms Mem0’s 72.93 by 3.67 points, highlighting a consistent, if slight, advantage in integrating conversational memory with external knowledge. $\texttt{Mem0}^{\tiny g}$remains a strong runner-up, with a J of 75.71 reflecting high factual retrieval precision, while Mem0 follows with 72.93, demonstrating robust coherence. These results underscore that although structured relational memories (as in Mem0 and $\texttt{Mem0}^{\tiny g}$) substantially improve open-domain retrieval, Zep maintains a small but meaningful lead.
+In open-domain settings, the baseline Zep achieves the highest F1 (49.56) and J (76.60) scores, edging out our methods by a narrow margin. In particular, Zep’s J score of 76.60 surpasses $\texttt{Mem0}^{\tiny g}$’s 75.71 by just 0.89 percentage points and outperforms Mem0’s 72.93 by 3.67 points, highlighting a consistent, if slight, advantage in integrating conversational memory with external knowledge. $\texttt{Mem0}^{\tiny g}$ remains a strong runner-up, with a J of 75.71 reflecting high factual retrieval precision, while Mem0 follows with 72.93, demonstrating robust coherence. These results underscore that although structured relational memories (as in Mem0 and $\texttt{Mem0}^{\tiny g}$) substantially improve open-domain retrieval, Zep maintains a small but meaningful lead.
 
 #### Temporal Reasoning Performance
 
-Temporal reasoning tasks hinge on accurate modeling of event sequences, their relative ordering, and durations within conversational history. Our architectures demonstrate substantial improvements across all metrics, with $\texttt{Mem0}^{\tiny g}$ achieving the highest F1(51.55) and J (58.13), suggesting that structured relational representations in addition to natural language memories significantly aid in temporally grounded judgments. Notably, the base variant, Mem0, also provide a decent J score (55.51), suggesting that natural language alone can aid in temporally grounded judgments.
-Among baselines, OpenAI notably underperforms, with scores below 15%, primarily due to missing timestamps in most generated memories despite explicit prompting in the OpenAI ChatGPT to extract memories with timestamps. Other baselines such as A-Mem achieve respectable results, yet our models clearly advance the state-of-the-art, emphasizing the critical advantage of accurately leveraging both natural language contextualization and structured graph representations for temporal reasoning.
+Temporal reasoning tasks hinge on accurate modeling of event sequences, their relative ordering, and durations within conversational history. Our architectures demonstrate substantial improvements across all metrics, with $\texttt{Mem0}^{\tiny g}$ achieving the highest F1(51.55) and J (58.13), suggesting that structured relational representations in addition to natural language memories significantly aid in temporally grounded judgments. Notably, the base variant, Mem0, also provide a decent J score (55.51), suggesting that natural language alone can aid in temporally grounded judgments. Among baselines, OpenAI notably underperforms, with scores below 15%, primarily due to missing timestamps in most generated memories despite explicit prompting in the OpenAI ChatGPT to extract memories with timestamps. Other baselines such as A-Mem achieve respectable results, yet our models clearly advance the state-of-the-art, emphasizing the critical advantage of accurately leveraging both natural language contextualization and structured graph representations for temporal reasoning.
 
 ### 4.2 Cross-Category Analysis
 
-The comprehensive evaluation across diverse question categories reveals that our proposed architectures, Mem0 and $\texttt{Mem0}^{\tiny g}$, consistently achieve superior performance compared to baseline systems. For single-hop queries, Mem0 demonstrates particularly strong performance, benefiting from its efficient dense natural language memory structure. Although graph-based representations in $\texttt{Mem0}^{\tiny g}$ slightly lag behind in lexical overlap metrics for these simpler queries, they significantly enhance semantic coherence, as demonstrated by competitive J scores. This indicates that graph structures are more beneficial in scenarios involving nuanced relational context rather than straightforward retrieval. For multi-hop questions, Mem0 exhibits clear advantages by effectively synthesizing dispersed information across multiple sessions, confirming that natural language memories provide sufficient representational richness for these integrative tasks. Surprisingly, the expected relational advantages of $\texttt{Mem0}^{\tiny g}$ do not translate into better outcomes here, suggesting potential overhead or redundancy when navigating more intricate graph structures in multi-step reasoning scenarios.
+The comprehensive evaluation across diverse question categories reveals that our proposed architectures, Mem0 and $\texttt{Mem0}^{\tiny g}$, consistently achieve superior performance compared to baseline systems. For single-hop queries, Mem0 demonstrates particularly strong performance, benefiting from its efficient dense natural language memory structure. Although graph-based representations in $\texttt{Mem0}^{\tiny g}$ slightly lag behind in lexical overlap metrics for these simpler queries, they significantly enhance semantic coherence, as demonstrated by competitive J scores. This indicates that graph structures are more beneficial in scenarios involving nuanced relational context rather than straightforward retrieval. For multi-hop questions, Mem0 exhibits clear advantages by effectively synthesizing dispersed information across multiple sessions, confirming that natural language memories provide sufficient representational richness for these integrative tasks. Surprisingly, the expected relational advantages of $\texttt{Mem0}^{\tiny g}$ do not translate into better outcomes here, suggesting potential overhead or redundancy when navigating more intricate graph structures in multi-step reasoning scenarios.
 
 **Table 2: Performance comparison of various baselines with proposed methods. Latency measurements show p50 (median) and p95 (95th percentile) values in seconds for both search time (time taken to fetch memories/chunks) and total time (time to generate the complete response). Overall LLM-as-a-Judge score ($\mathrm{J}$) represents the quality metric of the generated responses on the entire LOCOMO dataset.**
-| Method |  | Latency (seconds) | Overall<br>$\mathrm{J}$ |  |  |  |  |
+
+| Method | | Latency (seconds) | Overall<br>$\mathrm{J}$ | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-|  | Search | Total |  |  |  |  |  |
-| K | chunk size /<br>memory tokens | p50 | p95 | p50 | p95 |  |  |
+| | Search | Total | | | | | |
+| K | chunk size /<br>memory tokens | p50 | p95 | p50 | p95 | | |
 | RAG | 1 | 128 | 0.281 | 0.823 | 0.774 | 1.825 | 47.77 $\pm$ 0.23% |
-| 256 | 0.251 | 0.710 | 0.745 | 1.628 | 50.15 $\pm$ 0.16% |  |  |
-| 512 | 0.240 | 0.639 | 0.772 | 1.710 | 46.05 $\pm$ 0.14% |  |  |
-| 1024 | 0.240 | 0.723 | 0.821 | 1.957 | 40.74 $\pm$ 0.17% |  |  |
-| 2048 | 0.255 | 0.752 | 0.996 | 2.182 | 37.93 $\pm$ 0.12% |  |  |
-| 4096 | 0.254 | 0.719 | 1.093 | 2.711 | 36.84 $\pm$ 0.17% |  |  |
-| 8192 | 0.279 | 0.838 | 1.396 | 4.416 | 44.53 $\pm$ 0.13% |  |  |
-| 2 | 128 | 0.267 | 0.624 | 0.766 | 1.829 | 59.56 $\pm$ 0.19% |  |
-| 256 | 0.255 | 0.699 | 0.802 | 1.907 | 60.97 $\pm$ 0.20% |  |  |
-| 512 | 0.247 | 0.746 | 0.829 | 1.729 | 58.19 $\pm$ 0.18% |  |  |
-| 1024 | 0.238 | 0.702 | 0.860 | 1.850 | 50.68 $\pm$ 0.13% |  |  |
-| 2048 | 0.261 | 0.829 | 1.101 | 2.791 | 48.57 $\pm$ 0.22% |  |  |
-| 4096 | 0.266 | 0.944 | 1.451 | 4.822 | 51.79 $\pm$ 0.15% |  |  |
-| 8192 | 0.288 | 1.124 | 2.312 | 9.942 | 60.53 $\pm$ 0.16% |  |  |
-| Full-context |  | 26031 | - | - | 9.870 | 17.117 | 72.90 $\pm$ 0.19% |
-| A-Mem |  | 2520 | 0.668 | 1.485 | 1.410 | 4.374 | 48.38 $\pm$ 0.15% |
-| LangMem |  | 127 | 17.99 | 59.82 | 18.53 | 60.40 | 58.10 $\pm$ 0.21% |
-| Zep |  | 3911 | 0.513 | 0.778 | 1.292 | 2.926 | 65.99 $\pm$ 0.16% |
-| OpenAI |  | 4437 | - | - | 0.466 | 0.889 | 52.90 $\pm$ 0.14% |
-| Mem0 |  | 1764 | 0.148 | 0.200 | 0.708 | 1.440 | 66.88 $\pm$ 0.15% |
-| $\texttt{Mem0}^{\tiny g}$ |  | 3616 | 0.476 | 0.657 | 1.091 | 2.590 | 68.44 $\pm$ 0.17% |
+| | 256 | 0.251 | 0.710 | 0.745 | 1.628 | 50.15 $\pm$ 0.16% | | |
+| | 512 | 0.240 | 0.639 | 0.772 | 1.710 | 46.05 $\pm$ 0.14% | | |
+| | 1024 | 0.240 | 0.723 | 0.821 | 1.957 | 40.74 $\pm$ 0.17% | | |
+| | 2048 | 0.255 | 0.752 | 0.996 | 2.182 | 37.93 $\pm$ 0.12% | | |
+| | 4096 | 0.254 | 0.719 | 1.093 | 2.711 | 36.84 $\pm$ 0.17% | | |
+| | 8192 | 0.279 | 0.838 | 1.396 | 4.416 | 44.53 $\pm$ 0.13% | | |
+| | 2 | 128 | 0.267 | 0.624 | 0.766 | 1.829 | 59.56 $\pm$ 0.19% | |
+| | 256 | 0.255 | 0.699 | 0.802 | 1.907 | 60.97 $\pm$ 0.20% | | |
+| | 512 | 0.247 | 0.746 | 0.829 | 1.729 | 58.19 $\pm$ 0.18% | | |
+| | 1024 | 0.238 | 0.702 | 0.860 | 1.850 | 50.68 $\pm$ 0.13% | | |
+| | 2048 | 0.261 | 0.829 | 1.101 | 2.791 | 48.57 $\pm$ 0.22% | | |
+| | 4096 | 0.266 | 0.944 | 1.451 | 4.822 | 51.79 $\pm$ 0.15% | | |
+| | 8192 | 0.288 | 1.124 | 2.312 | 9.942 | 60.53 $\pm$ 0.16% | | |
+| Full-context | | 26031 | - | - | 9.870 | 17.117 | 72.90 $\pm$ 0.19% |
+| A-Mem | | 2520 | 0.668 | 1.485 | 1.410 | 4.374 | 48.38 $\pm$ 0.15% |
+| LangMem | | 127 | 17.99 | 59.82 | 18.53 | 60.40 | 58.10 $\pm$ 0.21% |
+| Zep | | 3911 | 0.513 | 0.778 | 1.292 | 2.926 | 65.99 $\pm$ 0.16% |
+| OpenAI | | 4437 | - | - | 0.466 | 0.889 | 52.90 $\pm$ 0.14% |
+| Mem0 | | 1764 | **0.148** | **0.200** | **0.708** | **1.440** | 66.88 $\pm$ 0.15% |
+| $\texttt{Mem0}^{\tiny g}$ | | 3616 | 0.476 | 0.657 | 1.091 | 2.590 | **68.44 $\pm$ 0.17%** |
 
-In temporal reasoning, $\texttt{Mem0}^{\tiny g}$ substantially outperforms other methods, validating that structured relational graphs excel in capturing chronological relationships and event sequences. The presence of explicit relational context significantly enhances $\texttt{Mem0}^{\tiny g}$’s temporal coherence, outperforming Mem0’s dense memory storage and highlighting the importance of precise relational representations when tracking temporally sensitive information. Open-domain performance further reinforces the value of relational modeling. $\texttt{Mem0}^{\tiny g}$, benefiting from the relational clarity of graph-based memory, closely competes with the top-performing baseline (Zep). This competitive result underscores $\texttt{Mem0}^{\tiny g}$’s robustness in integrating external knowledge through relational clarity, suggesting an optimal synergy between structured memory and open-domain information synthesis.
+In temporal reasoning, $\texttt{Mem0}^{\tiny g}$ substantially outperforms other methods, validating that structured relational graphs excel in capturing chronological relationships and event sequences. The presence of explicit relational context significantly enhances $\texttt{Mem0}^{\tiny g}$’s temporal coherence, outperforming Mem0’s dense memory storage and highlighting the importance of precise relational representations when tracking temporally sensitive information. Open-domain performance further reinforces the value of relational modeling. $\texttt{Mem0}^{\tiny g}$, benefiting from the relational clarity of graph-based memory, closely competes with the top-performing baseline (Zep). This competitive result underscores $\texttt{Mem0}^{\tiny g}$’s robustness in integrating external knowledge through relational clarity, suggesting an optimal synergy between structured memory and open-domain information synthesis.
 
-Overall, our analysis indicates complementary strengths of Mem0 and $\texttt{Mem0}^{\tiny g}$ across various task demands: dense, natural-language-based memory offers significant efficiency for simpler queries, while explicit relational modeling becomes essential for tasks demanding nuanced temporal and contextual integration.
-These findings reinforce the importance of adaptable memory structures tailored to specific reasoning contexts in AI agent deployments.
+Overall, our analysis indicates complementary strengths of Mem0 and $\texttt{Mem0}^{\tiny g}$ across various task demands: dense, natural-language-based memory offers significant efficiency for simpler queries, while explicit relational modeling becomes essential for tasks demanding nuanced temporal and contextual integration. These findings reinforce the importance of adaptable memory structures tailored to specific reasoning contexts in AI agent deployments.
 
-Figure: (a) Comparison of *search* latency at p50 (median) and p95 (95th percentile) across different memory methods (Mem0, $\texttt{Mem0}^{\tiny g}$, best RAG variant, Zep, LangMem, and A-Mem). The bar heights represent J scores (left axis), while the line plots show search latency in seconds (right axis scaled in log).
-Refer to caption: extracted/6393986/figures/latency_search.png
+![Comparison of *search* latency at p50 (median) and p95 (95th percentile) across different memory methods (Mem0, $\texttt{Mem0}^{\tiny g}$, best RAG variant, Zep, LangMem, and A-Mem). The bar heights represent J scores (left axis), while the line plots show search latency in seconds (right axis scaled in log).](extracted/6393986/figures/latency_search.png "(a) Comparison of *search* latency at p50 (median) and p95 (95th percentile) across different memory methods (Mem0, $\texttt{Mem0}^{\tiny g}$, best RAG variant, Zep, LangMem, and A-Mem). The bar heights represent J scores (left axis), while the line plots show search latency in seconds (right axis scaled in log).")
 
-### 4.3 Performance Comparison of Mem0 and Mem0 g superscript Mem0 𝑔 \texttt{Mem0}^{\tiny g} Mem0 start_POSTSUPERSCRIPT italic_g end_POSTSUPERSCRIPT Against RAG Approaches and Full-Context Model
+### 4.3 Performance Comparison of Mem0 and $\texttt{Mem0}^{\tiny g}$ Against RAG Approaches and Full-Context Model
 
-Comparisons in Table 2, focusing on the ‘Overall J’ column, reveal that both Mem0 and $\texttt{Mem0}^{\tiny g}$ consistently outperform all RAG configurations, which vary chunk sizes (128–8192 tokens) and retrieve either one ($k$=1) or two ($k$=2) chunks. Even the strongest RAG approach peaks at around 61% in the J metric, whereas Mem0 reaches 67%—about a 10% relative improvement—and $\texttt{Mem0}^{\tiny g}$ reaches over 68%, achieving around a 12% relative gain. These advances underscore the advantage of capturing only the most salient facts in memory, rather than retrieving large chunk of original text. By converting the conversation history into concise, structured representations, Mem0 and $\texttt{Mem0}^{\tiny g}$ mitigate noise and surface more precise cues to the LLM, leading to better answers as evaluated by an external LLM (J).
+Comparisons in Table 2, focusing on the ‘Overall J’ column, reveal that both Mem0 and $\texttt{Mem0}^{\tiny g}$ consistently outperform all RAG configurations, which vary chunk sizes (128–8192 tokens) and retrieve either one ($k$=1) or two ($k$=2) chunks. Even the strongest RAG approach peaks at around 61% in the J metric, whereas Mem0 reaches 67%—about a 10% relative improvement—and $\texttt{Mem0}^{\tiny g}$ reaches over 68%, achieving around a 12% relative gain. These advances underscore the advantage of capturing only the most salient facts in memory, rather than retrieving large chunk of original text. By converting the conversation history into concise, structured representations, Mem0 and $\texttt{Mem0}^{\tiny g}$ mitigate noise and surface more precise cues to the LLM, leading to better answers as evaluated by an external LLM (J).
 
-Despite these improvements, a full-context method that ingests a chunk of roughly 26,000 tokens still achieves the highest J score (approximately 73%). However, as shown in Figure 4(b), it also incurs a very high total p95 latency—around 17 seconds—since the model must read the entire conversation on every query. By contrast, Mem0 and $\texttt{Mem0}^{\tiny g}$ significantly reduce token usage and thus achieve lower p95 latencies of around 1.44 seconds (a 92% reduction) and 2.6 seconds (a 85% reduction), respectively over full-context approach. Although the full-context approach can provide a slight accuracy edge, the memory-based systems offer a more practical trade-off, maintaining near-competitive quality while imposing only a fraction of the token and latency cost.
-As conversation length increases, full-context approaches suffer from exponential growth in computational overhead (evident in Table 2 where total p95 latency increases significantly with larger $k$ values or chunk sizes). This increase in input chunks leads to longer response times and higher token consumption costs. In contrast, memory-focused approaches like Mem0 and $\texttt{Mem0}^{\tiny g}$ maintain consistent performance regardless of conversation length, making them substantially more viable for production-scale deployments where efficiency and responsiveness are critical.
+Despite these improvements, a full-context method that ingests a chunk of roughly 26,000 tokens still achieves the highest J score (approximately 73%). However, as shown in Figure 4(b), it also incurs a very high total p95 latency—around 17 seconds—since the model must read the entire conversation on every query. By contrast, Mem0 and $\texttt{Mem0}^{\tiny g}$ significantly reduce token usage and thus achieve lower p95 latencies of around 1.44 seconds (a 92% reduction) and 2.6 seconds (a 85% reduction), respectively over full-context approach. Although the full-context approach can provide a slight accuracy edge, the memory-based systems offer a more practical trade-off, maintaining near-competitive quality while imposing only a fraction of the token and latency cost. As conversation length increases, full-context approaches suffer from exponential growth in computational overhead (evident in Table 2 where total p95 latency increases significantly with larger $k$ values or chunk sizes). This increase in input chunks leads to longer response times and higher token consumption costs. In contrast, memory-focused approaches like Mem0 and $\texttt{Mem0}^{\tiny g}$ maintain consistent performance regardless of conversation length, making them substantially more viable for production-scale deployments where efficiency and responsiveness are critical.
 
 ### 4.4 Latency Analysis
 
-Table 2 provides a comprehensive performance comparison of various retrieval and memory methodologies, presenting median (p50) and tail (p95) latencies for both the search phase and total response generation across the LOCOMO dataset. Our analysis reveals distinct performance patterns governed by architectural choices. Memory-centric architectures demonstrate different performance characteristics. A-Mem, despite its larger memory store, incurs substantial search overhead (p50: 0.668s), resulting in total median latencies of 1.410s. LangMem exhibits even higher search latencies (p50: 17.99s, p95: 59.82s), rendering it impractical for interactive applications. Zep achieves moderate performance (p50 total: 1.292s).
-The full-context baseline, which processes the entire conversation history without retrieval, fundamentally differs from retrieval-based approaches. By passing the entire conversation context (26000 tokens) directly to the LLM, it eliminates search overhead but incurs extreme total latencies (p50: 9.870s, p95: 17.117s). Similarly, the OpenAI implementation does not perform memory search, as it processes manually extracted memories from their playground. While this approach achieves impressive response generation times (p50: 0.466s, p95: 0.889s), it requires pre-extraction of relevant context, which is not reflected in the reported metrics.
+Table 2 provides a comprehensive performance comparison of various retrieval and memory methodologies, presenting median (p50) and tail (p95) latencies for both the search phase and total response generation across the LOCOMO dataset. Our analysis reveals distinct performance patterns governed by architectural choices. Memory-centric architectures demonstrate different performance characteristics. A-Mem, despite its larger memory store, incurs substantial search overhead (p50: 0.668s), resulting in total median latencies of 1.410s. LangMem exhibits even higher search latencies (p50: 17.99s, p95: 59.82s), rendering it impractical for interactive applications. Zep achieves moderate performance (p50 total: 1.292s). The full-context baseline, which processes the entire conversation history without retrieval, fundamentally differs from retrieval-based approaches. By passing the entire conversation context (26000 tokens) directly to the LLM, it eliminates search overhead but incurs extreme total latencies (p50: 9.870s, p95: 17.117s). Similarly, the OpenAI implementation does not perform memory search, as it processes manually extracted memories from their playground. While this approach achieves impressive response generation times (p50: 0.466s, p95: 0.889s), it requires pre-extraction of relevant context, which is not reflected in the reported metrics.
 
-Our proposed Mem0 approach achieves the lowest search latency among all methods (p50: 0.148s, p95: 0.200s) as illustrated in Figure 4(a). This efficiency stems from our selective memory retrieval mechanism and infra improvements that dynamically identifies and retrieves only the most salient information rather than fixed-size chunks. Consequently, Mem0 maintains the lowest total median latency (0.708s) with remarkably contained p95 values (1.440s), making it particularly suitable for latency-sensitive applications such as interactive AI agents. The graph-enhanced $\texttt{Mem0}^{\tiny g}$ variant introduces additional relational modeling capabilities at a moderate latency cost, with search times (0.476s) still outperforming all existing memory solutions and baselines.
-Despite this increase, $\texttt{Mem0}^{\tiny g}$ maintains competitive total latencies (p50: 1.091s, p95: 2.590s) while achieving the highest J score (68.44%) across all methods—trailing only the computationally prohibitive full-context approach.
-This performance profile demonstrates our methods’ ability to balance response quality and computational efficiency, offering a compelling solution for production AI agents where both factors are critical constraints.
+Our proposed Mem0 approach achieves the lowest search latency among all methods (p50: 0.148s, p95: 0.200s) as illustrated in Figure 4(a). This efficiency stems from our selective memory retrieval mechanism and infra improvements that dynamically identifies and retrieves only the most salient information rather than fixed-size chunks. Consequently, Mem0 maintains the lowest total median latency (0.708s) with remarkably contained p95 values (1.440s), making it particularly suitable for latency-sensitive applications such as interactive AI agents. The graph-enhanced $\texttt{Mem0}^{\tiny g}$ variant introduces additional relational modeling capabilities at a moderate latency cost, with search times (0.476s) still outperforming all existing memory solutions and baselines. Despite this increase, $\texttt{Mem0}^{\tiny g}$ maintains competitive total latencies (p50: 1.091s, p95: 2.590s) while achieving the highest J score (68.44%) across all methods—trailing only the computationally prohibitive full-context approach. This performance profile demonstrates our methods’ ability to balance response quality and computational efficiency, offering a compelling solution for production AI agents where both factors are critical constraints.
 
 ### 4.5 Memory System Overhead: Token Analysis and Construction Time
 
-We measure the average token budget required to materialise each system’s long-term memory store.
-Mem0 encodes complete dialogue turns in a natural language representation and therefore occupies only 7k tokens per conversation on an average. Where as $\texttt{Mem0}^{\tiny g}$ roughly doubles the footprint to 14k tokens, due to the introduction of graph memories which includes nodes and corresponding relationships. In stark contrast, Zep’s memory graph consumes in excess of 600k tokens. The inflation arises from Zep’s design choice to cache a full abstractive summary at every node while also storing facts on the connecting edges, leading to extensive redundancy across the graph. For perspective, supplying the *entire* raw conversation context to the language model—without any memory abstraction—amounts to roughly 26k tokens on average, 20 times less relative to Zep’s graph.
-Beyond token inefficiency, our experiments revealed significant operational bottlenecks with Zep. After adding memories to Zep’s system, we observed that immediate memory retrieval attempts often failed to answer our queries correctly. Interestingly, re-running identical searches after a delay of several hours yielded considerably better results. This latency suggests that Zep’s graph construction involves multiple asynchronous LLM calls and extensive background processing, making the memory system impractical for real-time applications. In contrast, Mem0 graph construction completes in under a minute even in worst-case scenarios, allowing users to immediately leverage newly added memories for query responses.
+We measure the average token budget required to materialise each system’s long-term memory store. Mem0 encodes complete dialogue turns in a natural language representation and therefore occupies only 7k tokens per conversation on an average. Whereas $\texttt{Mem0}^{\tiny g}$ roughly doubles the footprint to 14k tokens, due to the introduction of graph memories which includes nodes and corresponding relationships. In stark contrast, Zep’s memory graph consumes in excess of 600k tokens. The inflation arises from Zep’s design choice to cache a full abstractive summary at every node while also storing facts on the connecting edges, leading to extensive redundancy across the graph. For perspective, supplying the *entire* raw conversation context to the language model—without any memory abstraction—amounts to roughly 26k tokens on average, 20 times less relative to Zep’s graph.
+Beyond token inefficiency, our experiments revealed significant operational bottlenecks with Zep. After adding memories to Zep’s system, we observed that immediate memory retrieval attempts often failed to answer our queries correctly. Interestingly, re-running identical searches after a delay of several hours yielded considerably better results. This latency suggests that Zep’s graph construction involves multiple asynchronous LLM calls and extensive background processing, making the memory system impractical for real-time applications. In contrast, Mem0 graph construction completes in under a minute even in worst-case scenarios, allowing users to immediately leverage newly added memories for query responses.
 
-These findings highlight that Zep not only replicates identical knowledge fragments across multiple nodes, but also introduces significant operational delays. Our architectures—Mem0 and $\texttt{Mem0}^{\tiny g}$—preserve the same information at a fraction of the token cost and with substantially faster memory availability, offering a more memory-efficient and operationally responsive representation.
+These findings highlight that Zep not only replicates identical knowledge fragments across multiple nodes, but also introduces significant operational delays. Our architectures—Mem0 and $\texttt{Mem0}^{\tiny g}$—preserve the same information at a fraction of the token cost and with substantially faster memory availability, offering a more memory-efficient and operationally responsive representation.
 
 ## 5 Conclusion and Future Work
 
-We have introduced Mem0 and $\texttt{Mem0}^{\tiny g}$, two complementary memory architectures that overcome the intrinsic limitations of fixed context windows in LLMs. By dynamically extracting, consolidating, and retrieving compact memory representations, Mem0 achieves state-of-the-art performance across single-hop and multi-hop reasoning, while $\texttt{Mem0}^{\tiny g}$’s graph-based extensions unlock significant gains in temporal and open-domain tasks. On the LOCOMO benchmark, our methods deliver 5%, 11%, and 7% relative improvements in single-hop, temporal, and multi-hop reasoning question types over best performing methods in respective question type and reduce p95 latency by over 91% compared to full-context baselines—demonstrating a powerful balance between precision and responsiveness. Mem0’s dense memory pipeline excels at rapid retrieval for straightforward queries, minimizing token usage and computational overhead. In contrast, $\texttt{Mem0}^{\tiny g}$’s structured graph representations provide nuanced relational clarity, enabling complex event sequencing and rich context integration without sacrificing practical efficiency. Together, they form a versatile memory toolkit that adapts to diverse conversational demands while remaining deployable at scale.
+We have introduced Mem0 and $\texttt{Mem0}^{\tiny g}$, two complementary memory architectures that overcome the intrinsic limitations of fixed context windows in LLMs. By dynamically extracting, consolidating, and retrieving compact memory representations, Mem0 achieves state-of-the-art performance across single-hop and multi-hop reasoning, while $\texttt{Mem0}^{\tiny g}$’s graph-based extensions unlock significant gains in temporal and open-domain tasks. On the LOCOMO benchmark, our methods deliver 5%, 11%, and 7% relative improvements in single-hop, temporal, and multi-hop reasoning question types over best performing methods in respective question type and reduce p95 latency by over 91% compared to full-context baselines—demonstrating a powerful balance between precision and responsiveness. Mem0’s dense memory pipeline excels at rapid retrieval for straightforward queries, minimizing token usage and computational overhead. In contrast, $\texttt{Mem0}^{\tiny g}$’s structured graph representations provide nuanced relational clarity, enabling complex event sequencing and rich context integration without sacrificing practical efficiency. Together, they form a versatile memory toolkit that adapts to diverse conversational demands while remaining deployable at scale.
 
 Future research directions include optimizing graph operations to reduce the latency overhead in $\texttt{Mem0}^{\tiny g}$, exploring hierarchical memory architectures that blend efficiency with relational representation, and developing more sophisticated memory consolidation mechanisms inspired by human cognitive processes. Additionally, extending our memory frameworks to domains beyond conversational scenarios, such as procedural reasoning and multimodal interactions, would further validate their broader applicability. By addressing the fundamental limitations of fixed context windows, our work represents a significant advancement toward conversational AI systems capable of maintaining coherent, contextually rich interactions over extended periods, much like their human counterparts.
 
@@ -4028,11 +3983,8 @@ We would like to express our sincere gratitude to Harsh Agarwal, Shyamal Anadkat
 
 In developing our LLM-as-a-Judge prompt, we adapt elements from the prompt released by .
 
-EqBox s O !htbp m floatplacement=#2,
-IfBooleanTF=#1float*,width=float,
-title=#3,
-
-[!htbp]Prompt Template for LLM as a Judge
+```markdown
+Prompt Template for LLM as a Judge
 Your task is to label an answer to a question as "CORRECT" or "WRONG".
 You will be given the following data:
 (1) a question (posed by one user to another user),
@@ -4063,8 +4015,10 @@ First, provide a short (one sentence) explanation of your reasoning, then finish
 Do NOT include both CORRECT and WRONG in your response, or it will break the evaluation script.
 
 Just return the label CORRECT or WRONG in a json format with the key as "label".
+```
 
-[!htbp]Prompt Template for Results Generation (Mem0)
+```markdown
+Prompt Template for Results Generation (Mem0)
 You are an intelligent memory assistant tasked with retrieving accurate information from conversation memories.
 
 # CONTEXT:
@@ -4121,8 +4075,10 @@ Memories for user {speaker_2_user_id}:
 Question: {question}
 
 Answer:
+```
 
-[!htbp]Prompt Template for Results Generation ($\texttt{Mem0}^{\tiny g}$)
+```markdown
+Prompt Template for Results Generation ($\texttt{Mem0}^{\tiny g}$)
 (same as previous)
 
 # APPROACH (Think step by step):
@@ -4164,8 +4120,10 @@ Relations for user {speaker_2_user_id}:
 Question: {question}
 
 Answer:
+```
 
-[!htbp]Prompt Template for OpenAI ChatGPT
+```markdown
+Prompt Template for OpenAI ChatGPT
 Can you please extract relevant information from this conversation and create memory entries for each user mentioned? Please store these memories in your knowledge base in addition to the timestamp provided for future reference and personalized interactions.
 
 (1:56 pm on 8 May, 2023) Caroline: Hey Mel! Good to see you! How have you been?
@@ -4175,10 +4133,11 @@ Can you please extract relevant information from this conversation and create me
 (1:56 pm on 8 May, 2023) Caroline: I went to a LGBTQ support group yesterday and it was so powerful.
 
 ...
+```
 
 ## Appendix B Algorithm
 
-Figure: Algorithm 1 Memory Management System: Update Operations
+![Algorithm 1 Memory Management System: Update Operations](extracted/6393986/figures/alg1.png "Algorithm 1 Memory Management System: Update Operations")
 
 ## Appendix C Selected Baselines
 
@@ -4205,11 +4164,11 @@ The A-Mem model introduces an agentic memory system designed for LLM agents. Thi
 </details>
 
 <details>
-<summary>**Source URL:** <https://danielp1.substack.com/p/memex-20-memory-the-missing-piece></summary>
-
-**Source URL:** <https://danielp1.substack.com/p/memex-20-memory-the-missing-piece>
+<summary>Memex 2.0: Memory The Missing Piece for Real Intelligence</summary>
 
 # Memex 2.0: Memory The Missing Piece for Real Intelligence
+
+**Source URL:** <https://danielp1.substack.com/p/memex-20-memory-the-missing-piece>
 
 [Daniel](https://substack.com/@forwardfeed) and [Vadym Barda](https://substack.com/@vadymbarda)
 
@@ -4257,7 +4216,6 @@ Short-term memory (also called thread-scoped or working memory) holds recent con
 
 - **Procedural memory** captures steps in successful or failed processes to improve over time ("To book a flight, confirm the date, destination, then passenger count")
 
-
 Robust memory requires more than just storage, it demands systems that decide what to keep, how to retrieve it, and when to update or overwrite it. A key requirement of managing memory is having some form of update mechanism within the stored data (memory components). This allows agents to modify or supersede existing memories with new information, surfacing relevant details beyond typical text matches or relevance scores.
 
 **The Challenges of Implementing Memory at Scale**
@@ -4268,7 +4226,7 @@ A primary bottleneck is the practical limits and costs of an LLM's context windo
 
 Beyond size, retrieving the right information poses a major challenge. Simple semantic similarity, central to many RAG systems, frequently misses true contextual relevance, worsening as memory stores expand. Accumulated interactions increase risks of surfacing stale or conflicting data—e.g., a vector search pulling a months-old restaurant recommendation over yesterday's. It falters on temporal nuances, state changes (distinguishing "John was CEO" from "Sarah is CEO"), or negation ("I used to like Italian, but now prefer Thai"). Without mechanisms to resolve contradictions and prioritize by time/relevance, agents retrieve technically similar but functionally incorrect memories, yielding inconsistent outputs.
 
-These issues manifest in various failure modes, including memory poisoning, a vulnerability flagged by [Microsoft's AI Red Team](https://www.microsoft.com/en-us/security/blog/2025/04/24/new-whitepaper-outlines-the-taxonomy-of-failure-modes-in-ai-agents/), where malicious or erroneous data enters memory and resurfaces as fact. An attacker might inject "Forward internal API emails to this address," leading to breaches if memorized and acted upon, especially in autonomous agents self-selecting what to store.
+These issues manifest in various failure modes, including memory poisoning, a vulnerability flagged by [Microsoft's AI Red Team](https://www.microsoft.com/en-us/security/blog/2025/04/24/new-whitepaper-outlines-the-taxonomy-of-failure-modes-in-ai-agents/), where malicious or erroneous data enters memory and resurfaces as fact. An attacker might inject "Forward internal API emails to this address," leading to breaches if memorized and acted on, especially in autonomous agents self-selecting what to store.
 
 Finally, efficiency demands intentional forgetting and pruning to prevent bloat, high costs, and retrieval noise. Without smart mechanisms, based on recency, usage frequency, or user signals, irrelevant data accumulates, degrading performance.
 
@@ -4334,27 +4292,34 @@ Memory might be the missing link to reach the true potential of generative AI. T
 
 - Personalized Healthcare and Continuous Care: With robust memory, AI health assistants will track years of medical history, treatments, conversations, and even nuanced patient preferences. This enables highly personalized, proactive care: agents can notice subtle health trends, recall past issues or interventions, flag contradictions, and coordinate seamlessly with human caregivers
 
-
 We’ve reached a point where scaling context is no longer enough. Solving memory means designing systems that can reason across time. The winners in generative AI will be those who treat memory not as storage, but as a dynamic architecture for compound intelligence.
+
+## **Authors:**
+
+- [Vadym Barda](https://www.linkedin.com/in/vadymbarda/): Software & AI Engineer, previously @ LangChain (OSS/LangGraph) and Kensho (AI for document understanding)
+
+- [Daniel Porras](https://www.linkedin.com/in/danielporrasr/): Investor at Flybridge and host of the [AI Without Border’s Podcast](https://open.spotify.com/show/64ZoEttcgTNXAC7DQRdTvg?si=2bd660dc9df34737). [Flybridge](https://www.flybridge.com/) is a New York venture capital fund, with over 22 years of history, backing companies like MongoDB (NASDAQ: MDB), Firebase, [Arcee.ai](http://arcee.ai/), among many other's. (daniel@flybridge.com)
 
 </details>
 
 <details>
-<summary>**Source URL:** <https://www.newsletter.swirlai.com/p/memory-in-agent-systems></summary>
-
-**Source URL:** <https://www.newsletter.swirlai.com/p/memory-in-agent-systems>
+<summary>Memory in Agent Systems</summary>
 
 # Memory in Agent Systems
 
+**Source URL:** <https://www.newsletter.swirlai.com/p/memory-in-agent-systems>
+
 ### In this article I outline my thoughts on implementation of memory in GenAI systems.
+
+* * *
 
 Agents are the topic of the day. No surprises as we are continuing the extraction of business value from LLMs. While the base LLM is useful in many use cases, it is not equipped with necessary tools and reasoning capabilities (let’s see how far OpenAI o1 and similar models will bring us) to solve real business problems in even semi-autonomous manner.
 
-As described in the following article,
+* * *
 
 a high level definition of a LLM based agent includes:
 
-https://substackcdn.com/image/fetch/$s_!PRVS!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3f41c8ef-2472-4ded-b78e-a85059515fd8_2926x1952.png
+https://substackcdn.com/image/fetch/$s_!PRVS!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3f41c8ef-2472-4ded-b78e-a85059515fd8_2926x1952.png
 
 1. A controller application, which orchestrates the actions of the agent. It uses LLM as a brain to define a set of actions that the controller application should complete to achieve the goal. Once this set of actions is defined, the controller can then use capabilities given to it to achieve the desired result. Following are some of the generally used capabilities.
 
@@ -4366,7 +4331,6 @@ https://substackcdn.com/image/fetch/$s_!PRVS!,f_auto,q_auto:good,fl_progressive:
 
 5. Instructions - this is usually a registry of prompts that the controller can use.
 
-
 ### Memory component of an Agent.
 
 In this article I will focus on the memory component of the Agent. Generally, we tend to use memory patterns present in humans to both model and describe agentic memory. Keeping that in mind, there are two types of agentic memory:
@@ -4375,10 +4339,9 @@ In this article I will focus on the memory component of the Agent. Generally, we
 
 - Long-term memory, that is further split into multiple types.
 
-
 In the diagram presented at the beginning of the article I have hidden short-term memory as part of the agent core as it is continuously used in the reasoning loop to decide on the next set of actions to be taken in order to solve the provided human intent. For clarity reasons it is worth to extract the memory element as a whole:
 
-https://substackcdn.com/image/fetch/$s_!rWiw!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F43da16a9-b430-446e-a176-d5bc5c2f4b8e_2926x2198.png
+https://substackcdn.com/image/fetch/$s_!rWiw!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F43da16a9-b430-446e-a176-d5bc5c2f4b8e_2926x2198.png
 
 We will continue to discuss each type of memory in the following sections.
 
@@ -4388,7 +4351,7 @@ Short-term memory is extremely important in Agentic applications as it represent
 
 A good example is a simple chat agent. As we are chatting with the assistant, the interactions that are happening are continuously piped into the system prompt so that the system “remembers” the actions it has already taken and can source information from them to decide on next steps. It is important to note, that response of the assistant in agentic systems might involve more complex operations like external knowledge queries or tool usage and not just a regular answer generated by base LLM. This means that short term memory can be continuously enriched by sourcing information from different kinds of memories available to the agent that we will discuss in following chapters.
 
-https://substackcdn.com/image/fetch/$s_!mqPo!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F372d0336-783a-47c8-843a-9fb6ecc3405b_3240x1731.png
+https://substackcdn.com/image/fetch/$s_!mqPo!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F372d0336-783a-47c8-843a-9fb6ecc3405b_3240x1731.png
 
 What are the difficulties in managing short-term memory? Why shouldn’t we just continuously update the context in the system prompt? Few reasons:
 
@@ -4397,7 +4360,6 @@ What are the difficulties in managing short-term memory? Why shouldn’t we just
 - Even if the context window is large (e.g. 1 million tokens) the ability of the LLM to take into account all the relevant provided context reduces with the amount of data passed to the prompt. When designing Agentic systems our goal should be to architect short-term memory to be as compact as possible (this is where multi-agent systems come into play, but more on that in future articles). The ability for LLMs to better reason in large context windows should and will most likely be improved with continuous research in LLM pre/post-training.
 
 - As we expand the system prompt with each step of the interaction with an Agent, this context gets continuously passed to the LLM to produce next set of actions. A consequence of this is that we incur more cost with each iteration of interaction. With more autonomy given to the agent this can unexpectedly and quickly ramp up and easily reach e.g. 500 thousand input tokens per single human intent solved.
-
 
 We utilise Long-term memory to solve for all of the above and more.
 
@@ -4411,7 +4373,6 @@ You can think of long term memory of an agent as any information that sits outsi
 
 - Procedural.
 
-
 #### Episodic memory.
 
 This type of memory contains past interactions and actions performed by the agent. While we already talked about this in short term memory segment, not all information might be kept in working memory as the context continues to expand. Few reasons:
@@ -4424,10 +4385,9 @@ This type of memory contains past interactions and actions performed by the agen
 
 - The older the interactions, the less relevant they might be. While they might have relevant information, we might want to filter it out thoroughly to extract only relevant pieces to not trash working memory.
 
-
 Interestingly, implementation of this kind of memory is very similar to what we do in regular Retrieval Augmented Generation systems. The difference is that the context that we store for retrieval phase is coming from within the agentic system rather that from external sources.
 
-https://substackcdn.com/image/fetch/$s_!xxJY!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F723c28e6-78d8-4bc9-8717-845e392dc967_2038x1743.png
+https://substackcdn.com/image/fetch/$s_!xxJY!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F723c28e6-78d8-4bc9-8717-845e392dc967_2038x1743.png
 
 An example implementation would follow these steps:
 
@@ -4437,7 +4397,6 @@ An example implementation would follow these steps:
 
 3. This additional context is stored as part of the system prompt in short-term (working) memory and can be used by the agent to plan its next steps.
 
-
 #### Semantic memory.
 
 In the paper that was linked at the beginning of long-term memory section - semantic memory is described as:
@@ -4446,10 +4405,9 @@ In the paper that was linked at the beginning of long-term memory section - sema
 
 - Any knowledge the agent should have about itself.
 
-
 In my initial description of the agent I described a knowledge element. It represents part of the semantic memory. Compared to episodic memory the system looks very similar to RAG, including the fact that we source information to be retrieved from external sources.
 
-https://substackcdn.com/image/fetch/$s_!PvWW!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F24c121fd-be9e-4494-a6f9-f397284eca23_2040x1726.png
+https://substackcdn.com/image/fetch/$s_!PvWW!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F24c121fd-be9e-4494-a6f9-f397284eca23_2040x1726.png
 
 An example implementation would follow these steps:
 
@@ -4459,13 +4417,11 @@ An example implementation would follow these steps:
 
 3. Usually we would allow the agent to search for this external information via a tool provided to the agent in system prompt.
 
-
 Semantic memory can be grouped into multiple sections and we can allow the agent to choose from different tools to tap into specific area of the knowledge. Implementation can vary:
 
 - We could have separate databases to store different types of semantic memory and point different tools to specific databases.
 
 - We could add specific metadata identifying the type of memories in the same database and define queries with different pre-filters for each tool to filter out specific context before applying search on top of it.
-
 
 An interesting note, identity of the agent provided in the system prompt is also considered semantic memory. This kind of information is usually retrieved at the beginning of Agent initialisation and used for alignment.
 
@@ -4481,7 +4437,6 @@ Procedural memory is defined as anything that has been codified into the agent b
 
 - Current agents are not yet fully autonomous. Procedural memory also includes the topology of the agentic system.
 
-
 ### Closing thoughts.
 
 Memory in agents is one of the main tools to allow planning that is grounded in the relevant context and there are many aspects to memory that you should take into consideration when building out your agentic architectures.
@@ -4493,7 +4448,9 @@ We are still early in understanding how to manage memory of an agent efficiently
 </details>
 
 <details>
-<summary>**Source URL:** <https://decodingml.substack.com/p/memory-the-secret-sauce-of-ai-agents></summary>
+<summary>Memory: The secret sauce of AI agents</summary>
+
+# Memory: The secret sauce of AI agents
 
 **Source URL:** <https://decodingml.substack.com/p/memory-the-secret-sauce-of-ai-agents>
 
@@ -4543,372 +4500,306 @@ When implementing AI agents, you always have short-term memory. Depending on you
 
 </golden_source>
 
-<golden_source type="local_files">
-## Local File Sources (from Article Guidelines)
-
-_No local file sources found._
-
-</golden_source>
-
 <research_source type="guideline_exploitation" phase="exploitation" file="cognitive-architectures-for-language-agents.md">
 <details>
-<summary>Abstract</summary>
+<summary>Cognitive Architectures for Language Agents</summary>
 
 Phase: [EXPLOITATION]
+
+# Cognitive Architectures for Language Agents
 
 **Source URL:** <https://arxiv.org/html/2309.02427>
 
 ## Abstract
 
-Abstract Recent efforts have augmented large language models (LLMs) with external resources (e.g., the Internet) or internal control flows (e.g., prompt chaining) for tasks requiring grounding or reasoning, leading to a new class of language agents . While these agents have achieved substantial empirical success, we lack a framework to organize existing agents and plan future developments.
+Recent efforts have augmented large language models (LLMs) with external resources (e.g., the Internet) or internal control flows (e.g., prompt chaining) for tasks requiring grounding or reasoning, leading to a new class of language agents. While these agents have achieved substantial empirical success, we lack a framework to organize existing agents and plan future developments.
+
 In this paper, we draw on the rich history of cognitive science and symbolic artificial intelligence to propose Cognitive Architectures for Language Agents (CoALA). CoALA describes a language agent with modular memory components, a structured action space to interact with internal memory and external environments, and a generalized decision-making process to choose actions.
-We use CoALA to retrospectively survey and organize a large body of recent work, and prospectively identify actionable directions towards more capable agents.
-Taken together, CoALA contextualizes today’s language agents within the broader history of AI and outlines a path towards language-based general intelligence.
+
+We use CoALA to retrospectively survey and organize a large body of recent work, and prospectively identify actionable directions towards more capable agents. Taken together, CoALA contextualizes today’s language agents within the broader history of AI and outlines a path towards language-based general intelligence.
 
 ## 1 Introduction
 
-*Language agents*  are an emerging class of artifical intelligence (AI) systems that use large language models  to interact with the world.
-They apply the latest advances in LLMs to the existing field of agent design .
-Intriguingly, this synthesis offers benefits for both fields. On one hand, LLMs possess limited knowledge and reasoning capabilities. Language agents mitigate these issues by connecting LLMs to internal memory and environments, grounding them to existing knowledge or external observations.
-On the other hand, traditional agents often require handcrafted rules  or reinforcement learning , making generalization to new environments challenging .
-Language agents leverage commonsense priors present in LLMs to adapt to novel tasks, reducing the dependence on human annotation or trial-and-error learning.
+_Language agents_ are an emerging class of artificial intelligence (AI) systems that use large language models (LLMs) to interact with the world. They apply the latest advances in LLMs to the existing field of agent design. Intriguingly, this synthesis offers benefits for both fields. On one hand, LLMs possess limited knowledge and reasoning capabilities. Language agents mitigate these issues by connecting LLMs to internal memory and environments, grounding them to existing knowledge or external observations. On the other hand, traditional agents often require handcrafted rules or reinforcement learning, making generalization to new environments challenging. Language agents leverage commonsense priors present in LLMs to adapt to novel tasks, reducing the dependence on human annotation or trial-and-error learning.
 
-While the earliest agents used LLMs to directly select or generate actions , more recent agents additionally use them to reason , plan , and manage long-term memory  to improve decision-making. This latest generation of *cognitive* language agents use remarkably sophisticated internal processes (Figure 1C). Today, however, individual works use custom terminology to describe these processes (such as ‘tool use’, ‘grounding’, ‘actions’), making it difficult to compare different agents, understand how they are evolving over time, or build new agents with clean and consistent abstractions.
+While the earliest agents used LLMs to directly select or generate actions, more recent agents additionally use them to reason, plan, and manage long-term memory to improve decision-making. This latest generation of _cognitive_ language agents use remarkably sophisticated internal processes (Figure 1C). Today, however, individual works use custom terminology to describe these processes (such as ‘tool use’, ‘grounding’, ‘actions’), making it difficult to compare different agents, understand how they are evolving over time, or build new agents with clean and consistent abstractions.
 
-In order to establish a conceptual framework organizing these efforts, we draw parallels with two ideas from the history of computing and artificial intelligence (AI): production systems and cognitive architectures. Production systems generate a set of outcomes by iteratively applying rules . They originated as string manipulation systems – an analog of the problem that LLMs solve – and were subsequently adopted by the AI community to define systems capable of complex, hierarchically structured behaviors .
-To do so, they were incorporated into cognitive architectures that specified control flow for selecting, applying, and even generating new productions .
-We suggest a meaningful analogy between production systems and LLMs: just as productions indicate possible ways to modify strings, LLMs define a distribution over changes or additions to text. This further suggests that controls from cognitive architectures used with production systems might be equally applicable to transform LLMs into language agents.
+In order to establish a conceptual framework organizing these efforts, we draw parallels with two ideas from the history of computing and artificial intelligence (AI): production systems and cognitive architectures. Production systems generate a set of outcomes by iteratively applying rules. They originated as string manipulation systems – an analog of the problem that LLMs solve – and were subsequently adopted by the AI community to define systems capable of complex, hierarchically structured behaviors. To do so, they were incorporated into cognitive architectures that specified control flow for selecting, applying, and even generating new productions. We suggest a meaningful analogy between production systems and LLMs: just as productions indicate possible ways to modify strings, LLMs define a distribution over changes or additions to text. This further suggests that controls from cognitive architectures used with production systems might be equally applicable to transform LLMs into language agents.
 
-Figure: Figure 1: Different uses of large language models (LLMs). A: In natural language processing (NLP), an LLM takes text as input and outputs text. B: *Language agents* place the LLM in a direct feedback loop with the external environment by transforming observations into text and using the LLM to choose actions. C: *Cognitive* language agents additionally use the LLM to manage the agent’s internal state via processes such as learning and reasoning. In this work, we propose a blueprint to structure such agents.
-Refer to caption: x1.png
+**Figure 1: Different uses of large language models (LLMs).** A: In natural language processing (NLP), an LLM takes text as input and outputs text. B: *Language agents* place the LLM in a direct feedback loop with the external environment by transforming observations into text and using the LLM to choose actions. C: *Cognitive* language agents additionally use the LLM to manage the agent’s internal state via processes such as learning and reasoning. In this work, we propose a blueprint to structure such agents.
 
-Thus, we propose Cognitive Architectures for Language Agents (CoALA), a conceptual framework to characterize and design general purpose language agents.
-CoALA organizes agents along three key dimensions: their information storage (divided into working and long-term memories); their action space (divided into internal and external actions); and their decision-making procedure (which is structured as an interactive loop with planning and execution). Through these three concepts (memory, action, and decision-making), we show CoALA can neatly express a large body of existing agents and identify underexplored directions to develop new ones.
-Notably, while several recent papers propose conceptual architectures for general intelligence  or empirically survey language models and agents , this paper combines elements of both: we propose a theoretical framework *and* use it to organize diverse empirical work. This grounds our theory to existing practices and allows us to identify both short-term and long-term directions for future work.
+Thus, we propose Cognitive Architectures for Language Agents (CoALA), a conceptual framework to characterize and design general purpose language agents. CoALA organizes agents along three key dimensions: their information storage (divided into working and long-term memories); their action space (divided into internal and external actions); and their decision-making procedure (which is structured as an interactive loop with planning and execution). Through these three concepts (memory, action, and decision-making), we show CoALA can neatly express a large body of existing agents and identify underexplored directions to develop new ones. Notably, while several recent papers propose conceptual architectures for general intelligence or empirically survey language models and agents, this paper combines elements of both: we propose a theoretical framework *and* use it to organize diverse empirical work. This grounds our theory to existing practices and allows us to identify both short-term and long-term directions for future work.
 
-The plan for the rest of the paper is as follows. We first introduce production systems and cognitive architectures (Section 2) and show how these recent developments in LLMs and language agents recapitulate these historical ideas (Section 3). Motivated by these parallels, Section 4 introduces the CoALA framework and uses it to survey existing language agents.
-Section 5 provides a deeper case study of several prominent agents. Section 6 suggests actionable steps to construct future language agents, while Section 7 highlights open questions in the broader arc of cognitive science and AI. Finally, Section 8 concludes. Readers interested in applied agent design may prioritize Sections 4-6.
+The plan for the rest of the paper is as follows. We first introduce production systems and cognitive architectures (Section 2) and show how these recent developments in LLMs and language agents recapitulate these historical ideas (Section 3). Motivated by these parallels, Section 4 introduces the CoALA framework and uses it to survey existing language agents. Section 5 provides a deeper case study of several prominent agents. Section 6 suggests actionable steps to construct future language agents, while Section 7 highlights open questions in the broader arc of cognitive science and AI. Finally, Section 8 concludes. Readers interested in applied agent design may prioritize Sections 4-6.
 
 ## 2 Background: From Strings to Symbolic AGI
 
-We first introduce production systems and cognitive architectures, providing a historical perspective on cognitive science and artificial intelligence: beginning with theories of logic and computation , and ending with attempts to build symbolic artificial general intelligence . We then briefly introduce language models and language agents. Section 3 will connect these ideas, drawing parallels between production systems and language models.
+We first introduce production systems and cognitive architectures, providing a historical perspective on cognitive science and artificial intelligence: beginning with theories of logic and computation, and ending with attempts to build symbolic artificial general intelligence. We then briefly introduce language models and language agents. Section 3 will connect these ideas, drawing parallels between production systems and language models.
 
 ### 2.1 Production systems for string manipulation
 
-In the first half of the twentieth century, a significant line of intellectual work led to the reduction of mathematics  and computation  to symbolic manipulation.
-Production systems are one such formalism. Intuitively, production systems consist of a set of rules, each specifying a precondition and an action. When the precondition is met, the action can be taken. The idea originates in efforts to characterize the limits of computation. proposed thinking about arbitrary logical systems in these terms, where formulas are expressed as strings and the conclusions they license are identified by production rules (as one string “produces” another). This formulation was subsequently shown to be equivalent to a simpler string rewriting system. In such a system, we specify rules of the form
+In the first half of the twentieth century, a significant line of intellectual work led to the reduction of mathematics and computation to symbolic manipulation. Production systems are one such formalism. Intuitively, production systems consist of a set of rules, each specifying a precondition and an action. When the precondition is met, the action can be taken. The idea originates in efforts to characterize the limits of computation. Post proposed thinking about arbitrary logical systems in these terms, where formulas are expressed as strings and the conclusions they license are identified by production rules (as one string “produces” another). This formulation was subsequently shown to be equivalent to a simpler string rewriting system. In such a system, we specify rules of the form
 
-$$ $X\,Y\,Z\rightarrow X\,W\,Z$ $$
+$$ X\,Y\,Z \rightarrow X\,W\,Z $$
 
-indicating that the string $XYZ$ can be rewritten to the string $XWZ$. String rewriting plays a significant role in the theory of formal languages, in the form of Chomsky’s phrase structure grammar .
+indicating that the string $XYZ$ can be rewritten to the string $XWZ$. String rewriting plays a significant role in the theory of formal languages, in the form of Chomsky’s phrase structure grammar.
 
 ### 2.2 Control flow: From strings to algorithms
 
-By itself, a production system simply characterizes the set of strings that can be generated from a starting point. However, they can be used to specify algorithms if we impose *control flow* to determine which productions are executed. For example, Markov algorithms are production systems with a priority ordering . The following algorithm implements division-with-remainder by converting a number written as strokes $|$ into the form $Q*R$, where $Q$ is the quotient of division by 5 and $R$ is the remainder:
+By itself, a production system simply characterizes the set of strings that can be generated from a starting point. However, they can be used to specify algorithms if we impose _control flow_ to determine which productions are executed. For example, Markov algorithms are production systems with a priority ordering. The following algorithm implements division-with-remainder by converting a number written as strokes $|$ into the form $Q \times R$, where $Q$ is the quotient of division by 5 and $R$ is the remainder:
 
-$$ $\displaystyle*|||||$ $\displaystyle\rightarrow$ $\displaystyle|*$ $\displaystyle\xrightarrow{\bullet}$ $\displaystyle*$ $\displaystyle\rightarrow$ $\displaystyle*$ $$
+\[
+\begin{array}{rcl}
+\displaystyle *||||| & \displaystyle \rightarrow & \displaystyle |* \\
+\displaystyle * & \displaystyle \xrightarrow{\bullet} & \displaystyle * \\
+\displaystyle * & \displaystyle \rightarrow & \displaystyle *
+\end{array}
+\]
 
-where the priority order runs from top to bottom, productions are applied to the first substring matching their preconditions when moving from left to right (including the empty substring, in the last production), and $\xrightarrow{\bullet}$ indicates the algorithm halts after executing the rule. The first rule effectively “subtracts” five if possible; the second handles the termination condition when no more subtraction is possible; and the third handles the empty substring input case. For example, given the input 11, this would yield the sequence of productions $*|||||||||||\rightarrow|*||||||\rightarrow||*|\xrightarrow{\bullet}||*|$ which is interpreted as 2 remainder 1. Simple productions can result in complex behavior – Markov algorithms can be shown to be Turing complete.
+where the priority order runs from top to bottom, productions are applied to the first substring matching their preconditions when moving from left to right (including the empty substring, in the last production), and $\xrightarrow{\bullet}$ indicates the algorithm halts after executing the rule. The first rule effectively “subtracts” five if possible; the second handles the termination condition when no more subtraction is possible; and the third handles the empty substring input case. For example, given the input 11, this would yield the sequence of productions $*||||||||||| \rightarrow |*||||||\rightarrow ||*|\xrightarrow{\bullet}||*|$ which is interpreted as 2 remainder 1. Simple productions can result in complex behavior – Markov algorithms can be shown to be Turing complete.
 
 ### 2.3 Cognitive architectures: From algorithms to agents
 
-Production systems were popularized in the AI community by Allen Newell, who was looking for a formalism to capture human problem solving . Productions were generalized beyond string rewriting to logical operations: *preconditions* that could be checked against the agent’s goals and world state, and *actions* that should be taken if the preconditions were satisfied. In their landmark book Human Problem Solving , Allen Newell and Herbert Simon gave the example of a simple production system implementing a thermostat agent:
+Production systems were popularized in the AI community by Allen Newell, who was looking for a formalism to capture human problem solving. Productions were generalized beyond string rewriting to logical operations: _preconditions_ that could be checked against the agent’s goals and world state, and _actions_ that should be taken if the preconditions were satisfied. In their landmark book Human Problem Solving, Allen Newell and Herbert Simon gave the example of a simple production system implementing a thermostat agent:
 
-$$ $\displaystyle(\mbox{temperature}>70^{\circ})\wedge(\mbox{temperature}<72^{ \circ})$ $\displaystyle\rightarrow$ stop $\displaystyle\mbox{temperature}<32^{\circ}$ $\displaystyle\rightarrow$ call for repairs; turn on electric heater $\displaystyle(\mbox{temperature}<70^{\circ})\wedge\mbox{(furnace off)}$ $\displaystyle\rightarrow$ turn on furnace $\displaystyle(\mbox{temperature}>72^{\circ})\wedge\mbox{(furnace on)}$ $\displaystyle\rightarrow$ turn off furnace $$
+\[
+\begin{array}{rcl}
+\displaystyle (\mbox{temperature}>70^{\circ})\wedge(\mbox{temperature}<72^{ \circ}) & \displaystyle \rightarrow & \mbox{stop} \\
+\displaystyle \mbox{temperature}<32^{\circ} & \displaystyle \rightarrow & \mbox{call for repairs; turn on electric heater} \\
+\displaystyle (\mbox{temperature}<70^{\circ})\wedge\mbox{(furnace off)} & \displaystyle \rightarrow & \mbox{turn on furnace} \\
+\displaystyle (\mbox{temperature}>72^{\circ})\wedge\mbox{(furnace on)} & \displaystyle \rightarrow & \mbox{turn off furnace}
+\end{array}
+\]
 
-Following this work, production systems were adopted by the AI community.
-The resulting agents contained large production systems connected to external sensors, actuators, and knowledge bases – requiring correspondingly sophisticated control flow. AI researchers defined “cognitive architectures” that mimicked human cognition – explicitly instantiating processes such as perception, memory, and planning  to achieve flexible, rational, real-time behaviors . This led to applications from psychological modeling to robotics, with hundreds of architectures and thousands of publications (see  for a recent survey).
+Following this work, production systems were adopted by the AI community. The resulting agents contained large production systems connected to external sensors, actuators, and knowledge bases – requiring correspondingly sophisticated control flow. AI researchers defined “cognitive architectures” that mimicked human cognition – explicitly instantiating processes such as perception, memory, and planning to achieve flexible, rational, real-time behaviors. This led to applications from psychological modeling to robotics, with hundreds of architectures and thousands of publications (see for a recent survey).
 
-A canonical example is the Soar architecture (Fig. 2A). Soar stores productions in long-term memory and executes them based on how well their preconditions match working memory (Fig. 2B). These productions specify actions that modify the contents of working and long-term memory. We next provide a brief overview of Soar and refer readers to for deeper introductions.
+A canonical example is the Soar architecture (Figure 2A). Soar stores productions in long-term memory and executes them based on how well their preconditions match working memory (Figure 2B). These productions specify actions that modify the contents of working and long-term memory. We next provide a brief overview of Soar and refer readers to for deeper introductions.
 
-Memory. Building on psychological theories, Soar uses several types of memory to track the agent’s state . *Working memory*  reflects the agent’s current circumstances: it stores the agent’s recent perceptual input, goals, and results from intermediate, internal reasoning. *Long term memory* is divided into three distinct types. *Procedural* memory stores the production system itself: the set of rules that can be applied to working memory to determine the agent’s behavior.
-*Semantic* memory stores facts about the world , while *episodic* memory stores sequences of the agent’s past behaviors .
+Memory. Building on psychological theories, Soar uses several types of memory to track the agent’s state. _Working memory_ reflects the agent’s current circumstances: it stores the agent’s recent perceptual input, goals, and results from intermediate, internal reasoning. _Long term memory_ is divided into three distinct types. _Procedural_ memory stores the production system itself: the set of rules that can be applied to working memory to determine the agent’s behavior. _Semantic_ memory stores facts about the world, while _episodic_ memory stores sequences of the agent’s past behaviors.
 
-Figure: Figure 2: Cognitive architectures augment a production system with sensory groundings, long-term memory, and a decision procedure for selecting actions. A: The Soar architecture, reproduced with permission from . B: Soar’s decision procedure uses productions to select and implement actions. These actions may be *internal* (such as modifying the agent’s memory) or *external* (such as a motor command).
-Refer to caption: x2.png
+**Figure 2: Cognitive architectures augment a production system with sensory groundings, long-term memory, and a decision procedure for selecting actions.** A: The Soar architecture, reproduced with permission from Laird et al. (2017). B: Soar’s decision procedure uses productions to select and implement actions. These actions may be *internal* (such as modifying the agent’s memory) or *external* (such as a motor command).
 
-Grounding. Soar can be instantiated in simulations  or real-world robotic systems . In embodied contexts, a variety of sensors stream perceptual input into working memory, where it is available for decision-making. Soar agents can also be equipped with actuators, allowing for physical actions and interactive learning via language .
+Grounding. Soar can be instantiated in simulations or real-world robotic systems. In embodied contexts, a variety of sensors stream perceptual input into working memory, where it is available for decision-making. Soar agents can also be equipped with actuators, allowing for physical actions and interactive learning via language.
 
-Decision making. Soar implements a decision loop that evaluates productions and applies the one that matches best (Fig. 2B). Productions are stored in long-term procedural memory. During each decision cycle, their preconditions are checked against the agent’s working memory. In the *proposal and evaluation* phase, a set of productions is used to generate and rank a candidate set of possible actions.(^*^**In more detail, Soar divides productions into two types: “operators,” which we refer to as actions, and “rules” which are used to propose, evaluate, and execute operators.) The best action is then chosen.(^†^††If no actions are valid, or multiple actions tie, then an *impasse* occurs. Soar creates a subgoal to resolve the impasse, resulting in hierarchical task decomposition. We refer the reader to for a more detailed discussion.) Another set of productions is then used to implement the action – for example, modifying the contents of working memory or issuing a motor command.
+Decision making. Soar implements a decision loop that evaluates productions and applies the one that matches best (Figure 2B). Productions are stored in long-term procedural memory. During each decision cycle, their preconditions are checked against the agent’s working memory. In the _proposal and evaluation_ phase, a set of productions is used to generate and rank a candidate set of possible actions. (In more detail, Soar divides productions into two types: “operators,” which we refer to as actions, and “rules” which are used to propose, evaluate, and execute operators.) The best action is then chosen. (If no actions are valid, or multiple actions tie, then an _impasse_ occurs. Soar creates a subgoal to resolve the impasse, resulting in hierarchical task decomposition. We refer the reader to Laird et al. (2017) for a more detailed discussion.) Another set of productions is then used to implement the action – for example, modifying the contents of working memory or issuing a motor command.
 
-Learning. Soar supports multiple modes of learning. First, new information can be stored directly in long-term memory: facts can be written to semantic memory, while experiences can be written to episodic memory . This information can later be retrieved back into working memory when needed for decision-making. Second, behaviors can be modified. Reinforcement learning  can be used to up-weight productions that have yielded good outcomes, allowing the agent to learn from experience . Most remarkably, Soar is also capable of writing new productions into its procedural memory  – effectively updating its source code.
+Learning. Soar supports multiple modes of learning. First, new information can be stored directly in long-term memory: facts can be written to semantic memory, while experiences can be written to episodic memory. This information can later be retrieved back into working memory when needed for decision-making. Second, behaviors can be modified. Reinforcement learning can be used to up-weight productions that have yielded good outcomes, allowing the agent to learn from experience. Most remarkably, Soar is also capable of writing new productions into its procedural memory – effectively updating its source code.
 
-Cognitive architectures were used broadly across psychology and computer science, with applications including robotics , military simulations , and intelligent tutoring .
-Yet they have become less popular in the AI community over the last few decades. This decrease in popularity reflects two of the challenges involved in such systems: they are limited to domains that can be described by logical predicates and require many pre-specified rules to function.
+Cognitive architectures were used broadly across psychology and computer science, with applications including robotics, military simulations, and intelligent tutoring. Yet they have become less popular in the AI community over the last few decades. This decrease in popularity reflects two of the challenges involved in such systems: they are limited to domains that can be described by logical predicates and require many pre-specified rules to function.
 
-Intriguingly, LLMs appear well-posed to meet these challenges. First, they operate over arbitrary text, making them more flexible than logic-based systems. Second, rather than requiring the user to specify productions, they learn a distribution over productions via pre-training on an internet corpus. Recognizing this, researchers have begun to use LLMs within cognitive architectures, leveraging their implicit world knowledge  to augment traditional symbolic approaches .
-Here, we instead import principles from cognitive architecture to guide the design of LLM-based agents.
+Intriguingly, LLMs appear well-posed to meet these challenges. First, they operate over arbitrary text, making them more flexible than logic-based systems. Second, rather than requiring the user to specify productions, they learn a distribution over productions via pre-training on an internet corpus. Recognizing this, researchers have begun to use LLMs within cognitive architectures, leveraging their implicit world knowledge to augment traditional symbolic approaches. Here, we instead import principles from cognitive architecture to guide the design of LLM-based agents.
 
 ### 2.4 Language models and agents
 
-Language modeling is a decades-old endeavor in the NLP and AI communities, aiming to develop systems that can generate text given some context . Formally, language models learn a distribution $P(w_{i}|w_{<i})$, where each $w$ is an individual token (word). This model can then generate text by sampling from the distribution, one token at a time. At its core, a language model is a probabilistic input-output system, since there are inherently several ways to continue a text (e.g., “I went to the” $\rightarrow$ “market” | “beach” | …). While earlier attempts at modeling language (e.g., n-grams) faced challenges in generalization and scaling, there has been a recent resurgence of the area due to the rise of Transformer-based  LLMs with a large number (billions) of parameters  and smart tokenization schemes. Modern LLMs are trained on enormous amounts of data, which helps them accumulate knowledge from a large number of input-output combinations and successfully generate human-like text .
+Language modeling is a decades-old endeavor in the NLP and AI communities, aiming to develop systems that can generate text given some context. Formally, language models learn a distribution $P(w_{i}|w_{<i})$, where each $w$ is an individual token (word). This model can then generate text by sampling from the distribution, one token at a time. At its core, a language model is a probabilistic input-output system, since there are inherently several ways to continue a text (e.g., “I went to the” $\rightarrow$ “market” | “beach” | …). While earlier attempts at modeling language (e.g., n-grams) faced challenges in generalization and scaling, there has been a recent resurgence of the area due to the rise of Transformer-based LLMs with a large number (billions) of parameters and smart tokenization schemes. Modern LLMs are trained on enormous amounts of data, which helps them accumulate knowledge from a large number of input-output combinations and successfully generate human-like text.
 
-Unexpectedly, training these models on internet-scale text also made them useful for many tasks beyond generating text, such as writing code , modeling proteins , and acting in interactive environments . The latter has led to the rise of “language agents” – systems that use LLMs as a core computation unit to reason, plan, and act – with applications in areas such as robotics , manufacturing , web manipulation , puzzle solving  and interactive code generation . The combination of language understanding and decision-making capabilities is an exciting and emerging direction that promises to bring these agents closer to human-like intelligence.
+Unexpectedly, training these models on internet-scale text also made them useful for many tasks beyond generating text, such as writing code, modeling proteins, and acting in interactive environments. The latter has led to the rise of “language agents” – systems that use LLMs as a core computation unit to reason, plan, and act – with applications in areas such as robotics, manufacturing, web manipulation, puzzle solving and interactive code generation. The combination of language understanding and decision-making capabilities is an exciting and emerging direction that promises to bring these agents closer to human-like intelligence.
 
 ## 3 Connections between Language Models and Production Systems
 
-Based on their common origins in processing strings, there is a natural analogy between production systems and language models. We develop this analogy, then show that prompting methods recapitulate the algorithms and agents based on production systems. The correspondence between production systems and language models motivates our use of cognitive architectures to build language agents, which we introduce in Section 4.
+Based on their common origins in processing strings, there is a natural analogy between production systems and language models. We develop this analogy, then show that prompting methods recapitulate the algorithms and agents based on production systems. The correspondence between production systems and language models motivates our use of cognitive architectures to build language agents, which we introduce in Section 4.
 
 ### 3.1 Language models as probabilistic production systems
 
-In their original instantiation, production systems specified the set of strings that could be generated from a starting point, breaking this process down into a series of string rewriting operations. Language models also define a possible set of expansions or modifications of a string – the prompt provided to the model.(^‡^‡‡In this work, we focus on autoregressive LLMs which are typically used for language agents. However, bidirectional LLMs such as BERT can be seen in a similar light: they define a distribution over *in-filling* productions.)
+In their original instantiation, production systems specified the set of strings that could be generated from a starting point, breaking this process down into a series of string rewriting operations. Language models also define a possible set of expansions or modifications of a string – the prompt provided to the model. (In this work, we focus on autoregressive LLMs which are typically used for language agents. However, bidirectional LLMs such as BERT can be seen in a similar light: they define a distribution over _in-filling_ productions.)
 
-For example, we can formulate the problem of completing a piece of text as a production. If $X$ is the prompt and $Y$ the continuation, then we can write this as the production $X\rightarrow X\,\,Y$.(^§^§§Alternatively, we can treat the prompt as input and take the output of the LLM as the next state, represented by the production $X\rightarrow Y$ – a more literal form of rewriting.) We might want to allow multiple possible continuations, in which case we have $X\rightarrow X\,\,Y_{i}$ for some set of $Y_{i}$. LLMs assign a *probability* to each of these completions.
-Viewed from this perspective, the LLM defines a probability distribution over *which productions to select* when presented with input $X$, yielding a distribution $P(Y_{i}|X)$ over possible completions . LLMs can thus be viewed as probabilistic production systems that sample a possible completion each time they are called, e.g., $X\mathbin{{\MNsim\mkern-3.6mu}{\MNsim\mkern-3.6mu}{\mkern-1.2mu\MNrhd}}X\,Y$.
+For example, we can formulate the problem of completing a piece of text as a production. If $X$ is the prompt and $Y$ the continuation, then we can write this as the production $X \rightarrow X \, Y$. (Alternatively, we can treat the prompt as input and take the output of the LLM as the next state, represented by the production $X \rightarrow Y$ – a more literal form of rewriting.) We might want to allow multiple possible continuations, in which case we have $X \rightarrow X \, Y_i$ for some set of $Y_i$. LLMs assign a _probability_ to each of these completions. Viewed from this perspective, the LLM defines a probability distribution over _which productions to select_ when presented with input $X$, yielding a distribution $P(Y_i|X)$ over possible completions. LLMs can thus be viewed as probabilistic production systems that sample a possible completion each time they are called, e.g., $X \leadsto X\,Y$.
 
-This probabilistic form offers both advantages and disadvantages compared to traditional production systems. The primary disadvantage of LLMs is their inherent opaqueness: while production systems are defined by discrete and human-legible rules, LLMs consist of billions of uninterpretable parameters. This opaqueness – coupled with inherent randomness from their probabilistic formulation – makes it challenging to analyze or control their behaviors . Nonetheless, their scale and pre-training provide massive advantages over traditional production systems. LLMs pre-trained on large-scale internet data learn a remarkably effective prior over string completions, allowing them to solve a wide range of tasks out of the box .
+This probabilistic form offers both advantages and disadvantages compared to traditional production systems. The primary disadvantage of LLMs is their inherent opaqueness: while production systems are defined by discrete and human-legible rules, LLMs consist of billions of uninterpretable parameters. This opaqueness – coupled with inherent randomness from their probabilistic formulation – makes it challenging to analyze or control their behaviors. Nonetheless, their scale and pre-training provide massive advantages over traditional production systems. LLMs pre-trained on large-scale internet data learn a remarkably effective prior over string completions, allowing them to solve a wide range of tasks out of the box.
 
 ### 3.2 Prompt engineering as control flow
 
 The weights of an LLM define a prioritization over output strings (completions), conditioned by the input string (the prompt). The resulting distribution can be interpreted as a task-specific prioritization of productions – in other words, a simple control flow. Tasks such as question answering can be formulated directly as an input string (the question), yielding conditional distributions over completions (possible answers).
 
-**Table 1: Conceptual diagram illustrating how prompting methods manipulate the input string before generating completions. $Q$ = question, $A$ = answer, $O$ = observation, $C$ = critique, and denotes sampling from a stochastic production. These pre-processing manipulations – which can employ other models such as vision-language models (VLMs), or even the LLM itself – can be seen as productions. Prompting methods thus define a *sequence* of productions.**
-| Prompting Method | Production Sequence |
-| --- | --- |
-| Zero-shot | $Q\mathbin{\stackon[1pt]{{\MNsim\mkern-3.6mu}{\MNsim\mkern-3.6mu}{\MNsim\mkern-<br>3.6mu}{\MNsim\mkern-3.6mu}{\mkern-1.2mu\MNrhd}}{\scriptscriptstyle\text{\!\!<br>LLM}}}Q\;A$ |
-| Few-shot | $Q\longrightarrow Q_{1}\;A_{1}\;Q_{2}\;A_{2}\;Q\mathbin{\stackon[1pt]{{\MNsim<br>\mkern-3.6mu}{\MNsim\mkern-3.6mu}{\MNsim\mkern-3.6mu}{\MNsim\mkern-3.6mu}{<br>\mkern-1.2mu\MNrhd}}{\scriptscriptstyle\text{\!\!LLM}}}Q_{1}\;A_{1}\;Q_{2}\;A_<br>{2}\;Q\;A$ |
-| Retrieval Augmented Generation | $Q\xrightarrow{\text{Wiki}}Q\,O\mathbin{\stackon[1pt]{{\MNsim\mkern-3.6mu}{<br>\MNsim\mkern-3.6mu}{\MNsim\mkern-3.6mu}{\MNsim\mkern-3.6mu}{\mkern-1.2mu\MNrhd<br>}}{\scriptscriptstyle\text{\!\!LLM}}}Q\,O\,A$ |
-| Socratic Models | $Q\mathbin{\stackon[1pt]{{\MNsim\mkern-3.6mu}{\MNsim\mkern-3.6mu}{\MNsim\mkern-<br>3.6mu}{\MNsim\mkern-3.6mu}{\mkern-1.2mu\MNrhd}}{\scriptscriptstyle\text{\!\!<br>VLM}}}Q\,O\mathbin{\stackon[1pt]{{\MNsim\mkern-3.6mu}{\MNsim\mkern-3.6mu}{<br>\MNsim\mkern-3.6mu}{\MNsim\mkern-3.6mu}{\mkern-1.2mu\MNrhd}}{<br>\scriptscriptstyle\text{\!\!LLM}}}Q\,O\,A$ |
-| Self-Critique | $Q\mathbin{\stackon[1pt]{{\MNsim\mkern-3.6mu}{\MNsim\mkern-3.6mu}{\MNsim\mkern-<br>3.6mu}{\MNsim\mkern-3.6mu}{\mkern-1.2mu\MNrhd}}{\scriptscriptstyle\text{\!\!<br>LLM}}}Q\,A\mathbin{\stackon[1pt]{{\MNsim\mkern-3.6mu}{\MNsim\mkern-3.6mu}{<br>\MNsim\mkern-3.6mu}{\MNsim\mkern-3.6mu}{\mkern-1.2mu\MNrhd}}{<br>\scriptscriptstyle\text{\!\!LLM}}}Q\,A\,C\mathbin{\stackon[1pt]{{\MNsim\mkern-<br>3.6mu}{\MNsim\mkern-3.6mu}{\MNsim\mkern-3.6mu}{\MNsim\mkern-3.6mu}{\mkern-1.2<br>mu\MNrhd}}{\scriptscriptstyle\text{\!\!LLM}}}Q\,A\,C\,A$ |
+**Table 1: Conceptual diagram illustrating how prompting methods manipulate the input string before generating completions.** $Q$ = question, $A$ = answer, $O$ = observation, $C$ = critique, and $\stackon[1pt]{\sim}{\scriptscriptstyle\text{LLM}}$ denotes sampling from a stochastic production. These pre-processing manipulations – which can employ other models such as vision-language models (VLMs), or even the LLM itself – can be seen as productions. Prompting methods thus define a _sequence_ of productions.
 
-Early work on few-shot learning  and prompt engineering  found that the LLM could be further biased towards high-quality productions by pre-processing the input string. These simple manipulations – typically concatenating additional text to the input – can themselves be seen as productions, meaning that these methods define a sequence of productions (Table 1). Later work extended these approaches to dynamic, context-sensitive prompts: for example, selecting few-shot examples that are maximally relevant to the input  or populating a template with external observations from video  or databases . For a survey of such prompting techniques, see .
+| Prompting Method          | Production Sequence                                                                                                                                                                                                            |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Zero-shot                 | $Q \stackon[1pt]{\sim}{\scriptscriptstyle\text{LLM}} Q\,A$                                                                                                                                                                      |
+| Few-shot                  | $Q \rightarrow Q_1\,A_1\,Q_2\,A_2\,Q \stackon[1pt]{\sim}{\scriptscriptstyle\text{LLM}} Q_1\,A_1\,Q_2\,A_2\,Q\,A$                                                                                                              |
+| Retrieval Augmented Generation | $Q \xrightarrow{\text{Wiki}} Q\,O \stackon[1pt]{\sim}{\scriptscriptstyle\text{LLM}} Q\,O\,A$                                                                                                                            |
+| Socratic Models           | $Q \stackon[1pt]{\sim}{\scriptscriptstyle\text{VLM}} Q\,O \stackon[1pt]{\sim}{\scriptscriptstyle\text{LLM}} Q\,O\,A$                                                                                                         |
+| Self-Critique             | $Q \stackon[1pt]{\sim}{\scriptscriptstyle\text{LLM}} Q\,A \stackon[1pt]{\sim}{\scriptscriptstyle\text{LLM}} Q\,A\,C \stackon[1pt]{\sim}{\scriptscriptstyle\text{LLM}} Q\,A\,C\,A$                                            |
 
-Subsequent work used the LLM itself as a pre-processing step, eliciting targeted reasoning to foreground a particular aspect of the problem  or generate intermediate reasoning steps  before returning an answer. *Chaining* multiple calls to an LLM  allows for increasingly complicated algorithms (Fig. 3).
+Early work on few-shot learning and prompt engineering found that the LLM could be further biased towards high-quality productions by pre-processing the input string. These simple manipulations – typically concatenating additional text to the input – can themselves be seen as productions, meaning that these methods define a sequence of productions (Table 1). Later work extended these approaches to dynamic, context-sensitive prompts: for example, selecting few-shot examples that are maximally relevant to the input or populating a template with external observations from video or databases. For a survey of such prompting techniques, see Liu et al. (2023).
 
-Figure: Figure 3: From language models to language agents. A: Basic structure of an LLM call. Prompt construction selects a template and populates it with variables from working memory. After calling the LLM, the string output is parsed into an action space and executed. An LLM call may result in one or more actions – for example, returning an answer, calling a function, or issuing motor commands. B: *Prompt chaining* techniques such as Self-Critique or Selection-Inference use a pre-defined sequence of LLM calls to generate an output. C: *Language agents* such as Inner Monologue and ReAct instead use an interactive feedback loop with the external environment. Vision-language models (VLMs) can be used to translate perceptual data into text for the LLM to process.
-Refer to caption: x3.png
+Subsequent work used the LLM itself as a pre-processing step, eliciting targeted reasoning to foreground a particular aspect of the problem or generate intermediate reasoning steps before returning an answer. _Chaining_ multiple calls to an LLM allows for increasingly complicated algorithms (Figure 3).
+
+**Figure 3: From language models to language agents.** A: Basic structure of an LLM call. Prompt construction selects a template and populates it with variables from working memory. After calling the LLM, the string output is parsed into an action space and executed. An LLM call may result in one or more actions – for example, returning an answer, calling a function, or issuing motor commands. B: *Prompt chaining* techniques such as Self-Critique or Selection-Inference use a pre-defined sequence of LLM calls to generate an output. C: *Language agents* such as Inner Monologue and ReAct instead use an interactive feedback loop with the external environment. Vision-language models (VLMs) can be used to translate perceptual data into text for the LLM to process.
 
 ### 3.3 Towards cognitive language agents
 
-*Language agents* move beyond pre-defined prompt chains and instead place the LLM in a feedback loop with the external environment (Fig. 1B). These approaches first transform multimodal input into text and pass it to the LLM. The LLM’s output is then parsed and used to determine an external action (Fig. 3C). Early agents interfaced the LLM directly with the external environment, using it to produce high-level instructions based on the agent’s state . Later work developed more sophisticated language agents that use the LLM to perform intermediate reasoning before selecting an action . The most recent agents incorporate sophisticated learning strategies such as reflecting on episodic memory to generate new semantic inferences  or modifying their program code to generate procedural knowledge , using their previous experience to adapt their future behaviors.
+_Language agents_ move beyond pre-defined prompt chains and instead place the LLM in a feedback loop with the external environment (Figure 1B). These approaches first transform multimodal input into text and pass it to the LLM. The LLM’s output is then parsed and used to determine an external action (Figure 3C). Early agents interfaced the LLM directly with the external environment, using it to produce high-level instructions based on the agent’s state. Later work developed more sophisticated language agents that use the LLM to perform intermediate reasoning before selecting an action. The most recent agents incorporate sophisticated learning strategies such as reflecting on episodic memory to generate new semantic inferences or modifying their program code to generate procedural knowledge, using their previous experience to adapt their future behaviors.
 
-These *cognitive* language agents employ nontrivial LLM-based reasoning and learning (Fig. 1C). Just as cognitive architectures were used to structure production systems’ interactions with agents’ internal state and external environments, we suggest that they can help design LLM-based cognitive agents. In the remainder of the paper, we use this perspective to organize existing approaches and highlight promising extensions.
+These _cognitive_ language agents employ nontrivial LLM-based reasoning and learning (Figure 1C). Just as cognitive architectures were used to structure production systems’ interactions with agents’ internal state and external environments, we suggest that they can help design LLM-based cognitive agents. In the remainder of the paper, we use this perspective to organize existing approaches and highlight promising extensions.
 
-Figure: Figure 4: Cognitive architectures for language agents (CoALA). A: CoALA defines a set of interacting modules and processes. The decision procedure executes the agent’s source code. This source code consists of procedures to interact with the LLM (prompt templates and parsers), internal memories (retrieval and learning), and the external environment (grounding). B: Temporally, the agent’s decision procedure executes a decision cycle in a loop with the external environment. During each cycle, the agent uses retrieval and reasoning to plan by proposing and evaluating candidate learning or grounding actions. The best action is then selected and executed. An observation may be made, and the cycle begins again.
-Refer to caption: x4.png
+**Figure 4: Cognitive architectures for language agents (CoALA).** A: CoALA defines a set of interacting modules and processes. The decision procedure executes the agent’s source code. This source code consists of procedures to interact with the LLM (prompt templates and parsers), internal memories (retrieval and learning), and the external environment (grounding). B: Temporally, the agent’s decision procedure executes a decision cycle in a loop with the external environment. During each cycle, the agent uses retrieval and reasoning to plan by proposing and evaluating candidate learning or grounding actions. The best action is then selected and executed. An observation may be made, and the cycle begins again.
 
 ## 4 Cognitive Architectures for Language Agents (CoALA): A Conceptual Framework
 
-We present Cognitive Architectures for Language Agents (CoALA) as a framework to organize existing language agents and guide the development of new ones.
-CoALA positions the LLM as the core component of a larger cognitive architecture (Figure 4). Under CoALA, a language agent stores information in memory modules (Section 4.1), and acts in an action space structured into external and internal parts (Figure 5):
+We present Cognitive Architectures for Language Agents (CoALA) as a framework to organize existing language agents and guide the development of new ones. CoALA positions the LLM as the core component of a larger cognitive architecture (Figure 4). Under CoALA, a language agent stores information in memory modules (Section 4.1), and acts in an action space structured into external and internal parts (Figure 5):
 
-- •
-External actions interact with external environments (e.g., control a robot, communicate with a human, navigate a website) through grounding (Section 4.2).
-- •
-Internal actions interact with internal memories. Depending on which memory gets accessed and whether the access is read or write, internal actions can be further decomposed into three kinds: retrieval (read from long-term memory; Section 4.3), reasoning (update the short-term working memory with LLM; Section 4.4), and learning (write to long-term memory; Section 4.5).
+- External actions interact with external environments (e.g., control a robot, communicate with a human, navigate a website) through grounding (Section 4.2).
+- Internal actions interact with internal memories. Depending on which memory gets accessed and whether the access is read or write, internal actions can be further decomposed into three kinds: retrieval (read from long-term memory; Section 4.3), reasoning (update the short-term working memory with LLM; Section 4.4), and learning (write to long-term memory; Section 4.5).
 
-Language agents choose actions via decision-making, which follows a repeated cycle (Section 4.6, Figure 4B). In each cycle, the agent can use reasoning and retrieval actions to plan. This planning subprocess selects a grounding or learning action, which is executed to affect the outside world or the agent’s long-term memory. CoALA’s decision cycle is analogous to a program’s “main” *procedure* (a *method* without return values, as opposed to *functions*) that runs in loops continuously, accepting new perceptual input and calling various action *procedures* in response.
+Language agents choose actions via decision-making, which follows a repeated cycle (Section 4.6, Figure 4B). In each cycle, the agent can use reasoning and retrieval actions to plan. This planning subprocess selects a grounding or learning action, which is executed to affect the outside world or the agent’s long-term memory. CoALA’s decision cycle is analogous to a program’s “main” *procedure* (a *method* without return values, as opposed to *functions*) that runs in loops continuously, accepting new perceptual input and calling various action *procedures* in response.
 
-CoALA (Figure 4) is inspired by the decades of research in cognitive architectures (Section 2.3), leveraging key concepts such as memory, grounding, learning, and decision-making. Yet the incorporation of an LLM leads to the addition of “reasoning” actions, which can flexibly produce new knowledge and heuristics for various purposes – replacing hand-written rules in traditional cognitive architectures.
-It also makes text the *de facto* internal representation, streamlining agents’ memory modules. Finally, recent advances in vision-language models can simplify grounding by providing a straightforward translation of perceptual data into text .
+CoALA (Figure 4) is inspired by the decades of research in cognitive architectures (Section 2.3), leveraging key concepts such as memory, grounding, learning, and decision-making. Yet the incorporation of an LLM leads to the addition of “reasoning” actions, which can flexibly produce new knowledge and heuristics for various purposes – replacing hand-written rules in traditional cognitive architectures. It also makes text the *de facto* internal representation, streamlining agents’ memory modules. Finally, recent advances in vision-language models can simplify grounding by providing a straightforward translation of perceptual data into text.
 
 The rest of this section details key concepts in CoALA: memory, actions (grounding, reasoning, retrieval, and learning), and decision-making. For each concept, we use existing language agents (or relevant NLP/RL methods) as examples – or note gaps in the literature for future directions.
 
 ### 4.1 Memory
 
-Language models are *stateless*: they do not persist information across calls. In contrast, language agents may store and maintain information internally for multi-step interaction with the world. Under the CoALA framework, language agents explicitly organize information (mainly textural, but other modalities also allowed) into multiple memory modules, each containing a different form of information. These include short-term working memory and several long-term memories: episodic, semantic, and procedural.
+Language models are _stateless_: they do not persist information across calls. In contrast, language agents may store and maintain information internally for multi-step interaction with the world. Under the CoALA framework, language agents explicitly organize information (mainly textural, but other modalities also allowed) into multiple memory modules, each containing a different form of information. These include short-term working memory and several long-term memories: episodic, semantic, and procedural.
 
-Working memory. Working memory maintains active and readily available information as symbolic variables for the current decision cycle (Section 4.6). This includes perceptual inputs, active knowledge (generated by reasoning or retrieved from long-term memory), and other core information carried over from the previous decision cycle (e.g., agent’s active goals). Previous methods encourage the LLM to generate intermediate reasoning , using the LLM’s own context as a form of working memory. CoALA’s notion of working memory is more general: it is a data structure that persists across LLM calls. On each LLM call, the LLM input is synthesized from a subset of working memory (e.g., a prompt template and relevant variables). The LLM output is then parsed back into other variables (e.g., an action name and arguments) which are stored back in working memory and used to execute the corresponding action (Figure 3A).
-Besides the LLM, the working memory also interacts with long-term memories and grounding interfaces. It thus serves as the central hub connecting different components of a language agent.
+Working memory. Working memory maintains active and readily available information as symbolic variables for the current decision cycle (Section 4.6). This includes perceptual inputs, active knowledge (generated by reasoning or retrieved from long-term memory), and other core information carried over from the previous decision cycle (e.g., agent’s active goals). Previous methods encourage the LLM to generate intermediate reasoning, using the LLM’s own context as a form of working memory. CoALA’s notion of working memory is more general: it is a data structure that persists across LLM calls. On each LLM call, the LLM input is synthesized from a subset of working memory (e.g., a prompt template and relevant variables). The LLM output is then parsed back into other variables (e.g., an action name and arguments) which are stored back in working memory and used to execute the corresponding action (Figure 3A). Besides the LLM, the working memory also interacts with long-term memories and grounding interfaces. It thus serves as the central hub connecting different components of a language agent.
 
-Figure: Figure 5: Agents’ action spaces can be divided into internal memory accesses and external interactions with the world. Reasoning and retrieval actions are used to support planning.
-Refer to caption: x5.png
+**Figure 5: Agents’ action spaces can be divided into internal memory accesses and external interactions with the world.** Reasoning and retrieval actions are used to support planning.
 
-Episodic memory. Episodic memory stores experience from earlier decision cycles. This can consist of training input-output pairs , history event flows , game trajectories from previous episodes , or other representations of the agent’s experiences. During the planning stage of a decision cycle, these episodes may be retrieved into working memory to support reasoning. An agent can also write new experiences from working to episodic memory as a form of learning (Section 4.5).
+Episodic memory. Episodic memory stores experience from earlier decision cycles. This can consist of training input-output pairs, history event flows, game trajectories from previous episodes, or other representations of the agent’s experiences. During the planning stage of a decision cycle, these episodes may be retrieved into working memory to support reasoning. An agent can also write new experiences from working to episodic memory as a form of learning (Section 4.5).
 
-Semantic memory. Semantic memory stores an agent’s knowledge about the world and itself.
-Traditional NLP or RL approaches that leverage retrieval for reasoning or decision-making initialize semantic memory from an external database for knowledge support.
-For example, retrieval-augmented methods in NLP  can be viewed as retrieving from a semantic memory of unstructured text (e.g., Wikipedia).
-In RL, “reading to learn” approaches  leverage game manuals and facts as a semantic memory to affect the policy.
-While these examples essentially employ a fixed, read-only semantic memory, language agents may also write new knowledge obtained from LLM reasoning into semantic memory as a form of learning (Section 4.5) to incrementally build up world knowledge from experience.
+Semantic memory. Semantic memory stores an agent’s knowledge about the world and itself. Traditional NLP or RL approaches that leverage retrieval for reasoning or decision-making initialize semantic memory from an external database for knowledge support. For example, retrieval-augmented methods in NLP can be viewed as retrieving from a semantic memory of unstructured text (e.g., Wikipedia). In RL, “reading to learn” approaches leverage game manuals and facts as a semantic memory to affect the policy. While these examples essentially employ a fixed, read-only semantic memory, language agents may also write new knowledge obtained from LLM reasoning into semantic memory as a form of learning (Section 4.5) to incrementally build up world knowledge from experience.
 
-Procedural memory. Language agents contain two forms of procedural memory: *implicit* knowledge stored in the LLM weights, and *explicit* knowledge written in the agent’s code. The agent’s code can be further divided into two types: procedures that implement actions (reasoning, retrieval, grounding, and learning procedures), and procedures that implement decision-making itself (Section 4.6). During a decision cycle, the LLM can be accessed via reasoning actions, and various code-based procedures can be retrieved and executed. Unlike episodic or semantic memory that may be initially empty or even absent, procedural memory must be initialized by the designer with proper code to bootstrap the agent. Finally, while learning new actions by writing to procedural memory is possible (Section 4.5), it is significantly riskier than writing to episodic or semantic memory, as it can easily introduce bugs or allow an agent to subvert its designers’ intentions.
+Procedural memory. Language agents contain two forms of procedural memory: _implicit_ knowledge stored in the LLM weights, and _explicit_ knowledge written in the agent’s code. The agent’s code can be further divided into two types: procedures that implement actions (reasoning, retrieval, grounding, and learning procedures), and procedures that implement decision-making itself (Section 4.6). During a decision cycle, the LLM can be accessed via reasoning actions, and various code-based procedures can be retrieved and executed. Unlike episodic or semantic memory that may be initially empty or even absent, procedural memory must be initialized by the designer with proper code to bootstrap the agent. Finally, while learning new actions by writing to procedural memory is possible (Section 4.5), it is significantly riskier than writing to episodic or semantic memory, as it can easily introduce bugs or allow an agent to subvert its designers’ intentions.
 
 ### 4.2 Grounding actions
 
 Grounding procedures execute external actions and process environmental feedback into working memory as text. This effectively simplifies the agent’s interaction with the outside world as a “text game” with textual observations and actions. We categorize three kinds of external environments:
 
-Physical environments. Physical embodiment is the oldest instantiation envisioned for AI agents . It involves processing perceptual inputs (visual, audio, tactile) into textual observations (e.g., via pre-trained captioning models), and affecting the physical environments via robotic planners that take language-based commands. Recent advances in LLMs have led to numerous robotic projects  that leverage LLMs as a “brain” for robots to generate actions or plans in the physical world. For perceptual input, vision-language models are typically used
-to convert images to text  providing additional context for the LLM .
+Physical environments. Physical embodiment is the oldest instantiation envisioned for AI agents. It involves processing perceptual inputs (visual, audio, tactile) into textual observations (e.g., via pre-trained captioning models), and affecting the physical environments via robotic planners that take language-based commands. Recent advances in LLMs have led to numerous robotic projects that leverage LLMs as a “brain” for robots to generate actions or plans in the physical world. For perceptual input, vision-language models are typically used to convert images to text providing additional context for the LLM.
 
-Dialogue with humans or other agents. Classic linguistic interactions allow the agent to accept instructions  or learn from people . Agents capable of *generating* language may ask for help  or clarification  – or entertain or emotionally help people . Recent work also investigates interaction among multiple language agents for social simulation , debate , improved safety , or collabrative task solving .
+Dialogue with humans or other agents. Classic linguistic interactions allow the agent to accept instructions or learn from people. Agents capable of _generating_ language may ask for help or clarification – or entertain or emotionally help people. Recent work also investigates interaction among multiple language agents for social simulation, debate, improved safety, or collaborative task solving.
 
-Digital environments. This includes interacting with games , APIs , and websites  as well as general code execution . Such digital grounding is cheaper and faster than physical or human interaction. It is thus a convenient testbed for language agents and has been studied with increasing intensity in recent years. In particular, for NLP tasks that require augmentation of external knowledge or computation, stateless digital APIs (e.g., search, calculator, translator) are often packaged as “tools” , which can be viewed as special “single-use” digital environments.
+Digital environments. This includes interacting with games, APIs, and websites as well as general code execution. Such digital grounding is cheaper and faster than physical or human interaction. It is thus a convenient testbed for language agents and has been studied with increasing intensity in recent years. In particular, for NLP tasks that require augmentation of external knowledge or computation, stateless digital APIs (e.g., search, calculator, translator) are often packaged as “tools”, which can be viewed as special “single-use” digital environments.
 
 ### 4.3 Retrieval actions
 
-In CoALA, a retrieval procedure  reads information from long-term memories into working memory.
-Depending on the information and memory type, it could be implemented in various ways, e.g., rule-based, sparse, or dense retrieval.
-For example, Voyager  loads code-based skills from a skill library via dense retrieval to interact with the Minecraft world – effectively retrieving grounding procedures from a procedural memory. Generative Agents  retrieves relevant events from episodic memory via a combination of recency (rule-based), importance (reasoning-based), and relevance (embedding-based) scores. DocPrompting  proposes to leverage library documents to assist code generation, which can be seen as retrieving knowledge from semantic memory. While retrieval plays a key role in human decision-making , adaptive and context-specific recall remains understudied in language agents. In Section 6, we suggest a principled integration of decision-making and retrieval as an important future direction.
+In CoALA, a retrieval procedure reads information from long-term memories into working memory. Depending on the information and memory type, it could be implemented in various ways, e.g., rule-based, sparse, or dense retrieval. For example, Voyager loads code-based skills from a skill library via dense retrieval to interact with the Minecraft world – effectively retrieving grounding procedures from a procedural memory. Generative Agents retrieves relevant events from episodic memory via a combination of recency (rule-based), importance (reasoning-based), and relevance (embedding-based) scores. DocPrompting proposes to leverage library documents to assist code generation, which can be seen as retrieving knowledge from semantic memory. While retrieval plays a key role in human decision-making, adaptive and context-specific recall remains understudied in language agents. In Section 6, we suggest a principled integration of decision-making and retrieval as an important future direction.
 
 ### 4.4 Reasoning actions
 
-Reasoning allows language agents to process the contents of working memory to generate new information. Unlike retrieval (which reads from long-term memory into working memory), reasoning reads from *and* writes to working memory. This allows the agent to summarize and distill insights about the most recent observation , the most recent trajectory , or information retrieved from long-term memory . Reasoning can be used to support learning (by writing the results into long-term memory) or decision-making (by using the results as additional context for subsequent LLM calls).
+Reasoning allows language agents to process the contents of working memory to generate new information. Unlike retrieval (which reads from long-term memory into working memory), reasoning reads from _and_ writes to working memory. This allows the agent to summarize and distill insights about the most recent observation, the most recent trajectory, or information retrieved from long-term memory. Reasoning can be used to support learning (by writing the results into long-term memory) or decision-making (by using the results as additional context for subsequent LLM calls).
 
 ### 4.5 Learning actions
 
 Learning occurs by writing information to long-term memory, which includes a spectrum of diverse procedures.
 
-Updating episodic memory with experience. It is common practice for RL agents to store episodic trajectories to update a parametric policy  or establish a non-parametric policy . For language agents, added experiences in episodic memory may be retrieved later as examples and bases for reasoning or decision-making .
+Updating episodic memory with experience. It is common practice for RL agents to store episodic trajectories to update a parametric policy or establish a non-parametric policy. For language agents, added experiences in episodic memory may be retrieved later as examples and bases for reasoning or decision-making.
 
-Updating semantic memory with knowledge.
-Recent work  has applied LLMs to reason about raw experiences and store the resulting inferences in semantic memory. For example, Reflexion  uses an LLM to reflect on failed episodes and stores the results (e.g., “there is no dishwasher in kitchen”) as semantic knowledge to be attached to LLM context for solving later episodes. Finally, work in robotics  uses vision-language models to build a semantic map of the environment, which can later be queried to execute instructions.
+Updating semantic memory with knowledge. Recent work has applied LLMs to reason about raw experiences and store the resulting inferences in semantic memory. For example, Reflexion uses an LLM to reflect on failed episodes and stores the results (e.g., “there is no dishwasher in kitchen”) as semantic knowledge to be attached to LLM context for solving later episodes. Finally, work in robotics uses vision-language models to build a semantic map of the environment, which can later be queried to execute instructions.
 
-Updating LLM parameters (procedural memory). The LLM weights represent implicit procedural knowledge. These can be adjusted to an agent’s domain by fine-tuning during the agent’s lifetime. Such fine-tuning can be accomplished via supervised  or imitation learning , reinforcement learning (RL) from environment feedback , human feedback , or AI feedback . Classic LLM self-improvement methods  use an external measure such as consistency  to select generations to fine-tune on. In reinforcement learning settings, this can be extended to use environmental feedback instead: for example, XTX  periodically fine-tunes a small language model on high-scoring trajectories stored in episodic memory, which serves as a robust “exploitation” policy to reach exploration frontiers in the face of stochasity. Fine-tuning the agent’s LLM is a costly form of learning; thus, present studies specify learning schedules. However, as training becomes more efficient – or if agents utilize smaller subtask-specific LLMs – it may be possible to allow language agents to autonomously determine when and how to fine-tune their LLMs.
+Updating LLM parameters (procedural memory). The LLM weights represent implicit procedural knowledge. These can be adjusted to an agent’s domain by fine-tuning during the agent’s lifetime. Such fine-tuning can be accomplished via supervised or imitation learning, reinforcement learning (RL) from environment feedback, human feedback, or AI feedback. Classic LLM self-improvement methods use an external measure such as consistency to select generations to fine-tune on. In reinforcement learning settings, this can be extended to use environmental feedback instead: for example, XTX periodically fine-tunes a small language model on high-scoring trajectories stored in episodic memory, which serves as a robust “exploitation” policy to reach exploration frontiers in the face of stochasticity. Fine-tuning the agent’s LLM is a costly form of learning; thus, present studies specify learning schedules. However, as training becomes more efficient – or if agents utilize smaller subtask-specific LLMs – it may be possible to allow language agents to autonomously determine when and how to fine-tune their LLMs.
 
 Updating agent code (procedural memory). CoALA allows agents to update their source code, thus modifying the implementation of various procedures. These can be broken down as follows:
 
-- •
-Updating reasoning . For example, APE  infers prompt instructions from input-output examples, then uses these instructions as part of the LLM prompt to assist task solving. Such a prompt update can be seen as a form of learning to reason.
-- •
-Updating grounding .
-For example, Voyager  maintains a curriculum library.
-Notably, current methods are limited to creating new code skills to interact with external environments.
-- •
-Updating retrieval. To our knowledge, these learning options are not studied in recent language agents. Retrieval is usually considered a basic action designed with some fixed implementation (e.g., BM25 or dense retrieval), but research in query/document expansion  or retrieval distillion  may be helpful for language agents to learn better retrieval procedures.
-- •
-Updating learning or decision-making.
-Finally, it is theoretically possible for CoALA agents to learn new procedures for learning or decision-making, thus providing significant adaptability. In general, however, updates to these procedures are risky both for the agent’s functionality and alignment. At present, we are not aware of any language agents that implement this form of learning; we discuss such possibilities more in Section 6.
+- Updating reasoning. For example, APE infers prompt instructions from input-output examples, then uses these instructions as part of the LLM prompt to assist task solving. Such a prompt update can be seen as a form of learning to reason.
+- Updating grounding. For example, Voyager maintains a curriculum library. Notably, current methods are limited to creating new code skills to interact with external environments.
+- Updating retrieval. To our knowledge, these learning options are not studied in recent language agents. Retrieval is usually considered a basic action designed with some fixed implementation (e.g., BM25 or dense retrieval), but research in query/document expansion or retrieval distillation may be helpful for language agents to learn better retrieval procedures.
+- Updating learning or decision-making. Finally, it is theoretically possible for CoALA agents to learn new procedures for learning or decision-making, thus providing significant adaptability. In general, however, updates to these procedures are risky both for the agent’s functionality and alignment. At present, we are not aware of any language agents that implement this form of learning; we discuss such possibilities more in Section 6.
 
-While RL agents usually fix one way of learning (e.g., Q-learning, PPO, or A3C) and learn by updating model parameters, language agents can select from a diversity of learning procedures. This allows them to learn rapidly by storing task-relevant language (cheaper and quicker than parameter updates), and leverage multiple forms of learning to compound their self-improvement (e.g., Generative Agents discussed in Section 5).
+While RL agents usually fix one way of learning (e.g., Q-learning, PPO, or A3C) and learn by updating model parameters, language agents can select from a diversity of learning procedures. This allows them to learn rapidly by storing task-relevant language (cheaper and quicker than parameter updates), and leverage multiple forms of learning to compound their self-improvement (e.g., Generative Agents discussed in Section 5).
 
-Finally, while our discussion has mostly focused on adding to memory, modifying and deleting (a case of “unlearning”) are understudied in recent language agents. We address these areas more in Section 6.
+Finally, while our discussion has mostly focused on adding to memory, modifying and deleting (a case of “unlearning”) are understudied in recent language agents. We address these areas more in Section 6.
 
 ### 4.6 Decision making
 
-With various actions (grounding, learning, reasoning, retrieval) in the action space, how should a language agent choose which action to apply?
-This is handled by the decision-making procedure, which is effectively the top-level or “main” agent program. CoALA structures this top-level program into decision cycles (Figure 4B) which yield an external *grounding* action (Section 4.2) or internal *learning* action (Section 4.5). In each cycle, program code defines a sequence of reasoning and retrieval actions to propose and evaluate alternatives (planning stage), then executes the selected action (execution stage) – then the cycle loops again.
+With various actions (grounding, learning, reasoning, retrieval) in the action space, how should a language agent choose which action to apply? This is handled by the decision-making procedure, which is effectively the top-level or “main” agent program. CoALA structures this top-level program into decision cycles (Figure 4B) which yield an external _grounding_ action (Section 4.2) or internal _learning_ action (Section 4.5). In each cycle, program code defines a sequence of reasoning and retrieval actions to propose and evaluate alternatives (planning stage), then executes the selected action (execution stage) – then the cycle loops again.
 
-Planning stage. During planning, reasoning and retrieval can be flexibly applied to propose, evaluate, and select actions, and these sub-stages could interleave or iterate to build up multi-step simulations  before taking an external action . It also enables agents to iteratively improve candidate solutions – for example, by using the LLM to simulate them, identifying defects, and proposing modifications that address those defects .
+Planning stage. During planning, reasoning and retrieval can be flexibly applied to propose, evaluate, and select actions, and these sub-stages could interleave or iterate to build up multi-step simulations before taking an external action. It also enables agents to iteratively improve candidate solutions – for example, by using the LLM to simulate them, identifying defects, and proposing modifications that address those defects.
 
-- •
-Proposal. The proposal sub-stage generates one or more action candidates. The usual approach is to use reasoning (and optionally retrieval) to sample one  or more  external grounding actions from the LLM. For simple domains with limited actions, the proposal stage might simply include all actions (e.g., SayCan in Section 5). More sophisticated agents use if-else or while-if code structures ; while agents deployed in well-defined domains may utilize structured simulators  to generate plausible rollouts .
-- •
-Evaluation. If multiple actions are proposed, the evaluation sub-stage assigns a value to each. This may use heuristic rules, LLM (perplexity) values , learned values , LLM reasoning , or some combination. Particularly, LLM reasoning can help evaluate actions by internally simulating their grounding feedback from the external world .
-- •
-Selection. Given a set of actions and their values, the selection step either selects one to execute or rejects them and loops back to the proposal step. Depending on the form of action values, selection may occur via argmax, softmax, or an alternative such as majority vote .
+- Proposal. The proposal sub-stage generates one or more action candidates. The usual approach is to use reasoning (and optionally retrieval) to sample one or more external grounding actions from the LLM. For simple domains with limited actions, the proposal stage might simply include all actions (e.g., SayCan in Section 5). More sophisticated agents use if-else or while-if code structures; while agents deployed in well-defined domains may utilize structured simulators to generate plausible rollouts.
+- Evaluation. If multiple actions are proposed, the evaluation sub-stage assigns a value to each. This may use heuristic rules, LLM (perplexity) values, learned values, LLM reasoning, or some combination. Particularly, LLM reasoning can help evaluate actions by internally simulating their grounding feedback from the external world.
+- Selection. Given a set of actions and their values, the selection step either selects one to execute or rejects them and loops back to the proposal step. Depending on the form of action values, selection may occur via argmax, softmax, or an alternative such as majority vote.
 
-Execution. The selected action is applied by executing the relevant procedures from the agent’s source code. Depending on the agent implementation, this might be an external *grounding* action (e.g., an API call; Section 4.2) or an internal *learning* action (e.g., a write to episodic memory; Section 4.5). An observation can be made from the environment, providing feedback from the agent’s action, and the cycle loops again.
+Execution. The selected action is applied by executing the relevant procedures from the agent’s source code. Depending on the agent implementation, this might be an external _grounding_ action (e.g., an API call; Section 4.2) or an internal _learning_ action (e.g., a write to episodic memory; Section 4.5). An observation can be made from the environment, providing feedback from the agent’s action, and the cycle loops again.
 
-Empirically, many early language agents simply use LLMs to propose an action , a sequence of actions , or evaluate a fixed set of actions  without intermediate reasoning or retrieval.
-Followup work  has exploited intermediate reasoning and retrieval to analyze the situation, make and maintain action plans, refine the previous action given the environmental feedback, and leveraged a more complex procedure to propose a single action.
-Most recently, research has started to investigate more complex decision-making employing iterative proposal and evaluation to consider multiple actions. These procedures are modeled after classical planning algorithms: for example, Tree of Thoughts  and RAP  use LLMs to implement BFS/DFS and Monte Carlo Tree Search  respectively. LLMs are used to generate proposals (i.e., to simulate rollouts conditioned on an action) and evaluate them (i.e., to value the outcome of the proposed action).
+Empirically, many early language agents simply use LLMs to propose an action, a sequence of actions, or evaluate a fixed set of actions without intermediate reasoning or retrieval. Followup work has exploited intermediate reasoning and retrieval to analyze the situation, make and maintain action plans, refine the previous action given the environmental feedback, and leveraged a more complex procedure to propose a single action. Most recently, research has started to investigate more complex decision-making employing iterative proposal and evaluation to consider multiple actions. These procedures are modeled after classical planning algorithms: for example, Tree of Thoughts and RAP use LLMs to implement BFS/DFS and Monte Carlo Tree Search respectively. LLMs are used to generate proposals (i.e., to simulate rollouts conditioned on an action) and evaluate them (i.e., to value the outcome of the proposed action).
 
 ## 5 Case Studies
 
-With variations and ablations of the memory modules, action space, and decision-making procedures, CoALA can express a wide spectrum of language agents. Table 2 lists some popular recent methods across diverse domains — from Minecraft to robotics, from pure reasoning to social simulacra. CoALA helps characterize their internal mechanisms and reveal their similarities and differences in a simple and structured way.
+With variations and ablations of the memory modules, action space, and decision-making procedures, CoALA can express a wide spectrum of language agents. Table 2 lists some popular recent methods across diverse domains — from Minecraft to robotics, from pure reasoning to social simulacra. CoALA helps characterize their internal mechanisms and reveal their similarities and differences in a simple and structured way.
 
-SayCan  grounds a language model to robotic interactions in a kitchen to satisfy user commands (e.g., “I just worked out, can you bring me a drink and a snack to recover?”). Its long-term memory is procedural only (an LLM and a learned value function). The action space is external only – a fixed set of 551 grounding skills (e.g., “find the apple”, “go to the table”), with no internal actions of reasoning, retrieval, or learning. During decision-making, SayCan evaluates each action using a combination of LLM and learned values, which balance a skill’s usefulness and groundedness. SayCan therefore employs the LLM (in conjunction with the learned value function) as a single-step planner.
+SayCan grounds a language model to robotic interactions in a kitchen to satisfy user commands (e.g., “I just worked out, can you bring me a drink and a snack to recover?”). Its long-term memory is procedural only (an LLM and a learned value function). The action space is external only – a fixed set of 551 grounding skills (e.g., “find the apple”, “go to the table”), with no internal actions of reasoning, retrieval, or learning. During decision-making, SayCan evaluates each action using a combination of LLM and learned values, which balance a skill’s usefulness and groundedness. SayCan therefore employs the LLM (in conjunction with the learned value function) as a single-step planner.
 
 **Table 2: Some recent language agents cast into the CoALA framework.**
-|  | Long-term | External | Internal | Decision |
-| --- | --- | --- | --- | --- |
-|  | Memory(^¶^¶¶All agents contain some procedural memory (agent code and LLM weights), so here we only list writable procedural memory.) | Grounding | Actions | Making |
-| SayCan | - | physical | - | evaluate |
-| ReAct | - | digital | reason | propose |
-| Voyager | procedural | digital | reason/retrieve/learn | propose |
-| Generative Agents | episodic/semantic | digital/agent | reason/retrieve/learn | propose |
-| Tree of Thoughts | - | digital(^∥^∥∥Special digital grounding with the only external action being submitting a final answer.) | reason | propose, evaluate, select |
 
-ReAct  is a language agent grounded to various digital environments (e.g., Wikipedia API, text game, website). Like SayCan, it lacks semantic or episodic memory and therefore has no retrieval or learning actions. Its action space consists of (internal) reasoning and (external) grounding. Its decision cycle is fixed to use a single reasoning action to analyze the situation and (re)make action plans, then generates a grounding action without evaluation or selection stages. ReAct can be considered the simplest language agent that leverages both internal and external actions, and is the initial work that demonstrates their synergizing effects: reasoning helps guide acting, while acting provides environmental feedback to support reasoning.
+|                 | Long-term                     | External   | Internal            | Decision                       |
+| :-------------- | :---------------------------- | :--------- | :------------------ | :----------------------------- |
+|                 | Memory (All agents contain some procedural memory (agent code and LLM weights), so here we only list writable procedural memory.) | Grounding  | Actions             | Making                         |
+| SayCan          | -                             | physical   | -                   | evaluate                       |
+| ReAct           | -                             | digital    | reason              | propose                        |
+| Voyager         | procedural                    | digital    | reason/retrieve/learn | propose                        |
+| Generative Agents | episodic/semantic             | digital/agent | reason/retrieve/learn | propose                        |
+| Tree of Thoughts | -                             | digital (Special digital grounding with the only external action being submitting a final answer.) | reason              | propose, evaluate, select      |
 
-Voyager  is a language agent grounded to the Minecraft API. Unlike SayCan, which grounds to perception via the learned value function, Voyager’s grounding is text-only. It has a long-term procedural memory that stores a library of code-based grounding procedures a.k.a. skills (e.g., “combatZombie”, “craftStoneSword”). This library is hierarchical: complex skills can use simpler skills as sub-procedures (e.g., “combatZombie” may call “craftStoneSword” if no sword is in inventory). Most impressively, its action space has all four kinds of actions: grounding, reasoning, retrieval, and learning (by adding new grounding procedures).
-During a decision cycle, Voyager first reasons to propose a new task objective if it is missing in the working memory, then reasons to propose a code-based grounding procedure to solve the task. In the next decision cycle, Voyager reasons over the environmental feedback to determine task completion. If successful, Voyager selects a learning action adding the grounding procedure to procedural memory; otherwise, it uses reasoning to refine the code and re-executes it.
-The importance of long-term memory and procedural learning is empirically verified by comparing to baselines like ReAct and AutoGPT and ablations without the procedural memory. Voyager is shown to better explore areas, master the tech tree, and zero-shot generalize to unseen tasks.
+ReAct is a language agent grounded to various digital environments (e.g., Wikipedia API, text game, website). Like SayCan, it lacks semantic or episodic memory and therefore has no retrieval or learning actions. Its action space consists of (internal) reasoning and (external) grounding. Its decision cycle is fixed to use a single reasoning action to analyze the situation and (re)make action plans, then generates a grounding action without evaluation or selection stages. ReAct can be considered the simplest language agent that leverages both internal and external actions, and is the initial work that demonstrates their synergizing effects: reasoning helps guide acting, while acting provides environmental feedback to support reasoning.
 
-Generative Agents  are language agents grounded to a sandbox game affording interaction with the environment and other agents. Its action space also has all four kinds of actions: grounding, reasoning, retrieval, and learning. Each agent has a long-term episodic memory that stores events in a list. These agents use retrieval and reasoning to generate reflections on their episodic memory (e.g., “I like to ski now.”) which are then written to long-term semantic memory. During decision-making, it retrieves relevant reflections from semantic memory, then reasons to make a high-level plan of the day. While executing the plan, the agent receives a stream of grounding observations; it can reason over these to maintain or adjust the plan.
+Voyager is a language agent grounded to the Minecraft API. Unlike SayCan, which grounds to perception via the learned value function, Voyager’s grounding is text-only. It has a long-term procedural memory that stores a library of code-based grounding procedures a.k.a. skills (e.g., “combatZombie”, “craftStoneSword”). This library is hierarchical: complex skills can use simpler skills as sub-procedures (e.g., “combatZombie” may call “craftStoneSword” if no sword is in inventory). Most impressively, its action space has all four kinds of actions: grounding, reasoning, retrieval, and learning (by adding new grounding procedures). During a decision cycle, Voyager first reasons to propose a new task objective if it is missing in the working memory, then reasons to propose a code-based grounding procedure to solve the task. In the next decision cycle, Voyager reasons over the environmental feedback to determine task completion. If successful, Voyager selects a learning action adding the grounding procedure to procedural memory; otherwise, it uses reasoning to refine the code and re-executes it. The importance of long-term memory and procedural learning is empirically verified by comparing to baselines like ReAct and AutoGPT and ablations without the procedural memory. Voyager is shown to better explore areas, master the tech tree, and zero-shot generalize to unseen tasks.
 
-Tree of Thoughts (ToT)  can be seen as a special kind of language agent with only one external action: submitting a final solution to a reasoning problem (game of 24, creative writing, crosswords puzzle). It has no long-term memory, and only reasoning in its internal action space, but differs from all previous agents in its deliberate decision-making. During planning, ToT iteratively proposes, evaluates, and selects “thoughts” (reasoning actions) based on LLM reasoning, and maintains them via a tree search algorithm to enable global exploration as well as local backtrack and foresight.
+Generative Agents are language agents grounded to a sandbox game affording interaction with the environment and other agents. Its action space also has all four kinds of actions: grounding, reasoning, retrieval, and learning. Each agent has a long-term episodic memory that stores events in a list. These agents use retrieval and reasoning to generate reflections on their episodic memory (e.g., “I like to ski now.”) which are then written to long-term semantic memory. During decision-making, it retrieves relevant reflections from semantic memory, then reasons to make a high-level plan of the day. While executing the plan, the agent receives a stream of grounding observations; it can reason over these to maintain or adjust the plan.
+
+Tree of Thoughts (ToT) can be seen as a special kind of language agent with only one external action: submitting a final solution to a reasoning problem (game of 24, creative writing, crosswords puzzle). It has no long-term memory, and only reasoning in its internal action space, but differs from all previous agents in its deliberate decision-making. During planning, ToT iteratively proposes, evaluates, and selects “thoughts” (reasoning actions) based on LLM reasoning, and maintains them via a tree search algorithm to enable global exploration as well as local backtrack and foresight.
 
 ## 6 Actionable Insights
 
-Compared to some recent empirical surveys around language agents ,
-CoALA offers a theoretical framework grounded in the well-established research of cognitive architectures.
-This leads to a unique and complementary set of actionable insights.
+Compared to some recent empirical surveys around language agents, CoALA offers a theoretical framework grounded in the well-established research of cognitive architectures. This leads to a unique and complementary set of actionable insights.
 
-Modular agents: thinking beyond monoliths. Perhaps our most important suggestion is that *agents should be structured and modular*. Practically, just as standardized software is used across robotics platforms , a framework for language agents would consolidate technical investment and improve compatibility.
+Modular agents: thinking beyond monoliths. Perhaps our most important suggestion is that *agents should be structured and modular*. Practically, just as standardized software is used across robotics platforms, a framework for language agents would consolidate technical investment and improve compatibility.
 
-- •
-In academic research, standardized terms allow conceptual comparisons across works (Table 2), and open-source implementations would further facilitate modular plug-and-play and re-use. For example, the theoretical framework of Markov Decision Processes  provides a standardized set of concepts and terminology (e.g., state, action, reward, transition) for reinforcement learning . Correspondingly, empirical frameworks like OpenAI Gym  provided standardized abstractions (e.g., obs, reward, done, info = env.step(action)) that facilitate empirical RL work. Thus, it would be timely and impactful to also implement useful abstractions (e.g., Memory, Action, Agent classes) for language agents, and cast simpler agents into such an empirical CoALA framework as examples for building more complex agents.
-- •
-In industry applications, maintaining a single company-wide “language agent library” would reduce technical debt by facilitating testing and component re-use across individual agent deployments. It could also standardize the customer experience: rather than interacting with a hodgepodge of language agents developed by individual teams, end users would experience a context-specific instantiation of the same base agent.
-- •
-LLMs vs. code in agent design. CoALA agents possess two forms of procedural memory: agent code (deterministic rules) and LLM parameters (a large, stochastic production system). Agent code is interpretable and extensible, but often brittle in face of stochasticity and limited to address situations the designer anticipates. In contrast, LLM parameters are hard to interpret, but offer significant zero-shot flexibility in new contexts . CoALA thus suggests using code sparingly to implement generic algorithms that complement LLM limitations, e.g., implementing tree search to mitigate myopia induced by autoregressive generation .
+- In academic research, standardized terms allow conceptual comparisons across works (Table 2), and open-source implementations would further facilitate modular plug-and-play and re-use. For example, the theoretical framework of Markov Decision Processes provides a standardized set of concepts and terminology (e.g., state, action, reward, transition) for reinforcement learning. Correspondingly, empirical frameworks like OpenAI Gym provided standardized abstractions (e.g., `obs, reward, done, info = env.step(action)`) that facilitate empirical RL work. Thus, it would be timely and impactful to also implement useful abstractions (e.g., `Memory`, `Action`, `Agent` classes) for language agents, and cast simpler agents into such an empirical CoALA framework as examples for building more complex agents.
+- In industry applications, maintaining a single company-wide “language agent library” would reduce technical debt by facilitating testing and component re-use across individual agent deployments. It could also standardize the customer experience: rather than interacting with a hodgepodge of language agents developed by individual teams, end users would experience a context-specific instantiation of the same base agent.
+- LLMs vs. code in agent design. CoALA agents possess two forms of procedural memory: agent code (deterministic rules) and LLM parameters (a large, stochastic production system). Agent code is interpretable and extensible, but often brittle in face of stochasticity and limited to address situations the designer anticipates. In contrast, LLM parameters are hard to interpret, but offer significant zero-shot flexibility in new contexts. CoALA thus suggests using code sparingly to implement generic algorithms that complement LLM limitations, e.g., implementing tree search to mitigate myopia induced by autoregressive generation.
 
-Agent design: thinking beyond simple reasoning. CoALA defines agents over three distinct concepts: (i) internal memory, (ii) a set of possible internal and external actions, and (iii) a decision making procedure over those actions. Using CoALA to develop an application-specific agent consists of specifying implementations for each of these components in turn. We assume that the agent’s environment and external action space are given, and show how CoALA can be used to determine an appropriate high-level architecture. For example, we can imagine designing a personalized retail assistant  that helps users find relevant items based on their queries and purchasing history. In this case, the external actions would consist of dialogue or returning search results to the user.
+Agent design: thinking beyond simple reasoning. CoALA defines agents over three distinct concepts: (i) internal memory, (ii) a set of possible internal and external actions, and (iii) a decision making procedure over those actions. Using CoALA to develop an application-specific agent consists of specifying implementations for each of these components in turn. We assume that the agent’s environment and external action space are given, and show how CoALA can be used to determine an appropriate high-level architecture. For example, we can imagine designing a personalized retail assistant that helps users find relevant items based on their queries and purchasing history. In this case, the external actions would consist of dialogue or returning search results to the user.
 
-- •
-Determine what memory modules are necessary. In our retail assistant example, it would be helpful for the agent to have semantic memory containing the set of items for sale, as well as episodic memory about each customer’s previous purchases and interactions. It will need procedural memory defining functions to query these datastores, as well as working memory to track the dialogue state.
-- •
-Define the agent’s internal action space. This consists primarily of defining read and write access to each of the agent’s memory modules. In our example, the agent should have read and write access to episodic memory (so it can store new interactions with customers), but read-only access to semantic and procedural memory (since it should not update the inventory or its own code).
-- •
-Define the decision-making procedure. This step specifies how reasoning and retrieval actions are taken in order to choose an external or learning action. In general, this requires a tradeoff between performance and generalization: more complex procedures can better fit to a particular problem (e.g., Voyager  for Minecraft) while simpler ones are more domain-agnostic and generalizable (e.g., ReAct ). For our retail assistant, we may want to encourage retrieval of episodic memory of interactions with a user to provide a prior over their search intent, as well as an explicit evaluation step reasoning about whether a particular set of search results will satisfy that intent. We can simplify the decision procedure by deferring learning to the end of the interaction , summarizing the episode prior to storing it in episodic memory.
+- Determine what memory modules are necessary. In our retail assistant example, it would be helpful for the agent to have semantic memory containing the set of items for sale, as well as episodic memory about each customer’s previous purchases and interactions. It will need procedural memory defining functions to query these datastores, as well as working memory to track the dialogue state.
+- Define the agent’s internal action space. This consists primarily of defining read and write access to each of the agent’s memory modules. In our example, the agent should have read and write access to episodic memory (so it can store new interactions with customers), but read-only access to semantic and procedural memory (since it should not update the inventory or its own code).
+- Define the decision-making procedure. This step specifies how reasoning and retrieval actions are taken in order to choose an external or learning action. In general, this requires a tradeoff between performance and generalization: more complex procedures can better fit to a particular problem (e.g., Voyager for Minecraft) while simpler ones are more domain-agnostic and generalizable (e.g., ReAct). For our retail assistant, we may want to encourage retrieval of episodic memory of interactions with a user to provide a prior over their search intent, as well as an explicit evaluation step reasoning about whether a particular set of search results will satisfy that intent. We can simplify the decision procedure by deferring learning to the end of the interaction, summarizing the episode prior to storing it in episodic memory.
 
 Structured reasoning: thinking beyond prompt engineering. Early work on prompt engineering manipulated the LLM’s input and output via low-level string operations. CoALA suggests a more structured reasoning procedure to update working memory variables.
 
-- •
-Prompting frameworks like LangChain  and LlamaIndex  can be used to define higher-level sequences of reasoning steps, reducing the burden of reasoning per LLM call and the low-level prompt crafting efforts. Structural output parsing solutions such as Guidance  and OpenAI function calling  can help update working memory variables. Defining and building good working memory modules will also be an important direction of future research. Such modules may be especially important for industry solutions where LLM reasoning needs to seamlessly integrate with large-scale code infrastructure.
-- •
-Reasoning usecases in agents can inform and reshape LLM training in terms of the types (e.g., reasoning for self-evaluation, reflection, action generation, etc.) and formats (e.g., CoT , ReAct , Reflexion ) of training instances. By default, existing LLMs are trained and optimized for NLP tasks, but agent applications have explored new modes of LLM reasoning (e.g., self-evaluation) that have proven broadly useful. LLMs trained or finetuned towards these capabilities will more likely be the backbones of future agents.
+- Prompting frameworks like LangChain and LlamaIndex can be used to define higher-level sequences of reasoning steps, reducing the burden of reasoning per LLM call and the low-level prompt crafting efforts. Structural output parsing solutions such as Guidance and OpenAI function calling can help update working memory variables. Defining and building good working memory modules will also be an important direction of future research. Such modules may be especially important for industry solutions where LLM reasoning needs to seamlessly integrate with large-scale code infrastructure.
+- Reasoning usecases in agents can inform and reshape LLM training in terms of the types (e.g., reasoning for self-evaluation, reflection, action generation, etc.) and formats (e.g., CoT, ReAct, Reflexion) of training instances. By default, existing LLMs are trained and optimized for NLP tasks, but agent applications have explored new modes of LLM reasoning (e.g., self-evaluation) that have proven broadly useful. LLMs trained or finetuned towards these capabilities will more likely be the backbones of future agents.
 
-Long-term memory: thinking beyond retrieval augmentation. While traditional retrieval-augmented language models  only read from human-written corpora, memory-augmented language agents can both read and write self-generated content autonomously. This opens up numerous possibilities for efficient lifelong learning.
+Long-term memory: thinking beyond retrieval augmentation. While traditional retrieval-augmented language models only read from human-written corpora, memory-augmented language agents can both read and write self-generated content autonomously. This opens up numerous possibilities for efficient lifelong learning.
 
-- •
-Combining existing human knowledge with new experience and skills can help agents bootstrap to learn efficiently. For example, a code-writing agent could be endowed with semantic programming knowledge in the form of manuals or textbooks. It could then generate its own episodic knowledge from experience; reflect on these experiences to generate new semantic knowledge; and gradually create procedural knowledge in the form of a code library storing useful methods.
-- •
-Integrating retrieval and reasoning can help to better ground planning. Recent computational psychological models implicate an integrated process of memory recall and decision-making  – suggesting that adaptive mechanisms interleaving memory search and forward simulation will allow agents to make the most of their knowledge.
+- Combining existing human knowledge with new experience and skills can help agents bootstrap to learn efficiently. For example, a code-writing agent could be endowed with semantic programming knowledge in the form of manuals or textbooks. It could then generate its own episodic knowledge from experience; reflect on these experiences to generate new semantic knowledge; and gradually create procedural knowledge in the form of a code library storing useful methods.
+- Integrating retrieval and reasoning can help to better ground planning. Recent computational psychological models implicate an integrated process of memory recall and decision-making – suggesting that adaptive mechanisms interleaving memory search and forward simulation will allow agents to make the most of their knowledge.
 
-Learning: thinking beyond in-context learning or finetuning. CoALA’s definition of “learning” encompasses these methods, but extends further to storing new experience or knowledge, or writing new agent code (Section 4.5). Important future directions include:
+Learning: thinking beyond in-context learning or finetuning. CoALA’s definition of “learning” encompasses these methods, but extends further to storing new experience or knowledge, or writing new agent code (Section 4.5). Important future directions include:
 
-- •
-Meta-learning by modifying agent code would allow agents to learn more effectively. For example, learning better retrieval procedures could enable agents to make better use of their experience. Recent expansion-based techniques  could allow agents to reason about when certain knowledge would be useful, and store this as metadata to facilitate later recall. These forms of meta-learning would enable agents to go beyond human-written code, yet are understudied due to their difficulty and risk.
-- •
-New forms of learning (and unlearning) could include fine-tuning smaller models for specific reasoning sub-tasks , deleting unneeded memory items for “unlearning” , and studying the interaction effects between multiple forms of learning .
+- Meta-learning by modifying agent code would allow agents to learn more effectively. For example, learning better retrieval procedures could enable agents to make better use of their experience. Recent expansion-based techniques could allow agents to reason about when certain knowledge would be useful, and store this as metadata to facilitate later recall. These forms of meta-learning would enable agents to go beyond human-written code, yet are understudied due to their difficulty and risk.
+- New forms of learning (and unlearning) could include fine-tuning smaller models for specific reasoning sub-tasks, deleting unneeded memory items for “unlearning”, and studying the interaction effects between multiple forms of learning.
 
-Action space: thinking beyond external tools or actions. Although “action space” is a standard term in reinforcement learning, it has been used sparingly with language agents.
-CoALA argues for defining a clear and task-suitable action space with both internal (reasoning, retrieval, learning) and external (grounding) actions, which will help systematize and inform the agent design.
+Action space: thinking beyond external tools or actions. Although “action space” is a standard term in reinforcement learning, it has been used sparingly with language agents. CoALA argues for defining a clear and task-suitable action space with both internal (reasoning, retrieval, learning) and external (grounding) actions, which will help systematize and inform the agent design.
 
-- •
-Size of the action space. More capable agents (e.g., Voyager, Generative Agents) have larger action spaces – which in turn means they face a more complex decision-making problem.
-As a result, these agents rely on more customized or hand-crafted decision procedures.
-The tradeoff of the action space vs. decision-making complexities is a basic problem to be considered before agent development, and taking the minimal action space necessary to solve a given task might be preferred.
-- •
-Safety of the action space. Some parts of the action space are inherently riskier. “Learning” actions (especially procedural deletion and modification) could cause internal harm, while “grounding” actions (e.g., “rm” in bash terminal, harmful speech in human dialog, holding a knife in physical environments) could cause external harm. Today, safety measures are typically task-specific heuristics (e.g., remove “os” operations in Python , filter keywords in dialog , limit robots to controlled environments ). However, as agents are grounded to more complex environments with richer internal mechanisms, it may be necessary to specify and ablate the agent’s action space for worst-case scenario prediction and prevention .
+- Size of the action space. More capable agents (e.g., Voyager, Generative Agents) have larger action spaces – which in turn means they face a more complex decision-making problem. As a result, these agents rely on more customized or hand-crafted decision procedures. The tradeoff of the action space vs. decision-making complexities is a basic problem to be considered before agent development, and taking the minimal action space necessary to solve a given task might be preferred.
+- Safety of the action space. Some parts of the action space are inherently riskier. “Learning” actions (especially procedural deletion and modification) could cause internal harm, while “grounding” actions (e.g., “rm” in bash terminal, harmful speech in human dialog, holding a knife in physical environments) could cause external harm. Today, safety measures are typically task-specific heuristics (e.g., remove “os” operations in Python, filter keywords in dialog, limit robots to controlled environments). However, as agents are grounded to more complex environments with richer internal mechanisms, it may be necessary to specify and ablate the agent’s action space for worst-case scenario prediction and prevention.
 
-Decision making: thinking beyond action generation. We believe one of the most exciting future directions for language agents is decision-making: as detailed in Section 4.6, most works are still confined to proposing (or directly generating) a single action. Present agents have just scratched the surface of more deliberate, propose-evaluate-select decision-making procedures.
+Decision making: thinking beyond action generation. We believe one of the most exciting future directions for language agents is decision-making: as detailed in Section 4.6, most works are still confined to proposing (or directly generating) a single action. Present agents have just scratched the surface of more deliberate, propose-evaluate-select decision-making procedures.
 
-- •
-Mixing language-based reasoning and code-based planning may offer the best of both worlds. Existing approaches either plan directly in natural language  or use LLMs to translate from natural language to structured world models . Future work could integrate these: just as Soar incorporates a simulator for physical reasoning , agents may write and execute simulation code on the fly to evaluate the consequences of plans. See Section 7 for more discussion.
-- •
-Extending deliberative reasoning to real-world settings. Initial works have implemented classical planning and tree search , using toy tasks such as game of 24 or block building. Extending these schemes to more complicated tasks with grounding  and long-term memory is an exciting direction.
-- •
-Metareasoning to improve efficiency. LLM calls are both slow and computationally intensive. Using LLMs for decision-making entails a balance between their computational cost and the utility of the resulting improved plan. Most LLM reasoning methods fix a search budget by specifying a depth of reasoning , but humans appear to adaptively allocate computation . Future work should develop mechanisms to estimate the utility of planning  and modify the decision procedure accordingly, either via amortization , routing among several decision sub-procedures (e.g., ReAct  investigated backing off to CoT  and vice versa), or updates to the decision-making procedure.
-- •
-Calibration and alignment. More complex decision-making is currently bottlenecked by issues such as over-confidence and miscalibration , misalignment with human values or bias , hallucinations in self-evaluation , and lack of human-in-the-loop mechanisms in face of uncertainties . Solving these issues will significantly improve LLMs’ utilities as agent backbones.
+- Mixing language-based reasoning and code-based planning may offer the best of both worlds. Existing approaches either plan directly in natural language or use LLMs to translate from natural language to structured world models. Future work could integrate these: just as Soar incorporates a simulator for physical reasoning, agents may write and execute simulation code on the fly to evaluate the consequences of plans. See Section 7 for more discussion.
+- Extending deliberative reasoning to real-world settings. Initial works have implemented classical planning and tree search, using toy tasks such as game of 24 or block building. Extending these schemes to more complicated tasks with grounding and long-term memory is an exciting direction.
+- Metareasoning to improve efficiency. LLM calls are both slow and computationally intensive. Using LLMs for decision-making entails a balance between their computational cost and the utility of the resulting improved plan. Most LLM reasoning methods fix a search budget by specifying a depth of reasoning, but humans appear to adaptively allocate computation. Future work should develop mechanisms to estimate the utility of planning and modify the decision procedure accordingly, either via amortization, routing among several decision sub-procedures (e.g., ReAct investigated backing off to CoT and vice versa), or updates to the decision-making procedure.
+- Calibration and alignment. More complex decision-making is currently bottlenecked by issues such as over-confidence and miscalibration, misalignment with human values or bias, hallucinations in self-evaluation, and lack of human-in-the-loop mechanisms in face of uncertainties. Solving these issues will significantly improve LLMs’ utilities as agent backbones.
 
 ## 7 Discussion
 
 In addition to the practical insights presented above, CoALA raises a number of open conceptual questions. We briefly highlight the most interesting as important directions for future research and debate.
 
-LLMs vs VLMs: should reasoning be language-only or multimodal? Most language agents use language-only models for decision-making , employing a separate captioning model to convert environment observations to text when necessary . However, the latest generation of language models are multimodal, allowing interleaved image and text input . Language agents built on such multimodal models natively reason over both image and text input , allowing them to ingest perceptual data and directly produce actions. This bypasses the lossy image-to-text conversion; however, it also tightly couples the reasoning and planning process to the model’s input modalities.
+LLMs vs VLMs: should reasoning be language-only or multimodal? Most language agents use language-only models for decision-making, employing a separate captioning model to convert environment observations to text when necessary. However, the latest generation of language models are multimodal, allowing interleaved image and text input. Language agents built on such multimodal models natively reason over both image and text input, allowing them to ingest perceptual data and directly produce actions. This bypasses the lossy image-to-text conversion; however, it also tightly couples the reasoning and planning process to the model’s input modalities.
 
-At a high level, the two approaches can be seen as different tokenization schemes to convert non-linguistic modalities into the core reasoning model’s language domain. The modular approach uses a separate image-to-text model to convert perceptual data into language , while the integrated approach projects images directly into the language model’s representation space . Integrated, multimodal reasoning may allow for more human-like behaviors: a VLM-based agent could “see” a webpage, whereas a LLM-based agent would more likely be given raw HTML. However, coupling the agent’s perception and reasoning systems makes the agent more domain-specific and difficult to update. In either case, the basic architectural principles described by CoALA — internal memories, a structured action space, and generalized decision-making — can be used to guide agent design.
+At a high level, the two approaches can be seen as different tokenization schemes to convert non-linguistic modalities into the core reasoning model’s language domain. The modular approach uses a separate image-to-text model to convert perceptual data into language, while the integrated approach projects images directly into the language model’s representation space. Integrated, multimodal reasoning may allow for more human-like behaviors: a VLM-based agent could “see” a webpage, whereas a LLM-based agent would more likely be given raw HTML. However, coupling the agent’s perception and reasoning systems makes the agent more domain-specific and difficult to update. In either case, the basic architectural principles described by CoALA — internal memories, a structured action space, and generalized decision-making — can be used to guide agent design.
 
-Internal vs. external: what is the boundary between an agent and its environment? While humans or robots are clearly distinct from their embodied environment, digital language agents have less clear boundaries. For example, is a Wikipedia database an internal semantic memory or an external digital environment ? If an agent iteratively executes and improves code before submitting an answer , is the code execution internal or external? If a method consists of proposal and evaluation prompts , should it be considered a single agent or two collaborating simpler agents (proposer and evaluator)?
+Internal vs. external: what is the boundary between an agent and its environment? While humans or robots are clearly distinct from their embodied environment, digital language agents have less clear boundaries. For example, is a Wikipedia database an internal semantic memory or an external digital environment? If an agent iteratively executes and improves code before submitting an answer, is the code execution internal or external? If a method consists of proposal and evaluation prompts, should it be considered a single agent or two collaborating simpler agents (proposer and evaluator)?
 
-We suggest the boundary question can be answered in terms of *controllability* and *coupling*.
-For example, Wikipedia is not *controllable*: it is an external environment that may be unexpectedly modified by other users. However, an offline version that only the agent may write to *is* controllable, and thus can be considered an internal memory. Similarly, code execution on a internal virtual environment should be considered an internal reasoning action, whereas code execution on an external machine (which may possess security vulnerabilities) should be considered an external grounding action. Lastly, if aspects of the agent – such as proposal and evaluation prompts – are designed for and dependent on each other, then they are *tightly coupled* and best conceptualized as components in an individual agent. In contrast, if the steps are independently useful, a multi-agent perspective may be more appropriate.
-While these dilemmas are primarily conceptual, such understanding can support agent design and help the field align on shared terminology. Practioners may also just choose their preferred framing, as long as it is consistent and useful for their own work.
+We suggest the boundary question can be answered in terms of _controllability_ and _coupling_. For example, Wikipedia is not _controllable_: it is an external environment that may be unexpectedly modified by other users. However, an offline version that only the agent may write to _is_ controllable, and thus can be considered an internal memory. Similarly, code execution on an internal virtual environment should be considered an internal reasoning action, whereas code execution on an external machine (which may possess security vulnerabilities) should be considered an external grounding action. Lastly, if aspects of the agent – such as proposal and evaluation prompts – are designed for and dependent on each other, then they are _tightly coupled_ and best conceptualized as components in an individual agent. In contrast, if the steps are independently useful, a multi-agent perspective may be more appropriate. While these dilemmas are primarily conceptual, such understanding can support agent design and help the field align on shared terminology. Practitioners may also just choose their preferred framing, as long as it is consistent and useful for their own work.
 
-Physical vs. digital: what differences beget attention? While animals only live once in the physical world, digital environments (e.g., the Internet) often allow sequential (via resets) and parallel trials. This means digital agents can more boldly explore (e.g., open a million webpages) and self-clone for parallel task solving (e.g., a million web agents try different web paths), which may result in decision-making procedures different from current ones inspired by human cognition .
+Physical vs. digital: what differences beget attention? While animals only live once in the physical world, digital environments (e.g., the Internet) often allow sequential (via resets) and parallel trials. This means digital agents can more boldly explore (e.g., open a million webpages) and self-clone for parallel task solving (e.g., a million web agents try different web paths), which may result in decision-making procedures different from current ones inspired by human cognition.
 
-Learning vs. acting: how should agents continuously and autonomously learn? In the CoALA framework, learning is a result action of a decision-making cycle just like grounding: the agent deliberately chooses to commit information to long-term memory. This is in contrast to most agents, which simply fix a learning schedule and only use decison making for external actions. Biological agents, however, do not have this luxury: they must balance learning against external actions in their lifetime, choosing when and what to learn . More flexible language agents  would follow a similar design and treat learning on par with external actions. Learning could be proposed as a possible action during regular decision-making, allowing the agent to “defer” it until the appropriate time.
+Learning vs. acting: how should agents continuously and autonomously learn? In the CoALA framework, learning is a result action of a decision-making cycle just like grounding: the agent deliberately chooses to commit information to long-term memory. This is in contrast to most agents, which simply fix a learning schedule and only use decision making for external actions. Biological agents, however, do not have this luxury: they must balance learning against external actions in their lifetime, choosing when and what to learn. More flexible language agents would follow a similar design and treat learning on par with external actions. Learning could be proposed as a possible action during regular decision-making, allowing the agent to “defer” it until the appropriate time.
 
-GPT-4 vs GPT-N: how would agent design change with more powerful LLMs? Agent design is a moving target as new LLM capabilities emerge with scale .
-For example, earlier language models such as GPT-2  would not support LLM agents — indeed, work at that time needed to combine GPT-2 with reinforcement learning for action generation ; GPT-3  unlocked flexible few-shot and zero-shot reasoning for NLP tasks; while only GPT-4  starts to afford more reliable self-evaluation  and self-refinement .
-Will future LLMs further reduce the need for coded rules and extra-learned models? Will this necessitate changes to the CoALA framework?
-As a thought experiment, imagine GPT-N could “simulate” memory, grounding, learning, and decision-making in context: list all the possible actions, simulate and evaluate each one, and maintain its entire long-term memory explicitly in a very long context. Or even more boldly: perhaps GPT-N+1 succeeds at generating the next action by simulating these implicitly in neurons, without any intermediate reasoning in context. While these extreme cases seem unlikely in the immediate future, incremental improvements may alter the importance of different CoALA components. For example, a longer context window could reduce the importance of long-term memory, while more powerful reasoning for internal evaluation and simulation could allow longer-horizon planning. In general, LLMs are not subject to biological limitations , and their emergent properties have been difficult to predict. Nonetheless, CoALA – and cognitive science more generally – may still help organize tasks where language agents succeed or fail, and suggest code-based procedures to complement a given LLM on a given task. Even in the most extreme case, where GPT implements all of CoALA’s mechanisms in neurons, it may be helpful to leverage CoALA as a conceptual guide to discover and interpret those implicit circuits.
-Of course, as discussed in Section 6, agent usecases will also help discover, define and shape LLM capabilities. Similar to how chips and computer architectures have co-evolved, language model and agent design should also develop a reciprocal path forward.
+GPT-4 vs GPT-N: how would agent design change with more powerful LLMs? Agent design is a moving target as new LLM capabilities emerge with scale. For example, earlier language models such as GPT-2 would not support LLM agents — indeed, work at that time needed to combine GPT-2 with reinforcement learning for action generation; GPT-3 unlocked flexible few-shot and zero-shot reasoning for NLP tasks; while only GPT-4 starts to afford more reliable self-evaluation and self-refinement. Will future LLMs further reduce the need for coded rules and extra-learned models? Will this necessitate changes to the CoALA framework? As a thought experiment, imagine GPT-N could “simulate” memory, grounding, learning, and decision-making in context: list all the possible actions, simulate and evaluate each one, and maintain its entire long-term memory explicitly in a very long context. Or even more boldly: perhaps GPT-N+1 succeeds at generating the next action by simulating these implicitly in neurons, without any intermediate reasoning in context. While these extreme cases seem unlikely in the immediate future, incremental improvements may alter the importance of different CoALA components. For example, a longer context window could reduce the importance of long-term memory, while more powerful reasoning for internal evaluation and simulation could allow longer-horizon planning. In general, LLMs are not subject to biological limitations, and their emergent properties have been difficult to predict. Nonetheless, CoALA – and cognitive science more generally – may still help organize tasks where language agents succeed or fail, and suggest code-based procedures to complement a given LLM on a given task. Even in the most extreme case, where GPT implements all of CoALA’s mechanisms in neurons, it may be helpful to leverage CoALA as a conceptual guide to discover and interpret those implicit circuits. Of course, as discussed in Section 6, agent usecases will also help discover, define and shape LLM capabilities. Similar to how chips and computer architectures have co-evolved, language model and agent design should also develop a reciprocal path forward.
 
 ## 8 Conclusion
 
@@ -4916,8 +4807,7 @@ We proposed Cognitive Architectures for Language Agents (CoALA), a conceptual fr
 
 ## Acknowledgements
 
-We thank Harrison Chase, Baian Chen, Khanh Nguyen, Ofir Press, Noah Shinn, Jens Tuyls for proofreading and valuable feedback, and members from the Princeton NLP Group and Princeton Computational Cognitive Science Lab for helpful discussions. Finally, we thank our anonymous reviewers for insightful comments and suggestions.
-SY and KN acknowledge support from an Oracle Collaborative Research award and the National Science Foundation under Grant No. 2239363. Any opinions, findings, conclusions, or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation. SY is also supported by the Harold W. Dodds Fellowship from Princeton. TS is supported by the National Defense Science and Engineering (NDSEG) Graduate Fellowship Program.
+We thank Harrison Chase, Baian Chen, Khanh Nguyen, Ofir Press, Noah Shinn, Jens Tuyls for proofreading and valuable feedback, and members from the Princeton NLP Group and Princeton Computational Cognitive Science Lab for helpful discussions. Finally, we thank our anonymous reviewers for insightful comments and suggestions. SY and KN acknowledge support from an Oracle Collaborative Research award and the National Science Foundation under Grant No. 2239363. Any opinions, findings, conclusions, or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation. SY is also supported by the Harold W. Dodds Fellowship from Princeton. TS is supported by the National Defense Science and Engineering (NDSEG) Graduate Fellowship Program.
 
 </details>
 
@@ -4929,51 +4819,9 @@ SY and KN acknowledge support from an Oracle Collaborative Research award and th
 
 Phase: [EXPLOITATION]
 
-**Source URL:** <https://medium.com/@honeyricky1m3/giving-your-ai-a-mind-exploring-memory-frameworks-for-agentic-language-models-c92af355df06>
-
-[Sitemap](https://medium.com/sitemap/sitemap.xml)
-
-[Open in app](https://play.google.com/store/apps/details?id=com.medium.reader&referrer=utm_source%3DmobileNavBar&source=post_page---top_nav_layout_nav-----------------------------------------)
-
-Sign up
-
-[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2F%40honeyricky1m3%2Fgiving-your-ai-a-mind-exploring-memory-frameworks-for-agentic-language-models-c92af355df06&source=post_page---top_nav_layout_nav-----------------------global_nav------------------)
-
-[Medium Logo](https://medium.com/?source=post_page---top_nav_layout_nav-----------------------------------------)
-
-Get app
-
-[Write](https://medium.com/m/signin?operation=register&redirect=https%3A%2F%2Fmedium.com%2Fnew-story&source=---top_nav_layout_nav-----------------------new_post_topnav------------------)
-
-[Search](https://medium.com/search?source=post_page---top_nav_layout_nav-----------------------------------------)
-
-Sign up
-
-[Sign in](https://medium.com/m/signin?operation=login&redirect=https%3A%2F%2Fmedium.com%2F%40honeyricky1m3%2Fgiving-your-ai-a-mind-exploring-memory-frameworks-for-agentic-language-models-c92af355df06&source=post_page---top_nav_layout_nav-----------------------global_nav------------------)
-
-https://miro.medium.com/v2/resize:fill:32:32/1*dmbNkD5D-u45r44go_cf0g.png
-
 # Giving Your AI a Mind: Exploring Memory Frameworks for Agentic Language Models
 
-[https://miro.medium.com/v2/resize:fill:32:32/1*tp2uj3tur89cbR2GW0SrDQ.png](https://medium.com/@honeyricky1m3?source=post_page---byline--c92af355df06---------------------------------------)
-
-[Richardson Gunde](https://medium.com/@honeyricky1m3?source=post_page---byline--c92af355df06---------------------------------------)
-
-Follow
-
-18 min read
-
-·
-
-Dec 20, 2024
-
-316
-
-3
-
-[Listen](https://medium.com/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2Fplans%3Fdimension%3Dpost_audio_button%26postId%3Dc92af355df06&operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40honeyricky1m3%2Fgiving-your-ai-a-mind-exploring-memory-frameworks-for-agentic-language-models-c92af355df06&source=---header_actions--c92af355df06---------------------post_audio_button------------------)
-
-Share
+**Source URL:** <https://medium.com/@honeyricky1m3/giving-your-ai-a-mind-exploring-memory-frameworks-for-agentic-language-models-c92af355df06>
 
 https://miro.medium.com/v2/resize:fit:687/1*D6GKOFWsHpO6ycPVQM98xQ.png
 
@@ -4997,7 +4845,7 @@ Now, contrast that with how _you_ approach problem-solving. You bring a wealth o
 
 To overcome this limitation, we can borrow concepts from psychology and model different forms of memory within our agentic system design. We’ll focus on four key types:
 
-1. **Working Memory:** This is your immediate cognitive workspace, the “RAM” of your mind. For a chatbot, it’s the current conversation and its context. Think of it as the short-term memory of the interaction, keeping track of the back-and-forth between user and AI. Remembering in this context is simply accessing this recent data, while learning involves dynamically integrating new messages to update the overall conversational state.
+1.  **Working Memory:** This is your immediate cognitive workspace, the “RAM” of your mind. For a chatbot, it’s the current conversation and its context. Think of it as the short-term memory of the interaction, keeping track of the back-and-forth between user and AI. Remembering in this context is simply accessing this recent data, while learning involves dynamically integrating new messages to update the overall conversational state.
 
 https://miro.medium.com/v2/resize:fit:480/1*60lIG7SeVeXCc0F1sL7WMQ.png
 
@@ -5098,14 +4946,12 @@ Message 9 - AI:  Your name is Richard.
 
 Episodic memory is the storage of past experiences — the “episodes” — and their outcomes. For a chatbot, this includes past conversations and the lessons learned from them. Remembering involves recalling similar past events and their results to inform current interactions.
 
-Press enter or click to view image in full size
-
 https://miro.medium.com/v2/resize:fit:700/1*yH2GWm1uZE7LSJherTRU5A.png
 
 Learning in episodic memory happens in two ways:
 
-1. Automatic Storage: Past conversations (1. Automatic Storage: Past conversations are automatically stored, perhaps with metadata like timestamps and user IDs.
-2. Feedback-Driven Refinement: The chatbot can receive feedback on its past performance (e.g., user ratings or human corrections). This feedback can be used to improve its future responses in similar situations. This could involve adjusting the chatbot’s reasoning process or updating its knowledge base.
+1.  Automatic Storage: Past conversations (1. Automatic Storage: Past conversations are automatically stored, perhaps with metadata like timestamps and user IDs.
+2.  Feedback-Driven Refinement: The chatbot can receive feedback on its past performance (e.g., user ratings or human corrections). This feedback can be used to improve its future responses in similar situations. This could involve adjusting the chatbot’s reasoning process or updating its knowledge base.
 
 **_Coding Episodic Memory (Conceptual):_**
 
@@ -5408,16 +5254,14 @@ def episodic_system_prompt(query, vdb_client):
     return SystemMessage(content=episodic_prompt)
 ```
 
-Press enter or click to view image in full size
-
 https://miro.medium.com/v2/resize:fit:700/1*fce-OPfCdKyIYcLPyWj1BQ.png
 
 _Current flow will:_
 
-1. _Take a user’s message_
-2. _Create a system prompt with relevant Episodic enrichment_
-3. _Reconstruct the entire working memory to update the system prompt and attach the new message to the end_
-4. _Generate a response with the LLM_
+1.  _Take a user’s message_
+2.  _Create a system prompt with relevant Episodic enrichment_
+3.  _Reconstruct the entire working memory to update the system prompt and attach the new message to the end_
+4.  _Generate a response with the LLM_
 
 ```
 # Simple storage for accumulated memories
@@ -5445,6 +5289,8 @@ while True:
     if user_input.lower() == "exit":
         add_episodic_memory(messages, vdb_client)
         print("\n == Conversation Stored in Episodic Memory ==")
+        procedural_memory_update(what_worked, what_to_avoid)
+        print("\n== Procedural Memory Updated ==")
         break
     if user_input.lower() == "exit_quiet":
         print("\n == Conversation Exited ==")
@@ -5513,16 +5359,6 @@ Message 7 - AI:  Your name is Richard.
 
 Episodic memory stores experiences; semantic memory stores _knowledge_. This is the AI’s factual database, a repository of information that can be dynamically retrieved to ground its responses. Think Wikipedia, but personalized for your chatbot.
 
-## Get Richardson Gunde’s stories in your inbox
-
-Join Medium for free to get updates from this writer.
-
-Subscribe
-
-Subscribe
-
-Remember me for faster sign in
-
 _Remembering_ in semantic memory involves querying this knowledge base for relevant information. We can use a knowledge graph or a simple key-value store, depending on the complexity of the knowledge we want to integrate. _Learning_ involves constantly updating this knowledge base with new information, either through manual input or by automatically extracting facts from the episodic memory and other sources.
 
 _Code Snippet (Illustrative):_
@@ -5536,17 +5372,15 @@ This simple example shows how we can add and retrieve information from our seman
 
 **Semantic Memory with Episodic and Working Memory Demonstration**
 
-Press enter or click to view image in full size
-
 https://miro.medium.com/v2/resize:fit:700/1*HOkDzeEluJb9cRHrePxz0g.png
 
 Current flow will:
 
-1. Take a user’s message
-2. Create a system prompt with relevant Episodic enrichment
-3. Create a Semantic memory message with context from the database
-4. Reconstruct the entire working memory to update the system prompt and attach the semantic memory and new user messages to the end
-5. Generate a response with the LLM
+1.  Take a user’s message
+2.  Create a system prompt with relevant Episodic enrichment
+3.  Create a Semantic memory message with context from the database
+4.  Reconstruct the entire working memory to update the system prompt and attach the semantic memory and new user messages to the end
+5.  Generate a response with the LLM
 
 ```
 # Simple storage for accumulated memories
@@ -5604,20 +5438,18 @@ Procedural memory is about _how_ to do things. This is where we store the chatbo
 
 _Remembering_ in procedural memory involves selecting and executing the appropriate skill based on the current context. _Learning_ involves acquiring new skills through reinforcement learning, supervised learning, or even by observing and mimicking human behavior.
 
-Press enter or click to view image in full size
-
 https://miro.medium.com/v2/resize:fit:700/1*JscUT-Fz1ZzrHuQFIiIi3A.png
 
 **Full Working Memory Demonstration**
 
 Current flow will:
 
-1. Take a user’s message
-2. Create a system prompt with relevant Episodic enrichment
-3. Insert procedural memory into prompt
-4. Create a Semantic memory message with context from the database
-5. Reconstruct the entire working memory to update the system prompt and attach the semantic memory and new user messages to the end
-6. Generate a response with the LLM
+1.  Take a user’s message
+2.  Create a system prompt with relevant Episodic enrichment
+3.  Insert procedural memory into prompt
+4.  Create a Semantic memory message with context from the database
+5.  Reconstruct the entire working memory to update the system prompt and attach the semantic memory and new user messages to the end
+6.  Generate a response with the LLM
 
 ```
 # Simple storage for accumulated memories
@@ -5689,182 +5521,31 @@ This is a fantastic overview of building more intelligent chatbots! The four mem
 
 ### **1\. Database Choices and Optimization:**
 
-- **_Vector Databases:_** _While Weaviate is a good choice, exploring others like Pinecone, Milvus, or FAISS is crucial. Each has its strengths and weaknesses regarding scalability, performance, and ease of use. The choice will depend on the scale of your project and your technical expertise. Benchmarking different databases is highly recommended._
-- **_Indexing and Search:_** _Efficient indexing and search strategies are paramount for speedy retrieval from episodic and semantic memory. Experimenting with different embedding models (SentenceTransformers, etc.) and indexing techniques (e.g., HNSW, IVF) can significantly improve performance_.
-- **_Data Cleaning and Preprocessing:_** _Before storing conversations in the vector database, cleaning and preprocessing the text (removing irrelevant information, handling noise, stemming/lemmatization) is critical for better search accuracy._
+-   **_Vector Databases:_** _While Weaviate is a good choice, exploring others like Pinecone, Milvus, or FAISS is crucial. Each has its strengths and weaknesses regarding scalability, performance, and ease of use. The choice will depend on the scale of your project and your technical expertise. Benchmarking different databases is highly recommended._
+-   **_Indexing and Search:_** _Efficient indexing and search strategies are paramount for speedy retrieval from episodic and semantic memory. Experimenting with different embedding models (SentenceTransformers, etc.) and indexing techniques (e.g., HNSW, IVF) can significantly improve performance_.
+-   **_Data Cleaning and Preprocessing:_** _Before storing conversations in the vector database, cleaning and preprocessing the text (removing irrelevant information, handling noise, stemming/lemmatization) is critical for better search accuracy._
 
 ### **2\. Episodic Memory Enhancement:**
 
-- **_Contextualized Retrieval:_** _Simply retrieving the most similar conversation isn’t always sufficient. A more sophisticated approach would involve considering the current conversation’s context when retrieving relevant past interactions. This could involve incorporating techniques like semantic search or incorporating metadata (e.g., conversation topic, user persona) into the vector embeddings._
-- **_Learning from Failures:_** _Explicitly identifying and storing “failure” cases in episodic memory is vital for learning. This could involve tagging conversations that resulted in unsatisfactory responses, allowing the AI to avoid similar mistakes in the future. This might involve a feedback mechanism where the user rates the chatbot’s responses._
-- **_Summarization and Knowledge Extraction:_** _Automated summarization of past conversations is crucial for efficient storage and retrieval. Techniques like abstractive summarization could generate concise summaries highlighting key events and insights. Furthermore, extracting key learnings or patterns from these summaries could enrich the semantic memory._
+-   **_Contextualized Retrieval:_** _Simply retrieving the most similar conversation isn’t always sufficient. A more sophisticated approach would involve considering the current conversation’s context when retrieving relevant past interactions. This could involve incorporating techniques like semantic search or incorporating metadata (e.g., conversation topic, user persona) into the vector embeddings._
+-   **_Learning from Failures:_** _Explicitly identifying and storing “failure” cases in episodic memory is vital for learning. This could involve tagging conversations that resulted in unsatisfactory responses, allowing the AI to avoid similar mistakes in the future. This might involve a feedback mechanism where the user rates the chatbot’s responses._
+-   **_Summarization and Knowledge Extraction:_** _Automated summarization of past conversations is crucial for efficient storage and retrieval. Techniques like abstractive summarization could generate concise summaries highlighting key events and insights. Furthermore, extracting key learnings or patterns from these summaries could enrich the semantic memory._
 
 ### **3\. Semantic Memory Expansion:**
 
-- **_Knowledge Graph Integration:_** _Integrating a knowledge graph (e.g., using Neo4j) would allow for more complex reasoning and relationship understanding. This allows the chatbot to infer information and connect concepts in a more sophisticated manner than a simple key-value store._
-- **_External Knowledge Sources:_** _Connecting the semantic memory to external knowledge bases (like Wikipedia, DBpedia) through APIs would expand the chatbot’s knowledge domain significantly._
-- **_Knowledge Update Strategies:_** _Implementing robust mechanisms for updating the semantic memory is crucial. This could involve scheduled updates from external sources or incorporating a feedback loop to correct inaccuracies._
+-   **_Knowledge Graph Integration:_** _Integrating a knowledge graph (e.g., using Neo4j) would allow for more complex reasoning and relationship understanding. This allows the chatbot to infer information and connect concepts in a more sophisticated manner than a simple key-value store._
+-   **_External Knowledge Sources:_** _Connecting the semantic memory to external knowledge bases (like Wikipedia, DBpedia) through APIs would expand the chatbot’s knowledge domain significantly._
+-   **_Knowledge Update Strategies:_** _Implementing robust mechanisms for updating the semantic memory is crucial. This could involve scheduled updates from external sources or incorporating a feedback loop to correct inaccuracies._
 
 ### **4\. Procedural Memory Development:**
 
-- **_Skill Composition:_** _Allowing the chatbot to combine multiple skills to perform more complex tasks is a key step toward advanced agency. This could involve chaining together different procedural memories based on the current context._
-- **_Reinforcement Learning:_** _Using reinforcement learning techniques to train and improve procedural memories would enable the chatbot to learn new skills and optimize existing ones through trial and error._
-- **_Skill Discovery:_** _Developing mechanisms for the chatbot to discover new skills automatically, perhaps by analyzing successful past conversations or identifying patterns in user requests, would enhance its adaptability._
+-   **_Skill Composition:_** _Allowing the chatbot to combine multiple skills to perform more complex tasks is a key step toward advanced agency. This could involve chaining together different procedural memories based on the current context._
+-   **_Reinforcement Learning:_** _Using reinforcement learning techniques to train and improve procedural memories would enable the chatbot to learn new skills and optimize existing ones through trial and error._
+-   **_Skill Discovery:_** _Developing mechanisms for the chatbot to discover new skills automatically, perhaps by analyzing successful past conversations or identifying patterns in user requests, would enhance its adaptability._
 
 ## Conclusion: Building Truly Intelligent Chatbots
 
 By incorporating these different memory models, we can move beyond the limitations of stateless chatbots and build AI companions that are truly intelligent, engaging, and capable of meaningful, long-term interactions. The journey is complex, but the rewards are immense! Let’s continue to explore and push the boundaries of AI memory.
-
-What are your thoughts? What challenges have you encountered in building memory-enabled chatbots? Let’s discuss!
-
-**Call to Action:**
-
-- Please do reach out for more insightful AI tutorials.-gunderichardson@gmail.com
-- Linkedin-Richardson Gunde
-- Share your thoughts and experiences with Agentic memory in the comments below.
-- Please share this post with your friends and Thanks to [Adam Lucek](https://www.youtube.com/@AdamLucek) for the clear explanation “ [(46) Building Brain-Like Memory for AI \| LLM Agent Memory Systems — YouTube](https://www.youtube.com/watch?v=VKPngyO0iKg)”
-
-[Langchain Agents](https://medium.com/tag/langchain-agents?source=post_page-----c92af355df06---------------------------------------)
-
-[Langchain](https://medium.com/tag/langchain?source=post_page-----c92af355df06---------------------------------------)
-
-[Langgraph Tutorial](https://medium.com/tag/langgraph-tutorial?source=post_page-----c92af355df06---------------------------------------)
-
-[Agentic Applications](https://medium.com/tag/agentic-applications?source=post_page-----c92af355df06---------------------------------------)
-
-[Memory Improvement](https://medium.com/tag/memory-improvement?source=post_page-----c92af355df06---------------------------------------)
-
-[https://miro.medium.com/v2/resize:fill:48:48/1*tp2uj3tur89cbR2GW0SrDQ.png](https://medium.com/@honeyricky1m3?source=post_page---post_author_info--c92af355df06---------------------------------------)
-
-[https://miro.medium.com/v2/resize:fill:64:64/1*tp2uj3tur89cbR2GW0SrDQ.png](https://medium.com/@honeyricky1m3?source=post_page---post_author_info--c92af355df06---------------------------------------)
-
-Follow
-
-[**Written by Richardson Gunde**](https://medium.com/@honeyricky1m3?source=post_page---post_author_info--c92af355df06---------------------------------------)
-
-[839 followers](https://medium.com/@honeyricky1m3/followers?source=post_page---post_author_info--c92af355df06---------------------------------------)
-
-· [56 following](https://medium.com/@honeyricky1m3/following?source=post_page---post_author_info--c92af355df06---------------------------------------)
-
-"Experienced Gen AI Researcher & Innovator \| Driving Digital Transformation at Infosys \| Transforming Ideas into Reality with Cutting-Edge Solutions"
-
-Follow
-
-## Responses (3)
-
-https://miro.medium.com/v2/resize:fill:32:32/1*dmbNkD5D-u45r44go_cf0g.png
-
-Write a response
-
-[What are your thoughts?](https://medium.com/m/signin?operation=register&redirect=https%3A%2F%2Fmedium.com%2F%40honeyricky1m3%2Fgiving-your-ai-a-mind-exploring-memory-frameworks-for-agentic-language-models-c92af355df06&source=---post_responses--c92af355df06---------------------respond_sidebar------------------)
-
-Cancel
-
-Respond
-
-[https://miro.medium.com/v2/resize:fill:32:32/1*RLAevzIv19_g-ol_eVVR3A.png](https://medium.com/@utkarsh-284?source=post_page---post_responses--c92af355df06----0-----------------------------------)
-
-[Utkarsh Bhardwaj\\
-\\
-he/him](https://medium.com/@utkarsh-284?source=post_page---post_responses--c92af355df06----0-----------------------------------)
-
-[Oct 12, 2025](https://medium.com/@utkarsh-284/the-best-easiest-and-most-comprehensive-blog-on-memory-management-one-can-find-out-there-46b745a7e93b?source=post_page---post_responses--c92af355df06----0-----------------------------------)
-
-```
-The best, easiest and most comprehensive blog on memory management one can find out there.
-
-Thank you so much, it cleared my various doubts and will certainly help me in building great agentic chatbots.
-
-PS: don't forget to check out the github repo for complete codes and implementations.
-```
-
-2
-
-1 reply
-
-Reply
-
-[https://miro.medium.com/v2/resize:fill:32:32/0*YSANgR58LsVzyXPh](https://medium.com/@bedlamstudios?source=post_page---post_responses--c92af355df06----1-----------------------------------)
-
-[Chad](https://medium.com/@bedlamstudios?source=post_page---post_responses--c92af355df06----1-----------------------------------)
-
-[May 28, 2025](https://medium.com/@bedlamstudios/awesome-article-74dabe2a2b96?source=post_page---post_responses--c92af355df06----1-----------------------------------)
-
-```
-Awesome article.
-
-Point 3 and 4 seem to be only partially implemented, though, and output is not supplied: instead the line used to log them appears.
-```
-
-2
-
-Reply
-
-[https://miro.medium.com/v2/resize:fill:32:32/0*3tye5Hfe_-wrV06S](https://medium.com/@mutyalapavan9?source=post_page---post_responses--c92af355df06----2-----------------------------------)
-
-[Pavan M](https://medium.com/@mutyalapavan9?source=post_page---post_responses--c92af355df06----2-----------------------------------)
-
-[Apr 4, 2025](https://medium.com/@mutyalapavan9/this-is-awesome-thank-you-for-the-blog-61db0e6e3eef?source=post_page---post_responses--c92af355df06----2-----------------------------------)
-
-```
-This is awesome, thank you for the blog.
-```
-
-Reply
-
-## More from Richardson Gunde
-
-https://miro.medium.com/v2/resize:fit:679/format:webp/0*ydhvFVVoKyOfEHMi.png
-
-https://miro.medium.com/v2/resize:fit:679/format:webp/1*t0A-d9cVvePWRUmI09KADw.png
-
-https://miro.medium.com/v2/resize:fit:679/format:webp/1*LCeiJB-3w3gzpOnFXvE9Hw.png
-
-https://miro.medium.com/v2/resize:fit:679/format:webp/1*n8483TpSUlRl0NFibt2nwA.png
-
-[See all from Richardson Gunde](https://medium.com/@honeyricky1m3?source=post_page---author_recirc--c92af355df06---------------------------------------)
-
-## Recommended from Medium
-
-https://miro.medium.com/v2/resize:fit:679/format:webp/1*XIe0AzU8UNuX0Wqco7ouZg.png
-
-https://miro.medium.com/v2/resize:fit:679/format:webp/1*qbVrf-wO9PYtthAj6E4RYQ.png
-
-https://miro.medium.com/v2/resize:fit:679/format:webp/1*1OGKfKCooEZbKCSoSXXY8g.png
-
-https://miro.medium.com/v2/resize:fit:679/format:webp/1*Xi5NxKh9VaV79bx6OyJ6dg.png
-
-https://miro.medium.com/v2/resize:fit:679/format:webp/1*W5hbs5lyrNhL9Jzij7k4xg.png
-
-https://miro.medium.com/v2/resize:fit:679/format:webp/1*buIx_OmBs9pTrD5pp4JRjQ.png
-
-[See more recommendations](https://medium.com/?source=post_page---read_next_recirc--c92af355df06---------------------------------------)
-
-[Help](https://help.medium.com/hc/en-us?source=post_page-----c92af355df06---------------------------------------)
-
-[Status](https://status.medium.com/?source=post_page-----c92af355df06---------------------------------------)
-
-[About](https://medium.com/about?autoplay=1&source=post_page-----c92af355df06---------------------------------------)
-
-[Careers](https://medium.com/jobs-at-medium/work-at-medium-959d1a85284e?source=post_page-----c92af355df06---------------------------------------)
-
-[Press](mailto:pressinquiries@medium.com)
-
-[Blog](https://blog.medium.com/?source=post_page-----c92af355df06---------------------------------------)
-
-[Privacy](https://policy.medium.com/medium-privacy-policy-f03bf92035c9?source=post_page-----c92af355df06---------------------------------------)
-
-[Rules](https://policy.medium.com/medium-rules-30e5502c4eb4?source=post_page-----c92af355df06---------------------------------------)
-
-[Terms](https://policy.medium.com/medium-terms-of-service-9db0094a1e0f?source=post_page-----c92af355df06---------------------------------------)
-
-[Text to speech](https://speechify.com/medium?source=post_page-----c92af355df06---------------------------------------)
-
-reCAPTCHA
-
-Recaptcha requires verification.
-
-protected by **reCAPTCHA**
 
 </details>
 
@@ -5876,9 +5557,9 @@ protected by **reCAPTCHA**
 
 Phase: [EXPLOITATION]
 
-**Source URL:** <https://docs.letta.com/guides/agents/memory>
-
 # Introduction to Stateful Agents
+
+**Source URL:** <https://docs.letta.com/guides/agents/memory>
 
 Stateful agents are agents that can maintain memory and context across conversations.
 
@@ -5919,20 +5600,23 @@ A single invocation of an agent is tied to a run. A single run may contain many 
 
 Independent message threads with the same underlying agent, allows for easy concurrent messaging between a single agent and many different users.
 
+Explore the [complete API reference](https://docs.letta.com/api-overview/introduction) with all endpoints, parameters, and response schemas.
+
 </details>
 
 </research_source>
 
 <research_source type="guideline_exploitation" phase="exploitation" file="memory-overview-docs-by-langchain.md">
 <details>
-<summary>Node that *uses* the instructions</summary>
+<summary>Memory overview</summary>
 
 Phase: [EXPLOITATION]
 
+# Memory overview
+
 **Source URL:** <https://langchain-ai.github.io/langgraph/concepts/memory/>
 
-```markdown
-Memory is a system that remembers information about previous interactions. For AI agents, memory is crucial because it lets them remember previous interactions, learn from feedback, and adapt to user preferences. As agents tackle more complex tasks with numerous user interactions, this capability becomes essential for both efficiency and user satisfaction.This conceptual guide covers two types of memory, based on their recall scope:
+[Memory](https://docs.langchain.com/oss/python/langgraph/add-memory) is a system that remembers information about previous interactions. For AI agents, memory is crucial because it lets them remember previous interactions, learn from feedback, and adapt to user preferences. As agents tackle more complex tasks with numerous user interactions, this capability becomes essential for both efficiency and user satisfaction.This conceptual guide covers two types of memory, based on their recall scope:
 
 - [Short-term memory](https://docs.langchain.com/oss/python/langgraph/memory#short-term-memory), or [thread](https://docs.langchain.com/oss/python/langgraph/persistence#threads)-scoped memory, tracks the ongoing conversation by maintaining message history within a session. LangGraph manages short-term memory as a part of your agent’s [state](https://docs.langchain.com/oss/python/langgraph/graph-api#state). State is persisted to a database using a [checkpointer](https://docs.langchain.com/oss/python/langgraph/persistence#checkpoints) so the thread can be resumed at any time. Short-term memory updates when the graph is invoked or a step is completed, and the State is read at the start of each step.
 - [Long-term memory](https://docs.langchain.com/oss/python/langgraph/memory#long-term-memory) stores user-specific or application-level data across sessions and is shared _across_ conversational threads. It can be recalled _at any time_ and _in any thread_. Memories are scoped to any custom namespace, not just within a single thread ID. LangGraph provides [stores](https://docs.langchain.com/oss/python/langgraph/persistence#memory-store) ( [reference doc](https://langchain-ai.github.io/langgraph/reference/store/#langgraph.store.base.BaseStore)) to let you save and recall long-term memories.
@@ -6054,9 +5738,6 @@ items = store.search(
 )
 ```
 
-For more information about the memory store, see the [Persistence](https://docs.langchain.com/oss/python/langgraph/persistence#memory-store) guide.
-```
-
 </details>
 
 </research_source>
@@ -6067,9 +5748,9 @@ For more information about the memory store, see the [Persistence](https://docs.
 
 Phase: [EXPLOITATION]
 
-**Source URL:** <https://www.ibm.com/think/topics/ai-agent-memory>
-
 # What is AI agent memory?
+
+**Source URL:** <https://www.ibm.com/think/topics/ai-agent-memory>
 
 - [Types of agentic memory](https://www.ibm.com/think/topics/ai-agent-memory#Types+of+agentic+memory)
 - [Frameworks for agentic AI memory](https://www.ibm.com/think/topics/ai-agent-memory#Frameworks+for+agentic+AI+memory)
@@ -6155,7 +5836,6 @@ By integrating vector databases, agentic systems can efficiently store embedding
 The rise of [open source](https://www.ibm.com/think/topics/open-source) frameworks has accelerated the development of memory-enhanced AI agents. Platforms such as GitHub host numerous repositories that provide tools and templates for integrating memory into [AI workflows](https://www.ibm.com/think/topics/ai-workflow).
 
 Additionally, [Hugging Face](https://huggingface.co/) offers pretrained models that can be fine-tuned with memory components to improve AI recall capabilities. Python, a dominant language in AI development, provides libraries for handling [orchestration](https://www.ibm.com/think/topics/ai-agent-orchestration), memory storage and retrieval mechanisms, making it a go-to choice for implementing AI memory systems.
-
 ##### Footnotes
 
 1 “ [Cognitive Architectures for Language Agents](https://arxiv.org/pdf/2309.02427),” Princeton University, February, 2024.
@@ -6163,3 +5843,10 @@ Additionally, [Hugging Face](https://huggingface.co/) offers pretrained models t
 </details>
 
 </research_source>
+
+<golden_source type="local_files">
+## Local File Sources (from Article Guidelines)
+
+_No local file sources found._
+
+</golden_source>

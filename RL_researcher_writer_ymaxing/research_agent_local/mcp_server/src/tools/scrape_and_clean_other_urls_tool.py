@@ -26,13 +26,21 @@ from ..config.settings import settings
 logger = logging.getLogger(__name__)
 
 
-def write_scraped_results_to_files(completed_results: List[dict], output_dir: Path) -> Tuple[List[str], int]:
+def write_scraped_results_to_files(
+    completed_results: List[dict],
+    output_dir: Path,
+    url_titles: dict[str, str] | None = None,
+) -> Tuple[List[str], int]:
     """
     Write scraped results to markdown files and return statistics.
 
     Args:
         completed_results: List of scraping results from scrape_urls_concurrently
         output_dir: Directory to write the markdown files to
+        url_titles: Optional {url: title} mapping from the article guideline.
+            When provided, the guideline title is always used as the H1 heading
+            (overriding the scraped page title) so collapsible summaries display
+            the human-readable name from the guideline.
 
     Returns:
         Tuple of (saved_files_list, successful_scrapes_count)
@@ -40,6 +48,7 @@ def write_scraped_results_to_files(completed_results: List[dict], output_dir: Pa
     saved_files = []
     successful_scrapes = 0
     existing_names: set[str] = set()
+    _url_titles = url_titles or {}
 
     for res in completed_results:
         # asyncio.gather(return_exceptions=True) can return exception objects;
@@ -48,24 +57,35 @@ def write_scraped_results_to_files(completed_results: List[dict], output_dir: Pa
             logger.warning(f"Skipping failed scrape result (exception): {res}")
             continue
         cleaned_markdown = res.get("markdown", "")
-        title = res.get("title", "")
+        scraped_title = res.get("title", "")
         url = res.get("url", "")
+
+        # Guideline-provided titles take precedence over scraped page titles
+        guideline_title = _url_titles.get(url, "")
+        effective_title = guideline_title or scraped_title
 
         if res.get("success", False):
             successful_scrapes += 1
 
         url_header = f"**Source URL:** <{url}>\n\n" if url else ""
-        filename = build_filename(title, url, existing_names)
+        filename = build_filename(effective_title, url, existing_names)
         output_path = output_dir / filename
         md_body = cleaned_markdown or ""
         # Inject H1 title before the URL header so get_first_line_title() picks it up
-        # as the collapsible <summary> text when LLM cleaning removed the article H1.
-        # Check for H1 only ("# ") so that articles where only H2/H3 subheadings
-        # survived cleaning also get the Firecrawl page title injected.
-        if title and title.lower() not in {"n/a", "scraping timeout", "scraping failed", ""} and not any(
+        # as the collapsible <summary> text.
+        # Guideline title always wins as H1 (even if scraped body has its own H1).
+        # Scraped title is only injected as fallback when the body has no H1.
+        if guideline_title:
+            # Remove any existing H1 line(s) from the body to avoid a duplicate heading.
+            body_lines = md_body.splitlines()
+            while body_lines and body_lines[0].strip().startswith("# "):
+                body_lines.pop(0)
+            md_body = "\n".join(body_lines).lstrip("\n")
+            file_content = f"# {guideline_title}\n\n{url_header}{md_body}"
+        elif scraped_title and scraped_title.lower() not in {"n/a", "scraping timeout", "scraping failed", ""} and not any(
             ln.strip().startswith("# ") for ln in md_body.splitlines()
         ):
-            file_content = f"# {title}\n\n{url_header}{md_body}"
+            file_content = f"# {scraped_title}\n\n{url_header}{md_body}"
         else:
             file_content = url_header + md_body
         output_path.write_text(file_content, encoding="utf-8")
@@ -120,6 +140,7 @@ async def scrape_and_clean_other_urls_tool(research_directory: str, concurrency_
     
     other_urls = [url for url in guidelines_data.get("other_urls", []) if not is_arxiv_url(url)]
     arxiv_urls = [url for url in guidelines_data.get("other_urls", []) if is_arxiv_url(url)]
+    url_titles: dict[str, str] = guidelines_data.get("url_titles", {})
     
     if not other_urls and not arxiv_urls:
         return {
@@ -164,7 +185,7 @@ async def scrape_and_clean_other_urls_tool(research_directory: str, concurrency_
 
     # Write all results (other URLs + arxiv) in a single pass so filenames are
     # deduplicated correctly and files are not written twice.
-    saved_files, successful_scrapes = write_scraped_results_to_files(completed_results, output_dir)
+    saved_files, successful_scrapes = write_scraped_results_to_files(completed_results, output_dir, url_titles=url_titles)
 
     total_attempted = len(other_urls) + len(arxiv_urls)
     return {

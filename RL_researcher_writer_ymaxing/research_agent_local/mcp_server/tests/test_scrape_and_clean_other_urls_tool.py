@@ -115,6 +115,7 @@ def _make_valid_dir(
     tmp_path: Path,
     all_urls: list[str] | None = None,
     write_guideline: bool = True,
+    url_titles: dict | None = None,
 ) -> Path:
     """
     Create a minimal valid directory tree for the tool.
@@ -130,7 +131,7 @@ def _make_valid_dir(
         )
     output = research_path / RESEARCH_OUTPUT_FOLDER
     output.mkdir()
-    guidelines: dict = {"other_urls": list(all_urls or [])}
+    guidelines: dict = {"other_urls": list(all_urls or []), "url_titles": dict(url_titles or {})}
     (output / GUIDELINES_FILENAMES_FILE).write_text(
         json.dumps(guidelines), encoding="utf-8"
     )
@@ -248,6 +249,25 @@ class TestWriteScrapedResultsToFiles:
         saved, _ = write_scraped_results_to_files(results, tmp_path)
         content = (tmp_path / saved[0]).read_text(encoding="utf-8")
         assert content.startswith("# My Article\n\n")
+
+    def test_guideline_title_overrides_scraped_title(self, tmp_path):
+        """Guideline title wins as H1 even when scraped body already has its own H1."""
+        url = "https://decodingml.substack.com/p/memory-the-secret-sauce-of-ai-agents"
+        results = [{"url": url, "title": "Vesa Alexandru | Substack", "markdown": "# Vesa Alexandru | Substack\n\nContent.", "success": True}]
+        url_titles = {url: "Memory: The secret sauce of AI agents"}
+        saved, _ = write_scraped_results_to_files(results, tmp_path, url_titles=url_titles)
+        content = (tmp_path / saved[0]).read_text(encoding="utf-8")
+        assert content.startswith("# Memory: The secret sauce of AI agents\n\n")
+
+    def test_guideline_title_used_when_no_scraped_h1(self, tmp_path):
+        """Guideline title is injected even when body has no H1."""
+        url = "https://example.com/article"
+        results = [{"url": url, "title": "Scraped Page Title", "markdown": "Some body text.", "success": True}]
+        url_titles = {url: "Guideline Title"}
+        saved, _ = write_scraped_results_to_files(results, tmp_path, url_titles=url_titles)
+        content = (tmp_path / saved[0]).read_text(encoding="utf-8")
+        assert content.startswith("# Guideline Title\n\n")
+        assert "# Scraped Page Title" not in content
 
 
 # ===========================================================================
@@ -403,6 +423,24 @@ class TestScrapeAndCleanOtherUrlsToolOtherUrls:
 
         assert result["urls_processed"] == 1
         assert result["files_saved"] == 2
+
+    async def test_guideline_title_used_in_output_file(self, tmp_path):
+        """url_titles from guidelines JSON is forwarded so guideline titles appear as H1."""
+        url = "https://blog.example.com/article"
+        url_titles = {url: "Guideline Article Title"}
+        research_path = _make_valid_dir(tmp_path, all_urls=[url], url_titles=url_titles)
+        # Scraped result has a different page title and no H1 in body
+        fake_results = [{"url": url, "title": "Example Domain | Blog", "markdown": "Body text.", "success": True}]
+
+        with patch(_SCRAPE_CONCURRENTLY_PATCH, AsyncMock(return_value=fake_results)):
+            await sacoU_mod.scrape_and_clean_other_urls_tool(str(research_path))
+
+        output_dir = research_path / RESEARCH_OUTPUT_FOLDER / URLS_FROM_GUIDELINES_FOLDER
+        md_files = list(output_dir.glob("*.md"))
+        assert len(md_files) == 1
+        content = md_files[0].read_text(encoding="utf-8")
+        assert content.startswith("# Guideline Article Title\n\n")
+        assert "# Example Domain" not in content
 
     async def test_article_guidelines_passed_to_scrape_concurrently(self, tmp_path):
         """The article guideline text is forwarded to scrape_urls_concurrently."""

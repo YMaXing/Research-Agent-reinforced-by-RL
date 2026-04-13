@@ -216,6 +216,38 @@ class TestCreateResearchFileToolFallback:
         content = (research_dir / RESEARCH_MD_FILE).read_text(encoding="utf-8")
         assert 'file="sample.md"' in content
 
+    def test_scraped_file_with_h1_uses_h1_as_collapsible_title(self, tmp_path):
+        """A scraped file with an H1 heading should use the H1 text as the collapsible title."""
+        research_dir = self._setup_fallback(tmp_path)
+        output_dir = research_dir / RESEARCH_OUTPUT_FOLDER
+        h1_file = output_dir / URLS_FROM_RESEARCH_FOLDER / "my-source.md"
+        h1_file.write_text(
+            "**Source URL:** https://example.com\n\n# Real Page Title\n\nBody content.",
+            encoding="utf-8",
+        )
+
+        create_research_file_tool(str(research_dir))
+
+        content = (research_dir / RESEARCH_MD_FILE).read_text(encoding="utf-8")
+        assert "<summary>Real Page Title</summary>" in content
+
+    def test_scraped_file_with_only_h2_falls_back_to_filename_stem(self, tmp_path):
+        """A scraped file with no H1 (only H2/H3) should fall back to the filename stem,
+        not pick up a subheading as the collapsible title."""
+        research_dir = self._setup_fallback(tmp_path)
+        output_dir = research_dir / RESEARCH_OUTPUT_FOLDER
+        h2_only_file = output_dir / URLS_FROM_RESEARCH_FOLDER / "subheading-only.md"
+        h2_only_file.write_text(
+            "**Source URL:** https://example.com\n\n## Summary\n\nBody content.",
+            encoding="utf-8",
+        )
+
+        create_research_file_tool(str(research_dir))
+
+        content = (research_dir / RESEARCH_MD_FILE).read_text(encoding="utf-8")
+        assert "<summary>subheading-only</summary>" in content
+        assert "<summary>Summary</summary>" not in content
+
     def test_scraped_file_with_heading_in_code_fence_uses_fallback_title(self, tmp_path):
         """A scraped file whose only heading is inside a code fence should use the
         filename stem as the collapsible title, not the fenced heading."""
