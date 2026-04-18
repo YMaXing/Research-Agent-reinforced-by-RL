@@ -11,7 +11,8 @@ from ..config.constants import (
     URLS_FROM_GUIDELINES_FOLDER,
 )
 from ..config.prompts import (
-    PROMPT_AUTO_SOURCE_SELECTION,
+    PROMPT_AUTO_SOURCE_SELECTION_EXPLOITATION,
+    PROMPT_AUTO_SOURCE_SELECTION_EXPLORATION,
     PROMPT_SELECT_TOP_SOURCES,
 )
 from ..config.settings import settings
@@ -63,42 +64,102 @@ def build_sources_data_text(parsed: Dict[int, Dict[str, str]]) -> str:
     return "\n".join(lines)
 
 
-async def select_sources(article_guidelines: str, md_results: str) -> List[int]:
-    """Use an LLM to select the best subset of sources."""
-    parsed_results = parse_tavily_results(md_results)
-    if not parsed_results:
-        logger.warning(f"⚠️  No sources found in {TAVILY_RESULTS_FILE} – accepting none.")
+async def _select_sources_for_phase(
+    article_guidelines: str,
+    parsed_phase: Dict[int, Dict[str, str]],
+    prompt_template: str,
+    phase_label: str,
+) -> List[int]:
+    """Run source selection for a single phase subset."""
+    if not parsed_phase:
+        logger.info(f"No {phase_label} sources to evaluate.")
         return []
 
-    sources_data_text = build_sources_data_text(parsed_results)
+    sources_data_text = build_sources_data_text(parsed_phase)
 
-    prompt_text = PROMPT_AUTO_SOURCE_SELECTION.format(
+    prompt_text = prompt_template.format(
         article_guidelines=article_guidelines or "<none>",
         sources_data=sources_data_text,
     )
 
     chat_llm = get_chat_model(settings.source_selection_model, SourceSelection)
-    logger.debug("Selecting sources to keep")
+    logger.info(f"Selecting {phase_label} sources to keep ({len(parsed_phase)} candidates)")
 
     try:
         response = await chat_llm.ainvoke(prompt_text)
     except Exception as exc:
-        logger.error(f"⚠️ LLM call failed ({exc}). Falling back to accepting all sources.", exc_info=True)
-        return sorted(parsed_results.keys())
+        logger.error(
+            f"⚠️ LLM call failed for {phase_label} ({exc}). Falling back to accepting all.",
+            exc_info=True,
+        )
+        return sorted(parsed_phase.keys())
 
     if not isinstance(response, SourceSelection):
-        logger.error(f"⚠️ LLM call returned unexpected type: {type(response)}")
-        return sorted(parsed_results.keys())
+        logger.error(f"⚠️ LLM returned unexpected type for {phase_label}: {type(response)}")
+        return sorted(parsed_phase.keys())
 
     if response.selection_type == "none":
-        logger.debug("No sources accepted.")
+        logger.info(f"No {phase_label} sources accepted.")
         return []
     if response.selection_type == "all":
-        logger.info("👍 All sources accepted.")
-        return sorted(parsed_results.keys())
+        logger.info(f"👍 All {phase_label} sources accepted ({len(parsed_phase)}).")
+        return sorted(parsed_phase.keys())
     # 'specific'
-    logger.info(f"👍 {len(response.source_ids)} sources accepted.")
-    return [sid for sid in response.source_ids if sid in parsed_results]
+    accepted = [sid for sid in response.source_ids if sid in parsed_phase]
+    logger.info(f"👍 {len(accepted)}/{len(parsed_phase)} {phase_label} sources accepted.")
+    return accepted
+
+
+async def select_sources(article_guidelines: str, md_results: str) -> List[int]:
+    """Use an LLM to select the best subset of sources.
+
+    Splits sources by phase (exploitation vs exploration) and evaluates each
+    phase independently with a phase-appropriate prompt and acceptance threshold.
+    """
+    parsed_results = parse_tavily_results(md_results)
+    if not parsed_results:
+        logger.warning(f"⚠️  No sources found in {TAVILY_RESULTS_FILE} - accepting none.")
+        return []
+
+    # Split by phase
+    exploitation: Dict[int, Dict[str, str]] = {}
+    exploration: Dict[int, Dict[str, str]] = {}
+    for src_id, entry in parsed_results.items():
+        if entry.get("phase", "[EXPLOITATION]") == "[EXPLORATION]":
+            exploration[src_id] = entry
+        else:
+            exploitation[src_id] = entry
+
+    logger.info(
+        f"Source selection: {len(exploitation)} exploitation, {len(exploration)} exploration "
+        f"({len(parsed_results)} total)"
+    )
+
+    # Evaluate each phase independently
+    exploitation_ids = await _select_sources_for_phase(
+        article_guidelines,
+        exploitation,
+        PROMPT_AUTO_SOURCE_SELECTION_EXPLOITATION,
+        "exploitation",
+    )
+    if exploration:
+        exploration_ids = await _select_sources_for_phase(
+            article_guidelines,
+            exploration,
+            PROMPT_AUTO_SOURCE_SELECTION_EXPLORATION,
+            "exploration",
+        )
+    else:
+        logger.info("No exploration sources present; skipping exploration selection call.")
+        exploration_ids = []
+
+    # Merge and sort
+    all_selected = sorted(set(exploitation_ids + exploration_ids))
+    logger.info(
+        f"✅ Total selected: {len(all_selected)} "
+        f"(exploitation: {len(exploitation_ids)}, exploration: {len(exploration_ids)})"
+    )
+    return all_selected
 
 
 def parse_results_selected(md_text: str) -> List[Dict[str, str]]:
@@ -170,7 +231,7 @@ async def select_top_sources(
     )
 
     chat_llm = get_chat_model(settings.source_selection_model, TopSourceSelection)
-    logger.debug("Selecting top sources to scrape")
+    logger.info("Selecting top sources to scrape")
     try:
         response = await chat_llm.ainvoke(prompt)
     except Exception as exc:

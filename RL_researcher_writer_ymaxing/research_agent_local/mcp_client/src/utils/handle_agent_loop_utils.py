@@ -62,6 +62,10 @@ async def execute_tool(name: str, args: dict, client: Agent):
     print_colored(f"⚡ Executing tool '{name}' via MCP server...", Color.CYAN)
     try:
         tool_result = await client.call_tool(name, args)
+        if getattr(tool_result, "isError", False):
+            error_msg = f"Tool '{name}' returned an error: {tool_result}"
+            print_colored(f"❌ {error_msg}", Color.BRIGHT_RED)
+            raise Exception(error_msg)
         print_colored("✅ Tool execution successful!", Color.CYAN)
         return tool_result
     except Exception as e:
@@ -126,8 +130,9 @@ async def handle_agent_loop(
                     tool_response = f"Tool '{name}' executed successfully. Result: {tool_result}"
                     conversation_history.append(make_user_message(tool_response))
                 except Exception as e:
-                    # Error already printed by execute_tool, just add to conversation
-                    conversation_history.append(make_user_message(str(e)))
+                    # Error already printed by execute_tool; surface it clearly to the LLM
+                    error_response = f"Tool '{name}' returned an error: {e}"
+                    conversation_history.append(make_user_message(error_response))
 
             else:
                 error_msg = f"Unknown function call: '{name}'. Not found in tools."

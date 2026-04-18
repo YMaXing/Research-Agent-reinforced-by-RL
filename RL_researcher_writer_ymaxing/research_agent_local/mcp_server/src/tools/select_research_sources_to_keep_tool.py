@@ -65,7 +65,7 @@ async def select_research_sources_to_keep_tool(research_directory: str) -> Dict[
     Returns:
         Dict with status, selection results, and file paths
     """
-    logger.debug(f"Selecting research sources to keep from: {research_directory}")
+    logger.info(f"Selecting research sources to keep from: {research_directory}")
 
     # Convert to Path object
     research_path = Path(research_directory)

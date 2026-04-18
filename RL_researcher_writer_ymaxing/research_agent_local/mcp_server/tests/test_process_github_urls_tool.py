@@ -23,12 +23,12 @@ _PATCH_HANDLER = "src.tools.process_github_urls_tool.process_github_url"
 _PATCH_SETTINGS = "src.tools.process_github_urls_tool.settings"
 
 
-def _setup_dir(tmp_path: Path, github_urls: list) -> Path:
+def _setup_dir(tmp_path: Path, github_urls: list, url_titles: dict | None = None) -> Path:
     """Create research folder with article_guideline.md and guidelines JSON."""
     (tmp_path / ARTICLE_GUIDELINE_FILE).write_text("# Topic", encoding="utf-8")
     output = tmp_path / RESEARCH_OUTPUT_FOLDER
     output.mkdir()
-    data = {"github_urls": github_urls, "youtube_videos_urls": [], "other_urls": [], "local_file_paths": []}
+    data = {"github_urls": github_urls, "youtube_videos_urls": [], "other_urls": [], "local_file_paths": [], "url_titles": url_titles or {}}
     (output / GUIDELINES_FILENAMES_FILE).write_text(json.dumps(data), encoding="utf-8")
     return tmp_path
 
@@ -64,7 +64,7 @@ class TestProcessGithubUrlsTool:
 
         call_count = 0
 
-        async def _side_effect(url, dest, token):
+        async def _side_effect(url, dest, token, title=""):
             nonlocal call_count
             call_count += 1
             if call_count == 1:
@@ -96,3 +96,15 @@ class TestProcessGithubUrlsTool:
     async def test_raises_for_missing_folder(self):
         with pytest.raises(ValueError):
             await process_github_urls_tool("/nonexistent/path")
+
+    async def test_title_forwarded_to_handler(self, tmp_path):
+        url = "https://github.com/a/b"
+        research_dir = _setup_dir(tmp_path, [url], url_titles={url: "My Awesome Library"})
+        mock_settings = type("S", (), {"github_token": type("T", (), {"get_secret_value": lambda self: "tok"})()})()  # noqa: E501
+        with (
+            patch(_PATCH_HANDLER, new_callable=AsyncMock, return_value=True) as mock_handler,
+            patch(_PATCH_SETTINGS, mock_settings),
+        ):
+            await process_github_urls_tool(str(research_dir))
+        _, kwargs = mock_handler.call_args
+        assert kwargs.get("title") == "My Awesome Library"

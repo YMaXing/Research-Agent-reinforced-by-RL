@@ -15,6 +15,7 @@ from ..tools import (
     process_github_urls_tool,
     process_local_files_tool,
     scrape_and_clean_other_urls_tool,
+    scrape_exploitation_guideline_urls_tool,
     scrape_research_urls_tool,
     select_research_sources_to_keep_tool,
     select_research_sources_to_scrape_tool,
@@ -23,6 +24,7 @@ from ..tools import (
     deduplicate_research_content_tool,
 )
 from ..utils.opik_utils import opik_context
+from ..config.settings import settings
 
 
 def register_mcp_tools(mcp: FastMCP) -> None:
@@ -33,7 +35,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     # ============================================================================
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def extract_guidelines_urls(research_directory: str) -> Dict[str, Any]:
         """
         Extract URLs and local file references from article guidelines.
@@ -65,7 +67,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def process_local_files(research_directory: str) -> Dict[str, Any]:
         """
         Process local files referenced in the article guidelines.
@@ -99,7 +101,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     # ============================================================================
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def scrape_and_clean_other_urls(research_directory: str, concurrency_limit: int = 4) -> Dict[str, Any]:
         """
         Scrape and clean other URLs (including arxiv URLs) from GUIDELINES_FILENAMES_FILE.
@@ -130,7 +132,45 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
+    async def scrape_exploitation_guideline_urls(
+        research_directory: str, concurrency_limit: int = 4
+    ) -> Dict[str, Any]:
+        """
+        Scrape URLs from the "Other Sources" section of the article guidelines (exploitation sources).
+
+        Reads ``exploitation_github_urls``, ``exploitation_youtube_videos_urls``, and
+        ``exploitation_other_urls`` from GUIDELINES_FILENAMES_FILE and processes each with
+        its dedicated handler:
+        - GitHub URLs → gitingest summary (process_github_urls)
+        - YouTube URLs → transcript (transcribe_youtube_urls)
+        - arXiv URLs → arxiv2markdown scrape
+        - Other web URLs → firecrawl scrape + LLM clean
+
+        All output is saved to URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER and tagged as
+        ``<research_source type="guideline_exploitation">`` in the final research file.
+
+        Args:
+            research_directory: Path to the research directory containing GUIDELINES_FILENAMES_FILE.
+            concurrency_limit: Maximum number of concurrent web scraping tasks (default: 4).
+
+        Returns:
+            Dict[str, Any]: Dictionary containing:
+                - status: Operation status ("success" or "warning")
+                - github_processed: Number of GitHub URLs processed
+                - youtube_processed: Number of YouTube URLs processed
+                - arxiv_processed: Number of arXiv papers processed
+                - web_processed: Number of web URLs processed
+                - urls_total: Total number of exploitation URLs attempted
+                - output_directory: Path to URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER
+                - message: Human-readable summary
+        """
+        opik_context.update_thread_id()
+        result = await scrape_exploitation_guideline_urls_tool(research_directory, concurrency_limit)
+        return result
+
+    @mcp.tool()
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def process_github_urls(research_directory: str) -> Dict[str, Any]:
         """
         Process GitHub URLs from GUIDELINES_FILENAMES_FILE using gitingest.
@@ -161,7 +201,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def transcribe_youtube_urls(research_directory: str) -> Dict[str, Any]:
         """
         Transcribe YouTube video URLs from GUIDELINES_FILENAMES_FILE using an LLM.
@@ -195,7 +235,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     # ============================================================================
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def generate_next_queries(research_directory: str, n_queries: int = 5) -> Dict[str, Any]:
         """
         Generate candidate web-search queries for the next research round.
@@ -224,7 +264,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def run_tavily_research(
         research_directory: str,
         queries: list[str],
@@ -264,10 +304,9 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
     
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def generate_next_complementary_queries(research_directory: str, 
-                                                    n_queries: int = 5, 
-                                                    depth_vs_breadth_ratio: float = 0.5, 
+                                                    n_queries: int = settings.n_exploration_queries_per_round, 
                                                     focus: Literal["balanced", "depth", "breadth"] = "balanced") -> Dict[str, Any]:
         """
         Generate complementary candidate web-search queries to explore uncovered but closely relevant aspects.
@@ -280,8 +319,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         Args:
             research_directory: Path to the research directory containing article data
-            n_queries: Number of queries to generate (default: 5)
-            depth_vs_breadth_ratio: Ratio to balance depth vs breadth in query generation (default: 0.5)
+            n_queries: Number of queries to generate (default: settings.n_exploration_queries_per_round)
             focus: Focus of query generation, one of "balanced", "depth", or "breadth" (default: "balanced")
 
         Returns:
@@ -295,11 +333,11 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         opik_context.update_thread_id()
 
-        result = await generate_next_complementary_queries_tool(research_directory, n_queries, depth_vs_breadth_ratio=depth_vs_breadth_ratio, focus=focus)
+        result = await generate_next_complementary_queries_tool(research_directory, n_queries, focus=focus)
         return result
     
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def deduplicate_new_queries(
             research_directory: str,
             query_source: Literal["exploitation", "complementary"] = "exploitation",
@@ -332,7 +370,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     # ============================================================================
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def select_research_sources_to_keep(research_directory: str) -> Dict[str, Any]:
         """
         Automatically select high-quality sources from Tavily results.
@@ -361,8 +399,8 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
 
     @mcp.tool()
-    @opik.track(type="tool")
-    async def select_research_sources_to_scrape(research_directory: str, max_sources: int = 7) -> Dict[str, Any]:
+    @opik.track(type="tool", project_name=settings.opik_project_name)
+    async def select_research_sources_to_scrape(research_directory: str, max_sources: int = settings.maximum_sources_to_scrape) -> Dict[str, Any]:
         """
         Select up to max_sources priority research sources to scrape in full.
 
@@ -373,7 +411,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         Args:
             research_directory: Path to the research directory (e.g., "articles/1")
-            max_sources: Maximum number of sources to select (default: 7)
+            max_sources: Maximum number of sources to select (default: settings.maximum_sources_to_scrape)
 
         Returns:
             Dict[str, Any]: Dictionary containing:
@@ -391,7 +429,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def scrape_research_urls(research_directory: str, concurrency_limit: int = 4) -> Dict[str, Any]:
         """
         Scrape the selected research URLs for full content.
@@ -426,7 +464,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     # ============================================================================
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def deduplicate_research_content(research_directory: str) -> Dict[str, Any]:
         """
         Deduplicates ALL research sources as a whole (Tavily + Guidelines + Research URLs + Code + YouTube).
@@ -449,7 +487,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
     
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def create_research_file(research_directory: str) -> Dict[str, Any]:
         """
         Generate the final comprehensive research.md file.

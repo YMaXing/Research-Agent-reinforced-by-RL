@@ -48,7 +48,7 @@ async def process_github_url(url: str, token: str | None) -> Dict[str, Any]:
         md = md[:MAX_CHARS] + "\n\n[... Content truncated due to length ...]"
 
     if ingestion_succeeded:
-        logger.debug(f"Successfully processed repository {url}")
+        logger.info(f"Successfully processed repository {url}")
 
     return {
         "success": ingestion_succeeded,

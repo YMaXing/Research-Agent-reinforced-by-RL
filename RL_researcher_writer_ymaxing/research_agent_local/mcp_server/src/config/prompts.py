@@ -75,6 +75,7 @@ Guidelines for the set of queries:
 • **Strictly avoid semantic duplication**: each query must target a truly distinct aspect. Do not generate near-equivalents (e.g. "limitations of X" and "failure modes of X").
 • Never repeat or closely paraphrase any query that already appears in <full_queries>.
 • The web search queries should be natural language questions, not just keywords.
+• **Exploitation queries fill direct coverage gaps only.** They target sections or topics explicitly required by the article guidelines that are currently missing or underrepresented in past research. Do not generate depth or breadth exploration queries here — those belong exclusively to the complementary phase (`generate_next_complementary_queries_tool`).
 
 **Few-shot examples:**
 
@@ -129,8 +130,9 @@ The queries, taken **as a group**, should add genuinely new value that cannot be
 </already_covered_context>
 
 **Exploration strategies** (respect the {depth_percentage}% / {breadth_percentage}% distribution above):
-• **Depth**: theoretical foundations, technical nuances, alternative perspectives, latest developments, limitations/criticisms, implementation challenges, real-world case studies, future implications.
-• **Breadth**: adjacent concepts, cross-domain analogies, historical context, enabling/disrupting technologies, practical applications in other fields, emerging trends connected to the core topic.
+*Depth* means intensifying understanding of a topic's inner workings — the query stays within the subject. *Breadth* means connecting outward to adjacent areas — the query moves beyond the subject to related concepts, other fields, or wider contexts.
+• **Depth** (inward — intensify understanding of the core topic): motivation for the topic (why it exists, what problem it solves), theoretical foundations or mathematical underpinnings, technical nuances or alternative implementation perspectives, latest advancements or recent developments, limitations, criticisms, or failure modes, implementation challenges or latency/scale trade-offs, real-world case studies or concrete metrics, future implications or open research directions.
+• **Breadth** (outward — connect to adjacent areas outside the core topic): adjacent or related concepts that expand the scope, cross-domain analogies or lessons from other fields, historical context or evolution of the topic, enabling or disrupting technologies that intersect with the core topic, practical applications of the core topic in other industries or domains, emerging trends in adjacent fields or the broader ecosystem.
 
 **Rules**:
 • **Strictly avoid semantic duplication**: each query must target a truly distinct aspect. Do not generate near-equivalents (e.g. "limitations of X" and "failure modes of X").
@@ -184,6 +186,10 @@ Perform **two-stage deduplication** on the new queries:
 **Phase-specific rules for Stage 2:**
 - Exploitation round: Be strict. Prevent close duplicates with previous exploitation queries.
 - Complementary round: Strongly protect all historical exploitation queries. Only keep new queries that add genuine new depth or breadth value.
+  For this purpose use the following definitions — these mirror the downstream evaluation criteria:
+  - *Depth* (inward — intensify understanding of the core topic): motivation for the topic (why it exists, what problem it solves), theoretical foundations or mathematical underpinnings, technical nuances or alternative implementation perspectives, latest advancements or recent developments, limitations/criticisms/failure modes, implementation challenges or latency/scale trade-offs, real-world case studies or concrete metrics, future implications or open research directions.
+  - *Breadth* (outward — connect to adjacent areas outside the core topic): adjacent or related concepts that expand the scope, cross-domain analogies or lessons from other fields, historical context or evolution of the topic, enabling/disrupting technologies that intersect with the core topic, practical applications of the core topic in other industries or domains, emerging trends in adjacent fields or the broader ecosystem.
+  A complementary query adds genuine new value if it clearly targets a depth or breadth category not already covered by any historical query.
 
 **What counts as a semantic duplicate?**
 Queries that target essentially the same knowledge need, angle, or sub-topic and would produce highly overlapping search results, even if worded differently.
@@ -251,15 +257,18 @@ Return a list of objects, where each object represents a source and has the foll
 
 # Markdown cleaning prompt
 PROMPT_CLEAN_MARKDOWN = """
-Your task is to clean markdown content scraped from a webpage by *only removing* all irrelevant sections such as
-headers, footers, navigation bars, advertisements, sidebars, self-promotion, call-to-actions, etc.
-Focus on keeping only the core textual content (and code content if there are code sections) that is pertinent to
-the article guidelines provided below.
-Return *only* the cleaned markdown.
-Do not summarize or rewrite the original content. This task is only about *removing* irrelevant content.
-Good content should be kept as is, do not touch it.
+Your task is to clean markdown content scraped from a webpage by removing **only web-page boilerplate** such as:
+site headers, footers, navigation menus, cookie banners, advertisements, sidebars, subscription prompts,
+self-promotion blocks, social-media share buttons, "related articles" sections, and call-to-action elements.
 
-Here are the article guidelines:
+**Critical rules:**
+- Keep ALL substantive article content: paragraphs, headings, code blocks, tables, lists, images, diagrams, and any explanatory text — even if some sections seem tangential.
+- Do NOT filter or remove sections based on topic relevance. Your job is boilerplate removal, not content curation.
+- Do NOT summarize, condense, paraphrase, or rewrite any kept content. Return it verbatim.
+- When in doubt, **keep** the content. Err on the side of preserving too much rather than too little.
+
+The article guidelines below are provided only so you can confirm the page is on-topic (i.e., not a completely unrelated page). Do NOT use them to decide which sections of the article to keep or remove.
+
 <article_guidelines>
 {article_guidelines}
 </article_guidelines>
@@ -270,44 +279,96 @@ Here is the markdown content to clean:
 </markdown_content>
 """.strip()
 
-# Auto source selection prompt
-PROMPT_AUTO_SOURCE_SELECTION = """
-You are a research assistant tasked with automatically selecting the most trustworthy and relevant sources
-from a collection of web search results generated across multiple rounds of a two-phase research process.
+# Auto source selection prompts (split by phase for independent evaluation)
 
-**Research Process Context:**
-- **Phase 1 (Exploitation)**: Fixed rounds that directly address the core topics and gaps in the article guidelines.
-- **Phase 2 (Exploration)**: Later complementary rounds that add depth and breadth through more advanced or adjacent angles.
+PROMPT_AUTO_SOURCE_SELECTION_EXPLOITATION = """
+You are a research assistant tasked with selecting the most trustworthy and relevant sources
+from a collection of web search results produced during the **exploitation phase** of a research process.
 
-Your task is to evaluate each source based on:
-1. **Domain Authority & Trustworthiness**: Prefer reputable websites, official sources, established publications, academic institutions, and well-known organizations. Avoid obscure or potentially unreliable websites.
-2. **Content Quality**: Evaluate the depth, accuracy, and usefulness of the answers obtained from each source.
-3. **Relevance to Article Guidelines**: How well each source's content aligns with the provided article guidelines.
-4. **Query Origin & Phase Value**: Whether the source came from an exploitation query (core coverage) or a complementary exploration query (depth/breadth).
+**Phase Context:**
+These are **exploitation sources** — they were generated by queries that directly address the core topics
+and gaps in the article guidelines. They represent essential guideline coverage.
 
 Here are the article guidelines:
 <article_guidelines>
 {article_guidelines}
 </article_guidelines>
 
-Here are the sources to evaluate:
+Here are the exploitation sources to evaluate:
 <sources_to_evaluate>
 {sources_data}
 </sources_to_evaluate>
 
 For each source, you will see:
-- The research phase it originated from ([EXPLOITATION] or [EXPLORATION])
 - The URL of the source
-- The queries that led to this source
-- The answers/content obtained from this source
+- The query that led to this source
+- The answer/content obtained from this source
 
-Please analyze each source and determine which ones should be ACCEPTED or REJECTED.
+---
 
-**Selection Criteria (apply in strict priority order):**
-- **Strongly protect exploitation sources**: These represent essential guideline coverage. Only reject them if they are clearly low-quality, unreliable, or irrelevant.
-- **Higher bar for exploration sources**: Accept complementary sources only if they add genuine new value (theoretical foundations, deeper technical insights, limitations/criticisms, real-world case studies, cross-domain analogies, emerging trends, or important breadth not covered in Phase 1).
-- **Trustworthiness**: Prefer sources from high-authority domains (.edu, .gov, established publications, official documentation, reputable organizations).
-- **Content Quality**: Accept high-quality, detailed, relevant content. Reject superficial, promotional, biased, marketing, or low-effort material.
+## Evaluation Criteria
+
+Evaluate each source **independently** on the following dimensions:
+1. **Relevance to Article Guidelines**: Does this source's content align with at least one section or topic in the article guidelines?
+2. **Domain Authority & Trustworthiness**: Prefer reputable websites, official sources, established publications, academic institutions, and well-known organizations. Avoid obscure or potentially unreliable websites.
+3. **Content Quality**: Does the answer contain substantive, accurate, and useful information? Reject only if the content is superficial, promotional, biased, marketing, or low-effort material.
+
+**CRITICAL GUIDELINES:**
+- **Strongly protect exploitation sources.** These represent essential guideline coverage. Only reject a source if it is clearly low-quality, unreliable, or irrelevant to the article topic.
+- **Evaluate each source on its own merits.** Do NOT reject sources for being similar to, or covering the same topic as, other sources. Redundancy removal happens in a later deduplication step — your job here is strictly individual quality filtering.
+- **Expected acceptance rate: 70-90%.** Rejection should be the exception, not the norm. If you find yourself rejecting more than ~30% of exploitation sources, re-examine whether you are applying the criteria too aggressively.
+
+---
+
+Return your decision as a structured output with:
+1. selection_type: "none" if no sources meet the quality standards, "all" if all sources are acceptable,
+or "specific" for specific source IDs
+2. source_ids: List of selected source IDs (empty for "none", all IDs for "all", or specific IDs for "specific")
+""".strip()
+
+PROMPT_AUTO_SOURCE_SELECTION_EXPLORATION = """
+You are a research assistant tasked with selecting the most trustworthy and relevant sources
+from a collection of web search results produced during the **exploration phase** of a research process.
+
+**Phase Context:**
+These are **exploration sources** — they were generated by queries designed to add depth and breadth
+through more advanced or adjacent angles beyond the core guideline topics. They complement the exploitation
+sources that already provide direct guideline coverage.
+
+Here are the article guidelines:
+<article_guidelines>
+{article_guidelines}
+</article_guidelines>
+
+Here are the exploration sources to evaluate:
+<sources_to_evaluate>
+{sources_data}
+</sources_to_evaluate>
+
+For each source, you will see:
+- The URL of the source
+- The query that led to this source
+- The answer/content obtained from this source
+
+---
+
+## Evaluation Criteria
+
+Evaluate each source **independently** on the following dimensions:
+1. **Relevance to Article Guidelines**: Does this source add genuine new value — in depth or breadth — to **at least one** section of the article guidelines?
+   This criterion is satisfied if you can identify at least one specific guideline section that the source meaningfully enriches through one or more of the following:
+   - **Depth** (inward — intensify understanding of the core topic): motivation for the topic (why it exists, what problem it solves), theoretical foundations or mathematical underpinnings, technical nuances or alternative implementation perspectives, latest advancements or recent developments, limitations/criticisms/failure modes, implementation challenges or latency/scale trade-offs, real-world case studies or concrete metrics, future implications or open research directions.
+   - **Breadth** (outward — connect to adjacent areas outside the core topic): adjacent or related concepts that expand the scope, cross-domain analogies or lessons from other fields, historical context or evolution of the topic, enabling/disrupting technologies that intersect with the core topic, practical applications of the core topic in other industries or domains, emerging trends in adjacent fields or the broader ecosystem.
+   If the source is clearly off-topic (e.g., about an unrelated domain like warehouse logistics when the article is about AI memory), reject it.
+2. **Domain Authority & Trustworthiness**: Prefer reputable websites, official sources, established publications, academic institutions, and well-known organizations. Avoid obscure or potentially unreliable websites.
+3. **Content Quality**: Does the answer contain substantive, accurate, and useful information? Reject only if the content is superficial, promotional, biased, marketing, or low-effort material.
+
+**CRITICAL GUIDELINES:**
+- **Evaluate each source on its own merits.** Do NOT reject sources for being similar to, or covering the same topic as, other sources. Redundancy removal happens in a later deduplication step — your job here is strictly individual quality filtering.
+- **Expected acceptance rate: 70-90%.** Exploration sources are by nature more speculative, so a moderate rejection rate is expected. But be careful not to over-filter: sources that provide genuine depth or breadth on any guideline section should be accepted, even if their angle is unconventional.
+- **Reject clearly irrelevant sources** (wrong domain entirely, no connection to article topic) and **low-quality sources** (promotional, superficial, broken content). Do NOT reject a source merely because it is tangential or covers a niche angle — tangential depth is the whole purpose of exploration.
+
+---
 
 Return your decision as a structured output with:
 1. selection_type: "none" if no sources meet the quality standards, "all" if all sources are acceptable,
@@ -321,7 +382,7 @@ You are assisting with research for an upcoming article in a two-phase research 
 
 **Research Process Context:**
 - **Phase 1 (Exploitation)**: Fixed rounds that directly address the core topics and gaps in the article guidelines.
-- **Phase 2 (Exploration)**: Later complementary rounds that add depth (technical nuances, limitations, criticisms, implementation challenges, future implications) and breadth (adjacent concepts, cross-domain analogies, emerging trends, practical applications in other fields).
+- **Phase 2 (Exploration)**: Later complementary rounds that add depth (inward — intensifying understanding of the core topic) and breadth (outward — expanding to adjacent areas beyond the core topic).
 
 Your task is to select the **top {top_n}** most valuable sources from the accepted Tavily web search results for full content scraping.
 
@@ -352,8 +413,8 @@ For each accepted source, you will see:
 3. **Phase-Aware Value**:
    - **Exploitation sources** (Phase 1): Strongly prioritize high-quality sources that strengthen or deepen core guideline coverage.
    - **Exploration sources** (Phase 2): Apply a **higher bar**. These sources must demonstrate **clear, non-redundant value** that cannot be easily inferred from Phase 1 material. Accept them **only if** they deliver one or more of the following:
-     - **Depth** (vertical drilling into the core topic): theoretical foundations, technical nuances, alternative perspectives, latest developments, limitations/criticisms, implementation challenges, real-world case studies, or future implications.
-     - **Breadth** (horizontal expansion): adjacent concepts, cross-domain analogies, historical context, enabling/disrupting technologies, practical applications in other fields, or emerging trends connected to the core topic.
+     - **Depth** (inward — intensify understanding of the core topic): motivation for the topic (why it exists, what problem it solves), theoretical foundations or mathematical underpinnings, technical nuances or alternative implementation perspectives, latest advancements or recent developments, limitations/criticisms/failure modes, implementation challenges or latency/scale trade-offs, real-world case studies or concrete metrics, future implications or open research directions.
+     - **Breadth** (outward — connect to adjacent areas outside the core topic): adjacent or related concepts that expand the scope, cross-domain analogies or lessons from other fields, historical context or evolution of the topic, enabling/disrupting technologies that intersect with the core topic, practical applications of the core topic in other industries or domains, emerging trends in adjacent fields or the broader ecosystem.
    - Exploration sources must meaningfully expand the article's comprehensiveness, introduce novel angles, or provide insights that Phase 1 sources alone cannot supply. Reject any exploration source that is merely a rephrasing or slight variation of existing exploitation material.
 4. **Authority & Quality**: Prefer reputable, trustworthy domains with high-depth, accurate, and well-structured content.
 5. **Diversity**: When possible, select a balanced mix across phases and topics for maximum overall research value.
@@ -390,7 +451,10 @@ Each tag carries a `file` attribute for source attribution. Tavily chunks inside
 **Phase-aware protection rules** — use the XML tags to identify each item's priority tier (apply strictly):
 1. **Golden sources** (`<golden_source ...>`): HIGHEST PRIORITY. Handpicked by the user. Never remove or significantly alter their content unless it is completely duplicated word-for-word with another golden source. Always preserve their core content and authority.
 2. **Exploitation phase sources** (`<research_source phase="exploitation">`, `<tavily_results phase="exploitation">`): HIGH PRIORITY. Strongly protect these — they represent essential guideline coverage. Only merge or remove if highly redundant with golden sources or other exploitation material.
-3. **Exploration phase sources** (`<research_source phase="exploration">`, `<tavily_results phase="exploration">`): MEDIUM PRIORITY. Apply a higher bar — only keep if they add genuine new value (depth: theoretical foundations, technical nuances, limitations/criticisms, real-world case studies, future implications; breadth: adjacent concepts, cross-domain analogies, emerging trends, applications in other fields). Do not override or dilute golden/exploitation content.
+3. **Exploration phase sources** (`<research_source phase="exploration">`, `<tavily_results phase="exploration">`): MEDIUM PRIORITY. Apply a higher bar — only keep if they add genuine new value:
+   - **Depth** (inward — intensify understanding of the core topic): motivation for the topic (why it exists, what problem it solves), theoretical foundations or mathematical underpinnings, technical nuances or alternative implementation perspectives, latest advancements or recent developments, limitations/criticisms/failure modes, implementation challenges or latency/scale trade-offs, real-world case studies or concrete metrics, future implications or open research directions.
+   - **Breadth** (outward — connect to adjacent areas outside the core topic): adjacent or related concepts that expand the scope, cross-domain analogies or lessons from other fields, historical context or evolution of the topic, enabling/disrupting technologies that intersect with the core topic, practical applications of the core topic in other industries or domains, emerging trends in adjacent fields or the broader ecosystem.
+   Do not override or dilute golden/exploitation content.
 
 **Goals (in priority order):**
 - Preserve golden sources almost untouched

@@ -11,6 +11,7 @@ context:
   character_profile: "paul_iusztin.md"
   examples_loader: "markdown"
   examples_uri: "inputs/examples/course_lessons"
+  exploration_examples_uri: "inputs/examples/exploration_integration"
 memory:
   checkpointer: "in_memory"
 num_reviews: 2
@@ -33,6 +34,12 @@ nodes:
     model_config:
       temperature: 0.7
       include_thoughts: false
+      thinking_budget: null
+  integrate_exploration:
+    model_id: "google_genai:gemini-2.5-pro"
+    model_config:
+      temperature: 0.7
+      include_thoughts: true
       thinking_budget: null
   review_article:
     model_id: "google_genai:gemini-2.5-pro"

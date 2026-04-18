@@ -14,7 +14,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from src.app.github_handler import process_github_url
+from src.app.github_handler import _normalize_github_url, process_github_url
 
 _PATCH_INGEST = "src.app.github_handler.ingest_async"
 
@@ -75,3 +75,70 @@ class TestProcessGithubUrl:
         assert result is False
         md = (dest_folder / "a_b.md").read_text(encoding="utf-8")
         assert "Error processing" in md
+
+
+# ---------------------------------------------------------------------------
+# _normalize_github_url (pure function)
+# ---------------------------------------------------------------------------
+
+
+class TestNormalizeGithubUrl:
+    def test_blob_file_url_converted_to_parent_tree(self):
+        url = "https://github.com/towardsai/agentic-ai-engineering-course/blob/dev/lessons/09_memory_knowledge_access/notebook.ipynb"
+        result = _normalize_github_url(url)
+        assert result == "https://github.com/towardsai/agentic-ai-engineering-course/tree/dev/lessons/09_memory_knowledge_access"
+
+    def test_blob_file_at_repo_root_falls_back_to_repo(self):
+        url = "https://github.com/owner/repo/blob/main/README.md"
+        result = _normalize_github_url(url)
+        assert result == "https://github.com/owner/repo"
+
+    def test_tree_directory_url_unchanged(self):
+        url = "https://github.com/owner/repo/tree/main/src"
+        assert _normalize_github_url(url) == url
+
+    def test_repo_root_url_unchanged(self):
+        url = "https://github.com/owner/repo"
+        assert _normalize_github_url(url) == url
+
+    def test_non_github_url_unchanged(self):
+        url = "https://gitlab.com/owner/repo/blob/main/file.py"
+        assert _normalize_github_url(url) == url
+
+    def test_blob_no_subpath_unchanged(self):
+        # Malformed URL with /blob/<ref> but nothing after — leave as-is
+        url = "https://github.com/owner/repo/blob/main"
+        assert _normalize_github_url(url) == url
+
+    def test_blob_directory_path_unchanged(self):
+        # /blob/<ref>/path/with/no/extension — treated as directory, leave as-is
+        url = "https://github.com/owner/repo/blob/main/src/mypackage"
+        assert _normalize_github_url(url) == url
+
+    def test_nested_file_url_uses_immediate_parent(self):
+        url = "https://github.com/owner/repo/blob/feature-branch/a/b/c/script.py"
+        result = _normalize_github_url(url)
+        assert result == "https://github.com/owner/repo/tree/feature-branch/a/b/c"
+
+
+class TestProcessGithubUrlUsesNormalizedUrl:
+    """Verify that process_github_url feeds the normalised URL to ingest_async."""
+
+    async def test_blob_url_is_normalised_before_ingest(self, dest_folder):
+        blob_url = "https://github.com/towardsai/agentic-ai-engineering-course/blob/dev/lessons/09_memory_knowledge_access/notebook.ipynb"
+        expected_ingest_url = "https://github.com/towardsai/agentic-ai-engineering-course/tree/dev/lessons/09_memory_knowledge_access"
+
+        with patch(_PATCH_INGEST, new_callable=AsyncMock, return_value=("s", "t", "c")) as mock_ingest:
+            await process_github_url(blob_url, dest_folder, "tok")
+
+        actual_url = mock_ingest.call_args.args[0]
+        assert actual_url == expected_ingest_url
+
+    async def test_repo_url_passed_through_unchanged(self, dest_folder):
+        repo_url = "https://github.com/owner/repo"
+
+        with patch(_PATCH_INGEST, new_callable=AsyncMock, return_value=("s", "t", "c")) as mock_ingest:
+            await process_github_url(repo_url, dest_folder, None)
+
+        actual_url = mock_ingest.call_args.args[0]
+        assert actual_url == repo_url

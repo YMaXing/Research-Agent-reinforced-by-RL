@@ -115,6 +115,7 @@ def _make_valid_dir(
     tmp_path: Path,
     all_urls: list[str] | None = None,
     write_guideline: bool = True,
+    url_titles: dict | None = None,
 ) -> Path:
     """
     Create a minimal valid directory tree for the tool.
@@ -130,7 +131,7 @@ def _make_valid_dir(
         )
     output = research_path / RESEARCH_OUTPUT_FOLDER
     output.mkdir()
-    guidelines: dict = {"other_urls": list(all_urls or [])}
+    guidelines: dict = {"other_urls": list(all_urls or []), "url_titles": dict(url_titles or {})}
     (output / GUIDELINES_FILENAMES_FILE).write_text(
         json.dumps(guidelines), encoding="utf-8"
     )
@@ -157,7 +158,7 @@ class TestWriteScrapedResultsToFiles:
         saved, success_count = write_scraped_results_to_files(results, tmp_path)
         assert success_count == 1
         assert len(saved) == 1
-        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == "# Content for https://a.com"
+        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == "**Source URL:** <https://a.com>\n\n# Content for https://a.com"
 
     def test_failed_result_still_written_but_not_counted(self, tmp_path):
         results = [_fake_result("https://b.com", success=False)]
@@ -182,15 +183,17 @@ class TestWriteScrapedResultsToFiles:
         saved, _ = write_scraped_results_to_files(results, tmp_path)
         assert len(set(saved)) == 2
 
-    def test_empty_markdown_written_as_empty_file(self, tmp_path):
+    def test_empty_markdown_written_with_url_header(self, tmp_path):
         results = [{"url": "https://a.com", "title": "Empty", "markdown": "", "success": True}]
         saved, _ = write_scraped_results_to_files(results, tmp_path)
-        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == ""
+        # Title is injected as H1 before the URL header so get_first_line_title() captures it.
+        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == "# Empty\n\n**Source URL:** <https://a.com>\n\n"
 
-    def test_none_markdown_written_as_empty_file(self, tmp_path):
+    def test_none_markdown_written_with_url_header(self, tmp_path):
         results = [{"url": "https://a.com", "title": "NoMd", "markdown": None, "success": True}]
         saved, _ = write_scraped_results_to_files(results, tmp_path)
-        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == ""
+        # Title is injected as H1 before the URL header so get_first_line_title() captures it.
+        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == "# NoMd\n\n**Source URL:** <https://a.com>\n\n"
 
     def test_empty_results_list(self, tmp_path):
         saved, success_count = write_scraped_results_to_files([], tmp_path)
@@ -201,12 +204,70 @@ class TestWriteScrapedResultsToFiles:
         emoji_content = "# Résumé 🚀"
         results = [{"url": "https://a.com", "title": "Unicode", "markdown": emoji_content, "success": True}]
         saved, _ = write_scraped_results_to_files(results, tmp_path)
-        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == emoji_content
+        assert (tmp_path / saved[0]).read_text(encoding="utf-8") == f"**Source URL:** <https://a.com>\n\n{emoji_content}"
 
     def test_filename_ends_with_md_extension(self, tmp_path):
         results = [_fake_result("https://a.com")]
         saved, _ = write_scraped_results_to_files(results, tmp_path)
         assert saved[0].endswith(".md")
+
+    def test_exception_in_results_is_skipped_gracefully(self, tmp_path):
+        """asyncio.gather(return_exceptions=True) may yield exception objects; they must be skipped."""
+        exc = RuntimeError("simulated scrape failure")
+        valid = _fake_result("https://a.com", success=True)
+        saved, success_count = write_scraped_results_to_files([exc, valid], tmp_path)
+        assert success_count == 1
+        assert len(saved) == 1
+        assert (tmp_path / saved[0]).exists()
+
+    def test_only_exception_in_results_yields_empty(self, tmp_path):
+        """When all results are exceptions, nothing is written."""
+        saved, success_count = write_scraped_results_to_files(
+            [RuntimeError("all failed")], tmp_path
+        )
+        assert saved == []
+        assert success_count == 0
+
+    def test_missing_h1_injects_metadata_title(self, tmp_path):
+        """When cleaned markdown has no heading, the Firecrawl metadata title is injected as H1."""
+        results = [{"url": "https://a.com", "title": "My Article", "markdown": "Some body text.", "success": True}]
+        saved, _ = write_scraped_results_to_files(results, tmp_path)
+        content = (tmp_path / saved[0]).read_text(encoding="utf-8")
+        assert content.startswith("# My Article\n\n")
+
+    def test_existing_h1_not_duplicated(self, tmp_path):
+        """When cleaned markdown already has an H1, no extra H1 is injected."""
+        results = [{"url": "https://a.com", "title": "My Article", "markdown": "# Existing Title\n\nBody.", "success": True}]
+        saved, _ = write_scraped_results_to_files(results, tmp_path)
+        content = (tmp_path / saved[0]).read_text(encoding="utf-8")
+        assert "# My Article" not in content
+        assert "# Existing Title" in content
+
+    def test_h2_without_h1_injects_metadata_title(self, tmp_path):
+        """When body has subheadings but no H1, the Firecrawl title is injected as H1."""
+        results = [{"url": "https://a.com", "title": "My Article", "markdown": "## Section\n\nContent.", "success": True}]
+        saved, _ = write_scraped_results_to_files(results, tmp_path)
+        content = (tmp_path / saved[0]).read_text(encoding="utf-8")
+        assert content.startswith("# My Article\n\n")
+
+    def test_guideline_title_overrides_scraped_title(self, tmp_path):
+        """Guideline title wins as H1 even when scraped body already has its own H1."""
+        url = "https://decodingml.substack.com/p/memory-the-secret-sauce-of-ai-agents"
+        results = [{"url": url, "title": "Vesa Alexandru | Substack", "markdown": "# Vesa Alexandru | Substack\n\nContent.", "success": True}]
+        url_titles = {url: "Memory: The secret sauce of AI agents"}
+        saved, _ = write_scraped_results_to_files(results, tmp_path, url_titles=url_titles)
+        content = (tmp_path / saved[0]).read_text(encoding="utf-8")
+        assert content.startswith("# Memory: The secret sauce of AI agents\n\n")
+
+    def test_guideline_title_used_when_no_scraped_h1(self, tmp_path):
+        """Guideline title is injected even when body has no H1."""
+        url = "https://example.com/article"
+        results = [{"url": url, "title": "Scraped Page Title", "markdown": "Some body text.", "success": True}]
+        url_titles = {url: "Guideline Title"}
+        saved, _ = write_scraped_results_to_files(results, tmp_path, url_titles=url_titles)
+        content = (tmp_path / saved[0]).read_text(encoding="utf-8")
+        assert content.startswith("# Guideline Title\n\n")
+        assert "# Scraped Page Title" not in content
 
 
 # ===========================================================================
@@ -363,6 +424,24 @@ class TestScrapeAndCleanOtherUrlsToolOtherUrls:
         assert result["urls_processed"] == 1
         assert result["files_saved"] == 2
 
+    async def test_guideline_title_used_in_output_file(self, tmp_path):
+        """url_titles from guidelines JSON is forwarded so guideline titles appear as H1."""
+        url = "https://blog.example.com/article"
+        url_titles = {url: "Guideline Article Title"}
+        research_path = _make_valid_dir(tmp_path, all_urls=[url], url_titles=url_titles)
+        # Scraped result has a different page title and no H1 in body
+        fake_results = [{"url": url, "title": "Example Domain | Blog", "markdown": "Body text.", "success": True}]
+
+        with patch(_SCRAPE_CONCURRENTLY_PATCH, AsyncMock(return_value=fake_results)):
+            await sacoU_mod.scrape_and_clean_other_urls_tool(str(research_path))
+
+        output_dir = research_path / RESEARCH_OUTPUT_FOLDER / URLS_FROM_GUIDELINES_FOLDER
+        md_files = list(output_dir.glob("*.md"))
+        assert len(md_files) == 1
+        content = md_files[0].read_text(encoding="utf-8")
+        assert content.startswith("# Guideline Article Title\n\n")
+        assert "# Example Domain" not in content
+
     async def test_article_guidelines_passed_to_scrape_concurrently(self, tmp_path):
         """The article guideline text is forwarded to scrape_urls_concurrently."""
         research_path = _make_valid_dir(tmp_path, all_urls=[OTHER_URL])
@@ -473,6 +552,24 @@ class TestScrapeAndCleanOtherUrlsToolArxivUrls:
         called_guidelines = mock_arxiv.call_args[0][1]
         assert called_guidelines == guideline_text
 
+    async def test_html_arxiv_url_routed_to_scrape_arxiv_url(self, tmp_path):
+        """/html/ arXiv URLs must route to scrape_arxiv_url, not scrape_urls_concurrently."""
+        html_url = "https://arxiv.org/html/2309.02427"
+        research_path = _make_valid_dir(tmp_path, all_urls=[html_url])
+        fake_arxiv_result = _fake_result(html_url)
+
+        with patch(_SCRAPE_CONCURRENTLY_PATCH, AsyncMock(return_value=[])) as mock_sc, \
+             patch(_SCRAPE_ARXIV_PATCH, AsyncMock(return_value=fake_arxiv_result)) as mock_ax, \
+             patch(_GET_CHAT_MODEL_PATCH, return_value=FakeLLM()):
+            result = await sacoU_mod.scrape_and_clean_other_urls_tool(str(research_path))
+
+        mock_ax.assert_awaited_once()
+        assert mock_ax.call_args[0][0] == html_url
+        # scrape_urls_concurrently must receive an empty non-arxiv list
+        called_other_urls = mock_sc.call_args[0][0]
+        assert html_url not in called_other_urls
+        assert result["files_saved"] == 1
+
 
 # ===========================================================================
 # ── Mixed URL types ──────────────────────────────────────────────────────────
@@ -505,8 +602,8 @@ class TestScrapeAndCleanOtherUrlsToolMixed:
 
         assert result["status"] == "success"
 
-    async def test_urls_total_reflects_only_other_urls(self, tmp_path):
-        """urls_total in the return dict counts non-arxiv URLs attempted."""
+    async def test_urls_total_includes_arxiv_and_other_urls(self, tmp_path):
+        """urls_total in the return dict counts all attempted URLs (arxiv + non-arxiv)."""
         research_path = _make_valid_dir(tmp_path, all_urls=[OTHER_URL, ARXIV_URL])
 
         with patch(_SCRAPE_CONCURRENTLY_PATCH, AsyncMock(return_value=[_fake_result(OTHER_URL)])), \
@@ -514,8 +611,8 @@ class TestScrapeAndCleanOtherUrlsToolMixed:
              patch(_GET_CHAT_MODEL_PATCH, return_value=FakeLLM()):
             result = await sacoU_mod.scrape_and_clean_other_urls_tool(str(research_path))
 
-        # urls_total = len(other_urls) = 1 (just the non-arxiv URL)
-        assert result["urls_total"] == 1
+        # urls_total = len(other_urls) + len(arxiv_urls) = 1 + 1 = 2
+        assert result["urls_total"] == 2
 
     async def test_output_dir_holds_files_for_both_types(self, tmp_path):
         research_path = _make_valid_dir(tmp_path, all_urls=[OTHER_URL, ARXIV_URL])

@@ -71,7 +71,7 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
     Returns:
         Dict with status, generated queries, and output file path
     """
-    logger.debug(f"Generating candidate web-search queries for {research_directory}")
+    logger.info(f"Generating candidate web-search queries for {research_directory}")
 
     # Convert to Path object
     research_path = Path(research_directory)
@@ -134,9 +134,9 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
     }
 
 
-async def generate_next_complementary_queries_tool(research_directory: str, 
-                                                   n_queries: int = 5, 
-                                                   depth_vs_breadth_ratio: float = 0.5, 
+async def generate_next_complementary_queries_tool(research_directory: str,
+                                                   n_queries: int = 5,
+                                                   depth_vs_breadth_ratio: float = 0.5,
                                                    focus: Literal["balanced", "depth", "breadth"] = "balanced") -> Dict[str, Any]:
         """
         Generate complementary candidate web-search queries to explore uncovered but closely relevant aspects.
@@ -149,7 +149,8 @@ async def generate_next_complementary_queries_tool(research_directory: str,
 
         Args:
             research_directory: Path to the research directory containing article data
-            n_queries: Number of queries to generate (default: 5)
+            n_queries: Number of queries to generate (default: 4)
+            focus: Query focus mode — "depth" (all depth), "breadth" (all breadth), or "balanced" (50/50)
 
         Returns:
             Dict[str, Any]: Dictionary containing:
@@ -159,8 +160,7 @@ async def generate_next_complementary_queries_tool(research_directory: str,
                 - output_path: Path to the generated next_queries.md file
                 - message: Human-readable success message with generation results
         """
-        logger.debug(f"Generating complementary queries for {research_directory} "
-                 f"(focus={focus}, ratio={depth_vs_breadth_ratio})")
+        logger.info(f"Generating complementary queries for {research_directory} (focus={focus})")
 
         # Convert to Path object
         research_path = Path(research_directory)
@@ -199,10 +199,10 @@ async def generate_next_complementary_queries_tool(research_directory: str,
 
         # === Resolve effective ratio based on focus knob ===
         if focus == "depth":
-            effective_ratio = 0.80
+            effective_ratio = 1
         elif focus == "breadth":
-            effective_ratio = 0.20
-        else:  # balanced
+            effective_ratio = 0
+        else:  # balanced — honour provided ratio, clamped to [0, 1]
             effective_ratio = max(0.0, min(1.0, depth_vs_breadth_ratio))
         
         queries_and_reasons = await generate_complementary_queries_with_reasons(

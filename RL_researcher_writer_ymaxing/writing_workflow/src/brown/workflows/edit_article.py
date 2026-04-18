@@ -59,7 +59,9 @@ async def _edit_article_workflow(inputs: EditArticleInput, config: RunnableConfi
 
     # Progress: Reviewing
     writer(WorkflowProgress(progress=20, message="Reviewing article").model_dump(mode="json"))
-    reviews = await generate_reviews(context["article"], human_feedback, context["article_guideline"], context["profiles"])
+    reviews = await generate_reviews(
+        context["article"], human_feedback, context["article_guideline"], context["profiles"], context["research"]
+    )
     writer(WorkflowProgress(progress=40, message="Generated reviews").model_dump(mode="json"))
 
     # Progress: Editing
@@ -90,6 +92,7 @@ async def generate_reviews(
     human_feedback: HumanFeedback,
     article_guideline: ArticleGuideline,
     article_profiles: ArticleProfiles,
+    research: Research,
 ) -> ArticleReviews:
     model, _ = build_model(app_config, node="review_article")
     article_reviewer = ArticleReviewer(
@@ -97,6 +100,7 @@ async def generate_reviews(
         article_guideline=article_guideline,
         article_profiles=article_profiles,
         human_feedback=human_feedback,
+        research=research,
         model=model,
     )
     reviews = await article_reviewer.ainvoke()

@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="en" prefix="dcterms: http://purl.org/dc/terms/">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="content-type"/>
+<title>1 Introduction</title>
+<!--Generated on Mon Feb 10 19:13:39 2025 by LaTeXML (version 0.8.8) http://dlmf.nist.gov/LaTeXML/.-->
+<meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+<link href="/static/browse/0.3.4/css/ar5iv.0.7.9.min.css" rel="stylesheet" type="text/css"/>
+<link href="/static/browse/0.3.4/css/ar5iv-fonts.0.7.9.min.css" rel="stylesheet" type="text/css"/>
+<link href="/static/browse/0.3.4/css/latexml_styles.css" rel="stylesheet" type="text/css"/>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.3/html2canvas.min.js"></script>
+<script src="/static/browse/0.3.4/js/addons_new.js"></script>
+<script src="/static/browse/0.3.4/js/feedbackOverlay.js"></script>
+<base href="/html/2502.06975v1/"/></head>
+<body>
+<nav class="ltx_page_navbar">
+<nav class="ltx_TOC">
+<ol class="ltx_toclist">
+<li class="ltx_tocentry ltx_tocentry_section"><a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S1" title=""><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">1 </span>Introduction</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_section">
+<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S2" title=""><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">2 </span>Operationalizing EM for LLMs</span></a>
+<ol class="ltx_toclist ltx_toclist_section">
+<li class="ltx_tocentry ltx_tocentry_subsection"><a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S2.SS1" title="In 2 Operationalizing EM for LLMs"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">2.1 </span>Unique Combination of EM Properties</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_subsection">
+<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S2.SS2" title="In 2 Operationalizing EM for LLMs"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">2.2 </span>Importance of EM Properties for LLM Agents</span></a>
+<ol class="ltx_toclist ltx_toclist_subsection">
+<li class="ltx_tocentry ltx_tocentry_subsubsection"><a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S2.SS2.SSS1" title="In 2.2 Importance of EM Properties for LLM Agents ‣ 2 Operationalizing EM for LLMs"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">2.2.1 </span>Episodic Memory Operations</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_subsubsection"><a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S2.SS2.SSS2" title="In 2.2 Importance of EM Properties for LLM Agents ‣ 2 Operationalizing EM for LLMs"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">2.2.2 </span>Episodic Memory Content</span></a></li>
+</ol>
+</li>
+</ol>
+</li>
+<li class="ltx_tocentry ltx_tocentry_section">
+<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S3" title=""><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">3 </span>Current Approaches</span></a>
+<ol class="ltx_toclist ltx_toclist_section">
+<li class="ltx_tocentry ltx_tocentry_subsection"><a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S3.SS1" title="In 3 Current Approaches"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">3.1 </span>In-Context Memory</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_subsection"><a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S3.SS2" title="In 3 Current Approaches"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">3.2 </span>External Memory</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_subsection"><a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S3.SS3" title="In 3 Current Approaches"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">3.3 </span>Parametric Memory</span></a></li>
+</ol>
+</li>
+<li class="ltx_tocentry ltx_tocentry_section">
+<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S4" title=""><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">4 </span>Episodic Memory as a Unifying Framework</span></a>
+<ol class="ltx_toclist ltx_toclist_section">
+<li class="ltx_tocentry ltx_tocentry_subsection"><a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S4.SS1" title="In 4 Episodic Memory as a Unifying Framework"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">4.1 </span>Encoding</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_subsection"><a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S4.SS2" title="In 4 Episodic Memory as a Unifying Framework"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">4.2 </span>Retrieval</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_subsection"><a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S4.SS3" title="In 4 Episodic Memory as a Unifying Framework"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">4.3 </span>Consolidation</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_subsection"><a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S4.SS4" title="In 4 Episodic Memory as a Unifying Framework"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">4.4 </span>Benchmarks</span></a></li>
+</ol>
+</li>
+<li class="ltx_tocentry ltx_tocentry_section"><a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S5" title=""><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">5 </span>Alternative Views</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_section"><a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S6" title=""><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">6 </span>Conclusion</span></a></li>
+</ol></nav>
+</nav>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<article class="ltx_document ltx_pruned_first">
+<div class="ltx_para ltx_align_center" id="p2">
+<p class="ltx_p" id="p2.1"><span class="ltx_rule" style="width:100%;height:1.0pt;background:black;display:inline-block;"> </span></p>
+</div>
+<div class="ltx_para ltx_align_center" id="p3">
+<p class="ltx_p" id="p3.1"><span class="ltx_text ltx_font_bold" id="p3.1.1">Position: Episodic Memory is the Missing Piece for Long-Term LLM Agents</span></p>
+</div>
+<div class="ltx_para ltx_align_center" id="p4">
+<p class="ltx_p" id="p4.1"><span class="ltx_rule" style="width:100%;height:1.0pt;background:black;display:inline-block;"> </span></p>
+</div>
+<div class="ltx_para" id="p5">
+<p class="ltx_p ltx_align_center" id="p5.1"><span class="ltx_text ltx_font_bold" id="p5.1.1">Mathis Pink</span> <sup class="ltx_sup" id="p5.1.2">1 </sup>
+<span class="ltx_text ltx_font_bold" id="p5.1.3">Qinyuan Wu</span> <sup class="ltx_sup" id="p5.1.4">1 </sup>
+<span class="ltx_text ltx_font_bold" id="p5.1.5">Vy Ai Vo</span> <sup class="ltx_sup" id="p5.1.6">2 </sup>
+<span class="ltx_text ltx_font_bold" id="p5.1.7">Javier Turek</span> <sup class="ltx_sup" id="p5.1.8">3 </sup>
+<span class="ltx_text ltx_font_bold" id="p5.1.9">Jianing Mu</span> <sup class="ltx_sup" id="p5.1.10">4 </sup>
+<span class="ltx_text ltx_font_bold" id="p5.1.11">Alexander Huth</span> <sup class="ltx_sup" id="p5.1.12">4 </sup>
+<span class="ltx_text ltx_font_bold" id="p5.1.13">Mariya Toneva</span> <sup class="ltx_sup" id="p5.1.14">1 </sup></p>
+</div>
+<div class="ltx_para ltx_noindent" id="p6">
+<br class="ltx_break"/>
+</div>
+<span class="ltx_note ltx_role_footnotetext" id="footnotex1"><sup class="ltx_note_mark">†</sup><span class="ltx_note_outer"><span class="ltx_note_content"><sup class="ltx_note_mark">†</sup><span class="ltx_note_type">footnotetext: </span><sup class="ltx_sup" id="footnotex1.1">*</sup>Equal contribution 
+<sup class="ltx_sup" id="footnotex1.2">1</sup>Max Planck Institute for Software Systems
+<sup class="ltx_sup" id="footnotex1.3">2</sup>
+<sup class="ltx_sup" id="footnotex1.4">3</sup>EarthDynamics.ai
+<sup class="ltx_sup" id="footnotex1.5">4</sup>University of Texas at Austin.
+Correspondence to: Mathis Pink &lt;mpink@mpi-sws.org&gt;.
+ 
+<br class="ltx_break"/><span class="ltx_text ltx_font_italic" id="footnotex1.6">Preprint. Under Review.</span></span></span></span>
+<div class="ltx_abstract">
+<h6 class="ltx_title ltx_title_abstract">Abstract</h6>
+<p class="ltx_p" id="id1.id1">As Large Language Models (LLMs) evolve from text-completion tools into fully fledged agents operating in dynamic environments, they must address the challenge of continuous learning and long-term knowledge retention. Many biological systems solve these challenges with episodic memory, which supports single-shot learning of instance-specific contexts. Inspired by this, we present a framework for LLM agents, centered around five key properties of episodic memory that underlie adaptive and context-sensitive behavior. With various research efforts already covering portions of these properties, this position paper argues that now is the right time for an explicit, integrated focus on episodic memory to catalyze the development of long-term agents. To this end, we outline a roadmap that unites several research directions under the goal to support all five properties of episodic memory for more efficient long-term LLM agents.</p>
+</div>
+<section class="ltx_section" id="S1">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">1 </span>Introduction</h2>
+<div class="ltx_para ltx_noindent" id="S1.p1">
+<p class="ltx_p" id="S1.p1.1">Large Language Models (LLMs) are rapidly expanding beyond their origins as text-completion engines. Instead, they are evolving into agentic systems capable of taking meaningful actions in complex environments <cite class="ltx_cite ltx_citemacro_citep">(Xi et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib98" title="">2023</a>)</cite>. This transformation can enable a range of real-world applications, including autonomous research assistance <cite class="ltx_cite ltx_citemacro_citep">(Schmidgall et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib78" title="">2025</a>)</cite>, aiding in literature reviews, data analysis, and hypothesis generation; personalized customer support <cite class="ltx_cite ltx_citemacro_citep">(Li et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib48" title="">2024b</a>)</cite>, where they can recall prior interactions to provide consistent and tailored assistance; and interactive tutoring systems <cite class="ltx_cite ltx_citemacro_citep">(Lin et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib51" title="">2023</a>)</cite>, which track learning progress, and revisit challenging concepts to ensure effective and personalized education.
+These diverse applications hint at a vast potential of LLMs to enable intelligent agents capable of meaningful and context-sensitive interaction.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S1.p2">
+<p class="ltx_p" id="S1.p2.1">Operating and reasoning over extended timescales in dynamic interactive contexts demands that an agent not only recalls what happened, but also when, how, why, and involving whom. Such rich traces of past events, motivations, and outcomes form the basis of context-sensitive behavior—especially crucial in large-scale projects involving human stakeholders and multiple actors. For example, a future long-term LLM agent that is supposed to assist in the ongoing development of a massive software project such as Linux—which has spanned decades, encompasses over 40 million lines of code, and additionally involves countless past contributions, issues, comments, notes, and feature requests—would need to continuously integrate and reason about a vast, evolving historical context while adapting to new requirements.
+Core necessities for this kind of system are constant computational cost per new token and a stable or improving performance over time.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S1.p3">
+<p class="ltx_p" id="S1.p3.1">Ongoing research directions attack the problem of long-term retention and adaptation from different angles and have made impressive progress.
+However, we are still lacking approaches that maintain relevant contextualized information over long time frames at a constant cost without degrading performance—necessities for a widespread adoption of LLM agents in many long-term settings.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S1.p4">
+<p class="ltx_p" id="S1.p4.1">Meanwhile, many biological systems solve the demands for acting in a continually evolving environment with a dedicated memory system that allows for both fast and slow learning: episodic memory <cite class="ltx_cite ltx_citemacro_citep">(McClelland et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib60" title="">1995</a>; Schwartz &amp; Evans, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib79" title="">2001</a>; O’Reilly &amp; Norman, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib69" title="">2002</a>; O’Reilly et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib70" title="">2014</a>; Kumaran et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib42" title="">2016</a>; Liao &amp; Losonczy, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib49" title="">2024</a>)</cite>. <span class="ltx_text ltx_font_bold" id="S1.p4.1.1">In this position paper, we argue that the growing demand for LLM agents to operate effectively over extended timescales, alongside ongoing advances in long-context models, external memory systems, and efficient fine-tuning methods, makes episodic memory a timely framework to unify efforts for enabling truly long-term LLM agents.</span></p>
+</div>
+<figure class="ltx_figure" id="S1.F1"><img alt="Refer to caption" class="ltx_graphics ltx_centering ltx_img_landscape" height="275" id="S1.F1.g1" src="x1.png" width="728"/>
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 1: </span>LLM-Agents with an Episodic Memory system. The LLM agent acts on and gets feedback from an environment. Feedback can come in the form of outputs from programs (E1), from other agents (E2), humans (E3), as well as external real-world data (E4). Actions can modify parts of the environment, and provide feedback for humans or other agents in the environment. Within the agent, an external memory system acts as a bridge between parametric and in-context memory while allowing for fast <em class="ltx_emph ltx_font_italic" id="S1.F1.6.1">encoding</em> of and <em class="ltx_emph ltx_font_italic" id="S1.F1.7.2">retrieval</em> into in-context memory (the LLM’s context window). (a) <em class="ltx_emph ltx_font_italic" id="S1.F1.8.3">Consolidation</em>: Episodes in the external memory are consolidated into a model’s broader parametric memory to avoid capacity limitations and allow for generalization to new semantic knowledge and procedural skills based on specific instances. (b) <em class="ltx_emph ltx_font_italic" id="S1.F1.9.4">Encoding</em>: Limited in-context memory can offload its content into external memory. (c) <em class="ltx_emph ltx_font_italic" id="S1.F1.10.5">Retrieval</em>: Stored episodes can later be retrieved and used to reinstate representations into in-context memory.</figcaption>
+</figure>
+<div class="ltx_para ltx_noindent" id="S1.p5">
+<p class="ltx_p" id="S1.p5.1">To lay out the argument for this position, we proceed as follows: In Section <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S2" title="2 Operationalizing EM for LLMs"><span class="ltx_text ltx_ref_tag">2</span></a>, we operationalize the concept of episodic memory for LLM agents by highlighting five key properties that distinguish it from other biological types of memory that are also desirable for LLM agents. We proceed to argue in Section <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S3" title="3 Current Approaches"><span class="ltx_text ltx_ref_tag">3</span></a> for episodic memory as a unifying goal by showing how various existing approaches to improve LLM memory target different properties that are united in episodic memory. In Section <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S4" title="4 Episodic Memory as a Unifying Framework"><span class="ltx_text ltx_ref_tag">4</span></a>, we highlight how unifying these threads under a common goal can spur more holistic progress and outline a roadmap toward implementing episodic memory. Lastly, in Section <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S5" title="5 Alternative Views"><span class="ltx_text ltx_ref_tag">5</span></a>, we discuss alternative views under which episodic memory would not be necessary for long-term LLM agents.</p>
+</div>
+</section>
+<section class="ltx_section" id="S2">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">2 </span>Operationalizing EM for LLMs</h2>
+<div class="ltx_para ltx_noindent" id="S2.p1">
+<p class="ltx_p" id="S2.p1.1">To transfer the concept of episodic memory from cognitive science to the context of LLM agents, we highlight five properties of episodic memory that are useful for LLM agents, and that distinguish episodic memory from other memory types in animals and humans. These five properties naturally cluster into two categories: properties that concern the way that the system operates with the memory—namely, long-term storage, explicit reasoning, and single-shot learning, and properties that concern the content of the stored memory—namely, instance-specific and contextualized memories. We first discuss how the combination of these five properties distinguishes episodic memory from other types of memories in animals and humans, and then detail each property and its utility for LLM agents.</p>
+</div>
+<section class="ltx_subsection" id="S2.SS1">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.1 </span>Unique Combination of EM Properties</h3>
+<div class="ltx_para ltx_noindent" id="S2.SS1.p1">
+<p class="ltx_p" id="S2.SS1.p1.1">Episodic memory is one of multiple memory systems that exist in animals and humans, distinguished by its unique combination of properties (Table <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S2.T1" title="Table 1 ‣ 2.2 Importance of EM Properties for LLM Agents ‣ 2 Operationalizing EM for LLMs"><span class="ltx_text ltx_ref_tag">1</span></a>). Other biological memory systems that share some, but not all, properties of episodic memory are 1) procedural memory <cite class="ltx_cite ltx_citemacro_citep">(Milner, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib64" title="">1962</a>; Cohen &amp; Squire, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib14" title="">1980</a>)</cite>, which allows for long-term storage of memories for implicit operations or task behaviors, such as producing a sequence of a particular type, rather than reasoning about the sequence; 2) semantic memory <cite class="ltx_cite ltx_citemacro_citep">(Collins &amp; Quillian, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib16" title="">1969</a>; Tulving, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib88" title="">1972</a>)</cite>, which allows for long-term storage of factual knowledge and explicit reasoning with these stored memories, but lacks specificity to single instances of acquired information and its context; and 3) working memory <cite class="ltx_cite ltx_citemacro_citep">(Baddeley, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib4" title="">1986</a>; Baddeley &amp; Hitch, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib5" title="">1974</a>)</cite>, which can share many of the highlighted properties of episodic memory except for the important fact that it does not allow for long-term storage. The unique combination of important properties in episodic memory makes it a promising candidate for translation to AI systems.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S2.SS2">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.2 </span>Importance of EM Properties for LLM Agents</h3>
+<figure class="ltx_table" id="S2.T1">
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_table">Table 1: </span>Properties of episodic memory in comparison to other relevant forms of memory in animals and humans.</figcaption>
+<table class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle" id="S2.T1.8">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr" id="S2.T1.8.9.1">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_tt" id="S2.T1.8.9.1.1"><span class="ltx_text ltx_font_bold" id="S2.T1.8.9.1.1.1">Memory Type</span></th>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_tt" id="S2.T1.8.9.1.2">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.9.1.2.1">
+<span class="ltx_p" id="S2.T1.8.9.1.2.1.1" style="width:14.2pt;"><span class="ltx_text ltx_font_bold" id="S2.T1.8.9.1.2.1.1.1">Long-term</span></span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_tt" id="S2.T1.8.9.1.3">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.9.1.3.1">
+<span class="ltx_p" id="S2.T1.8.9.1.3.1.1" style="width:22.8pt;"><span class="ltx_text ltx_font_bold" id="S2.T1.8.9.1.3.1.1.1">Explicit</span></span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_tt" id="S2.T1.8.9.1.4">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.9.1.4.1">
+<span class="ltx_p" id="S2.T1.8.9.1.4.1.1" style="width:17.1pt;"><span class="ltx_text ltx_font_bold" id="S2.T1.8.9.1.4.1.1.1">Single-shot</span></span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_tt" id="S2.T1.8.9.1.5">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.9.1.5.1">
+<span class="ltx_p" id="S2.T1.8.9.1.5.1.1" style="width:25.6pt;"><span class="ltx_text ltx_font_bold" id="S2.T1.8.9.1.5.1.1.1">Instance-specific</span></span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_tt" id="S2.T1.8.9.1.6">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.9.1.6.1">
+<span class="ltx_p" id="S2.T1.8.9.1.6.1.1" style="width:34.1pt;"><span class="ltx_text ltx_font_bold" id="S2.T1.8.9.1.6.1.1.1">Contextual  relations</span></span>
+</span>
+</td>
+</tr>
+<tr class="ltx_tr" id="S2.T1.8.10.2">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_t" id="S2.T1.8.10.2.1">Episodic</th>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_t" id="S2.T1.8.10.2.2">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.10.2.2.1">
+<span class="ltx_p" id="S2.T1.8.10.2.2.1.1" style="width:14.2pt;">✓</span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_t" id="S2.T1.8.10.2.3">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.10.2.3.1">
+<span class="ltx_p" id="S2.T1.8.10.2.3.1.1" style="width:22.8pt;">✓</span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_t" id="S2.T1.8.10.2.4">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.10.2.4.1">
+<span class="ltx_p" id="S2.T1.8.10.2.4.1.1" style="width:17.1pt;">✓</span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_t" id="S2.T1.8.10.2.5">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.10.2.5.1">
+<span class="ltx_p" id="S2.T1.8.10.2.5.1.1" style="width:25.6pt;">✓</span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_t" id="S2.T1.8.10.2.6">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.10.2.6.1">
+<span class="ltx_p" id="S2.T1.8.10.2.6.1.1" style="width:34.1pt;">✓</span>
+</span>
+</td>
+</tr>
+<tr class="ltx_tr" id="S2.T1.4.4">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row" id="S2.T1.4.4.5">Procedural</th>
+<td class="ltx_td ltx_align_justify ltx_align_top" id="S2.T1.4.4.6">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.4.4.6.1">
+<span class="ltx_p" id="S2.T1.4.4.6.1.1" style="width:14.2pt;">✓</span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top" id="S2.T1.1.1.1">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.1.1.1.1">
+<span class="ltx_p" id="S2.T1.1.1.1.1.1" style="width:22.8pt;"><math alttext="\times" class="ltx_Math" display="inline" id="S2.T1.1.1.1.1.1.m1.1"><semantics id="S2.T1.1.1.1.1.1.m1.1a"><mo id="S2.T1.1.1.1.1.1.m1.1.1" xref="S2.T1.1.1.1.1.1.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S2.T1.1.1.1.1.1.m1.1b"><times id="S2.T1.1.1.1.1.1.m1.1.1.cmml" xref="S2.T1.1.1.1.1.1.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S2.T1.1.1.1.1.1.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S2.T1.1.1.1.1.1.m1.1d">×</annotation></semantics></math></span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top" id="S2.T1.2.2.2">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.2.2.2.1">
+<span class="ltx_p" id="S2.T1.2.2.2.1.1" style="width:17.1pt;"><math alttext="\times" class="ltx_Math" display="inline" id="S2.T1.2.2.2.1.1.m1.1"><semantics id="S2.T1.2.2.2.1.1.m1.1a"><mo id="S2.T1.2.2.2.1.1.m1.1.1" xref="S2.T1.2.2.2.1.1.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S2.T1.2.2.2.1.1.m1.1b"><times id="S2.T1.2.2.2.1.1.m1.1.1.cmml" xref="S2.T1.2.2.2.1.1.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S2.T1.2.2.2.1.1.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S2.T1.2.2.2.1.1.m1.1d">×</annotation></semantics></math></span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top" id="S2.T1.3.3.3">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.3.3.3.1">
+<span class="ltx_p" id="S2.T1.3.3.3.1.1" style="width:25.6pt;"><math alttext="\times" class="ltx_Math" display="inline" id="S2.T1.3.3.3.1.1.m1.1"><semantics id="S2.T1.3.3.3.1.1.m1.1a"><mo id="S2.T1.3.3.3.1.1.m1.1.1" xref="S2.T1.3.3.3.1.1.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S2.T1.3.3.3.1.1.m1.1b"><times id="S2.T1.3.3.3.1.1.m1.1.1.cmml" xref="S2.T1.3.3.3.1.1.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S2.T1.3.3.3.1.1.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S2.T1.3.3.3.1.1.m1.1d">×</annotation></semantics></math></span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top" id="S2.T1.4.4.4">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.4.4.4.1">
+<span class="ltx_p" id="S2.T1.4.4.4.1.1" style="width:34.1pt;"><math alttext="\times" class="ltx_Math" display="inline" id="S2.T1.4.4.4.1.1.m1.1"><semantics id="S2.T1.4.4.4.1.1.m1.1a"><mo id="S2.T1.4.4.4.1.1.m1.1.1" xref="S2.T1.4.4.4.1.1.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S2.T1.4.4.4.1.1.m1.1b"><times id="S2.T1.4.4.4.1.1.m1.1.1.cmml" xref="S2.T1.4.4.4.1.1.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S2.T1.4.4.4.1.1.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S2.T1.4.4.4.1.1.m1.1d">×</annotation></semantics></math></span>
+</span>
+</td>
+</tr>
+<tr class="ltx_tr" id="S2.T1.7.7">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row" id="S2.T1.7.7.4">Semantic</th>
+<td class="ltx_td ltx_align_justify ltx_align_top" id="S2.T1.7.7.5">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.7.7.5.1">
+<span class="ltx_p" id="S2.T1.7.7.5.1.1" style="width:14.2pt;">✓</span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top" id="S2.T1.7.7.6">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.7.7.6.1">
+<span class="ltx_p" id="S2.T1.7.7.6.1.1" style="width:22.8pt;">✓</span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top" id="S2.T1.5.5.1">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.5.5.1.1">
+<span class="ltx_p" id="S2.T1.5.5.1.1.1" style="width:17.1pt;"><math alttext="\times" class="ltx_Math" display="inline" id="S2.T1.5.5.1.1.1.m1.1"><semantics id="S2.T1.5.5.1.1.1.m1.1a"><mo id="S2.T1.5.5.1.1.1.m1.1.1" xref="S2.T1.5.5.1.1.1.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S2.T1.5.5.1.1.1.m1.1b"><times id="S2.T1.5.5.1.1.1.m1.1.1.cmml" xref="S2.T1.5.5.1.1.1.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S2.T1.5.5.1.1.1.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S2.T1.5.5.1.1.1.m1.1d">×</annotation></semantics></math></span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top" id="S2.T1.6.6.2">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.6.6.2.1">
+<span class="ltx_p" id="S2.T1.6.6.2.1.1" style="width:25.6pt;"><math alttext="\times" class="ltx_Math" display="inline" id="S2.T1.6.6.2.1.1.m1.1"><semantics id="S2.T1.6.6.2.1.1.m1.1a"><mo id="S2.T1.6.6.2.1.1.m1.1.1" xref="S2.T1.6.6.2.1.1.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S2.T1.6.6.2.1.1.m1.1b"><times id="S2.T1.6.6.2.1.1.m1.1.1.cmml" xref="S2.T1.6.6.2.1.1.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S2.T1.6.6.2.1.1.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S2.T1.6.6.2.1.1.m1.1d">×</annotation></semantics></math></span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top" id="S2.T1.7.7.3">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.7.7.3.1">
+<span class="ltx_p" id="S2.T1.7.7.3.1.1" style="width:34.1pt;"><math alttext="\times" class="ltx_Math" display="inline" id="S2.T1.7.7.3.1.1.m1.1"><semantics id="S2.T1.7.7.3.1.1.m1.1a"><mo id="S2.T1.7.7.3.1.1.m1.1.1" xref="S2.T1.7.7.3.1.1.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S2.T1.7.7.3.1.1.m1.1b"><times id="S2.T1.7.7.3.1.1.m1.1.1.cmml" xref="S2.T1.7.7.3.1.1.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S2.T1.7.7.3.1.1.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S2.T1.7.7.3.1.1.m1.1d">×</annotation></semantics></math></span>
+</span>
+</td>
+</tr>
+<tr class="ltx_tr" id="S2.T1.8.8">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_bb" id="S2.T1.8.8.2">Working</th>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_bb" id="S2.T1.8.8.1">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.8.1.1">
+<span class="ltx_p" id="S2.T1.8.8.1.1.1" style="width:14.2pt;"><math alttext="\times" class="ltx_Math" display="inline" id="S2.T1.8.8.1.1.1.m1.1"><semantics id="S2.T1.8.8.1.1.1.m1.1a"><mo id="S2.T1.8.8.1.1.1.m1.1.1" xref="S2.T1.8.8.1.1.1.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S2.T1.8.8.1.1.1.m1.1b"><times id="S2.T1.8.8.1.1.1.m1.1.1.cmml" xref="S2.T1.8.8.1.1.1.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S2.T1.8.8.1.1.1.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S2.T1.8.8.1.1.1.m1.1d">×</annotation></semantics></math></span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_bb" id="S2.T1.8.8.3">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.8.3.1">
+<span class="ltx_p" id="S2.T1.8.8.3.1.1" style="width:22.8pt;">✓</span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_bb" id="S2.T1.8.8.4">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.8.4.1">
+<span class="ltx_p" id="S2.T1.8.8.4.1.1" style="width:17.1pt;">✓</span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_bb" id="S2.T1.8.8.5">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.8.5.1">
+<span class="ltx_p" id="S2.T1.8.8.5.1.1" style="width:25.6pt;">✓</span>
+</span>
+</td>
+<td class="ltx_td ltx_align_justify ltx_align_top ltx_border_bb" id="S2.T1.8.8.6">
+<span class="ltx_inline-block ltx_align_top" id="S2.T1.8.8.6.1">
+<span class="ltx_p" id="S2.T1.8.8.6.1.1" style="width:34.1pt;">✓</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</figure>
+<section class="ltx_subsubsection" id="S2.SS2.SSS1">
+<h4 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">2.2.1 </span>Episodic Memory Operations</h4>
+<div class="ltx_para ltx_noindent" id="S2.SS2.SSS1.p1">
+<p class="ltx_p" id="S2.SS2.SSS1.p1.1"><span class="ltx_text ltx_font_bold" id="S2.SS2.SSS1.p1.1.1">Long-term storage.</span>
+In humans and other animals, episodic memory functions as a form of long-term memory, capable of storing knowledge throughout an individual’s lifetime <cite class="ltx_cite ltx_citemacro_citep">(Conway, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib17" title="">2001</a>; Mayes &amp; Roberts, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib59" title="">2001</a>; Squire &amp; Zola, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib81" title="">1996</a>; Hampton &amp; Schwartz, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib34" title="">2004</a>)</cite>. This distinguishes it from working memory, which is transient. For LLM agents, an effective episodic memory system must similarly support memory retrieval across any number of tokens. This requires mechanisms for long-term memory that maintain an agent’s performance throughout a continual interaction with an environment. An adaptive long-term agent should not only prevent a degradation in performance over time-it should also be able to improve by learning new general knowledge and skills.
+</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S2.SS2.SSS1.p2">
+<p class="ltx_p" id="S2.SS2.SSS1.p2.1"><span class="ltx_text ltx_font_bold" id="S2.SS2.SSS1.p2.1.1">Explicit reasoning.</span>
+In classical theories of human memory, episodic memory is described as a subset of declarative or explicit memory <cite class="ltx_cite ltx_citemacro_citep">(Squire &amp; Zola, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib81" title="">1996</a>; Hampton &amp; Schwartz, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib34" title="">2004</a>)</cite>. A defining feature of explicit memory is the ability to reflect and reason about the memory content. In the context of LLM agents, the explicitness of memory is necessary as agents need to be able to answer direct queries about stored information or use this information in explicit internal reasoning processes.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S2.SS2.SSS1.p3">
+<p class="ltx_p" id="S2.SS2.SSS1.p3.1"><span class="ltx_text ltx_font_bold" id="S2.SS2.SSS1.p3.1.1">Single-shot learning.</span>
+A key characteristic of episodic memory, as emphasized in complementary learning systems theory, is its ability to be acquired based on a single exposure <cite class="ltx_cite ltx_citemacro_citep">(Liao &amp; Losonczy, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib49" title="">2024</a>; Schwartz &amp; Evans, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib79" title="">2001</a>; O’Reilly &amp; Norman, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib69" title="">2002</a>; O’Reilly et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib70" title="">2014</a>; McClelland et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib60" title="">1995</a>; Kumaran et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib42" title="">2016</a>; Das et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib20" title="">2024b</a>)</cite>. This fast learning enables the rapid encoding of unique experiences or events. For LLM agents, this capability is particularly crucial in environments where continual deployment may not provide multiple variations or repetitions of specific events. Certain occurrences in an environment may happen only once, necessitating an episodic memory system that is capable of effectively capturing and utilizing information from single exposures.</p>
+</div>
+</section>
+<section class="ltx_subsubsection" id="S2.SS2.SSS2">
+<h4 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">2.2.2 </span>Episodic Memory Content</h4>
+<div class="ltx_para ltx_noindent" id="S2.SS2.SSS2.p1">
+<p class="ltx_p" id="S2.SS2.SSS2.p1.1"><span class="ltx_text ltx_font_bold" id="S2.SS2.SSS2.p1.1.1">Instance-specific memories.</span>
+Episodic memory stores information specific to an individual sequence of events along with their distinct temporal contexts <cite class="ltx_cite ltx_citemacro_citep">(Sugar &amp; Moser, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib82" title="">2019</a>; Colgin et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib15" title="">2008</a>)</cite>. This specificity allows episodic memory to capture details unique to a particular occurrence, enabling its application in agentic environments where reasoning about specific past actions and their consequences matters. This can include past lines of reasoning that were associated with a decision to be made by an LLM agent.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S2.SS2.SSS2.p2">
+<p class="ltx_p" id="S2.SS2.SSS2.p2.1"><span class="ltx_text ltx_font_bold" id="S2.SS2.SSS2.p2.1.1">Contextual memories.</span> Episodic memory binds context to its memory content, such as when, where, and why an event was encountered <cite class="ltx_cite ltx_citemacro_citep">(Eichenbaum &amp; Cohen, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib24" title="">2014</a>; O’Keefe &amp; Nadel, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib71" title="">1978</a>; Eichenbaum, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib23" title="">2015</a>)</cite>. The ability to store many contextual relations associated with a specific event enables retrieval based on contextual cues as well as explicit recall of context. For LLM agents, this property is important to not only remember that a specific event happened in the past, but also when, why, and in which broader context it happened.</p>
+</div>
+</section>
+</section>
+</section>
+<section class="ltx_section" id="S3">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">3 </span>Current Approaches</h2>
+<div class="ltx_para ltx_noindent" id="S3.p1">
+<p class="ltx_p" id="S3.p1.1">While many methods currently exist to modify and augment LLM memory, we argue that they fall short of the memory properties that would enable effective, long-term LLM agents. We group existing methods that seek to improve the memory of LLMs into three categories that are relevant to episodic memory:</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.p2">
+<ol class="ltx_enumerate" id="S3.I1">
+<li class="ltx_item" id="S3.I1.i1" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">1.</span>
+<div class="ltx_para" id="S3.I1.i1.p1">
+<p class="ltx_p" id="S3.I1.i1.p1.1"><span class="ltx_text ltx_font_bold" id="S3.I1.i1.p1.1.1">In-Context Memory</span> methods extend the effective context length by optimizing computational efficiency and length generalization;</p>
+</div>
+</li>
+<li class="ltx_item" id="S3.I1.i2" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">2.</span>
+<div class="ltx_para" id="S3.I1.i2.p1">
+<p class="ltx_p" id="S3.I1.i2.p1.1"><span class="ltx_text ltx_font_bold" id="S3.I1.i2.p1.1.1">External Memory</span> methods augment a model’s in-context memory capacity with a separate module, often with reduced GPU memory requirements and/or computational cost;</p>
+</div>
+</li>
+<li class="ltx_item" id="S3.I1.i3" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">3.</span>
+<div class="ltx_para ltx_noindent" id="S3.I1.i3.p1">
+<p class="ltx_p" id="S3.I1.i3.p1.1"><span class="ltx_text ltx_font_bold" id="S3.I1.i3.p1.1.1">Parametric Memory</span> methods modify the LLM parameters that encode memories (primarily learned from the language modeling training data).</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.p3">
+<p class="ltx_p" id="S3.p3.1">In this section, we discuss examples in each category that capture different properties of episodic memory (Table <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S3.T2" title="Table 2 ‣ 3 Current Approaches"><span class="ltx_text ltx_ref_tag">2</span></a>). More importantly, we highlight their shortcomings in supporting episodic memory for LLM agents in isolation.</p>
+</div>
+<figure class="ltx_table" id="S3.T2">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_table">Table 2: </span>
+Methods for in-context, external, and parametric memory do not cover all features of episodic memory. <math alttext="\sim" class="ltx_Math" display="inline" id="S3.T2.2.m1.1"><semantics id="S3.T2.2.m1.1b"><mo id="S3.T2.2.m1.1.1" xref="S3.T2.2.m1.1.1.cmml">∼</mo><annotation-xml encoding="MathML-Content" id="S3.T2.2.m1.1c"><csymbol cd="latexml" id="S3.T2.2.m1.1.1.cmml" xref="S3.T2.2.m1.1.1">similar-to</csymbol></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.2.m1.1d">\sim</annotation><annotation encoding="application/x-llamapun" id="S3.T2.2.m1.1e">∼</annotation></semantics></math> is used for cases where it is unclear whether an aspect of episodic memory is properly satisfied by a method.</figcaption>
+<div class="ltx_inline-block ltx_align_center ltx_transformed_outer" id="S3.T2.19" style="width:433.6pt;height:320.1pt;vertical-align:-0.0pt;"><span class="ltx_transformed_inner" style="transform:translate(83.4pt,-61.5pt) scale(1.62488838002384,1.62488838002384) ;">
+<table class="ltx_tabular ltx_align_middle" id="S3.T2.19.17">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr" id="S3.T2.19.17.18.1">
+<td class="ltx_td ltx_align_left ltx_border_tt" colspan="2" id="S3.T2.19.17.18.1.1"><span class="ltx_text ltx_font_bold" id="S3.T2.19.17.18.1.1.1">Memory Approach</span></td>
+<td class="ltx_td ltx_align_center ltx_border_tt" id="S3.T2.19.17.18.1.2">
+<div class="ltx_inline-block ltx_transformed_outer" id="S3.T2.19.17.18.1.2.1" style="width:8.8pt;height:45.7pt;vertical-align:-0.0pt;"><span class="ltx_transformed_inner" style="width:45.7pt;transform:translate(-18.47pt,-17.5pt) rotate(-90deg) ;">
+<p class="ltx_p" id="S3.T2.19.17.18.1.2.1.1">Long-term</p>
+</span></div>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_tt" id="S3.T2.19.17.18.1.3">
+<div class="ltx_inline-block ltx_transformed_outer" id="S3.T2.19.17.18.1.3.1" style="width:8.9pt;height:34.3pt;vertical-align:-0.0pt;"><span class="ltx_transformed_inner" style="width:34.3pt;transform:translate(-12.71pt,-11.74pt) rotate(-90deg) ;">
+<p class="ltx_p" id="S3.T2.19.17.18.1.3.1.1">Explicit</p>
+</span></div>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_tt" id="S3.T2.19.17.18.1.4">
+<div class="ltx_inline-block ltx_transformed_outer" id="S3.T2.19.17.18.1.4.1" style="width:8.9pt;height:47.8pt;vertical-align:-0.0pt;"><span class="ltx_transformed_inner" style="width:47.8pt;transform:translate(-19.47pt,-18.5pt) rotate(-90deg) ;">
+<p class="ltx_p" id="S3.T2.19.17.18.1.4.1.1">Single-shot</p>
+</span></div>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_tt" id="S3.T2.19.17.18.1.5">
+<div class="ltx_inline-block ltx_transformed_outer" id="S3.T2.19.17.18.1.5.1" style="width:8.9pt;height:54.8pt;vertical-align:-0.0pt;"><span class="ltx_transformed_inner" style="width:54.8pt;transform:translate(-22.97pt,-22pt) rotate(-90deg) ;">
+<p class="ltx_p" id="S3.T2.19.17.18.1.5.1.1">Inst.-specific</p>
+</span></div>
+</td>
+<td class="ltx_td ltx_align_center ltx_border_tt" id="S3.T2.19.17.18.1.6">
+<div class="ltx_inline-block ltx_transformed_outer" id="S3.T2.19.17.18.1.6.1" style="width:6.9pt;height:65.6pt;vertical-align:-0.0pt;"><span class="ltx_transformed_inner" style="width:65.6pt;transform:translate(-29.32pt,-29.32pt) rotate(-90deg) ;">
+<p class="ltx_p" id="S3.T2.19.17.18.1.6.1.1">Contextual rel.</p>
+</span></div>
+</td>
+</tr>
+<tr class="ltx_tr" id="S3.T2.3.1.1">
+<td class="ltx_td ltx_align_left ltx_border_t" id="S3.T2.3.1.1.2" rowspan="2"><span class="ltx_text ltx_font_bold" id="S3.T2.3.1.1.2.1">In-Context</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t" id="S3.T2.3.1.1.3">KV-Compression</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.3.1.1.1"><math alttext="\times" class="ltx_Math" display="inline" id="S3.T2.3.1.1.1.m1.1"><semantics id="S3.T2.3.1.1.1.m1.1a"><mo id="S3.T2.3.1.1.1.m1.1.1" xref="S3.T2.3.1.1.1.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S3.T2.3.1.1.1.m1.1b"><times id="S3.T2.3.1.1.1.m1.1.1.cmml" xref="S3.T2.3.1.1.1.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.3.1.1.1.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S3.T2.3.1.1.1.m1.1d">×</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.3.1.1.4">✓</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.3.1.1.5">✓</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.3.1.1.6">✓</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.3.1.1.7">✓</td>
+</tr>
+<tr class="ltx_tr" id="S3.T2.4.2.2">
+<td class="ltx_td ltx_align_left" id="S3.T2.4.2.2.2">State-space-model</td>
+<td class="ltx_td ltx_align_center" id="S3.T2.4.2.2.1"><math alttext="\times" class="ltx_Math" display="inline" id="S3.T2.4.2.2.1.m1.1"><semantics id="S3.T2.4.2.2.1.m1.1a"><mo id="S3.T2.4.2.2.1.m1.1.1" xref="S3.T2.4.2.2.1.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S3.T2.4.2.2.1.m1.1b"><times id="S3.T2.4.2.2.1.m1.1.1.cmml" xref="S3.T2.4.2.2.1.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.4.2.2.1.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S3.T2.4.2.2.1.m1.1d">×</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S3.T2.4.2.2.3">✓</td>
+<td class="ltx_td ltx_align_center" id="S3.T2.4.2.2.4">✓</td>
+<td class="ltx_td ltx_align_center" id="S3.T2.4.2.2.5">✓</td>
+<td class="ltx_td ltx_align_center" id="S3.T2.4.2.2.6">✓</td>
+</tr>
+<tr class="ltx_tr" id="S3.T2.7.5.5">
+<td class="ltx_td ltx_align_left ltx_border_t" id="S3.T2.7.5.5.4" rowspan="2"><span class="ltx_text ltx_font_bold" id="S3.T2.7.5.5.4.1">External</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t" id="S3.T2.7.5.5.5">RAG</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.7.5.5.6">✓</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.7.5.5.7">✓</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.5.3.3.1"><math alttext="\sim" class="ltx_Math" display="inline" id="S3.T2.5.3.3.1.m1.1"><semantics id="S3.T2.5.3.3.1.m1.1a"><mo id="S3.T2.5.3.3.1.m1.1.1" xref="S3.T2.5.3.3.1.m1.1.1.cmml">∼</mo><annotation-xml encoding="MathML-Content" id="S3.T2.5.3.3.1.m1.1b"><csymbol cd="latexml" id="S3.T2.5.3.3.1.m1.1.1.cmml" xref="S3.T2.5.3.3.1.m1.1.1">similar-to</csymbol></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.5.3.3.1.m1.1c">\sim</annotation><annotation encoding="application/x-llamapun" id="S3.T2.5.3.3.1.m1.1d">∼</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.6.4.4.2"><math alttext="\sim" class="ltx_Math" display="inline" id="S3.T2.6.4.4.2.m1.1"><semantics id="S3.T2.6.4.4.2.m1.1a"><mo id="S3.T2.6.4.4.2.m1.1.1" xref="S3.T2.6.4.4.2.m1.1.1.cmml">∼</mo><annotation-xml encoding="MathML-Content" id="S3.T2.6.4.4.2.m1.1b"><csymbol cd="latexml" id="S3.T2.6.4.4.2.m1.1.1.cmml" xref="S3.T2.6.4.4.2.m1.1.1">similar-to</csymbol></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.6.4.4.2.m1.1c">\sim</annotation><annotation encoding="application/x-llamapun" id="S3.T2.6.4.4.2.m1.1d">∼</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.7.5.5.3"><math alttext="\times" class="ltx_Math" display="inline" id="S3.T2.7.5.5.3.m1.1"><semantics id="S3.T2.7.5.5.3.m1.1a"><mo id="S3.T2.7.5.5.3.m1.1.1" xref="S3.T2.7.5.5.3.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S3.T2.7.5.5.3.m1.1b"><times id="S3.T2.7.5.5.3.m1.1.1.cmml" xref="S3.T2.7.5.5.3.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.7.5.5.3.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S3.T2.7.5.5.3.m1.1d">×</annotation></semantics></math></td>
+</tr>
+<tr class="ltx_tr" id="S3.T2.10.8.8">
+<td class="ltx_td ltx_align_left" id="S3.T2.10.8.8.4">GraphRAG</td>
+<td class="ltx_td ltx_align_center" id="S3.T2.10.8.8.5">✓</td>
+<td class="ltx_td ltx_align_center" id="S3.T2.10.8.8.6">✓</td>
+<td class="ltx_td ltx_align_center" id="S3.T2.8.6.6.1"><math alttext="\sim" class="ltx_Math" display="inline" id="S3.T2.8.6.6.1.m1.1"><semantics id="S3.T2.8.6.6.1.m1.1a"><mo id="S3.T2.8.6.6.1.m1.1.1" xref="S3.T2.8.6.6.1.m1.1.1.cmml">∼</mo><annotation-xml encoding="MathML-Content" id="S3.T2.8.6.6.1.m1.1b"><csymbol cd="latexml" id="S3.T2.8.6.6.1.m1.1.1.cmml" xref="S3.T2.8.6.6.1.m1.1.1">similar-to</csymbol></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.8.6.6.1.m1.1c">\sim</annotation><annotation encoding="application/x-llamapun" id="S3.T2.8.6.6.1.m1.1d">∼</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S3.T2.9.7.7.2"><math alttext="\sim" class="ltx_Math" display="inline" id="S3.T2.9.7.7.2.m1.1"><semantics id="S3.T2.9.7.7.2.m1.1a"><mo id="S3.T2.9.7.7.2.m1.1.1" xref="S3.T2.9.7.7.2.m1.1.1.cmml">∼</mo><annotation-xml encoding="MathML-Content" id="S3.T2.9.7.7.2.m1.1b"><csymbol cd="latexml" id="S3.T2.9.7.7.2.m1.1.1.cmml" xref="S3.T2.9.7.7.2.m1.1.1">similar-to</csymbol></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.9.7.7.2.m1.1c">\sim</annotation><annotation encoding="application/x-llamapun" id="S3.T2.9.7.7.2.m1.1d">∼</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S3.T2.10.8.8.3"><math alttext="\sim" class="ltx_Math" display="inline" id="S3.T2.10.8.8.3.m1.1"><semantics id="S3.T2.10.8.8.3.m1.1a"><mo id="S3.T2.10.8.8.3.m1.1.1" xref="S3.T2.10.8.8.3.m1.1.1.cmml">∼</mo><annotation-xml encoding="MathML-Content" id="S3.T2.10.8.8.3.m1.1b"><csymbol cd="latexml" id="S3.T2.10.8.8.3.m1.1.1.cmml" xref="S3.T2.10.8.8.3.m1.1.1">similar-to</csymbol></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.10.8.8.3.m1.1c">\sim</annotation><annotation encoding="application/x-llamapun" id="S3.T2.10.8.8.3.m1.1d">∼</annotation></semantics></math></td>
+</tr>
+<tr class="ltx_tr" id="S3.T2.13.11.11">
+<td class="ltx_td ltx_align_left ltx_border_bb ltx_border_t" id="S3.T2.13.11.11.4" rowspan="3"><span class="ltx_text ltx_font_bold" id="S3.T2.13.11.11.4.1">Parametric</span></td>
+<td class="ltx_td ltx_align_left ltx_border_t" id="S3.T2.13.11.11.5">Efficient Fine-tuning</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.13.11.11.6">✓</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.13.11.11.7">✓</td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.11.9.9.1"><math alttext="\times" class="ltx_Math" display="inline" id="S3.T2.11.9.9.1.m1.1"><semantics id="S3.T2.11.9.9.1.m1.1a"><mo id="S3.T2.11.9.9.1.m1.1.1" xref="S3.T2.11.9.9.1.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S3.T2.11.9.9.1.m1.1b"><times id="S3.T2.11.9.9.1.m1.1.1.cmml" xref="S3.T2.11.9.9.1.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.11.9.9.1.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S3.T2.11.9.9.1.m1.1d">×</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.12.10.10.2"><math alttext="\times" class="ltx_Math" display="inline" id="S3.T2.12.10.10.2.m1.1"><semantics id="S3.T2.12.10.10.2.m1.1a"><mo id="S3.T2.12.10.10.2.m1.1.1" xref="S3.T2.12.10.10.2.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S3.T2.12.10.10.2.m1.1b"><times id="S3.T2.12.10.10.2.m1.1.1.cmml" xref="S3.T2.12.10.10.2.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.12.10.10.2.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S3.T2.12.10.10.2.m1.1d">×</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_t" id="S3.T2.13.11.11.3"><math alttext="\times" class="ltx_Math" display="inline" id="S3.T2.13.11.11.3.m1.1"><semantics id="S3.T2.13.11.11.3.m1.1a"><mo id="S3.T2.13.11.11.3.m1.1.1" xref="S3.T2.13.11.11.3.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S3.T2.13.11.11.3.m1.1b"><times id="S3.T2.13.11.11.3.m1.1.1.cmml" xref="S3.T2.13.11.11.3.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.13.11.11.3.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S3.T2.13.11.11.3.m1.1d">×</annotation></semantics></math></td>
+</tr>
+<tr class="ltx_tr" id="S3.T2.17.15.15">
+<td class="ltx_td ltx_align_left" id="S3.T2.17.15.15.5">Knowledge Editing</td>
+<td class="ltx_td ltx_align_center" id="S3.T2.17.15.15.6">✓</td>
+<td class="ltx_td ltx_align_center" id="S3.T2.14.12.12.1"><math alttext="\sim" class="ltx_Math" display="inline" id="S3.T2.14.12.12.1.m1.1"><semantics id="S3.T2.14.12.12.1.m1.1a"><mo id="S3.T2.14.12.12.1.m1.1.1" xref="S3.T2.14.12.12.1.m1.1.1.cmml">∼</mo><annotation-xml encoding="MathML-Content" id="S3.T2.14.12.12.1.m1.1b"><csymbol cd="latexml" id="S3.T2.14.12.12.1.m1.1.1.cmml" xref="S3.T2.14.12.12.1.m1.1.1">similar-to</csymbol></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.14.12.12.1.m1.1c">\sim</annotation><annotation encoding="application/x-llamapun" id="S3.T2.14.12.12.1.m1.1d">∼</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S3.T2.15.13.13.2"><math alttext="\times" class="ltx_Math" display="inline" id="S3.T2.15.13.13.2.m1.1"><semantics id="S3.T2.15.13.13.2.m1.1a"><mo id="S3.T2.15.13.13.2.m1.1.1" xref="S3.T2.15.13.13.2.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S3.T2.15.13.13.2.m1.1b"><times id="S3.T2.15.13.13.2.m1.1.1.cmml" xref="S3.T2.15.13.13.2.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.15.13.13.2.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S3.T2.15.13.13.2.m1.1d">×</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S3.T2.16.14.14.3"><math alttext="\sim" class="ltx_Math" display="inline" id="S3.T2.16.14.14.3.m1.1"><semantics id="S3.T2.16.14.14.3.m1.1a"><mo id="S3.T2.16.14.14.3.m1.1.1" xref="S3.T2.16.14.14.3.m1.1.1.cmml">∼</mo><annotation-xml encoding="MathML-Content" id="S3.T2.16.14.14.3.m1.1b"><csymbol cd="latexml" id="S3.T2.16.14.14.3.m1.1.1.cmml" xref="S3.T2.16.14.14.3.m1.1.1">similar-to</csymbol></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.16.14.14.3.m1.1c">\sim</annotation><annotation encoding="application/x-llamapun" id="S3.T2.16.14.14.3.m1.1d">∼</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center" id="S3.T2.17.15.15.4"><math alttext="\times" class="ltx_Math" display="inline" id="S3.T2.17.15.15.4.m1.1"><semantics id="S3.T2.17.15.15.4.m1.1a"><mo id="S3.T2.17.15.15.4.m1.1.1" xref="S3.T2.17.15.15.4.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S3.T2.17.15.15.4.m1.1b"><times id="S3.T2.17.15.15.4.m1.1.1.cmml" xref="S3.T2.17.15.15.4.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.17.15.15.4.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S3.T2.17.15.15.4.m1.1d">×</annotation></semantics></math></td>
+</tr>
+<tr class="ltx_tr" id="S3.T2.19.17.17">
+<td class="ltx_td ltx_align_left ltx_border_bb" id="S3.T2.19.17.17.3">Context Distillation</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S3.T2.19.17.17.4">✓</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S3.T2.19.17.17.5">✓</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S3.T2.18.16.16.1"><math alttext="\times" class="ltx_Math" display="inline" id="S3.T2.18.16.16.1.m1.1"><semantics id="S3.T2.18.16.16.1.m1.1a"><mo id="S3.T2.18.16.16.1.m1.1.1" xref="S3.T2.18.16.16.1.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S3.T2.18.16.16.1.m1.1b"><times id="S3.T2.18.16.16.1.m1.1.1.cmml" xref="S3.T2.18.16.16.1.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.18.16.16.1.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S3.T2.18.16.16.1.m1.1d">×</annotation></semantics></math></td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S3.T2.19.17.17.6">✓</td>
+<td class="ltx_td ltx_align_center ltx_border_bb" id="S3.T2.19.17.17.2"><math alttext="\times" class="ltx_Math" display="inline" id="S3.T2.19.17.17.2.m1.1"><semantics id="S3.T2.19.17.17.2.m1.1a"><mo id="S3.T2.19.17.17.2.m1.1.1" xref="S3.T2.19.17.17.2.m1.1.1.cmml">×</mo><annotation-xml encoding="MathML-Content" id="S3.T2.19.17.17.2.m1.1b"><times id="S3.T2.19.17.17.2.m1.1.1.cmml" xref="S3.T2.19.17.17.2.m1.1.1"></times></annotation-xml><annotation encoding="application/x-tex" id="S3.T2.19.17.17.2.m1.1c">\times</annotation><annotation encoding="application/x-llamapun" id="S3.T2.19.17.17.2.m1.1d">×</annotation></semantics></math></td>
+</tr>
+</tbody>
+</table>
+</span></div>
+</figure>
+<section class="ltx_subsection" id="S3.SS1">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.1 </span>In-Context Memory</h3>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p1">
+<p class="ltx_p" id="S3.SS1.p1.1">In-context memory (ICM) allows LLMs to perform single-shot, instance-specific, and contextualized learning by enabling them to directly attend to representations of encountered sequences (Table <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S3.T2" title="Table 2 ‣ 3 Current Approaches"><span class="ltx_text ltx_ref_tag">2</span></a>). ICM capacity is either tightly limited or extensible but expensive to scale, often requiring sequence parallelization. Recent works seek to extend it by increasing the context window, but models struggle with length generalization beyond training exposures. We review existing methods and their limitations in addressing these challenges.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p2">
+<p class="ltx_p" id="S3.SS1.p2.1">One active research direction focuses on extending the in-context window to handle significantly longer sequences, enabling LLMs to perform reasoning over extended contexts. This advancement brings LLMs closer to mimicking episodic memory, as it allows models to retain and utilize information across longer contexts. However, transformer-based LLMs face significant challenges, including the high computational cost of processing long sequences and limitations in length generalization.
+Recent research has sought to address these challenges by reducing memory usage, optimizing inference time, and improving long-sequence generation. Despite these advancements, current methods have yet to achieve robust, persistent memory capabilities necessary for long-term, open-ended, and context-aware reasoning. Below, we briefly review existing methods and their limitations.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p3">
+<p class="ltx_p" id="S3.SS1.p3.1"><span class="ltx_text ltx_font_bold" id="S3.SS1.p3.1.1">Memory reduction.</span>
+For transformer-based LLMs, several methods aim to reduce memory and computation costs.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p4">
+<p class="ltx_p" id="S3.SS1.p4.1">Sparsification and compression methods selectively retain relevant information to optimize memory usage. Sparsification strategies optimize memory by restricting attention computations to the most relevant parts of the sequence <cite class="ltx_cite ltx_citemacro_citep">(Lou et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib57" title="">2024</a>)</cite>, reducing both storage and computational overhead. Similarly, forgetting mechanisms remove less useful tokens to maintain efficiency <cite class="ltx_cite ltx_citemacro_citep">(Anonymous, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib2" title="">2024</a>)</cite>. Other compression-based approaches dynamically reduce KV cache size by storing only the most important tokens and key-value pairs <cite class="ltx_cite ltx_citemacro_citep">(Liu et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib55" title="">2023b</a>; Ge et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib27" title="">2024</a>; Tang et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib87" title="">2024</a>)</cite>. Adaptive strategies further refine compression across layers <cite class="ltx_cite ltx_citemacro_citep">(Yang et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib102" title="">2024a</a>; Nawrot et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib68" title="">2024</a>)</cite> or merge similar states to minimize redundancy <cite class="ltx_cite ltx_citemacro_citep">(Liu et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib52" title="">2024a</a>)</cite>.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p5">
+<p class="ltx_p" id="S3.SS1.p5.1">Quantization methods reduce memory footprints by lowering precision or selectively storing information. Quantization techniques store key-value pairs at reduced precision <cite class="ltx_cite ltx_citemacro_citep">(Liu et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib56" title="">2024c</a>; Hooper et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib36" title="">2024</a>; Yue et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib111" title="">2024</a>; Duanmu et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib21" title="">2024</a>)</cite>, allowing for larger context windows with a relatively minimal performance degradation.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p6">
+<p class="ltx_p" id="S3.SS1.p6.1"><span class="ltx_text ltx_font_bold" id="S3.SS1.p6.1.1">Inference time reduction.</span>
+Efficiency improvements during inference focus on optimizing KV cache management and parallelization. Techniques such as paged caching <cite class="ltx_cite ltx_citemacro_citep">(Kwon et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib43" title="">2023</a>; Lee et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib45" title="">2024</a>; Zheng et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib112" title="">2024</a>)</cite> dynamically allocate memory to accommodate longer sequences without excessive overhead. Other methods leverage GPU memory pooling and adaptive chunking <cite class="ltx_cite ltx_citemacro_citep">(Lin et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib50" title="">2024</a>; Agrawal et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib1" title="">2024</a>)</cite> to process extended contexts efficiently while maintaining fast retrieval and computation speeds.
+Other strategies improve efficiency by reusing KV tensors across layers <cite class="ltx_cite ltx_citemacro_citep">(Ye et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib104" title="">2024a</a>; Brandon et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib10" title="">2024</a>)</cite></p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p7">
+<p class="ltx_p" id="S3.SS1.p7.1">Recent work has aimed to introduce episodic memory in LLMs by structuring token sequences into retrievable events <cite class="ltx_cite ltx_citemacro_citep">(Fountas et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib25" title="">2024</a>)</cite>, enhancing long-context reasoning and outperforming retrieval-based models. However, a fundamental challenge remain the increasing memory and retrieval costs: maintaining the full KV-Cache for an entire interaction history can quickly become impractical, especially in large-scale, long-duration, and multimodal applications. This limitation is inherent to KV-Cache management systems, which must retain the entire cache, leading to significant storage and computational overhead.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p8">
+<p class="ltx_p" id="S3.SS1.p8.1"><span class="ltx_text ltx_font_bold" id="S3.SS1.p8.1.1">Transformer alternatives to reduce both memory and inference time.</span>
+In addition to optimizing KV cache storage and management, alternative architectures have been proposed to address the limitations of standard transformers in both memory and inference time.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p9">
+<p class="ltx_p" id="S3.SS1.p9.1">Linear attention <cite class="ltx_cite ltx_citemacro_citep">(Li et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib46" title="">2020</a>; Katharopoulos et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib39" title="">2020</a>)</cite> approximates full self-attention using kernel-based or low-rank transformations, significantly reducing computational complexity and improving efficiency for long-sequence processing.
+State-space models (SSMs) <cite class="ltx_cite ltx_citemacro_citep">(Peng et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib75" title="">2023</a>; Gu &amp; Dao, <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib31" title="">2023</a>)</cite> further achieve linear scaling for sequence handling by maintaining a fixed-size representation, making them inherently memory-efficient. Hybrid architectures <cite class="ltx_cite ltx_citemacro_citep">(Goldstein et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib28" title="">2024</a>)</cite> combine these techniques with transformers to compress KV-cache sizes while preserving strong performance.
+Other alternatives restructure the transformer architecture itself to enhance efficiency. Some models <cite class="ltx_cite ltx_citemacro_citep">(Sun et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib84" title="">2024a</a>)</cite> modify the decoder structure to reduce memory usage and latency, while others <cite class="ltx_cite ltx_citemacro_citep">(Pang et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib74" title="">2024</a>)</cite> compress sequence information into compact representations to improve inference speed and scalability.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p10">
+<p class="ltx_p" id="S3.SS1.p10.1">These methods enhance ICM efficiency, but their reliance on compression, approximation, and selective retention comes with limited support for long-term reasoning with episodic memory. This limitation highlights the need for an external memory structure that retains past information. Methods of KV-cache optimization can also discard older context, leading to irreversible information loss and different model behavior <cite class="ltx_cite ltx_citemacro_citep">(Kirsten et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib41" title="">2024</a>)</cite>.
+Generally, methods with a constant cost, like SSMs, struggle to handle a continually expanding interaction history in dynamic environments, while methods with an increasing state representation increase in both inference time and GPU memory requirements.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p11">
+<p class="ltx_p" id="S3.SS1.p11.1"><span class="ltx_text ltx_font_bold" id="S3.SS1.p11.1.1">Length Generalization.</span>
+Length generalization refers to a model’s ability to maintain understanding over long sequences, preventing degradation of performance such as forgetting or losing context midway through processing <cite class="ltx_cite ltx_citemacro_citep">(Liu et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib54" title="">2024b</a>)</cite>. In essence, humans avoid SSMs’ trade-offs by storing compressed representations and retrieving knowledge adaptively, allowing us to manage expanding information effortlessly.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS1.p12">
+<p class="ltx_p" id="S3.SS1.p12.1">To address this, lightweight solutions <cite class="ltx_cite ltx_citemacro_citep">(Yen et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib106" title="">2024</a>; Xiao et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib99" title="">2024</a>)</cite> create adapters to process and retrieve long inputs before passing the content to the LLM.
+Other approaches <cite class="ltx_cite ltx_citemacro_citep">(Han et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib35" title="">2024</a>)</cite> refine attention patterns and positional encodings to enhance long-context comprehension.
+Alternative architectures <cite class="ltx_cite ltx_citemacro_citep">(Ye et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib105" title="">2024b</a>; Dai et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib18" title="">2019</a>)</cite> improve long-context learning through mechanisms like differential attention and segment-level recurrence.
+Another promising approach embeds test-time information into the model’s parameters, creating a form of long-term memory <cite class="ltx_cite ltx_citemacro_citep">(Sun et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib85" title="">2024b</a>; Behrouz et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib6" title="">2024</a>)</cite>, combining attention with neural memory modules, enabling adaptability for long contexts but at the cost of increased inference overhead. These approaches have limited capacity and still face eventual forgetting over very long sequences.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S3.SS2">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.2 </span>External Memory</h3>
+<div class="ltx_para ltx_noindent" id="S3.SS2.p1">
+<p class="ltx_p" id="S3.SS2.p1.1">Many methods propose a separate memory module that stores information when it exceeds the effective operating span of the model. These augmented memory models are usually evaluated on tasks which require using that stored information. As such, these methods typically have long-term and explicit memory (Table <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S3.T2" title="Table 2 ‣ 3 Current Approaches"><span class="ltx_text ltx_ref_tag">2</span></a>). However, they often lack information that relates the stored memories to one another—especially contextual details on how the model acquired the memory, or details to help differentiate specific instances. They are typically not evaluated for single-shot learning, especially for specific instances. And finally, there is a lack of proposals to generalize information from these instances and update parametric memory (Figure <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S1.F1" title="Figure 1 ‣ 1 Introduction"><span class="ltx_text ltx_ref_tag">1</span></a>a). Below we review some relevant external memory methods and elaborate on key examples to illustrate these shortcomings.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS2.p2">
+<p class="ltx_p" id="S3.SS2.p2.1"><span class="ltx_text ltx_font_bold" id="S3.SS2.p2.1.1">Slot-based memory with recurrent controllers.</span> A key advance in memory augmentation in the pre-transformer era was the formulation of learnable memory modules external to the main neural network <cite class="ltx_cite ltx_citemacro_citep">(Bordes et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib9" title="">2015</a>; Graves et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib29" title="">2014</a>; Sukhbaatar et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib83" title="">2015</a>)</cite>. External memories were stored in individual slots and updated via a recurrent memory controller. These models were shown to retain longer-term information than vanilla long-short term memory (LSTM) networks. Similar memory augmentation methods have been adapted for transformers <cite class="ltx_cite ltx_citemacro_citep">(Wu et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib94" title="">2022a</a>)</cite>. However, these methods lack a way to store contextual details that LLM agents would need in an episodic memory, as they strongly depend on the details available in the input data. One exception devised a method to record temporal relationships between memories <cite class="ltx_cite ltx_citemacro_citep">(Graves et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib30" title="">2016</a>)</cite>, but this has yet to be seen in augmented LLMs.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS2.p3">
+<p class="ltx_p" id="S3.SS2.p3.1"><span class="ltx_text ltx_font_bold" id="S3.SS2.p3.1.1">Distributed vs. slot memory.</span> An issue with slot-based memory modules is that they are capacity-limited, both by the number of slots and the dimensionality of each slot representation. While these models adopt forgetting mechanisms to mitigate this, the capacity limit still affects how long memories can be stored. Another approach addresses this downside by storing external memories in a sparse, distributed fashion <cite class="ltx_cite ltx_citemacro_citep">(Wu et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib95" title="">2018</a>)</cite> instead of in slots. Recent work <cite class="ltx_cite ltx_citemacro_citep">(Das et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib19" title="">2024a</a>)</cite> integrated distributed memory in an LLM, and showed that the model can recall a greater number of facts over longer contexts, compared to baseline LLMs. While they demonstrate how they can perform one-shot memory updates (fact-editing), they do not evaluate single-shot learning of novel facts.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS2.p4">
+<p class="ltx_p" id="S3.SS2.p4.1"><span class="ltx_text ltx_font_bold" id="S3.SS2.p4.1.1">RAG and GraphRAG methods.</span> Retrieval Augmented Generation (RAG) methods maintain an external database of information that is added to the input data to augment LLM generation. Naive RAG implementations encode chunks of text using embedding models <cite class="ltx_cite ltx_citemacro_citep">(Gao et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib26" title="">2023</a>)</cite>, typically without much metadata or contextual detail about the original text. (One exception is work that preserves the order of retrieved text from the database <cite class="ltx_cite ltx_citemacro_citep">(Yu et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib110" title="">2024</a>)</cite>.) And while text embedding models can capture some similarity relationships between embeddings, they do not encompass the rich set of relationships that LLM agents will likely need for most applications. GraphRAG models replace the vector embedding database with a structured graph that explicitly encodes relationships as connections between nodes <cite class="ltx_cite ltx_citemacro_citep">(Peng et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib76" title="">2024</a>)</cite>. Still, these graphs encode a limited number of relationship types, even when researchers branch out beyond pre-existing datasets and learn to build the graphs directly from the input text <cite class="ltx_cite ltx_citemacro_citep">(Li et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib47" title="">2024a</a>; Edge et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib22" title="">2024</a>; Gutiérrez et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib33" title="">2025</a>)</cite>. As such, they also lack rich contextual detail.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS2.p5">
+<p class="ltx_p" id="S3.SS2.p5.1"><span class="ltx_text ltx_font_bold" id="S3.SS2.p5.1.1">External storage of past LLM inputs and outputs.</span> Another type of approach maintains a database of pasts LLM inputs to avoid recomputing predictions to similar future inputs <cite class="ltx_cite ltx_citemacro_citep">(Wu et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib96" title="">2022b</a>; Khandelwal et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib40" title="">2020</a>; Yogatama et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib108" title="">2021</a>)</cite>. Here, contextual information (e.g. details that differentiate specific instances) will only be stored when explicitly given in the LLM input text. That is, the memory is much more dependent on input data, limiting test-time generalization. One proposal to mitigate this formulates a long-term memory module for context that is updated with LLM activations based on the current inputs <cite class="ltx_cite ltx_citemacro_citep">(Behrouz et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib6" title="">2024</a>)</cite>. Other approaches additionally store LLM outputs, such as generated text <cite class="ltx_cite ltx_citemacro_citep">(Cheng et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib13" title="">2023</a>)</cite>, summarizations <cite class="ltx_cite ltx_citemacro_citep">(Wang et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib90" title="">2024a</a>; Lee et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib44" title="">2023</a>)</cite>, chain-of-thought steps <cite class="ltx_cite ltx_citemacro_citep">(Liu et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib53" title="">2023a</a>; Lu et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib58" title="">2023</a>)</cite>, and extracted relation triples <cite class="ltx_cite ltx_citemacro_citep">(Modarressi et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib66" title="">2025</a>)</cite>. One approach specialized for chat interactions stores timestamps and user personality profiles as context <cite class="ltx_cite ltx_citemacro_citep">(Zhong et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib113" title="">2024</a>)</cite>. These modifications enable storage of contextual details useful for LLM agents. However, specifying the type of contextual detail is restrictive, so it is preferable to combine this with a more learnable and flexible mechanism for storing context.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS2.p6">
+<p class="ltx_p" id="S3.SS2.p6.1"><span class="ltx_text ltx_font_bold" id="S3.SS2.p6.1.1">Learning to interact with external memory.</span> The approaches described above may fine-tune or instruct the LLM to interact with and update external memory. That is, the LLM learns the functions of a memory controller. For example, several RAG approaches fine-tune the LLM to make better use of the retrieved content <cite class="ltx_cite ltx_citemacro_citep">(Gao et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib26" title="">2023</a>)</cite>. Other approaches define how LLMs should interact with memory, requiring them to learn specific API calls <cite class="ltx_cite ltx_citemacro_citep">(Modarressi et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib66" title="">2025</a>)</cite> or memory hierarchies <cite class="ltx_cite ltx_citemacro_citep">(Packer et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib72" title="">2024</a>)</cite>. These provide possible mechanisms to add information to external memory, such as contextual details and specific instances. However, most current work does not consider how to modify the LLM to generalize across specific instances to store new knowledge in LLM parameters (Figure <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S1.F1" title="Figure 1 ‣ 1 Introduction"><span class="ltx_text ltx_ref_tag">1</span></a>a). <cite class="ltx_cite ltx_citemacro_citet">Behrouz et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib6" title="">2024</a>)</cite> propose one way to generalize across instances by adding a data-independent memory system (a.k.a. meta-memory, persistent memory) in addition to a more data-dependent memory module. However, the data-independent memory is considered to be closer to task memory than knowledge distillation, and the meta-memory parameters are kept separate from the LLM itself.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S3.SS3">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.3 </span>Parametric Memory</h3>
+<div class="ltx_para ltx_noindent" id="S3.SS3.p1">
+<p class="ltx_p" id="S3.SS3.p1.1">This type of memory allows LLMs to process the information in the input to obtain well-suited output. Parametric memory values are initially learned through back-propagation with a pretraining dataset.
+During this process, the parametric memory tends to capture general knowledge and rules ranging from syntax to common sense and factual knowledge.
+Due to the sheer size of the parametric memory, the amount of data needed for pre-training is usually very large, following power laws <cite class="ltx_cite ltx_citemacro_cite">Kaplan et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib38" title="">2020</a>)</cite>.
+Generally, parametric memory is fixed after training, i.e., does not change with the input at inference time.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS3.p2">
+<p class="ltx_p" id="S3.SS3.p2.1">A relevant research direction in parametric memory focuses on adapting LLM parameters to specific domains, tasks, or applications when given limited resources. Efficient fine-tuning methods have been developed in recent years to tackle the runtime and memory consumption of this process. Alternatively, distillation techniques have been proposed to update knowledge and propagate it through a model. A key challenge is the need for updating specific factual knowledge without interfering with other knowledge. Some facts may change over time, requiring surgical precision to update the parameters of a model. The line of work that proposes these updates is known as knowledge editing.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS3.p3">
+<p class="ltx_p" id="S3.SS3.p3.1"><span class="ltx_text ltx_font_bold" id="S3.SS3.p3.1.1">Efficient Fine-tuning.</span> Various works have been proposed to reduce the computational needs (hardware memory) of updating a model to a specific domain. Among these, Low-Rank Adaptation (LoRA) <cite class="ltx_cite ltx_citemacro_cite">Hu et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib37" title="">2022</a>)</cite> applies additive low-rank approximation updates to shift the model parameters.
+Several methods proposed other ways to further improve efficiency by reducing and localizing updates <cite class="ltx_cite ltx_citemacro_cite">Wang et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib91" title="">2024b</a>); Valipour et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib89" title="">2022</a>); Xu et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib100" title="">2021</a>); Yin et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib107" title="">2024</a>)</cite>. Other work learned modifications on representations instead of parameters <cite class="ltx_cite ltx_citemacro_cite">Wu et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib97" title="">2024</a>); Yin et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib107" title="">2024</a>)</cite>.
+In all cases, fine-tuning methods require a dataset to adapt a model for a specific task or domain, i.e. they are not capable of single-shot learning or capturing instance-specific and contextually rich information.
+On the other hand, additional fine-tuned adapter parameters are often frozen after the fine-tuning process, supporting the long term storage of information. Moreover, these methods tend to preserve the reasoning capabilities while updating the model with newly captured information <cite class="ltx_cite ltx_citemacro_cite">Wu et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib97" title="">2024</a>)</cite>.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS3.p4">
+<p class="ltx_p" id="S3.SS3.p4.1"><span class="ltx_text ltx_font_bold" id="S3.SS3.p4.1.1">Knowledge Editing.</span> As the environment evolves over time, some factual knowledge becomes outdated (e.g., the president of a country may change after the elections). Knowledge editing methods aim to make modifications to the factual knowledge in parametric memory with targeted updates while avoiding interference with other facts. In ROME <cite class="ltx_cite ltx_citemacro_citep">(Meng et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib61" title="">2023a</a>)</cite> and MEM-IT <cite class="ltx_cite ltx_citemacro_citep">(Meng et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib62" title="">2023b</a>)</cite>, the first step is to find relevant parameters (in MLPs) that influence the specific fact through causal interventions and then update the related parameters with low-rank model edits. An alternative research direction proposes to train a hyper-network <cite class="ltx_cite ltx_citemacro_citep">(Cao et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib12" title="">2021</a>; Tan et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib86" title="">2024</a>)</cite> that predicts the amount of change for each parameter given the knowledge to be edited. A different method, SERAC, stores the set of edits in an external memory, combined with a scope detector and a counter-factual model to decide when and how to apply the edits<cite class="ltx_cite ltx_citemacro_citep">(Mitchell et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib65" title="">2022</a>)</cite>. All knowledge editing methods work on facts which are inherently context-free, making it impossible to contextualize the edited knowledge in the history of the agent-environment interaction. However, they mimic the episodic memory traits of learning from a single instance, while enabling long-term retention.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS3.p5">
+<p class="ltx_p" id="S3.SS3.p5.1">The problem of knowledge editing has been extended to a continual learning setting, where edits are required sequentially over time to correct a model. This leads to the sequential editing problem: hyper-network prediction quality decreases because they fail to reflect the updated model, and low-rank parameter updates interfere with one another causing catastrophic forgetting <cite class="ltx_cite ltx_citemacro_cite">Gupta et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib32" title="">2024</a>)</cite>.
+MELO <cite class="ltx_cite ltx_citemacro_citep">(Yu et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib109" title="">2023</a>)</cite> adapts dynamic LoRA to this problem and introduces a vector database to search the selections of the blocks to be dynamically activated within the LoRA matrices for each layer. WISE <cite class="ltx_cite ltx_citemacro_citep">(Wang et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib93" title="">2024c</a>)</cite> adds duplicates of the MLP’s output parameters for some layers in the network, and updates them with each new edit set. A routing mechanism decides whether to use the original layer or the updated one. It further uses sharding and merging <cite class="ltx_cite ltx_citemacro_citep">(Yadav et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib101" title="">2023</a>)</cite> to distribute the edits into random subspaces to improve generalization and parameter utilization.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS3.p6">
+<p class="ltx_p" id="S3.SS3.p6.1">While continual learning-based knowledge editing allows models to integrate updates over time, it has fundamental limitations. Edited knowledge often lacks generalization, struggling with inferring new relationships or reasoning over multiple steps <cite class="ltx_cite ltx_citemacro_citep">(Berglund et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib8" title="">2023</a>; Yang et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib103" title="">2024b</a>)</cite>. This highlights a key challenge—knowledge editing methods can introduce updates but do not always ensure deeper understanding or adaptability.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S3.SS3.p7">
+<p class="ltx_p" id="S3.SS3.p7.1"><span class="ltx_text ltx_font_bold" id="S3.SS3.p7.1.1">Context Distillation.</span> The idea behind these techniques is to transfer in-context learned information, abilities, and task-understanding by distilling them into model parameters.
+<cite class="ltx_cite ltx_citemacro_citet">Snell et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib80" title="">2022</a>)</cite> proposed to use distillation when the teacher and the student are in the same model, but less in-context information is given to the student. This would enable the student to learn skills and express knowledge that would otherwise depend on including information and instances in costly and limited in-context memory. Further, <cite class="ltx_cite ltx_citemacro_citet">Padmanabhan et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib73" title="">2023</a>)</cite> proposes to exploit context distillation to inject and propagate knowledge through a model. The original model is provided with new definitions and continuations. The distillation process updates a copy of the model with only the generated continuation, conditioning the updated model to the new entities implicitly. This helps to propagate the information into the parameters (i.e., consolidating it) and thus improving inference with such entities.</p>
+</div>
+</section>
+</section>
+<section class="ltx_section" id="S4">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">4 </span>Episodic Memory as a Unifying Framework</h2>
+<div class="ltx_para ltx_noindent" id="S4.p1">
+<p class="ltx_p" id="S4.p1.1">Although current work has advanced context-sensitive LLMs that are capable of handling longer sequences, it does not yet deliver efficient learning that could support long-term LLM agents. Existing methods—which extend in-context (working) memory, integrate external memory, or update parametric memory—only address subsets of episodic memory’s five essential properties, as discussed in Section <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S3" title="3 Current Approaches"><span class="ltx_text ltx_ref_tag">3</span></a>. These approaches remain fragmented, impeding the immediate assimilation of new experiences and gradual improvement over time.
+</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.p2">
+<p class="ltx_p" id="S4.p2.1">We propose that enabling episodic memory offers a unifying perspective that will combine and extend existing methods to advance the capabilities of LLM agents. By incorporating long in-context memory, external memory, and mechanisms for updating parametric memory, agents can more seamlessly adapt to new information, consolidate it, and prevent escalating costs or performance degradation during extended interactions with an environment. This view is based on Complementary Learning Systems Theory <cite class="ltx_cite ltx_citemacro_citep">(O’Reilly et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib70" title="">2014</a>; Kumaran et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib42" title="">2016</a>; Arani et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib3" title="">2022</a>)</cite>, in which episodic memory is part of a fast-learning system that stores information from individual instances. Over time, that information is consolidated into a slow-learning system that stores more stable, durable knowledge.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.p3">
+<p class="ltx_p" id="S4.p3.1">In Figure <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S1.F1" title="Figure 1 ‣ 1 Introduction"><span class="ltx_text ltx_ref_tag">1</span></a>, we present a general architecture and framework that combines these elements under the overarching goal of enabling all five key features of episodic memory for LLM agents as detailed in Section <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S2" title="2 Operationalizing EM for LLMs"><span class="ltx_text ltx_ref_tag">2</span></a>. As a roadmap to enable episodic memory in LLM agents, we specifically call for four main research directions (encoding, retrieval, consolidation, and benchmarks), and formulate six research questions under these areas below.</p>
+</div>
+<section class="ltx_subsection" id="S4.SS1">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">4.1 </span>Encoding</h3>
+<div class="ltx_para ltx_noindent" id="S4.SS1.p1">
+<p class="ltx_p" id="S4.SS1.p1.1">RQ1: <em class="ltx_emph ltx_font_italic" id="S4.SS1.p1.1.1">How to store information from in-context memory in a long-term external memory store?</em></p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.SS1.p2">
+<p class="ltx_p" id="S4.SS1.p2.1">An external memory store is essential for retaining experience in a structured way that preserves the context of individual instances (Fig.<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S1.F1" title="Figure 1 ‣ 1 Introduction"><span class="ltx_text ltx_ref_tag">1</span></a>, arrow (b)). A straightforward approach is to store text chunks or embeddings in a non-parametric RAG-like database, potentially augmented with metadata for context <cite class="ltx_cite ltx_citemacro_cite">Mombaerts et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib67" title="">2024</a>)</cite>. More structured representations, such as GraphRAG, could also facilitate context-sensitive retrieval. However, capacity constraints on these types of databases may make it necessary to rely on more compressed parametric representations.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.SS1.p3">
+<p class="ltx_p" id="S4.SS1.p3.1">RQ2: <em class="ltx_emph ltx_font_italic" id="S4.SS1.p3.1.1">How to segment continuous input into discrete episodes, and when to store them in an external memory?</em></p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.SS1.p4">
+<p class="ltx_p" id="S4.SS1.p4.1">A major design question is <em class="ltx_emph ltx_font_italic" id="S4.SS1.p4.1.1">when and how to segment</em> a continuous stream of agent experience into episodes to be encoded into an external memory. LLMs have already been shown to be capable of segmenting text into meaningful events, in a way that is similar to humans <cite class="ltx_cite ltx_citemacro_cite">Michelmann et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib63" title="">2023</a>)</cite>, and recent approaches show that further bundling related segments based on model surprise can improve long-term modeling <cite class="ltx_cite ltx_citemacro_cite">Behrouz et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib6" title="">2024</a>); Fountas et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib25" title="">2024</a>)</cite>.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.SS1.p5">
+<p class="ltx_p" id="S4.SS1.p5.1"><em class="ltx_emph ltx_font_italic" id="S4.SS1.p5.1.1">Leveraging long-context advances</em> can further improve encoding by providing a space in which new episodes can be equipped with a rich contextualization. Large hidden states or extended attention windows help capture high-fidelity contextual information, which can then be encoded into an external memory in a compressed format for future retrieval.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S4.SS2">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">4.2 </span>Retrieval</h3>
+<div class="ltx_para ltx_noindent" id="S4.SS2.p1">
+<p class="ltx_p" id="S4.SS2.p1.1">RQ3: <em class="ltx_emph ltx_font_italic" id="S4.SS2.p1.1.1">Given an external memory, how to select relevant past episodes for retrieval and reinstatement into in-context memory for the purpose of explicit reasoning?</em></p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.SS2.p2">
+<p class="ltx_p" id="S4.SS2.p2.1">To employ past experiences in current tasks, an agent must <em class="ltx_emph ltx_font_italic" id="S4.SS2.p2.1.1">retrieve</em> relevant episodes at the right time and <em class="ltx_emph ltx_font_italic" id="S4.SS2.p2.1.2">reintegrate</em> them into its in-context memory with an adequate mechanism (Fig.<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S1.F1" title="Figure 1 ‣ 1 Introduction"><span class="ltx_text ltx_ref_tag">1</span></a>, arrow (c)). Common strategies include prepending retrieved text tokens to the input sequence (as in RAG), manipulating representational states within the transformer (e.g., memory tokens <cite class="ltx_cite ltx_citemacro_citep">(Bulatov et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib11" title="">2022</a>)</cite>), or adapting internal representations <cite class="ltx_cite ltx_citemacro_citep">(Wu et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib97" title="">2024</a>)</cite>.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.SS2.p3">
+<p class="ltx_p" id="S4.SS2.p3.1">RQ4: <em class="ltx_emph ltx_font_italic" id="S4.SS2.p3.1.1">How can retrieval mechanisms in long-context LLMs improve and accelerate the optimization of external memory retrieval and reinstatement?</em></p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.SS2.p4">
+<p class="ltx_p" id="S4.SS2.p4.1"><em class="ltx_emph ltx_font_italic" id="S4.SS2.p4.1.1">Long-context advances</em> can be leveraged to inform when and what to retrieve at sequence lengths that are still feasible. Future research could explore tight integration of external memory with the model’s forward pass <cite class="ltx_cite ltx_citemacro_citep">(Berges et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib7" title="">2024</a>)</cite> and adopt cross-architecture distillation <cite class="ltx_cite ltx_citemacro_citep">(Wang et al., <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib92" title="">2025</a>)</cite> to accelerate the development of external memory structures that retain many of the desirable properties of in-context memory while reducing the resource cost.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S4.SS3">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">4.3 </span>Consolidation</h3>
+<div class="ltx_para ltx_noindent" id="S4.SS3.p1">
+<p class="ltx_p" id="S4.SS3.p1.1">RQ5: <em class="ltx_emph ltx_font_italic" id="S4.SS3.p1.1.1">How to periodically consolidate external memory contents into the LLM’s base parameters without forgetting previous knowledge?</em></p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.SS3.p2">
+<p class="ltx_p" id="S4.SS3.p2.1">Eventually, merging external memory contents into the model’s parameters (Fig.<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S1.F1" title="Figure 1 ‣ 1 Introduction"><span class="ltx_text ltx_ref_tag">1</span></a>, arrow (a)) promises to allow new generalized knowledge to be used without explicit retrieval. This process both prevents external memory overflow and supports continuous adaptation of the agent’s semantic and procedural backbone to the environment. Relevant techniques include context distillation, parametric knowledge editing, and localized fine-tuning methods that capture newly encountered information without catastrophic interference with other knowledge. Open questions remain about how to decide when to consolidate and how to compress many episodic instances into more abstract parametric knowledge while also retaining previous knowledge and skills.</p>
+</div>
+</section>
+<section class="ltx_subsection" id="S4.SS4">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">4.4 </span>Benchmarks</h3>
+<div class="ltx_para ltx_noindent" id="S4.SS4.p1">
+<p class="ltx_p" id="S4.SS4.p1.1">RQ6: <em class="ltx_emph ltx_font_italic" id="S4.SS4.p1.1.1">What new types of benchmarks are needed to assess episodic memory in LLM agents?</em></p>
+</div>
+<div class="ltx_para ltx_noindent" id="S4.SS4.p2">
+<p class="ltx_p" id="S4.SS4.p2.1">Finally, <em class="ltx_emph ltx_font_italic" id="S4.SS4.p2.1.1">evaluating</em> episodic memory effectiveness requires new tasks and metrics. Studies should test the recall of contextualized events after long delays, assessing how well agents remember when, where, and how events occurred. An example of such a study is the testing of instance-specific temporal order memory proposed by <cite class="ltx_cite ltx_citemacro_citet">Pink et al. (<a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#bib.bib77" title="">2024</a>)</cite>. Beyond controlled probes, benchmarks must incorporate real-world complexities: agents should demonstrate an improving task performance that is linked to encoding, retrieval, and consolidation of past experiences over extended timescales.</p>
+</div>
+</section>
+</section>
+<section class="ltx_section" id="S5">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">5 </span>Alternative Views</h2>
+<div class="ltx_para ltx_noindent" id="S5.p1">
+<p class="ltx_p" id="S5.p1.1">While we argue that an explicit episodic memory framework is necessary for effective long-term and context-sensitive behavior, there are alternative perspectives suggesting that current or emerging methods might suffice in the future without the need for the concept of episodic memory to provide guidance.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.p2">
+<p class="ltx_p" id="S5.p2.1"><span class="ltx_text ltx_font_bold" id="S5.p2.1.1">Scaling in-context memory will be sufficient.</span> One view suggests that advances in long-context methods—such as improved transformers, state-space models, or other architectures with extended context windows—will enable practically unlimited access to past information. Proponents claim that better positional encodings, modified attention mechanisms, and other in-context memory extensions will cover most relevant applications for LLM-based agents.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.p3">
+<p class="ltx_p" id="S5.p3.1"><span class="ltx_text ltx_font_bold" id="S5.p3.1.1">Contextualized external memory will be sufficient.</span>
+A second view holds that external memory structures—such as knowledge graphs or retrieval-augmented generation (RAG) systems—could eliminate the need for an episodic memory framework. By contextualizing data chunks and storing them in structured graphs, these systems aim to incorporate past context into current tasks effectively.</p>
+</div>
+<div class="ltx_para ltx_noindent" id="S5.p4">
+<p class="ltx_p" id="S5.p4.1">“Infinite” in-context memory remains a speculative prospect. Extending limited context windows to include all information needed by an agent requires foreknowledge of the maximum timespan of relevant information. For very long timespans, this will either incur prohibitive computational costs or require compression methods that may lose key details. Only relying on external memory will still incur high storage costs, and require forgetting mechanisms. An episodic memory framework addresses these constraints by periodically consolidating information into high-capacity parametric memory (Figure <a class="ltx_ref" href="https://arxiv.org/html/2502.06975v1#S1.F1" title="Figure 1 ‣ 1 Introduction"><span class="ltx_text ltx_ref_tag">1</span></a>, arrow (a)). This has the added benefit of enabling LLM agents to slowly improve over time, as they continue to learn from the past before they forget it.</p>
+</div>
+</section>
+<section class="ltx_section" id="S6">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">6 </span>Conclusion</h2>
+<div class="ltx_para ltx_noindent" id="S6.p1">
+<p class="ltx_p" id="S6.p1.1">This position paper argues that to fully realize efficient long-term LLM agents, we must endow LLM agents with episodic memory. We operationalize episodic memory—a term borrowed from cognitive science—for LLMs by highlighting five key characteristics that distinguish episodic memory from other types of memory in biological systems, and argue for why each property is also important for LLM agents. We position the call for episodic memory in LLM agents in the current literature and discuss how episodic memory can serve as a unifying goal for existing research directions. Lastly, we provide a roadmap of research questions towards implementing episodic memory in LLMs. By describing the potential of this research direction, we aim to spark a community-wide shift in how we conceive and engineer long-term memory in the move towards agentic AI—one that more deeply integrates lessons from cognitive science and brings together existing approaches in ML under a unifying goal with strong promise.</p>
+</div>
+</section>
+<section class="ltx_bibliography" id="bib">
+<h2 class="ltx_title ltx_title_bibliography">References</h2>
+<ul class="ltx_biblist">
+<li class="ltx_bibitem" id="bib.bib1">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Agrawal et al. (2024)</span>
+<span class="ltx_bibblock">
+Agrawal, A., Chen, J., Íñigo Goiri, Ramjee, R., Zhang, C., Tumanov, A., and Choukse, E.
+
+</span>
+<span class="ltx_bibblock">Mnemosyne: Parallelization strategies for efficiently serving multi-million context length llm inference requests without approximations, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2409.17264" title="">https://arxiv.org/abs/2409.17264</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib2">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Anonymous (2024)</span>
+<span class="ltx_bibblock">
+Anonymous.
+
+</span>
+<span class="ltx_bibblock">Forgetting transformer: Softmax attention with a forget gate.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib2.1.1">Submitted to The Thirteenth International Conference on Learning Representations</em>, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://openreview.net/forum?id=q2Lnyegkr8" title="">https://openreview.net/forum?id=q2Lnyegkr8</a>.
+
+</span>
+<span class="ltx_bibblock">under review.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib3">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Arani et al. (2022)</span>
+<span class="ltx_bibblock">
+Arani, E., Sarfraz, F., and Zonooz, B.
+
+</span>
+<span class="ltx_bibblock">Learning fast, learning slow: A general continual learning method based on complementary learning system, 2022.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2201.12604" title="">https://arxiv.org/abs/2201.12604</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib4">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Baddeley (1986)</span>
+<span class="ltx_bibblock">
+Baddeley, A. D.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib4.1.1">Working Memory</em>.
+
+</span>
+<span class="ltx_bibblock">Clarendon Press, Oxford, UK, 1986.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib5">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Baddeley &amp; Hitch (1974)</span>
+<span class="ltx_bibblock">
+Baddeley, A. D. and Hitch, G. J.
+
+</span>
+<span class="ltx_bibblock">Working memory.
+
+</span>
+<span class="ltx_bibblock">In Bower, G. H. (ed.), <em class="ltx_emph ltx_font_italic" id="bib.bib5.1.1">The Psychology of Learning and Motivation: Advances in Research and Theory</em>, volume 8, pp.  47–89. Academic Press, New York, 1974.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib6">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Behrouz et al. (2024)</span>
+<span class="ltx_bibblock">
+Behrouz, A., Zhong, P., and Mirrokni, V.
+
+</span>
+<span class="ltx_bibblock">Titans: Learning to memorize at test time, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2501.00663" title="">https://arxiv.org/abs/2501.00663</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib7">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Berges et al. (2024)</span>
+<span class="ltx_bibblock">
+Berges, V.-P., Oğuz, B., Haziza, D., tau Yih, W., Zettlemoyer, L., and Ghosh, G.
+
+</span>
+<span class="ltx_bibblock">Memory layers at scale, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2412.09764" title="">https://arxiv.org/abs/2412.09764</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib8">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Berglund et al. (2023)</span>
+<span class="ltx_bibblock">
+Berglund, L., Tong, M., Kaufmann, M., Balesni, M., Stickland, A. C., Korbak, T., and Evans, O.
+
+</span>
+<span class="ltx_bibblock">The reversal curse: Llms trained on” a is b” fail to learn” b is a”.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib8.1.1">arXiv preprint arXiv:2309.12288</em>, 2023.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib9">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Bordes et al. (2015)</span>
+<span class="ltx_bibblock">
+Bordes, A., Usunier, N., Chopra, S., and Weston, J.
+
+</span>
+<span class="ltx_bibblock">Large-scale simple question answering with memory networks, 2015.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/1506.02075" title="">https://arxiv.org/abs/1506.02075</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib10">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Brandon et al. (2024)</span>
+<span class="ltx_bibblock">
+Brandon, W., Mishra, M., Nrusimha, A., Panda, R., and Kelly, J. R.
+
+</span>
+<span class="ltx_bibblock">Reducing transformer key-value cache size with cross-layer attention.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib10.1.1">arXiv preprint arXiv:2405.12981</em>, 2024.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib11">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Bulatov et al. (2022)</span>
+<span class="ltx_bibblock">
+Bulatov, A., Kuratov, Y., and Burtsev, M. S.
+
+</span>
+<span class="ltx_bibblock">Recurrent memory transformer, 2022.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2207.06881" title="">https://arxiv.org/abs/2207.06881</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib12">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Cao et al. (2021)</span>
+<span class="ltx_bibblock">
+Cao, N. D., Aziz, W., and Titov, I.
+
+</span>
+<span class="ltx_bibblock">Editing factual knowledge in language models, 2021.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2104.08164" title="">https://arxiv.org/abs/2104.08164</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib13">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Cheng et al. (2023)</span>
+<span class="ltx_bibblock">
+Cheng, X., Luo, D., Chen, X., Liu, L., Zhao, D., and Yan, R.
+
+</span>
+<span class="ltx_bibblock">Lift yourself up: Retrieval-augmented text generation with self-memory.
+
+</span>
+<span class="ltx_bibblock">In Oh, A., Naumann, T., Globerson, A., Saenko, K., Hardt, M., and Levine, S. (eds.), <em class="ltx_emph ltx_font_italic" id="bib.bib13.1.1">Advances in Neural Information Processing Systems</em>, volume 36, pp.  43780–43799. Curran Associates, Inc., 2023.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib14">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Cohen &amp; Squire (1980)</span>
+<span class="ltx_bibblock">
+Cohen, N. J. and Squire, L. R.
+
+</span>
+<span class="ltx_bibblock">Preserved learning and retention of pattern-analyzing skill in amnesia: Dissociation of “knowing how” and “knowing that”.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib14.1.1">Science</em>, 210(4466):207–210, 1980.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib15">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Colgin et al. (2008)</span>
+<span class="ltx_bibblock">
+Colgin, L., Moser, E., and Moser, M.
+
+</span>
+<span class="ltx_bibblock">Understanding memory through hippocampal remapping.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib15.1.1">Trends in Neurosciences</em>, 2008.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib16">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Collins &amp; Quillian (1969)</span>
+<span class="ltx_bibblock">
+Collins, A. M. and Quillian, M. R.
+
+</span>
+<span class="ltx_bibblock">Retrieval time from semantic memory.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib16.1.1">Journal of Verbal Learning and Verbal Behavior</em>, 8(2):240–247, 1969.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib17">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Conway (2001)</span>
+<span class="ltx_bibblock">
+Conway, M.
+
+</span>
+<span class="ltx_bibblock">Sensory–perceptual episodic memory and its context: Autobiographical memory.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib17.1.1">Philosophical Transactions of the Royal Society of London. Series B: Biological Sciences</em>, 2001.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib18">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Dai et al. (2019)</span>
+<span class="ltx_bibblock">
+Dai, Z., Yang, Z., Yang, Y., Carbonell, J., Le, Q., and Salakhutdinov, R.
+
+</span>
+<span class="ltx_bibblock">Transformer-XL: Attentive language models beyond a fixed-length context.
+
+</span>
+<span class="ltx_bibblock">In Korhonen, A., Traum, D., and Màrquez, L. (eds.), <em class="ltx_emph ltx_font_italic" id="bib.bib18.1.1">Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics</em>, pp.  2978–2988, Florence, Italy, July 2019. Association for Computational Linguistics.
+
+</span>
+<span class="ltx_bibblock">doi: <span class="ltx_ref ltx_nolink ltx_Url ltx_ref_self">10.18653/v1/P19-1285</span>.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://aclanthology.org/P19-1285/" title="">https://aclanthology.org/P19-1285/</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib19">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Das et al. (2024a)</span>
+<span class="ltx_bibblock">
+Das, P., Chaudhury, S., Nelson, E., Melnyk, I., Swaminathan, S., Dai, S., Lozano, A., Kollias, G., Chenthamarakshan, V., Jiří, Navrátil, Dan, S., and Chen, P.-Y.
+
+</span>
+<span class="ltx_bibblock">Larimar: Large language models with episodic memory control, 2024a.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2403.11901" title="">https://arxiv.org/abs/2403.11901</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib20">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Das et al. (2024b)</span>
+<span class="ltx_bibblock">
+Das, P., Chaudhury, S., Nelson, E., et al.
+
+</span>
+<span class="ltx_bibblock">Larimar: Large language models with episodic memory control.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib20.1.1">Proceedings of the 41st International Conference on Machine Learning (ICML)</em>, 2024b.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib21">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Duanmu et al. (2024)</span>
+<span class="ltx_bibblock">
+Duanmu, H., Yuan, Z., Li, X., Duan, J., Zhang, X., and Lin, D.
+
+</span>
+<span class="ltx_bibblock">Skvq: Sliding-window key and value cache quantization for large language models, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2405.06219" title="">https://arxiv.org/abs/2405.06219</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib22">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Edge et al. (2024)</span>
+<span class="ltx_bibblock">
+Edge, D., Trinh, H., Cheng, N., Bradley, J., Chao, A., Mody, A., Truitt, S., and Larson, J.
+
+</span>
+<span class="ltx_bibblock">From local to global: A graph rag approach to query-focused summarization, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2404.16130" title="">https://arxiv.org/abs/2404.16130</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib23">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Eichenbaum (2015)</span>
+<span class="ltx_bibblock">
+Eichenbaum, H.
+
+</span>
+<span class="ltx_bibblock">The hippocampus as a cognitive map . . . of social space.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib23.1.1">Neuron</em>, 2015.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib24">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Eichenbaum &amp; Cohen (2014)</span>
+<span class="ltx_bibblock">
+Eichenbaum, H. and Cohen, N.
+
+</span>
+<span class="ltx_bibblock">Can we reconcile the declarative memory and spatial navigation views on hippocampal function?
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib24.1.1">Neuron</em>, 2014.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib25">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Fountas et al. (2024)</span>
+<span class="ltx_bibblock">
+Fountas, Z., Benfeghoul, M. A., Oomerjee, A., Christopoulou, F., Lampouras, G., Bou-Ammar, H., and Wang, J.
+
+</span>
+<span class="ltx_bibblock">Human-like episodic memory for infinite context llms, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2407.09450" title="">https://arxiv.org/abs/2407.09450</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib26">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Gao et al. (2023)</span>
+<span class="ltx_bibblock">
+Gao, T., Yen, H., Yu, J., and Chen, D.
+
+</span>
+<span class="ltx_bibblock">Enabling large language models to generate text with citations, 2023.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2305.14627" title="">https://arxiv.org/abs/2305.14627</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib27">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Ge et al. (2024)</span>
+<span class="ltx_bibblock">
+Ge, S., Zhang, Y., Liu, L., Zhang, M., Han, J., and Gao, J.
+
+</span>
+<span class="ltx_bibblock">Model tells you what to discard: Adaptive kv cache compression for llms, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2310.01801" title="">https://arxiv.org/abs/2310.01801</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib28">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Goldstein et al. (2024)</span>
+<span class="ltx_bibblock">
+Goldstein, D., Obeid, F., Alcaide, E., Song, G., and Cheah, E.
+
+</span>
+<span class="ltx_bibblock">Goldfinch: High performance rwkv/transformer hybrid with linear pre-fill and extreme kv-cache compression, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2407.12077" title="">https://arxiv.org/abs/2407.12077</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib29">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Graves et al. (2014)</span>
+<span class="ltx_bibblock">
+Graves, A., Wayne, G., and Danihelka, I.
+
+</span>
+<span class="ltx_bibblock">Neural turing machines, 2014.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/1410.5401" title="">https://arxiv.org/abs/1410.5401</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib30">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Graves et al. (2016)</span>
+<span class="ltx_bibblock">
+Graves, A., Wayne, G., Reynolds, M., Harley, T., Danihelka, I., Grabska-Barwińska, A., Colmenarejo, S. G., Grefenstette, E., Ramalho, T., Agapiou, J., et al.
+
+</span>
+<span class="ltx_bibblock">Hybrid computing using a neural network with dynamic external memory.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib30.1.1">Nature</em>, 538(7626):471–476, 2016.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib31">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Gu &amp; Dao (2023)</span>
+<span class="ltx_bibblock">
+Gu, A. and Dao, T.
+
+</span>
+<span class="ltx_bibblock">Mamba: Linear-time sequence modeling with selective state spaces.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib31.1.1">arXiv preprint arXiv:2312.00752</em>, 2023.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib32">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Gupta et al. (2024)</span>
+<span class="ltx_bibblock">
+Gupta, A., Rao, A., and Anumanchipalli, G.
+
+</span>
+<span class="ltx_bibblock">Model editing at scale leads to gradual and catastrophic forgetting, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2401.07453" title="">https://arxiv.org/abs/2401.07453</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib33">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Gutiérrez et al. (2025)</span>
+<span class="ltx_bibblock">
+Gutiérrez, B. J., Shu, Y., Gu, Y., Yasunaga, M., and Su, Y.
+
+</span>
+<span class="ltx_bibblock">Hipporag: Neurobiologically inspired long-term memory for large language models, 2025.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2405.14831" title="">https://arxiv.org/abs/2405.14831</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib34">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Hampton &amp; Schwartz (2004)</span>
+<span class="ltx_bibblock">
+Hampton, R. and Schwartz, B.
+
+</span>
+<span class="ltx_bibblock">Episodic memory in nonhumans: what, and where, is when?
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib34.1.1">Current Opinion in Neurobiology</em>, 2004.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib35">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Han et al. (2024)</span>
+<span class="ltx_bibblock">
+Han, C., Wang, Q., Peng, H., Xiong, W., Chen, Y., Ji, H., and Wang, S.
+
+</span>
+<span class="ltx_bibblock">LM-infinite: Zero-shot extreme length generalization for large language models.
+
+</span>
+<span class="ltx_bibblock">In Duh, K., Gomez, H., and Bethard, S. (eds.), <em class="ltx_emph ltx_font_italic" id="bib.bib35.1.1">Proceedings of the 2024 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers)</em>, pp.  3991–4008, Mexico City, Mexico, June 2024. Association for Computational Linguistics.
+
+</span>
+<span class="ltx_bibblock">doi: <span class="ltx_ref ltx_nolink ltx_Url ltx_ref_self">10.18653/v1/2024.naacl-long.222</span>.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://aclanthology.org/2024.naacl-long.222/" title="">https://aclanthology.org/2024.naacl-long.222/</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib36">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Hooper et al. (2024)</span>
+<span class="ltx_bibblock">
+Hooper, C., Kim, S., Mohammadzadeh, H., Mahoney, M. W., Shao, Y. S., Keutzer, K., and Gholami, A.
+
+</span>
+<span class="ltx_bibblock">Kvquant: Towards 10 million context length llm inference with kv cache quantization, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2401.18079" title="">https://arxiv.org/abs/2401.18079</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib37">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Hu et al. (2022)</span>
+<span class="ltx_bibblock">
+Hu, E. J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., Wang, L., and Chen, W.
+
+</span>
+<span class="ltx_bibblock">LoRA: Low-rank adaptation of large language models.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib37.1.1">International Conference on Learning Representations</em>, 2022.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://openreview.net/forum?id=nZeVKeeFYf9" title="">https://openreview.net/forum?id=nZeVKeeFYf9</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib38">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Kaplan et al. (2020)</span>
+<span class="ltx_bibblock">
+Kaplan, J., McCandlish, S., Henighan, T., Brown, T. B., Chess, B., Child, R., Gray, S., Radford, A., Wu, J., and Amodei, D.
+
+</span>
+<span class="ltx_bibblock">Scaling laws for neural language models, 2020.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2001.08361" title="">https://arxiv.org/abs/2001.08361</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib39">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Katharopoulos et al. (2020)</span>
+<span class="ltx_bibblock">
+Katharopoulos, A., Vyas, A., Pappas, N., and Fleuret, F.
+
+</span>
+<span class="ltx_bibblock">Transformers are rnns: Fast autoregressive transformers with linear attention.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib39.1.1">International conference on machine learning</em>, pp.  5156–5165. PMLR, 2020.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib40">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Khandelwal et al. (2020)</span>
+<span class="ltx_bibblock">
+Khandelwal, U., Levy, O., Jurafsky, D., Zettlemoyer, L., and Lewis, M.
+
+</span>
+<span class="ltx_bibblock">Generalization through memorization: Nearest neighbor language models.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib40.1.1">International Conference on Learning Representations</em>, 2020.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://openreview.net/forum?id=HklBjCEKvH" title="">https://openreview.net/forum?id=HklBjCEKvH</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib41">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Kirsten et al. (2024)</span>
+<span class="ltx_bibblock">
+Kirsten, E., Habernal, I., Nanda, V., and Zafar, M. B.
+
+</span>
+<span class="ltx_bibblock">The impact of inference acceleration strategies on bias of llms.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib41.1.1">arXiv preprint arXiv:2410.22118</em>, 2024.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib42">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Kumaran et al. (2016)</span>
+<span class="ltx_bibblock">
+Kumaran, D., Hassabis, D., and McClelland, J. L.
+
+</span>
+<span class="ltx_bibblock">What learning systems do intelligent agents need? complementary learning systems theory updated.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib42.1.1">Trends in Cognitive Sciences</em>, 20(7):512–534, July 2016.
+
+</span>
+<span class="ltx_bibblock">ISSN 1364-6613.
+
+</span>
+<span class="ltx_bibblock">doi: <span class="ltx_ref ltx_nolink ltx_Url ltx_ref_self">10.1016/j.tics.2016.05.004</span>.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="http://dx.doi.org/10.1016/j.tics.2016.05.004" title="">http://dx.doi.org/10.1016/j.tics.2016.05.004</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib43">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Kwon et al. (2023)</span>
+<span class="ltx_bibblock">
+Kwon, W., Li, Z., Zhuang, S., Sheng, Y., Zheng, L., Yu, C. H., Gonzalez, J., Zhang, H., and Stoica, I.
+
+</span>
+<span class="ltx_bibblock">Efficient memory management for large language model serving with pagedattention.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib43.1.1">Proceedings of the 29th Symposium on Operating Systems Principles</em>, SOSP ’23, pp.  611–626. ACM, October 2023.
+
+</span>
+<span class="ltx_bibblock">doi: <span class="ltx_ref ltx_nolink ltx_Url ltx_ref_self">10.1145/3600006.3613165</span>.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="http://dx.doi.org/10.1145/3600006.3613165" title="">http://dx.doi.org/10.1145/3600006.3613165</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib44">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Lee et al. (2023)</span>
+<span class="ltx_bibblock">
+Lee, G., Hartmann, V., Park, J., Papailiopoulos, D., and Lee, K.
+
+</span>
+<span class="ltx_bibblock">Prompted llms as chatbot modules for long open-domain conversation.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib44.1.1">Findings of the Association for Computational Linguistics: ACL 2023</em>. Association for Computational Linguistics, 2023.
+
+</span>
+<span class="ltx_bibblock">doi: <span class="ltx_ref ltx_nolink ltx_Url ltx_ref_self">10.18653/v1/2023.findings-acl.277</span>.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="http://dx.doi.org/10.18653/v1/2023.findings-acl.277" title="">http://dx.doi.org/10.18653/v1/2023.findings-acl.277</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib45">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Lee et al. (2024)</span>
+<span class="ltx_bibblock">
+Lee, W., Lee, J., Seo, J., and Sim, J.
+
+</span>
+<span class="ltx_bibblock">Infinigen: Efficient generative inference of large language models with dynamic kv cache management, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2406.19707" title="">https://arxiv.org/abs/2406.19707</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib46">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Li et al. (2020)</span>
+<span class="ltx_bibblock">
+Li, R., Su, J., Duan, C., and Zheng, S.
+
+</span>
+<span class="ltx_bibblock">Linear attention mechanism: An efficient attention for semantic segmentation.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib46.1.1">arXiv preprint arXiv:2007.14902</em>, 2020.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib47">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Li et al. (2024a)</span>
+<span class="ltx_bibblock">
+Li, S., He, Y., Guo, H., Bu, X., Bai, G., Liu, J., Liu, J., Qu, X., Li, Y., Ouyang, W., Su, W., and Zheng, B.
+
+</span>
+<span class="ltx_bibblock">Graphreader: Building graph-based agent to enhance long-context abilities of large language models, 2024a.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2406.14550" title="">https://arxiv.org/abs/2406.14550</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib48">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Li et al. (2024b)</span>
+<span class="ltx_bibblock">
+Li, Y., Wen, H., Wang, W., Li, X., Yuan, Y., Liu, G., Liu, J., Xu, W., Wang, X., Sun, Y., Kong, R., Wang, Y., Geng, H., Luan, J., Jin, X., Ye, Z., Xiong, G., Zhang, F., Li, X., Xu, M., Li, Z., Li, P., Liu, Y., Zhang, Y.-Q., and Liu, Y.
+
+</span>
+<span class="ltx_bibblock">Personal llm agents: Insights and survey about the capability, efficiency and security, 2024b.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2401.05459" title="">https://arxiv.org/abs/2401.05459</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib49">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Liao &amp; Losonczy (2024)</span>
+<span class="ltx_bibblock">
+Liao, Z. and Losonczy, A.
+
+</span>
+<span class="ltx_bibblock">Learning, fast and slow: Single- and many-shot learning in the hippocampus.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib49.1.1">Annual Review of Neuroscience</em>, 2024.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib50">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Lin et al. (2024)</span>
+<span class="ltx_bibblock">
+Lin, B., Zhang, C., Peng, T., Zhao, H., Xiao, W., Sun, M., Liu, A., Zhang, Z., Li, L., Qiu, X., Li, S., Ji, Z., Xie, T., Li, Y., and Lin, W.
+
+</span>
+<span class="ltx_bibblock">Infinite-llm: Efficient llm service for long context with distattention and distributed kvcache, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2401.02669" title="">https://arxiv.org/abs/2401.02669</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib51">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Lin et al. (2023)</span>
+<span class="ltx_bibblock">
+Lin, C.-C., Huang, A. Y., and Lu, O. H.
+
+</span>
+<span class="ltx_bibblock">Artificial intelligence in intelligent tutoring systems toward sustainable education: a systematic review.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib51.1.1">Smart Learning Environments</em>, 10(1):41, 2023.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib52">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Liu et al. (2024a)</span>
+<span class="ltx_bibblock">
+Liu, A., Liu, J., Pan, Z., He, Y., Haffari, G., and Zhuang, B.
+
+</span>
+<span class="ltx_bibblock">Minicache: Kv cache compression in depth dimension for large language models, 2024a.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2405.14366" title="">https://arxiv.org/abs/2405.14366</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib53">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Liu et al. (2023a)</span>
+<span class="ltx_bibblock">
+Liu, L., Yang, X., Shen, Y., Hu, B., Zhang, Z., Gu, J., and Zhang, G.
+
+</span>
+<span class="ltx_bibblock">Think-in-memory: Recalling and post-thinking enable llms with long-term memory, 2023a.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2311.08719" title="">https://arxiv.org/abs/2311.08719</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib54">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Liu et al. (2024b)</span>
+<span class="ltx_bibblock">
+Liu, N. F., Lin, K., Hewitt, J., Paranjape, A., Bevilacqua, M., Petroni, F., and Liang, P.
+
+</span>
+<span class="ltx_bibblock">Lost in the middle: How language models use long contexts.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib54.1.1">Transactions of the Association for Computational Linguistics</em>, 12:157–173, 2024b.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib55">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Liu et al. (2023b)</span>
+<span class="ltx_bibblock">
+Liu, Z., Desai, A., Liao, F., Wang, W., Xie, V., Xu, Z., Kyrillidis, A., and Shrivastava, A.
+
+</span>
+<span class="ltx_bibblock">Scissorhands: Exploiting the persistence of importance hypothesis for llm kv cache compression at test time.
+
+</span>
+<span class="ltx_bibblock">In Oh, A., Naumann, T., Globerson, A., Saenko, K., Hardt, M., and Levine, S. (eds.), <em class="ltx_emph ltx_font_italic" id="bib.bib55.1.1">Advances in Neural Information Processing Systems</em>, volume 36, pp.  52342–52364. Curran Associates, Inc., 2023b.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib56">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Liu et al. (2024c)</span>
+<span class="ltx_bibblock">
+Liu, Z., Yuan, J., Jin, H., Zhong, S., Xu, Z., Braverman, V., Chen, B., and Hu, X.
+
+</span>
+<span class="ltx_bibblock">Kivi: A tuning-free asymmetric 2bit quantization for kv cache.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib56.1.1">arXiv preprint arXiv:2402.02750</em>, 2024c.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib57">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Lou et al. (2024)</span>
+<span class="ltx_bibblock">
+Lou, C., Jia, Z., Zheng, Z., and Tu, K.
+
+</span>
+<span class="ltx_bibblock">Sparser is faster and less is more: Efficient sparse attention for long-range transformers.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib57.1.1">arXiv preprint arXiv:2406.16747</em>, 2024.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib58">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Lu et al. (2023)</span>
+<span class="ltx_bibblock">
+Lu, J., An, S., Lin, M., Pergola, G., He, Y., Yin, D., Sun, X., and Wu, Y.
+
+</span>
+<span class="ltx_bibblock">Memochat: Tuning llms to use memos for consistent long-range open-domain conversation, 2023.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2308.08239" title="">https://arxiv.org/abs/2308.08239</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib59">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Mayes &amp; Roberts (2001)</span>
+<span class="ltx_bibblock">
+Mayes, A. and Roberts, N.
+
+</span>
+<span class="ltx_bibblock">Theories of episodic memory.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib59.1.1">Philosophical Transactions of the Royal Society of London. Series B: Biological Sciences</em>, 2001.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib60">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">McClelland et al. (1995)</span>
+<span class="ltx_bibblock">
+McClelland, J., McNaughton, B., and O’Reilly, R.
+
+</span>
+<span class="ltx_bibblock">Why there are complementary learning systems in the hippocampus and neocortex: Insights from the successes and failures of connectionist models of learning and memory.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib60.1.1">Psychological Review</em>, 1995.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib61">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Meng et al. (2023a)</span>
+<span class="ltx_bibblock">
+Meng, K., Bau, D., Andonian, A., and Belinkov, Y.
+
+</span>
+<span class="ltx_bibblock">Locating and editing factual associations in gpt, 2023a.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2202.05262" title="">https://arxiv.org/abs/2202.05262</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib62">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Meng et al. (2023b)</span>
+<span class="ltx_bibblock">
+Meng, K., Sharma, A. S., Andonian, A., Belinkov, Y., and Bau, D.
+
+</span>
+<span class="ltx_bibblock">Mass-editing memory in a transformer, 2023b.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2210.07229" title="">https://arxiv.org/abs/2210.07229</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib63">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Michelmann et al. (2023)</span>
+<span class="ltx_bibblock">
+Michelmann, S., Kumar, M., Norman, K. A., and Toneva, M.
+
+</span>
+<span class="ltx_bibblock">Large language models can segment narrative events similarly to humans, 2023.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2301.10297" title="">https://arxiv.org/abs/2301.10297</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib64">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Milner (1962)</span>
+<span class="ltx_bibblock">
+Milner, B.
+
+</span>
+<span class="ltx_bibblock">Les troubles de la mémoire accompagnant des lésions hippocampiques bilatérales.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib64.1.1">Psychologie Médicale</em>, 51:39–52, 1962.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib65">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Mitchell et al. (2022)</span>
+<span class="ltx_bibblock">
+Mitchell, E., Lin, C., Bosselut, A., Manning, C. D., and Finn, C.
+
+</span>
+<span class="ltx_bibblock">Memory-based model editing at scale, 2022.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2206.06520" title="">https://arxiv.org/abs/2206.06520</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib66">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Modarressi et al. (2025)</span>
+<span class="ltx_bibblock">
+Modarressi, A., Köksal, A., Imani, A., Fayyaz, M., and Schütze, H.
+
+</span>
+<span class="ltx_bibblock">Memllm: Finetuning llms to use an explicit read-write memory, 2025.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2404.11672" title="">https://arxiv.org/abs/2404.11672</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib67">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Mombaerts et al. (2024)</span>
+<span class="ltx_bibblock">
+Mombaerts, L., Ding, T., Banerjee, A., Felice, F., Taws, J., and Borogovac, T.
+
+</span>
+<span class="ltx_bibblock">Meta knowledge for retrieval augmented large language models, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2408.09017" title="">https://arxiv.org/abs/2408.09017</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib68">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Nawrot et al. (2024)</span>
+<span class="ltx_bibblock">
+Nawrot, P., Łańcucki, A., Chochowski, M., Tarjan, D., and Ponti, E. M.
+
+</span>
+<span class="ltx_bibblock">Dynamic memory compression: Retrofitting llms for accelerated inference, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2403.09636" title="">https://arxiv.org/abs/2403.09636</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib69">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">O’Reilly &amp; Norman (2002)</span>
+<span class="ltx_bibblock">
+O’Reilly, R. and Norman, K.
+
+</span>
+<span class="ltx_bibblock">Hippocampal and neocortical contributions to memory: Advances in the complementary learning systems framework.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib69.1.1">Trends in Cognitive Sciences</em>, 2002.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib70">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">O’Reilly et al. (2014)</span>
+<span class="ltx_bibblock">
+O’Reilly, R., Bhattacharyya, R., Howard, M., and Ketz, N.
+
+</span>
+<span class="ltx_bibblock">Complementary learning systems.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib70.1.1">Cognitive Science</em>, 2014.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib71">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">O’Keefe &amp; Nadel (1978)</span>
+<span class="ltx_bibblock">
+O’Keefe, J. and Nadel, L.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib71.1.1">The Hippocampus as a Cognitive Map</em>.
+
+</span>
+<span class="ltx_bibblock">Oxford: Clarendon Press, 1978.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib72">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Packer et al. (2024)</span>
+<span class="ltx_bibblock">
+Packer, C., Wooders, S., Lin, K., Fang, V., Patil, S. G., Stoica, I., and Gonzalez, J. E.
+
+</span>
+<span class="ltx_bibblock">Memgpt: Towards llms as operating systems, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2310.08560" title="">https://arxiv.org/abs/2310.08560</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib73">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Padmanabhan et al. (2023)</span>
+<span class="ltx_bibblock">
+Padmanabhan, S., Onoe, Y., Zhang, M., Durrett, G., and Choi, E.
+
+</span>
+<span class="ltx_bibblock">Propagating knowledge updates to lms through distillation.
+
+</span>
+<span class="ltx_bibblock">In Oh, A., Naumann, T., Globerson, A., Saenko, K., Hardt, M., and Levine, S. (eds.), <em class="ltx_emph ltx_font_italic" id="bib.bib73.1.1">Advances in Neural Information Processing Systems</em>, volume 36, pp.  47124–47142. Curran Associates, Inc., 2023.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib74">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Pang et al. (2024)</span>
+<span class="ltx_bibblock">
+Pang, J., Ye, F., Wong, D. F., He, X., Chen, W., and Wang, L.
+
+</span>
+<span class="ltx_bibblock">Anchor-based large language models, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2402.07616" title="">https://arxiv.org/abs/2402.07616</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib75">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Peng et al. (2023)</span>
+<span class="ltx_bibblock">
+Peng, B., Alcaide, E., Anthony, Q., Albalak, A., Arcadinho, S., Biderman, S., Cao, H., Cheng, X., Chung, M., Grella, M., GV, K. K., He, X., Hou, H., Lin, J., Kazienko, P., Kocon, J., Kong, J., Koptyra, B., Lau, H., Mantri, K. S. I., Mom, F., Saito, A., Song, G., Tang, X., Wang, B., Wind, J. S., Wozniak, S., Zhang, R., Zhang, Z., Zhao, Q., Zhou, P., Zhou, Q., Zhu, J., and Zhu, R.-J.
+
+</span>
+<span class="ltx_bibblock">Rwkv: Reinventing rnns for the transformer era, 2023.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2305.13048" title="">https://arxiv.org/abs/2305.13048</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib76">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Peng et al. (2024)</span>
+<span class="ltx_bibblock">
+Peng, B., Zhu, Y., Liu, Y., Bo, X., Shi, H., Hong, C., Zhang, Y., and Tang, S.
+
+</span>
+<span class="ltx_bibblock">Graph retrieval-augmented generation: A survey, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2408.08921" title="">https://arxiv.org/abs/2408.08921</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib77">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Pink et al. (2024)</span>
+<span class="ltx_bibblock">
+Pink, M., Vo, V. A., Wu, Q., Mu, J., Turek, J. S., Hasson, U., Norman, K. A., Michelmann, S., Huth, A., and Toneva, M.
+
+</span>
+<span class="ltx_bibblock">Assessing episodic memory in llms with sequence order recall tasks, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2410.08133" title="">https://arxiv.org/abs/2410.08133</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib78">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Schmidgall et al. (2025)</span>
+<span class="ltx_bibblock">
+Schmidgall, S., Su, Y., Wang, Z., Sun, X., Wu, J., Yu, X., Liu, J., Liu, Z., and Barsoum, E.
+
+</span>
+<span class="ltx_bibblock">Agent laboratory: Using llm agents as research assistants.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib78.1.1">arXiv preprint arXiv:2501.04227</em>, 2025.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib79">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Schwartz &amp; Evans (2001)</span>
+<span class="ltx_bibblock">
+Schwartz, B. and Evans, S.
+
+</span>
+<span class="ltx_bibblock">Episodic memory in primates.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib79.1.1">American Journal of Primatology: Official Journal of the American Society of Primatologists</em>, 2001.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib80">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Snell et al. (2022)</span>
+<span class="ltx_bibblock">
+Snell, C., Klein, D., and Zhong, R.
+
+</span>
+<span class="ltx_bibblock">Learning by distilling context, 2022.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2209.15189" title="">https://arxiv.org/abs/2209.15189</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib81">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Squire &amp; Zola (1996)</span>
+<span class="ltx_bibblock">
+Squire, L. and Zola, S.
+
+</span>
+<span class="ltx_bibblock">Structure and function of declarative and nondeclarative memory systems.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib81.1.1">PNAS</em>, 1996.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib82">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Sugar &amp; Moser (2019)</span>
+<span class="ltx_bibblock">
+Sugar, J. and Moser, M.
+
+</span>
+<span class="ltx_bibblock">Episodic memory: Neuronal codes for what, where, and when.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib82.1.1">Hippocampus</em>, 2019.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib83">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Sukhbaatar et al. (2015)</span>
+<span class="ltx_bibblock">
+Sukhbaatar, S., Szlam, A., Weston, J., and Fergus, R.
+
+</span>
+<span class="ltx_bibblock">End-to-end memory networks.
+
+</span>
+<span class="ltx_bibblock">In Cortes, C., Lawrence, N., Lee, D., Sugiyama, M., and Garnett, R. (eds.), <em class="ltx_emph ltx_font_italic" id="bib.bib83.1.1">Advances in Neural Information Processing Systems</em>, volume 28. Curran Associates, Inc., 2015.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/1503.08895" title="">https://arxiv.org/abs/1503.08895</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib84">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Sun et al. (2024a)</span>
+<span class="ltx_bibblock">
+Sun, Y., Dong, L., Zhu, Y., Huang, S., Wang, W., Ma, S., Zhang, Q., Wang, J., and Wei, F.
+
+</span>
+<span class="ltx_bibblock">You only cache once: Decoder-decoder architectures for language models, 2024a.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2405.05254" title="">https://arxiv.org/abs/2405.05254</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib85">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Sun et al. (2024b)</span>
+<span class="ltx_bibblock">
+Sun, Y., Li, X., Dalal, K., Xu, J., Vikram, A., Zhang, G., Dubois, Y., Chen, X., Wang, X., Koyejo, S., Hashimoto, T., and Guestrin, C.
+
+</span>
+<span class="ltx_bibblock">Learning to (learn at test time): Rnns with expressive hidden states, 2024b.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2407.04620" title="">https://arxiv.org/abs/2407.04620</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib86">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Tan et al. (2024)</span>
+<span class="ltx_bibblock">
+Tan, C., Zhang, G., and Fu, J.
+
+</span>
+<span class="ltx_bibblock">Massive editing for large language models via meta learning, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2311.04661" title="">https://arxiv.org/abs/2311.04661</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib87">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Tang et al. (2024)</span>
+<span class="ltx_bibblock">
+Tang, H., Lin, Y., Lin, J., Han, Q., Hong, S., Yao, Y., and Wang, G.
+
+</span>
+<span class="ltx_bibblock">Razorattention: Efficient kv cache compression through retrieval heads, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2407.15891" title="">https://arxiv.org/abs/2407.15891</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib88">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Tulving (1972)</span>
+<span class="ltx_bibblock">
+Tulving, E.
+
+</span>
+<span class="ltx_bibblock">Episodic and semantic memory.
+
+</span>
+<span class="ltx_bibblock">In Tulving, E. and Donaldson, W. (eds.), <em class="ltx_emph ltx_font_italic" id="bib.bib88.1.1">Organization of Memory</em>, pp.  381–403. Academic Press, New York, 1972.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib89">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Valipour et al. (2022)</span>
+<span class="ltx_bibblock">
+Valipour, M., Rezagholizadeh, M., Kobyzev, I., and Ghodsi, A.
+
+</span>
+<span class="ltx_bibblock">Dylora: Parameter efficient tuning of pre-trained models using dynamic search-free low rank adaptation, 2022.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib90">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Wang et al. (2024a)</span>
+<span class="ltx_bibblock">
+Wang, B., Liang, X., Yang, J., Huang, H., Wu, S., Wu, P., Lu, L., Ma, Z., and Li, Z.
+
+</span>
+<span class="ltx_bibblock">Enhancing large language model with self-controlled memory framework, 2024a.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2304.13343" title="">https://arxiv.org/abs/2304.13343</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib91">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Wang et al. (2024b)</span>
+<span class="ltx_bibblock">
+Wang, H., Liu, T., Li, R., Cheng, M., Zhao, T., and Gao, J.
+
+</span>
+<span class="ltx_bibblock">Roselora: Row and column-wise sparse low-rank adaptation of pre-trained language model for knowledge editing and fine-tuning, 2024b.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2406.10777" title="">https://arxiv.org/abs/2406.10777</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib92">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Wang et al. (2025)</span>
+<span class="ltx_bibblock">
+Wang, J., Paliotta, D., May, A., Rush, A. M., and Dao, T.
+
+</span>
+<span class="ltx_bibblock">The mamba in the llama: Distilling and accelerating hybrid models, 2025.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2408.15237" title="">https://arxiv.org/abs/2408.15237</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib93">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Wang et al. (2024c)</span>
+<span class="ltx_bibblock">
+Wang, P., Li, Z., Zhang, N., Xu, Z., Yao, Y., Jiang, Y., Xie, P., Huang, F., and Chen, H.
+
+</span>
+<span class="ltx_bibblock">Wise: Rethinking the knowledge memory for lifelong model editing of large language models, 2024c.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2405.14768" title="">https://arxiv.org/abs/2405.14768</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib94">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Wu et al. (2022a)</span>
+<span class="ltx_bibblock">
+Wu, Q., Lan, Z., Qian, K., Gu, J., Geramifard, A., and Yu, Z.
+
+</span>
+<span class="ltx_bibblock">Memformer: A memory-augmented transformer for sequence modeling.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib94.1.1">Findings of the Association for Computational Linguistics: AACL-IJCNLP 2022</em>, pp.  308–318. Association for Computational Linguistics, November 2022a.
+
+</span>
+<span class="ltx_bibblock">doi: <span class="ltx_ref ltx_nolink ltx_Url ltx_ref_self">10.18653/v1/2022.findings-aacl.29</span>.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://aclanthology.org/2022.findings-aacl.29/" title="">https://aclanthology.org/2022.findings-aacl.29/</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib95">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Wu et al. (2018)</span>
+<span class="ltx_bibblock">
+Wu, Y., Wayne, G., Graves, A., and Lillicrap, T.
+
+</span>
+<span class="ltx_bibblock">The kanerva machine: A generative distributed memory.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib95.1.1">International Conference on Learning Representations</em>, 2018.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://openreview.net/forum?id=S1HlA-ZAZ" title="">https://openreview.net/forum?id=S1HlA-ZAZ</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib96">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Wu et al. (2022b)</span>
+<span class="ltx_bibblock">
+Wu, Y., Rabe, M. N., Hutchins, D., and Szegedy, C.
+
+</span>
+<span class="ltx_bibblock">Memorizing transformers.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib96.1.1">International Conference on Learning Representations</em>, 2022b.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://openreview.net/forum?id=TrjbxzRcnf-" title="">https://openreview.net/forum?id=TrjbxzRcnf-</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib97">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Wu et al. (2024)</span>
+<span class="ltx_bibblock">
+Wu, Z., Arora, A., Wang, Z., Geiger, A., Jurafsky, D., Manning, C. D., and Potts, C.
+
+</span>
+<span class="ltx_bibblock">Reft: Representation finetuning for language models, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2404.03592" title="">https://arxiv.org/abs/2404.03592</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib98">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Xi et al. (2023)</span>
+<span class="ltx_bibblock">
+Xi, Z., Chen, W., Guo, X., He, W., Ding, Y., Hong, B., Zhang, M., Wang, J., Jin, S., Zhou, E., Zheng, R., Fan, X., Wang, X., Xiong, L., Zhou, Y., Wang, W., Jiang, C., Zou, Y., Liu, X., Yin, Z., Dou, S., Weng, R., Cheng, W., Zhang, Q., Qin, W., Zheng, Y., Qiu, X., Huang, X., and Gui, T.
+
+</span>
+<span class="ltx_bibblock">The rise and potential of large language model based agents: A survey, 2023.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2309.07864" title="">https://arxiv.org/abs/2309.07864</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib99">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Xiao et al. (2024)</span>
+<span class="ltx_bibblock">
+Xiao, C., Zhang, P., Han, X., Xiao, G., Lin, Y., Zhang, Z., Liu, Z., and Sun, M.
+
+</span>
+<span class="ltx_bibblock">Infllm: Training-free long-context extrapolation for llms with an efficient context memory, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2402.04617" title="">https://arxiv.org/abs/2402.04617</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib100">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Xu et al. (2021)</span>
+<span class="ltx_bibblock">
+Xu, R., Luo, F., Zhang, Z., Tan, C., Chang, B., Huang, S., and Huang, F.
+
+</span>
+<span class="ltx_bibblock">Raise a child in large language model: Towards effective and generalizable fine-tuning.
+
+</span>
+<span class="ltx_bibblock">In Moens, M.-F., Huang, X., Specia, L., and Yih, S. W.-t. (eds.), <em class="ltx_emph ltx_font_italic" id="bib.bib100.1.1">Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing</em>, pp.  9514–9528, Online and Punta Cana, Dominican Republic, November 2021. Association for Computational Linguistics.
+
+</span>
+<span class="ltx_bibblock">doi: <span class="ltx_ref ltx_nolink ltx_Url ltx_ref_self">10.18653/v1/2021.emnlp-main.749</span>.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://aclanthology.org/2021.emnlp-main.749/" title="">https://aclanthology.org/2021.emnlp-main.749/</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib101">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Yadav et al. (2023)</span>
+<span class="ltx_bibblock">
+Yadav, P., Tam, D., Choshen, L., Raffel, C., and Bansal, M.
+
+</span>
+<span class="ltx_bibblock">TIES-merging: Resolving interference when merging models.
+
+</span>
+<span class="ltx_bibblock">In <em class="ltx_emph ltx_font_italic" id="bib.bib101.1.1">Thirty-seventh Conference on Neural Information Processing Systems</em>, 2023.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://openreview.net/forum?id=xtaX3WyCj1" title="">https://openreview.net/forum?id=xtaX3WyCj1</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib102">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Yang et al. (2024a)</span>
+<span class="ltx_bibblock">
+Yang, D., Han, X., Gao, Y., Hu, Y., Zhang, S., and Zhao, H.
+
+</span>
+<span class="ltx_bibblock">Pyramidinfer: Pyramid kv cache compression for high-throughput llm inference, 2024a.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2405.12532" title="">https://arxiv.org/abs/2405.12532</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib103">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Yang et al. (2024b)</span>
+<span class="ltx_bibblock">
+Yang, S., Gribovskaya, E., Kassner, N., Geva, M., and Riedel, S.
+
+</span>
+<span class="ltx_bibblock">Do large language models latently perform multi-hop reasoning?
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib103.1.1">arXiv preprint arXiv:2402.16837</em>, 2024b.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib104">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Ye et al. (2024a)</span>
+<span class="ltx_bibblock">
+Ye, L., Tao, Z., Huang, Y., and Li, Y.
+
+</span>
+<span class="ltx_bibblock">Chunkattention: Efficient self-attention with prefix-aware kv cache and two-phase partition, 2024a.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2402.15220" title="">https://arxiv.org/abs/2402.15220</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib105">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Ye et al. (2024b)</span>
+<span class="ltx_bibblock">
+Ye, T., Dong, L., Xia, Y., Sun, Y., Zhu, Y., Huang, G., and Wei, F.
+
+</span>
+<span class="ltx_bibblock">Differential transformer, 2024b.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2410.05258" title="">https://arxiv.org/abs/2410.05258</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib106">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Yen et al. (2024)</span>
+<span class="ltx_bibblock">
+Yen, H., Gao, T., and Chen, D.
+
+</span>
+<span class="ltx_bibblock">Long-context language modeling with parallel context encoding, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2402.16617" title="">https://arxiv.org/abs/2402.16617</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib107">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Yin et al. (2024)</span>
+<span class="ltx_bibblock">
+Yin, F., Ye, X., and Durrett, G.
+
+</span>
+<span class="ltx_bibblock">Lofit: Localized fine-tuning on llm representations, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2406.01563" title="">https://arxiv.org/abs/2406.01563</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib108">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Yogatama et al. (2021)</span>
+<span class="ltx_bibblock">
+Yogatama, D., de Masson d’Autume, C., and Kong, L.
+
+</span>
+<span class="ltx_bibblock">Adaptive semiparametric language models.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib108.1.1">Transactions of the Association for Computational Linguistics</em>, 9:362–373, 04 2021.
+
+</span>
+<span class="ltx_bibblock">ISSN 2307-387X.
+
+</span>
+<span class="ltx_bibblock">doi: <span class="ltx_ref ltx_nolink ltx_Url ltx_ref_self">10.1162/tacl˙a˙00371</span>.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://doi.org/10.1162/tacl_a_00371" title="">https://doi.org/10.1162/tacl_a_00371</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib109">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Yu et al. (2023)</span>
+<span class="ltx_bibblock">
+Yu, L., Chen, Q., Zhou, J., and He, L.
+
+</span>
+<span class="ltx_bibblock">Melo: Enhancing model editing with neuron-indexed dynamic lora, 2023.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2312.11795" title="">https://arxiv.org/abs/2312.11795</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib110">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Yu et al. (2024)</span>
+<span class="ltx_bibblock">
+Yu, T., Xu, A., and Akkiraju, R.
+
+</span>
+<span class="ltx_bibblock">In defense of rag in the era of long-context language models, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2409.01666" title="">https://arxiv.org/abs/2409.01666</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib111">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Yue et al. (2024)</span>
+<span class="ltx_bibblock">
+Yue, Y., Yuan, Z., Duanmu, H., Zhou, S., Wu, J., and Nie, L.
+
+</span>
+<span class="ltx_bibblock">Wkvquant: Quantizing weight and key/value cache for large language models gains more, 2024.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://arxiv.org/abs/2402.12065" title="">https://arxiv.org/abs/2402.12065</a>.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib112">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Zheng et al. (2024)</span>
+<span class="ltx_bibblock">
+Zheng, L., Yin, L., Xie, Z., Sun, C., Huang, J., Yu, C. H., Cao, S., Kozyrakis, C., Stoica, I., Gonzalez, J. E., et al.
+
+</span>
+<span class="ltx_bibblock">Sglang: Efficient execution of structured language model programs.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib112.1.1">arXiv preprint arXiv:2312.07104</em>, 2024.
+
+</span>
+</li>
+<li class="ltx_bibitem" id="bib.bib113">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Zhong et al. (2024)</span>
+<span class="ltx_bibblock">
+Zhong, W., Guo, L., Gao, Q., Ye, H., and Wang, Y.
+
+</span>
+<span class="ltx_bibblock">Memorybank: Enhancing large language models with long-term memory.
+
+</span>
+<span class="ltx_bibblock"><em class="ltx_emph ltx_font_italic" id="bib.bib113.1.1">Proceedings of the AAAI Conference on Artificial Intelligence</em>, 38(17), Mar. 2024.
+
+</span>
+<span class="ltx_bibblock">doi: <span class="ltx_ref ltx_nolink ltx_Url ltx_ref_self">10.1609/aaai.v38i17.29946</span>.
+
+</span>
+<span class="ltx_bibblock">URL <a class="ltx_ref ltx_url ltx_font_typewriter" href="https://ojs.aaai.org/index.php/AAAI/article/view/29946" title="">https://ojs.aaai.org/index.php/AAAI/article/view/29946</a>.
+
+</span>
+</li>
+</ul>
+</section>
+<div class="ltx_pagination ltx_role_newpage"></div>
+<div about="" class="ltx_rdf" content="Mathis Pink, Qinyuan Wu, Vy Ai Vo, Javier Turek, Jianing Mu, Alexander Huth, Mariya Toneva" property="dcterms:creator"></div>
+<div about="" class="ltx_rdf" content="Machine Learning, ICML" property="dcterms:subject"></div>
+<div about="" class="ltx_rdf" content="Proceedings of the International Conference on Machine Learning 2025" property="dcterms:subject"></div>
+<div about="" class="ltx_rdf" content="Position: Episodic Memory is the Missing Piece for Long-Term LLM Agents" property="dcterms:title"></div>
+<div class="ltx_pagination ltx_role_newpage"></div>
+<div class="ltx_para ltx_noindent" id="p7">
+<p class="ltx_p" id="p7.1"></p>
+</div>
+</article>
+</div>
+<footer class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Mon Feb 10 19:13:39 2025 by <a class="ltx_LaTeXML_logo" href="http://dlmf.nist.gov/LaTeXML/"><span style="letter-spacing:-0.2em; margin-right:0.1em;">L<span class="ltx_font_smallcaps" style="position:relative; bottom:2.2pt;">a</span>T<span class="ltx_font_smallcaps" style="font-size:120%;position:relative; bottom:-0.2ex;">e</span></span><span style="font-size:90%; position:relative; bottom:-0.2ex;">XML</span><img alt="Mascot Sammy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg=="/></a>
+</div></footer>
+</div>
+</body>
+</html>

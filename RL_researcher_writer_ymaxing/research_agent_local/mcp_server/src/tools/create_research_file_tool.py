@@ -13,17 +13,17 @@ from ..config.constants import (
     TAVILY_RESULTS_FILE,
     TAVILY_RESULTS_SELECTED_FILE,
     URLS_FROM_GUIDELINES_CODE_FOLDER,
+    URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER,
     URLS_FROM_GUIDELINES_FOLDER,
     URLS_FROM_GUIDELINES_YOUTUBE_FOLDER,
     URLS_FROM_RESEARCH_FOLDER,
 )
 from ..utils.file_utils import (
-    collect_directory_markdowns,
     collect_directory_markdowns_with_titles,
     read_file_safe,
     validate_research_folder,
 )
-from ..utils.markdown_utils import build_research_results_section, build_sources_section, combine_research_sections
+from ..utils.markdown_utils import build_research_results_section, build_sources_section, combine_research_sections, markdown_collapsible
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +31,19 @@ logger = logging.getLogger(__name__)
 def _wrap_xml(tag: str, attrs: str, content: str) -> str:
     """Wrap *content* in an XML element for downstream LLM provenance detection."""
     return f"<{tag} {attrs}>\n{content}\n</{tag}>"
+
+
+def _extract_page_heading(content: str, fallback: str) -> str:
+    """Return the text of the first H1 heading found in *content*, outside code blocks."""
+    in_code_block = False
+    for line in content.split("\n"):
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_code_block = not in_code_block
+            continue
+        if not in_code_block and stripped.startswith("# "):
+            return stripped.lstrip("#").strip()
+    return fallback
 
 
 def _build_tagged_sections(research_output_dir: Path) -> str:
@@ -56,6 +69,7 @@ def _build_tagged_sections(research_output_dir: Path) -> str:
     additional_sources_dir = research_output_dir / URLS_FROM_GUIDELINES_FOLDER
     youtube_transcripts_dir = research_output_dir / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER
     local_files_dir = research_output_dir / LOCAL_FILES_FROM_RESEARCH_FOLDER
+    exploitation_guideline_dir = research_output_dir / URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER
 
     # --- Tavily research results (non-golden) — one block per phase ---
     if selected_results_file.exists():
@@ -100,10 +114,11 @@ def _build_tagged_sections(research_output_dir: Path) -> str:
                     if first_line.startswith("Phase:") and "[EXPLORATION]" in first_line
                     else "exploitation"
                 )
+                title = _extract_page_heading(content, f.stem)
                 scraped_parts.append(_wrap_xml(
                     "research_source",
                     f'type="scraped_from_research" phase="{phase}" file="{f.name}"',
-                    content,
+                    markdown_collapsible(title, content),
                 ))
     sources_scraped_section = (
         "\n\n".join(scraped_parts)
@@ -135,7 +150,7 @@ def _build_tagged_sections(research_output_dir: Path) -> str:
     )
 
     # --- Additional scraped guideline URLs (golden) ---
-    additional_sources = collect_directory_markdowns(additional_sources_dir)
+    additional_sources = collect_directory_markdowns_with_titles(additional_sources_dir)
     additional_sources_section = _wrap_xml(
         "golden_source", 'type="guideline_urls"',
         build_sources_section(
@@ -154,6 +169,28 @@ def _build_tagged_sections(research_output_dir: Path) -> str:
         ),
     )
 
+    # --- Exploitation sources from guidelines "Other Sources" section (non-golden) ---
+    # Placed immediately after the golden guideline_urls section in the final document.
+    exploitation_guideline_parts: list[str] = []
+    if exploitation_guideline_dir.exists():
+        for f in sorted(exploitation_guideline_dir.glob("*.md")):
+            content = read_file_safe(f)
+            if content:
+                title = _extract_page_heading(content, f.stem)
+                exploitation_guideline_parts.append(_wrap_xml(
+                    "research_source",
+                    f'type="guideline_exploitation" phase="exploitation" file="{f.name}"',
+                    markdown_collapsible(title, content),
+                ))
+    exploitation_guideline_section = (
+        "\n\n".join(exploitation_guideline_parts)
+        if exploitation_guideline_parts
+        else _wrap_xml(
+            "research_source", 'type="guideline_exploitation" phase="exploitation"',
+            "## Exploitation Sources (from Article Guidelines — Other Sources)\n\n_No exploitation guideline sources found._\n",
+        )
+    )
+
     final_md = combine_research_sections(
         research_results_section,
         sources_scraped_section,
@@ -161,11 +198,13 @@ def _build_tagged_sections(research_output_dir: Path) -> str:
         youtube_transcripts_section,
         additional_sources_section,
         local_files_section,
+        exploitation_guideline_section,
     )
 
     counts = {
         "research_results_count": len(chunks),
         "scraped_sources_count": len(scraped_parts),
+        "exploitation_guideline_sources_count": len(exploitation_guideline_parts),
         "code_sources_count": len(code_sources),
         "youtube_transcripts_count": len(youtube_sources),
         "additional_sources_count": len(additional_sources),
@@ -187,7 +226,7 @@ def create_research_file_tool(research_directory: str) -> Dict[str, Any]:
     Falls back to the tagged multi-section assembly alone when no
     deduplicated file is present.
     """
-    logger.debug(f"Creating research files for directory: {research_directory}")
+    logger.info(f"Creating research files for directory: {research_directory}")
 
     article_dir = Path(research_directory)
     research_output_dir = article_dir / RESEARCH_OUTPUT_FOLDER

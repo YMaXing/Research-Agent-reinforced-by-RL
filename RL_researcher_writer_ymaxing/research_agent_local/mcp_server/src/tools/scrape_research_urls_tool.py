@@ -107,11 +107,17 @@ def deduplicate_urls(research_output_path: Path, urls: list[str]) -> tuple[list[
             with open(guidelines_json_path, "r", encoding="utf-8") as f:
                 guidelines_data = json.load(f)
 
-            # Collect URLs from steps 2.2 and 2.3 (other_urls and github_urls)
+            # Collect URLs from golden other_urls, github_urls, and exploitation URLs
             other_urls_guidelines = guidelines_data.get("other_urls", [])
             github_urls_guidelines = guidelines_data.get("github_urls", [])
+            exploitation_other = guidelines_data.get("exploitation_other_urls", [])
+            exploitation_github = guidelines_data.get("exploitation_github_urls", [])
+            exploitation_youtube = guidelines_data.get("exploitation_youtube_videos_urls", [])
             already_processed_urls.update(other_urls_guidelines)
             already_processed_urls.update(github_urls_guidelines)
+            already_processed_urls.update(exploitation_other)
+            already_processed_urls.update(exploitation_github)
+            already_processed_urls.update(exploitation_youtube)
 
         except (IOError, OSError, json.JSONDecodeError) as e:
             msg = f"⚠️ Warning: Could not read {GUIDELINES_FILENAMES_FILE} for deduplication: {e}"
@@ -189,9 +195,22 @@ def write_scraped_results_to_files(
         if res.get("success", False):
             successful_scrapes += 1
 
+        md_body = cleaned_markdown or ""
+        # Inject H1 title so _extract_page_heading() has a readable collapsible
+        # summary even when LLM cleaning removed the article's heading.
+        # Check for H1 only ("# ") so that articles where only H2/H3 subheadings
+        # survived cleaning also get the Firecrawl page title injected.
+        if title and title.lower() not in {"n/a", "scraping timeout", "scraping failed", ""} and not any(
+            ln.strip().startswith("# ") for ln in md_body.splitlines()
+        ):
+            md_body = f"# {title}\n\n{md_body}"
+
+        url_header = f"**Source URL:** <{url}>\n\n" if url else ""
         if url_to_phase:
             phase = url_to_phase.get(url, "[EXPLOITATION]")
-            cleaned_markdown = f"Phase: {phase}\n\n" + (cleaned_markdown or "")
+            cleaned_markdown = f"Phase: {phase}\n\n{url_header}{md_body}"
+        else:
+            cleaned_markdown = url_header + md_body
 
         filename = build_filename(title, url, existing_names)
         output_path = output_dir / filename
@@ -233,7 +252,7 @@ async def process_and_save_urls(
 
     # Process OTHER URLs
     if other_urls:
-        logger.debug(
+        logger.info(
             f"Starting scraping of {len(other_urls)} web pages with a concurrency limit of {concurrency_limit}..."
         )
 
@@ -248,7 +267,7 @@ async def process_and_save_urls(
 
     # Process arXiv URLs
     if arxiv_urls:
-        logger.debug(f"Starting arXiv scraping of {len(arxiv_urls)} paper(s)...")
+        logger.info(f"Starting arXiv scraping of {len(arxiv_urls)} paper(s)...")
         chat_model = get_chat_model(settings.scraping_model)
         arxiv_tasks = [
             scrape_arxiv_url(url, article_guidelines, chat_model) for url in arxiv_urls
@@ -262,7 +281,7 @@ async def process_and_save_urls(
 
     # Process GITHUB URLs
     if github_urls:
-        logger.debug(f"Starting gitingest processing of {len(github_urls)} GitHub repo(s)...")
+        logger.info(f"Starting gitingest processing of {len(github_urls)} GitHub repo(s)...")
         github_success = 0
         for url in github_urls:
             try:
@@ -290,7 +309,7 @@ async def process_and_save_urls(
 
     # Process YOUTUBE URLs
     if youtube_urls:
-        logger.debug(f"Starting transcription of {len(youtube_urls)} YouTube video(s)...")
+        logger.info(f"Starting transcription of {len(youtube_urls)} YouTube video(s)...")
         try:
             yt_semaphore = asyncio.Semaphore(YOUTUBE_TRANSCRIPTION_MAX_CONCURRENT_REQUESTS)
 
@@ -333,7 +352,7 @@ async def scrape_research_urls_tool(research_directory: str, concurrency_limit: 
     Returns:
         Dict with status, processing results, and file paths
     """
-    logger.debug(f"Scraping research URLs from directory: {research_directory}")
+    logger.info(f"Scraping research URLs from directory: {research_directory}")
 
     # Convert to Path object
     research_path = Path(research_directory)

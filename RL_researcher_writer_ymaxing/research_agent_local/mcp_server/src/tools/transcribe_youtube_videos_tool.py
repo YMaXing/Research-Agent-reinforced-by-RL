@@ -6,7 +6,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict
 
-from ..app.youtube_handler import process_youtube_url
+from ..app.youtube_handler import get_video_id, process_youtube_url
 from ..config.constants import (
     GUIDELINES_FILENAMES_FILE,
     RESEARCH_OUTPUT_FOLDER,
@@ -32,7 +32,7 @@ async def transcribe_youtube_videos_tool(research_directory: str) -> Dict[str, A
     Returns:
         Dict with status, processing results, and file paths
     """
-    logger.debug(f"Starting transcription of YouTube videos from {research_directory}")
+    logger.info(f"Starting transcription of YouTube videos from {research_directory}")
 
     research_path = Path(research_directory)
     research_output_path = research_path / RESEARCH_OUTPUT_FOLDER
@@ -54,6 +54,7 @@ async def transcribe_youtube_videos_tool(research_directory: str) -> Dict[str, A
         raise ValueError(msg) from e
 
     youtube_urls: list[str] = data.get("youtube_videos_urls", [])
+    url_titles: dict[str, str] = data.get("url_titles", {})
 
     if not youtube_urls:
         return {
@@ -66,11 +67,25 @@ async def transcribe_youtube_videos_tool(research_directory: str) -> Dict[str, A
     dest_folder = research_output_path / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER
     dest_folder.mkdir(parents=True, exist_ok=True)
 
-    logger.debug(f"Processing {len(youtube_urls)} YouTube URL(s)...")
+    logger.info(f"Processing {len(youtube_urls)} YouTube URL(s)...")
 
     semaphore = asyncio.Semaphore(YOUTUBE_TRANSCRIPTION_MAX_CONCURRENT_REQUESTS)
     tasks = [process_youtube_url(url, dest_folder, semaphore) for url in youtube_urls]
     await asyncio.gather(*tasks)
+
+    # Post-process: inject guideline title as H1 when the transcription lacks one
+    for url in youtube_urls:
+        title = url_titles.get(url, "")
+        if not title:
+            continue
+        video_id = get_video_id(url)
+        if not video_id:
+            video_id = url.replace("https://", "").replace("http://", "").replace("/", "_")
+        yt_file = dest_folder / f"{video_id}.md"
+        if yt_file.exists():
+            content = yt_file.read_text(encoding="utf-8")
+            if not any(ln.strip().startswith("# ") for ln in content.splitlines()):
+                yt_file.write_text(f"# {title}\n\n{content}", encoding="utf-8")
 
     return {
         "status": "success",

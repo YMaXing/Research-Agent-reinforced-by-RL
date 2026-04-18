@@ -67,7 +67,10 @@ three criteria:
         - We expect a perfect match between the expected section and the generated section. Intuitively, you can
         think of the section guideline as a sketch, a compressed version of the generated section.
         - Less: If any topic from the expected article guideline is missing from the generated article, you will assign 
-        a score of 0.
+        a score of 0. This includes explicitly required section transitions: if the article guideline specifies a 
+        transition at the end of a section (e.g., via a "Transition to Section X: [text]" instruction), check that the 
+        generated section ends with such a closing transition sentence or paragraph. A missing section-closing transition that is 
+        explicitly required by the guideline scores 0.
         - More: If the generated section has additional topics that are NOT related to the expected main idea or topic 
         of that section in the article guideline, you will assign a score of 0. However, if the additional topics are 
         complementary information closely related to the expected main idea or topic of that section (e.g., depth or 
@@ -102,10 +105,13 @@ three criteria:
         Pydantic structured outputs work, but the generated section instead uses a `RedditThread` class for 
         the same purpose, this is a content mismatch and scores 0.
         - If section constraints are provided, we are looking only for a rough approximation of the length. The exact
-        section length criterias are present in the article guideline. Errors of ±100 units are acceptable. Units can
-        be words, characters, or reading time. For example, if the expected section length is 100 words and the generated section length 
-        is 190 words, you will assign a score of 1. But if the generated section is 230 words, as it exceeds the tolerance range,
-        you will assign a score of 0.
+        section length criteria are present in the article guideline. Apply a tolerance of ±10% of the stated target
+        (minimum ±25 words): if the prose-only word count falls more than that tolerance below the target, or exceeds
+        the target by more than that tolerance, assign a score of 0. For example, a 400-word target allows 360–440
+        words (±40); a 250-word target allows 225–275 words (±25); a 700-word target allows 630–770 words (±70).
+        - **Prose-only word count:** When the unit is words, count prose words only — exclude fenced code blocks
+        (all content between opening and closing ``` delimiters), Mermaid diagram blocks, table cell
+        text, image/diagram captions, and inline citation markers (e.g. `[[N]](url)` tokens).
    2. **Research Anchoring**: For each expected section in the article guideline, you will evaluate whether the generated 
    section content is based on or derived from the provided research:
         - We expect each section from the generated article to be generated entirely based on the ideas provided
@@ -369,7 +375,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = UserIntentMetricFewShotExamples(
                                     "extract_json_from_response function (step 5 in the article as a helper), "
                                     "(7) extracts the output, and (8) prints the extracted Python dictionary. "
                                     "All steps are present and appear in the correct order. Word count is "
-                                    "approximately 300 words (excluding code)."
+                                    "approximately 300 words (prose only, excluding fenced code blocks)."
                                 ),
                             ),
                             research_anchoring=CriterionScore(
@@ -620,7 +626,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = UserIntentMetricFewShotExamples(
                                     "recovery), connects to prior lessons (workflows, structured outputs, "
                                     "tools as building blocks), and transitions to Section 2 about teaching "
                                     "models to think. The consequences are clearly outlined. Word count is "
-                                    "approximately 280 words, within the 250-350 word range."
+                                    "approximately 280 words (prose only, excluding fenced code blocks), within the 250-350 word range."
                                 ),
                             ),
                             research_anchoring=CriterionScore(
@@ -662,7 +668,8 @@ DEFAULT_FEW_SHOT_EXAMPLES = UserIntentMetricFewShotExamples(
                                     "assistant task, and clarifies the limitations (plan and answer mixed "
                                     "in a single block, no iterative loop to refine/correct). The "
                                     "transition to Section 3 about separating the two processes is present. "
-                                    "Word count is approximately 250 words, within the 250-350 range."
+                                    "Word count is approximately 250 words (prose only, excluding "
+                                    "fenced code blocks), within the 250-350 range."
                                 ),
                             ),
                             research_anchoring=CriterionScore(
@@ -703,8 +710,8 @@ DEFAULT_FEW_SHOT_EXAMPLES = UserIntentMetricFewShotExamples(
                                     "interpretability, iterative loops). It positions ReAct (interleaved "
                                     "Thought-Action-Observation) and Plan-and-Execute (separate planning "
                                     "and execution phases). The transition to Section 4 for ReAct in-depth "
-                                    "coverage is present. Word count is approximately 180 words, within "
-                                    "the 150-250 range."
+                                    "coverage is present. Word count is approximately 180 words (prose only, "
+                                    "excluding fenced code blocks), within the 150-250 range."
                                 ),
                             ),
                             research_anchoring=CriterionScore(

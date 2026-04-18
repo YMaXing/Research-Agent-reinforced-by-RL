@@ -21,13 +21,13 @@ from src.tools.transcribe_youtube_videos_tool import transcribe_youtube_videos_t
 _PATCH_PROCESS = "src.tools.transcribe_youtube_videos_tool.process_youtube_url"
 
 
-def _setup_dir(tmp_path: Path, youtube_urls: list[str] | None = None) -> Path:
+def _setup_dir(tmp_path: Path, youtube_urls: list[str] | None = None, url_titles: dict | None = None) -> Path:
     """Create a valid research directory with guidelines_filenames.json."""
     (tmp_path / ARTICLE_GUIDELINE_FILE).write_text("# Topic", encoding="utf-8")
     output = tmp_path / RESEARCH_OUTPUT_FOLDER
     output.mkdir()
 
-    data = {"youtube_videos_urls": youtube_urls or []}
+    data = {"youtube_videos_urls": youtube_urls or [], "url_titles": url_titles or {}}
     (output / GUIDELINES_FILENAMES_FILE).write_text(
         json.dumps(data), encoding="utf-8"
     )
@@ -95,3 +95,20 @@ class TestTranscribeYoutubeVideosTool:
         assert call_args.args[0] == urls[0]
         dest = call_args.args[1]
         assert dest == research_dir / RESEARCH_OUTPUT_FOLDER / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER
+
+    async def test_title_injected_into_youtube_file(self, tmp_path):
+        """Title from url_titles is prepended as H1 when transcription has no H1."""
+        url = "https://youtube.com/watch?v=abc"
+        research_dir = _setup_dir(tmp_path, [url], url_titles={url: "My Awesome Video"})
+
+        async def fake_transcribe(u, dest_folder, semaphore):
+            dest_folder.mkdir(parents=True, exist_ok=True)
+            (dest_folder / "abc.md").write_text("Transcript content without heading.", encoding="utf-8")
+
+        with patch(_PATCH_PROCESS, side_effect=fake_transcribe):
+            await transcribe_youtube_videos_tool(str(research_dir))
+
+        yt_file = research_dir / RESEARCH_OUTPUT_FOLDER / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER / "abc.md"
+        content = yt_file.read_text(encoding="utf-8")
+        assert content.startswith("# My Awesome Video\n\n")
+        assert "Transcript content without heading." in content

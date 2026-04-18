@@ -85,7 +85,7 @@ def process_local_files_tool(research_directory: str) -> Dict[str, Any]:
     Returns:
         Dict with status, processing results, and file paths
     """
-    logger.debug(f"Processing local files from research folder: {research_directory}")
+    logger.info(f"Processing local files from research folder: {research_directory}")
 
     # Convert to Path object
     research_path = Path(research_directory)

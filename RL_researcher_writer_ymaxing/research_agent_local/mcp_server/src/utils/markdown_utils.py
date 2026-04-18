@@ -5,19 +5,34 @@ from typing import Dict, List, Tuple
 
 def markdown_collapsible(title: str, body: str) -> str:
     """Return a Markdown collapsible block using <details> / <summary>."""
-    return f"<details>\n<summary>{title}</summary>\n\n{body.strip()}\n\n</details>\n"
+    stripped_body = body.strip()
+    # Balance any unclosed code fence so </details> is not swallowed into a <pre> block.
+    if stripped_body.count("```") % 2 != 0:
+        stripped_body += "\n```"
+    return f"<details>\n<summary>{title}</summary>\n\n{stripped_body}\n\n</details>\n"
 
 
 def get_first_line_title(markdown: str) -> str:
     """
-    Get the first non-empty line of markdown, remove leading '#' and whitespace.
-    If not found, return 'Untitled'.
+    Get the title from markdown content.
+
+    Prefers the first markdown heading (any level, outside code blocks).
+    Falls back to the first non-empty line with leading '#' stripped.
+    If neither is found, returns 'Untitled'.
     """
+    in_code_block = False
+    first_non_empty: str | None = None
     for line in markdown.splitlines():
-        line = line.strip()
-        if line:
-            return line.lstrip("#").strip() or "Untitled"
-    return "Untitled"
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_code_block = not in_code_block
+            continue
+        if not in_code_block and stripped:
+            if first_non_empty is None:
+                first_non_empty = stripped.lstrip("#").strip()
+            if stripped.startswith("#"):
+                return stripped.lstrip("#").strip() or "Untitled"
+    return first_non_empty or "Untitled"
 
 
 def build_research_results_section(grouped_queries: Dict[str, List[str]]) -> str:
@@ -67,6 +82,7 @@ def combine_research_sections(
     youtube_transcripts_section: str,
     additional_sources_section: str,
     local_files_section: str = "",
+    exploitation_guideline_section: str = "",
 ) -> str:
     """
     Combine all research sections into a single markdown document.
@@ -78,6 +94,7 @@ def combine_research_sections(
         youtube_transcripts_section: YouTube transcripts section markdown
         additional_sources_section: Additional sources section markdown
         local_files_section: Local files section markdown (optional)
+        exploitation_guideline_section: Exploitation guideline sources section markdown (optional)
 
     Returns:
         Complete markdown document as a single string
@@ -90,6 +107,8 @@ def combine_research_sections(
         youtube_transcripts_section,
         additional_sources_section,
     ]
+    if exploitation_guideline_section:
+        sections.append(exploitation_guideline_section)
     if local_files_section:
         sections.append(local_files_section)
     return "\n\n".join(sections)

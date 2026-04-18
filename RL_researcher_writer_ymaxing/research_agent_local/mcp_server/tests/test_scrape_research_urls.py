@@ -374,6 +374,42 @@ class TestScrapeAndClean:
         # LLM should not have been called
         assert fake_llm.prompts_received == []
 
+    async def test_all_content_uses_same_model_for_cleaning(self):
+        """All article sizes use the injected chat_model; get_chat_model is never called from scrape_and_clean."""
+        raw_content = "![logo](https://example.com/img.png) body text"
+        fake_fc = FakeFirecrawlApp(FakeFirecrawlResult("Title", raw_content))
+        fake_llm = FakeLLM("cleaned output")
+        # Override token counter to simulate a very large article
+        fake_llm.get_num_tokens = lambda text: 9999
+
+        with patch("src.app.scraping_handler.get_chat_model") as mock_get_model:
+            result = await scraping_handler.scrape_and_clean(
+                "https://example.com", "guidelines", fake_fc, fake_llm
+            )
+
+        assert result["success"] is True
+        assert result["markdown"] == "cleaned output"
+        # The injected model must have been used for cleaning
+        assert len(fake_llm.prompts_received) >= 1
+        # get_chat_model must NOT have been called from scrape_and_clean
+        mock_get_model.assert_not_called()
+
+    async def test_small_content_calls_llm_cleaning(self):
+        """≤MAX_TOKENS_FOR_LLM_CLEANING: LLM is invoked for content cleaning."""
+        raw_content = "short body"
+        fake_fc = FakeFirecrawlApp(FakeFirecrawlResult("Title", raw_content))
+        fake_llm = FakeLLM("llm cleaned output")
+        # Override token counter to stay well below the threshold
+        fake_llm.get_num_tokens = lambda text: 10
+
+        result = await scraping_handler.scrape_and_clean(
+            "https://example.com", "guidelines", fake_fc, fake_llm
+        )
+
+        assert result["success"] is True
+        assert result["markdown"] == "llm cleaned output"
+        assert len(fake_llm.prompts_received) >= 1
+
 
 class TestScrapeUrlsConcurrently:
     """
@@ -431,7 +467,8 @@ class TestScrapeArxivUrl:
     async def test_success_path_uses_ingest_paper(self):
         fake_llm = FakeLLM("arxiv cleaned")
         fake_fc = FakeFirecrawlApp()
-        with patch(self._INGEST_PATCH, return_value="# Paper content"):
+        fake_ingest_result = MagicMock(content="# Paper content")
+        with patch(self._INGEST_PATCH, new=AsyncMock(return_value=(fake_ingest_result, {"title": "Test Paper"}))):
             result = await scraping_handler.scrape_arxiv_url(
                 "https://arxiv.org/abs/2312.05678",
                 "guidelines",
@@ -445,7 +482,7 @@ class TestScrapeArxivUrl:
         fake_llm = FakeLLM("firecrawl cleaned")
         # Make the firecrawl fallback succeed
         fake_fc_instance = FakeFirecrawlApp(FakeFirecrawlResult("FallbackTitle", "fallback body"))
-        with patch(self._INGEST_PATCH, side_effect=RuntimeError("ingest failed")), \
+        with patch(self._INGEST_PATCH, new=AsyncMock(side_effect=RuntimeError("ingest failed"))), \
              patch(self._FC_INSTANCE_PATCH, return_value=fake_fc_instance):
             result = await scraping_handler.scrape_arxiv_url(
                 "https://arxiv.org/abs/2312.05678",
@@ -471,7 +508,8 @@ class TestScrapeArxivUrl:
         """Empty ingest_paper output should skip LaTeX cleanup but still call clean_markdown."""
         fake_llm = FakeLLM("final cleaned")
         fake_fc = FakeFirecrawlApp()
-        with patch(self._INGEST_PATCH, return_value="   "):  # whitespace-only
+        fake_ingest_result = MagicMock(content="   ")
+        with patch(self._INGEST_PATCH, new=AsyncMock(return_value=(fake_ingest_result, {"title": "Test Paper"}))):  # whitespace-only
             result = await scraping_handler.scrape_arxiv_url(
                 "https://arxiv.org/abs/2312.05678",
                 "",
@@ -479,6 +517,48 @@ class TestScrapeArxivUrl:
             )
         # success=True comes from ingest_paper path succeeding
         assert result["success"] is True
+
+    async def test_all_raw_md_uses_same_model_for_cleanup(self):
+        """All arXiv content sizes use the injected chat_model; get_chat_model is never called from scrape_arxiv_url."""
+        fake_llm = FakeLLM("arxiv cleaned output")
+        # Override token counter to simulate a very large paper
+        fake_llm.get_num_tokens = lambda text: 9999
+        raw_content = "# Full Paper\n\nVery long paper body..."
+        fake_ingest_result = MagicMock(content=raw_content)
+
+        with patch(self._INGEST_PATCH, new=AsyncMock(return_value=(fake_ingest_result, {"title": "Big Paper"}))), \
+             patch("src.app.scraping_handler.get_chat_model") as mock_get_model:
+            result = await scraping_handler.scrape_arxiv_url(
+                "https://arxiv.org/abs/2309.02427",
+                "guidelines",
+                fake_llm,
+            )
+
+        assert result["success"] is True
+        assert result["markdown"] == "arxiv cleaned output"
+        # The injected model must have been used for cleanup
+        assert len(fake_llm.prompts_received) >= 1
+        # get_chat_model must NOT have been called from scrape_arxiv_url
+        mock_get_model.assert_not_called()
+
+    async def test_small_raw_md_calls_llm_cleanup(self):
+        """≤MAX_TOKENS_FOR_LLM_CLEANING: LLM is called for LaTeX cleanup."""
+        fake_llm = FakeLLM("latex cleaned output")
+        # Override token counter to stay well below the threshold
+        fake_llm.get_num_tokens = lambda text: 10
+        raw_content = "# Short Paper with $\\LaTeX$"
+        fake_ingest_result = MagicMock(content=raw_content)
+
+        with patch(self._INGEST_PATCH, new=AsyncMock(return_value=(fake_ingest_result, {"title": "Short Paper"}))):
+            result = await scraping_handler.scrape_arxiv_url(
+                "https://arxiv.org/abs/2312.05678",
+                "guidelines",
+                fake_llm,
+            )
+
+        assert result["success"] is True
+        assert result["markdown"] == "latex cleaned output"
+        assert len(fake_llm.prompts_received) == 1
 
 
 # ===========================================================================
@@ -652,7 +732,7 @@ class TestWriteScrapedResultsToFiles:
         assert len(saved) == 1
         written_file = tmp_path / saved[0]
         assert written_file.exists()
-        assert written_file.read_text(encoding="utf-8") == "# A"
+        assert written_file.read_text(encoding="utf-8") == "**Source URL:** <https://a.com>\n\n# A"
 
     def test_failed_result_still_written_but_not_counted(self, tmp_path):
         results = [{"url": "https://b.com", "title": "Fail", "markdown": "error msg", "success": False}]
@@ -677,11 +757,34 @@ class TestWriteScrapedResultsToFiles:
         saved, _ = write_scraped_results_to_files(results, tmp_path)
         assert len(set(saved)) == 2  # unique filenames
 
-    def test_empty_markdown_written_as_empty_file(self, tmp_path):
+    def test_empty_markdown_written_with_url_header(self, tmp_path):
         results = [{"url": "https://a.com", "title": "Empty", "markdown": "", "success": True}]
         saved, _ = write_scraped_results_to_files(results, tmp_path)
         written_file = tmp_path / saved[0]
-        assert written_file.read_text(encoding="utf-8") == ""
+        # Title is injected as H1 so _extract_page_heading() can produce a readable collapsible summary.
+        assert written_file.read_text(encoding="utf-8") == "**Source URL:** <https://a.com>\n\n# Empty\n\n"
+
+    def test_missing_h1_injects_metadata_title(self, tmp_path):
+        """When cleaned markdown has no heading, the Firecrawl metadata title is injected as H1."""
+        results = [{"url": "https://a.com", "title": "My Article", "markdown": "Some body text.", "success": True}]
+        saved, _ = write_scraped_results_to_files(results, tmp_path)
+        content = (tmp_path / saved[0]).read_text(encoding="utf-8")
+        assert "# My Article" in content
+
+    def test_existing_h1_not_duplicated(self, tmp_path):
+        """When cleaned markdown already has an H1, no extra H1 is injected."""
+        results = [{"url": "https://a.com", "title": "My Article", "markdown": "# Existing Title\n\nBody.", "success": True}]
+        saved, _ = write_scraped_results_to_files(results, tmp_path)
+        content = (tmp_path / saved[0]).read_text(encoding="utf-8")
+        assert "# My Article" not in content
+        assert "# Existing Title" in content
+
+    def test_h2_without_h1_injects_metadata_title(self, tmp_path):
+        """When body has subheadings but no H1, the Firecrawl title is injected as H1."""
+        results = [{"url": "https://a.com", "title": "My Article", "markdown": "## Section\n\nContent.", "success": True}]
+        saved, _ = write_scraped_results_to_files(results, tmp_path)
+        content = (tmp_path / saved[0]).read_text(encoding="utf-8")
+        assert "# My Article" in content
 
 
 # ===========================================================================

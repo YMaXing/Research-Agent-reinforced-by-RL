@@ -54,7 +54,9 @@ def get_chat_model(model_id: str, schema: Optional[Type[BaseModel]] = None) -> B
     model = init_chat_model(model_identifier, **init_kwargs)
 
     if schema is not None:
-        model = model.with_structured_output(schema)    
+        model = model.with_structured_output(schema)
+
+
 
     # Apply Opik tracking if configured
     if is_opik_enabled():

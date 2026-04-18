@@ -73,6 +73,7 @@ def evaluate(
         task=evaluation_task,
         scoring_metrics=metrics,
         experiment_config=llm_judge_config,
+        project_name=get_settings().OPIK_PROJECT_NAME,
         task_threads=workers,
         nb_samples=nb_samples,
         dataset_item_ids=dataset_item_ids,
