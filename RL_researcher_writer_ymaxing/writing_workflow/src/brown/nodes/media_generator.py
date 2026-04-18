@@ -193,12 +193,20 @@ If no explicit media requirements are found in the guideline, respond with:
             article_guideline=self.article_guideline.to_context(),
             research=self.research.to_context(),
         )
-        user_input_content = self.build_user_input_content(inputs=[system_prompt], image_urls=self.research.image_urls)
+        user_instruction = (
+            "Analyze the article guideline and research provided in the system prompt, "
+            "then call the appropriate tools for each identified media item requirement."
+        )
+        user_input_content = self.build_user_input_content(inputs=[user_instruction], image_urls=self.research.image_urls)
         inputs = [
+            {
+                "role": "system",
+                "content": system_prompt,
+            },
             {
                 "role": "user",
                 "content": user_input_content,
-            }
+            },
         ]
         response = await self.model.ainvoke(inputs)
 

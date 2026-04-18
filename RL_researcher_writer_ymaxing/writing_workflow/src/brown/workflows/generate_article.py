@@ -128,14 +128,36 @@ async def _generate_article_workflow(inputs: GenerateArticleInput, config: Runna
 def _is_comparison_matrix_section(section_text: str) -> bool:
     """Check whether a guideline section describes a comparison matrix.
 
-    A comparison matrix is identified by having multiple items each with
-    explicit 'Pros' AND 'Cons' (or close synonyms).  If both counts are
-    >= 2, the section is tabular data that should be rendered as a
-    Markdown table, NOT as a Mermaid diagram.
+    A comparison matrix is identified when a section compares N items each with
+    multiple per-item attributes. Two independent signals are checked:
+
+    1. **Explicit Pros/Cons** — multiple "Pros:" / "Cons:" (or close synonyms) labelled
+       per-item. If both counts are >= 2, the section is tabular data.
+
+    2. **Broad per-item attributes** — when the section has >= 2 distinct multi-attribute
+       markers (trade-offs, use cases, complexity, performance, when-to-use, etc.) even
+       without explicit Pros/Cons labels. This matches the orchestrator prompt's definition
+       which covers any per-item property, not only Pros/Cons.
     """
     pros_count = len(re.findall(r"(?i)\bpros?\b\s*:", section_text))
     cons_count = len(re.findall(r"(?i)\bcons?\b\s*:", section_text))
-    return pros_count >= 2 and cons_count >= 2
+    if pros_count >= 2 and cons_count >= 2:
+        return True
+
+    # Broader attribute markers: trade-offs, use cases, complexity, performance, limitations,
+    # advantages, disadvantages, when to use — each appearing >= 2 times signals tabular data.
+    broad_markers = [
+        r"(?i)\btrade-?offs?\b\s*:",
+        r"(?i)\buse[\s-]cases?\b\s*:",
+        r"(?i)\bcomplexity\b\s*:",
+        r"(?i)\bperformance\b\s*:",
+        r"(?i)\blimitations?\b\s*:",
+        r"(?i)\badvantages?\b\s*:",
+        r"(?i)\bdisadvantages?\b\s*:",
+        r"(?i)\bwhen[\s-]to[\s-]use\b\s*:",
+    ]
+    marker_hits = sum(1 for pattern in broad_markers if len(re.findall(pattern, section_text)) >= 2)
+    return marker_hits >= 2
 
 
 def _is_comparison_matrix_description(description: str) -> bool:
@@ -225,18 +247,43 @@ def _filter_comparison_matrix_tool_calls(
     return filtered
 
 
+# Broad set of comparison-attribute patterns mirroring _is_comparison_matrix_section.
+# Two or more distinct hits in a diagram's content flag it as comparison-matrix content.
+_COMPARISON_ATTRIBUTE_PATTERNS: tuple[str, ...] = (
+    r"\bpros?\b",
+    r"\bcons?\b",
+    r"\badvantages?\b",
+    r"\bdisadvantages?\b",
+    r"\bdrawbacks?\b",
+    r"\btrade-?offs?\b",
+    r"\buse[\s-]cases?\b",
+    r"\bcomplexity\b",
+    r"\bperformance\b",
+    r"\blimitations?\b",
+    r"\bwhen[\s-]to[\s-]use\b",
+    r"\bbenefits?\b",
+    r"\bstrengths?\b",
+    r"\bweaknesses?\b",
+)
+
+
 def _filter_comparison_matrix_media_items(
     media_items: list[MediaItem],
     writer,
 ) -> list[MediaItem]:
     """Post-generation safety net: drop any MermaidDiagram whose content
-    renders tabular Pros/Cons data.
+    renders comparison-matrix (per-item attribute) data.
 
     If the pre-flight filter was bypassed (e.g. section_title mismatch) and
     a MermaidDiagram was generated anyway, this check inspects the actual
-    diagram content.  A diagram that contains both 'Pros' AND 'Cons' labels
-    in its node/subgraph text is clearly comparison-matrix content and must
-    not be inserted into the article.
+    diagram content.  A diagram that mentions two or more distinct comparison
+    attributes — such as Pros/Cons, trade-offs, limitations, use cases,
+    complexity, performance, etc. — is considered comparison-matrix content
+    and must not be inserted into the article; the article writer will produce
+    a Markdown table instead.
+
+    The broad attribute list mirrors ``_is_comparison_matrix_section`` so that
+    pre-flight detection and post-generation filtering use consistent criteria.
     """
     from brown.entities.media_items import MermaidDiagram  # local import to avoid circular
 
@@ -244,13 +291,12 @@ def _filter_comparison_matrix_media_items(
     for item in media_items:
         if isinstance(item, MermaidDiagram):
             content_lower = item.content.lower()
-            has_pros = bool(re.search(r"\bpros?\b|\badvantages?\b", content_lower))
-            has_cons = bool(re.search(r"\bcons?\b|\bdisadvantages?\b|\bdrawbacks?\b", content_lower))
-            if has_pros and has_cons:
+            attribute_hits = sum(1 for pattern in _COMPARISON_ATTRIBUTE_PATTERNS if re.search(pattern, content_lower))
+            if attribute_hits >= 2:
                 writer(
                     f"  ⛔ Dropped already-generated MermaidDiagram for location '{item.location}' — "
-                    f"its content contains Pros/Cons labels (comparison matrix); "
-                    f"article writer will produce a Markdown table instead."
+                    f"its content contains {attribute_hits} distinct comparison attributes "
+                    f"(comparison matrix); article writer will produce a Markdown table instead."
                 )
                 continue
         filtered.append(item)

@@ -330,10 +330,11 @@ particular section of the <article_guideline>, you will use more or less informa
 The <article_guideline> can ALSO contain:
 - length constraints for each section, such as the number of characters, words or reading time. If present, you will
   respect them, targeting each section's word count within a tolerance of ±10% of the stated target (minimum ±25
-  words) — e.g., a 400-word target allows 360–440 words. **Word-count constraints are enforced at the individual
-  section level, not as an article-wide total.** Each section that carries a length constraint (e.g., `**Section
-  length:** 800 words`) is evaluated independently. A section that is too short may not borrow words from adjacent
-  sections, and a section that exceeds its limit does not offset a short neighbour.
+  words) — e.g., a 400-word target allows 360–440 words.
+  **Word-count constraints are enforced at the individual section level, not as an article-wide total.**
+  Each section that carries a length constraint (e.g., `**Section length:** 800 words`) is evaluated
+  independently. A section that is too short may not borrow words from adjacent sections,
+  and a section that exceeds its limit does not offset a short neighbour.
   When counting words toward any section length requirement, count **only prose text** —
   the natural-language sentences and paragraphs that form the body of the section.
   Exclude from the word count:

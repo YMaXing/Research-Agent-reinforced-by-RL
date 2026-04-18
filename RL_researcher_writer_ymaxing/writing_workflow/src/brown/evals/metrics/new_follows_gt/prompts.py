@@ -271,8 +271,7 @@ ideas in a different order or with missing transitions score Flow=0 but must not
 Similarly, a strong depth or breadth addition must not affect the core_preservation score unless it actually
 dilutes the core. A non-qualifying addition that scores 0 on both depth_enhancement and breadth_enhancement
 must not trigger CorePreservation=0 — CorePreservation only evaluates qualifying depth or breadth additions.
-If such an addition is disproportionately long and crowds out expected section ideas, the penalty belongs
-exclusively to Flow.
+If such an addition is disproportionately long and crowds out expected section ideas, the penalty belongs exclusively to Flow.
 
 ## FEW-SHOT EXAMPLES
 

@@ -1,3 +1,4 @@
+import re
 from typing import cast
 
 from langchain_core.language_models import BaseChatModel
@@ -69,9 +70,9 @@ flowchart LR
   DB -- "ingest" --> LTM
   API -- "fetch" --> LTM
   LTM -- "retrieve" --> STM
-  STM --> R
-  IK --> R
-  R --> ACT
+  STM -- "provide context" --> R
+  IK -- "inform" --> R
+  R -- "produce" --> ACT
 
   %% Indirect / supporting relationships
   IK -. "guides retrieval" .-> LTM
@@ -105,7 +106,7 @@ stateDiagram-v2
 
 ### System Architecture
 ```mermaid
-graph TB
+flowchart LR
     subgraph "Frontend"
         UI["User Interface"]
     end
@@ -113,8 +114,8 @@ graph TB
         API["API Gateway"]
         DB[("Database")]
     end
-    UI --> API
-    API --> DB
+    UI -- "request" --> API
+    API -- "query" --> DB
 ```
 
 ### Sequence Diagrams
@@ -202,7 +203,7 @@ classDiagram
 ```
 
 ## Syntax Rules
-1. **Node Labels**: Use square brackets `[Label]` for rectangular nodes
+1. **Node Labels**: Use square brackets with double quotes `["Label"]` for rectangular nodes
 2. **Decisions**: Use curly braces `{{Decision}}` for diamond shapes  
 3. **Databases**: Use `[(Label)]` for cylindrical database shapes
 4. **Circles**: Use `((Label))` for circular nodes
@@ -216,8 +217,8 @@ classDiagram
 12. **Class Relationships**: Use `<|--` (inheritance), `-->` (association), `--*` (composition)
 13. **Multi-line Labels**: Use `<br/>` inside labels for a second line of context: `A["Long-Term Memory<br/>(External DB)"]`
 14. **Named-edge Arrows**: Prefer `-- "label" -->` over `-->|"label"|` in flowcharts for readability
-15. **Node Style Classes**: Use `classDef name properties;` at the bottom to define visual groups, 
-    then `class node1,node2 name;` to apply — differentiates related nodes visually
+15. **Node Style Classes**: Use `classDef name properties` at the bottom to define visual groups,
+    then `class node1,node2 name` to apply — differentiates related nodes visually. **No trailing semicolons.**
 
 ## Formatting Rules
 **ALWAYS wrap node labels in double quotes `"..."` to prevent parsing errors:**
@@ -286,6 +287,9 @@ graph TD
   horizontally through a pipeline or system
 - **NEVER omit edge labels on primary flows** — unlabeled arrows leave the diagram semantically
   ambiguous; the reader cannot tell what the relationship means
+- **NEVER use inline comments** — place `%%` comments on their own dedicated line, never after
+  diagram code on the same line (e.g., `IK --> LLM %% comment` breaks the parser; write the
+  `%%` line separately above or below the edge)
 - **NEVER produce shallow diagrams** — a diagram with only 3-4 nodes for a system with 7+
   meaningful components misses key relationships and provides little value
 - Don't create overly complex diagrams with too many connections
@@ -293,7 +297,7 @@ graph TD
 - **Never use custom colors or styling** — stick to Mermaid's default appearance
 
 Generate a clean, professional diagram that clearly illustrates the described concept using only default Mermaid 
-styling. Remember: ALWAYS use double quotes around ALL labels and NEVER use semicolons.
+styling. Remember: ALWAYS use double quotes around ALL labels, NEVER use semicolons, and NEVER place %% comments inline after diagram code.
 """
 
     def _extend_model(self, model: Runnable) -> Runnable:
@@ -326,39 +330,149 @@ styling. Remember: ALWAYS use double quotes around ALL labels and NEVER use semi
         >>> diagram = await generate_mermaid_diagram(description)
         >>> print(diagram)
         ```mermaid
-        graph LR
-            A[User Input] --> B[Processing]
-            B --> C[(Database)]
+        flowchart LR
+            A["User Input"] -- "submit" --> B["Processing"]
+            B -- "store" --> C[("Database")]
         ```
         """
 
-        try:
-            response = await self.model.ainvoke(
-                [
-                    {
-                        "role": "user",
-                        "content": self.prompt_template.format(
-                            description_of_the_diagram=description_of_the_diagram,
-                        ),
-                    }
-                ]
+        _MERMAID_DIAGRAM_TYPES = (
+            "flowchart",
+            "graph",
+            "sequencediagram",
+            "classdiagram",
+            "statediagram",
+            "erdiagram",
+            "journey",
+            "gantt",
+            "pie",
+            "mindmap",
+            "timeline",
+        )
+        _MAX_RETRIES = 2
+
+        def _fix_inline_comments(content: str) -> str:
+            """Strip inline %% comments (code followed by %% on the same line).
+
+            Only removes %% that follows non-whitespace code on the same line.
+            Standalone %% comment lines (e.g. `  %% section label`) are preserved.
+            """
+            # (?<=\S) requires a non-whitespace character immediately before the spaces+%%,
+            # so %% at the start of an indented line (preceded only by spaces/newline) is kept.
+            return re.sub(r"(?m)(?<=\S)[ \t]+%%[^\n]*", "", content)
+
+        def _fix_trailing_semicolons(content: str) -> str:
+            """Strip trailing semicolons from diagram lines.
+
+            Mermaid treats a semicolon at the end of a line as a parse error in
+            most contexts. This is safe to strip unconditionally because a
+            semicolon inside a quoted string can never be the last character on
+            the line (it would be followed by the closing quote).
+            """
+            return re.sub(r";[ \t]*$", "", content, flags=re.MULTILINE)
+
+        def _fix_unquoted_labels(content: str) -> str:
+            """Auto-quote rectangular node labels that contain special characters.
+
+            Converts  ``A[Label (V2)]``  →  ``A["Label (V2)"]``.
+            Only targets standard rectangular nodes (``node[content]``); leaves
+            database cylinders ``[(label)]``, diamonds ``{{label}}``, and
+            already-quoted labels ``["..."]`` untouched.
+            """
+            # Match: word_id + '[' + unquoted content containing at least one
+            # special char that breaks Mermaid's parser (parens, comma, colon,
+            # period, slash, backslash, @, !, ?, #, %, +, =, |, ~, ^)
+            # Excludes content that starts with '"' (already quoted) or '(' (cylinder)
+            return re.sub(
+                r'(\b\w+)\[([^"\[\]{}<>()\n]+[(),:./\\@!?#%+=|~^][^"\[\]{}<>\n]*)\]',
+                r'\1["\2"]',
+                content,
             )
 
-        except Exception as e:
-            logger.exception(f"Failed to generate Mermaid diagram: {e}")
+        def _has_valid_structure(content: str) -> bool:
+            """Check that the first non-comment, non-empty diagram line declares
+            a recognised Mermaid diagram type.
 
+            Extracts the body inside the ```mermaid fence (if present), then
+            walks line-by-line to find the first real content line, and checks
+            that it starts with a known diagram type keyword.  This avoids false
+            positives where a diagram type word appears inside a node label.
+            """
+            fence_match = re.search(r"```mermaid\s*\n(.*?)(?:```|$)", content, re.DOTALL | re.IGNORECASE)
+            inner = fence_match.group(1) if fence_match else content
+            for line in inner.splitlines():
+                stripped = line.strip()
+                if not stripped or stripped.startswith("%%"):
+                    continue
+                # First non-comment content line must begin with the diagram type
+                return any(stripped.lower().startswith(dtype) for dtype in _MERMAID_DIAGRAM_TYPES)
+            return False
+
+        async def _invoke_once(prompt_content: str) -> GeneratedMermaidDiagram | None:
+            try:
+                result = await self.model.ainvoke([{"role": "user", "content": prompt_content}])
+                if not isinstance(result, GeneratedMermaidDiagram):
+                    raise InvalidOutputTypeException(GeneratedMermaidDiagram, type(result))
+                return result
+            except Exception as exc:
+                logger.exception(f"Failed to generate Mermaid diagram: {exc}")
+                return None
+
+        # --- initial generation ---
+        response = await _invoke_once(
+            self.prompt_template.format(
+                description_of_the_diagram=description_of_the_diagram,
+            )
+        )
+
+        if response is None:
             return MermaidDiagram(
                 location=section_title,
                 content='```mermaid\ngraph TD\n    A["Error: Failed to generate diagram"]\n    A --> B["See logs for details"]\n```',
                 caption="Error: Failed to generate diagram. See logs for details.",
             )
 
-        if not isinstance(response, GeneratedMermaidDiagram):
-            raise InvalidOutputTypeException(GeneratedMermaidDiagram, type(response))
+        # --- Option 1: strip deterministic syntax errors ---
+        fixed_content = _fix_inline_comments(response.content)
+        if fixed_content != response.content:
+            logger.warning("Mermaid diagram contained inline %% comments — stripped automatically.")
+        fixed_content_after_semi = _fix_trailing_semicolons(fixed_content)
+        if fixed_content_after_semi != fixed_content:
+            logger.warning("Mermaid diagram contained trailing semicolons — stripped automatically.")
+            fixed_content = fixed_content_after_semi
+        fixed_content_after_quotes = _fix_unquoted_labels(fixed_content)
+        if fixed_content_after_quotes != fixed_content:
+            logger.warning("Mermaid diagram contained unquoted special-char labels — auto-quoted.")
+            fixed_content = fixed_content_after_quotes
+
+        # --- Option 3: LLM self-correction retry if structure is still invalid ---
+        if not _has_valid_structure(fixed_content):
+            logger.warning("Mermaid diagram failed structural validation — attempting self-correction retry.")
+            for attempt in range(_MAX_RETRIES):
+                retry_prompt = (
+                    f"The following Mermaid diagram is invalid because it does not contain a "
+                    f"recognised diagram type declaration (e.g. `flowchart LR`, `graph TD`).\n"
+                    f"Fix the diagram, preserving all nodes, edges, and relationships:\n\n"
+                    f"{fixed_content}\n\n"
+                    f"Return only the corrected Mermaid code block."
+                )
+                retry_response = await _invoke_once(retry_prompt)
+                if retry_response is not None:
+                    candidate = _fix_inline_comments(retry_response.content)
+                    candidate = _fix_trailing_semicolons(candidate)
+                    candidate = _fix_unquoted_labels(candidate)
+                    if _has_valid_structure(candidate):
+                        fixed_content = candidate
+                        response = GeneratedMermaidDiagram(content=fixed_content, caption=retry_response.caption)
+                        logger.info(f"Mermaid self-correction succeeded on attempt {attempt + 1}.")
+                        break
+                    logger.warning(f"Self-correction attempt {attempt + 1} still invalid — returning best available result.")
+            else:
+                logger.error("Mermaid self-correction exhausted all retries without a valid diagram.")
 
         return MermaidDiagram(
             location=section_title,
-            content=response.content,
+            content=fixed_content,
             caption=response.caption,
         )
 
@@ -366,7 +480,7 @@ styling. Remember: ALWAYS use double quotes around ALL labels and NEVER use semi
         model.responses = [
             MermaidDiagram(
                 location="Mock Section Title",
-                content="```mermaid\ngraph TD\n    A[Mock Diagram]\n```",
+                content='```mermaid\ngraph TD\n    A["Mock Diagram"]\n```',
                 caption="Mock Caption",
             ).model_dump_json()
         ]
