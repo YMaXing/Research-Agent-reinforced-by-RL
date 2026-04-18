@@ -160,3 +160,16 @@ class TestResearchInstructionsPromptStepNumberConsistency:
             result = await full_research_instructions_prompt()
 
         assert "create_research_file" in result
+
+    @pytest.mark.parametrize("dedup_enabled", [True, False])
+    async def test_step_5_contains_inward_outward_depth_breadth_definitions(self, dedup_enabled: bool):
+        """Step 5.1 Stage 2 description must use the canonical inward/outward depth/breadth definitions."""
+        from src.prompts.research_instructions_prompt import full_research_instructions_prompt
+
+        with patch(_PATCH_SETTINGS, _make_settings(enable_content_dedup=dedup_enabled)):
+            result = await full_research_instructions_prompt()
+
+        assert "inward \u2014 intensify understanding of the core topic" in result
+        assert "outward \u2014 connect to adjacent areas outside the core topic" in result
+        assert "alternative implementation perspectives" in result
+        assert "motivation for the topic" in result

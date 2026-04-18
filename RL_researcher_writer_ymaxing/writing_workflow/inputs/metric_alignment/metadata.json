@@ -1,10 +1,10 @@
 [
     {
-        "name": "Lesson 10: Memory - with exploration sources",
-        "directory": "data/10_memory_knowledge_access_with_exploration"
-    },
-    {
         "name": "Lesson 10: Memory - without exploration sources",
         "directory": "data/10_memory_knowledge_access_without_exploration"
+    },
+    {
+        "name": "Lesson 10: Memory - with exploration sources",
+        "directory": "data/10_memory_knowledge_access_with_exploration"
     }
 ]

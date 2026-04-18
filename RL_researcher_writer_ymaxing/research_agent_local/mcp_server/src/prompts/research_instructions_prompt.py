@@ -161,10 +161,18 @@ If the user doesn't provide a research directory, you should ask for it before e
     - **Stage 2 — Exploration sources**: Each [EXPLORATION] source is evaluated on the same three dimensions,
       but with a higher bar. The tool scans through the article guidelines section by section and only accepts
       an exploration source if it can identify at least one specific section where the source adds genuine new
-      value in depth (theoretical foundations, technical nuances, alternative perspectives, latest developments,
-      limitations/criticisms, implementation challenges, real-world case studies, future implications) or
-      breadth (adjacent concepts, cross-domain analogies, historical context, enabling/disrupting technologies,
-      practical applications in other fields, emerging trends). Sources that cannot satisfy this criterion are rejected.
+      value in depth or breadth:
+      - **Depth** (inward — intensify understanding of the core topic): motivation for the topic (why it exists,
+        what problem it solves), theoretical foundations or mathematical underpinnings, technical nuances or
+        alternative implementation perspectives, latest advancements or recent developments,
+        limitations/criticisms/failure modes, implementation challenges or latency/scale trade-offs,
+        real-world case studies or concrete metrics, future implications or open research directions.
+      - **Breadth** (outward — connect to adjacent areas outside the core topic): adjacent or related concepts
+        that expand the scope, cross-domain analogies or lessons from other fields, historical context or
+        evolution of the topic, enabling/disrupting technologies that intersect with the core topic, practical
+        applications of the core topic in other industries or domains, emerging trends in adjacent fields or
+        the broader ecosystem.
+      Sources that cannot satisfy this criterion are rejected.
     The tool writes the comma-separated IDs of the accepted sources to the TAVILY_SOURCES_SELECTED_FILE **and**
     saves a filtered markdown file TAVILY_RESULTS_SELECTED_FILE that contains only the full content blocks of
     the accepted sources. Both files are saved within RESEARCH_OUTPUT_DIRECTORY.

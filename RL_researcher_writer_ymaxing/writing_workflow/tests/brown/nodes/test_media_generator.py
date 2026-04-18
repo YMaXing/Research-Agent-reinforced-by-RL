@@ -116,6 +116,35 @@ class TestMermaidDiagramGenerator:
         """Prompt forbids shallow diagrams with too few nodes."""
         assert "NEVER produce shallow diagrams" in MermaidDiagramGenerator.prompt_template
 
+    def test_mermaid_diagram_generator_prompt_preserves_verbatim_identifiers(self) -> None:
+        """Prompt requires preserving exact names and identifiers from the description verbatim."""
+        assert "Preserve exact identifiers" in MermaidDiagramGenerator.prompt_template
+        assert "Do not shorten, paraphrase, or abbreviate" in MermaidDiagramGenerator.prompt_template
+
+    @pytest.mark.asyncio
+    async def test_mermaid_diagram_generator_error_fallback_is_static(self) -> None:
+        """Error fallback returns a static 'See logs for details' message without leaking exception text."""
+        from pydantic import BaseModel
+
+        class InvalidResponse(BaseModel):
+            invalid: str
+
+        mock_response = InvalidResponse(invalid="some internal exception message")
+
+        app_config = get_app_config()
+        model, _ = build_model(app_config, node="generate_media_items")
+        model.responses = [mock_response.model_dump_json()]
+
+        generator = MermaidDiagramGenerator(model=model)
+
+        result = await generator.ainvoke("Test diagram", "Test Section")
+
+        assert "See logs for details" in result.content
+        assert "See logs for details" in result.caption
+        # Exception message must NOT leak into the output
+        assert "some internal exception message" not in result.content
+        assert "some internal exception message" not in result.caption
+
 
 class TestMediaGeneratorOrchestrator:
     """Test the MediaGeneratorOrchestrator class."""
@@ -234,3 +263,19 @@ class TestMediaGeneratorOrchestrator:
     def test_orchestrator_prompt_word_mermaid_alone_not_sufficient(self) -> None:
         """Prompt warns that the word 'mermaid' in the guideline is not sufficient to trigger a tool call."""
         assert 'word "diagram" or "mermaid" in the guideline alone is NOT sufficient' in MediaGeneratorOrchestrator.system_prompt_template
+
+    def test_orchestrator_step1_triggers_on_broad_per_item_attributes(self) -> None:
+        """Step 1 condition (b) covers any per-item attribute, not only explicit Pros AND Cons."""
+        prompt = MediaGeneratorOrchestrator.system_prompt_template
+        # The broad attribute list must be present
+        assert "any other per-item property" in prompt
+        # Representative attributes beyond Pros/Cons must be listed
+        assert "use cases" in prompt
+        assert "trade-offs" in prompt
+        assert "complexity" in prompt
+        assert "limitations" in prompt
+
+    def test_orchestrator_step2_includes_mindmap_classification(self) -> None:
+        """Step 2 classification list must include mindmap as a valid visual type."""
+        assert "mindmap" in MediaGeneratorOrchestrator.system_prompt_template
+        assert "concept map" in MediaGeneratorOrchestrator.system_prompt_template

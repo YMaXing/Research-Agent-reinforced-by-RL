@@ -1,4 +1,5 @@
 import asyncio
+import re
 from pathlib import Path
 from typing import TypedDict, cast
 
@@ -124,6 +125,138 @@ async def _generate_article_workflow(inputs: GenerateArticleInput, config: Runna
     return f"Final article rendered to`{article_path}`."
 
 
+def _is_comparison_matrix_section(section_text: str) -> bool:
+    """Check whether a guideline section describes a comparison matrix.
+
+    A comparison matrix is identified by having multiple items each with
+    explicit 'Pros' AND 'Cons' (or close synonyms).  If both counts are
+    >= 2, the section is tabular data that should be rendered as a
+    Markdown table, NOT as a Mermaid diagram.
+    """
+    pros_count = len(re.findall(r"(?i)\bpros?\b\s*:", section_text))
+    cons_count = len(re.findall(r"(?i)\bcons?\b\s*:", section_text))
+    return pros_count >= 2 and cons_count >= 2
+
+
+def _is_comparison_matrix_description(description: str) -> bool:
+    """Return True if the tool-call description asks for a Pros/Cons comparison diagram.
+
+    Any description that explicitly mentions BOTH a pros-like term AND a cons-like
+    term is describing 2-D tabular data.  Such content must be rendered as a
+    Markdown table by the article writer — never as a Mermaid diagram.
+    """
+    d = description.lower()
+    has_pros = bool(re.search(r"\bpros?\b|\badvantages?\b|\bstrengths?\b|\bbenefits?\b", d))
+    has_cons = bool(re.search(r"\bcons?\b|\bdisadvantages?\b|\bdrawbacks?\b|\blimitations?\b|\bweaknesses?\b", d))
+    return has_pros and has_cons
+
+
+def _extract_section_text(guideline: str, section_title: str) -> str | None:
+    """Extract the text of the guideline section whose heading best matches *section_title*.
+
+    Returns the raw text between the matching heading and the next heading of
+    the same or higher level, or None if no match is found.
+    """
+    # Normalise for comparison
+    title_lower = section_title.lower().strip()
+    # Split guideline into (heading, body) pairs
+    heading_pattern = re.compile(r"^(#{1,6})\s+(.+)$", re.MULTILINE)
+    headings = list(heading_pattern.finditer(guideline))
+    for idx, m in enumerate(headings):
+        heading_text = m.group(2).strip()
+        # Fuzzy: check if the section_title is a substring of the heading (or vice-versa)
+        if title_lower in heading_text.lower() or heading_text.lower() in title_lower:
+            start = m.end()
+            if idx + 1 < len(headings):
+                end = headings[idx + 1].start()
+            else:
+                end = len(guideline)
+            return guideline[start:end]
+    return None
+
+
+def _filter_comparison_matrix_tool_calls(
+    jobs: list[dict],
+    guideline_content: str,
+    writer,
+) -> list[dict]:
+    """Remove mermaid tool calls whose target section is a comparison matrix.
+
+    Detection uses two independent checks — the first match wins:
+
+    1. **Description-based (primary):** If the orchestrator's description for
+       the diagram mentions both "pros" (or synonym) AND "cons" (or synonym),
+       the call is for 2-D tabular data.  Block it unconditionally.
+
+    2. **Section-content-based (secondary):** If the tool provides a
+       section_title that can be matched against a guideline heading, and
+       that section contains ≥ 2 "Pros:" / "Cons:" pairs, block it.
+
+    When a call is blocked the article writer's existing fallback produces a
+    Markdown table for that section automatically.
+    """
+    filtered: list[dict] = []
+    for job in jobs:
+        args = job.get("args", {})
+        description = args.get("description_of_the_diagram", "")
+        section_title = args.get("section_title", "")
+
+        # --- Primary check: description mentions pros AND cons ---
+        if _is_comparison_matrix_description(description):
+            writer(
+                f"  ⛔ Filtered out mermaid tool call for section '{section_title}' — "
+                f"comparison matrix detected in description (pros + cons language); "
+                f"article writer will produce a Markdown table instead."
+            )
+            continue
+
+        # --- Secondary check: guideline section content has pros/cons structure ---
+        if section_title:
+            section_text = _extract_section_text(guideline_content, section_title)
+            if section_text and _is_comparison_matrix_section(section_text):
+                writer(
+                    f"  ⛔ Filtered out mermaid tool call for section '{section_title}' — "
+                    f"comparison matrix detected in guideline section content; "
+                    f"article writer will produce a Markdown table instead."
+                )
+                continue
+
+        filtered.append(job)
+    return filtered
+
+
+def _filter_comparison_matrix_media_items(
+    media_items: list[MediaItem],
+    writer,
+) -> list[MediaItem]:
+    """Post-generation safety net: drop any MermaidDiagram whose content
+    renders tabular Pros/Cons data.
+
+    If the pre-flight filter was bypassed (e.g. section_title mismatch) and
+    a MermaidDiagram was generated anyway, this check inspects the actual
+    diagram content.  A diagram that contains both 'Pros' AND 'Cons' labels
+    in its node/subgraph text is clearly comparison-matrix content and must
+    not be inserted into the article.
+    """
+    from brown.entities.media_items import MermaidDiagram  # local import to avoid circular
+
+    filtered: list[MediaItem] = []
+    for item in media_items:
+        if isinstance(item, MermaidDiagram):
+            content_lower = item.content.lower()
+            has_pros = bool(re.search(r"\bpros?\b|\badvantages?\b", content_lower))
+            has_cons = bool(re.search(r"\bcons?\b|\bdisadvantages?\b|\bdrawbacks?\b", content_lower))
+            if has_pros and has_cons:
+                writer(
+                    f"  ⛔ Dropped already-generated MermaidDiagram for location '{item.location}' — "
+                    f"its content contains Pros/Cons labels (comparison matrix); "
+                    f"article writer will produce a Markdown table instead."
+                )
+                continue
+        filtered.append(item)
+    return filtered
+
+
 @task(retry_policy=retry_policy)
 async def generate_media_items(article_guideline: ArticleGuideline, research: Research) -> MediaItems:
     writer = get_stream_writer()
@@ -136,6 +269,11 @@ async def generate_media_items(article_guideline: ArticleGuideline, research: Re
         toolkit=toolkit,
     )
     media_items_to_generate_jobs = await media_generator_orchestrator.ainvoke()
+
+    # Code-level filter: drop mermaid tool calls for sections whose guideline content
+    # is a comparison matrix (multiple items each with explicit Pros and Cons).
+    # The article writer will automatically produce a Markdown table for these sections.
+    media_items_to_generate_jobs = _filter_comparison_matrix_tool_calls(media_items_to_generate_jobs, article_guideline.content, writer)
 
     writer(f"Found {len(media_items_to_generate_jobs)} media items to generate using the following tool configurations:")
     for i, job in enumerate(media_items_to_generate_jobs):
@@ -154,6 +292,11 @@ async def generate_media_items(article_guideline: ArticleGuideline, research: Re
     writer(f"Executing {len(coroutines)} media item generation jobs in parallel.")
     media_items: list[MediaItem] = await asyncio.gather(*coroutines)
     writer(f"Generated {len(media_items)} media items.")
+
+    # Post-generation safety net: drop any MermaidDiagram whose content contains
+    # Pros/Cons labels — meaning the pre-flight filter was bypassed but the
+    # generated diagram is still comparison-matrix content.
+    media_items = _filter_comparison_matrix_media_items(list(media_items), writer)
 
     return MediaItems.build(media_items)
 

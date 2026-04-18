@@ -77,10 +77,10 @@ flowchart LR
   IK -. "guides retrieval" .-> LTM
 
   %% Visual grouping
-  classDef store stroke-dasharray: 3 3;
-  classDef exec stroke-width:2;
-  class LTM,STM,IK store;
-  class R,ACT exec;
+  classDef store stroke-dasharray:3,3
+  classDef exec stroke-width:2px
+  class LTM,STM,IK store
+  class R,ACT exec
 ```
 
 
@@ -265,12 +265,20 @@ graph TD
 - **Indirect relationships:** Use `-.->` with an edge label for supporting, enabling, or indirect
   relationships that are not primary data flows.
 - **Comments:** Use `%%` comment lines to label sections of the diagram code.
+- **Preserve exact identifiers:** Reproduce all names, class names, and artifact identifiers from
+  the description verbatim in node labels. Do not shorten, paraphrase, or abbreviate them
+  (e.g., if the description specifies `DocumentMetadata`, the node label must read
+  `DocumentMetadata`, not `DocMeta` or any other shorthand).
 - Keep node labels concise — avoid special characters outside of quoted strings.
 - Choose the appropriate diagram type for the concept being illustrated.
 
 ## Common Mistakes to Avoid
 - **NEVER use unquoted labels** — always wrap in double quotes: `A["Label"]`
 - **NEVER use semicolons** at the end of lines (causes parsing issues)
+- **NEVER use space-separated multi-value `classDef` properties** — Mermaid's classDef parser treats spaces as
+  property separators; `stroke-dasharray: 3 3` breaks because the second `3` is read as a new unknown property. Use
+  comma-separated values instead: `classDef name stroke-dasharray:3,3` and always omit trailing semicolons on
+  `classDef`/`class` lines
 - **NEVER put parentheses `()` in unquoted labels** — parser treats them as shape tokens
 - **NEVER truncate the flow** — a memory/pipeline diagram without a final "Reasoning" and
   "Output/Action" node is incomplete; always follow data to its endpoint
@@ -278,7 +286,7 @@ graph TD
   horizontally through a pipeline or system
 - **NEVER omit edge labels on primary flows** — unlabeled arrows leave the diagram semantically
   ambiguous; the reader cannot tell what the relationship means
-- **NEVER produce shallow diagrams** — a diagram with only 3–4 nodes for a system with 7+
+- **NEVER produce shallow diagrams** — a diagram with only 3-4 nodes for a system with 7+
   meaningful components misses key relationships and provides little value
 - Don't create overly complex diagrams with too many connections
 - Avoid extremely long labels that break the visual flow
@@ -341,8 +349,8 @@ styling. Remember: ALWAYS use double quotes around ALL labels and NEVER use semi
 
             return MermaidDiagram(
                 location=section_title,
-                content=f'```mermaid\ngraph TD\n    A["Error: Failed to generate diagram"]\n    A --> B["{str(e)}"]\n```',
-                caption=f"Error: Failed to generate diagram: {str(e)}",
+                content='```mermaid\ngraph TD\n    A["Error: Failed to generate diagram"]\n    A --> B["See logs for details"]\n```',
+                caption="Error: Failed to generate diagram. See logs for details.",
             )
 
         if not isinstance(response, GeneratedMermaidDiagram):

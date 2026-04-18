@@ -126,6 +126,23 @@ class TestGenerateQueriesWithReasons:
             with pytest.raises(RuntimeError, match="unexpected type"):
                 await generate_queries_with_reasons("g", "p", "f", "s", n_queries=5)
 
+    async def test_prompt_contains_exploitation_boundary_rule(self):
+        """The exploitation prompt must state that depth/breadth queries belong to the complementary phase."""
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_PATCH_TARGET, return_value=recording):
+            await generate_queries_with_reasons("g", "p", "f", "s", n_queries=5)
+
+        assert "Exploitation queries fill direct coverage gaps only" in recording.last_prompt
+
+    async def test_prompt_does_not_contain_depth_breadth_definition(self):
+        """The exploitation prompt must NOT contain the inward/outward framing (that belongs to the complementary prompt)."""
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_PATCH_TARGET, return_value=recording):
+            await generate_queries_with_reasons("g", "p", "f", "s", n_queries=5)
+
+        assert "inward" not in recording.last_prompt
+        assert "outward" not in recording.last_prompt
+
 
 # ---------------------------------------------------------------------------
 # generate_complementary_queries_with_reasons
@@ -205,3 +222,34 @@ class TestGenerateComplementaryQueriesWithReasons:
             )
 
         assert len(result) == 2
+
+    async def test_prompt_contains_inward_outward_framing(self):
+        """The complementary prompt must contain the canonical inward/outward depth-breadth framing."""
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_PATCH_TARGET, return_value=recording):
+            await generate_complementary_queries_with_reasons(
+                "g", "p", "f", "s", n_queries=5
+            )
+
+        assert "inward \u2014 intensify understanding of the core topic" in recording.last_prompt
+        assert "outward \u2014 connect to adjacent areas outside the core topic" in recording.last_prompt
+
+    async def test_prompt_contains_motivation_depth_bullet(self):
+        """The motivation bullet (first depth item) must be present in the complementary prompt."""
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_PATCH_TARGET, return_value=recording):
+            await generate_complementary_queries_with_reasons(
+                "g", "p", "f", "s", n_queries=5
+            )
+
+        assert "motivation for the topic" in recording.last_prompt
+
+    async def test_prompt_contains_alternative_implementation_perspectives_bullet(self):
+        """'alternative implementation perspectives' must appear verbatim, not the vaguer 'alternative perspectives'."""
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_PATCH_TARGET, return_value=recording):
+            await generate_complementary_queries_with_reasons(
+                "g", "p", "f", "s", n_queries=5
+            )
+
+        assert "alternative implementation perspectives" in recording.last_prompt

@@ -1,7 +1,7 @@
 """Type definitions for the ground_truth evaluation metric.
 
 This module contains Pydantic models and types used for evaluating articles
-against ground truth content across six dimensions (core_content, flow,
+against ground truth content across five dimensions (core_content, flow,
 structure, depth_enhancement, breadth_enhancement, core_preservation).
 """
 
@@ -26,8 +26,8 @@ class FollowsGTCriteriaScores(CriteriaScores):
         core_content: Score for substance match to GT.
         flow: Score for logical progression (adaptive to single-paragraph).
         structure: Score for internal formatting (adaptive to single-paragraph).
-        depth_enhancement: Score for valuable depth additions from exploration.
-        breadth_enhancement: Score for valuable breadth additions from exploration.
+        depth_enhancement: Score for valuable depth additions from exploration (inward).
+        breadth_enhancement: Score for valuable breadth additions from exploration (outward).
         core_preservation: Score for preserving GT core without dilution.
     """
 

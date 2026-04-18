@@ -62,6 +62,7 @@ The position of content within the window matters more than it might appear. Res
 information placed in the middle of a long context compared to content near the boundaries — even when
 that information is directly needed. This means that when constructing the context window, placing the
 most critical content at the start rather than burying it in the middle measurably improves output quality.
+[[N]](https://arxiv.org/abs/2307.03172)
 
 More sophisticated approaches include summarizing older turns into a compact memory block and prepending
 that to the current window, or using a retrieval step to surface only the most relevant past exchanges
@@ -75,4 +76,7 @@ The research finding was inserted **between** the truncation overview paragraph 
 sophisticated-approaches paragraph. It enriches the truncation point by explaining *why* position
 matters — adding an empirically grounded "so what" layer. The surrounding paragraphs are unchanged and
 the section's focus on history management strategies remains primary. The exploration addition is
-self-contained: removing it leaves the article fully coherent.
+self-contained: removing it leaves the article fully coherent. The inserted paragraph ends with a
+mandatory inline citation `[[N]](https://arxiv.org/abs/2307.03172)`, where N is the next available
+citation identifier in the article — every exploration addition must carry a citation to its source
+URL, regardless of whether that source has been cited elsewhere in the article.

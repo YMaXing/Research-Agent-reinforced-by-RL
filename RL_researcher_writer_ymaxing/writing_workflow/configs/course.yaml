@@ -38,7 +38,7 @@ nodes:
   integrate_exploration:
     model_id: "google_genai:gemini-2.5-pro"
     model_config:
-      temperature: 1.0
+      temperature: 0.7
       include_thoughts: true
       thinking_budget: null
   review_article:

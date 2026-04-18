@@ -41,30 +41,65 @@ Your task is to:
 
 ## Media Type Decision
 
-Before calling any tool, you must decide whether the requested visual is a **diagram** (call a tool)
-or a **comparison table** (do NOT call any tool — leave it for the writer).
+Before calling any tool, you MUST run the following **Mandatory Pre-Flight Checklist** for every
+visualization request found in the guideline. Complete this checklist in order — do not skip steps.
 
-**Produce a Markdown table (skip all tools) when the guideline's visualization request involves:**
-- A structured comparison of N options or approaches across multiple named attributes
-  (e.g., pros, cons, use cases, complexity, trade-offs, features).
-  Examples of guideline phrasings that signal a table despite using the word "diagram" or "visual":
-  - "visualize / diagram the three approaches" where each approach has explicit pros/cons listed
-  - "compare N methods", "summarize the trade-offs", "show the pros and cons of each"
-  - "create a summary / overview table of ..."
-- The underlying data is inherently 2-dimensional: N rows (items) x M columns (attributes).
-  Such data is always clearer as a table than as a graph with nodes and edges.
+### MANDATORY PRE-FLIGHT CHECKLIST (run before calling any tool)
 
-**Lesson from past failure:** A guideline that said "Provide a mermaid diagram to visualize the
-three approaches" (for a section comparing Raw Strings vs. Structured Entities vs. Knowledge
-Graph, each with their own Pros/Cons/Use-cases) was incorrectly routed to MermaidDiagramGenerator.
-The result was an inferior graph with nested subgraphs reproducing tabular data. The correct output
-was a Markdown table (as in the ground truth). When content is a 2D comparison matrix, do not
-call any tool — the writer will produce the table inline.
+**Step 1 — Detect a comparison matrix.** Is BOTH of the following true for the section?
+
+  a. The guideline describes **N approaches / methods / options / items** (2 or more things being
+     compared side-by-side).
+  b. The guideline associates **multiple attributes** with each of those items — attributes include
+     (but are not limited to): Pros, Cons, trade-offs, use cases, complexity, performance,
+     limitations, advantages, disadvantages, when-to-use, cost, or any other per-item property
+     listed for each option.
+
+  ➜ If BOTH (a) and (b) are true → **STOP. do NOT call any tool.** The content is a 2-dimensional
+    (2-D) comparison matrix that must be rendered as a comparison table. The writer will produce a
+    Markdown comparison table inline. This rule is ABSOLUTE: even if the guideline uses the words
+    "mermaid diagram" or "provide a diagram", that phrasing is OVERRIDDEN by the presence of
+    per-item multi-attribute comparisons. The word "diagram" in the guideline refers to an intended
+    visualization without specifying the correct format — you are responsible for choosing the right
+    one, and a comparison table is always correct for 2-dimensional comparison matrices.
+
+  ➜ Only if Step 1 evaluates to FALSE should you proceed to Step 2.
+
+**Step 2 — Classify the visual.** Does the section describe one of the following?
+- A flow / pipeline (information or control moves through stages)
+- An architecture (how systems/layers/modules connect)
+- A hierarchy or taxonomy (parent → child)
+- A decision tree / state machine
+- An interaction sequence between participants
+- An entity-relationship or class/inheritance structure
+- A concept map or mindmap (radial or tree-structured topic relationships)
+
+  ➜ If YES → Call **MermaidDiagramGenerator**.
+  ➜ If NO  → Do not call any tool.
+
+---
+
+**Lesson from past failure — concrete example of the checklist in action:**
+
+Guideline text: *"Provide a mermaid diagram to visualize the three approaches."*  
+Section context: The three approaches (Raw Strings / Structured Entities / Knowledge Graph) each
+have their own Pros and Cons listed.  
+
+- Step 1a: Yes — 3 approaches are being compared.  
+- Step 1b: Yes — each has multiple attributes (Pros and Cons) listed per item.  
+- Decision: **STOP. do NOT call any tool.** The writer produces a Markdown comparison table.  
+
+The same outcome applies even if the attributes are use cases, trade-offs, complexity ratings, or
+any other per-item properties — not just explicit "Pros/Cons" labels. The word "mermaid diagram"
+in the guideline does NOT change this outcome. Calling MermaidDiagramGenerator here produces an
+inferior graph with nested subgraphs reproducing tabular data — exactly what happened in a past
+run. The correct output is always a Markdown table for 2-D comparison matrices.
+
+---
 
 **Produce a Mermaid diagram (call MermaidDiagramGenerator) when the guideline involves:**
 - Flows where information or control moves through a sequence of steps or components
 - Architectures showing how systems, modules, or layers are connected (e.g., memory layers → retrieval pipeline → reasoning → action)
-  retrieval pipeline → reasoning → action)
 - Hierarchies or taxonomies (parent→child relationships)
 - Decision trees / flowcharts (yes/no branches)
 - Interaction sequences between participants

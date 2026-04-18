@@ -209,7 +209,7 @@ This section explores how the way agent's memories are stored is an important ar
         - Potential for slower queries: While powerful, graph traversals for complex queries can be slower than a simple vector lookup, which might impact real-time performance if not carefully optimized.
         - Overhead for simple use cases: For many applications, the complexity of implementing and maintaining a graph database is overkill. A simpler entity-based or even string-based approach may be more than sufficient.
 
-- Provide a mermaid diagram to visualize the three approaches.
+- Provide a markdown comparison table to compare the three approaches across their key Pros and Cons.
 Tip: the choice of memory storage should be guided by your product's core needs. Start with the simplest architecture that delivers value and evolve it as the demands on your agent grow more complex.
 
 - Transition to Section 5: Now that we know what to save and how to store the memories, let's provide some code examples, using available "memory" tools, like mem0.

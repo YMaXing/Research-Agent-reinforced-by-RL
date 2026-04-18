@@ -497,6 +497,97 @@ class TestArticleReviewer:
         assert "Mermaid diagram code blocks" in ArticleReviewer.system_prompt_template
         assert "code blocks" in ArticleReviewer.system_prompt_template
 
+    def test_article_reviewer_prompt_enforces_word_count_per_section(self) -> None:
+        """Reviewer prompt enforces word-count constraints at the individual section level and
+        the Chain of Thoughts contains a dedicated per-section prose-count pass.
+        """
+        assert "individual section level" in ArticleReviewer.system_prompt_template
+        assert "A section that is too short may not borrow words from adjacent sections" in ArticleReviewer.system_prompt_template
+        # Chain of Thoughts must name per-section check step
+        assert "Per-section word-count check" in ArticleReviewer.system_prompt_template
+        assert "Each section is evaluated independently" in ArticleReviewer.system_prompt_template
+
     def test_article_reviewer_prompt_no_length_violation_for_code_heavy_sections(self) -> None:
         """Reviewer prompt instructs not to flag length violations caused by code, media, or captions."""
         assert "Do not raise a length-violation review" in ArticleReviewer.system_prompt_template
+
+    def test_article_reviewer_prompt_flags_prose_below_minimum(self) -> None:
+        """Reviewer prompt must flag prose shortfalls; a ±10% tolerance is used,
+        so prose falling more than that tolerance below the target is flagged.
+        """
+        assert "never compensate for" in ArticleReviewer.system_prompt_template
+        assert "below the stated target" in ArticleReviewer.system_prompt_template
+
+    def test_article_reviewer_prompt_flags_prose_above_maximum(self) -> None:
+        """Reviewer prompt must also flag sections exceeding the stated target by more than
+        the ±10% tolerance — both over-length and under-length are enforced.
+        """
+        assert "exceeds the stated" in ArticleReviewer.system_prompt_template
+        assert "trimmed" in ArticleReviewer.system_prompt_template
+
+    def test_article_reviewer_prompt_flags_labeled_bullet_artifacts(self) -> None:
+        """Reviewer must detect and flag sections where the writer reproduced the guideline's
+        labeled bullet-point structural artifacts instead of expanding them into narrative prose.
+        """
+        assert "content-expansion" in ArticleReviewer.system_prompt_template
+        assert "content expansion compliance" in ArticleReviewer.system_prompt_template
+        assert "flowing prose that integrates the content naturally" in ArticleReviewer.system_prompt_template
+
+    def test_article_reviewer_prompt_flags_uncited_first_person_anecdotes(self) -> None:
+        """Reviewer must flag first-person anecdotes written in 'we' voice that are traceable
+        to a research source but lack a citation — they are indistinguishable from hallucinations.
+        """
+        assert "First-person anecdotes require citations" in ArticleReviewer.system_prompt_template
+        assert "uncited first-person narrative drawn from research is indistinguishable" in ArticleReviewer.system_prompt_template
+
+    def test_article_reviewer_prompt_contains_enumeration_completeness_check(self) -> None:
+        """Reviewer prompt must instruct the reviewer to verify that every numbered item
+        (0, 1, 2, 3…) in the guideline produced a corresponding H3 subsection, including
+        item '0' which must not be treated as an introductory paragraph.
+        """
+        assert "Enumeration completeness" in ArticleReviewer.system_prompt_template
+        assert 'Item "0" is the first peer content' in ArticleReviewer.system_prompt_template
+        assert "missing its own H3 subsection" in ArticleReviewer.system_prompt_template
+
+    def test_article_reviewer_prompt_kind1_kind2_classification(self) -> None:
+        """Reviewer prompt defines Kind 1 (outline directives — flag) and Kind 2 (verbatim
+        artifacts — do not flag) to prevent false-positive content-expansion reviews on
+        code blocks, labeled example prompts, and labeled example outputs.
+        """
+        assert "Kind 1 — Outline directives" in ArticleReviewer.system_prompt_template
+        assert "Kind 2 — Verbatim artifacts" in ArticleReviewer.system_prompt_template
+        assert "must NOT be flagged as content-expansion violations" in ArticleReviewer.system_prompt_template
+
+    def test_article_reviewer_prompt_flags_h3_number_prefixes(self) -> None:
+        """Reviewer prompt instructs flagging H3 headings that include a leading number
+        prefix derived from the guideline's list numbering.
+        """
+        assert "H3 heading number prefixes" in ArticleReviewer.system_prompt_template
+        assert "position marker only" in ArticleReviewer.system_prompt_template
+
+    def test_article_reviewer_prompt_flags_shared_setup_subsection(self) -> None:
+        """Reviewer prompt instructs checking for a dedicated `### Setup` subsection
+        when golden-source research contains shared setup code.
+        """
+        assert "Shared setup subsection" in ArticleReviewer.system_prompt_template
+        assert "### Setup" in ArticleReviewer.system_prompt_template
+
+    def test_article_reviewer_prompt_flags_intro_standalone_list(self) -> None:
+        """Reviewer prompt instructs flagging a standalone bulleted or numbered list
+        at the end of the introduction that previews what will be covered.
+        """
+        assert "Introduction standalone list" in ArticleReviewer.system_prompt_template
+        assert "sentence-level enumeration" in ArticleReviewer.system_prompt_template
+
+    def test_article_reviewer_prompt_flags_references_numbered_format(self) -> None:
+        """Reviewer prompt instructs flagging the References section if it uses a
+        numbered list format instead of the correct bulleted format.
+        """
+        assert "References section format" in ArticleReviewer.system_prompt_template
+        assert "- [N] [Title or short description](url)" in ArticleReviewer.system_prompt_template
+
+    def test_article_reviewer_selected_text_preserves_reviewing_rules(self) -> None:
+        """Selected-text chain of thoughts replaces the reviewing workflow but explicitly
+        preserves all Reviewing Rules from the system prompt.
+        """
+        assert "continue to apply all Reviewing Rules" in ArticleReviewer.selected_text_system_prompt_template

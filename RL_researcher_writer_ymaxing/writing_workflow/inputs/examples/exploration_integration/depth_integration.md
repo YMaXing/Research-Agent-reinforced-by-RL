@@ -64,6 +64,7 @@ query. Approximate nearest neighbor (ANN) indexes solve this by trading a small 
 substantially faster queries. The two most common options are HNSW and IVFFlat. HNSW achieves 95–99%
 recall at 5–10× the query speed of IVFFlat but uses roughly 10× more memory per vector. For datasets
 that fit in GPU memory HNSW is the default choice; IVFFlat is preferable when memory is constrained.
+[[N]](https://www.pinecone.io/learn/series/faiss/vector-indexes/)
 
 Choosing the right chunk size and top-k value requires experimentation. Chunks that are too long dilute
 relevance; chunks that are too short lose coherent context. In practice, chunks of 256–512 tokens with a
@@ -77,4 +78,7 @@ The ANN trade-off paragraph was inserted **after** the first paragraph (which es
 retrieval does conceptually) and **before** the chunk-size paragraph (which covers a separate
 implementation decision). This follows the natural decision sequence: understand what retrieval does →
 how to scale it → how to tune it. The existing paragraphs are unchanged and the section's core
-narrative about semantic retrieval remains primary.
+narrative about semantic retrieval remains primary. The inserted paragraph ends with a mandatory inline
+citation `[[N]](https://www.pinecone.io/learn/series/faiss/vector-indexes/)`, where N is the next
+available citation identifier in the article — every exploration addition must carry a citation to its
+source URL, regardless of whether that source has been cited elsewhere in the article.

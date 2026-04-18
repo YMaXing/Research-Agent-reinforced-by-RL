@@ -771,6 +771,18 @@ Answer: The survey 'Recent Advances of Continual Learning in Computer Vision' ca
 
 -----
 
+-----
+
+Phase: [EXPLORATION]
+
+### Source [61]: https://cameronrwolfe.substack.com/p/rl-continual-learning
+
+Query: What recent advances in continual learning for neural networks offer potential pathways beyond current external memory workarounds for agent personalization and adaptation?
+
+Answer: Recent RLHF/RLVR advances show on-policy RL naturally mitigates catastrophic forgetting better than SFT in continual post-training, via low-KL distributional shift bias (RL's Razor). Papers like 'Reinforcement Finetuning Naturally Mitigates Forgetting' demonstrate RL (GRPO) achieves near multi-task performance without replay, unlike SFT causing severe forgetting. 'Retaining by Doing' confirms on-policy data key, equating RL to reverse KL (mode-seeking) vs SFT forward KL (mode-covering). 'RL's Razor' proves KL divergence on target data predicts forgetting, RL biases low-shift solutions. Architectural extensions like LoRA modules or MoE aid without external memory. Pathways for agent adaptation: RL enables personalization via conservative updates preserving general capabilities while adapting to new tasks/domains.
+
+-----
+
 </details>
 
 <details>
@@ -825,10 +837,46 @@ Answer: The paper 'Memory for Autonomous LLM Agents: Mechanisms, Evaluation, and
 
 -----
 
+-----
+
+Phase: [EXPLORATION]
+
+### Source [66]: https://arxiv.org/html/2603.07670v1
+
+Query: How have memory architectures from autonomous robotics and embodied AI systems influenced the design of procedural and episodic memory in modern LLM-based conversational agents?
+
+Answer: Similar to the PDF, this HTML version covers the same content. Voyager in Minecraft (embodied agent) uses procedural skill library for executable plans. Game agents integrate episodic and procedural memory. JARVIS-1 for multimodal embodied settings with visual, textual, skills stores. Cognitive architectures mirror human memory types. Influences from embodied AI like robotics-inspired hierarchies and multimodal memory for LLM agents' procedural/episodic designs.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [68]: https://www.analyticsvidhya.com/blog/2026/04/memory-systems-in-ai-agents/
+
+Query: How have memory architectures from autonomous robotics and embodied AI systems influenced the design of procedural and episodic memory in modern LLM-based conversational agents?
+
+Answer: Article on memory systems: episodic (events, sequential experiences), procedural (operational skills, execution). Frameworks like LangMem for procedural learning. Mentions Voyager (Minecraft embodied agent) implicitly via skill libraries. Discusses embodied settings but no explicit robotics influence on LLM conversational agents. Focuses on tripartite model (episodic, semantic, procedural) for long-term memory in agents.
+
+-----
+
 </details>
 
 <details>
 <summary>What design principles from personal knowledge management tools such as Roam Research, Obsidian, or Memex-inspired systems can inform effective semantic, episodic, and procedural memory architectures for AI personal companions?</summary>
+
+Phase: [EXPLORATION]
+
+### Source [70]: https://www.emotionmachine.com/blog/how-memory-works
+
+Query: What design principles from personal knowledge management tools such as Roam Research, Obsidian, or Memex-inspired systems can inform effective semantic, episodic, and procedural memory architectures for AI personal companions?
+
+Answer: The Emotion Machine blog post discusses three memory architectures for AI companions: pgvector-backed semantic memory (V1), ChatGPT-style scratchpad (V2), and filesystem-based context (V3). It frames memory through cognitive science: working memory (context window), semantic memory (facts), episodic memory (experiences), procedural memory (instructions/skills). These map to systems built, with pragmatic naming like 'scratchpad' or 'hot context'. Key principles include asynchronous ingestion via Modal workers (invisible to conversation), layered context assembly (core prompt, memory, knowledge, tools in parallel), and separation of personal memory from knowledge base (OpenAI vector store for documents). V1 uses importance scoring and two-stage retrieval; V2 maintains curated semantic entries injected every turn; V3 materializes context as files in /em/ for agent navigation. No direct mention of Roam Research, Obsidian, or Memex, but filesystem approach echoes file-based PKM tools. Influences effective architectures via cognitive abstractions, async processing, and pluggable layers for semantic (facts), episodic (scratchpad), procedural (behaviors/tools). (198 words)
+
+-----
+
+-----
 
 Phase: [EXPLORATION]
 
@@ -837,6 +885,18 @@ Phase: [EXPLORATION]
 Query: What design principles from personal knowledge management tools such as Roam Research, Obsidian, or Memex-inspired systems can inform effective semantic, episodic, and procedural memory architectures for AI personal companions?
 
 Answer: MemMachine is a ground-truth-preserving memory system for personalized AI agents with short-term memory (STM: current context), long-term episodic memory (specific experiences), semantic/profile memory (high-level facts/preferences), and extensible procedural memory (skills/strategies). Architecture: REST API/SDK/MCP interfaces; storage via PostgreSQL/pgvector/SQLite/Neo4j. Episodic memory preserves raw records for factual accuracy; semantic distills patterns like 'user prefers vegetarian'. Data ingestion segments episodes into sentences for fine-grained indexing. Retrieval uses contextualized nucleus expansion (neighboring episodes) and reranking. Profile memory extracts structured attributes. No explicit PKM tool mentions, but sentence-level chunking and graph storage parallel Obsidian's atomic notes/links. Informs AI memory via multi-tier (STM/LTM), ground-truth preservation (episodic), distillation (semantic), and procedural extensibility, emphasizing when to use each for personalization without LLM extraction errors. (187 words)
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [72]: https://www.analyticsvidhya.com/blog/2026/04/memory-systems-in-ai-agents/
+
+Query: What design principles from personal knowledge management tools such as Roam Research, Obsidian, or Memex-inspired systems can inform effective semantic, episodic, and procedural memory architectures for AI personal companions?
+
+Answer: Article on memory architectures for AI agents: short-term (working context), long-term tripartite (episodic: events; semantic: facts via RAG/vector DBs; procedural: skills/workflows). Asynchronous consolidation extracts structured facts from episodic history. Intelligent forgetting uses TTL tiers, refresh-on-read, importance scoring. Conflict resolution via temporal weighting, semantic merging. Compares frameworks: Mem0 (compression/personalization), Zep (temporal KG), LangMem (procedural). No Roam/Obsidian/Memex mentions, but multi-DB approach (relational for episodic, vector for semantic, KV for procedural) echoes PKM hybrid storage. Principles: cognitive compression, decay-aware ecosystems, layered access controls inform AI memory via separate stores, async processing, forgetting policies for semantic (facts), episodic (experiences), procedural (skills) scalability. (162 words)
 
 -----
 
@@ -891,10 +951,46 @@ Answer: No direct empirical evidence on immediate vs. batched consolidation sche
 
 -----
 
+-----
+
+Phase: [EXPLORATION]
+
+### Source [78]: https://github.com/IAAR-Shanghai/Awesome-AI-Memory
+
+Query: What empirical evidence exists on how different memory consolidation schedules (e.g., immediate vs. batched offline processing) impact the accuracy of semantic and episodic recall in long-running agent deployments exceeding 1000 interactions?
+
+Answer: No direct comparison of immediate vs. batched schedules. Curated list of 300+ papers/systems on AI/LLM memory. Relevant: CRAM (immediate consolidation during training, 37.8× attention reduction post-3K steps, 100% accuracy SRCD benchmark >10K steps). OBLIVION (decay-driven activation, hierarchical L1-L3, balances learning/forgetting long-horizon). MemFactory (unified inference/training, GRPO fine-tuning). MemVerse (parametric + hierarchical retrieval, multimodal lifelong). MemInsight (autonomous augmentation). MemSifter (proxy reasoning offload). No explicit >1000 interaction deployments or schedule ablation studies. Benchmarks like LoCoMo (long-horizon), MemoryArena (multi-session), LifeBench (multi-source) evaluate long-term but not schedules.
+
+-----
+
 </details>
 
 <details>
 <summary>How do variations in entity resolution accuracy during JSON-structured memory creation affect downstream personalization quality and error propagation in production personal assistant agents?</summary>
+
+Phase: [EXPLORATION]
+
+### Source [80]: https://www.mdpi.com/2306-5729/11/4/66
+
+Query: How do variations in entity resolution accuracy during JSON-structured memory creation affect downstream personalization quality and error propagation in production personal assistant agents?
+
+Answer: The provenance graph representation in AgentSec enables reconstruction of causal chains across reasoning and action steps, supporting downstream analyses of faithfulness, error propagation, and decision reversibility. This structured entity-relation model connects user interactions, decision traces, tool calls, memory updates, and assistant responses with explicit causal relations like 'triggered', 'caused', 'derived from', and 'used by'. Such provenance supports auditing tasks including detecting unsupported reasoning steps, identifying missing dependencies, or analyzing propagation of faulty tool responses through the decision trace. All interaction components are recorded as structured traces forming a sequential log that mirrors temporal execution, ensuring intermediate reasoning steps, side effects, and final responses remain observable and auditable. The dataset captures scenarios with memory conflicts, overwrites, and provenance branching, enabling study of error propagation in agent memory updates. Validation tools and schema ensure structural consistency for reliable downstream analyses of agent behavior, reasoning fidelity, and causal accountability.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [81]: https://github.com/datawhalechina/hello-agents/blob/main/docs/chapter8/Chapter8-Memory-and-Retrieval.md
+
+Query: How do variations in entity resolution accuracy during JSON-structured memory creation affect downstream personalization quality and error propagation in production personal assistant agents?
+
+Answer: Current large language models are stateless, leading to context loss, lack of personalization, limited learning ability, and consistency issues in multi-turn conversations. The memory system addresses this with a four-layer architecture: WorkingMemory (temporary, TTL-managed), EpisodicMemory (events, SQLite+Qdrant), SemanticMemory (knowledge graphs, Qdrant+Neo4j), and PerceptualMemory (multimodal). Semantic memory addition extracts entities and relationships to build structured knowledge representations, where entity resolution accuracy directly impacts knowledge graph quality and downstream personalization. Retrieval uses hybrid strategies combining vector similarity, graph reasoning, and importance weighting, with scoring formulas like (vector × 0.7 + graph × 0.3) × (0.8 + importance × 0.4). Errors in entity resolution propagate through memory types, affecting consolidation (working → episodic → semantic) and forgetting strategies, ultimately degrading agent personalization quality and response consistency.
+
+-----
+
+-----
 
 Phase: [EXPLORATION]
 
@@ -903,6 +999,30 @@ Phase: [EXPLORATION]
 Query: How do variations in entity resolution accuracy during JSON-structured memory creation affect downstream personalization quality and error propagation in production personal assistant agents?
 
 Answer: Entity resolution accuracy critically impacts data quality for AI applications, particularly when linking heterogeneous sources without unique identifiers. Poor resolution leads to incorrect entity matches, propagating errors through AI systems and causing harms like biased outcomes or privacy breaches. In production, variations in accuracy affect downstream personalization by creating inconsistent entity profiles, while error propagation occurs through causal chains in provenance graphs. Standards for entity resolution should address preprocessing (cleaning, standardization), model evaluation (precision/recall tradeoffs), and secure linkage to mitigate risks. Key AI actors (data scientists, domain experts) must inform standards for data preparation and bias mitigation, ensuring high-quality linked data for reliable personalization in personal assistant agents. Failure to resolve entities correctly results in poor-quality learning/employment records, disproportionately affecting marginalized groups.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [83]: https://link.springer.com/article/10.1007/s44206-025-00232-4
+
+Query: How do variations in entity resolution accuracy during JSON-structured memory creation affect downstream personalization quality and error propagation in production personal assistant agents?
+
+Answer: Personalized Privacy Assistants (PPAs) require high entity resolution accuracy for accurate inferences about user preferences, directly affecting personalization quality. Variations in accuracy during memory creation (e.g., JSON-structured user data) propagate errors, leading to incorrect privacy decisions and reduced agency. Hybrid PPAs (manual-automated) are preferred, but accuracy concerns arise from implicit data use, risking biased profiles. Experts emphasize human-in-the-loop validation, explicit user preferences over inferred data, and oversight to prevent error propagation. Accountability requires transparency in entity resolution processes, with multistakeholder involvement (regulators, developers) to ensure compliance. Poor resolution undermines GDPR principles of accuracy and accountability, impacting downstream personalization in agents.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [84]: https://developers.openai.com/cookbook/examples/partners/temporal_agents_with_knowledge_graphs/temporal_agents
+
+Query: How do variations in entity resolution accuracy during JSON-structured memory creation affect downstream personalization quality and error propagation in production personal assistant agents?
+
+Answer: Temporal agents build knowledge graphs from JSON-structured memory, where entity resolution accuracy ensures correct triplet extraction (subject-predicate-object). Poor accuracy propagates errors through invalidation agents, affecting temporal validity and downstream retrieval quality. Multi-hop retrieval over graphs requires precise entity linking; variations lead to missed relationships and degraded personalization. Production safeguards include output validation, structured logging, and monitoring for data drift. Relevance scoring and pruning prevent error accumulation in large graphs. Hybrid tools balance fixed (rigid queries) and free-form (flexible) retrieval, with model selection (o3 → o4-mini → GPT-4.1) optimizing accuracy vs. latency. Evaluation uses golden answers and synthetic evals to measure propagation impact on agent performance.
 
 -----
 
@@ -937,6 +1057,18 @@ Answer: MempMem^p explores agent procedural memory, distilling trajectories into
 
 <details>
 <summary>How have memory management techniques from distributed systems consensus protocols been adapted to ensure consistency in multi-session AI agent memory stores?</summary>
+
+Phase: [EXPLORATION]
+
+### Source [89]: https://arxiv.org/pdf/2601.05569
+
+Query: How have memory management techniques from distributed systems consensus protocols been adapted to ensure consistency in multi-session AI agent memory stores?
+
+Answer: The paper introduces SEDMA (Self-Evolving Distributed Memory Architecture), a framework for coordinated memory management across computation, communication, and deployment layers in distributed AI systems. It features a dual memory system with long-term episodic memory tracking performance patterns and short-term working memory for workload statistics. Memory-guided matrix processing dynamically partitions RRAM computations using historical strategies from long-term memory and current statistics from short-term memory. Adaptive distributed communication uses memory-aware peer selection, storing peer performance profiles in long-term memory and current loads in short-term memory for optimal routing. Dynamic deployment optimization recompiles configurations based on runtime memory patterns. While not explicitly from consensus protocols, it employs distributed hash tables (DHTs) and peer-to-peer mechanisms akin to distributed systems, with memory ensuring consistency across heterogeneous environments. Experiments show 87.3% memory utilization efficiency. No direct mention of consensus protocols like Paxos or Raft, but coordinated optimization across layers maintains consistency in multi-session distributed AI agent deployments.
+
+-----
+
+-----
 
 Phase: [EXPLORATION]
 
@@ -1054,11 +1186,86 @@ Answer: Survey formalizes agent memory as write–manage–read loop. Effective 
 
 Phase: [EXPLORATION]
 
+### Source [99]: https://www.preprints.org/manuscript/202601.0618
+
+Query: What LLM-driven techniques for autonomous memory auditing, contradiction flagging, and self-correction have proven effective in maintaining semantic and episodic store integrity over thousands of interactions?
+
+Answer: Evolutionary framework: Storage (trajectories), Reflection (refinement), Experience (abstraction). Reflection stage: Introspection (self-critique verifies/repairs trajectories; Reflexion distills feedback; detects contradictions via consistency checks). Error rectification targets hallucinations/multi-step errors. Environment/Coordination feedback. Proven over long interactions via benchmarks assessing consistency (LoCoMo: 35 sessions, 16K tokens). Experience abstracts for generalization, but Reflection flags contradictions.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
 ### Source [100]: https://arxiv.org/html/2604.04853v1
 
 Query: What LLM-driven techniques for autonomous memory auditing, contradiction flagging, and self-correction have proven effective in maintaining semantic and episodic store integrity over thousands of interactions?
 
 Answer: MemMachine: ground-truth-preserving episodic/semantic memory. Contextualized retrieval expands nucleus episodes with neighbors for integrity. Profile memory extracts/updates user facts, handling contradictions via latest state. Benchmarks (LoCoMo: 91.69%; LongMemEval S: 93%) over thousands interactions. Ablations: retrieval depth/prompts key for self-correction-like accuracy.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [101]: https://openreview.net/pdf/efa7518ae97c78d6fa2dcbdb06e9a6bf5e799c97.pdf
+
+Query: What LLM-driven techniques for autonomous memory auditing, contradiction flagging, and self-correction have proven effective in maintaining semantic and episodic store integrity over thousands of interactions?
+
+Answer: Taxonomy: episodic/semantic/procedural. Techniques: reflection (Reflexion: self-critiques), conflict resolution in updates. Benchmarks (LoCoMo, LongMemEval) test integrity over long interactions.
+
+-----
+
+</details>
+
+<details>
+<summary>How have state persistence and memory recall patterns from NPC design in open-world video games influenced episodic and procedural memory architectures in contemporary LLM-based conversational agents?</summary>
+
+Phase: [EXPLORATION]
+
+### Source [103]: https://pmc.ncbi.nlm.nih.gov/articles/PMC11449156/
+
+Query: How have state persistence and memory recall patterns from NPC design in open-world video games influenced episodic and procedural memory architectures in contemporary LLM-based conversational agents?
+
+Answer: The paper reviews episodic-inspired AI systems, particularly in reinforcement learning agents for games like Atari and navigation tasks, using hippocampus-inspired replay buffers for episodic memory. Early architectures like Soar include procedural memory (if-then rules), working memory (current state), and episodic memory (past states). These enable strategic decision-making, fast learning, navigation, exploration, and acting over temporal distance in game environments. Event memory in AI agents supports one-shot learning in sparse-reward settings like Atari Labyrinth, novel strategies in TankSoar, and cognitive map construction for navigation. The paper proposes AI event memory informs biological episodic memory functions, such as planning independent of simulation and fast learning in novel environments. Direct influence from open-world NPC design is not explicit, but game agent architectures draw from biological episodic memory, paralleling NPC state persistence and recall.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [104]: https://antoniosliapis.com/articles/llm_and_games.php
+
+Query: How have state persistence and memory recall patterns from NPC design in open-world video games influenced episodic and procedural memory architectures in contemporary LLM-based conversational agents?
+
+Answer: The survey on LLMs in games discusses NPCs using LLMs for dialogue and behavior, with persistent memory via language-based storage of environment state and actions, summarized for prompting to retain knowledge. Generative Agents project populates virtual village with LLM agents recalling past events during social interactions in sandbox environments. Background NPCs maintain agency illusion through goal-following and planning. No explicit link to open-world game NPC design influencing LLM memory architectures, but highlights LLMs enabling state persistence and recall patterns in conversational agents simulating NPC-like behavior.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [105]: https://www.daydreamsoft.com/blog/generative-npc-behavior-using-llms-transforming-ai-characters-into-adaptive-intelligent-entities
+
+Query: How have state persistence and memory recall patterns from NPC design in open-world video games influenced episodic and procedural memory architectures in contemporary LLM-based conversational agents?
+
+Answer: The blog describes LLM-based NPCs with persistent memory remembering player choices, alliances, betrayals, or conversations for personal gameplay. Dynamic decision-making evaluates scenarios considering consequences. Hybrid with traditional AI for pathfinding and behavior trees. Challenges include guardrails for lore accuracy. No direct discussion of influence from open-world game NPC design on LLM architectures, but emphasizes state persistence enabling organic, memory-driven interactions in open-world-like games.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [106]: https://www.diva-portal.org/smash/get/diva2:2013165/FULLTEXT01.pdf
+
+Query: How have state persistence and memory recall patterns from NPC design in open-world video games influenced episodic and procedural memory architectures in contemporary LLM-based conversational agents?
+
+Answer: The thesis implements Dax NPC with episodic memory in JSON logging past exchanges, sentiments, timestamps for recall and consistency. Uses Mistral LLM with prompts incorporating memory and sentiment. Related work includes memory-augmented NPCs inspired by human memory. No explicit influence from open-world NPC design, but framework enables context-aware, emotion-based persistence in game conversations.
 
 -----
 
