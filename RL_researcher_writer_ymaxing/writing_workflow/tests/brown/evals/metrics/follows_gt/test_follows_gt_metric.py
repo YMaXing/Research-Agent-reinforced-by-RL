@@ -196,6 +196,14 @@ def test_system_prompt_contains_h1_exclusion() -> None:
     assert "article title" in follows_gt_prompts.SYSTEM_PROMPT
 
 
+def test_system_prompt_references_section_excluded_from_structure() -> None:
+    """
+    The Structure criterion must explicitly state that the ## References section
+    is excluded from structure evaluation (entry format differences never fail).
+    """
+    assert "## References` section is excluded from this criterion" in follows_gt_prompts.SYSTEM_PROMPT
+
+
 def test_system_prompt_contains_structure_filtering_procedure() -> None:
     """
     The Structure criterion must document the paragraph-length filtering

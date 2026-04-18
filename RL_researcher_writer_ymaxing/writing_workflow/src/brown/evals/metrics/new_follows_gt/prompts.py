@@ -160,6 +160,8 @@ another criterion.
       both sections, not whether the generated section introduces extra media artifacts.
       - Formatting of notes and code blocks
       - Number formatting conventions
+      - **The `## References` section is excluded from this criterion** — differences in how reference entries
+      are formatted in the terminal references list never count as a structure failure.
 
    > **Shared principle for criteria 4 and 5 (DepthEnhancement and BreadthEnhancement):** *Depth* means intensifying
    > understanding of the core topic — the addition stays within the same subject but reveals more of its inner workings,
@@ -678,9 +680,8 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             structure=CriterionScore(
                                 score=1,
                                 reason=(
-                                    "Both sections use the same pattern to structure the references, as a "
-                                    "bulleted list, where each element is structured as "
-                                    "[<reference_number>] [<reference_name>](<reference_url>)"
+                                    "The ## References section is excluded from structure evaluation. "
+                                    "Reference entry format differences never count as a structure failure."
                                 ),
                             ),
                             depth_enhancement=CriterionScore(
@@ -1257,12 +1258,10 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                                 reason=("Both sections follow the same flow for referencing the sources, as a numbered list from 1 to n."),
                             ),
                             structure=CriterionScore(
-                                score=0,
+                                score=1,
                                 reason=(
-                                    "Both sections use a bulleted list to enumerate the citations, but the "
-                                    "use of parentheses is not the same. The generated article outputs the "
-                                    "references as `- [<number>] <reference_name>(<url>)` instead of "
-                                    "`- [[<number>]](<url>) <article_name>`."
+                                    "The ## References section is excluded from structure evaluation. "
+                                    "Reference entry format differences never count as a structure failure."
                                 ),
                             ),
                             depth_enhancement=CriterionScore(
