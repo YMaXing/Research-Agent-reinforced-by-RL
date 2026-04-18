@@ -199,9 +199,9 @@ async def generate_next_complementary_queries_tool(research_directory: str,
 
         # === Resolve effective ratio based on focus knob ===
         if focus == "depth":
-            effective_ratio = 0.80
+            effective_ratio = 1
         elif focus == "breadth":
-            effective_ratio = 0.20
+            effective_ratio = 0
         else:  # balanced — honour provided ratio, clamped to [0, 1]
             effective_ratio = max(0.0, min(1.0, depth_vs_breadth_ratio))
         
