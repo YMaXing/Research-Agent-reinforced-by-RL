@@ -134,23 +134,22 @@ Conclusion text...
 
 ## References
 
-1. Author Name. (Publish Date). Full Title. Source. [Reference URL](Reference URL)
-2. Author Name. (Publish Date). Full Title. Source. [Reference URL](Reference URL)
+- [1] [Title or short description](url)
+- [2] [Title or short description](url)
 ...
-3. Author Name. (Publish Date). Full Title. Source. [Reference URL](Reference URL)
+- [N] [Title or short description](url)
 
 <references_rules>
-- References wrriten in APA 7th edition format.
+- References formatted as a bulleted list using `-` markers. Each entry follows the pattern `- [N] [Title or short description](url)`, where `N` is the citation identifier already used inline in the article. Do NOT use a numbered list (`1.`, `2.`, `3.`) for references.
 - We will always add the citations used within the articles within the references section, where we will list all the sources used within the article. There will be a one on one 
 relationship between the citations used within the article and what's inside the references section. The ONLY exception to this rule is if we any resource links within the <article_guideline>.
 In that case, within the references section we will have the citations used within the article + the sources specified within the <article_guideline>. Always add the sources from the <article_guideline> at the top of the references list then continue with the sources used within the article.
 - As we merge the article citations, plus the <article_guideline> ones, it's possible to have duplicate citations. Always keep only one unique version of them.
 - Along with adding the citations in the paragraphs of relevance, we want to also add them at the end of the article,
-under the "## References" section, where we list all the citations used in the article, respecting their order and numbering
-such as: "1. ... 2. ... 3. ..."
+under the "## References" section, where we list all the citations used in the article using a bulleted list with `-` markers,
+following `- [1] ... - [2] ... - [N] ...`
 - Even if we add the citations as references at the end of the article, we still want to add them, together with their links, in the paragraphs of relevance.
-- If the author, publish date or full title is missing mark it with `(n.d.)`, as seen in the eamples
-- If the article name and source are not directly present within the research, infer them from the link. For example, for the following link https://www.philschmid.de/gemini-function-calling, we cam safely assume that the Full Title is "Gemini Function Calling" and the Source is Philschmid.
+- Use a short descriptive title for the reference entry (e.g., the article title or page name inferred from the URL if not directly available). For example, for https://www.philschmid.de/gemini-function-calling, the entry would be `- [N] [Gemini Function Calling](https://www.philschmid.de/gemini-function-calling)`.
 </references_rules>
 
 <correction_reference_rules>

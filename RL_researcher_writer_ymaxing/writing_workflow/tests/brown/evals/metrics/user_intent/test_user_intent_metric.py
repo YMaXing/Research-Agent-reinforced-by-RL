@@ -1,6 +1,7 @@
 import pytest
 
 from brown.evals.metrics.base import CriterionScore, SectionCriteriaScores
+from brown.evals.metrics.new_user_intent import prompts as user_intent_prompts
 from brown.evals.metrics.new_user_intent.metric import UserIntentMetric
 from brown.evals.metrics.new_user_intent.types import (
     UserIntentArticleScores,
@@ -349,3 +350,22 @@ def test_user_intent_article_scores_to_context() -> None:
     assert "Section 1" in context_xml
     assert "guideline_adherence" in context_xml
     assert "research_anchoring" in context_xml
+
+
+def test_system_prompt_word_count_prose_only() -> None:
+    """The word-count rule in the UserIntent SYSTEM_PROMPT must instruct the evaluator
+    to count prose words only — excluding fenced code blocks, Mermaid diagrams, table
+    cell text, and inline citation markers — matching the definition used by the writer.
+    """
+    assert "Prose-only word count" in user_intent_prompts.SYSTEM_PROMPT
+    assert "fenced code blocks" in user_intent_prompts.SYSTEM_PROMPT
+    assert "Mermaid diagram blocks" in user_intent_prompts.SYSTEM_PROMPT
+    assert "inline citation markers" in user_intent_prompts.SYSTEM_PROMPT
+
+
+def test_system_prompt_word_count_tolerance_aligned_with_writer() -> None:
+    """The word-count tolerance in the UserIntent SYSTEM_PROMPT must use ±10% of the stated
+    target (minimum ±25 words), matching the tolerance used by the article writer and reviewer.
+    """
+    assert "±10%" in user_intent_prompts.SYSTEM_PROMPT
+    assert "minimum ±25 words" in user_intent_prompts.SYSTEM_PROMPT

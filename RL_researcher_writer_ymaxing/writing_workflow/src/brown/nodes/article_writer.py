@@ -59,7 +59,18 @@ class ArticleWriter(Node):
     For reference: a 250-word target allows 225-275 words; a 400-word target allows 360-440 words;
     a 700-word target allows 630-770 words. Sections are checked one by one —
     a long section does not excuse a short one.
-  - Confirm that every adjacent section pair has a transition sentence present.
+  - **Transition enforcement:** For every section, read its final paragraph and confirm that the
+    last sentence (or one of the last two sentences) bridges to the next section — i.e., it
+    explicitly sets up what comes next rather than merely summarising the current section.
+    Pay special attention to the **Introduction**: its closing sentence MUST name or clearly
+    anticipate the first body section (Section 2). If the Introduction ends by summarising its
+    own content without a forward-pointing sentence (e.g., "In this article we will cover X, Y,
+    and Z" counts only if the very last sentence then says something like "Let's start with X"),
+    add a dedicated closing transition sentence before returning. Apply the same check to every
+    subsequent section: if a section ends without a sentence that leads into the next one, insert
+    a bridging sentence at the close of that section. Never remove a closing transition sentence
+    that bridges into the next section as part of any length-trimming step — section-closing
+    transition sentences are protected content.
   - Confirm that every factual claim traceable to a research source carries a citation.
   - **Exploration citation completeness** *(skip this check during the core article draft pass — it
     applies only after exploration sources have been integrated):* Scan every paragraph that contains

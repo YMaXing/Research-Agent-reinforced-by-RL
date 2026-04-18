@@ -305,6 +305,16 @@ Mock references.
         assert "Do NOT use a numbered list" in ArticleWriter.system_prompt_template
         assert "bulleted list item following" in ArticleWriter._verification_checklist
 
+    def test_article_writer_verification_enforces_introduction_transition(self) -> None:
+        """Verification checklist must instruct the writer to check that the Introduction's
+        closing sentence bridges forward to the first body section, and that the same
+        forward-pointing check applies to every other section. Transitions are protected
+        and must never be trimmed.
+        """
+        assert "Transition enforcement" in ArticleWriter._verification_checklist
+        assert "Introduction" in ArticleWriter._verification_checklist
+        assert "section-closing\n    transition sentences are protected content" in ArticleWriter._verification_checklist
+
     def test_article_writer_prompt_shared_setup_subsection(self) -> None:
         """Article Outline rules instruct the writer to create a dedicated `### Setup` subsection
         for shared setup code from golden-source notebooks.

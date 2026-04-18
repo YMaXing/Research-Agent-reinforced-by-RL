@@ -586,6 +586,49 @@ class TestArticleReviewer:
         assert "References section format" in ArticleReviewer.system_prompt_template
         assert "- [N] [Title or short description](url)" in ArticleReviewer.system_prompt_template
 
+    def test_article_reviewer_cot_word_count_excludes_citation_markers(self) -> None:
+        """Reviewer Chain of Thoughts step 5b must list inline citation markers as an
+        exclusion from the prose word count, consistent with the writer's definition.
+        """
+        assert "[[N]](url)" in ArticleReviewer.system_prompt_template
+        assert "inline citation markers" in ArticleReviewer.system_prompt_template
+
+    def test_article_reviewer_prompt_includes_media_items_section(self) -> None:
+        """Reviewer system prompt must include a {media_items} placeholder so the reviewer
+        can verify that pre-generated media items were placed in their declared sections.
+        """
+        assert "{media_items}" in ArticleReviewer.system_prompt_template
+        assert "pre-generated media items" in ArticleReviewer.system_prompt_template
+
+    def test_article_reviewer_accepts_media_items_kwarg(self) -> None:
+        """ArticleReviewer.__init__ must accept an optional media_items parameter."""
+        from brown.entities.media_items import MediaItems
+        from brown.nodes.article_reviewer import ReviewsOutput
+
+        mock_response = ReviewsOutput(reviews=[])
+        app_config = get_app_config()
+        model, _ = build_model(app_config, node="review_article")
+        model.responses = [mock_response.model_dump_json()]
+
+        article = Article(content="# Title\n\n## Section\n\nContent.")
+        article_guideline = ArticleGuideline(content="Write about topic X.")
+        article_profiles = ArticleProfiles(
+            character=CharacterProfile(name="test", content="Test character"),
+            article=ArticleProfile(name="test", content="Test article"),
+            structure=StructureProfile(name="test", content="Test structure"),
+            mechanics=MechanicsProfile(name="test", content="Test mechanics"),
+            terminology=TerminologyProfile(name="test", content="Test terminology"),
+            tonality=TonalityProfile(name="test", content="Test tonality"),
+        )
+        reviewer = ArticleReviewer(
+            to_review=article,
+            article_guideline=article_guideline,
+            article_profiles=article_profiles,
+            model=model,
+            media_items=MediaItems.build(),
+        )
+        assert reviewer.media_items is not None
+
     def test_article_reviewer_selected_text_preserves_reviewing_rules(self) -> None:
         """Selected-text chain of thoughts replaces the reviewing workflow but explicitly
         preserves all Reviewing Rules from the system prompt.

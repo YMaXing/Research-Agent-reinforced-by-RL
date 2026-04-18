@@ -94,7 +94,7 @@ async def _generate_article_workflow(inputs: GenerateArticleInput, config: Runna
                 mode="json"
             )
         )
-        reviews = await generate_reviews(article, context["article_guideline"], context["profiles"], context["research"])
+        reviews = await generate_reviews(article, context["article_guideline"], context["profiles"], context["research"], media_items)
         writer(WorkflowProgress(progress=p_review, message="Generated reviews").model_dump(mode="json"))
 
         # Edit step
@@ -395,7 +395,7 @@ async def integrate_exploration(
 
 @task(retry_policy=retry_policy)
 async def generate_reviews(
-    article: Article, article_guideline: ArticleGuideline, article_profiles: ArticleProfiles, research: Research
+    article: Article, article_guideline: ArticleGuideline, article_profiles: ArticleProfiles, research: Research, media_items: MediaItems
 ) -> ArticleReviews:
     model, _ = build_model(app_config, node="review_article")
     article_reviewer = ArticleReviewer(
@@ -403,6 +403,7 @@ async def generate_reviews(
         article_guideline=article_guideline,
         article_profiles=article_profiles,
         research=research,
+        media_items=media_items,
         model=model,
     )
     reviews = await article_reviewer.ainvoke()

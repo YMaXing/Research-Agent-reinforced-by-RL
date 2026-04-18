@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from brown.entities.articles import Article, SelectedText
 from brown.entities.exceptions import InvalidOutputTypeException
 from brown.entities.guidelines import ArticleGuideline
+from brown.entities.media_items import MediaItems
 from brown.entities.profiles import ArticleProfiles
 from brown.entities.research import Research
 from brown.entities.reviews import ArticleReviews, HumanFeedback, Review, SelectedTextReviews
@@ -174,6 +175,13 @@ code blocks, or media items:
 
 Here is the article profile, describing particularities on how the end-to-end article should look like:
 {article_profile}
+
+## Media Items
+
+These are the pre-generated media items that were provided to the writer before article creation. Each item
+has a `<location>` indicating which section it belongs to. When reviewing media placement, verify that each
+pre-generated item appears in the correct section per its declared `<location>`:
+{media_items}
 
 ## Research Context
 
@@ -351,7 +359,8 @@ or "Implementing GraphRAG - Third paragraph"
    section:
    a. Identify the section boundaries (from its `##` heading to the next `##` heading).
    b. Collect all text within those boundaries, then subtract code blocks (` ```...``` `),
-      Mermaid diagram blocks, table cell text, and media captions.
+      Mermaid diagram blocks, table cell text, media captions, and inline citation markers
+      (`[[N]](url)` tokens).
    c. Tally the remaining prose word count.
    d. The `**Section length:**` value is always a single target number. Apply a tolerance of ±10%
       of the stated target (minimum ±25 words): flag a `length-violation` review if the prose count
@@ -421,12 +430,14 @@ steps, but continue to apply all Reviewing Rules from the system prompt above:
         article_profiles: ArticleProfiles,
         human_feedback: HumanFeedback | None = None,
         research: Research | None = None,
+        media_items: MediaItems | None = None,
     ) -> None:
         self.to_review = to_review
         self.article_guideline = article_guideline
         self.article_profiles = article_profiles
         self.human_feedback = human_feedback
         self.research = research
+        self.media_items = media_items
 
         super().__init__(model, toolkit=Toolkit(tools=[]))
 
@@ -465,6 +476,7 @@ steps, but continue to apply all Reviewing Rules from the system prompt above:
             research_context=self.research.to_reviewer_context()
             if self.research
             else "Research was not provided to the reviewer. Skip all exploration integration checks.",
+            media_items=self.media_items.to_context() if self.media_items else "No pre-generated media items were provided.",
         )
         user_input_content = self.build_user_input_content(inputs=[system_prompt])
         inputs = [
