@@ -12,7 +12,7 @@ RAG is one of the core technologies (and part of the context engineering work do
 
 ### Expected Length of the Lesson
 
-**2000-2500 words** (without the titles and references), where we assume that 200-250 words ≈ 1 minute of reading time.
+**2,800 words** (without the titles and references), where we assume that 200-250 words ≈ 1 minute of reading time.
 
 ### Theory / Practice Ratio
 
@@ -134,7 +134,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
 
 - Transition to Section 2: With the problem and motivation clear, we’ll first decompose RAG into its core components so you can see where each responsibility lives.
 
--  **Section length:** 400 words
+-  **Section length:** 500 words
 
 ## Section 2 - The RAG System: Core Components
 
@@ -147,7 +147,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
 
 - Transition to Section 3: Now that you can name each moving part, let’s see how they line up across the two phases of a real system.
 
--  **Section length:** 400 words
+-  **Section length:** 500 words
 
 ## Section 3 - The RAG Pipeline: Ingestion and Retrieval
 
@@ -167,7 +167,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
 
 - Transition to Section 4: With the end-to-end path in place, the next question is quality: what are the advanced techniques to make the retrieval more accurate and useful across messy, real-world data?
 
--  **Section length:** 400 words
+-  **Section length:** 500 words
 
 ## Section 4 - Advanced RAG Techniques
 
@@ -200,7 +200,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
 
 - Transition to Section 5: These techniques increase retrieval quality. Next, we’ll see how retrieval becomes one tool that an agent can choose to use as it reasons.
 
--  **Section length:** 400 words
+-  **Section length:** 500 words
 
 ## Section 5 - Agentic RAG
 
@@ -242,7 +242,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
 
 - Transition to Section 6: You now understand both a linear RAG pipeline and how an agent can control retrieval when needed. Let’s wrap up by situating RAG in the wider AI Engineering toolkit and previewing what comes next.
 
--  **Section length:** 400 words
+-  **Section length:** 500 words
 
 ## Section 6 - Conclusion ...
 (Connect our solution to the bigger field of AI Engineering. Add course next steps.)
@@ -259,7 +259,7 @@ Next leverage the concepts listed in subsection `Concepts That Will Be Introduce
 
 Lightly preview other relevant future topics touched here (e.g., evaluations for retrieval quality and monitoring in production) and note they’ll be covered later in the course.
 
--  **Section length:** 200 words
+-  **Section length:** 250 words
 
 ## Golden Sources
 

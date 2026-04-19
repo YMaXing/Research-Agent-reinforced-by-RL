@@ -41,24 +41,36 @@ async def run_tavily_search(query: str) -> Tuple[str, Dict[int, str], Dict[int, 
 
     # Truncate raw_content per result to stay well within the model's context window.
     # 5 results × 8 000 chars ≈ 40 000 chars (~10 K tokens) — generous but bounded.
+    # langchain_tavily.TavilySearch.ainvoke() may return either a List[dict] or a serialised
+    # string depending on the invocation path (e.g. direct call vs. agent chain, Opik wrapper).
+    # Guard both cases so raw_content truncation is always applied.
     _RAW_CONTENT_CHAR_LIMIT = 8_000
+    _TOTAL_RESULTS_CHAR_LIMIT = 50_000  # hard ceiling regardless of result type
     if isinstance(tavily_results, list):
         for result in tavily_results:
             if isinstance(result, dict) and isinstance(result.get("raw_content"), str):
                 result["raw_content"] = result["raw_content"][:_RAW_CONTENT_CHAR_LIMIT]
+        tavily_results_str = str(tavily_results)
+    else:
+        # ainvoke returned a string — apply a total-length cap directly.
+        tavily_results_str = str(tavily_results)
+
+    if len(tavily_results_str) > _TOTAL_RESULTS_CHAR_LIMIT:
+        logger.warning(
+            f"⚠️ Tavily results string is {len(tavily_results_str):,} chars after per-result "
+            f"truncation; capping to {_TOTAL_RESULTS_CHAR_LIMIT:,} chars before LLM call."
+        )
+        tavily_results_str = tavily_results_str[:_TOTAL_RESULTS_CHAR_LIMIT]
 
     # 2. Strong LLM synthesis (better than Sonar for technical content)
     # Use include_raw=True so we can inspect what the model actually returned if parsing fails.
-    # PydanticToolsParser (used internally by with_structured_output) returns parsed=None when the
-    # model emits plain text instead of a tool call — this is guarded against by the raw_content
-    # truncation above, which keeps the total prompt within the model's context window.
     base_llm = get_chat_model(settings.search_enhancement_model)
     struct_llm = base_llm.with_structured_output(SearchResponse, include_raw=True)
 
     # Optional: enhance the prompt with Tavily results
     enhanced_prompt = (
         PROMPT_WEB_SEARCH.format(query=query)
-        + f"\n\nUse the following high-quality search results as source material:\n{tavily_results}"
+        + f"\n\nUse the following high-quality search results as source material:\n{tavily_results_str}"
     )
 
     # Retry with exponential back-off on transient 503 / rate-limit errors.

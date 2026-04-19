@@ -10,7 +10,7 @@ For an AI Engineer, tools are what transform an LLM from a simple text generator
 
 ### Expected Length of the Lesson
 
-**3350 words** (without the titles and references), where we assume that 200-250 words ≈ 1 minute of reading time.
+**3,700 words** (without the titles and references), where we assume that 200-250 words ≈ 1 minute of reading time.
 
 ### Theory / Practice Ratio
 
@@ -150,7 +150,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
     - Access agent's long-term memory to remember information beyond their context window
     - Execute code (Python, JavaScript)
     - Perform precise calculations beyond their training data (basic math calculations, sorting, filtering, grouping, etc.)
-- **Section length:** 300 words
+- **Section length:** 350 words
 
 ## Section 3: Implementing tool calls from scratch
 
@@ -199,7 +199,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
     21. Conclude by showing and explaining that usually we use an LLM to interpret the tool output. To do so, the tool result is sent back to the LLM used to formulate a final response to the user or decide on the next step.
     22. Show the LLM response after it interprets the tool output
 - Conclude by saying that this is the basic concept behind tool calling.
-- **Section length:** 1000 words (without counting the code or mermaid diagram)
+- **Section length:** 1,100 words (without counting the code or mermaid diagram)
 
 ## Section 4: Implementing a tool calling framework from scratch
 
@@ -226,7 +226,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
     10. Output the LLM response
     11. Call the tool from the LLM response using the `call_tool` function and output its result
 - Voilà! We have our little tool calling framework. This implementation is similar to what LangGraph does under the scenes.
-- **Section length:** 450 words (without counting the code or mermaid diagram)
+- **Section length:** 500 words (without counting the code or mermaid diagram)
 
 
 ## Section 5: Implementing production-level tool calls with Gemini
@@ -251,7 +251,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
     13. Show the output of the function
     14. Wrap-up with the idea that by using Gemini's native SDK, we managed to reduce the tool implementation from dozens of lines of code to a few.
 - Conclude the section by explaining that all popular APIs, along with Google's, such as OpenAI or Anthropic, use the same logic to instruct the LLM how to use different tools, but with minimal interface differences. Thus, what we learnt in this lesson can easily be extrapolated to your API of choice.
-- **Section length:** 450 words (without counting the code)
+- **Section length:** 500 words (without counting the code)
 
 
 ## Section 6: Using Pydantic models as tools for on-demand structured outputs
@@ -269,7 +269,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
     5. Show the function name and arguments output as the response from the LLM
     6. Show we created the `document_metadata` Pydantic object and how it outputs `Validation successful!` if the output args have the right signature
 - Conclude by highlighting that this pattern is often used in AI agents that require structured outputs
-- **Section length:** 300 words (without counting the code)
+- **Section length:** 350 words (without counting the code)
 
 ## Section 7: The downsides of running tools in a loop
 
@@ -300,7 +300,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
     - Explain scenarios where multiple tools can be called simultaneously in parallel (e.g., fetching financial news and stock prices) as long they are independent from each other 
     - The core benefit is reduced latency
 - To conclude, these limitations pushed the industry to develop more sophisticated patterns like **ReAct** (Reasoning and Acting), which we will explore in lessons 7 and 8.
-- **Section length:** 400 words (without counting the code)
+- **Section length:** 450 words (without counting the code)
 
 ## Section 8: Popular tools used within the industry
 
@@ -320,7 +320,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
     4. **Other Popular Tools:**
         - Interacting with external APIs (e.g., calendar, email, project management, calls) omnipresent in enterprise AI apps
         - File system operations (read/write files, list directories) omnipresent in productivity AI apps that have to interact with our OS
-- **Section length:** 250 words
+- **Section length:** 275 words
 
 ## Section 9 - Conclusion: ...
 (Connect our solution to the bigger field of AI Engineering. Add course next steps.)

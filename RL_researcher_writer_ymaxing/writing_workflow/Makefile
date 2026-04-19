@@ -36,6 +36,19 @@ brown-edit-article: # Run the Brown MCP client to edit an article.
 brown-edit-selected-text: # Run the Brown MCP client to a selected text section of an article.
 	uv run python scripts/brown_mcp_cli.py edit-text --dir-path $(DIR_PATH) --human-feedback $(HUMAN_FEEDBACK) --first-line $(FIRST_LINE) --last-line $(LAST_LINE)
 
+# --- RL Training Data ---
+
+rl-writing-generate: # Phase 2a: Generate article.md for all RL training episodes.
+	uv run python rl_writing_generator.py
+
+rl-writing-dry-run: # Phase 2a dry run: Show plan without executing.
+	uv run python rl_writing_generator.py --dry-run
+
+rl-grading-generate: # Phase 2b: Grade article.md episodes and write scores.json.
+	uv run python rl_grading_generator.py
+
+rl-grading-dry-run: # Phase 2b dry run: Show grading plan without LLM calls.
+	uv run python rl_grading_generator.py --dry-run
 
 # --- Evals ---
 
