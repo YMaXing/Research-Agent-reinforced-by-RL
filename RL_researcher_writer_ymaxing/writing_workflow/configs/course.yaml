@@ -20,48 +20,40 @@ nodes:
     model_id: "google_genai:gemini-2.5-flash"
     model_config:
       temperature: 0.0
-      include_thoughts: false
-      thinking_budget: null
+      max_retries: 2
     tools:
       mermaid_diagram_generator:
         model_id: "google_genai:gemini-2.5-flash"
         config:
           temperature: 0.0
-          include_thoughts: false
-          thinking_budget: null
+          max_retries: 2
   write_article:
     model_id: "google_genai:gemini-2.5-pro"
     model_config:
       temperature: 0.7
-      include_thoughts: false
-      thinking_budget: null
+      max_retries: 2
   integrate_exploration:
     model_id: "google_genai:gemini-2.5-pro"
     model_config:
       temperature: 0.7
-      include_thoughts: true
-      thinking_budget: null
+      max_retries: 2
   review_article:
     model_id: "google_genai:gemini-2.5-pro"
     model_config:
       temperature: 0.0
-      include_thoughts: false
-      thinking_budget: null
+      max_retries: 2
   edit_article:
     model_id: "google_genai:gemini-2.5-pro"
     model_config:
       temperature: 0.1
-      include_thoughts: false
-      thinking_budget: null
+      max_retries: 2
   review_selected_text:
     model_id: "google_genai:gemini-2.5-pro"
     model_config:
       temperature: 0.0
-      include_thoughts: false
-      thinking_budget: null
+      max_retries: 2
   edit_selected_text:
     model_id: "google_genai:gemini-2.5-pro"
     model_config:
       temperature: 0.1
-      include_thoughts: false
-      thinking_budget: null
+      max_retries: 2

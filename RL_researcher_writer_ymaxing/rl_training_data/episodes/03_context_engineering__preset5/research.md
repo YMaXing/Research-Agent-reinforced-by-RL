@@ -1322,6 +1322,69 @@ Answer: Opik traces RAG pipelines: query, retrieval, generation; logs retrieved 
 
 </details>
 
+<details>
+<summary>What are the specific impacts of context window position on different types of memory components (procedural, episodic, semantic) in LLM reasoning for agentic workflows, based on empirical studies?</summary>
+
+Phase: [EXPLORATION]
+
+### Source [110]: https://arxiv.org/html/2505.16067v2
+
+Query: What are the specific impacts of context window position on different types of memory components (procedural, episodic, semantic) in LLM reasoning for agentic workflows, based on empirical studies?
+
+Answer: LLM agents often include short-term memory and long-term memory. Short-term memory usually refers to inside-task working memory, while long-term memory can be divided into three types: semantic memory, procedural memory, and episodic memory. Semantic memory contains the agent’s world knowledge and understanding of the environment; procedural memory involves rules or procedures, which may reside implicitly in the LLM’s weights or be explicitly defined as guidelines for the agent; and episodic memory records task-specific experiences. In this paper, we specifically focus on episodic memory, which is commonly used by LLM agents with memory and has recently been shown to mitigate the lack of latent learning capability in LLMs. Although various strategies have been proposed for memory management, such as structural transformation, merging, summarization, and reflection, these approaches are often designed for specific agent types (e.g., chatbot agents) and lack a unified design that generalizes across different agentic systems. The paper conducts an empirical study on how memory management impacts LLM agents' experience-following behavior, but does not directly detail impacts of context window position on specific memory types.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [111]: https://vinithavn.medium.com/advancing-agentic-memory-an-overview-of-modern-memory-management-architectures-in-llm-agents-8df87b0da58f
+
+Query: What are the specific impacts of context window position on different types of memory components (procedural, episodic, semantic) in LLM reasoning for agentic workflows, based on empirical studies?
+
+Answer: Short-term memory or working memory is what we call as context window, which represents the data or context that the LLM uses to generate any response. This is the active information. As the conversation becomes too long, the LLM might start to skip or forget some of the context. Episodic memory includes past events, experiences, etc. This is important for an LLM agent to remember past interactions with a particular user for a particular task. This is usually stored in an external data source and not in memory. Semantic memory is discussed. Langmem formally supports semantic, episodic, and procedural memory, facilitating tailored recall and reasoning depending on application needs. No specific empirical studies on context window position impacts are detailed.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [112]: https://www.nitorinfotech.com/blog/how-context-engineering-powers-agentic-llm-systems/
+
+Query: What are the specific impacts of context window position on different types of memory components (procedural, episodic, semantic) in LLM reasoning for agentic workflows, based on empirical studies?
+
+Answer: Memories: Sometimes agents benefit from remembering things across many sessions. An LLM can be used to update or create memories. For example, ChatGPT, Cursor, and Windsurf can auto-generate semantic memories (facts), procedural memories (instructions), and episodic memories (examples) that last indefinitely. So, never waste context that you can store. The LLM is like the CPU, and its context window is like the RAM, serving as the model’s working memory. The size, relevance, and organization of that context directly influence accuracy, efficiency, and reliability. Context engineering manages instructions, memory, tools, and knowledge within limited context windows to improve reasoning and reduce failures. No empirical studies on position impacts provided.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [113]: https://www.centron.de/en/tutorial/episodic-memory-in-ai-agents-long-term-context-learning/
+
+Query: What are the specific impacts of context window position on different types of memory components (procedural, episodic, semantic) in LLM reasoning for agentic workflows, based on empirical studies?
+
+Answer: Semantic memory holds broad factual understanding, whereas episodic memory captures personal experience enriched with contextual detail. Short-term memory remains temporary and corresponds to the model’s context window, while procedural memory represents learned skills and actions. Episodic memory is valuable for LLM agents that operate on emails, calendars, or project tasks, because they need to remember actions taken previously in order to avoid repeating errors. No specific details on impacts of context window position on memory types or empirical studies.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [114]: https://arxiv.org/html/2602.19320v1
+
+Query: What are the specific impacts of context window position on different types of memory components (procedural, episodic, semantic) in LLM reasoning for agentic workflows, based on empirical studies?
+
+Answer: Context Window Management: This category manages the model’s working context within a single task, without accumulating memory across sessions. Prior interactions are folded, summarized, or reorganized to fit within a bounded window, prioritizing local reasoning efficiency over long-term storage or reuse. Agentic memory systems enable LLM agents to maintain state across long interactions, supporting long-horizon reasoning and personalization beyond fixed context windows. Token-Level Semantic Memory: This category encodes memory at the token level using dedicated memory tokens or compressed latent panels. These representations primarily capture semantic content, aiming to improve long-context handling with minimal overhead. The survey presents a structured analysis of agentic memory, including empirical foundations, but does not specify impacts of context window position on procedural, episodic, or semantic memory components.
+
+-----
+
+</details>
+
 </research_source>
 
 <research_source type="scraped_from_research" phase="exploitation" file="context-engineering-for-ai-coding-a-practical-intro-to-conte.md">

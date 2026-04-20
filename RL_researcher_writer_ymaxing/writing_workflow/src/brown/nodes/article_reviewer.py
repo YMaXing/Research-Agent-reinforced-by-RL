@@ -12,6 +12,7 @@ from brown.entities.profiles import ArticleProfiles
 from brown.entities.research import Research
 from brown.entities.reviews import ArticleReviews, HumanFeedback, Review, SelectedTextReviews
 from brown.models import FakeModel
+from brown.utils.rate_limiter import llm_throttle
 
 from .base import Node, Toolkit
 
@@ -494,7 +495,8 @@ steps, but continue to apply all Reviewing Rules from the system prompt above:
                     }
                 ]
             )
-        reviews = await self.model.ainvoke(inputs)
+        async with llm_throttle():
+            reviews = await self.model.ainvoke(inputs)
         if not isinstance(reviews, ReviewsOutput):
             raise InvalidOutputTypeException(ReviewsOutput, type(reviews))
 

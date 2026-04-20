@@ -7,6 +7,7 @@ from brown.config import get_settings
 
 from .config import (
     DEFAULT_MODEL_CONFIGS,
+    GOOGLE_ONLY_PARAMS,
     ModelConfig,
     SupportedModels,
 )
@@ -16,6 +17,8 @@ MODEL_TO_REQUIRED_API_KEY = {
     SupportedModels.GOOGLE_GEMINI_25_PRO: "GOOGLE_API_KEY",
     SupportedModels.GOOGLE_GEMINI_25_FLASH: "GOOGLE_API_KEY",
     SupportedModels.GOOGLE_GEMINI_25_FLASH_LITE: "GOOGLE_API_KEY",
+    SupportedModels.XAI_GROK_420: "XAI_API_KEY",
+    SupportedModels.XAI_GROK_41_FAST: "XAI_API_KEY",
 }
 
 
@@ -35,6 +38,15 @@ def get_model(model: SupportedModels, config: ModelConfig | None = None) -> Base
         "model": model.value,
         **config.model_dump(),
     }
+
+    # Remove Google-specific params for non-Google providers.
+    if not model.value.startswith("google_genai:"):
+        for key in GOOGLE_ONLY_PARAMS:
+            model_kwargs.pop(key, None)
+        # ChatXAI (OpenAI-compatible) uses 'max_tokens' instead of 'max_output_tokens'.
+        max_out = model_kwargs.pop("max_output_tokens", None)
+        if max_out is not None:
+            model_kwargs["max_tokens"] = max_out
 
     required_api_key = MODEL_TO_REQUIRED_API_KEY.get(model)
     if required_api_key:

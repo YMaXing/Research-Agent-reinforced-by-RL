@@ -1,3 +1,4 @@
+import asyncio
 from abc import ABC, abstractmethod
 from typing import Any, Iterable, Literal, TypedDict, cast
 
@@ -99,6 +100,20 @@ class Node(ABC):
             )
 
         return messages
+
+    async def abuild_user_input_content(self, inputs: Iterable[str], image_urls: list[str] | None = None) -> list[dict[str, Any]]:
+        """Like build_user_input_content but downloads images as base64 data URIs.
+
+        Use this instead of build_user_input_content when the target API fetches
+        image URLs server-side (e.g. xAI), which can fail with 403 Forbidden.
+        """
+        resolved: list[str] | None = None
+        if image_urls:
+            from brown.utils.network import fetch_image_as_data_uri
+
+            results = await asyncio.gather(*[fetch_image_as_data_uri(url) for url in image_urls])
+            resolved = [r for r in results if r is not None] or None
+        return self.build_user_input_content(inputs=inputs, image_urls=resolved)
 
     @abstractmethod
     async def ainvoke(self) -> Any:

@@ -1,6 +1,11 @@
+import base64
+
 import httpx
 
 INVALID_IMAGE_DOMAINS = ["github"]
+
+# OpenAI vision API only accepts these MIME types for inline images.
+_OPENAI_ACCEPTED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
 
 
 async def is_image_url_valid(url: str, timeout: float = 5.0) -> bool:
@@ -49,11 +54,37 @@ async def ping(url: str, timeout: float = 5.0) -> bool:
             if response.status_code != 200:
                 return False
 
-            # Validate content type to catch HTML pages that "redirect" via meta/JS
-            content_type = response.headers.get("Content-Type", "").lower()
-            if not content_type.startswith("image/"):
+            # Validate content type — only accept image types supported by OpenAI vision API
+            content_type = response.headers.get("Content-Type", "").split(";")[0].strip().lower()
+            if content_type not in _OPENAI_ACCEPTED_IMAGE_TYPES:
                 return False
 
             return True
     except (httpx.RequestError, httpx.HTTPStatusError, httpx.TimeoutException, httpx.InvalidURL):
         return False
+
+
+async def fetch_image_as_data_uri(url: str, timeout: float = 10.0) -> str | None:
+    """Download an image and return it as a base64 data URI, or None on failure.
+
+    Use this when the target API fetches image URLs server-side (and may be blocked
+    by 403/auth) — encoding the image locally avoids the remote-fetch entirely.
+    """
+    try:
+        async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:
+            response = await client.get(
+                url,
+                headers={
+                    "Accept": "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+                    "User-Agent": "Mozilla/5.0 (compatible; brown-bot/1.0)",
+                },
+            )
+            if response.status_code != 200:
+                return None
+            content_type = response.headers.get("Content-Type", "").split(";")[0].strip().lower()
+            if content_type not in _OPENAI_ACCEPTED_IMAGE_TYPES:
+                return None
+            b64 = base64.b64encode(response.content).decode("ascii")
+            return f"data:{content_type};base64,{b64}"
+    except (httpx.RequestError, httpx.HTTPStatusError, httpx.TimeoutException, httpx.InvalidURL):
+        return None

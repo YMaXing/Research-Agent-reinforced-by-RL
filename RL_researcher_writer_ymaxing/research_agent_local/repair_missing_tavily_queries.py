@@ -69,9 +69,12 @@ logger = logging.getLogger("repair_missing_tavily")
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-_EPISODES_DIR = (
-    _THIS_DIR.parent / "rl_training_data" / "episodes"
-)
+_TRAINING_DATA_DIR = _THIS_DIR.parent / "rl_training_data"
+# Both subdirectories that can contain episode-like dirs with .research/ folders
+_SEARCH_ROOTS = [
+    _TRAINING_DATA_DIR / "episodes",
+    _TRAINING_DATA_DIR / "bases",
+]
 
 _PHASE_TAG: dict[str, str] = {
     "Exploitation": "[EXPLOITATION]",
@@ -223,7 +226,10 @@ async def repair_episode(ep_dir: Path, missing: list[MissingQuery], dry_run: boo
 # ---------------------------------------------------------------------------
 
 async def main(dry_run: bool, filter_episodes: list[str] | None) -> None:
-    missing = find_missing_queries(_EPISODES_DIR, filter_episodes)
+    missing: list[MissingQuery] = []
+    for root in _SEARCH_ROOTS:
+        if root.exists():
+            missing.extend(find_missing_queries(root, filter_episodes))
 
     if not missing:
         logger.info("✅ No missing queries found across all episodes.")

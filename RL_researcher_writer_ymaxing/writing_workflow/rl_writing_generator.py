@@ -33,6 +33,7 @@ from typing import Sequence
 from langchain_core.runnables import RunnableConfig
 
 from brown.memory import build_sqlite_checkpointer
+from brown.utils.rate_limiter import set_llm_concurrency
 from brown.workflows import build_generate_article_workflow
 
 # ---------------------------------------------------------------------------
@@ -55,17 +56,21 @@ _THIS_DIR = Path(__file__).resolve().parent
 EPISODES_DIR = _THIS_DIR.parent / "rl_training_data" / "episodes"
 
 # Train articles (L2, L3, L5, L8, L11) — must match Phase 1
+# L11 is listed before L8 because L8 (08_react_practice) frequently triggers
+# LLM 429 rate-limit errors; processing L11 first keeps the pipeline moving.
 TRAIN_ARTICLES: list[str] = [
     "02_workflows_vs_agents",
     "03_context_engineering",
     "05_workflow_patterns",
-    "08_react_practice",
     "11_multimodal",
+    "08_react_practice",
 ]
 
 N_PRESETS = 6  # preset IDs 0-5
 MAX_RETRIES = 3
 RETRY_BACKOFF_BASE = 30  # seconds; attempt N waits N * 30s
+DEFAULT_CONCURRENCY = 2  # concurrent episodes; Gemini 2.5 Pro is 150 RPM / 2M TPM — keep low
+DEFAULT_LLM_CONCURRENCY = 2  # concurrent LLM API calls; each call can be 100K-500K tokens
 
 
 # ---------------------------------------------------------------------------
@@ -159,10 +164,22 @@ async def run_episode(episode_dir: Path, episode_name: str) -> bool:
 # ---------------------------------------------------------------------------
 
 
+async def _bounded_run(
+    sem: asyncio.Semaphore,
+    ep_dir: Path,
+    ep_name: str,
+) -> tuple[str, bool]:
+    """Run a single episode under the concurrency semaphore."""
+    async with sem:
+        ok = await run_episode(ep_dir, ep_name)
+        return ep_name, ok
+
+
 async def run_pipeline(
     articles: Sequence[str] | None = None,
     preset_ids: Sequence[int] | None = None,
     dry_run: bool = False,
+    max_concurrent: int = DEFAULT_CONCURRENCY,
 ) -> None:
     """Run the writing pipeline across all requested episodes.
 
@@ -195,6 +212,7 @@ async def run_pipeline(
     logger.info(f"  Already complete:   {len(done)}")
     logger.info(f"  Ready to generate:  {len(ready)}")
     logger.info(f"  Missing research:   {len(missing)}")
+    logger.info(f"  Max concurrent:     {max_concurrent}")
     logger.info(f"  Episodes dir:       {EPISODES_DIR}")
     logger.info("=" * 70)
 
@@ -214,30 +232,21 @@ async def run_pipeline(
         return
 
     pipeline_t0 = time.monotonic()
-    succeeded = 0
-    failed = 0
+    sem = asyncio.Semaphore(max_concurrent)
+    tasks = [_bounded_run(sem, ep_dir, ep_name) for ep_name, ep_dir in ready]
 
-    for idx, (ep_name, ep_dir) in enumerate(ready, 1):
-        logger.info(f"\n{'─' * 60}")
-        logger.info(f"Episode {idx}/{len(ready)}: {ep_name}")
-        logger.info(f"{'─' * 60}")
+    logger.info(f"Launching {len(tasks)} episode(s) with max_concurrent={max_concurrent} …")
+    results: list[tuple[str, bool]] = await asyncio.gather(*tasks)
 
-        ep_t0 = time.monotonic()
-        ok = await run_episode(ep_dir, ep_name)
-        ep_elapsed = time.monotonic() - ep_t0
-
-        if ok:
-            succeeded += 1
-            logger.info(f"  Completed in {ep_elapsed:.0f}s")
-        else:
-            failed += 1
-            logger.warning(f"  Failed after {ep_elapsed:.0f}s")
-
-        logger.info(f"  Progress: {succeeded + failed}/{len(ready)} (succeeded={succeeded}  failed={failed})")
-
+    succeeded = sum(1 for _, ok in results if ok)
+    failed = sum(1 for _, ok in results if not ok)
     elapsed = time.monotonic() - pipeline_t0
     logger.info("=" * 70)
     logger.info(f"Pipeline complete — {succeeded} succeeded, {failed} failed in {elapsed:.0f}s")
+    if failed:
+        for ep_name, ok in results:
+            if not ok:
+                logger.warning(f"  FAILED: {ep_name}")
     logger.info("=" * 70)
 
 
@@ -268,13 +277,34 @@ def main() -> None:
         action="store_true",
         help="Show execution plan without running",
     )
+    parser.add_argument(
+        "--concurrency",
+        type=int,
+        default=DEFAULT_CONCURRENCY,
+        metavar="N",
+        help=f"Max concurrent episodes (default: {DEFAULT_CONCURRENCY}; raise carefully — Gemini RPM limits apply)",
+    )
+    parser.add_argument(
+        "--llm-concurrency",
+        type=int,
+        default=DEFAULT_LLM_CONCURRENCY,
+        metavar="N",
+        dest="llm_concurrency",
+        help=(
+            f"Max concurrent LLM API calls across all episodes (default: {DEFAULT_LLM_CONCURRENCY}). "
+            "Each article call consumes 100K-500K input tokens. Lower this if you see 429 quota errors."
+        ),
+    )
     args = parser.parse_args()
+
+    set_llm_concurrency(args.llm_concurrency)
 
     asyncio.run(
         run_pipeline(
             articles=args.articles,
             preset_ids=args.presets,
             dry_run=args.dry_run,
+            max_concurrent=args.concurrency,
         )
     )
 

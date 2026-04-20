@@ -73,14 +73,17 @@ async def run_tavily_search(query: str) -> Tuple[str, Dict[int, str], Dict[int, 
         + f"\n\nUse the following high-quality search results as source material:\n{tavily_results_str}"
     )
 
-    # Retry with exponential back-off on transient 503 / rate-limit errors.
+    # Retry with exponential back-off on transient 503 / rate-limit errors AND on
+    # empty structured responses (tool_calls=[], raw_content='') which can occur
+    # transiently when the model declines to invoke the output schema.
     _MAX_RETRIES = 4
     _BASE_DELAY = 5.0  # seconds
     last_exc: Exception | None = None
+    raw_result = None
+    response = None
     for attempt in range(_MAX_RETRIES):
         try:
             raw_result = await struct_llm.ainvoke(enhanced_prompt)
-            break
         except (InternalServerError, RateLimitError) as exc:
             last_exc = exc
             status = getattr(exc, "status_code", None)
@@ -93,10 +96,22 @@ async def run_tavily_search(query: str) -> Tuple[str, Dict[int, str], Dict[int, 
                 f"Retrying in {delay:.0f}s…"
             )
             await asyncio.sleep(delay)
-    else:
-        raise last_exc  # all retries exhausted
+            continue
 
-    response = raw_result.get("parsed") if isinstance(raw_result, dict) else raw_result
+        response = raw_result.get("parsed") if isinstance(raw_result, dict) else raw_result
+        if response is not None and hasattr(response, "sources") and response.sources:
+            break  # got a valid response
+
+        # Empty structured output — retry after a short pause
+        delay = _BASE_DELAY * (2 ** attempt)
+        logger.warning(
+            f"⚠️ LLM returned empty structured output for query {query!r} "
+            f"(attempt {attempt + 1}/{_MAX_RETRIES}). Retrying in {delay:.0f}s…"
+        )
+        await asyncio.sleep(delay)
+    else:
+        if last_exc is not None:
+            raise last_exc  # all retries exhausted due to API errors
 
     if response is None or not hasattr(response, "sources") or response.sources is None:
         parsing_error = raw_result.get("parsing_error") if isinstance(raw_result, dict) else None

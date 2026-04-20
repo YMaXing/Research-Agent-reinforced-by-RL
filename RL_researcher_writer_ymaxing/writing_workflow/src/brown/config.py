@@ -17,6 +17,10 @@ class Settings(BaseSettings):
 
     GOOGLE_API_KEY: SecretStr | None = Field(default=None, alias="GOOGLE_API_KEY", description="The API key for the Gemini API.")
 
+    # --- xAI ---
+
+    XAI_API_KEY: SecretStr | None = Field(default=None, alias="XAI_API_KEY", description="The API key for the xAI API.")
+
     # --- Opik ---
 
     OPIK_ENABLED: bool = Field(default=False, alias="OPIK_ENABLED", description="Whether to use Opik for monitoring and logging.")

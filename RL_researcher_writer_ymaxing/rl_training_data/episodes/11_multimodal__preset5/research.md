@@ -1241,6 +1241,132 @@ Answer: Multimodal LLMs are large language models capable of processing multiple
 
 </details>
 
+<details>
+<summary>How is multimodal RAG being combined with digital twin technologies in industrial IoT and smart manufacturing to enable predictive maintenance agents that reason over both visual sensor data and textual logs?</summary>
+
+Phase: [EXPLORATION]
+
+### Source [103]: https://www.linkedin.com/posts/prabhakarv1_%F0%9D%97%94%F0%9D%97%9C-%F0%9D%97%B6%F0%9D%97%BB-%F0%9D%97%A3%F0%9D%97%BF%F0%9D%97%B2%F0%9D%97%B1%F0%9D%97%B6%F0%9D%97%B0%F0%9D%98%81%F0%9D%97%B6%F0%9D%98%83%F0%9D%97%B2-%F0%9D%97%A0%F0%9D%97%AE%F0%9D%97%B6%F0%9D%97%BB%F0%9D%98%81-activity-7369037791353098244-OXjK
+
+Query: How is multimodal RAG being combined with digital twin technologies in industrial IoT and smart manufacturing to enable predictive maintenance agents that reason over both visual sensor data and textual logs?
+
+Answer: AI agent-driven predictive maintenance in Industry 4.0 leverages large language and multimodal models combining sensor data with logs, manuals, and operator notes. Retrieval-Augmented Generation (RAG) grounds predictions in real-time technical knowledge. AI + Digital Twins simulate 'what-if' scenarios before interventions. In practice, edge and fog layers handle real-time monitoring and anomaly detection. RAGFlow enriches anomaly data with relevant manuals and past cases, reducing false alarms and improving diagnostic accuracy. Core AI agents collaborate: a diagnostic agent identifies root causes and risk levels, a scheduling agent optimizes work orders, a digital twin agent tests scenarios before execution, and a summing-up agent closes loops. This addresses traditional PdM limitations like siloed data and model degradation through autonomous AI agents that reason, plan, and execute maintenance actions.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [104]: https://www.scitepress.org/Papers/2025/141522/141522.pdf
+
+Query: How is multimodal RAG being combined with digital twin technologies in industrial IoT and smart manufacturing to enable predictive maintenance agents that reason over both visual sensor data and textual logs?
+
+Answer: This paper introduces a Digital Twin-based predictive maintenance framework leveraging Multi-Agent Reinforcement Learning (MARL) and Industrial IoT (IIoT) data. It addresses challenges like scalability, data quality, real-time decision-making. The framework integrates Digital Twin technology, IIoT data streams, and MARL for predictive maintenance. Figure 1 shows the flowchart for the Digital Twin-enabled Predictive Maintenance Framework where Digital Twin and MARL enhance the process. References include works on digital twin for predictive maintenance using IIoT sensors, real-time anomaly detection, and machine learning integration.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [105]: https://addepto.com/blog/next-generation-industry-multimodal-ai-for-automotive-manufacturing-and-engineering/
+
+Query: How is multimodal RAG being combined with digital twin technologies in industrial IoT and smart manufacturing to enable predictive maintenance agents that reason over both visual sensor data and textual logs?
+
+Answer: Multimodal AI enables systems to ingest, interpret, and reason across visual, textual, spatial, and numerical data in manufacturing and engineering. For predictive maintenance, multimodal agents cross-reference visual inspection data with sensor telemetry and maintenance records (textual logs) to identify anomalies, recommend interventions, and generate documentation. This unifies information silos, enabling cognitive automation where AI understands context like human experts. In automotive and manufacturing, it supports intelligent assembly, inspection, correlating visual anomalies with sensor patterns.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [106]: https://www.scitepress.org/publishedPapers/2025/141522/pdf/index.html
+
+Query: How is multimodal RAG being combined with digital twin technologies in industrial IoT and smart manufacturing to enable predictive maintenance agents that reason over both visual sensor data and textual logs?
+
+Answer: This paper presents a Digital Twin-Enabled Predictive Maintenance Framework Leveraging Multi-Agent Reinforcement Learning and Industrial IoT Data. It uses Digital Twin, Predictive Maintenance, MARL, IIoT, Real-Time Data. The approach integrates DT technology, IIoT data, and MARL to tackle data quality, real-time decisions, scalability in predictive maintenance. References cover digital twin technology for predictive maintenance using industrial IoT sensors, real-time anomaly detection, machine learning and digital twin integration in smart factories.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [107]: https://processgenius.eu/articles/how-iot-ai-and-3d-digital-twin-boost-predictive-maintenance-in-manufacturing/
+
+Query: How is multimodal RAG being combined with digital twin technologies in industrial IoT and smart manufacturing to enable predictive maintenance agents that reason over both visual sensor data and textual logs?
+
+Answer: IoT, 3D Digital Twin, and AI combine for predictive maintenance in manufacturing. IoT provides real-time data from sensors, Digital Twins offer comprehensive views of machines and production lines for accurate predictions, AI processes IoT data with predictive models to identify failures and optimize schedules. This integration gives real-time visibility into assets, reduces downtime, cuts costs, improves efficiency. Benefits include predictive maintenance cost reduction and operational excellence via IoT sensor data processed by AI within Digital Twin contexts.
+
+-----
+
+</details>
+
+<details>
+<summary>In what ways are advancements in multimodal LLMs influencing creative industries like film production and game development, particularly for AI-assisted storyboarding, asset retrieval, and interactive narrative agents?</summary>
+
+Phase: [EXPLORATION]
+
+### Source [108]: https://arxiv.org/html/2501.02725v5
+
+Query: In what ways are advancements in multimodal LLMs influencing creative industries like film production and game development, particularly for AI-assisted storyboarding, asset retrieval, and interactive narrative agents?
+
+Answer: A clear divide exists between open-source and proprietary LLMs. Open-source models such as LLaMA 3, Mistral, and Falcon promote transparency, reproducibility, and creative customization, allowing researchers to fine-tune or deploy them locally with improved data control. Proprietary systems like GPT-4, Gemini 1.5, and Claude 3, meanwhile, deliver stronger multimodal integration, safety alignment, and reliability—benefiting from access to large, private datasets and compute resources. Yet their closed architectures limit interpretability and independent evaluation. Together, these ecosystems form a complementary landscape balancing openness and innovation against performance and safety, shaping accessibility and creative autonomy in AI-driven practice. Similar to other content generation tools, LLMs have been influenced on immersive technologies, including text-to-3D and image-to-3D. Exciting examples include [...]. One of the exciting aspects of using LLMs in the creative sector is that ‘The human in the loop’ [chung:human-loop:2021] is simplified through text prompts, with sophisticated, multilingual language capabilities enabling artists to convey complex emotions and narratives. This is important because generative AI does produce mistakes, known as hallucinations. Human oversight is thus essential to correct this through reinforcement learning with feedback [Wu:brief:2023].
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [109]: https://antoniosliapis.com/articles/llm_and_games.php
+
+Query: In what ways are advancements in multimodal LLMs influencing creative industries like film production and game development, particularly for AI-assisted storyboarding, asset retrieval, and interactive narrative agents?
+
+Answer: One can argue that existing interfaces with LLMs and Large Multimodal Models (LMMs) act as design assistants. The designer provides their specifications and receives one (in LLMs) or multiple (in AI image generators) suggestions that they can further refine. Many creatives report using such interfaces for brainstorming and concept development, including game developers. However, the applicability of LLMs as design assistants is somewhat limited, reverting only to conceptual assistance. Similarly, their potential for refining an existing idea (i.e. offering procedural assistance) is underexplored, as we discuss in Section 4. The previous section attempted to group current research in LLMs and games into a typology focused on the roles an LLM is asked to play. As part of this exercise, we identified a number of roles that have been heavily researched. Unsurprisingly, the role of player and automated designer have received most attention: this matches the general trends within AI and games research more broadly. Following general trends in Game AI for playing or generating content, LLM-based approaches are likely to flourish via community events, benchmarks and competitions, with first steps already being taken in this direction. Based on the roles listed in Section 3, we identify below some gaps found in the literature, and lay out possible research directions that leverage the power of LLMs in new ways. game, or hidden within the games' ruleset (controlling a mechanic of the game). There are however other roles an LLM can play outside of the game's runtime, such as a designer for the game (replacing or assisting a human designer) or as analyst of the gameplay data of the playerbase. Finally, the LLM can interface with a player or an audience in different ways, acting as a commentator of an ongoing play session (during runtime) or a reteller of past game events in some narrative form (outside runtime). Some of these roles (autonomous player, autonomous designer) are prominent in the broader AI and games research and LLM research has targeted them extensively, while some of the other roles have been toyed with in exploratory research.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [110]: https://www.microsoft.com/en-us/research/blog/geneva-uses-large-language-models-for-interactive-game-narrative-design/
+
+Query: In what ways are advancements in multimodal LLMs influencing creative industries like film production and game development, particularly for AI-assisted storyboarding, asset retrieval, and interactive narrative agents?
+
+Answer: Mastering the art of storytelling, a highly valued skill across films, novels, games, and more, requires creating rich narratives with compelling plots and characters. In recent years, the rise of AI has prompted inquiries into whether large language models (LLMs) can effectively generate and sustain detailed, coherent storylines that engage audiences. Consequentially, researchers have been actively exploring AI’s potential to support creative processes in video game development, where the growing demands of narrative design often surpass the capabilities of traditional tools. This investigation focuses on AI’s capacity for innovation in storytelling and the necessary human interactions to drive such advances. Our collaboration with Xbox and Inworld AI continues to advance the use of AI in game development, incorporating these developments into practical tools for creators.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [111]: https://openaccess.thecvf.com/content/CVPR2025W/CVEU/papers/Zhang_Generative_AI_for_Film_Creation_A_Survey_of_Recent_Advances_CVPRW_2025_paper.pdf
+
+Query: In what ways are advancements in multimodal LLMs influencing creative industries like film production and game development, particularly for AI-assisted storyboarding, asset retrieval, and interactive narrative agents?
+
+Answer: Overall, as generative models and multi-modal learning continue to advance, AI’s role in filmmaking—spanning creation, stylistic coherence, and audience engagement—will likely deepen, creating new opportunities and challenges for the industry. Survey Many computer scientists and filmmakers are eager to understand how these tools are being integrated into film production. In this section, we examine the adoption rates of various GenAI technologies and how artists rate the impact of different factors on film quality. We also surveyed artists on their opinions of current GenAI tools and their expectations for future advancements in film production. Traditionally, film production consists of three phases: pre-production (scriptwriting, storyboarding, character design), production (direction, cinematography [90, 100, 101], and other departments working in tandem [91, 92]), and post-production (editing, special effects, sound design, and mixing) [20, 94]. With advances in multimodal AI, researchers have developed text-to-video models that generate coherent clips or full AI-driven shorts from minimal input, synthesizing both appearance and motion [41, 72, 106, 108]. In recent multimodal generative models research, certain pipelines demonstrate the ability to maintain internal continuity, style coherence, and believable character interplay across challenging scene transitions [24, 110, 117, 118]. Beyond 2D frames, AI extends into 3D and 4D asset generation, where virtual actors integrate high-resolution models such as Neural Radiance Fields (NeRF), 3D Gaussian Splatting and dynamic 3D representations enable realistic scene synthesis and temporal consistency [6, 29, 36, 54, 63, 107]. These approaches allow filmmakers to generate and animate objects and environments over time, ensuring spatial and stylistic fidelity.
+
+-----
+
+-----
+
+Phase: [EXPLORATION]
+
+### Source [112]: https://milvus.io/ai-quick-reference/how-is-multimodal-ai-applied-in-gaming-and-entertainment
+
+Query: In what ways are advancements in multimodal LLMs influencing creative industries like film production and game development, particularly for AI-assisted storyboarding, asset retrieval, and interactive narrative agents?
+
+Answer: Content generation and personalization are key areas where multimodal AI streamlines development. Tools like NVIDIA’s Omniverse or Epic’s MetaHuman Creator use text prompts, sketches, or voice descriptions to generate 3D models, textures, or animations, accelerating asset creation. For example, a developer could describe a “futuristic city with neon-lit skyscrapers” in text, and the AI generates a prototype environment. In entertainment platforms like Netflix or Spotify, multimodal systems analyze viewing history, audio preferences, and even user-generated content (e.g., screenshots or playlists) to recommend tailored content. Games like No Man’s Sky use procedural generation algorithms that combine terrain data, player behavior, and aesthetic rules to build vast, unique worlds. Multimodal AI enhances gaming and entertainment by integrating multiple data types—such as text, audio, visual inputs, and sensor data—to create more interactive and adaptive experiences. For example, games can combine voice commands, gesture recognition, and environmental context to enable players to interact with virtual worlds more naturally. A player might speak to an NPC, use hand gestures to manipulate objects, and have the game adjust lighting or sound based on real-world surroundings captured by a camera. Technologies like Microsoft’s Project Acoustics use spatial audio modeling to simulate realistic sound propagation in 3D environments, while tools like Unity’s ML-Agents allow developers to train NPCs using multimodal inputs for dynamic behavior. By processing these inputs [...] In character interaction and storytelling, multimodal AI enables NPCs to interpret player intent through speech, facial expressions, and actions. For instance, in games like Hellblade: Senua’s Sacrifice, audio cues and voice acting are paired with visual effects to reflect the protagonist’s mental state. Developers can use frameworks like OpenAI’s GPT-4 or Meta’s PyTorch to build NPCs that analyze player dialogue (text or speech) and respond contextually while tracking in-game actions. A player’s frustrated tone or aggressive movements could trigger NPCs to adopt defensive behaviors or alter story paths. Similarly, AI-driven tools like Inworld AI allow creators to design characters that blend natural language interactions with emotion recognition from camera feeds, making conversations
+
+-----
+
+</details>
+
 </research_source>
 
 <research_source type="scraped_from_research" phase="exploitation" file="2025-the-year-ai-reasoning-models-took-over-a-month-by-month.md">
