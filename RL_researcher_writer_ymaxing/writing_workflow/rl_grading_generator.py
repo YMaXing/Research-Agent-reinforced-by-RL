@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import Sequence
 
 from brown.evals.metrics import FollowsGTMetric, UserIntentMetric
-from brown.models import SupportedModels
+from brown.models import ModelConfig, SupportedModels
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -70,8 +70,19 @@ N_PRESETS = 6  # preset IDs 0-5
 MAX_RETRIES = 3
 RETRY_BACKOFF_BASE = 30  # seconds; attempt N waits N * 30s
 
-# Grading model: Gemini 2.5 Flash (LLM-as-judge)
-GRADING_MODEL = SupportedModels.GOOGLE_GEMINI_25_FLASH
+# Minimum pause between episodes (seconds).
+# Each episode fires 2 concurrent Pro calls.  The UserIntentMetric prompt
+# includes the full research.md (~130K-300K tokens), so back-to-back
+# episodes can sustain high TPM.  20s provides a reasonable cooldown;
+# increase to 30s if quota errors are observed.
+INTER_EPISODE_DELAY_SECS: float = 20.0
+
+# Grading model: Gemini 2.5 Pro (LLM-as-judge)
+GRADING_MODEL = SupportedModels.GOOGLE_GEMINI_25_PRO
+
+# Shared model config: lower thinking budget vs the per-metric default (4096)
+# to reduce cost and latency; Pro reasons reliably at 1024 for binary scoring.
+_GRADING_CONFIG = ModelConfig(temperature=0.0, thinking_budget=1024, include_thoughts=False, max_retries=3)
 
 # ---------------------------------------------------------------------------
 # Metric instances (shared across episodes; each ascore() creates its own client)
@@ -82,12 +93,14 @@ _follows_gt_metric = FollowsGTMetric(
     name="ground_truth",
     track=True,
     project_name="rl-grading",
+    model_config=_GRADING_CONFIG,
 )
 _user_intent_metric = UserIntentMetric(
     model=GRADING_MODEL,
     name="user_intent",
     track=True,
     project_name="rl-grading",
+    model_config=_GRADING_CONFIG,
 )
 
 
@@ -96,8 +109,8 @@ _user_intent_metric = UserIntentMetric(
 # ---------------------------------------------------------------------------
 
 
-async def _grade_episode(episode_dir: Path, article_name: str) -> dict[str, float]:
-    """Run FollowsGTMetric and UserIntentMetric concurrently; return merged scores."""
+async def _grade_episode(episode_dir: Path, article_name: str) -> tuple[dict[str, float], dict[str, str]]:
+    """Run FollowsGTMetric and UserIntentMetric concurrently; return merged scores and reasons."""
     article_md = (episode_dir / "article.md").read_text(encoding="utf-8")
     gt_md = (EVAL_DATA_DIR / article_name / "article_ground_truth.md").read_text(encoding="utf-8")
     guideline_md = (EVAL_DATA_DIR / article_name / "article_guideline.md").read_text(encoding="utf-8")
@@ -113,10 +126,12 @@ async def _grade_episode(episode_dir: Path, article_name: str) -> dict[str, floa
     )
 
     scores: dict[str, float] = {}
+    reasons: dict[str, str] = {}
     for sr in gt_results + ui_results:
         scores[sr.name] = round(sr.value, 6)
+        reasons[sr.name] = sr.reason or ""
 
-    return scores
+    return scores, reasons
 
 
 async def run_episode(episode_dir: Path, article_name: str, episode_name: str) -> bool:
@@ -140,9 +155,11 @@ async def run_episode(episode_dir: Path, article_name: str, episode_name: str) -
             logger.info(f"[START] {episode_name} (attempt {attempt}/{MAX_RETRIES})")
             t0 = time.monotonic()
 
-            scores = await _grade_episode(episode_dir, article_name)
+            scores, reasons = await _grade_episode(episode_dir, article_name)
 
             elapsed = time.monotonic() - t0
+            reasoning_path = episode_dir / "reasoning.json"
+            reasoning_path.write_text(json.dumps(reasons, indent=2), encoding="utf-8")
             scores_path.write_text(json.dumps(scores, indent=2), encoding="utf-8")
             logger.info(f"[DONE]  {episode_name}  ({elapsed:.1f}s)\n        {json.dumps(scores, separators=(',', ':'))}")
             return True
@@ -223,7 +240,10 @@ async def run_pipeline(
 
     succeeded = 0
     failed = 0
-    for ep_dir, article_name, ep_name in ready:
+    for i, (ep_dir, article_name, ep_name) in enumerate(ready):
+        if i > 0:
+            logger.info(f"Waiting {INTER_EPISODE_DELAY_SECS:.0f}s before next episode (TPM cooldown) ...")
+            await asyncio.sleep(INTER_EPISODE_DELAY_SECS)
         ok = await run_episode(ep_dir, article_name, ep_name)
         if ok:
             succeeded += 1
