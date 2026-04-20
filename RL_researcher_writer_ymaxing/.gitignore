@@ -188,6 +188,9 @@ cython_debug/
 checkpoints/
 outputs/
 
+# Models (large model weight files)
+models/
+
 # Nova
 .nova
 .research
