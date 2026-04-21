@@ -1,0 +1,150 @@
+{
+  "article": "06_tools",
+  "status": "success",
+  "split": "TEST",
+  "rl_signal": {
+    "rl_recommendation": {
+      "preset": 2,
+      "name": "P2  2_rounds_balanced\u2192depth",
+      "confidence": 0.8351,
+      "entropy_bits": 0.706,
+      "floor_correction_applied": false
+    },
+    "section_signals": [
+      {
+        "title": "Introduction",
+        "preset": 2,
+        "name": "P2  2_rounds_balanced\u2192depth",
+        "top2": [
+          [
+            "P2",
+            1.0
+          ],
+          [
+            "P3",
+            0.0
+          ]
+        ]
+      },
+      {
+        "title": "Understanding why agents need tools",
+        "preset": 2,
+        "name": "P2  2_rounds_balanced\u2192depth",
+        "top2": [
+          [
+            "P2",
+            0.9241
+          ],
+          [
+            "P3",
+            0.0759
+          ]
+        ]
+      },
+      {
+        "title": "Implementing tool calls from scratch",
+        "preset": 2,
+        "name": "P2  2_rounds_balanced\u2192depth",
+        "top2": [
+          [
+            "P2",
+            1.0
+          ],
+          [
+            "P1",
+            0.0
+          ]
+        ]
+      },
+      {
+        "title": "Implementing a tool calling framework from scratch",
+        "preset": 2,
+        "name": "P2  2_rounds_balanced\u2192depth",
+        "top2": [
+          [
+            "P2",
+            0.9997
+          ],
+          [
+            "P1",
+            0.0003
+          ]
+        ]
+      },
+      {
+        "title": "Implementing production-level tool calls with Gemini",
+        "preset": 2,
+        "name": "P2  2_rounds_balanced\u2192depth",
+        "top2": [
+          [
+            "P2",
+            1.0
+          ],
+          [
+            "P3",
+            0.0
+          ]
+        ]
+      },
+      {
+        "title": "Using Pydantic models as tools for on-demand structured outputs",
+        "preset": 2,
+        "name": "P2  2_rounds_balanced\u2192depth",
+        "top2": [
+          [
+            "P2",
+            1.0
+          ],
+          [
+            "P0",
+            0.0
+          ]
+        ]
+      },
+      {
+        "title": "The downsides of running tools in a loop",
+        "preset": 2,
+        "name": "P2  2_rounds_balanced\u2192depth",
+        "top2": [
+          [
+            "P2",
+            1.0
+          ],
+          [
+            "P1",
+            0.0
+          ]
+        ]
+      },
+      {
+        "title": "Going through popular tools used within the industry",
+        "preset": 0,
+        "name": "P0  no_exploration",
+        "top2": [
+          [
+            "P0",
+            1.0
+          ],
+          [
+            "P2",
+            0.0
+          ]
+        ]
+      }
+    ],
+    "guidance": "RL model strongly recommends P2 (P2  2_rounds_balanced\u2192depth, confidence 84%)."
+  },
+  "oracle": {
+    "preset": 1,
+    "name": "P1  1_round_balanced",
+    "rewards": [
+      0.448,
+      0.6513,
+      0.488,
+      0.5827,
+      0.6113,
+      0.546
+    ]
+  },
+  "verdict": "NEAR MISS  (\u00b11 preset)"
+}

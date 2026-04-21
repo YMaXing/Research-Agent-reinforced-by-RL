@@ -18,6 +18,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import math
 import re
 import sys
 from pathlib import Path
@@ -340,7 +341,13 @@ class ExplorationStrategySelector:
         # under-exploration zone (P0–P2).  When the vote is already ≥ P3
         # the model has committed to 2+ rounds; letting one outlier section
         # drag it higher causes systematic over-shooting.
-        if section_chosen <= 2:
+        # Additionally, suppress the floor when the model is already
+        # uncertain (entropy > 1.5 bits): in that state the guidance tells
+        # the client to apply its own judgement, so letting a single
+        # outlier section hijack the aggregate makes things worse.
+        _eps = 1e-12
+        _agg_entropy = -sum(p * math.log2(p + _eps) for p in agg_normalised)
+        if section_chosen <= 2 and _agg_entropy <= 1.5:
             chosen = max(section_chosen, section_max_floor)
         else:
             chosen = section_chosen

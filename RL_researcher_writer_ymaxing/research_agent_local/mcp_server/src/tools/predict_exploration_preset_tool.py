@@ -459,7 +459,7 @@ async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, 
     h = round(_entropy(agg_probs), 4)
     section_vote = meta.get("section_vote", preset)
     section_floor = meta.get("section_floor", 0)
-    floor_applied = section_vote <= 2 and section_floor > section_vote
+    floor_applied = section_vote <= 2 and section_floor > section_vote and h <= 1.5
 
     section_signals = []
     for d in section_details:

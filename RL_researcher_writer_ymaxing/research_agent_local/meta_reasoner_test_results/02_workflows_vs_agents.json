@@ -1,0 +1,120 @@
+{
+  "article": "02_workflows_vs_agents",
+  "status": "success",
+  "split": "TEST",
+  "rl_signal": {
+    "rl_recommendation": {
+      "preset": 3,
+      "name": "P3  2_rounds_depth\u2192breadth",
+      "confidence": 0.3868,
+      "entropy_bits": 1.9389,
+      "floor_correction_applied": false
+    },
+    "section_signals": [
+      {
+        "title": "Introduction: The Critical Decision Every AI Engineer Faces",
+        "preset": 3,
+        "name": "P3  2_rounds_depth\u2192breadth",
+        "top2": [
+          [
+            "P3",
+            1.0
+          ],
+          [
+            "P2",
+            0.0
+          ]
+        ]
+      },
+      {
+        "title": "Understanding the Spectrum: From Workflows to Agents",
+        "preset": 3,
+        "name": "P3  2_rounds_depth\u2192breadth",
+        "top2": [
+          [
+            "P3",
+            0.9241
+          ],
+          [
+            "P4",
+            0.0759
+          ]
+        ]
+      },
+      {
+        "title": "Choosing Your Path",
+        "preset": 0,
+        "name": "P0  no_exploration",
+        "top2": [
+          [
+            "P0",
+            1.0
+          ],
+          [
+            "P2",
+            0.0
+          ]
+        ]
+      },
+      {
+        "title": "Exploring Common Patterns",
+        "preset": 1,
+        "name": "P1  1_round_balanced",
+        "top2": [
+          [
+            "P1",
+            1.0
+          ],
+          [
+            "P0",
+            0.0
+          ]
+        ]
+      },
+      {
+        "title": "Zooming In on Our Favorite Examples",
+        "preset": 2,
+        "name": "P2  2_rounds_balanced\u2192depth",
+        "top2": [
+          [
+            "P2",
+            1.0
+          ],
+          [
+            "P0",
+            0.0
+          ]
+        ]
+      },
+      {
+        "title": "Conclusion: The Challenges of Every AI Engineer",
+        "preset": 2,
+        "name": "P2  2_rounds_balanced\u2192depth",
+        "top2": [
+          [
+            "P2",
+            1.0
+          ],
+          [
+            "P0",
+            0.0
+          ]
+        ]
+      }
+    ],
+    "guidance": "RL model is uncertain (H=1.94 bits > 1.5) \u2014 apply own judgement."
+  },
+  "oracle": {
+    "preset": 4,
+    "name": "P4  3_rounds_balanced\u2192depth\u2192breadth",
+    "rewards": [
+      0.6971,
+      0.7207,
+      0.6639,
+      0.74,
+      0.7571,
+      0.5593
+    ]
+  },
+  "verdict": "NEAR MISS  (\u00b11 preset)"
+}
