@@ -57,6 +57,55 @@ class TestProcessYoutubeUrl:
         output_path = call_kwargs.kwargs.get("output_path") or call_kwargs.args[1]
         assert output_path.name == "test_vid.md"
 
+    async def test_canonical_url_passed_to_transcribe(self, tmp_path):
+        """Clean URL (no extra params) is forwarded to transcribe_youtube unchanged."""
+        with patch("src.app.youtube_handler.transcribe_youtube", new_callable=AsyncMock) as mock_transcribe:
+            semaphore = asyncio.Semaphore(2)
+            await process_youtube_url("https://www.youtube.com/watch?v=test_vid", tmp_path, semaphore)
+
+        call_kwargs = mock_transcribe.call_args
+        url_used = call_kwargs.kwargs.get("url") or call_kwargs.args[0]
+        assert url_used == "https://www.youtube.com/watch?v=test_vid"
+
+    async def test_playlist_params_stripped_from_url(self, tmp_path):
+        """URLs with &list= and &index= must be normalised before being sent to Gemini.
+
+        Passing raw playlist URLs causes Gemini to receive text/html and raise
+        a 400 INVALID_ARGUMENT error (Unsupported MIME type).
+        """
+        dirty_url = "https://www.youtube.com/watch?v=7AmhgMAJIT4&list=PLDV8PPvY5K8VlygSJcp3__mhToZMBoiwX&index=112"
+        expected_url = "https://www.youtube.com/watch?v=7AmhgMAJIT4"
+
+        with patch("src.app.youtube_handler.transcribe_youtube", new_callable=AsyncMock) as mock_transcribe:
+            semaphore = asyncio.Semaphore(2)
+            await process_youtube_url(dirty_url, tmp_path, semaphore)
+
+        call_kwargs = mock_transcribe.call_args
+        url_used = call_kwargs.kwargs.get("url") or call_kwargs.args[0]
+        assert url_used == expected_url
+
+    async def test_playlist_params_stripped_output_filename_uses_video_id(self, tmp_path):
+        """Output filename must still use only the video ID even for playlist URLs."""
+        dirty_url = "https://www.youtube.com/watch?v=7AmhgMAJIT4&list=PLDV8PPvY5K8VlygSJcp3__mhToZMBoiwX&index=112"
+
+        with patch("src.app.youtube_handler.transcribe_youtube", new_callable=AsyncMock) as mock_transcribe:
+            semaphore = asyncio.Semaphore(2)
+            await process_youtube_url(dirty_url, tmp_path, semaphore)
+
+        call_kwargs = mock_transcribe.call_args
+        output_path = call_kwargs.kwargs.get("output_path") or call_kwargs.args[1]
+        assert output_path.name == "7AmhgMAJIT4.md"
+
+    async def test_youtu_be_short_url_canonical(self, tmp_path):
+        """youtu.be short URLs are also normalised to the canonical watch URL."""
+        with patch("src.app.youtube_handler.transcribe_youtube", new_callable=AsyncMock) as mock_transcribe:
+            semaphore = asyncio.Semaphore(2)
+            await process_youtube_url("https://youtu.be/xyz789", tmp_path, semaphore)
+
+        call_kwargs = mock_transcribe.call_args
+        url_used = call_kwargs.kwargs.get("url") or call_kwargs.args[0]
+        assert url_used == "https://www.youtube.com/watch?v=xyz789"
+
     async def test_fallback_filename_for_unparseable_url(self, tmp_path):
         with patch("src.app.youtube_handler.transcribe_youtube", new_callable=AsyncMock) as mock_transcribe:
             semaphore = asyncio.Semaphore(2)
@@ -67,3 +116,15 @@ class TestProcessYoutubeUrl:
         assert output_path.suffix == ".md"
         # Fallback name should be sanitized URL
         assert "example.com" in output_path.stem
+
+    async def test_fallback_url_unchanged_for_unparseable_url(self, tmp_path):
+        """When no video ID can be extracted, the original URL is passed through."""
+        original_url = "https://example.com/no-video-id"
+
+        with patch("src.app.youtube_handler.transcribe_youtube", new_callable=AsyncMock) as mock_transcribe:
+            semaphore = asyncio.Semaphore(2)
+            await process_youtube_url(original_url, tmp_path, semaphore)
+
+        call_kwargs = mock_transcribe.call_args
+        url_used = call_kwargs.kwargs.get("url") or call_kwargs.args[0]
+        assert url_used == original_url

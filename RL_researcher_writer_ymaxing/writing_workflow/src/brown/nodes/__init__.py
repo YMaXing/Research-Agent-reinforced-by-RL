@@ -1,10 +1,10 @@
 from typing import Type
 
-from brown.nodes.base import ToolNode
+from brown.nodes.base import Toolkit, ToolNode
 
 from .article_reviewer import ArticleReviewer
 from .article_writer import ArticleWriter
-from .media_generator import MediaGeneratorOrchestrator, Toolkit
+from .media_generator import MediaGeneratorOrchestrator
 from .tool_nodes import MermaidDiagramGenerator
 
 TOOL_NODES: dict[str, Type[ToolNode]] = {

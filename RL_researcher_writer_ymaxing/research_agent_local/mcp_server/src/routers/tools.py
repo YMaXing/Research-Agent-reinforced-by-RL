@@ -9,12 +9,14 @@ from fastmcp import FastMCP
 from ..tools import (
     create_research_file_tool,
     extract_guidelines_urls_tool,
+    predict_exploration_preset_tool,
     generate_next_queries_tool,
     generate_next_complementary_queries_tool,
     run_tavily_research_tool,
     process_github_urls_tool,
     process_local_files_tool,
     scrape_and_clean_other_urls_tool,
+    scrape_exploitation_guideline_urls_tool,
     scrape_research_urls_tool,
     select_research_sources_to_keep_tool,
     select_research_sources_to_scrape_tool,
@@ -23,6 +25,7 @@ from ..tools import (
     deduplicate_research_content_tool,
 )
 from ..utils.opik_utils import opik_context
+from ..config.settings import settings
 
 
 def register_mcp_tools(mcp: FastMCP) -> None:
@@ -33,7 +36,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     # ============================================================================
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def extract_guidelines_urls(research_directory: str) -> Dict[str, Any]:
         """
         Extract URLs and local file references from article guidelines.
@@ -65,7 +68,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def process_local_files(research_directory: str) -> Dict[str, Any]:
         """
         Process local files referenced in the article guidelines.
@@ -99,7 +102,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     # ============================================================================
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def scrape_and_clean_other_urls(research_directory: str, concurrency_limit: int = 4) -> Dict[str, Any]:
         """
         Scrape and clean other URLs (including arxiv URLs) from GUIDELINES_FILENAMES_FILE.
@@ -130,7 +133,45 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
+    async def scrape_exploitation_guideline_urls(
+        research_directory: str, concurrency_limit: int = 4
+    ) -> Dict[str, Any]:
+        """
+        Scrape URLs from the "Other Sources" section of the article guidelines (exploitation sources).
+
+        Reads ``exploitation_github_urls``, ``exploitation_youtube_videos_urls``, and
+        ``exploitation_other_urls`` from GUIDELINES_FILENAMES_FILE and processes each with
+        its dedicated handler:
+        - GitHub URLs → gitingest summary (process_github_urls)
+        - YouTube URLs → transcript (transcribe_youtube_urls)
+        - arXiv URLs → arxiv2markdown scrape
+        - Other web URLs → firecrawl scrape + LLM clean
+
+        All output is saved to URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER and tagged as
+        ``<research_source type="guideline_exploitation">`` in the final research file.
+
+        Args:
+            research_directory: Path to the research directory containing GUIDELINES_FILENAMES_FILE.
+            concurrency_limit: Maximum number of concurrent web scraping tasks (default: 4).
+
+        Returns:
+            Dict[str, Any]: Dictionary containing:
+                - status: Operation status ("success" or "warning")
+                - github_processed: Number of GitHub URLs processed
+                - youtube_processed: Number of YouTube URLs processed
+                - arxiv_processed: Number of arXiv papers processed
+                - web_processed: Number of web URLs processed
+                - urls_total: Total number of exploitation URLs attempted
+                - output_directory: Path to URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER
+                - message: Human-readable summary
+        """
+        opik_context.update_thread_id()
+        result = await scrape_exploitation_guideline_urls_tool(research_directory, concurrency_limit)
+        return result
+
+    @mcp.tool()
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def process_github_urls(research_directory: str) -> Dict[str, Any]:
         """
         Process GitHub URLs from GUIDELINES_FILENAMES_FILE using gitingest.
@@ -161,7 +202,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def transcribe_youtube_urls(research_directory: str) -> Dict[str, Any]:
         """
         Transcribe YouTube video URLs from GUIDELINES_FILENAMES_FILE using an LLM.
@@ -195,7 +236,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     # ============================================================================
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def generate_next_queries(research_directory: str, n_queries: int = 5) -> Dict[str, Any]:
         """
         Generate candidate web-search queries for the next research round.
@@ -224,7 +265,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def run_tavily_research(
         research_directory: str,
         queries: list[str],
@@ -264,10 +305,9 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
     
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def generate_next_complementary_queries(research_directory: str, 
-                                                    n_queries: int = 5, 
-                                                    depth_vs_breadth_ratio: float = 0.5, 
+                                                    n_queries: int = settings.n_exploration_queries_per_round, 
                                                     focus: Literal["balanced", "depth", "breadth"] = "balanced") -> Dict[str, Any]:
         """
         Generate complementary candidate web-search queries to explore uncovered but closely relevant aspects.
@@ -280,8 +320,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         Args:
             research_directory: Path to the research directory containing article data
-            n_queries: Number of queries to generate (default: 5)
-            depth_vs_breadth_ratio: Ratio to balance depth vs breadth in query generation (default: 0.5)
+            n_queries: Number of queries to generate (default: settings.n_exploration_queries_per_round)
             focus: Focus of query generation, one of "balanced", "depth", or "breadth" (default: "balanced")
 
         Returns:
@@ -295,11 +334,11 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         opik_context.update_thread_id()
 
-        result = await generate_next_complementary_queries_tool(research_directory, n_queries, depth_vs_breadth_ratio=depth_vs_breadth_ratio, focus=focus)
+        result = await generate_next_complementary_queries_tool(research_directory, n_queries, focus=focus)
         return result
     
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def deduplicate_new_queries(
             research_directory: str,
             query_source: Literal["exploitation", "complementary"] = "exploitation",
@@ -332,7 +371,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     # ============================================================================
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def select_research_sources_to_keep(research_directory: str) -> Dict[str, Any]:
         """
         Automatically select high-quality sources from Tavily results.
@@ -361,8 +400,8 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
 
     @mcp.tool()
-    @opik.track(type="tool")
-    async def select_research_sources_to_scrape(research_directory: str, max_sources: int = 7) -> Dict[str, Any]:
+    @opik.track(type="tool", project_name=settings.opik_project_name)
+    async def select_research_sources_to_scrape(research_directory: str, max_sources: int = settings.maximum_sources_to_scrape) -> Dict[str, Any]:
         """
         Select up to max_sources priority research sources to scrape in full.
 
@@ -373,7 +412,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         Args:
             research_directory: Path to the research directory (e.g., "articles/1")
-            max_sources: Maximum number of sources to select (default: 7)
+            max_sources: Maximum number of sources to select (default: settings.maximum_sources_to_scrape)
 
         Returns:
             Dict[str, Any]: Dictionary containing:
@@ -391,7 +430,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def scrape_research_urls(research_directory: str, concurrency_limit: int = 4) -> Dict[str, Any]:
         """
         Scrape the selected research URLs for full content.
@@ -426,7 +465,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
     # ============================================================================
 
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def deduplicate_research_content(research_directory: str) -> Dict[str, Any]:
         """
         Deduplicates ALL research sources as a whole (Tavily + Guidelines + Research URLs + Code + YouTube).
@@ -449,7 +488,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         return result
     
     @mcp.tool()
-    @opik.track(type="tool")
+    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def create_research_file(research_directory: str) -> Dict[str, Any]:
         """
         Generate the final comprehensive research.md file.
@@ -476,6 +515,80 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         opik_context.update_thread_id()
 
         result = create_research_file_tool(research_directory)
+        return result
+
+    # ============================================================================
+    # RL META-REASONER TOOLS
+    # ============================================================================
+
+    @mcp.tool()
+    @opik.track(type="tool", project_name=settings.opik_project_name)
+    async def predict_exploration_preset(research_directory: str) -> Dict[str, Any]:
+        """
+        Predict the optimal exploration preset using the GRPO-trained RL model.
+
+        Reads exploitation_digest.md from the research directory and runs two-stage
+        inference:
+
+        Stage 1 — RL model (Qwen3-4B + LoRA, NF4 quantised):
+          Splits the digest into per-section excerpts and runs a word-count-weighted
+          probability vote to produce an aggregate preset recommendation.
+          A max-preset floor heuristic fires when the aggregate vote is P0–P2 and at
+          least one section individually predicts a higher preset, preventing short
+          intro sections from masking deep technical sections.
+
+        Stage 2 — client LLM (you):
+          Use the returned signals to make the final decision.  The RL model closes
+          ~91% of the uniform-random → oracle E[R] gap, but top-1 accuracy on
+          unseen articles is low (~5–17%); treat it as calibrated evidence, not ground
+          truth.  Override freely when entropy_bits > 1.5 or confidence < 0.40.
+
+        Signal semantics:
+          preset (int 0–5):
+            0 – no exploration
+            1 – 1 round, balanced
+            2 – 2 rounds, balanced then depth
+            3 – 2 rounds, depth then breadth
+            4 – 3 rounds, balanced then depth then breadth
+            5 – 3 rounds, depth then breadth then depth
+
+          confidence (float 0–1):
+            Probability mass on the chosen preset.
+            ≥0.70 → decisive.  0.40–0.70 → check section signals.  <0.40 → uncertain.
+
+          entropy_bits (float):
+            H = −∑ p·log₂(p+ε) over the 6-preset distribution.
+            <0.5 → very confident.  0.5–1.5 → moderate.  >1.5 → uncertain, override.
+
+          floor_correction_applied (bool):
+            True when the floor heuristic raised the aggregate vote.
+
+          section_signals[i].top2:
+            [["P3", 0.81], ["P2", 0.11]] — large gap means high section confidence.
+            [["P3", 0.35], ["P4", 0.32]] — small gap means ambiguous section.
+
+          guidance (str):
+            One-sentence synthesis.  Use this as your reasoning seed.
+
+        Note: the RL model loads on the first call (~3 min on GPU) and is then cached
+        for the lifetime of the server process.
+
+        Args:
+            research_directory: Path to the research directory containing
+                                exploitation_digest.md at its root.
+
+        Returns:
+            Dict[str, Any]:
+                - status: "success" or "error"
+                - rl_recommendation: dict with preset, name, confidence,
+                                     entropy_bits, floor_correction_applied
+                - section_signals: list of per-section dicts with title, preset,
+                                   name, top2
+                - guidance: one-sentence synthesis for the client LLM
+                - message: human-readable summary
+        """
+        opik_context.update_thread_id()
+        result = await predict_exploration_preset_tool(research_directory)
         return result
 
     # ============================================================================

@@ -28,6 +28,7 @@ class Loaders(TypedDict):
     research: Loader
     profiles: Loader
     examples: Loader
+    exploration_examples: Loader
 
 
 def build_article_loader(app_config: AppConfig) -> MarkdownArticleLoader:
@@ -74,6 +75,13 @@ def build_example_loader(app_config: AppConfig) -> MarkdownArticleExampleLoader:
         raise InvalidConfigurationException(f"Invalid article example loader: {app_config.context.article_example_loader}")
 
 
+def build_exploration_example_loader(app_config: AppConfig) -> MarkdownArticleExampleLoader:
+    if app_config.context.examples_loader == "markdown":
+        return MarkdownArticleExampleLoader(uri=app_config.context.exploration_examples_uri)
+    else:
+        raise InvalidConfigurationException(f"Invalid article example loader: {app_config.context.examples_loader}")
+
+
 def build_loaders(app_config: AppConfig) -> Loaders:
     return Loaders(
         article=build_article_loader(app_config),
@@ -81,6 +89,7 @@ def build_loaders(app_config: AppConfig) -> Loaders:
         research=build_research_loader(app_config),
         profiles=build_profiles_loader(app_config),
         examples=build_example_loader(app_config),
+        exploration_examples=build_exploration_example_loader(app_config),
     )
 
 
@@ -131,7 +140,15 @@ def build_short_term_memory(app_config: AppConfig):
 def build_model(
     app_config: AppConfig,
     *,
-    node: Literal["write_article", "review_article", "generate_media_items", "edit_article", "review_selected_text", "edit_selected_text"],
+    node: Literal[
+        "write_article",
+        "review_article",
+        "generate_media_items",
+        "edit_article",
+        "review_selected_text",
+        "edit_selected_text",
+        "integrate_exploration",
+    ],
 ) -> tuple[Runnable, Toolkit]:
     model = app_config.nodes[node]
 

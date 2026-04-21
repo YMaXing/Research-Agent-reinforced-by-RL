@@ -111,8 +111,8 @@ if __name__ == "__main__":
     script_dir = Path(__file__).resolve().parent
     home_dir = script_dir.parent
 
-    nova_server_dir = home_dir / "research_agent_local" / "mcp_server"
-    brown_server_dir = home_dir / "writing_workflow"
+    research_server_dir = home_dir / "research_agent_local" / "mcp_server"
+    writer_server_dir = home_dir / "writing_workflow"
     composed_server_dir = script_dir / "mcp_server"
     mcp_client_dir = script_dir / "mcp_client"
     composed_server_config = script_dir / "mcp_servers_config_http.json"
@@ -121,44 +121,44 @@ if __name__ == "__main__":
     # Load optional shared env plus project-specific env files.
     load_env_file(script_dir / ".env")
     load_env_file(script_dir / "mcp_client" / ".env")
-    load_env_file(nova_server_dir / ".env")
-    load_env_file(brown_server_dir / ".env")
+    load_env_file(research_server_dir / ".env")
+    load_env_file(writer_server_dir / ".env")
 
     # Ensure Opik project has a default name when key/workspace are provided.
-    os.environ.setdefault("OPIK_PROJECT_NAME", "nova-brown-composed")
+    os.environ.setdefault("OPIK_PROJECT_NAME", "research-writer-composed")
     startup_timeout = int(os.environ.get("MCP_STARTUP_TIMEOUT_SECONDS", "300"))
 
-    nova_python = resolve_python_executable(nova_server_dir)
-    brown_python = resolve_python_executable(brown_server_dir)
-    # Reuse Nova interpreter for composed server because both require FastMCP.
-    composed_python = nova_python
-    client_python = nova_python
+    research_python = resolve_python_executable(research_server_dir)
+    writer_python = resolve_python_executable(writer_server_dir)
+    # Reuse Research interpreter for composed server because both require FastMCP.
+    composed_python = research_python
+    client_python = research_python
 
     print("Starting MCP servers as HTTP services...")
 
-    nova_proc = subprocess.Popen(
-        [str(nova_python), "-m", "src.server", "--transport", "streamable-http", "--port", "8001"],
-        cwd=nova_server_dir,
-        env=make_env_with_pythonpath(nova_server_dir),
+    research_proc = subprocess.Popen(
+        [str(research_python), "-m", "src.server", "--transport", "streamable-http", "--port", "8001"],
+        cwd=research_server_dir,
+        env=make_env_with_pythonpath(research_server_dir),
     )
-    brown_proc = subprocess.Popen(
-        [str(brown_python), "-m", "brown.mcp.server", "--transport", "streamable-http", "--port", "8002"],
-        cwd=brown_server_dir,
-        env=make_env_with_pythonpath(brown_server_dir),
+    writer_proc = subprocess.Popen(
+        [str(writer_python), "-m", "brown.mcp.server", "--transport", "streamable-http", "--port", "8002"],
+        cwd=writer_server_dir,
+        env=make_env_with_pythonpath(writer_server_dir),
     )
 
     composed_proc: subprocess.Popen | None = None
 
     try:
-        print("Waiting for Nova server on port 8001...")
-        wait_for_port("127.0.0.1", 8001, nova_proc, "Nova MCP server", timeout=startup_timeout)
-        assert_process_running(nova_proc, "Nova MCP server")
+        print("Waiting for Research server on port 8001...")
+        wait_for_port("127.0.0.1", 8001, research_proc, "Research MCP server", timeout=startup_timeout)
+        assert_process_running(research_proc, "Research MCP server")
 
-        print("Waiting for Brown server on port 8002...")
-        wait_for_port("127.0.0.1", 8002, brown_proc, "Brown MCP server", timeout=startup_timeout)
-        assert_process_running(brown_proc, "Brown MCP server")
+        print("Waiting for Writer server on port 8002...")
+        wait_for_port("127.0.0.1", 8002, writer_proc, "Writer MCP server", timeout=startup_timeout)
+        assert_process_running(writer_proc, "Writer MCP server")
 
-        print("Nova and Brown servers are running")
+        print("Research and Writer servers are running")
 
         # Start composed server after upstream servers are confirmed reachable.
         composed_proc = subprocess.Popen(
@@ -193,7 +193,7 @@ if __name__ == "__main__":
         print(f"Launcher failed: {exc}")
         raise
     finally:
-        terminate_process(nova_proc, "Nova MCP server")
-        terminate_process(brown_proc, "Brown MCP server")
+        terminate_process(research_proc, "Research MCP server")
+        terminate_process(writer_proc, "Writer MCP server")
         if composed_proc is not None:
             terminate_process(composed_proc, "Composed MCP server")

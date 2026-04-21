@@ -2,7 +2,6 @@
 
 import logging
 
-from sympy import n_order
 from ..config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -15,7 +14,45 @@ async def full_research_instructions_prompt() -> str:
     Returns:
         The complete research instructions as a string
     """
-    instructions_content = """
+    dedup_enabled = settings.enable_content_dedup
+
+    dedup_step_number = 7   # step number assigned to dedup when enabled
+    # Paragraph shown inside the write step describing how DEDUPLICATED_RESEARCH_FILE is used
+    dedup_available_block = f"""
+    When DEDUPLICATED_RESEARCH_FILE is available (i.e. step {dedup_step_number}.1 was run), the tool produces a RESEARCH_MD_FILE
+    that contains:
+      (a) A primary body section with the clean deduplicated content.
+      (b) A "Golden Source Reference" appendix containing the full XML-tagged section assembly described above.
+          This appendix exists so that downstream LLM metric judges evaluating the generated article can
+          identify which parts of the research came from golden sources versus Tavily research, supporting
+          the GoldenSourcePriority evaluation criterion.
+    
+    If DEDUPLICATED_RESEARCH_FILE is not available (step {dedup_step_number}.1 was skipped), the tool falls back to writing
+    the XML-tagged section assembly directly as the RESEARCH_MD_FILE.
+""" if dedup_enabled else """
+    Since content deduplication is disabled, DEDUPLICATED_RESEARCH_FILE will not be present.
+    The "create_research_file" tool will write the RESEARCH_MD_FILE with
+    the full XML-tagged section assembly directly, without a separate deduplicated content section.
+"""
+
+    dedup_step_block = """
+7. Content-level deduplication:
+
+    7.1 Run the "deduplicate_research_content" tool. The tool reads all research content available in the scraped guideline sources 
+    from URLS_FROM_GUIDELINES_FOLDER, URLS_FROM_RESEARCH_FOLDER, URLS_FROM_GUIDELINES_CODE_FOLDER, URLS_FROM_GUIDELINES_YOUTUBE_FOLDER,
+    and URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER.
+    The tool takes a large collection of research sources (from golden sources provided by the article guideline file to both exploitation and exploration phases) 
+    and produce the cleanest, most authoritative, non-repetitive knowledge base possible following phase-aware protection rules and hierarchical deduplication goals.
+    The tool will automatically remove redundant information while preserving important unique insights, and cluster similar concepts together even if they come from different sources.
+    You will be able to see the hierarchy of the sources in the content structure, with clear XML-like tags indicating the source of each content block. 
+    Overall, the tool prefers golden > exploitation > high-authority exploration > other exploration sources, but it also applies more complex rules to protect unique insights 
+    from lower-tier sources and to ensure that the final content is comprehensive and non-repetitive. The deduplicated content is saved to the DEDUPLICATED_RESEARCH_FILE within RESEARCH_OUTPUT_DIRECTORY.
+
+""" if dedup_enabled else ""
+
+    write_step_number = 8 if dedup_enabled else 7
+
+    instructions_content = f"""
 Your job is to execute the workflow below.
 
 All the tools require a research directory as input.
@@ -32,36 +69,56 @@ If the user doesn't provide a research directory, you should ask for it before e
     workflow (e.g. running from a specific step, adding user feedback to specific steps, or changing parameters such as the number of exploration rounds).
 
     1.3 Extract the URLs from the ARTICLE_GUIDELINE_FILE with the "extract_guidelines_urls" tool. This tool reads the
-    ARTICLE_GUIDELINE_FILE and extracts three groups of references from the guidelines:
-    • "github_urls" - all GitHub links;
-    • "youtube_videos_urls" - all YouTube video links;
-    • "other_urls" - all remaining HTTP/HTTPS links, including arxiv papers;
-    • "local_files" - relative paths to local files mentioned in the guidelines (e.g. "code.py", "src/main.py").
-    Only extensions allowed are: ".py", ".ipynb", and ".md".
+    ARTICLE_GUIDELINE_FILE and categorises all references by the H2 section they appear in:
+
+    **Golden sources** (from "Golden Sources", "Article Code", "Lesson Code", or any other section):
+    • "github_urls" - GitHub links that are golden sources;
+    • "youtube_videos_urls" - YouTube video links that are golden sources;
+    • "other_urls" - all other HTTP/HTTPS links (including arXiv papers) that are golden sources;
+    • "local_files" - relative paths to local files mentioned in the guidelines.
+
+    **Exploitation sources** (from "Other Sources" section only):
+    • "exploitation_github_urls" - GitHub links listed under "Other Sources";
+    • "exploitation_youtube_videos_urls" - YouTube links listed under "Other Sources";
+    • "exploitation_other_urls" - all other HTTP/HTTPS links (including arXiv papers) listed under "Other Sources".
+
+    Only extensions allowed for local files are: ".py", ".ipynb", and ".md".
     The extracted data is saved to the GUIDELINES_FILENAMES_FILE within the RESEARCH_OUTPUT_DIRECTORY directory.
 
 2. Process the extracted resources in parallel:
 
-    You can run the following sub-steps (2.1 to 2.4) in parallel. In a single turn, you can call all the
+    You can run the following sub-steps (2.1 to 2.5) in parallel. In a single turn, you can call all the
     necessary tools for these steps.
 
     2.1 Local files - run the "process_local_files" tool to read every file path listed under "local_files" in the
     GUIDELINES_FILENAMES_FILE and copy its content into the LOCAL_FILES_FROM_RESEARCH_FOLDER subfolder within
     RESEARCH_OUTPUT_DIRECTORY, giving each copy an appropriate filename (path separators are replaced with underscores).
 
-    2.2 Other URL links (including arXiv papers) - run the "scrape_and_clean_other_urls" tool to read the `other_urls` list from the
-    GUIDELINES_FILENAMES_FILE and scrape/clean them. The tool writes the cleaned markdown files inside the
+    2.2 Golden other URL links (including arXiv papers) - run the "scrape_and_clean_other_urls" tool to read the
+    `other_urls` list (golden sources from "Golden Sources", "Article Code", and "Lesson Code" sections) from
+    GUIDELINES_FILENAMES_FILE and scrape/clean them. ArXiv papers are automatically scraped with arxiv2markdown
+    for higher-quality extraction. The tool writes the cleaned markdown files inside the
     URLS_FROM_GUIDELINES_FOLDER subfolder within RESEARCH_OUTPUT_DIRECTORY.
 
-    2.3 GitHub URLs - run the "process_github_urls" tool to process the `github_urls` list from the
-    GUIDELINES_FILENAMES_FILE with gitingest and save a Markdown summary for each URL inside the
+    2.3 Golden GitHub URLs - run the "process_github_urls" tool to process the `github_urls` list (golden sources)
+    from the GUIDELINES_FILENAMES_FILE with gitingest and save a Markdown summary for each URL inside the
     URLS_FROM_GUIDELINES_CODE_FOLDER subfolder within RESEARCH_OUTPUT_DIRECTORY.
 
-    2.4 YouTube URLs - run the "transcribe_youtube_urls" tool to process the `youtube_videos_urls` list from the
-    GUIDELINES_FILENAMES_FILE, transcribe each video, and save the transcript as a Markdown file inside the
-    URLS_FROM_GUIDELINES_YOUTUBE_FOLDER subfolder within RESEARCH_OUTPUT_DIRECTORY.
+    2.4 Golden YouTube URLs - run the "transcribe_youtube_urls" tool to process the `youtube_videos_urls` list
+    (golden sources) from the GUIDELINES_FILENAMES_FILE, transcribe each video, and save the transcript as a
+    Markdown file inside the URLS_FROM_GUIDELINES_YOUTUBE_FOLDER subfolder within RESEARCH_OUTPUT_DIRECTORY.
         Note: Please be aware that video transcription can be a time-consuming process. For reference,
         transcribing a 39-minute video can take approximately 4.5 minutes.
+
+    2.5 Exploitation guideline URLs ("Other Sources") - run the "scrape_exploitation_guideline_urls" tool to
+    process all URLs listed under the `exploitation_github_urls`, `exploitation_youtube_videos_urls`, and
+    `exploitation_other_urls` keys. Each URL type is routed to its dedicated handler:
+    - GitHub URLs → gitingest repository summary (same as step 2.3 but non-golden)
+    - YouTube URLs → video transcript (same as step 2.4 but non-golden)
+    - ArXiv URLs → arxiv2markdown scrape (same high-quality extraction as step 2.2 but non-golden)
+    - Other web URLs → firecrawl scrape + LLM clean (same as step 2.2 but non-golden)
+    All output files are saved to the URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER subfolder. In the final
+    research file these sources are tagged <research_source type="guideline_exploitation">, not <golden_source>.
 
 3. Exploitation Phase, repeat the following research loop for 3 rounds:
 
@@ -78,9 +135,64 @@ If the user doesn't provide a research directory, you should ask for it before e
     3.3. Run the "run_tavily_research" tool with the new queries in NEXT_QUERIES_FILE. This tool executes the queries with
     Tavily and appends the results to the TAVILY_RESULTS_FILE within RESEARCH_OUTPUT_DIRECTORY.
 
-4. Exploration Phase, repeat the following research loop for an indefinite number of rounds with a configurable maximum number of {n_max_round} rounds:
+3.4. Exploration Planning (RL Meta-Reasoner + Grok 4.2 Planner):
 
-    For each of the {n_max_round} exploitation rounds:
+    After completing all 3 exploitation rounds, run the "predict_exploration_preset" tool with the research
+    directory. The tool runs a two-stage pipeline internally:
+      Stage 1 — Qwen3-4B RL model: infers a per-section preset vote from the exploitation digest,
+                 aggregates via weighted vote, and applies an entropy-gated floor correction.
+      Stage 2 — Grok 4.2 reasoning model: reviews the RL output together with the article guideline
+                 and the digest gap profile, then either confirms or overrides the RL preset and
+                 returns a structured JSON decision.
+
+    The tool returns:
+    - grok_recommendation.preset (P0–P5) — the authoritative preset chosen by Grok 4.2 (null if
+      XAI_API_KEY is not set or the Grok call fails, in which case fall back to rl_recommendation)
+    - grok_recommendation.name — human-readable name for the preset
+    - grok_recommendation.reasoning — Grok 4.2's one-sentence justification
+    - grok_recommendation.override — True if Grok 4.2 disagreed with the RL model
+    - grok_recommendation.override_reason — reason for the override (null when override is False)
+    - rl_recommendation.preset (P0–P5) — the Qwen3-4B RL model's aggregate recommendation
+    - rl_recommendation.confidence — probability mass on the chosen preset (0.0–1.0)
+    - rl_recommendation.entropy_bits — spread of the distribution (lower = more confident)
+    - rl_recommendation.floor_correction_applied — True if a deep-section override fired
+    - section_signals — per-section preset, top-2 probs, and preset name
+    - guidance — one-sentence synthesis from the RL stage
+
+    Preset mapping (use this to configure step 4):
+      P0 → Skip the exploration phase entirely (step 4 is not run)
+      P1 → 1 round, balanced focus
+      P2 → 2 rounds: round 1 balanced, round 2 depth-focused
+      P3 → 2 rounds: round 1 depth-focused, round 2 breadth-focused
+      P4 → 3 rounds: round 1 balanced, round 2 depth-focused, round 3 breadth-focused
+      P5 → 3 rounds: round 1 depth-focused, round 2 breadth-focused, round 3 depth-focused
+
+    **Default behaviour**: Use grok_recommendation.preset as the authoritative preset. If
+    grok_recommendation is null (Grok call unavailable), fall back to rl_recommendation.preset.
+    Use the section_signals breakdown to guide the "focus" parameter of each exploration round
+    in step 4 (target the weakest sections flagged in section_signals for depth/breadth rounds).
+    If grok_recommendation.override is True, note the override_reason — it may highlight specific
+    article sections that need extra attention.
+
+    **User override**: The user may specify their own round count and focus at any time. If the
+    user says "run 2 rounds, focus on breadth" or any equivalent, skip the tool's preset and
+    follow the user's instructions instead.
+
+    **When to apply your own judgement on top**:
+    - grok_recommendation is null AND rl_recommendation.entropy_bits > 1.5 → RL model is
+      uncertain; rely on section_signals individually rather than the aggregate preset
+    - rl_recommendation.floor_correction_applied is True → if grok_recommendation did not
+      already address it, focus additional rounds on the sections that triggered the floor
+      (the highest-preset sections in section_signals)
+    - The article guideline clearly calls for a specific depth of research that contradicts
+      both the RL and Grok recommendations
+
+4. Exploration Phase, repeat the following research loop for an indefinite number of rounds with a configurable maximum number of {settings.maximum_exploration_rounds} rounds:
+
+    The number of rounds and the per-round focus are determined by the preset chosen in step 3.4
+    (or by the user's explicit override if provided). If preset is P0, skip this step entirely.
+
+    For each exploration round:
 
     4.1. Run "generate_next_complementary_queries_tool" (where you should choose the value for the arguments "focus" and/or "depth_vs_breadth_ratio") 
         to analyzes the article guidelines, already-scraped content, and existing Tavily results. The tool dives deeper into the content already covered 
@@ -97,39 +209,64 @@ If the user doesn't provide a research directory, you should ask for it before e
 5. Filter Tavily results by quality:
 
     5.1 Run the "select_research_sources_to_keep" tool. The tool reads the ARTICLE_GUIDELINE_FILE and the
-    TAVILY_RESULTS_FILE (including queries in both exploitation and exploration phases), automatically evaluates 
-    each source for trustworthiness, authority and relevance, writes the comma-separated IDs of the accepted sources 
-    to the TAVILY_SOURCES_SELECTED_FILE **and** saves a filtered markdown file TAVILY_RESULTS_SELECTED_FILE that contains 
-    only the full content blocks of the accepted sources. Both files are saved within RESEARCH_OUTPUT_DIRECTORY.
+    TAVILY_RESULTS_FILE and applies a two-stage evaluation process:
+    - **Stage 1 — Exploitation sources**: Each [EXPLOITATION] source is evaluated on domain authority &
+      trustworthiness, relevance to the article guidelines, and content quality. Exploitation sources are
+      strongly protected and only rejected if clearly low-quality, unreliable, or irrelevant.
+    - **Stage 2 — Exploration sources**: Each [EXPLORATION] source is evaluated on the same three dimensions,
+      but with a higher bar. The tool scans through the article guidelines section by section and only accepts
+      an exploration source if it can identify at least one specific section where the source adds genuine new
+      value in depth or breadth:
+      - **Depth** (inward — intensify understanding of the core topic): motivation for the topic (why it exists,
+        what problem it solves), theoretical foundations or mathematical underpinnings, technical nuances or
+        alternative implementation perspectives, latest advancements or recent developments,
+        limitations/criticisms/failure modes, implementation challenges or latency/scale trade-offs,
+        real-world case studies or concrete metrics, future implications or open research directions.
+      - **Breadth** (outward — connect to adjacent areas outside the core topic): adjacent or related concepts
+        that expand the scope, cross-domain analogies or lessons from other fields, historical context or
+        evolution of the topic, enabling/disrupting technologies that intersect with the core topic, practical
+        applications of the core topic in other industries or domains, emerging trends in adjacent fields or
+        the broader ecosystem.
+      Sources that cannot satisfy this criterion are rejected.
+    The tool writes the comma-separated IDs of the accepted sources to the TAVILY_SOURCES_SELECTED_FILE **and**
+    saves a filtered markdown file TAVILY_RESULTS_SELECTED_FILE that contains only the full content blocks of
+    the accepted sources. Both files are saved within RESEARCH_OUTPUT_DIRECTORY.
 
 6. Identify which of the accepted sources deserve a *full* scrape:
 
     6.1 Run the "select_research_sources_to_scrape" tool. It analyses the TAVILY_RESULTS_SELECTED_FILE together
-    with the ARTICLE_GUIDELINE_FILE and the material already scraped from guideline URLs, then chooses up to {n_max_sources_to_scrape} diverse,
+    with the ARTICLE_GUIDELINE_FILE and the material already scraped from guideline URLs, then chooses up to {settings.maximum_sources_to_scrape} diverse,
     authoritative sources whose full content will add most value. The chosen URLs are written (one per line) to the
     URLS_TO_SCRAPE_FROM_RESEARCH_FILE within RESEARCH_OUTPUT_DIRECTORY.
 
     6.2 Run the "scrape_research_urls" tool. The tool reads the URLs from URLS_TO_SCRAPE_FROM_RESEARCH_FILE and
     scrapes/cleans each URL's full content, including special high-quality handling for arXiv papers. The cleaned markdown files are saved to the
     URLS_FROM_RESEARCH_FOLDER subfolder within RESEARCH_OUTPUT_DIRECTORY with appropriate filenames.
+{dedup_step_block}
+{write_step_number}. Write final research file:
 
-7. Content-level deduplication:
+    {write_step_number}.1 Run the "create_research_file" tool. The tool always assembles all source content into XML-tagged sections
+    that clearly distinguish golden sources (material referenced in the article guideline) from research sources
+    (material discovered through Tavily exploitation and exploration rounds):
+    
+    • Golden sources are wrapped in <golden_source type="..."> tags, where the type attribute identifies the
+      specific guideline-referenced category:
+        - type="guideline_urls"   — web pages scraped from golden URLs listed in the article guideline
+        - type="guideline_code"   — GitHub repositories referenced in the golden sources of the article guideline
+        - type="guideline_youtube" — YouTube videos referenced in the golden sources of the article guideline
+        - type="local_files"      — local files referenced in the article guideline
+    
+    • Exploitation sources from the article guideline ("Other Sources" section) are wrapped in
+      <research_source type="guideline_exploitation"> tags. These sources were explicitly listed
+      in the guidelines but are treated as exploitation (not golden) because they are supplementary
+      references rather than primary authoritative sources.
 
-    7.1 Run the "deduplicate_research_content" tool. The tool reads all research content available in the scraped guideline sources 
-    from URLS_FROM_GUIDELINES_FOLDER, URLS_FROM_RESEARCH_FOLDER, URLS_FROM_GUIDELINES_CODE_FOLDER, and URLS_FROM_GUIDELINES_YOUTUBE_FOLDER.
-    The tool takes a large collection of research sources (from golden sources provided by the article guideline file to both exploitation and exploration phases) 
-    and produce the cleanest, most authoritative, non-repetitive knowledge base possible following phase-aware protection rules and hierarchical deduplication goals.
-    The tool will automatically remove redundant information while preserving important unique insights, and cluster similar concepts together even if they come from different sources.
-    You will be able to see the hierarchy of the sources in the content structure, with clear XML-like tags indicating the source of each content block. 
-    Overall, the tool prefers golden > exploitation > high-authority exploration > other exploration sources, but it also applies more complex rules to protect unique insights 
-    from lower-tier sources and to ensure that the final content is comprehensive and non-repetitive. The deduplicated content is saved to the DEDUPLICATED_RESEARCH_FILE within RESEARCH_OUTPUT_DIRECTORY.
-
-8. Write final research file:
-
-    8.1 Run the "create_research_file" tool. It will automatically prefer the deduplicated content when available and copy-paste the DEDUPLICATED_RESEARCH_FILE
-    into the final RESEARCH_MD_FILE. If the deduplicated content is not available, then as a fallback, the tool combines all research data including filtered Tavily results
-    from TAVILY_RESULTS_SELECTED_FILE, scraped guideline sources from URLS_FROM_GUIDELINES_FOLDER, URLS_FROM_GUIDELINES_CODE_FOLDER, and URLS_FROM_GUIDELINES_YOUTUBE_FOLDER, 
-    and full research sources from URLS_FROM_RESEARCH_FOLDER into a comprehensive RESEARCH_MD_FILE organized into sections with collapsible blocks for easy navigation. 
+    • Research sources (Tavily results and URLs scraped from Tavily-discovered links) are wrapped in
+      <research_source type="..."> tags. Importantly, even if a Tavily-discovered URL is a GitHub repo
+      or YouTube video, it is still a research source (not golden) because it was not referenced in the
+      article guideline.
+    
+{dedup_available_block}
     The final RESEARCH_MD_FILE is saved in the root of the research directory.
 
 Depending on the results of previous steps, you may want to skip running a tool if not necessary.
@@ -155,12 +292,14 @@ research_directory/
 │   ├── GUIDELINES_FILENAMES_FILE                       # Step 1.3 — Extracted URLs and local files from guidelines
 │   ├── LOCAL_FILES_FROM_RESEARCH_FOLDER/               # Step 2.1 — Copied local files referenced in guidelines
 │   │   └── [processed_local_files...]
-│   ├── URLS_FROM_GUIDELINES_FOLDER/                    # Step 2.2 — Scraped content from other URLs in guidelines
+│   ├── URLS_FROM_GUIDELINES_FOLDER/                    # Step 2.2 — Scraped content from golden other URLs in guidelines
 │   │   └── [scraped_web_pages...]
-│   ├── URLS_FROM_GUIDELINES_CODE_FOLDER/               # Step 2.3 — GitHub repository summaries and code analysis
+│   ├── URLS_FROM_GUIDELINES_CODE_FOLDER/               # Step 2.3 — GitHub repository summaries (golden sources)
 │   │   └── [github_repo_summaries...]
-│   ├── URLS_FROM_GUIDELINES_YOUTUBE_FOLDER/            # Step 2.4 — YouTube video transcripts
+│   ├── URLS_FROM_GUIDELINES_YOUTUBE_FOLDER/            # Step 2.4 — YouTube video transcripts (golden sources)
 │   │   └── [youtube_transcripts...]
+│   ├── URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER/       # Step 2.5 — Scraped "Other Sources" (exploitation, non-golden)
+│   │   └── [exploitation_sources...]
 │   ├── FULL_QUERIES_FILE                               # Steps 3.2 / 4.2 — Cumulative history of all deduplicated queries
 │   ├── NEXT_QUERIES_FILE                               # Steps 3.1 / 4.1 — Proposed queries for the current round
 │   ├── TAVILY_RESULTS_FILE                             # Steps 3.3 / 4.3 — Complete results from all Tavily rounds
@@ -170,12 +309,12 @@ research_directory/
 │   ├── URL_PHASES_FILE                                 # Step 6.1 — URL → phase mapping (exploitation / exploration)
 │   ├── URLS_FROM_RESEARCH_FOLDER/                      # Step 6.2 — Fully scraped content from selected research URLs
 │   │   └── [full_research_sources...]
-│   └── DEDUPLICATED_RESEARCH_FILE                      # Step 7.1 — Phase-aware deduplicated knowledge base
-└── RESEARCH_MD_FILE                                    # Step 8.1 — Final comprehensive research compilation
+    │   └── DEDUPLICATED_RESEARCH_FILE                      # Step 7.1 — Phase-aware deduplicated knowledge base (omitted when dedup disabled)
+└── RESEARCH_MD_FILE                                    # Step {write_step_number}.1 — Final comprehensive research compilation
 ```
 
 This organized structure ensures all research artifacts are systematically collected, processed, and made easily
 accessible for article writing and future reference.
     """.strip()
 
-    return instructions_content.format(n_max_round=settings.maximum_exploration_rounds, n_max_sources_to_scrape=settings.maximum_sources_to_scrape)
+    return instructions_content

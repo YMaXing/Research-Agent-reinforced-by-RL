@@ -9,6 +9,7 @@ from ..config.constants import (
     TAVILY_RESULTS_FILE,
     URLS_FROM_GUIDELINES_FOLDER,
     URLS_FROM_GUIDELINES_CODE_FOLDER,
+    URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER,
     URLS_FROM_GUIDELINES_YOUTUBE_FOLDER,
     URLS_FROM_RESEARCH_FOLDER,
     LOCAL_FILES_FROM_RESEARCH_FOLDER,)
@@ -38,7 +39,7 @@ async def deduplicate_research_content(research_path:Path, output_path:Path) -> 
             content = read_file_safe(f)
             if content:
                 sources_collected.append(f'<golden_source type="guideline_url" file="{f.name}">\n{content}\n</golden_source>')
-                logger.debug(f"Added guideline source: {f.name}")
+                logger.info(f"Added guideline source: {f.name}")
             else:
                 logger.warning(f"Empty or failed to read guideline source: {f}")
 
@@ -56,11 +57,26 @@ async def deduplicate_research_content(research_path:Path, output_path:Path) -> 
                 content = read_file_safe(f)
                 if content:
                     sources_collected.append(f'<golden_source type="{xml_type}" file="{f.name}">\n{content}\n</golden_source>')
-                    logger.debug(f"Added {folder_name} source: {f.name}")
+                    logger.info(f"Added {folder_name} source: {f.name}")
                 else:
                     logger.warning(f"Empty or failed to read {folder_name} source: {f}")
 
-    # 3. Research URLs (scraped files in urls_from_research/ directory)
+    # 3. Exploitation sources from guidelines ("Other Sources" section — non-golden)
+    exploitation_guideline_dir = output_path / URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER
+    if exploitation_guideline_dir.exists():
+        files = list(exploitation_guideline_dir.glob("*.md"))
+        source_counts["exploitation/guideline"] = len(files)
+        for f in files:
+            content = read_file_safe(f)
+            if content:
+                sources_collected.append(
+                    f'<research_source type="guideline_exploitation" phase="exploitation" file="{f.name}">\n{content}\n</research_source>'
+                )
+                logger.info(f"Added exploitation guideline source: {f.name}")
+            else:
+                logger.warning(f"Empty or failed to read exploitation guideline source: {f}")
+
+    # 4. Research URLs (scraped files in urls_from_research/ directory)
     research_urls_dir = output_path / URLS_FROM_RESEARCH_FOLDER
     if research_urls_dir.exists():
         files = list(research_urls_dir.glob("*.md"))
@@ -71,7 +87,7 @@ async def deduplicate_research_content(research_path:Path, output_path:Path) -> 
                 first_line = content.split("\n", 1)[0]
                 phase = "exploration" if (first_line.startswith("Phase:") and "[EXPLORATION]" in first_line) else "exploitation"
                 sources_collected.append(f'<research_source phase="{phase}" file="{f.name}">\n{content}\n</research_source>')
-                logger.debug(f"Added research URL source: {f.name} (phase: {phase})")
+                logger.info(f"Added research URL source: {f.name} (phase: {phase})")
             else:
                 logger.warning(f"Empty or failed to read research URL source: {f}")
 
@@ -118,9 +134,10 @@ async def deduplicate_research_content(research_path:Path, output_path:Path) -> 
     article_guidelines = read_file_safe(guidelines_path) or "<none>"
 
     # Deduplicate
-    prompt = PROMPT_CONTENT_DEDUPLICATION.format(
-        article_guidelines=article_guidelines,
-        all_content=full_content,
+    prompt = (
+        PROMPT_CONTENT_DEDUPLICATION
+        .replace("{article_guidelines}", article_guidelines)
+        .replace("{all_content}", full_content)
     )
 
     try:

@@ -6,6 +6,7 @@ import re
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+from openai import InternalServerError, RateLimitError
 from pydantic import BaseModel, Field
 
 from ..config.constants import TAVILY_RESULTS_FILE
@@ -35,19 +36,97 @@ async def run_tavily_search(query: str) -> Tuple[str, Dict[int, str], Dict[int, 
     
     # 1. Tavily retrieval (rich raw_content + advanced depth)
     tavily_tool = get_tavily_tool("tavily")
-    logger.debug(f"🔍 Running Tavily search for: {query}")
+    logger.info(f"🔍 Running Tavily search for: {query}")
     tavily_results = await tavily_tool.ainvoke({"query": query})   # returns List[dict] with raw_content
 
+    # Truncate raw_content per result to stay well within the model's context window.
+    # 5 results × 8 000 chars ≈ 40 000 chars (~10 K tokens) — generous but bounded.
+    # langchain_tavily.TavilySearch.ainvoke() may return either a List[dict] or a serialised
+    # string depending on the invocation path (e.g. direct call vs. agent chain, Opik wrapper).
+    # Guard both cases so raw_content truncation is always applied.
+    _RAW_CONTENT_CHAR_LIMIT = 8_000
+    _TOTAL_RESULTS_CHAR_LIMIT = 50_000  # hard ceiling regardless of result type
+    if isinstance(tavily_results, list):
+        for result in tavily_results:
+            if isinstance(result, dict) and isinstance(result.get("raw_content"), str):
+                result["raw_content"] = result["raw_content"][:_RAW_CONTENT_CHAR_LIMIT]
+        tavily_results_str = str(tavily_results)
+    else:
+        # ainvoke returned a string — apply a total-length cap directly.
+        tavily_results_str = str(tavily_results)
+
+    if len(tavily_results_str) > _TOTAL_RESULTS_CHAR_LIMIT:
+        logger.warning(
+            f"⚠️ Tavily results string is {len(tavily_results_str):,} chars after per-result "
+            f"truncation; capping to {_TOTAL_RESULTS_CHAR_LIMIT:,} chars before LLM call."
+        )
+        tavily_results_str = tavily_results_str[:_TOTAL_RESULTS_CHAR_LIMIT]
+
     # 2. Strong LLM synthesis (better than Sonar for technical content)
-    struct_llm = get_chat_model(settings.search_enhancement_model, SearchResponse) 
+    # Use include_raw=True so we can inspect what the model actually returned if parsing fails.
+    base_llm = get_chat_model(settings.search_enhancement_model)
+    struct_llm = base_llm.with_structured_output(SearchResponse, include_raw=True)
 
     # Optional: enhance the prompt with Tavily results
     enhanced_prompt = (
         PROMPT_WEB_SEARCH.format(query=query)
-        + f"\n\nUse the following high-quality search results as source material:\n{tavily_results}"
+        + f"\n\nUse the following high-quality search results as source material:\n{tavily_results_str}"
     )
 
-    response = await struct_llm.ainvoke(enhanced_prompt)
+    # Retry with exponential back-off on transient 503 / rate-limit errors AND on
+    # empty structured responses (tool_calls=[], raw_content='') which can occur
+    # transiently when the model declines to invoke the output schema.
+    _MAX_RETRIES = 4
+    _BASE_DELAY = 5.0  # seconds
+    last_exc: Exception | None = None
+    raw_result = None
+    response = None
+    for attempt in range(_MAX_RETRIES):
+        try:
+            raw_result = await struct_llm.ainvoke(enhanced_prompt)
+        except (InternalServerError, RateLimitError) as exc:
+            last_exc = exc
+            status = getattr(exc, "status_code", None)
+            if status not in (429, 503) and not isinstance(exc, RateLimitError):
+                raise
+            delay = _BASE_DELAY * (2 ** attempt)
+            logger.warning(
+                f"⚠️ LLM returned {status} for query {query!r} "
+                f"(attempt {attempt + 1}/{_MAX_RETRIES}). "
+                f"Retrying in {delay:.0f}s…"
+            )
+            await asyncio.sleep(delay)
+            continue
+
+        response = raw_result.get("parsed") if isinstance(raw_result, dict) else raw_result
+        if response is not None and hasattr(response, "sources") and response.sources:
+            break  # got a valid response
+
+        # Empty structured output — retry after a short pause
+        delay = _BASE_DELAY * (2 ** attempt)
+        logger.warning(
+            f"⚠️ LLM returned empty structured output for query {query!r} "
+            f"(attempt {attempt + 1}/{_MAX_RETRIES}). Retrying in {delay:.0f}s…"
+        )
+        await asyncio.sleep(delay)
+    else:
+        if last_exc is not None:
+            raise last_exc  # all retries exhausted due to API errors
+
+    if response is None or not hasattr(response, "sources") or response.sources is None:
+        parsing_error = raw_result.get("parsing_error") if isinstance(raw_result, dict) else None
+        raw_output = raw_result.get("raw") if isinstance(raw_result, dict) else None
+        # Extract the actual text the model emitted instead of a tool call
+        raw_text = getattr(raw_output, "content", None) if raw_output is not None else None
+        tool_calls = getattr(raw_output, "tool_calls", None) if raw_output is not None else None
+        logger.warning(
+            f"⚠️ LLM returned no structured response for query: {query!r}.\n"
+            f"  parsing_error : {parsing_error!r}\n"
+            f"  prompt_length : {len(enhanced_prompt)}\n"
+            f"  tool_calls    : {tool_calls!r}\n"
+            f"  raw_content   : {raw_text!r}"
+        )
+        return "", {}, {}
 
     # 3. Convert to the exact format your append function expects
     answer_by_source: Dict[int, str] = {}
@@ -117,10 +196,10 @@ async def run_queries(article_id: str, queries: List[str]) -> None:
 
     next_global_id = compute_next_source_id(results_path)
 
-    logger.debug(f"Executing {len(queries)} Tavily queries concurrently...")
+    logger.info(f"Executing {len(queries)} Tavily queries concurrently...")
     tasks = [run_tavily_search(query) for query in queries]
     search_results = await asyncio.gather(*tasks)
-    logger.debug("...all Tavily queries finished. Appending results.")
+    logger.info("...all Tavily queries finished. Appending results.")
 
     for query, (_, answer_by_source, citations) in zip(queries, search_results):
         if citations:
@@ -131,9 +210,9 @@ async def run_queries(article_id: str, queries: List[str]) -> None:
                 citations,
                 next_global_id,
             )
-            logger.debug(f"Appended results for query: '{query}' (added {len(citations)} source section(s)).")
+            logger.info(f"Appended results for query: '{query}' (added {len(citations)} source section(s)).")
 
-    logger.debug(f"\n✅ Completed Tavily research round. Results saved to {results_path}.")
+    logger.info(f"\n✅ Completed Tavily research round. Results saved to {results_path}.")
 
 
 def extract_tavily_chunks(markdown: str) -> Dict[int, str]:

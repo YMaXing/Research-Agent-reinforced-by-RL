@@ -27,6 +27,7 @@ from src.brown.observability import upload_dataset
 @click.option(
     "--description",
     type=str,
+    default="",
     show_default=True,
     help="Dataset description.",
 )

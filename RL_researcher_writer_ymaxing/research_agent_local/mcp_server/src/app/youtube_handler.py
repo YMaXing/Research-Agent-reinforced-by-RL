@@ -94,7 +94,7 @@ async def transcribe_youtube(
         return
 
     output_path.write_text(response.text, encoding="utf-8")
-    logger.debug(f"📄 Transcription saved to {output_path}")
+    logger.info(f"📄 Transcription saved to {output_path}")
 
 
 def get_video_id(url: str) -> str | None:
@@ -134,11 +134,15 @@ async def process_youtube_url(
         sanitized_url = url.replace("https://", "").replace("http://", "").replace("/", "_")
         logger.warning(f"⚠️ Could not extract video ID from URL: {url}. Using fallback name: {sanitized_url}")
         video_id = sanitized_url
+        canonical_url = url
+    else:
+        # Strip playlist/index parameters — Gemini requires a clean YouTube URL
+        canonical_url = f"https://www.youtube.com/watch?v={video_id}"
 
     output_path = dest_folder / f"{video_id}.md"
 
     async with semaphore:
         await transcribe_youtube(
-            url=url,
+            url=canonical_url,
             output_path=output_path,
         )

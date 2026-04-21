@@ -68,7 +68,7 @@ async def _edit_selected_text_workflow(inputs: EditSelectedTextInput, config: Ru
 
     # Progress: Reviewing
     writer(WorkflowProgress(progress=20, message="Reviewing selected text").model_dump(mode="json"))
-    reviews = await generate_reviews(selected_text, human_feedback, context["article_guideline"], context["profiles"])
+    reviews = await generate_reviews(selected_text, human_feedback, context["article_guideline"], context["profiles"], context["research"])
     writer(WorkflowProgress(progress=40, message="Generated reviews").model_dump(mode="json"))
 
     # Progress: Editing
@@ -99,6 +99,7 @@ async def generate_reviews(
     human_feedback: HumanFeedback,
     article_guideline: ArticleGuideline,
     article_profiles: ArticleProfiles,
+    research: Research,
 ) -> SelectedTextReviews:
     model, _ = build_model(app_config, node="review_selected_text")
     selected_text_reviewer = ArticleReviewer(
@@ -106,6 +107,7 @@ async def generate_reviews(
         human_feedback=human_feedback,
         article_guideline=article_guideline,
         article_profiles=article_profiles,
+        research=research,
         model=model,
     )
     reviews = await selected_text_reviewer.ainvoke()

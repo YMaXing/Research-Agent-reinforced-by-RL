@@ -1,10 +1,10 @@
 """Server configuration settings."""
 
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
 from numpy import maximum
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger(__name__)
@@ -18,29 +18,44 @@ class Settings(BaseSettings):
     # Server settings
     server_name: str = Field(default="Research MCP Server", description="The name of the server")
     version: str = Field(default="0.1.0", description="The version of the server")
-    log_level: int = Field(default=logging.INFO, alias="LOG_LEVEL", description="The log level")
-    log_level_dependencies: int = Field(
+    log_level: Union[int, str] = Field(default=logging.INFO, alias="LOG_LEVEL", description="The log level")
+    log_level_dependencies: Union[int, str] = Field(
         default=logging.WARNING, alias="LOG_LEVEL_DEPENDENCIES", description="The log level for dependencies"
     )
 
+    @field_validator("log_level", "log_level_dependencies", mode="before")
+    @classmethod
+    def _parse_log_level(cls, v: Any) -> int:
+        if isinstance(v, str):
+            level = logging.getLevelName(v.upper())
+            if not isinstance(level, int):
+                raise ValueError(f"Invalid log level: {v!r}")
+            return level
+        return v
+
     # Research settings
     maximum_exploration_rounds: int = Field(default=3, alias="MAXIMUM_EXPLORATION_ROUNDS", description="Maximum number of exploration rounds in the research loop")
-    maximum_sources_to_scrape: int = Field(default=5, alias="MAXIMUM_SOURCES_TO_SCRAPE", description="Maximum number of sources to scrape fully during research")
+    n_exploration_queries_per_round: int = Field(default=4, alias="N_EXPLORATION_QUERIES_PER_ROUND", description="Number of exploration queries to generate per exploration round. Only applicable if maximum_exploration_rounds > 0.")
+    maximum_sources_to_scrape: int = Field(default=6, alias="MAXIMUM_SOURCES_TO_SCRAPE", description="Maximum number of sources to scrape fully during research")
+    enable_content_dedup: bool = Field(default=False, alias="ENABLE_CONTENT_DEDUP", description="Whether to run the content deduplication step (step 7). Set to false to feed the full raw research into the final file.")
     
     # LLM Configuration
     youtube_transcription_model: str = Field(default="gemini-2.5-flash", description="Model for YouTube transcription, only supported Gemini models")
-    scraping_model: str = Field(default="grok-4-1-fast-reasoning", description="Model for web scraping")
+    scraping_model: str = Field(default="gemini-2.5-flash", description="Model for web scraping")
     query_generation_model: str = Field(default="grok-4.20-reasoning", description="Model for query generation")
     search_enhancement_model: str = Field(default="grok-4-1-fast-non-reasoning", description="Model for search enhancement")
-    source_selection_model: str = Field(default="grok-4-1-fast-reasoning", description="Model for source selection")
+    source_selection_model: str = Field(default="grok-4.20-reasoning", description="Model for source selection")
     content_dedup_model: str = Field(default="grok-4-1-fast-reasoning", description="Model for content deduplication")
-
+    
     # API Keys
     google_api_key: SecretStr | None = Field(
         default=None, alias="GOOGLE_API_KEY", description="The API key for the Google API"
     )
     firecrawl_api_key: SecretStr | None = Field(
         default=None, alias="FIRECRAWL_API_KEY", description="The API key for the Firecrawl API"
+    )
+    firecrawl_api_key_2: SecretStr | None = Field(
+        default=None, alias="FIRECRAWL_API_KEY_2", description="The second API key for the Firecrawl API"
     )
     github_token: SecretStr | None = Field(default=None, alias="GITHUB_TOKEN", description="The GitHub token")
     xai_api_key: SecretStr | None = Field(
@@ -119,9 +134,9 @@ class Settings(BaseSettings):
                 "identifier": "tavily",    
                 "api_key_env_var": "TAVILY_API_KEY",       # ignored for tools, kept for config consistency
                 "params": {
-                    "max_results": 6,
+                    "max_results": 5,
                     "search_depth": "advanced",
-                    "include_raw_content": True,
+                    "include_raw_content": False,  # raw page HTML is fetched separately by scrape_research_urls_tool; enabling this bloats the LLM prompt 20-50x with no quality gain
                     "include_answer": True,
                     # add any other Tavily params you like (time_range, include_images, etc.)
                 },

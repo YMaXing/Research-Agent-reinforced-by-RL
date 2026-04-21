@@ -156,7 +156,7 @@ Human feedback:
 </human_feedback>
 
 If the <human_feedback> is empty, you will infer it from the previous messages. If there are no other messages 
-to infer from, use an empty string. Don't ever fill it in with things such as "Please provide more details" or
+to infer from, use an empty string. Don't ever fill it in with things such as "Please provi de more details" or
 fill it in with generic stuff.
 """
 

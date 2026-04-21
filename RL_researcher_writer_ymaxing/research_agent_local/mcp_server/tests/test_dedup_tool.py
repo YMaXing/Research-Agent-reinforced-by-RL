@@ -115,15 +115,15 @@ class TestDeduplicateNewQueriesTool:
     async def test_write_queries_to_file_called_after_dedup(
         self, fake_plain_model_factory, tmp_research_dir
     ):
-        """The (mocked) write_queries_to_file must be called exactly once per run."""
+        """write_queries_to_file must be called exactly once per run."""
         _write_next_queries(tmp_research_dir, _SAMPLE_QUERIES)
         model = fake_plain_model_factory(_kept_json([q for q, _ in _SAMPLE_QUERIES]))
 
-        _dedup_mod.write_queries_to_file.reset_mock()
-        with patch(_DEDUP_LLM_PATCH, return_value=model):
+        with patch("src.tools.dedup_new_queries_tool.write_queries_to_file") as mock_write, \
+             patch(_DEDUP_LLM_PATCH, return_value=model):
             await deduplicate_new_queries_tool(str(tmp_research_dir))
 
-        _dedup_mod.write_queries_to_file.assert_called_once()
+        mock_write.assert_called_once()
 
     async def test_output_path_in_result(self, fake_plain_model_factory, tmp_research_dir):
         _write_next_queries(tmp_research_dir, _SAMPLE_QUERIES)

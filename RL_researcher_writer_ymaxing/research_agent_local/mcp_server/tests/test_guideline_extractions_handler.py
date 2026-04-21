@@ -2,11 +2,12 @@
 
 Both ``extract_urls`` and ``extract_local_paths`` are pure functions —
 no LLM mocking or file I/O is required.
+``extract_urls_by_section`` is also pure and tested here.
 """
 
 import pytest
 
-from src.app.guideline_extractions_handler import extract_local_paths, extract_urls
+from src.app.guideline_extractions_handler import extract_local_paths, extract_urls, extract_urls_by_section
 
 
 # ---------------------------------------------------------------------------
@@ -101,3 +102,87 @@ class TestExtractLocalPaths:
         assert "a.py" in paths
         assert "b.ipynb" in paths
         assert "c.md" in paths
+
+
+# ---------------------------------------------------------------------------
+# extract_urls_by_section
+# ---------------------------------------------------------------------------
+
+
+class TestExtractUrlsBySection:
+    def test_other_sources_are_exploitation(self):
+        text = (
+            "## Other Sources\n"
+            "1. [IBM](https://www.ibm.com/article)\n"
+            "2. [ArXiv](https://arxiv.org/abs/1234)\n"
+        )
+        result = extract_urls_by_section(text)
+        assert "https://www.ibm.com/article" in result["exploitation"]
+        assert "https://arxiv.org/abs/1234" in result["exploitation"]
+        assert result["golden"] == []
+
+    def test_golden_sources_are_golden(self):
+        text = (
+            "## Golden Sources\n"
+            "1. [YouTube](https://youtube.com/watch?v=abc)\n"
+        )
+        result = extract_urls_by_section(text)
+        assert "https://youtube.com/watch?v=abc" in result["golden"]
+        assert result["exploitation"] == []
+
+    def test_article_code_is_golden(self):
+        text = (
+            "## Article Code\n"
+            "1. [Notebook](https://github.com/owner/repo)\n"
+        )
+        result = extract_urls_by_section(text)
+        assert "https://github.com/owner/repo" in result["golden"]
+        assert result["exploitation"] == []
+
+    def test_lesson_code_is_golden(self):
+        text = (
+            "## Lesson Code\n"
+            "1. [Notebook](https://github.com/owner/repo2)\n"
+        )
+        result = extract_urls_by_section(text)
+        assert "https://github.com/owner/repo2" in result["golden"]
+        assert result["exploitation"] == []
+
+    def test_mixed_sections(self):
+        text = (
+            "## Golden Sources\n"
+            "1. [Gold](https://golden.example.com)\n"
+            "## Other Sources\n"
+            "1. [Other](https://other.example.com)\n"
+        )
+        result = extract_urls_by_section(text)
+        assert "https://golden.example.com" in result["golden"]
+        assert "https://other.example.com" in result["exploitation"]
+
+    def test_urls_before_any_section_are_golden(self):
+        text = (
+            "Intro text with https://intro.example.com\n"
+            "## Other Sources\n"
+            "1. [Other](https://other.example.com)\n"
+        )
+        result = extract_urls_by_section(text)
+        assert "https://intro.example.com" in result["golden"]
+        assert "https://other.example.com" in result["exploitation"]
+
+    def test_unknown_section_defaults_to_golden(self):
+        text = (
+            "## References\n"
+            "1. [Ref](https://ref.example.com)\n"
+        )
+        result = extract_urls_by_section(text)
+        assert "https://ref.example.com" in result["golden"]
+
+    def test_empty_text_returns_empty_lists(self):
+        result = extract_urls_by_section("")
+        assert result["golden"] == []
+        assert result["exploitation"] == []
+
+    def test_other_sources_case_insensitive(self):
+        text = "## OTHER SOURCES\n1. [X](https://x.example.com)\n"
+        result = extract_urls_by_section(text)
+        assert "https://x.example.com" in result["exploitation"]

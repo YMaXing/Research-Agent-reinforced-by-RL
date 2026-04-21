@@ -14,7 +14,7 @@ from ..app.generate_queries_handler import(
     compute_next_query_id,
 )
 
-from generate_next_queries_tool import write_queries_to_file
+from .generate_next_queries_tool import write_queries_to_file
 from ..utils.file_utils import validate_research_folder
 from ..config.settings import settings
 from ..config.constants import (

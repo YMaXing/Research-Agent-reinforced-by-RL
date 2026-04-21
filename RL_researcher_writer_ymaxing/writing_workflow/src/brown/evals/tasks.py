@@ -29,7 +29,7 @@ async def evaluation_task(
     clean_cache: bool = False,
     debug: bool = False,
 ) -> Dict[str, Any]:
-    """Generate an article using the Brown agent for a single evaluation sample.
+    """Generate an article using the Brown agent for a SINGLE evaluation sample.
 
     This function calls the Brown agent to generate an article based on the provided
     evaluation sample data, using the same workflow as the main article generation script.
@@ -42,16 +42,10 @@ async def evaluation_task(
             - research: Research content
             - ground_truth_article: Ground truth article content
             - is_few_shot_example: Whether this is a few-shot example
-        style_guideline_dir: Directory containing style guidelines.
-        examples_dir: Directory containing example articles.
-        evaluation_rules_path: Path to evaluation rules file.
-        writer_profile_path: Path to writer profile file.
         cache_dir: Cache directory for generated articles.
         read_from_cache: Whether to read from cache instead of generating.
         clean_cache: Whether to clean up cache after processing.
         debug: Whether to enable debug mode.
-        online_human_review: Whether to enable online human review.
-        skip_to_stage_3: Whether to skip to stage 3 of the workflow.
 
     Returns:
         Dictionary containing evaluation results with keys:
@@ -123,7 +117,6 @@ async def __run(config: RunnableConfig, inputs: Dict[str, Any], read_from_cache:
     generated article content from the output directory.
 
     Args:
-        graph: The compiled state graph for article generation.
         config: Runnable configuration containing thread_id, debug settings, etc.
         inputs: Input parameters for the workflow including file paths and settings.
         read_from_cache: Whether to read from cache instead of running the workflow.

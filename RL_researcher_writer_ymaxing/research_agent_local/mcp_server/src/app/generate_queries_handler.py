@@ -67,28 +67,38 @@ async def generate_queries_with_reasons(
     )
 
     chat_llm = get_chat_model(settings.query_generation_model, GeneratedQueries)
-    logger.debug("Generating candidate queries")
+    logger.info("Generating candidate queries")
 
-    try:
-        response = await chat_llm.ainvoke(prompt)
+    max_llm_retries = 3
+    for attempt in range(max_llm_retries):
+        try:
+            response = await chat_llm.ainvoke(prompt)
 
-        if not isinstance(response, GeneratedQueries):
-            msg = f"LLM returned unexpected type: {type(response)}"
-            logger.error(msg)
-            raise RuntimeError(msg)
+            if not isinstance(response, GeneratedQueries):
+                msg = f"LLM returned unexpected type: {type(response)} (attempt {attempt + 1}/{max_llm_retries})"
+                logger.warning(msg)
+                if attempt < max_llm_retries - 1:
+                    continue
+                raise RuntimeError(f"LLM returned unexpected type: {type(response)} after {max_llm_retries} attempts")
 
-        queries_and_reasons = [(item.question, item.reason) for item in response.queries]
+            queries_and_reasons = [(item.question, item.reason) for item in response.queries]
 
-        if len(queries_and_reasons) < n_queries:
-            msg = f"LLM returned only {len(queries_and_reasons)} queries, expected {n_queries}."
-            logger.error(msg)
-            raise RuntimeError(msg)
+            if len(queries_and_reasons) < n_queries:
+                msg = f"LLM returned only {len(queries_and_reasons)} queries, expected {n_queries} (attempt {attempt + 1}/{max_llm_retries})"
+                logger.warning(msg)
+                if attempt < max_llm_retries - 1:
+                    continue
+                raise RuntimeError(msg)
 
-        return queries_and_reasons[:n_queries]
+            return queries_and_reasons[:n_queries]
 
-    except Exception as exc:
-        logger.error(f"⚠️ LLM call failed ({exc}).", exc_info=True)
-        raise
+        except RuntimeError:
+            raise
+        except Exception as exc:
+            logger.error(f"⚠️ LLM call failed ({exc}).", exc_info=True)
+            raise
+
+    raise RuntimeError(f"generate_queries_with_reasons failed after {max_llm_retries} attempts")
 
 async def generate_complementary_queries_with_reasons(
     article_guidelines: str,
@@ -115,25 +125,35 @@ async def generate_complementary_queries_with_reasons(
     )
 
     chat_llm = get_chat_model(settings.query_generation_model, GeneratedQueries)
-    logger.debug(f"Generating complementary queries (Depth {depth_pct}% / Breadth {breadth_pct}%)")
+    logger.info(f"Generating complementary queries (Depth {depth_pct}% / Breadth {breadth_pct}%)")
 
-    try:
-        response = await chat_llm.ainvoke(prompt)
+    max_llm_retries = 3
+    for attempt in range(max_llm_retries):
+        try:
+            response = await chat_llm.ainvoke(prompt)
 
-        if not isinstance(response, GeneratedQueries):
-            msg = f"LLM returned unexpected type: {type(response)}"
-            logger.error(msg)
-            raise RuntimeError(msg)
+            if not isinstance(response, GeneratedQueries):
+                msg = f"LLM returned unexpected type: {type(response)} (attempt {attempt + 1}/{max_llm_retries})"
+                logger.warning(msg)
+                if attempt < max_llm_retries - 1:
+                    continue
+                raise RuntimeError(f"LLM returned unexpected type: {type(response)} after {max_llm_retries} attempts")
 
-        queries_and_reasons = [(item.question, item.reason) for item in response.queries]
+            queries_and_reasons = [(item.question, item.reason) for item in response.queries]
 
-        if len(queries_and_reasons) < n_queries:
-            msg = f"LLM returned only {len(queries_and_reasons)} queries, expected {n_queries}."
-            logger.error(msg)
-            raise RuntimeError(msg)
+            if len(queries_and_reasons) < n_queries:
+                msg = f"LLM returned only {len(queries_and_reasons)} queries, expected {n_queries} (attempt {attempt + 1}/{max_llm_retries})"
+                logger.warning(msg)
+                if attempt < max_llm_retries - 1:
+                    continue
+                raise RuntimeError(msg)
 
-        return queries_and_reasons[:n_queries]
+            return queries_and_reasons[:n_queries]
 
-    except Exception as exc:
-        logger.error(f"⚠️ LLM call failed ({exc}).", exc_info=True)
-        raise
+        except RuntimeError:
+            raise
+        except Exception as exc:
+            logger.error(f"⚠️ LLM call failed ({exc}).", exc_info=True)
+            raise
+
+    raise RuntimeError(f"generate_complementary_queries_with_reasons failed after {max_llm_retries} attempts")

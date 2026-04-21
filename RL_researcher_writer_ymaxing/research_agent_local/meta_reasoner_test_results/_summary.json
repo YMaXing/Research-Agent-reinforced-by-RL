@@ -1,0 +1,392 @@
+[
+  {
+    "article": "02_workflows_vs_agents",
+    "status": "success",
+    "split": "TEST",
+    "rl_signal": {
+      "rl_recommendation": {
+        "preset": 3,
+        "name": "P3  2_rounds_depth\u2192breadth",
+        "confidence": 0.3868,
+        "entropy_bits": 1.9389,
+        "floor_correction_applied": false
+      },
+      "section_signals": [
+        {
+          "title": "Introduction: The Critical Decision Every AI Engineer Faces",
+          "preset": 3,
+          "name": "P3  2_rounds_depth\u2192breadth",
+          "top2": [
+            [
+              "P3",
+              1.0
+            ],
+            [
+              "P2",
+              0.0
+            ]
+          ]
+        },
+        {
+          "title": "Understanding the Spectrum: From Workflows to Agents",
+          "preset": 3,
+          "name": "P3  2_rounds_depth\u2192breadth",
+          "top2": [
+            [
+              "P3",
+              0.9241
+            ],
+            [
+              "P4",
+              0.0759
+            ]
+          ]
+        },
+        {
+          "title": "Choosing Your Path",
+          "preset": 0,
+          "name": "P0  no_exploration",
+          "top2": [
+            [
+              "P0",
+              1.0
+            ],
+            [
+              "P2",
+              0.0
+            ]
+          ]
+        },
+        {
+          "title": "Exploring Common Patterns",
+          "preset": 1,
+          "name": "P1  1_round_balanced",
+          "top2": [
+            [
+              "P1",
+              1.0
+            ],
+            [
+              "P0",
+              0.0
+            ]
+          ]
+        },
+        {
+          "title": "Zooming In on Our Favorite Examples",
+          "preset": 2,
+          "name": "P2  2_rounds_balanced\u2192depth",
+          "top2": [
+            [
+              "P2",
+              1.0
+            ],
+            [
+              "P0",
+              0.0
+            ]
+          ]
+        },
+        {
+          "title": "Conclusion: The Challenges of Every AI Engineer",
+          "preset": 2,
+          "name": "P2  2_rounds_balanced\u2192depth",
+          "top2": [
+            [
+              "P2",
+              1.0
+            ],
+            [
+              "P0",
+              0.0
+            ]
+          ]
+        }
+      ],
+      "guidance": "RL model is uncertain (H=1.94 bits > 1.5) \u2014 apply own judgement."
+    },
+    "oracle": {
+      "preset": 4,
+      "name": "P4  3_rounds_balanced\u2192depth\u2192breadth",
+      "rewards": [
+        0.6971,
+        0.7207,
+        0.6639,
+        0.74,
+        0.7571,
+        0.5593
+      ]
+    },
+    "verdict": "NEAR MISS  (\u00b11 preset)"
+  },
+  {
+    "article": "06_tools",
+    "status": "success",
+    "split": "TEST",
+    "rl_signal": {
+      "rl_recommendation": {
+        "preset": 2,
+        "name": "P2  2_rounds_balanced\u2192depth",
+        "confidence": 0.8351,
+        "entropy_bits": 0.706,
+        "floor_correction_applied": false
+      },
+      "section_signals": [
+        {
+          "title": "Introduction",
+          "preset": 2,
+          "name": "P2  2_rounds_balanced\u2192depth",
+          "top2": [
+            [
+              "P2",
+              1.0
+            ],
+            [
+              "P3",
+              0.0
+            ]
+          ]
+        },
+        {
+          "title": "Understanding why agents need tools",
+          "preset": 2,
+          "name": "P2  2_rounds_balanced\u2192depth",
+          "top2": [
+            [
+              "P2",
+              0.9241
+            ],
+            [
+              "P3",
+              0.0759
+            ]
+          ]
+        },
+        {
+          "title": "Implementing tool calls from scratch",
+          "preset": 2,
+          "name": "P2  2_rounds_balanced\u2192depth",
+          "top2": [
+            [
+              "P2",
+              1.0
+            ],
+            [
+              "P1",
+              0.0
+            ]
+          ]
+        },
+        {
+          "title": "Implementing a tool calling framework from scratch",
+          "preset": 2,
+          "name": "P2  2_rounds_balanced\u2192depth",
+          "top2": [
+            [
+              "P2",
+              0.9997
+            ],
+            [
+              "P1",
+              0.0003
+            ]
+          ]
+        },
+        {
+          "title": "Implementing production-level tool calls with Gemini",
+          "preset": 2,
+          "name": "P2  2_rounds_balanced\u2192depth",
+          "top2": [
+            [
+              "P2",
+              1.0
+            ],
+            [
+              "P3",
+              0.0
+            ]
+          ]
+        },
+        {
+          "title": "Using Pydantic models as tools for on-demand structured outputs",
+          "preset": 2,
+          "name": "P2  2_rounds_balanced\u2192depth",
+          "top2": [
+            [
+              "P2",
+              1.0
+            ],
+            [
+              "P0",
+              0.0
+            ]
+          ]
+        },
+        {
+          "title": "The downsides of running tools in a loop",
+          "preset": 2,
+          "name": "P2  2_rounds_balanced\u2192depth",
+          "top2": [
+            [
+              "P2",
+              1.0
+            ],
+            [
+              "P1",
+              0.0
+            ]
+          ]
+        },
+        {
+          "title": "Going through popular tools used within the industry",
+          "preset": 0,
+          "name": "P0  no_exploration",
+          "top2": [
+            [
+              "P0",
+              1.0
+            ],
+            [
+              "P2",
+              0.0
+            ]
+          ]
+        }
+      ],
+      "guidance": "RL model strongly recommends P2 (P2  2_rounds_balanced\u2192depth, confidence 84%)."
+    },
+    "oracle": {
+      "preset": 1,
+      "name": "P1  1_round_balanced",
+      "rewards": [
+        0.448,
+        0.6513,
+        0.488,
+        0.5827,
+        0.6113,
+        0.546
+      ]
+    },
+    "verdict": "NEAR MISS  (\u00b11 preset)"
+  },
+  {
+    "article": "09_RAG",
+    "status": "success",
+    "split": "TEST",
+    "rl_signal": {
+      "rl_recommendation": {
+        "preset": 2,
+        "name": "P2  2_rounds_balanced\u2192depth",
+        "confidence": 0.5102,
+        "entropy_bits": 1.7594,
+        "floor_correction_applied": false
+      },
+      "section_signals": [
+        {
+          "title": "Introduction: Giving LLMs an Open-Book Exam",
+          "preset": 5,
+          "name": "P5  3_rounds_depth\u2192breadth\u2192depth",
+          "top2": [
+            [
+              "P5",
+              1.0
+            ],
+            [
+              "P4",
+              0.0
+            ]
+          ]
+        },
+        {
+          "title": "The RAG System: Core Components",
+          "preset": 2,
+          "name": "P2  2_rounds_balanced\u2192depth",
+          "top2": [
+            [
+              "P2",
+              1.0
+            ],
+            [
+              "P3",
+              0.0
+            ]
+          ]
+        },
+        {
+          "title": "The RAG Pipeline: Ingestion and Retrieval",
+          "preset": 4,
+          "name": "P4  3_rounds_balanced\u2192depth\u2192breadth",
+          "top2": [
+            [
+              "P4",
+              1.0
+            ],
+            [
+              "P3",
+              0.0
+            ]
+          ]
+        },
+        {
+          "title": "Advanced RAG Techniques",
+          "preset": 2,
+          "name": "P2  2_rounds_balanced\u2192depth",
+          "top2": [
+            [
+              "P2",
+              1.0
+            ],
+            [
+              "P4",
+              0.0
+            ]
+          ]
+        },
+        {
+          "title": "Agentic RAG",
+          "preset": 2,
+          "name": "P2  2_rounds_balanced\u2192depth",
+          "top2": [
+            [
+              "P2",
+              0.989
+            ],
+            [
+              "P1",
+              0.011
+            ]
+          ]
+        },
+        {
+          "title": "Conclusion",
+          "preset": 0,
+          "name": "P0  no_exploration",
+          "top2": [
+            [
+              "P0",
+              1.0
+            ],
+            [
+              "P3",
+              0.0
+            ]
+          ]
+        }
+      ],
+      "guidance": "RL model is uncertain (H=1.76 bits > 1.5) \u2014 apply own judgement."
+    },
+    "oracle": {
+      "preset": 1,
+      "name": "P1  1_round_balanced",
+      "rewards": [
+        0.5036,
+        0.6264,
+        0.5943,
+        0.5371,
+        0.55,
+        0.5971
+      ]
+    },
+    "verdict": "NEAR MISS  (\u00b11 preset)"
+  }
+]

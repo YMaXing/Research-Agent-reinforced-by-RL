@@ -5,10 +5,11 @@ from pydantic import BaseModel, Field
 
 
 class SupportedModels(StrEnum):
-    GOOGLE_GEMINI_30_PRO = "google_genai:gemini-3-pro-preview"
     GOOGLE_GEMINI_25_PRO = "google_genai:gemini-2.5-pro"
     GOOGLE_GEMINI_25_FLASH = "google_genai:gemini-2.5-flash"
     GOOGLE_GEMINI_25_FLASH_LITE = "google_genai:gemini-2.5-flash-lite"
+    XAI_GROK_420 = "xai:grok-4.20-0309-reasoning"
+    XAI_GROK_41_FAST = "xai:grok-4-1-fast-reasoning"
     FAKE_MODEL = "fake"
 
 
@@ -24,7 +25,7 @@ class ModelConfig(BaseModel):
         description="If reasoning is available, the maximum number of tokens the model can use for thinking.",
     )
     max_output_tokens: int | None = None
-    max_retries: int = 6
+    max_retries: int = 1
 
     mocked_response: Any | None = None
 
@@ -45,23 +46,28 @@ class ModelConfig(BaseModel):
         )
 
 
+# Parameters that are Google-specific and should not be passed to non-Google providers.
+GOOGLE_ONLY_PARAMS = {"thinking_budget", "top_k", "response_modalities"}
+
 DEFAULT_MODEL_CONFIGS = {
-    "google_genai:gemini-3-pro-preview": ModelConfig(
-        temperature=0.7,
-        include_thoughts=False,
-        thinking_budget=1000,
-        max_retries=3,
-    ),
     "google_genai:gemini-2.5-pro": ModelConfig(
         temperature=0.7,
         include_thoughts=False,
         thinking_budget=1000,
-        max_retries=3,
+        max_retries=1,
     ),
     "google_genai:gemini-2.5-flash": ModelConfig(
         temperature=1,
         thinking_budget=1000,
         include_thoughts=False,
-        max_retries=3,
+        max_retries=1,
+    ),
+    "xai:grok-4.20-0309-reasoning": ModelConfig(
+        temperature=0.7,
+        max_retries=1,
+    ),
+    "xai:grok-4-1-fast-reasoning": ModelConfig(
+        temperature=0.0,
+        max_retries=1,
     ),
 }

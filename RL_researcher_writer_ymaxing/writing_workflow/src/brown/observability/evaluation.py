@@ -17,7 +17,7 @@ def evaluate(
     metrics: list[base_metric.BaseMetric],
     evaluation_task: Callable,
     llm_judge_config: dict[str, Any],
-    workers: int = 2,
+    workers: int = 3,
     nb_samples: int | None = None,
     dataset_item_names: list[str] | None = None,
 ) -> None:
@@ -31,7 +31,7 @@ def evaluate(
         metrics: List of metric instances used to score task outputs.
         evaluation_task: Callable that generates outputs for a single dataset item.
         llm_judge_config: Configuration passed to the scoring environment (e.g., model info).
-        workers: Number of parallel task threads. Defaults to 2.
+        workers: Number of parallel task threads. Defaults to 3.
         nb_samples: Optional cap on the number of samples; if None, evaluates all.
         dataset_item_names: Optional subset of dataset item names to evaluate.
 
@@ -73,6 +73,7 @@ def evaluate(
         task=evaluation_task,
         scoring_metrics=metrics,
         experiment_config=llm_judge_config,
+        project_name=get_settings().OPIK_PROJECT_NAME,
         task_threads=workers,
         nb_samples=nb_samples,
         dataset_item_ids=dataset_item_ids,

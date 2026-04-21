@@ -1,0 +1,120 @@
+{
+  "article": "09_RAG",
+  "status": "success",
+  "split": "TEST",
+  "rl_signal": {
+    "rl_recommendation": {
+      "preset": 2,
+      "name": "P2  2_rounds_balanced\u2192depth",
+      "confidence": 0.5102,
+      "entropy_bits": 1.7594,
+      "floor_correction_applied": false
+    },
+    "section_signals": [
+      {
+        "title": "Introduction: Giving LLMs an Open-Book Exam",
+        "preset": 5,
+        "name": "P5  3_rounds_depth\u2192breadth\u2192depth",
+        "top2": [
+          [
+            "P5",
+            1.0
+          ],
+          [
+            "P4",
+            0.0
+          ]
+        ]
+      },
+      {
+        "title": "The RAG System: Core Components",
+        "preset": 2,
+        "name": "P2  2_rounds_balanced\u2192depth",
+        "top2": [
+          [
+            "P2",
+            1.0
+          ],
+          [
+            "P3",
+            0.0
+          ]
+        ]
+      },
+      {
+        "title": "The RAG Pipeline: Ingestion and Retrieval",
+        "preset": 4,
+        "name": "P4  3_rounds_balanced\u2192depth\u2192breadth",
+        "top2": [
+          [
+            "P4",
+            1.0
+          ],
+          [
+            "P3",
+            0.0
+          ]
+        ]
+      },
+      {
+        "title": "Advanced RAG Techniques",
+        "preset": 2,
+        "name": "P2  2_rounds_balanced\u2192depth",
+        "top2": [
+          [
+            "P2",
+            1.0
+          ],
+          [
+            "P4",
+            0.0
+          ]
+        ]
+      },
+      {
+        "title": "Agentic RAG",
+        "preset": 2,
+        "name": "P2  2_rounds_balanced\u2192depth",
+        "top2": [
+          [
+            "P2",
+            0.989
+          ],
+          [
+            "P1",
+            0.011
+          ]
+        ]
+      },
+      {
+        "title": "Conclusion",
+        "preset": 0,
+        "name": "P0  no_exploration",
+        "top2": [
+          [
+            "P0",
+            1.0
+          ],
+          [
+            "P3",
+            0.0
+          ]
+        ]
+      }
+    ],
+    "guidance": "RL model is uncertain (H=1.76 bits > 1.5) \u2014 apply own judgement."
+  },
+  "oracle": {
+    "preset": 1,
+    "name": "P1  1_round_balanced",
+    "rewards": [
+      0.5036,
+      0.6264,
+      0.5943,
+      0.5371,
+      0.55,
+      0.5971
+    ]
+  },
+  "verdict": "NEAR MISS  (\u00b11 preset)"
+}

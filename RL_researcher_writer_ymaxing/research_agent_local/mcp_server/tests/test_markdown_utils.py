@@ -50,6 +50,22 @@ class TestMarkdownCollapsible:
         assert "Line 1" in result
         assert "Line 3" in result
 
+    def test_unclosed_code_fence_is_balanced(self):
+        """A body with an odd number of ``` fences must have a closing fence added
+        so that </details> is not swallowed inside a preformatted block."""
+        body = "```markdown\n## 1 Introduction\nSome content"
+        result = markdown_collapsible("Title", body)
+        # The closing ``` must appear before </details>
+        assert result.index("```\n\n</details>") > 0
+        assert "</details>" in result
+
+    def test_balanced_code_fences_not_modified(self):
+        """A body with an even number of ``` fences should not gain an extra one."""
+        body = "```python\nprint('hi')\n```"
+        result = markdown_collapsible("Title", body)
+        # Exactly two ``` occurrences from the body, plus none added
+        assert result.count("```") == 2
+
 
 # ---------------------------------------------------------------------------
 # get_first_line_title
@@ -84,6 +100,16 @@ class TestGetFirstLineTitle:
     def test_title_with_trailing_whitespace_stripped(self):
         result = get_first_line_title("# Title With Spaces   ")
         assert result == "Title With Spaces"
+
+    def test_heading_not_on_first_line_is_still_found(self):
+        """A '#' heading deeper in the file is preferred over the first non-heading line."""
+        result = get_first_line_title("**Source URL:** <https://a.com>\n\n# Article Title\n\ncontent")
+        assert result == "Article Title"
+
+    def test_subheading_not_on_first_line_is_still_found(self):
+        """A subheading deeper in the file is returned when first line is plain text."""
+        result = get_first_line_title("**Source URL:** <https://a.com>\n\n## Section Heading\n\ncontent")
+        assert result == "Section Heading"
 
 
 # ---------------------------------------------------------------------------
@@ -174,3 +200,17 @@ class TestCombineResearchSections:
     def test_returns_string(self):
         result = combine_research_sections("a", "b", "c", "d", "e")
         assert isinstance(result, str)
+
+    def test_local_files_section_included_when_provided(self):
+        result = combine_research_sections("S1", "S2", "S3", "S4", "S5", local_files_section="Local Files Content")
+        assert "Local Files Content" in result
+
+    def test_local_files_section_omitted_when_empty(self):
+        result = combine_research_sections("S1", "S2", "S3", "S4", "S5", local_files_section="")
+        assert result == combine_research_sections("S1", "S2", "S3", "S4", "S5")
+
+    def test_default_local_files_section_is_empty(self):
+        """Calling without local_files_section should behave like the original 5-section version."""
+        result = combine_research_sections("A", "B", "C", "D", "E")
+        # Should have exactly 6 parts joined (title + 5 sections)
+        assert result.count("\n\n") == 5
