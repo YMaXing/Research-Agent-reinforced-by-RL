@@ -1,22 +1,29 @@
 """
-End-to-end test: Grok's exploration planning decisions via the MCP tool.
+Preset planner test: predict_exploration_preset tool (direct MCP call).
 
-For each article the script:
-  1. Starts the MCP server (stdio transport, same as batch_runner).
-  2. Asks Grok to call `predict_exploration_preset` for the article's
-     research directory (rl_training_data/bases/<article>/), which already
-     contains a pre-computed exploitation_digest.md.
-  3. Captures Grok's chosen preset from its final JSON response.
-  4. Computes the oracle preset from the offline reward data.
-  5. Prints a hit/miss comparison and summary table.
+The tool now makes the final planning decision internally via two stages:
+  Stage 1 — Qwen3-4B RL model  -> rl_recommendation
+  Stage 2 — Grok 4.2 reasoning -> grok_recommendation
 
-This isolates step 3.4 of the research workflow (RL meta-reasoner planning)
-without running the expensive scraping / writing steps.
+This test calls the tool directly via the MCP protocol, bypassing the
+Grok-4.1-fast orchestration layer that previously parsed preset decisions
+from free-text responses (which could return None for long contexts).
 
-Usage (from research_agent_local/):
+The mcp-agent is still used to manage the server subprocess and expose the
+MCP transport, but no LLM agent loop is involved.
 
+Modes
+-----
+  default     — reads grok_recommendation.preset (full pipeline)
+  --rl-only   — reads rl_recommendation.preset   (Qwen3-4B only, no Grok 4.2)
+
+Usage (from research_agent_local/)
+-----------------------------------
   # Test-set articles only (default)
   uv run python -m mcp_client.src.test_grok_planner
+
+  # RL model only — faster, no Grok 4.2 call
+  uv run python -m mcp_client.src.test_grok_planner --rl-only
 
   # All articles (train + test)
   uv run python -m mcp_client.src.test_grok_planner --all
@@ -26,9 +33,6 @@ Usage (from research_agent_local/):
 
   # Save per-article JSON results
   uv run python -m mcp_client.src.test_grok_planner --save-json
-
-  # Disable LLM thinking (faster, cheaper)
-  uv run python -m mcp_client.src.test_grok_planner --no-thinking
 """
 
 from __future__ import annotations
@@ -38,8 +42,6 @@ import asyncio
 import json
 import logging
 import math
-import re
-import sys
 from pathlib import Path
 
 from mcp_agent.app import MCPApp
@@ -47,7 +49,6 @@ from mcp_agent.agents.agent import Agent
 from mcp_agent.config import get_settings as get_mcp_settings
 
 from .settings import settings
-from .utils.handle_agent_loop_utils import handle_agent_loop, make_user_message
 from .utils.logging_utils import configure_logging
 from .utils.mcp_startup_utils import get_capabilities_from_mcp_client
 
@@ -107,40 +108,6 @@ _mcp_settings.mcp.servers["research_agent"].args = [
 ]
 app = MCPApp(name="GrokPlannerTest", settings=_mcp_settings)
 
-# ---------------------------------------------------------------------------
-# System instruction for Grok
-# ---------------------------------------------------------------------------
-_SYSTEM_INSTRUCTION = (
-    "You are a research planning assistant. Your ONLY task is to call "
-    "predict_exploration_preset for a given research directory, then decide "
-    "which exploration preset (0–5) to use for that article.\n\n"
-    "Preset meanings:\n"
-    "  P0 = no exploration (exploitation only)\n"
-    "  P1 = 1 exploration round, balanced breadth/depth\n"
-    "  P2 = 2 rounds: balanced then depth\n"
-    "  P3 = 2 rounds: depth then breadth\n"
-    "  P4 = 3 rounds: balanced → depth → breadth\n"
-    "  P5 = 3 rounds: depth → breadth → depth\n\n"
-    "After calling the tool and reviewing its output, end your response with "
-    "exactly one JSON line:\n"
-    '{"chosen_preset": N, "reasoning": "one-sentence explanation"}\n\n'
-    "Do NOT call any other tools. Do NOT run any research steps."
-)
-
-
-def _make_article_prompt(research_dir: Path) -> str:
-    return (
-        f"Research directory: {research_dir}\n\n"
-        "The exploitation phase for this article is already complete.\n"
-        "Please:\n"
-        "  1. Call predict_exploration_preset with the research directory above.\n"
-        "  2. Read the tool output carefully.\n"
-        "  3. Decide which exploration preset (0–5) to use, following the "
-        "tool's guidance unless you have a strong reason to override it.\n\n"
-        "End your final response with this exact JSON on its own line:\n"
-        '{"chosen_preset": N, "reasoning": "one sentence"}'
-    )
-
 
 # ---------------------------------------------------------------------------
 # Oracle computation (mirrors test_meta_reasoner.py)
@@ -176,66 +143,78 @@ def _compute_oracle(article: str) -> tuple[int, list[float]]:
 
 
 # ---------------------------------------------------------------------------
-# Response parsing
+# Tool call + result parsing
 # ---------------------------------------------------------------------------
-def _parse_chosen_preset(text: str) -> int | None:
-    """Extract chosen_preset integer from Grok's JSON decision line."""
-    m = re.search(r'"chosen_preset"\s*:\s*([0-5])', text)
-    if m:
-        return int(m.group(1))
-    return None
-
-
-def _extract_final_text(conversation_history: list) -> str:
-    """Return the text content of the last assistant message in history."""
-    for msg in reversed(conversation_history):
-        if isinstance(msg, dict) and msg.get("role") == "assistant":
-            return msg.get("content") or ""
-    return ""
+def _parse_tool_result(tool_result) -> dict:
+    """Extract the JSON dict from an MCP CallToolResult."""
+    if getattr(tool_result, "isError", False):
+        raise RuntimeError(f"Tool returned an error: {tool_result}")
+    content = getattr(tool_result, "content", None)
+    if not content:
+        raise RuntimeError("Tool returned empty content.")
+    text = getattr(content[0], "text", None)
+    if text is None:
+        raise RuntimeError(f"First content item has no .text: {content[0]!r}")
+    return json.loads(text)
 
 
 # ---------------------------------------------------------------------------
 # Per-article runner
 # ---------------------------------------------------------------------------
-async def run_article(
-    article: str,
-    agent: Agent,
-    tools: list,
-    thinking_enabled: bool,
-) -> dict:
+async def run_article(article: str, agent: Agent, rl_only: bool) -> dict:
     research_dir = _BASES_DIR / article
     if not research_dir.exists():
         return {"article": article, "error": f"Directory not found: {research_dir}"}
 
-    # Build conversation history with system instruction + per-article prompt
-    conversation_history: list = [
-        {"role": "system", "content": _SYSTEM_INSTRUCTION},
-        make_user_message(_make_article_prompt(research_dir)),
-    ]
+    # --- Direct MCP tool call (no LLM agent loop) ---
+    try:
+        tool_result = await agent.call_tool(
+            "predict_exploration_preset",
+            {"research_directory": str(research_dir)},
+        )
+        data = _parse_tool_result(tool_result)
+    except Exception as exc:
+        return {"article": article, "error": str(exc)}
 
-    await handle_agent_loop(conversation_history, tools, agent, thinking_enabled)
+    if data.get("status") == "error":
+        return {"article": article, "error": data.get("message", "unknown error")}
 
-    final_text = _extract_final_text(conversation_history)
-    grok_preset = _parse_chosen_preset(final_text)
+    rl = data["rl_recommendation"]
+    grok = data.get("grok_recommendation")  # None if XAI_API_KEY unset or call failed
 
+    # Determine which preset to evaluate
+    if rl_only or grok is None:
+        chosen_preset = rl["preset"]
+        chosen_by = "RL"
+    else:
+        chosen_preset = grok["preset"]
+        chosen_by = "Grok4.2"
+
+    # --- Oracle ---
     try:
         oracle_preset, rewards = _compute_oracle(article)
     except FileNotFoundError as exc:
         return {
             "article": article,
             "split": "TRAIN" if article in _TRAIN_ARTICLES else "TEST",
-            "grok_preset": grok_preset,
+            "rl_preset": rl["preset"],
+            "grok_preset": grok["preset"] if grok else None,
+            "chosen_preset": chosen_preset,
+            "chosen_by": chosen_by,
             "oracle_preset": None,
             "verdict": "NO_ORACLE",
-            "grok_response": final_text,
+            "entropy_bits": rl["entropy_bits"],
+            "confidence": rl["confidence"],
+            "floor_applied": rl["floor_correction_applied"],
+            "grok_override": grok.get("override") if grok else None,
+            "grok_reasoning": grok.get("reasoning") if grok else None,
+            "grok_override_reason": grok.get("override_reason") if grok else None,
             "error": str(exc),
         }
 
-    if grok_preset is None:
-        verdict = "PARSE_FAIL"
-    elif grok_preset == oracle_preset:
+    if chosen_preset == oracle_preset:
         verdict = "EXACT"
-    elif abs(grok_preset - oracle_preset) == 1:
+    elif abs(chosen_preset - oracle_preset) == 1:
         verdict = "NEAR"
     else:
         verdict = "MISS"
@@ -243,14 +222,24 @@ async def run_article(
     return {
         "article": article,
         "split": "TRAIN" if article in _TRAIN_ARTICLES else "TEST",
-        "grok_preset": grok_preset,
+        "rl_preset": rl["preset"],
+        "grok_preset": grok["preset"] if grok else None,
+        "chosen_preset": chosen_preset,
+        "chosen_by": chosen_by,
         "oracle_preset": oracle_preset,
         "rewards": [round(r, 4) for r in rewards],
         "verdict": verdict,
-        "grok_response": final_text,
+        "entropy_bits": rl["entropy_bits"],
+        "confidence": rl["confidence"],
+        "floor_applied": rl["floor_correction_applied"],
+        "grok_override": grok.get("override") if grok else None,
+        "grok_reasoning": grok.get("reasoning") if grok else None,
+        "grok_override_reason": grok.get("override_reason") if grok else None,
     }
 
 
+# ---------------------------------------------------------------------------
+# Display helpers
 # ---------------------------------------------------------------------------
 # Display helpers
 # ---------------------------------------------------------------------------
@@ -258,31 +247,46 @@ _VERDICT_SYM = {
     "EXACT": "✓  EXACT HIT",
     "NEAR": "~  NEAR MISS  (±1 preset)",
     "MISS": "✗  MISS",
-    "PARSE_FAIL": "?  PARSE FAILED",
     "NO_ORACLE": "?  NO ORACLE DATA",
 }
 
 
 def _print_article_result(r: dict) -> None:
     print()
-    if "error" in r and r.get("verdict") not in ("PARSE_FAIL", "NO_ORACLE"):
+    if "error" in r and r.get("verdict") not in ("NO_ORACLE",):
         print(f"  ERROR: {r['error']}")
         return
 
+    rl_p = r.get("rl_preset")
     gp = r.get("grok_preset")
+    chosen = r.get("chosen_preset")
     op = r.get("oracle_preset")
     verdict = r.get("verdict", "?")
+    entropy = r.get("entropy_bits")
+    conf = r.get("confidence")
+    floor = r.get("floor_applied")
+
+    if rl_p is not None:
+        floor_tag = "  [floor applied]" if floor else ""
+        print(f"  RL model   : P{rl_p}  ({_PRESET_NAMES.get(rl_p, '?')})  "
+              f"conf={conf:.0%}  H={entropy:.2f}bits{floor_tag}")
 
     if gp is not None:
-        print(f"  Grok chose : P{gp}  ({_PRESET_NAMES.get(gp, '?')})")
+        override_tag = "  [OVERRIDE]" if r.get("grok_override") else "  [agrees with RL]"
+        print(f"  Grok 4.2   : P{gp}  ({_PRESET_NAMES.get(gp, '?')}){override_tag}")
+        if r.get("grok_override") and r.get("grok_override_reason"):
+            print(f"               reason: {r['grok_override_reason']}")
+        if r.get("grok_reasoning"):
+            print(f"               reasoning: {r['grok_reasoning']}")
     else:
-        print("  Grok chose : (could not parse preset from response)")
+        print(f"  Grok 4.2   : (skipped -- --rl-only or XAI_API_KEY not set)")
+
+    if chosen is not None:
+        print(f"  -> Chosen  : P{chosen}  (by {r.get('chosen_by', '?')})")
 
     if op is not None:
         rewards = r.get("rewards", [])
-        reward_str = "  ".join(
-            f"P{i}:{rewards[i]:.4f}" for i in range(len(rewards))
-        )
+        reward_str = "  ".join(f"P{i}:{rewards[i]:.4f}" for i in range(len(rewards)))
         print(f"  Oracle     : P{op}  ({_PRESET_NAMES[op]})")
         print(f"  Rewards    : {reward_str}")
     else:
@@ -290,43 +294,42 @@ def _print_article_result(r: dict) -> None:
 
     print(f"  Verdict    : {_VERDICT_SYM.get(verdict, verdict)}")
 
-    tail = (r.get("grok_response") or "")[-600:]
-    if tail:
-        indented = tail.replace("\n", "\n    ")
-        print(f"\n  Grok response (tail):\n    {indented}")
 
-
-def _print_summary(results: list[dict]) -> None:
+def _print_summary(results: list[dict], rl_only: bool) -> None:
+    mode = "RL-only" if rl_only else "RL + Grok 4.2"
     sep = "#" * 72
     print(f"\n{sep}")
-    print("  SUMMARY")
+    print(f"  SUMMARY  [{mode}]")
     print(sep)
-    print(f"  {'Article':<38} {'Split':<6} {'Grok':>4}  {'Oracle':>6}  Verdict")
-    print(f"  {'-'*65}")
+    print(f"  {'Article':<38} {'Split':<6} {'RL':>3}  {'Grok':>4}  {'Chosen':>6}  {'Oracle':>6}  Verdict")
+    print(f"  {'-'*68}")
 
     counts: dict[str, int] = {}
     for r in results:
+        rl_p = r.get("rl_preset")
         gp = r.get("grok_preset")
+        chosen = r.get("chosen_preset")
         op = r.get("oracle_preset")
         v = r.get("verdict", "ERROR")
         counts[v] = counts.get(v, 0) + 1
-        gp_str = f"P{gp}" if gp is not None else "?"
+        rl_str = f"P{rl_p}" if rl_p is not None else "?"
+        gp_str = f"P{gp}" if gp is not None else "-"
+        ch_str = f"P{chosen}" if chosen is not None else "?"
         op_str = f"P{op}" if op is not None else "?"
-        print(f"  {r['article']:<38} {r.get('split','?'):<6} {gp_str:>4}  →  {op_str:<4}  {v}")
+        print(f"  {r['article']:<38} {r.get('split','?'):<6} {rl_str:>3}  {gp_str:>4}  {ch_str:>6}  →  {op_str:<4}  {v}")
 
     total = len(results)
     exact = counts.get("EXACT", 0)
     near = counts.get("NEAR", 0)
     miss = counts.get("MISS", 0)
-    pfail = counts.get("PARSE_FAIL", 0)
     print(
         f"\n  Overall  ({total} articles): "
-        f"exact={exact}  near={near}  miss={miss}  parse_fail={pfail}"
+        f"exact={exact}  near={near}  miss={miss}"
     )
 
     test_results = [
         r for r in results
-        if r.get("split") == "TEST" and r.get("verdict") not in ("NO_ORACLE", "PARSE_FAIL", "ERROR")
+        if r.get("split") == "TEST" and r.get("verdict") not in ("NO_ORACLE", "ERROR")
     ]
     if test_results:
         t_exact = sum(1 for r in test_results if r["verdict"] == "EXACT")
@@ -355,14 +358,20 @@ def _save_results(results: list[dict], out_dir: Path) -> None:
 # ---------------------------------------------------------------------------
 async def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Test Grok's exploration planning decisions via the MCP tool."
+        description=(
+            "Test predict_exploration_preset via direct MCP tool call. "
+            "No LLM orchestration layer -- the tool makes the final decision internally."
+        )
     )
     parser.add_argument("--all", action="store_true", help="Run all articles (train + test)")
     parser.add_argument(
         "--articles", type=str,
         help="Comma-separated article names, e.g. 02_workflows_vs_agents,09_RAG",
     )
-    parser.add_argument("--no-thinking", action="store_true", help="Disable LLM extended thinking")
+    parser.add_argument(
+        "--rl-only", action="store_true",
+        help="Evaluate rl_recommendation.preset only (skip Grok 4.2 stage)",
+    )
     parser.add_argument("--save-json", action="store_true", help="Save per-article JSON results")
     args = parser.parse_args()
 
@@ -373,33 +382,31 @@ async def main() -> None:
     else:
         article_list = _DEFAULT_TEST_ARTICLES
 
-    thinking_enabled = not args.no_thinking
+    rl_only = args.rl_only
+    mode = "RL-only (--rl-only)" if rl_only else "RL + Grok 4.2"
 
-    print(f"\nGrok Planner Test")
-    print(f"  Model      : {settings.model_id}")
+    print(f"\nPreset Planner Test")
+    print(f"  Mode       : {mode}")
     print(f"  Articles   : {article_list}")
-    print(f"  Thinking   : {'ON' if thinking_enabled else 'OFF'}")
 
     async with app.run():
         agent = Agent(
             name="research_agent",
-            instruction=_SYSTEM_INSTRUCTION,
+            instruction="",  # no LLM loop -- direct tool calls only
             server_names=["research_agent"],
         )
 
         async with agent:
             all_tools, _, _ = await get_capabilities_from_mcp_client(agent)
-
-            # Restrict to only the RL meta-reasoner tool — no accidental scraping
-            tools = [t for t in all_tools if t.name == "predict_exploration_preset"]
-            if not tools:
+            tool_names = [t.name for t in all_tools]
+            if "predict_exploration_preset" not in tool_names:
                 print(
                     "ERROR: predict_exploration_preset tool not found on the MCP server.\n"
                     "Make sure the server is up to date and the tool is registered."
                 )
                 return
 
-            print(f"  Tool       : {tools[0].name} (only tool exposed to Grok)\n")
+            print(f"  Tool       : predict_exploration_preset (direct call, no agent loop)\n")
 
             results = []
             for article in article_list:
@@ -408,11 +415,11 @@ async def main() -> None:
                 print(f"  Article: {article}  [{split}]")
                 print("=" * 72)
 
-                result = await run_article(article, agent, tools, thinking_enabled)
+                result = await run_article(article, agent, rl_only)
                 results.append(result)
                 _print_article_result(result)
 
-    _print_summary(results)
+    _print_summary(results, rl_only)
 
     if args.save_json:
         out_dir = _AGENT_DIR / "grok_planner_test_results"

@@ -62,9 +62,15 @@ dominating the vote.
 from __future__ import annotations
 
 import asyncio
+import json as _json
 import logging
 import math
+import re
+import subprocess
 import threading
+import time
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Any, Dict
 
@@ -73,18 +79,23 @@ from ..config.settings import settings
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Lazy singleton — model loads once on first tool call (~3 min on GPU)
+# Subprocess inference server — infer.py --serve via training venv (has torch)
 # ---------------------------------------------------------------------------
-_selector = None
-_selector_lock = threading.Lock()
-
 # parents[3] = research_agent_local/  (tools is 3 levels below: mcp_server/src/tools/)
 _TRAINING_DIR = Path(__file__).resolve().parents[3] / "training"
+_TRAINING_PYTHON = _TRAINING_DIR / ".venv" / "bin" / "python"
+_INFER_SCRIPT = _TRAINING_DIR / "infer.py"
+_INFER_PORT = 8787
+_INFER_STARTUP_TIMEOUT = 1800  # seconds — Qwen3-4B NF4 over /mnt/f/ can take >5 min
+
+_infer_proc: subprocess.Popen | None = None
+_infer_lock = threading.Lock()
 
 # ---------------------------------------------------------------------------
 # Digest generation constants (mirrors generate_digests.py)
 # ---------------------------------------------------------------------------
 _DIGEST_MODEL = "grok-4-1-fast-reasoning"
+_PLANNER_MODEL = "grok-4.20-0309-reasoning"  # Grok 4.2 reasoning — final planning decision
 _COMPRESS_CONCURRENCY = 5
 _MAX_SOURCE_CHARS = 80_000
 _SKIP_SECTION_KEYWORDS = {
@@ -312,24 +323,146 @@ _CONFIDENCE_STRONG = 0.70
 _CONFIDENCE_MODERATE = 0.40
 
 
-def _get_selector():
-    global _selector
-    if _selector is None:
-        with _selector_lock:
-            if _selector is None:
-                import sys
-                sys.path.insert(0, str(_TRAINING_DIR))
-                from infer import ExplorationStrategySelector  # type: ignore[import]  # noqa: PLC0415
-                logger.info("Loading RL model (first call — ~3 min on GPU)…")
-                _selector = ExplorationStrategySelector()
-                logger.info("RL model loaded and cached.")
-    return _selector
+# Collects stderr lines from the infer subprocess so the pipe never blocks.
+_infer_stderr_lines: list[str] = []
+_infer_stderr_lock = threading.Lock()
+
+
+def _drain_stderr(proc: subprocess.Popen) -> None:
+    """Background thread: read stderr line-by-line, log each line, keep last 200."""
+    if proc.stderr is None:
+        return
+    for raw in proc.stderr:
+        line = raw.decode(errors="replace").rstrip()
+        logger.debug("[infer-server] %s", line)
+        with _infer_stderr_lock:
+            _infer_stderr_lines.append(line)
+            if len(_infer_stderr_lines) > 200:
+                _infer_stderr_lines.pop(0)
+
+
+def _ensure_infer_server() -> str:
+    """Start the infer.py HTTP server subprocess if not already running.
+
+    Uses the training venv's Python (which has torch/transformers installed).
+    Blocks until the /health endpoint responds or the timeout is reached.
+    Returns the server base URL.
+
+    stderr is drained by a background thread to prevent pipe-buffer stalls
+    (bitsandbytes / transformers can emit hundreds of KB during model load).
+    """
+    global _infer_proc
+    base_url = f"http://127.0.0.1:{_INFER_PORT}"
+    health_url = f"{base_url}/health"
+
+    # Fast path — already running
+    if _infer_proc is not None and _infer_proc.poll() is None:
+        return base_url
+
+    with _infer_lock:
+        # Re-check after acquiring lock
+        if _infer_proc is not None and _infer_proc.poll() is None:
+            return base_url
+
+        logger.info(
+            "Starting infer.py HTTP server (this will load the model — "
+            "~5-10 min on first call over /mnt/f/)…"
+        )
+        with _infer_stderr_lock:
+            _infer_stderr_lines.clear()
+
+        _infer_proc = subprocess.Popen(
+            [
+                str(_TRAINING_PYTHON),
+                str(_INFER_SCRIPT),
+                "--serve",
+                "--port", str(_INFER_PORT),
+            ],
+            cwd=str(_TRAINING_DIR),
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+        )
+
+        # Drain stderr in a background thread so the pipe buffer never fills.
+        _stderr_thread = threading.Thread(
+            target=_drain_stderr, args=(_infer_proc,), daemon=True
+        )
+        _stderr_thread.start()
+
+        # Poll /health until ready or timeout
+        deadline = time.monotonic() + _INFER_STARTUP_TIMEOUT
+        last_exc: Exception | None = None
+        while time.monotonic() < deadline:
+            if _infer_proc.poll() is not None:
+                with _infer_stderr_lock:
+                    stderr = "\n".join(_infer_stderr_lines)
+                raise RuntimeError(
+                    f"Infer server process exited unexpectedly during startup.\n{stderr}"
+                )
+            try:
+                with urllib.request.urlopen(health_url, timeout=2) as resp:
+                    if resp.status == 200:
+                        logger.info("Infer server is ready.")
+                        return base_url
+            except Exception as exc:  # noqa: BLE001
+                last_exc = exc
+            time.sleep(2)
+
+        with _infer_stderr_lock:
+            stderr_tail = "\n".join(_infer_stderr_lines[-40:])
+        raise RuntimeError(
+            f"Infer server did not become ready within {_INFER_STARTUP_TIMEOUT}s. "
+            f"Last error: {last_exc}\n"
+            f"Last stderr output:\n{stderr_tail}"
+        )
+
+
+def _call_infer_server(digest: str) -> tuple[int, list[float], list[dict], dict]:
+    """Send the digest to the running infer server and return structured results."""
+    base_url = _ensure_infer_server()
+    payload = _json.dumps({"digest": digest, "verbose": True}).encode()
+    req = urllib.request.Request(
+        f"{base_url}/predict",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    # Inference can take several minutes for large digests
+    with urllib.request.urlopen(req, timeout=600) as resp:
+        data = _json.loads(resp.read())
+    if "error" in data:
+        raise RuntimeError(f"Infer server returned error: {data['error']}")
+    preset: int = data["preset"]
+    probs: list[float] = data["probs"]
+    sections: list[dict] = data.get("sections", [])
+    corrections: dict = data.get("corrections", {})
+    return preset, probs, sections, corrections
 
 
 def _entropy(probs: list[float]) -> float:
     """Shannon entropy in bits: H = -∑ p·log₂(p+ε)."""
     eps = 1e-12
     return -sum(p * math.log2(p + eps) for p in probs)
+
+
+def _extract_gap_profile(digest: str) -> str:
+    """
+    Extract the '## 3. Overall Gap Profile' section from the exploitation digest.
+
+    Returns the section text, or an empty string if the section is absent
+    (e.g. the digest was malformed or not yet generated).
+    """
+    marker = "## 3. Overall Gap Profile"
+    idx = digest.find(marker)
+    if idx == -1:
+        return ""
+    # Take everything from the marker to the next top-level ## heading (if any)
+    rest = digest[idx:]
+    # Find the next ## heading after the marker itself
+    next_heading = rest.find("\n## ", len(marker))
+    if next_heading != -1:
+        return rest[:next_heading].strip()
+    return rest.strip()
 
 
 def _top2(probs: list[float]) -> list[list]:
@@ -363,6 +496,164 @@ def _guidance(preset: int, confidence: float, entropy: float, floor_applied: boo
         )
 
     return " ".join(parts)
+
+
+# ---------------------------------------------------------------------------
+# Grok 4.2 final planning call
+# ---------------------------------------------------------------------------
+_PLANNER_SYSTEM = """\
+You are an expert research strategist deciding how many rounds of autonomous web \
+exploration to run before writing an article. You will be shown the RL model's \
+output, the article guideline, and a coverage gap profile from the exploitation digest.
+
+Your job: make the final exploration-preset decision.
+
+Preset meanings (P0–P5):
+  P0 – No exploration   (coverage is already complete)
+  P1 – 1 round, balanced
+  P2 – 2 rounds: balanced → depth
+  P3 – 2 rounds: depth → breadth
+  P4 – 3 rounds: balanced → depth → breadth
+  P5 – 3 rounds: depth → breadth → depth
+
+Rules:
+  1. Begin by explicitly restating the RL model's recommendation and your \
+agreement or disagreement.
+  2. Use the article guideline to understand topic complexity and intended depth.
+  3. Use the gap profile to quantify which sections need more coverage.
+  4. Only override the RL model if the article guideline or gap profile provides \
+a concrete reason.
+  5. Your final output MUST be valid JSON (no prose after the JSON block)."""
+
+_PLANNER_USER_TEMPLATE = """\
+## RL Model Output
+
+Aggregate recommendation: P{preset} — {name}
+Confidence: {confidence:.0%} | Entropy: {entropy:.2f} bits
+Floor correction applied: {floor_applied}
+RL guidance: {guidance}
+
+### Per-Section Signals
+{section_table}
+
+---
+
+## Article Guideline
+
+<article_guideline>
+{article_guideline}
+</article_guideline>
+
+---
+
+## Coverage Gap Profile (from Exploitation Digest)
+
+<gap_profile>
+{digest_gap_profile}
+</gap_profile>
+
+---
+
+## Task
+
+First, explicitly state whether you agree with the RL model's recommendation \
+of P{preset} and why (1-2 sentences). Then output ONLY the following JSON block \
+(no additional prose after it):
+
+```json
+{{
+  "preset": <integer 0-5>,
+  "name": "<preset_name>",
+  "reasoning": "<2-4 sentences: which evidence drove your final decision>",
+  "override": <true|false>,
+  "override_reason": "<why you deviated from the RL model, or null if you agree>"
+}}
+```"""
+
+
+async def _call_grok_planner(
+    api_key: str,
+    base_url: str,
+    rl_preset: int,
+    rl_confidence: float,
+    rl_entropy: float,
+    floor_applied: bool,
+    guidance: str,
+    section_signals: list[dict],
+    article_guideline: str,
+    digest_gap_profile: str,
+) -> dict:
+    """Call Grok 4.2 to produce the final exploration-preset decision.
+
+    Grok sees the RL model's full output (aggregate recommendation, per-section
+    signals, confidence, entropy) together with the article guideline and the
+    structured gap profile extracted from the exploitation digest.
+
+    Returns a dict with keys: preset, name, reasoning, override, override_reason.
+    Falls back to the RL recommendation on any parsing failure.
+    """
+    from openai import AsyncOpenAI  # noqa: PLC0415
+
+    client = AsyncOpenAI(api_key=api_key, base_url=base_url)
+
+    section_table = "\n".join(
+        f"  {i + 1}. [{s['title']}]  P{s['preset']} ({s['name']})  top2={s['top2']}"
+        for i, s in enumerate(section_signals)
+    ) or "  (no section signals)"
+
+    user_msg = _PLANNER_USER_TEMPLATE.format(
+        preset=rl_preset,
+        name=_PRESET_NAMES[rl_preset].replace("_", " "),
+        confidence=rl_confidence,
+        entropy=rl_entropy,
+        floor_applied=floor_applied,
+        guidance=guidance,
+        section_table=section_table,
+        article_guideline=article_guideline or "(not available)",
+        digest_gap_profile=digest_gap_profile or "(not available)",
+    )
+
+    response = await client.chat.completions.create(
+        model=_PLANNER_MODEL,
+        messages=[
+            {"role": "system", "content": _PLANNER_SYSTEM},
+            {"role": "user", "content": user_msg},
+        ],
+        max_tokens=4096,
+    )
+    raw = (response.choices[0].message.content or "").strip()
+
+    # Extract JSON — fenced code block first, then bare object
+    m = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.DOTALL)
+    json_str = m.group(1) if m else ""
+    if not json_str:
+        m = re.search(r"\{[^{}]*\}", raw, re.DOTALL)
+        json_str = m.group(0) if m else ""
+
+    try:
+        parsed = _json.loads(json_str)
+        parsed_preset = int(parsed["preset"])
+        if parsed_preset not in range(_NUM_PRESETS):
+            raise ValueError(f"preset {parsed_preset} out of range 0-{_NUM_PRESETS - 1}")
+        return {
+            "preset": parsed_preset,
+            "name": _PRESET_NAMES[parsed_preset].replace("_", " "),
+            "reasoning": parsed.get("reasoning", ""),
+            "override": bool(parsed.get("override", parsed_preset != rl_preset)),
+            "override_reason": parsed.get("override_reason"),
+        }
+    except Exception:
+        logger.warning(
+            "Grok planner response could not be parsed as JSON; "
+            "defaulting to RL recommendation. raw=%s", raw[:300]
+        )
+        return {
+            "preset": rl_preset,
+            "name": _PRESET_NAMES[rl_preset].replace("_", " "),
+            "reasoning": "JSON parsing failed; using RL model recommendation.",
+            "override": False,
+            "override_reason": None,
+        }
 
 
 async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, Any]:
@@ -400,6 +691,14 @@ async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, 
                                  floor_correction_applied
           section_signals      – per-section list of preset, name, top2 probs
           guidance             – one-sentence synthesis for the client LLM
+          article_guideline    – full text of article_guideline.md (article intent,
+                                 section structure, golden/exploitation source list)
+          digest_gap_profile   – "## 3. Overall Gap Profile" section from the
+                                 exploitation digest (structured gap summary used
+                                 by the RL model to make its recommendation)
+          grok_recommendation  – Grok 4.2's final planning decision: preset, name,
+                                 reasoning, override (bool), override_reason. None
+                                 if XAI_API_KEY is unset or the call fails.
           message              – human-readable summary
     """
     research_path = Path(research_directory)
@@ -442,17 +741,23 @@ async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, 
         except Exception as exc:
             return {"status": "error", "message": f"Failed to read digest: {exc}"}
 
-    try:
-        selector = _get_selector()
-    except Exception as exc:
-        logger.exception("Failed to load RL model")
-        return {"status": "error", "message": f"RL model failed to load: {exc}"}
+    # --- Supplementary context for the client LLM ---
+    guideline_path = research_path / "article_guideline.md"
+    article_guideline = (
+        guideline_path.read_text(encoding="utf-8", errors="replace")
+        if guideline_path.exists()
+        else ""
+    )
+    digest_gap_profile = _extract_gap_profile(digest)
 
     try:
-        preset, agg_probs, section_details, meta = selector.predict_article_verbose(digest)
+        loop = asyncio.get_running_loop()
+        preset, agg_probs, section_details, meta = await loop.run_in_executor(
+            None, _call_infer_server, digest
+        )
     except Exception as exc:
-        logger.exception("Inference error")
-        return {"status": "error", "message": f"Inference failed: {exc}"}
+        logger.exception("RL inference failed")
+        return {"status": "error", "message": f"RL inference failed: {exc}"}
 
     # --- Derived signals ---
     confidence = round(agg_probs[preset], 4)
@@ -472,6 +777,32 @@ async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, 
 
     guidance_str = _guidance(preset, confidence, h, floor_applied)
 
+    # --- Grok 4.2 final planning decision ---
+    grok_recommendation: dict | None = None
+    if settings.xai_api_key is not None:
+        try:
+            grok_recommendation = await _call_grok_planner(
+                api_key=settings.xai_api_key.get_secret_value(),
+                base_url="https://api.x.ai/v1",
+                rl_preset=preset,
+                rl_confidence=confidence,
+                rl_entropy=h,
+                floor_applied=floor_applied,
+                guidance=guidance_str,
+                section_signals=section_signals,
+                article_guideline=article_guideline,
+                digest_gap_profile=digest_gap_profile,
+            )
+            logger.info(
+                "Grok planner chose P%d (override=%s)",
+                grok_recommendation["preset"],
+                grok_recommendation["override"],
+            )
+        except Exception:
+            logger.warning("Grok planner call failed; falling back to RL recommendation.")
+    else:
+        logger.warning("XAI_API_KEY not set; skipping Grok 4.2 planner call.")
+
     result = {
         "status": "success",
         "digest_generated": digest_generated,
@@ -484,6 +815,9 @@ async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, 
         },
         "section_signals": section_signals,
         "guidance": guidance_str,
+        "grok_recommendation": grok_recommendation,
+        "article_guideline": article_guideline,
+        "digest_gap_profile": digest_gap_profile,
         "message": (
             f"RL model recommends preset P{preset} "
             f"({_PRESET_NAMES[preset].replace('_', ' ')}) "

@@ -135,19 +135,29 @@ If the user doesn't provide a research directory, you should ask for it before e
     3.3. Run the "run_tavily_research" tool with the new queries in NEXT_QUERIES_FILE. This tool executes the queries with
     Tavily and appends the results to the TAVILY_RESULTS_FILE within RESEARCH_OUTPUT_DIRECTORY.
 
-3.4. Exploration Planning (RL Meta-Reasoner):
+3.4. Exploration Planning (RL Meta-Reasoner + Grok 4.2 Planner):
 
     After completing all 3 exploitation rounds, run the "predict_exploration_preset" tool with the research
-    directory. The tool analyses the exploitation sources and produces structured RL signals that recommend
-    how many exploration rounds to run and in what order.
+    directory. The tool runs a two-stage pipeline internally:
+      Stage 1 — Qwen3-4B RL model: infers a per-section preset vote from the exploitation digest,
+                 aggregates via weighted vote, and applies an entropy-gated floor correction.
+      Stage 2 — Grok 4.2 reasoning model: reviews the RL output together with the article guideline
+                 and the digest gap profile, then either confirms or overrides the RL preset and
+                 returns a structured JSON decision.
 
     The tool returns:
-    - rl_recommendation.preset (P0–P5) — the aggregate recommended strategy
+    - grok_recommendation.preset (P0–P5) — the authoritative preset chosen by Grok 4.2 (null if
+      XAI_API_KEY is not set or the Grok call fails, in which case fall back to rl_recommendation)
+    - grok_recommendation.name — human-readable name for the preset
+    - grok_recommendation.reasoning — Grok 4.2's one-sentence justification
+    - grok_recommendation.override — True if Grok 4.2 disagreed with the RL model
+    - grok_recommendation.override_reason — reason for the override (null when override is False)
+    - rl_recommendation.preset (P0–P5) — the Qwen3-4B RL model's aggregate recommendation
     - rl_recommendation.confidence — probability mass on the chosen preset (0.0–1.0)
     - rl_recommendation.entropy_bits — spread of the distribution (lower = more confident)
     - rl_recommendation.floor_correction_applied — True if a deep-section override fired
     - section_signals — per-section preset, top-2 probs, and preset name
-    - guidance — one-sentence synthesis
+    - guidance — one-sentence synthesis from the RL stage
 
     Preset mapping (use this to configure step 4):
       P0 → Skip the exploration phase entirely (step 4 is not run)
@@ -157,21 +167,25 @@ If the user doesn't provide a research directory, you should ask for it before e
       P4 → 3 rounds: round 1 balanced, round 2 depth-focused, round 3 breadth-focused
       P5 → 3 rounds: round 1 depth-focused, round 2 breadth-focused, round 3 depth-focused
 
-    **Default behaviour**: Follow the RL model's recommended preset. Use the section_signals
-    breakdown to guide the "focus" parameter of each exploration round in step 4 (target the
-    weakest sections flagged in section_signals for depth/breadth rounds).
+    **Default behaviour**: Use grok_recommendation.preset as the authoritative preset. If
+    grok_recommendation is null (Grok call unavailable), fall back to rl_recommendation.preset.
+    Use the section_signals breakdown to guide the "focus" parameter of each exploration round
+    in step 4 (target the weakest sections flagged in section_signals for depth/breadth rounds).
+    If grok_recommendation.override is True, note the override_reason — it may highlight specific
+    article sections that need extra attention.
 
-    **Override**: The user may specify their own round count and focus at any time. If the user
-    says "run 2 rounds, focus on breadth" or any equivalent, skip the preset and follow the
-    user's instructions instead.
+    **User override**: The user may specify their own round count and focus at any time. If the
+    user says "run 2 rounds, focus on breadth" or any equivalent, skip the tool's preset and
+    follow the user's instructions instead.
 
-    **When to override the RL model on your own**:
-    - entropy_bits > 1.5 → model is uncertain; rely on section_signals individually and apply
-      your own judgement rather than the aggregate preset
-    - floor_correction_applied is True → focus the additional rounds on the sections that
-      triggered the floor (the highest-preset sections in section_signals)
+    **When to apply your own judgement on top**:
+    - grok_recommendation is null AND rl_recommendation.entropy_bits > 1.5 → RL model is
+      uncertain; rely on section_signals individually rather than the aggregate preset
+    - rl_recommendation.floor_correction_applied is True → if grok_recommendation did not
+      already address it, focus additional rounds on the sections that triggered the floor
+      (the highest-preset sections in section_signals)
     - The article guideline clearly calls for a specific depth of research that contradicts
-      the RL recommendation
+      both the RL and Grok recommendations
 
 4. Exploration Phase, repeat the following research loop for an indefinite number of rounds with a configurable maximum number of {settings.maximum_exploration_rounds} rounds:
 
