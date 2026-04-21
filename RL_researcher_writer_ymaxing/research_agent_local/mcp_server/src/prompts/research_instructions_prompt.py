@@ -135,9 +135,50 @@ If the user doesn't provide a research directory, you should ask for it before e
     3.3. Run the "run_tavily_research" tool with the new queries in NEXT_QUERIES_FILE. This tool executes the queries with
     Tavily and appends the results to the TAVILY_RESULTS_FILE within RESEARCH_OUTPUT_DIRECTORY.
 
+3.4. Exploration Planning (RL Meta-Reasoner):
+
+    After completing all 3 exploitation rounds, run the "predict_exploration_preset" tool with the research
+    directory. The tool analyses the exploitation sources and produces structured RL signals that recommend
+    how many exploration rounds to run and in what order.
+
+    The tool returns:
+    - rl_recommendation.preset (P0–P5) — the aggregate recommended strategy
+    - rl_recommendation.confidence — probability mass on the chosen preset (0.0–1.0)
+    - rl_recommendation.entropy_bits — spread of the distribution (lower = more confident)
+    - rl_recommendation.floor_correction_applied — True if a deep-section override fired
+    - section_signals — per-section preset, top-2 probs, and preset name
+    - guidance — one-sentence synthesis
+
+    Preset mapping (use this to configure step 4):
+      P0 → Skip the exploration phase entirely (step 4 is not run)
+      P1 → 1 round, balanced focus
+      P2 → 2 rounds: round 1 balanced, round 2 depth-focused
+      P3 → 2 rounds: round 1 depth-focused, round 2 breadth-focused
+      P4 → 3 rounds: round 1 balanced, round 2 depth-focused, round 3 breadth-focused
+      P5 → 3 rounds: round 1 depth-focused, round 2 breadth-focused, round 3 depth-focused
+
+    **Default behaviour**: Follow the RL model's recommended preset. Use the section_signals
+    breakdown to guide the "focus" parameter of each exploration round in step 4 (target the
+    weakest sections flagged in section_signals for depth/breadth rounds).
+
+    **Override**: The user may specify their own round count and focus at any time. If the user
+    says "run 2 rounds, focus on breadth" or any equivalent, skip the preset and follow the
+    user's instructions instead.
+
+    **When to override the RL model on your own**:
+    - entropy_bits > 1.5 → model is uncertain; rely on section_signals individually and apply
+      your own judgement rather than the aggregate preset
+    - floor_correction_applied is True → focus the additional rounds on the sections that
+      triggered the floor (the highest-preset sections in section_signals)
+    - The article guideline clearly calls for a specific depth of research that contradicts
+      the RL recommendation
+
 4. Exploration Phase, repeat the following research loop for an indefinite number of rounds with a configurable maximum number of {settings.maximum_exploration_rounds} rounds:
 
-    For each of the {settings.maximum_exploration_rounds} exploitation rounds:
+    The number of rounds and the per-round focus are determined by the preset chosen in step 3.4
+    (or by the user's explicit override if provided). If preset is P0, skip this step entirely.
+
+    For each exploration round:
 
     4.1. Run "generate_next_complementary_queries_tool" (where you should choose the value for the arguments "focus" and/or "depth_vs_breadth_ratio") 
         to analyzes the article guidelines, already-scraped content, and existing Tavily results. The tool dives deeper into the content already covered 
