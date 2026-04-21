@@ -54,6 +54,9 @@ class Settings(BaseSettings):
     firecrawl_api_key: SecretStr | None = Field(
         default=None, alias="FIRECRAWL_API_KEY", description="The API key for the Firecrawl API"
     )
+    firecrawl_api_key_2: SecretStr | None = Field(
+        default=None, alias="FIRECRAWL_API_KEY_2", description="The second API key for the Firecrawl API"
+    )
     github_token: SecretStr | None = Field(default=None, alias="GITHUB_TOKEN", description="The GitHub token")
     xai_api_key: SecretStr | None = Field(
         default=None, alias="XAI_API_KEY", description="The API key for the xAI (Grok) API"
@@ -133,7 +136,7 @@ class Settings(BaseSettings):
                 "params": {
                     "max_results": 5,
                     "search_depth": "advanced",
-                    "include_raw_content": True,
+                    "include_raw_content": False,  # raw page HTML is fetched separately by scrape_research_urls_tool; enabling this bloats the LLM prompt 20-50x with no quality gain
                     "include_answer": True,
                     # add any other Tavily params you like (time_range, include_images, etc.)
                 },

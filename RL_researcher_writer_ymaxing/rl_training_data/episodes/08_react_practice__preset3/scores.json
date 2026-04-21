@@ -1,0 +1,11 @@
+{
+  "ground_truth_core_content": 0.545455,
+  "ground_truth_flow": 0.272727,
+  "ground_truth_structure": 0.181818,
+  "ground_truth_depth_enhancement": 0.363636,
+  "ground_truth_breadth_enhancement": 0.181818,
+  "ground_truth_core_preservation": 0.818182,
+  "user_intent_guideline_adherence": 1.0,
+  "user_intent_research_anchoring": 1.0,
+  "user_intent_golden_source_priority": 1.0
+}

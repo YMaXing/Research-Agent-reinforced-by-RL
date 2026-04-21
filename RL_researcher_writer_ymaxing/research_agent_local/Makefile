@@ -45,3 +45,25 @@ run-batch-two-variants-ci:
 # Dry-run: list samples that would be processed without running anything
 run-batch-dry-run:
 	uv run --project mcp_client python -m mcp_client.src.batch_runner $(_BATCH_FLAGS) --dry-run
+
+# --------------------------------------------------------------------------- #
+# RL data generator (Phase 1)
+# Usage examples:
+#   make run-rl-gen-dry                                    # show plan, no execution
+#   make run-rl-gen                                        # full pipeline (all articles × all presets)
+#   make run-rl-gen ARTICLES="02_workflows_vs_agents" PRESETS="0 1"
+# --------------------------------------------------------------------------- #
+
+ARTICLES ?=
+PRESETS  ?=
+
+_ARTICLES_FLAG = $(foreach a,$(ARTICLES),--articles $(a))
+_PRESETS_FLAG  = $(foreach p,$(PRESETS),--presets $(p))
+_RL_FLAGS      = $(if $(ARTICLES),$(_ARTICLES_FLAG),) $(if $(PRESETS),$(_PRESETS_FLAG),)
+
+run-rl-gen-dry:
+	uv run --project mcp_server python rl_data_generator.py --dry-run $(_RL_FLAGS)
+
+run-rl-gen:
+	uv run --project mcp_server python rl_data_generator.py $(_RL_FLAGS)
+

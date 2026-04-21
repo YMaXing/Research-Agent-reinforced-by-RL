@@ -17,6 +17,17 @@ class Settings(BaseSettings):
 
     GOOGLE_API_KEY: SecretStr | None = Field(default=None, alias="GOOGLE_API_KEY", description="The API key for the Gemini API.")
 
+    # Multiple comma-separated Gemini keys for round-robin rotation to multiply TPM quota.
+    # Example: GOOGLE_API_KEYS=AIza...key1,AIza...key2,AIza...key3
+    # Falls back to GOOGLE_API_KEY if not set.
+    GOOGLE_API_KEYS: str | None = Field(
+        default=None, alias="GOOGLE_API_KEYS", description="Comma-separated Google API keys for round-robin rotation."
+    )
+
+    # --- xAI ---
+
+    XAI_API_KEY: SecretStr | None = Field(default=None, alias="XAI_API_KEY", description="The API key for the xAI API.")
+
     # --- Opik ---
 
     OPIK_ENABLED: bool = Field(default=False, alias="OPIK_ENABLED", description="Whether to use Opik for monitoring and logging.")

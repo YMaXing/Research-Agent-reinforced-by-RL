@@ -9,6 +9,7 @@ from brown.config_app import get_app_config
 from brown.entities.guidelines import ArticleGuideline
 from brown.entities.research import Research
 from brown.models import FakeModel
+from brown.utils.rate_limiter import llm_throttle
 
 from .base import Node, ToolCall, Toolkit
 
@@ -197,7 +198,7 @@ If no explicit media requirements are found in the guideline, respond with:
             "Analyze the article guideline and research provided in the system prompt, "
             "then call the appropriate tools for each identified media item requirement."
         )
-        user_input_content = self.build_user_input_content(inputs=[user_instruction], image_urls=self.research.image_urls)
+        user_input_content = await self.abuild_user_input_content(inputs=[user_instruction], image_urls=self.research.image_urls)
         inputs = [
             {
                 "role": "system",
@@ -208,7 +209,8 @@ If no explicit media requirements are found in the guideline, respond with:
                 "content": user_input_content,
             },
         ]
-        response = await self.model.ainvoke(inputs)
+        async with llm_throttle():
+            response = await self.model.ainvoke(inputs)
 
         if isinstance(response, AIMessage) and response.tool_calls:
             jobs = cast(list[ToolCall], response.tool_calls)

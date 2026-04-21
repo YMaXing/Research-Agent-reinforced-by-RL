@@ -7,6 +7,7 @@ from typing import List
 from urllib.parse import urlparse
 
 from firecrawl import AsyncFirecrawl
+from firecrawl.v2.utils.error_handler import WebsiteNotSupportedError
 from langchain.chat_models.base import BaseChatModel
 from arxiv2md import ingest_paper
 
@@ -68,6 +69,11 @@ async def scrape_url(url: str, firecrawl_app: AsyncFirecrawl) -> dict:
             title = res.metadata.title if res and res.metadata and res.metadata.title else "N/A"
             markdown_content = res.markdown if res and res.markdown else ""
             return {"url": url, "title": title, "markdown": markdown_content, "success": True}
+        except WebsiteNotSupportedError as e:
+            # Unsupported sites (e.g. x.com/Twitter) will never succeed — skip immediately.
+            msg = f"⚠️ Skipping unsupported URL {url}: {e}"
+            logger.warning(msg)
+            return {"url": url, "title": "Website Not Supported", "markdown": msg, "success": False}
         except asyncio.TimeoutError:
             error_msg = f"⚠️ Firecrawl request timed out after {timeout_seconds}s for {url}"
             logger.warning(f"{error_msg} (attempt {attempt + 1}/{max_retries})")
@@ -133,8 +139,11 @@ def arxiv_html_url(arxiv_id: str) -> str:
 
 # Tiny private helper for fallback (keeps the main function clean)
 async def _fallback_firecrawl_scrape(url: str) -> dict:
-    """Fallback using a fresh Firecrawl instance."""
-    firecrawl_app = AsyncFirecrawl(api_key=settings.firecrawl_api_key.get_secret_value())
+    """Fallback using a fresh Firecrawl instance (uses first available key)."""
+    key = settings.firecrawl_api_key or settings.firecrawl_api_key_2
+    if key is None:
+        raise ValueError("No Firecrawl API key configured")
+    firecrawl_app = AsyncFirecrawl(api_key=key.get_secret_value())
     return await scrape_url(url, firecrawl_app)
 
 
@@ -321,19 +330,33 @@ async def scrape_urls_concurrently(
     Returns:
         List of scraping results, each containing the scraped data or error information
     """
-    # Initialize clients
-    firecrawl_app = AsyncFirecrawl(api_key=settings.firecrawl_api_key.get_secret_value())
+    # Build one AsyncFirecrawl client per available API key (1 or 2).
+    # Each client gets its own semaphore so their rate limits stay independent.
+    # URLs are distributed round-robin across clients.
+    api_keys = [
+        k for k in [settings.firecrawl_api_key, settings.firecrawl_api_key_2]
+        if k is not None
+    ]
+    if not api_keys:
+        raise ValueError("No Firecrawl API key configured (set FIRECRAWL_API_KEY in .env)")
+
+    clients = [AsyncFirecrawl(api_key=k.get_secret_value()) for k in api_keys]
+    semaphores = [asyncio.Semaphore(concurrency_limit) for _ in clients]
+    n_clients = len(clients)
+
     chat_model = get_chat_model(settings.scraping_model)
-    logger.info(f"Starting scraping of {len(other_urls)} URL(s) with a concurrency limit of {concurrency_limit}...")
+    logger.info(
+        f"Starting scraping of {len(other_urls)} URL(s) with {n_clients} Firecrawl key(s), "
+        f"concurrency limit {concurrency_limit} per key..."
+    )
 
-    semaphore = asyncio.Semaphore(concurrency_limit)
-
-    async def scrape_with_semaphore(url: str, guidelines: str) -> dict:
-        async with semaphore:
-            return await scrape_and_clean(url, guidelines, firecrawl_app, chat_model)
+    async def scrape_with_semaphore(url: str, idx: int) -> dict:
+        client_idx = idx % n_clients
+        async with semaphores[client_idx]:
+            return await scrape_and_clean(url, article_guidelines, clients[client_idx], chat_model)
 
     # Process URLs concurrently
-    tasks = [scrape_with_semaphore(url, article_guidelines) for url in other_urls]
+    tasks = [scrape_with_semaphore(url, i) for i, url in enumerate(other_urls)]
     completed_results = await asyncio.gather(*tasks, return_exceptions=True)
 
     # Process results and handle exceptions

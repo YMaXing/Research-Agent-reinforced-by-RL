@@ -10,6 +10,7 @@ from brown.config_app import get_app_config
 from brown.entities.exceptions import InvalidOutputTypeException
 from brown.entities.media_items import MermaidDiagram
 from brown.models import FakeModel
+from brown.utils.rate_limiter import llm_throttle
 
 from .base import ToolNode
 
@@ -410,7 +411,8 @@ styling. Remember: ALWAYS use double quotes around ALL labels, NEVER use semicol
 
         async def _invoke_once(prompt_content: str) -> GeneratedMermaidDiagram | None:
             try:
-                result = await self.model.ainvoke([{"role": "user", "content": prompt_content}])
+                async with llm_throttle():
+                    result = await self.model.ainvoke([{"role": "user", "content": prompt_content}])
                 if not isinstance(result, GeneratedMermaidDiagram):
                     raise InvalidOutputTypeException(GeneratedMermaidDiagram, type(result))
                 return result

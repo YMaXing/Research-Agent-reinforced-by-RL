@@ -11,6 +11,7 @@ from brown.entities.profiles import ArticleProfiles
 from brown.entities.research import Research
 from brown.entities.reviews import ArticleReviews, SelectedTextReviews
 from brown.models import FakeModel
+from brown.utils.rate_limiter import llm_throttle
 
 from .base import Node, Toolkit
 
@@ -943,7 +944,7 @@ following all the necessary instructions from the profiles and guidelines above.
             article_examples=self.article_examples.to_context(),
             _verification_checklist=self._verification_checklist,
         )
-        user_input_content = self.build_user_input_content(inputs=[system_prompt], image_urls=self.research.image_urls)
+        user_input_content = await self.abuild_user_input_content(inputs=[system_prompt], image_urls=self.research.image_urls)
         inputs = [
             {
                 "role": "user",
@@ -974,7 +975,8 @@ following all the necessary instructions from the profiles and guidelines above.
                     },
                 ]
             )
-        written_output = await self.model.ainvoke(inputs)
+        async with llm_throttle():
+            written_output = await self.model.ainvoke(inputs)
         if not isinstance(written_output, AIMessage):
             raise InvalidOutputTypeException(AIMessage, type(written_output))
         written_output = cast(str, written_output.text)
@@ -1013,7 +1015,8 @@ following all the necessary instructions from the profiles and guidelines above.
                 "content": user_input_content,
             }
         ]
-        written_output = await self.model.ainvoke(inputs)
+        async with llm_throttle():
+            written_output = await self.model.ainvoke(inputs)
         if not isinstance(written_output, AIMessage):
             raise InvalidOutputTypeException(AIMessage, type(written_output))
         written_output = cast(str, written_output.text)

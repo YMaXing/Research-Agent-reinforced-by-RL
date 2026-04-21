@@ -25,7 +25,21 @@ from brown.workflows.types import WorkflowProgress
 
 app_config = get_app_config()
 
-retry_policy = RetryPolicy(max_attempts=3, retry_on=Exception)
+
+def _retry_non_quota(exc: Exception) -> bool:
+    """Return True if *exc* should be retried by LangGraph's RetryPolicy.
+
+    Quota-exhausted (429) errors are handled by the rate-limiter cooldown
+    and must NOT be retried at the task level — doing so fires another
+    large-token call that immediately hits the same limit.
+    """
+    msg = str(exc).lower()
+    if "resourceexhausted" in msg or "429" in msg or "quota" in msg:
+        return False
+    return True
+
+
+retry_policy = RetryPolicy(max_attempts=3, retry_on=_retry_non_quota)
 
 
 def build_generate_article_workflow(checkpointer: BaseCheckpointSaver):

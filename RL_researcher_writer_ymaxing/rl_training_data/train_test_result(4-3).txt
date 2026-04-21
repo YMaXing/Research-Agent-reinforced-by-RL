@@ -1,0 +1,150 @@
+======================================================================
+  TRAIN ARTICLES
+======================================================================
+
+--- 03_context_engineering ---
+
+  Section                                            Oracle   Model  Match
+  -------------------------------------------------- ------  ------  -----
+  Introduction: When prompt engineering breaks       P    2  P    3      ✗
+  From prompt to context engineering                 P    1  P    1      ✓
+  Understanding context engineering                  P    4  P    0      ✗
+  What makes up the context                          P    1  P    1      ✓
+  Production implementation challenges               P    0  P    1      ✗
+  Key strategies for context optimization            P    2  P    2      ✓
+  Here is an example                                 P    0  P    1      ✗
+  Conclusion - Wrap-up: Connecting context enginee.. P    3  P    3      ✓
+
+  Section top-1 accuracy: 4/8 = 50.0%
+  Article oracle: P1 (P1 single_balanced)
+  Article predicted: P3 (P3 depth_breadth) ✗
+  Article rewards: ['0.561', '0.669', '0.624', '0.521', '0.611', '0.546']
+
+--- 05_workflow_patterns ---
+
+  Section                                            Oracle   Model  Match
+  -------------------------------------------------- ------  ------  -----
+  The Challenge with Complex Single LLM Calls        P    0  P    0      ✓
+  The Power of Modularity: Why Chain LLM Calls?      P    5  P    4      ✗
+  Building a Sequential Workflow: FAQ Generation P.. P    0  P    0      ✓
+  Optimizing Sequential Workflows With Parallel Pr.. P    2  P    2      ✓
+  Introducing Dynamic Behavior: Routing and Condit.. P    5  P    3      ✗
+  Building a Basic Routing Workflow                  P    2  P    2      ✓
+  Orchestrator-Worker Pattern: Dynamic Task Decomp.. P    2  P    2      ✓
+
+  Section top-1 accuracy: 5/7 = 71.4%
+  Article oracle: P2 (P2 balanced_depth)
+  Article predicted: P4 (P4 bal_depth_breadth) ✗
+  Article rewards: ['0.659', '0.648', '0.701', '0.643', '0.658', '0.695']
+
+--- 08_react_practice ---
+
+  Section                                            Oracle   Model  Match
+  -------------------------------------------------- ------  ------  -----
+  Setup and Environment                              P    2  P    2      ✓
+  Tool Layer: Mock Search Implementation             P    1  P    2      ✗
+  Thought Phase: Prompt Construction and Generatio.. P    4  P    4      ✓
+  Action Phase: Function Calling and Parsing         P    1  P    1      ✓
+  Control Loop: Messages, Scratchpad, Orchestratio.. P    5  P    4      ✗
+  Tests and Traces: Success and Graceful Fallback    P    4  P    4      ✓
+
+  Section top-1 accuracy: 4/6 = 66.7%
+  Article oracle: P2 (P2 balanced_depth)
+  Article predicted: P4 (P4 bal_depth_breadth) ✗
+  Article rewards: ['0.498', '0.540', '0.570', '0.495', '0.548', '0.517']
+
+--- 11_multimodal ---
+
+  Section                                            Oracle   Model  Match
+  -------------------------------------------------- ------  ------  -----
+  Introduction: The need for multimodal AI           P    1  P    1      ✓
+  Limitations of traditional document processing     P    5  P    5      ✓
+  Foundations of multimodal LLMs                     P    4  P    4      ✓
+  Applying multimodal LLMs to images and PDFs        P    3  P    3      ✓
+  Foundations of multimodal RAG                      P    4  P    3      ✗
+  Implementing multimodal RAG for images, PDFs and.. P    3  P    3      ✓
+  Building multimodal AI agents                      P    1  P    3      ✗
+  Conclusion                                         P    3  P    3      ✓
+
+  Section top-1 accuracy: 6/8 = 75.0%
+  Article oracle: P3 (P3 depth_breadth)
+  Article predicted: P3 (P3 depth_breadth) ✓
+  Article rewards: ['0.688', '0.671', '0.539', '0.734', '0.651', '0.600']
+
+======================================================================
+  TEST ARTICLES
+======================================================================
+
+--- 02_workflows_vs_agents ---
+
+  Section                                            Oracle   Model  Match
+  -------------------------------------------------- ------  ------  -----
+  Introduction: The Critical Decision Every AI Eng.. P    2  P    3      ✗
+  Understanding the Spectrum: From Workflows to Ag.. P    0  P    3      ✗
+  Choosing Your Path                                 P    3  P    0      ✗
+  Exploring Common Patterns                          P    2  P    1      ✗
+  Zooming In on Our Favorite Examples                P    1  P    2      ✗
+  Conclusion: The Challenges of Every AI Engineer    P    4  P    2      ✗
+
+  Section top-1 accuracy: 0/6 = 0.0%
+  Article oracle: P4 (P4 bal_depth_breadth)
+  Article predicted: P3 (P3 depth_breadth) ✗
+  Article rewards: ['0.697', '0.721', '0.664', '0.740', '0.757', '0.559']
+
+--- 06_tools ---
+
+  Section                                            Oracle   Model  Match
+  -------------------------------------------------- ------  ------  -----
+  Introduction                                       P    0  P    2      ✗
+  Understanding why agents need tools                P    3  P    2      ✗
+  Implementing tool calls from scratch               P    3  P    2      ✗
+  Implementing a tool calling framework from scrat.. P    1  P    2      ✗
+  Implementing production-level tool calls with Ge.. P    1  P    2      ✗
+  Using Pydantic models as tools for on-demand str.. P    4  P    2      ✗
+  The downsides of running tools in a loop           P    1  P    2      ✗
+  Going through popular tools used within the indu.. P    1  P    0      ✗
+
+  Section top-1 accuracy: 0/8 = 0.0%
+  Article oracle: P1 (P1 single_balanced)
+  Article predicted: P2 (P2 balanced_depth) ✗
+  Article rewards: ['0.448', '0.651', '0.488', '0.583', '0.611', '0.546']
+
+--- 09_RAG ---
+
+  Section                                            Oracle   Model  Match
+  -------------------------------------------------- ------  ------  -----
+  Introduction: Giving LLMs an Open-Book Exam        P    5  P    5      ✓
+  The RAG System: Core Components                    P    1  P    2      ✗
+  The RAG Pipeline: Ingestion and Retrieval          P    2  P    4      ✗
+  Advanced RAG Techniques                            P    5  P    2      ✗
+  Agentic RAG                                        P    5  P    2      ✗
+  Conclusion                                         P    1  P    0      ✗
+
+  Section top-1 accuracy: 1/6 = 16.7%
+  Article oracle: P1 (P1 single_balanced)
+  Article predicted: P5 (P5 depth_breadth_depth) ✗
+  Article rewards: ['0.504', '0.626', '0.594', '0.537', '0.550', '0.597']
+
+======================================================================
+  SUMMARY
+======================================================================
+
+  Article                             Split   Sec Acc    Article
+  ----------------------------------- -----  --------  ---------
+  03_context_engineering              TRAIN  4/8 (50%)    P1→P3 ✗
+  05_workflow_patterns                TRAIN  5/7 (71%)    P2→P4 ✗
+  08_react_practice                   TRAIN  4/6 (67%)    P2→P4 ✗
+  11_multimodal                       TRAIN  6/8 (75%)    P3→P3 ✓
+  02_workflows_vs_agents               TEST  0/6 (0%)    P4→P3 ✗
+  06_tools                             TEST  0/8 (0%)    P1→P2 ✗
+  09_RAG                               TEST  1/6 (17%)    P1→P5 ✗
+
+  TRAIN totals                               19/29 (66%)    1/4 (25%)
+  TEST totals                                1/20 (5%)    0/3 (0%)
+  ALL totals                                 20/49 (41%)    1/7 (14%)
+
+  E[R] reference:
+    Uniform random baseline : 0.6299
+    Trained model (train)   : 0.7765  (from training log)
+    Oracle ceiling          : 0.7907
+    Gap closed              : 91.2% of uniform→oracle
