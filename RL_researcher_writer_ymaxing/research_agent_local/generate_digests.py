@@ -89,7 +89,9 @@ ARTICLES: dict[str, str] = {
     "02_workflows_vs_agents": "Workflows vs. Agents",
     "03_context_engineering": "Context Engineering",
     "05_workflow_patterns": "Workflow Patterns",
+    "06_tools": "Tools",
     "08_react_practice": "ReAct in Practice",
+    "09_RAG": "Retrieval-Augmented Generation",
     "11_multimodal": "Multimodal AI",
 }
 

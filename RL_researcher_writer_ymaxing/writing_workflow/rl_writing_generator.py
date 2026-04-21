@@ -55,22 +55,25 @@ _THIS_DIR = Path(__file__).resolve().parent
 # Episode dirs produced by Phase 1
 EPISODES_DIR = _THIS_DIR.parent / "rl_training_data" / "episodes"
 
-# Train articles (L2, L3, L5, L8, L11) — must match Phase 1
+# Train articles (L2, L3, L5, L6, L8, L9, L11) — must match Phase 1
 # L11 is listed before L8 because L8 (08_react_practice) frequently triggers
 # LLM 429 rate-limit errors; processing L11 first keeps the pipeline moving.
+# L9 (09_RAG) is listed before L6 (06_tools) for the same reason.
 TRAIN_ARTICLES: list[str] = [
     "02_workflows_vs_agents",
     "03_context_engineering",
     "05_workflow_patterns",
     "11_multimodal",
     "08_react_practice",
+    "09_RAG",
+    "06_tools",
 ]
 
 N_PRESETS = 6  # preset IDs 0-5
 MAX_RETRIES = 3
-RETRY_BACKOFF_BASE = 30  # seconds; attempt N waits N * 30s
+RETRY_BACKOFF_BASE = 60  # seconds; attempt N waits N * 60s
 DEFAULT_CONCURRENCY = 2  # concurrent episodes; Gemini 2.5 Pro is 150 RPM / 2M TPM — keep low
-DEFAULT_LLM_CONCURRENCY = 2  # concurrent LLM API calls; each call can be 100K-500K tokens
+DEFAULT_LLM_CONCURRENCY = 1  # concurrent LLM API calls; each call can be 100K-500K tokens
 
 
 # ---------------------------------------------------------------------------

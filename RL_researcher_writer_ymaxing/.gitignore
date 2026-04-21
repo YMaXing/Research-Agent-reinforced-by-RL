@@ -185,7 +185,6 @@ cython_debug/
 # Brown
 .brown
 .debug/
-checkpoints/
 outputs/
 
 # Models (large model weight files)
@@ -201,3 +200,15 @@ configs/
 inputs/
 !writing_workflow/configs/
 !writing_workflow/inputs/
+
+# Base model (download from HuggingFace)
+models/
+
+# Training data: episodes and bases are large; regenerate locally
+rl_training_data/episodes/
+rl_training_data/bases/
+
+# Checkpoints: all checkpoint files are large model weights (*.safetensors,
+# *.pt, etc.) and exceed GitHub's recommended or hard file-size limits.
+# Ignore the entire checkpoints directory; use Git LFS if you need to version them.
+rl_training_data/checkpoints/

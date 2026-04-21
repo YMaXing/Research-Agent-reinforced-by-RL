@@ -31,15 +31,16 @@ _DEFAULT_CONCURRENCY = 3
 
 # After a 429 failure escapes (after tenacity gives up), we hold the semaphore
 # for this many extra seconds before releasing it to the next caller.
-# Both xAI and Gemini enforce per-minute windows; 60 s is sufficient for the
-# quota to reset.
-_QUOTA_COOLDOWN_SECS: int = 60
+# Both xAI and Gemini enforce per-minute windows; with large-context article
+# calls (100K-500K tokens), the TPM window often needs a full 90s to clear.
+_QUOTA_COOLDOWN_SECS: int = 90
 
 # Minimum seconds between successive LLM calls.
 # Gemini 2.5 Pro has a 150 RPM ceiling (~0.4 s/call theoretically), but each
 # article call consumes 100K-500K tokens so TPM is the binding constraint.
-# A 4 s gap keeps burst RPM well below 60, giving quota ample headroom.
-_INTER_CALL_DELAY_SECS: float = 4.0
+# An 8 s gap keeps burst RPM well below 60 and spaces out token consumption
+# across the per-minute TPM window more evenly.
+_INTER_CALL_DELAY_SECS: float = 8.0
 
 # Module-level semaphore — lazily created the first time llm_throttle() is
 # entered so it is always bound to the running event loop.
