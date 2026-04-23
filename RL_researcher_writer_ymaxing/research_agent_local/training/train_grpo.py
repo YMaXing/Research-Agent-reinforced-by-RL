@@ -124,6 +124,20 @@ class Group:
     ref_log_probs: torch.Tensor | None = None
     best_preset_idx: int = 0
     hit_sigma_floor: bool = False
+    # Loss weight for this group.  Set by load_groups / load_section_groups so
+    # the training loop mirrors the word-count-weighted inference aggregation:
+    #   article-level  -> equal (1 / num_articles)
+    #   section-level  -> controlled by --section-weight (see load_section_groups)
+    word_weight: float = 1.0
+    # Raw reward std before sigma-floor clamping. Stored here so the weight
+    # normalizer can use it for 'variance' and 'hybrid' weighting modes.
+    raw_reward_std: float = 0.0
+    # Expected regret of uniform-random preset selection: max(R) - mean(R).
+    # Answers "how much does it matter that the policy learns the right preset
+    # for this section?"  Unlike std, this is upside-aware: a section where
+    # one preset is uniquely great scores higher than one with symmetric spread.
+    # Used by the 'regret-hybrid' weighting mode.
+    raw_reward_regret: float = 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -251,17 +265,61 @@ def load_groups(sigma_floor: float) -> list[Group]:
             f"best=P{group.best_preset_idx} ({max(group.rewards):.4f})"
         )
 
+    # Equal weight per article (article-level granularity has no word-count signal).
+    equal_w = 1.0 / len(groups)
+    for g in groups:
+        g.word_weight = equal_w
     return groups
 
 
 # ---------------------------------------------------------------------------
 # Data loading — section level
 # ---------------------------------------------------------------------------
-def load_section_groups(sigma_floor: float) -> list[Group]:
+def load_section_groups(
+    sigma_floor: float,
+    section_weight: str = "hybrid",
+) -> list[Group]:
     """Load section-level GRPO groups from digest section excerpts.
 
     Each article section becomes its own GRPO group with 6 preset arms.
     Rewards are computed from per-section binary scores in reasoning.json.
+
+    ``section_weight`` controls how each section's loss contribution is weighted
+    within an article.  Each article always contributes equally overall (its
+    sections' weights sum to ``1 / num_articles``), so the choice only affects
+    the *distribution* of gradient signal within an article.
+
+    **Design principle.**  Two independent questions determine how much a section
+    should drive parameter updates:
+
+    1. *How much does this section represent the article?*  Word count is the
+       natural proxy — a long technical section contributes more to final quality
+       than a short conclusion.
+    2. *How much does the preset choice actually matter for this section?*  A
+       section where all presets yield similar rewards carries no learning signal
+       regardless of its length; a short but structurally incomplete section
+       where one preset is clearly superior is where the policy needs to improve.
+
+    The modes differ in how they answer question 2:
+
+    * ``wordcount``     — ignores question 2 entirely.  Matches the word-count-
+      weighted vote used at inference; longest sections always dominate.
+    * ``variance``      — answers question 2 with ``std(R)``.  Symmetric: treats
+      "one preset uniquely great" the same as "one preset uniquely terrible".
+    * ``hybrid``        — ``wordcount × std(R)``.  Combines both signals but
+      inherits the symmetry limitation of ``variance``.
+    * ``regret-hybrid`` — ``wordcount × (max(R) − mean(R))``.  Preferred mode.
+      Regret is *upside-aware*: it measures the expected gain from learning the
+      right preset rather than picking uniformly at random, which is exactly what
+      GRPO optimises.  A section where all presets are bad (high std, zero
+      upside) gets weight ≈ 0; a section with one clear winner gets a high weight
+      even if it is short.  Training/inference decoupling is intentional: regret
+      requires a reward oracle unavailable at inference time, but that is fine —
+      the regret weight is a training-time gradient-focusing device.  The
+      model's learned per-section distributions encode the signal; inference
+      aggregates those distributions by word count as usual.
+    * ``uniform``       — equal weight per section.  Original behaviour; no
+      length or exploration signal.
     """
     groups: list[Group] = []
 
@@ -274,10 +332,12 @@ def load_section_groups(sigma_floor: float) -> list[Group]:
             log.warning(f"  {article}: no digest sections found, skipping")
             continue
 
+        article_groups: list[Group] = []
         for sec_idx, (sec_title, sec_excerpt) in enumerate(digest_sections):
             group = Group(
                 name=f"{article}__S{sec_idx + 1}",
                 digest=sec_excerpt,
+                word_weight=len(sec_excerpt.split()),  # raw word count; normalised below
             )
 
             for p in range(NUM_PRESETS):
@@ -313,19 +373,52 @@ def load_section_groups(sigma_floor: float) -> list[Group]:
             raw_std = (
                 sum((r - mean_r) ** 2 for r in group.rewards) / len(group.rewards)
             ) ** 0.5
+            group.raw_reward_std = raw_std
+            group.raw_reward_regret = max(group.rewards) - mean_r
             group.hit_sigma_floor = raw_std < sigma_floor
             std_r = max(raw_std, sigma_floor)
             advantages = [(r - mean_r) / std_r for r in group.rewards]
             group.advantages = torch.tensor(advantages, dtype=torch.float32)
             group.best_preset_idx = group.rewards.index(max(group.rewards))
 
-            groups.append(group)
+            article_groups.append(group)
             log.info(
                 f"  {group.name} ({sec_title[:40]}): "
                 f"R={[f'{r:.3f}' for r in group.rewards]} "
                 f"best=P{group.best_preset_idx} ({max(group.rewards):.4f})"
                 + (" [flat]" if group.hit_sigma_floor else "")
             )
+
+        # Compute raw unnormalized weights according to the chosen mode.
+        # 'wordcount' raw weight is already stored in g.word_weight (set at init).
+        # See docstring for the motivation behind each mode.
+        if section_weight == "variance":
+            raw_weights = [g.raw_reward_std for g in article_groups]
+        elif section_weight == "hybrid":
+            raw_weights = [g.word_weight * g.raw_reward_std for g in article_groups]
+        elif section_weight == "regret-hybrid":
+            raw_weights = [g.word_weight * g.raw_reward_regret for g in article_groups]
+        elif section_weight == "uniform":
+            raw_weights = [1.0] * len(article_groups)
+        else:  # "wordcount" — matches inference aggregation
+            raw_weights = [g.word_weight for g in article_groups]
+
+        # Normalize: within-article weights sum to 1 / num_articles so each
+        # article contributes equally to the total gradient regardless of how
+        # many sections it has.
+        total_w = sum(raw_weights)
+        if total_w == 0.0:
+            # Edge case: all sections flat (all presets same reward) under
+            # variance/hybrid — fall back to equal weight within article.
+            log.warning(
+                f"  {article}: all raw_weights=0 under mode '{section_weight}'; "
+                "falling back to uniform within this article."
+            )
+            total_w = len(article_groups)
+            raw_weights = [1.0] * len(article_groups)
+        for g, rw in zip(article_groups, raw_weights):
+            g.word_weight = rw / total_w / len(ARTICLES)
+        groups.extend(article_groups)
 
     n_flat = sum(1 for g in groups if g.hit_sigma_floor)
     log.info(
@@ -564,13 +657,15 @@ def train(
                 # Entropy bonus H(π) — directly prevents collapse (always ≥ 0).
                 loss_entropy = -(pi_lp_6.exp() * pi_lp_6).sum()
 
-                # Combined, averaged across groups
-                loss = (loss_grpo + args.beta * loss_kl - args.entropy_coef * loss_entropy) / num_groups
+                # Weighted sum across groups: word-count weight mirrors the
+                # word-count-weighted vote used at inference (section granularity)
+                # or equal weight per article (article granularity).
+                loss = (loss_grpo + args.beta * loss_kl - args.entropy_coef * loss_entropy) * group.word_weight
                 loss.backward()
 
-                epoch_loss_grpo += loss_grpo.item() / num_groups
-                epoch_loss_kl += loss_kl.item() / num_groups
-                epoch_loss_entropy += loss_entropy.item() / num_groups
+                epoch_loss_grpo += loss_grpo.item() * group.word_weight
+                epoch_loss_kl += loss_kl.item() * group.word_weight
+                epoch_loss_entropy += loss_entropy.item() * group.word_weight
                 epoch_loss_total += loss.item()
 
                 # --- per-group evaluation metrics (no grad) ---
@@ -751,6 +846,21 @@ def main() -> None:
         "section-level (~35 groups)",
     )
     parser.add_argument(
+        "--section-weight",
+        choices=["wordcount", "variance", "hybrid", "regret-hybrid", "uniform"],
+        default="hybrid",
+        help=(
+            "How to weight section groups in the loss (section granularity only). "
+            "'wordcount': proportional to section length (matches inference). "
+            "'variance': proportional to reward std (upweights exploration-critical sections). "
+            "'hybrid': wordcount x reward_std (combines length and variance signals). "
+            "'regret-hybrid': wordcount x regret where regret=max(R)-mean(R); "
+            "upside-aware — focuses gradient on sections where one clear winner exists, "
+            "not just sections with high symmetric spread (recommended). "
+            "'uniform': equal weight per section (original behaviour)."
+        ),
+    )
+    parser.add_argument(
         "--dry-run", action="store_true",
         help="Load model and data, run one forward pass, then exit",
     )
@@ -801,7 +911,7 @@ def main() -> None:
     # ------------------------------------------------------------------
     log.info(f"\n--- Step 1: Load training data (granularity={args.granularity}) ---")
     if args.granularity == "section":
-        groups = load_section_groups(args.sigma_floor)
+        groups = load_section_groups(args.sigma_floor, section_weight=args.section_weight)
         active_system_prompt = SECTION_SYSTEM_PROMPT
     else:
         groups = load_groups(args.sigma_floor)

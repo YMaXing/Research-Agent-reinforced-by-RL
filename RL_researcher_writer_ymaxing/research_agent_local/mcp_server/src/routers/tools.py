@@ -523,7 +523,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     @opik.track(type="tool", project_name=settings.opik_project_name)
-    async def predict_exploration_preset(research_directory: str) -> Dict[str, Any]:
+    async def predict_exploration_preset(research_directory: str, grok_only: bool = False) -> Dict[str, Any]:
         """
         Predict the optimal exploration preset using the GRPO-trained RL model.
 
@@ -537,11 +537,11 @@ def register_mcp_tools(mcp: FastMCP) -> None:
           least one section individually predicts a higher preset, preventing short
           intro sections from masking deep technical sections.
 
-        Stage 2 — client LLM (you):
-          Use the returned signals to make the final decision.  The RL model closes
-          ~91% of the uniform-random → oracle E[R] gap, but top-1 accuracy on
-          unseen articles is low (~5–17%); treat it as calibrated evidence, not ground
-          truth.  Override freely when entropy_bits > 1.5 or confidence < 0.40.
+        Stage 2 — Grok 4.2 planner:
+          Uses the RL signals plus article guideline and coverage gap profile to make
+          the final preset decision. Set grok_only=True to skip Stage 1 entirely and
+          have Grok decide from the article guideline and gap profile alone (useful as
+          a baseline to measure the RL model's marginal contribution).
 
         Signal semantics:
           preset (int 0–5):
@@ -571,24 +571,31 @@ def register_mcp_tools(mcp: FastMCP) -> None:
             One-sentence synthesis.  Use this as your reasoning seed.
 
         Note: the RL model loads on the first call (~3 min on GPU) and is then cached
-        for the lifetime of the server process.
+        for the lifetime of the server process. When grok_only=True the RL model is
+        not loaded at all.
 
         Args:
             research_directory: Path to the research directory containing
                                 exploitation_digest.md at its root.
+            grok_only: When True, skip the RL inference stage. Grok 4.2 decides
+                       solely from the article guideline and coverage gap profile.
+                       rl_recommendation will be None in the returned dict.
 
         Returns:
             Dict[str, Any]:
                 - status: "success" or "error"
                 - rl_recommendation: dict with preset, name, confidence,
                                      entropy_bits, floor_correction_applied
+                                     (None when grok_only=True)
                 - section_signals: list of per-section dicts with title, preset,
-                                   name, top2
+                                   name, top2 (empty when grok_only=True)
                 - guidance: one-sentence synthesis for the client LLM
+                - grok_recommendation: dict with preset, name, reasoning
+                                       (and override, override_reason when grok_only=False)
                 - message: human-readable summary
         """
         opik_context.update_thread_id()
-        result = await predict_exploration_preset_tool(research_directory)
+        result = await predict_exploration_preset_tool(research_directory, grok_only=grok_only)
         return result
 
     # ============================================================================
