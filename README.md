@@ -149,7 +149,7 @@ The `presentation.md` table (Section 7) reports test-set behaviour for the
 locally without any API calls — the exploitation digests and offline grading
 scores are checked into `rl_training_data/`.
 
-> The reproducible checkpoint is `task_20260422_114127/best`
+> The reproducible checkpoint is `task_20260420_223150/best`
 > (Run 2 in `presentation.md`: $\beta = 0.05$, $\alpha = 0.15$,
 > per-section simple-average weighting).
 
@@ -178,7 +178,7 @@ From `RL_researcher_writer_ymaxing/research_agent_local/`:
 # Default: tests {02_workflows_vs_agents, 06_tools, 09_RAG} with the
 # checkpoint hard-coded in eval_accuracy.py / test_meta_reasoner.py.
 uv run python training/test_meta_reasoner.py \
-    --checkpoint ../rl_training_data/checkpoints/tasks/task_20260422_114127/best
+    --checkpoint ../rl_training_data/checkpoints/tasks/task_20260420_223150/best
 ```
 
 For each article this:
@@ -203,7 +203,7 @@ uv run python training/test_meta_reasoner.py --save-json              # persist 
 ```bash
 # From research_agent_local/
 uv run python training/eval_accuracy.py \
-    --checkpoint ../rl_training_data/checkpoints/tasks/task_20260422_114127/best
+    --checkpoint ../rl_training_data/checkpoints/tasks/task_20260420_223150/best
 ```
 
 This reports top-1 section-level and article-level accuracy on both the train
@@ -244,7 +244,7 @@ in the per-subproject READMEs.
 
 ## Credits
 
-Built on top of the [Agentic AI Engineering course](https://academy.towardsai.net/courses/agent-engineering)
+Built on top of the [Agentic AI Engineering course](https://github.com/towardsai/agentic-ai-engineering-course)
 by **Towards AI** and **Decoding AI**. The Nova research agent and Brown
 writing agent originated in that course; the RL policy, training pipeline,
 composed MCP server, and held-out evaluation are extensions in this fork.
