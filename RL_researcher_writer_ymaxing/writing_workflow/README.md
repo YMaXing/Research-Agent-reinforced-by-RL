@@ -1,6 +1,10 @@
-## Brown Writing Agent – Terminal Usage Guide
+# Brown Writing Agent – Terminal Usage Guide
 
-This folder contains the **Brown writing agent**, a sophisticated AI-powered system for generating and editing high-quality articles based on research data and guidelines.
+This folder contains the **Brown writing agent**, an AI-powered system for
+generating and editing high-quality articles based on research data and
+guidelines. It is the *writing* half of the
+[Research-Agent-reinforced-by-RL](../../README.md) pipeline; the research half
+lives in [`../research_agent_local/`](../research_agent_local).
 
 Brown implements three core workflows:
 
@@ -14,18 +18,22 @@ This README shows how to:
 - Configure API keys
 - Run Brown workflows from the terminal
 - Use Brown as an **MCP server** in other applications
+- Use the **RL data generators** that turn Brown into Phase 2 of the
+  GRPO training pipeline
 
 > [!NOTE]
-> This will be run as an independent project from the rest of this repository.
+> This subproject is independent of the rest of the repository — it has its
+> own `uv` env. For the composed *research → write* deployment, see
+> [`../agents_integration_local/mcp_client/README.md`](../agents_integration_local/mcp_client/README.md).
 
 ---
 
 ## 1. Directory Layout
 
-From the repository root (`course-ai-agents`):
+From the repository root (`Research-Agent-reinforced-by-RL`):
 
 ```bash
-lessons/writing_workflow/
+RL_researcher_writer_ymaxing/writing_workflow/
   ├── configs/              # YAML configuration files
   │   ├── course.yaml       # Production config
   │   └── debug.yaml        # Testing config (fake models)
@@ -33,7 +41,7 @@ lessons/writing_workflow/
   │   ├── profiles/         # Writing style and character profiles
   │   ├── examples/         # Example articles for context
   │   ├── tests/            # Test input directories with guidelines and research
-  │   └── evals/            # Evaluation datasets
+  │   └── evals/            # Evaluation datasets (incl. ground-truth articles)
   ├── scripts/              # CLI scripts for running workflows
   │   ├── brown_mcp_cli.py  # Main CLI interface for Brown workflows
   │   ├── brown_create_eval_dataset.py
@@ -47,6 +55,8 @@ lessons/writing_workflow/
   │       ├── models/       # LLM model configuration and wrappers
   │       ├── evals/        # Evaluation framework
   │       └── observability/ # Observability infrastructure (tracing, monitoring, evals)
+  ├── rl_writing_generator.py   # Phase 2a — generate article.md per (article × preset)
+  ├── rl_grading_generator.py   # Phase 2b — grade each article.md (9-dim scores.json)
   └── tests/                # Test suite
 ```
 
@@ -54,11 +64,10 @@ lessons/writing_workflow/
 
 ## 2. Prerequisites
 
-- **Python**: The project is pinned to Python `3.12.11` in `pyproject.toml`.  
-  If you followed the main course `README.md`, you already have a compatible Python installed.
-- **`uv`** package manager: see the root `README.md` for installation instructions.
-- **GNU Make**: Used to run all the commands from the project. Get installation instructions using this prompt: `How do I install GNU Make on ${YOUR_OS}`. Change `${YOUR_OS}` with MacOS, Ubuntu, etc.
-- All the commands below assume you are using a MacOS / Linux shell with commands based on Bash/zsh. In case you are using Windows, we assume to use a shell compatible with Linux such as WSL.
+- **Python**: The project is pinned to Python `3.12.11` in `pyproject.toml`.
+- **`uv`** package manager: see the top-level [README](../../README.md#prerequisites) for installation instructions.
+- **GNU Make**: used to run all the commands from the project. Get installation instructions using this prompt: `How do I install GNU Make on ${YOUR_OS}` (replace `${YOUR_OS}` with MacOS, Ubuntu, etc.).
+- All the commands below assume a MacOS / Linux shell (Bash/zsh). On Windows, use **WSL**.
 
 You do **not** need to manually create or activate virtual environments; `uv` will manage them automatically.
 
@@ -69,7 +78,7 @@ You do **not** need to manually create or activate virtual environments; `uv` wi
 From the repository root:
 
 ```bash
-cd lessons/writing_workflow
+cd RL_researcher_writer_ymaxing/writing_workflow
 uv sync
 ```
 
@@ -87,7 +96,7 @@ Brown reads configuration from:
 For a smooth setup, create a `.env` file:
 
 ```bash
-lessons/writing_workflow/.env
+RL_researcher_writer_ymaxing/writing_workflow/.env
 ```
 
 You can use `.env.example` as a template: `cp .env.example .env`
@@ -95,14 +104,13 @@ You can use `.env.example` as a template: `cp .env.example .env`
 ### 4.1. Required and optional variables
 
 ```bash
-GOOGLE_API_KEY=your-google-api-key-here 
+GOOGLE_API_KEY=your-google-api-key-here
 OPIK_API_KEY=your-opik-api-key-here
 ```
 
 **Where to get these keys (all have free tiers):**
 
-- **`GOOGLE_API_KEY` (Gemini)**: Create a key in Google AI Studio (`https://aistudio.google.com/app/apikey`).  
-  Google offers a free tier suitable for experimentation and this course.
+- **`GOOGLE_API_KEY` (Gemini)**: Create a key in Google AI Studio (`https://aistudio.google.com/app/apikey`).
 - **`OPIK_API_KEY`**: Create a free account at `https://www.comet.com/site/products/opik/` and find the API KEY based on this [doc](https://www.comet.com/docs/opik/faq#where-can-i-find-my-opik-api-key-)
 
 You can either:
@@ -146,7 +154,7 @@ your_article_directory/
 You can find a complete example at:
 
 ```bash
-lessons/writing_workflow/inputs/tests/00_debug/
+RL_researcher_writer_ymaxing/writing_workflow/inputs/tests/00_debug/
   ├── article_guideline.md
   └── research.md
 ```
@@ -164,7 +172,7 @@ Brown provides a convenient `Makefile` with commands for all workflows. All comm
 To generate a new article from scratch:
 
 ```bash
-cd lessons/writing_workflow
+cd RL_researcher_writer_ymaxing/writing_workflow
 make brown-generate-article DIR_PATH=inputs/tests/00_debug
 ```
 
@@ -184,7 +192,7 @@ make brown-generate-article DIR_PATH=inputs/tests/00_debug
 To edit an existing article based on an optional human feedback:
 
 ```bash
-cd lessons/writing_workflow
+cd RL_researcher_writer_ymaxing/writing_workflow
 make brown-edit-article DIR_PATH=inputs/tests/00_debug HUMAN_FEEDBACK="Make the introduction more engaging and add more technical depth to section 2"
 ```
 
@@ -204,7 +212,7 @@ make brown-edit-article DIR_PATH=inputs/tests/00_debug HUMAN_FEEDBACK="Make the 
 To make targeted edits to a specific section of an article:
 
 ```bash
-cd lessons/writing_workflow
+cd RL_researcher_writer_ymaxing/writing_workflow
 make brown-edit-selected-text DIR_PATH=inputs/tests/00_debug HUMAN_FEEDBACK="Simplify this explanation and add a concrete example" FIRST_LINE=10 LAST_LINE=20
 ```
 
@@ -236,7 +244,7 @@ Brown includes an evaluation framework to assess article quality.
 **Create an evaluation dataset:**
 
 ```bash
-cd lessons/writing_workflow
+cd RL_researcher_writer_ymaxing/writing_workflow
 make brown-create-eval-dataset
 ```
 
@@ -245,7 +253,7 @@ This creates an evaluation dataset from the articles in `inputs/evals/dataset/` 
 **Run evaluations:**
 
 ```bash
-cd lessons/writing_workflow
+cd RL_researcher_writer_ymaxing/writing_workflow
 make brown-run-eval
 ```
 
@@ -259,11 +267,73 @@ This runs the evaluation using the `follows_gt` metric (checks if generated arti
 
 ---
 
-## 7. Running Full Writing Workflow
+## 7. RL data generation (Phases 2a & 2b)
+
+Brown is also driven by two scripts that produce the offline data consumed
+by the GRPO trainer in
+[`../research_agent_local/training/`](../research_agent_local/training).
+Both are **idempotent** — they skip episodes whose output sentinel already
+exists.
+
+### 7.1. `rl_writing_generator.py` — Phase 2a (article generation)
+
+Generates `article.md` for every `<article>__preset<N>` episode that already
+has a `research.md` from Phase 1.
+
+```bash
+cd RL_researcher_writer_ymaxing/writing_workflow
+uv run python rl_writing_generator.py                # all articles, all presets
+uv run python rl_writing_generator.py --dry-run
+uv run python rl_writing_generator.py --articles 02_workflows_vs_agents,09_RAG
+uv run python rl_writing_generator.py --presets 0,1,4
+```
+
+Implementation notes:
+
+- Uses Gemini 2.5 Pro via `build_generate_article_workflow(checkpointer)`.
+- 2 review iterations per article.
+- 3-layer resumability:
+  1. `article.md` exists → skip the episode (zero cost).
+  2. Per-episode SQLite checkpointer + deterministic `thread_id` for LangGraph
+     task memoisation.
+  3. Per-episode retry with exponential backoff (3 attempts, 30 s base).
+
+Outputs land under
+`../rl_training_data/episodes/<article>__preset<N>/article.md`.
+
+### 7.2. `rl_grading_generator.py` — Phase 2b (LLM-as-judge grading)
+
+Grades each `article.md` against its ground-truth article on **9 dimensions**
+and writes `scores.json` per episode.
+
+```bash
+cd RL_researcher_writer_ymaxing/writing_workflow
+uv run python rl_grading_generator.py                # all articles, all presets
+uv run python rl_grading_generator.py --dry-run
+uv run python rl_grading_generator.py --articles 06_tools
+uv run python rl_grading_generator.py --presets 0,2,5
+```
+
+Implementation notes:
+
+- Uses Gemini 2.5 Flash as the judge.
+- Inputs per episode:
+  - `output` = `episode_dir/article.md`
+  - `expected_output` = `inputs/evals/dataset/data/<lesson>/article_ground_truth.md`
+  - `input` (guideline) = `inputs/evals/dataset/data/<lesson>/article_guideline.md`
+  - `context["research"]` = `episode_dir/research.md`
+- Sentinel: existence of `scores.json` → skip.
+
+The 9 stored dimensions feed the reward formula in
+[`../../Plan_of_attack.md`](../../Plan_of_attack.md#phase-2b---grading-rl_grading_generatorpy---next).
+
+---
+
+## 8. Running Full Writing Workflow
 
 This section provides an in-depth look at each workflow and what happens under the hood.
 
-### 7.1. Article Generation Workflow
+### 8.1. Article Generation Workflow
 
 The article generation workflow is Brown's most comprehensive process, designed to create high-quality articles from research data.
 
@@ -313,7 +383,7 @@ nodes:
     model_id: "google_genai:gemini-2.5-pro"
     model_config:
       temperature: 0.7  # Higher for creative writing
-  
+
   review_article:
     model_id: "google_genai:gemini-2.5-pro"
     model_config:
@@ -323,13 +393,13 @@ nodes:
 **Example Run:**
 
 ```bash
-cd lessons/writing_workflow
+cd RL_researcher_writer_ymaxing/writing_workflow
 make brown-generate-article DIR_PATH=inputs/tests/02_workflows_vs_agents
 ```
 
 This will generate an article about "Workflows vs Agents" based on the guidelines and research in that directory.
 
-### 7.2. Article Editing Workflow
+### 8.2. Article Editing Workflow
 
 The article editing workflow refines an existing article based on human feedback.
 
@@ -364,13 +434,13 @@ The article editing workflow refines an existing article based on human feedback
 **Example Run:**
 
 ```bash
-cd lessons/writing_workflow
+cd RL_researcher_writer_ymaxing/writing_workflow
 make brown-edit-article \
   DIR_PATH=inputs/tests/02_workflows_vs_agents \
   HUMAN_FEEDBACK="Add more concrete examples in section 3 and improve the conclusion"
 ```
 
-### 7.3. Selected Text Editing Workflow
+### 8.3. Selected Text Editing Workflow
 
 The selected text editing workflow makes targeted improvements to a specific section.
 
@@ -405,7 +475,7 @@ The selected text editing workflow makes targeted improvements to a specific sec
 First, identify the line numbers of the section you want to edit by viewing `article.md`. Then:
 
 ```bash
-cd lessons/writing_workflow
+cd RL_researcher_writer_ymaxing/writing_workflow
 make brown-edit-selected-text \
   DIR_PATH=inputs/tests/02_workflows_vs_agents \
   HUMAN_FEEDBACK="Make this explanation clearer and add a code example" \
@@ -415,7 +485,7 @@ make brown-edit-selected-text \
 
 ---
 
-## 8. Troubleshooting & Tips
+## 9. Troubleshooting & Tips
 
 ### Common Issues
 
@@ -448,11 +518,11 @@ make brown-edit-selected-text \
 
 ---
 
-## 9. Additional MCP Server Information
+## 10. Additional MCP Server Information
 
 Brown can be used as a standalone **MCP server** that you can integrate with other MCP-compatible clients (Cursor, Claude Desktop, Zed, etc.).
 
-### 9.1. Features
+### 10.1. Features
 
 - **Article generation**: Complete workflow from research to final article
 - **Article editing**: Full article refinement based on feedback
@@ -460,7 +530,7 @@ Brown can be used as a standalone **MCP server** that you can integrate with oth
 - **AI integration**: Built-in support for Gemini and OpenAI models
 - **Flexible transport**: Supports both **stdio** and **HTTP** transport protocols
 
-### 9.2. Available Tools
+### 10.2. Available Tools
 
 When Brown is running as an MCP server, it exposes the following tools:
 
@@ -477,7 +547,7 @@ When Brown is running as an MCP server, it exposes the following tools:
   - Parameters: `article_path`, `human_feedback`, `selected_text`, `first_line_number`, `last_line_number`
   - Returns: Edited section with line number mappings
 
-### 9.3. Available Prompts
+### 10.3. Available Prompts
 
 Brown provides MCP prompts that help trigger workflows:
 
@@ -485,19 +555,19 @@ Brown provides MCP prompts that help trigger workflows:
 - **`edit_article_prompt`**: Retrieves a prompt that will trigger the article editing workflow
 - **`edit_selected_text_prompt`**: Retrieves a prompt that will trigger the selected text editing workflow
 
-### 9.4. Available Resources
+### 10.4. Available Resources
 
 Brown exposes configuration and profile data as MCP resources:
 
 - **`resource://config/app`**: Application configuration (models, file paths, workflow settings)
 - **`resource://profiles/character`**: Character profile for consistent writing voice
 
-### 9.5. Using Brown from Other MCP Clients
+### 10.5. Using Brown from Other MCP Clients
 
 You can point other MCP-aware tools at Brown. Examples below assume the project lives at:
 
 ```bash
-/absolute/path/to/course-ai-agents/lessons/writing_workflow
+/absolute/path/to/Research-Agent-reinforced-by-RL/RL_researcher_writer_ymaxing/writing_workflow
 ```
 
 #### Cursor & Claude Desktop (stdio)
@@ -511,7 +581,7 @@ Add the following configuration to your `.cursor/mcp.json` or `claude_desktop_co
       "command": "uv",
       "args": [
         "--directory",
-        "/absolute/path/to/course-ai-agents/lessons/writing_workflow",
+        "/absolute/path/to/Research-Agent-reinforced-by-RL/RL_researcher_writer_ymaxing/writing_workflow",
         "run",
         "fastmcp",
         "run",
@@ -537,7 +607,7 @@ You can also leverage the `.env` file directly:
       "command": "uv",
       "args": [
         "--directory",
-        "/absolute/path/to/course-ai-agents/lessons/writing_workflow",
+        "/absolute/path/to/Research-Agent-reinforced-by-RL/RL_researcher_writer_ymaxing/writing_workflow",
         "run",
         "fastmcp",
         "run",
@@ -547,7 +617,7 @@ You can also leverage the `.env` file directly:
       ],
       "cwd": "${workspaceFolder}",
       "env": {
-        "ENV_FILE_PATH": "${workspaceFolder}/lessons/writing_workflow/.env"
+        "ENV_FILE_PATH": "${workspaceFolder}/RL_researcher_writer_ymaxing/writing_workflow/.env"
       }
     }
   }
@@ -561,9 +631,13 @@ Once configured, you can use Brown directly in Cursor's AI chat:
 1. Start a new chat in Cursor
 2. Enter `/generate_article_prompt` which will take care of calling the generate article tool with the right inputs.
 
+For HTTP transport (used by the composed deployment), launch Brown with
+`--transport streamable-http --port 8002` instead. See
+[`../agents_integration_local/mcp_client/README.md`](../agents_integration_local/mcp_client/README.md).
+
 ---
 
-## 10. Testing & QA
+## 11. Testing & QA
 
 Brown includes a comprehensive test suite and code quality tools.
 
@@ -572,7 +646,7 @@ Brown includes a comprehensive test suite and code quality tools.
 Run the test suite using pytest:
 
 ```bash
-cd lessons/writing_workflow
+cd RL_researcher_writer_ymaxing/writing_workflow
 make tests
 ```
 
@@ -616,7 +690,7 @@ This runs all quality checks including formatting and linting.
 
 ---
 
-## 11. Next Steps
+## 12. Next Steps
 
 Now that you have Brown set up, you can:
 
@@ -624,6 +698,12 @@ Now that you have Brown set up, you can:
 2. **Create your own articles**: Set up a new directory with your own `article_guideline.md` and `research.md`
 3. **Customize the configuration**: Adjust models, review iterations, and other settings in `configs/course.yaml`
 4. **Integrate with your IDE**: Set up Brown as an MCP server in Cursor or Claude Desktop
-5. **Explore the evaluation framework**: Check out the `evals/` directory for quality assessment tools
+5. **Run the composed pipeline**: pair Brown with the research agent via
+   [`../agents_integration_local/mcp_client/README.md`](../agents_integration_local/mcp_client/README.md)
+6. **Generate RL training data**: see §7 above
+7. **Reproduce the held-out RL test results**: see the top-level
+   [README — *Reproduce the held-out test results*](../../README.md#reproduce-the-held-out-test-results-l2-l6-l9)
 
-For more information about the course and the broader AI agents framework, see the main repository `README.md`.
+For project context, the GRPO training math, and the held-out evaluation, see
+the top-level [README.md](../../README.md), [Plan_of_attack.md](../../Plan_of_attack.md),
+and [presentation.md](../../presentation.md).

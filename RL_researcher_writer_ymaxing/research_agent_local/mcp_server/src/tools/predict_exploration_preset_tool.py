@@ -525,6 +525,58 @@ agreement or disagreement.
 a concrete reason.
   5. Your final output MUST be valid JSON (no prose after the JSON block)."""
 
+_PLANNER_STANDALONE_SYSTEM = """\
+You are an expert research strategist deciding how many rounds of autonomous web \
+exploration to run before writing an article. You will be shown the article \
+guideline and a coverage gap profile from the exploitation digest.
+
+Your job: choose the best exploration preset entirely on your own judgment.
+
+Preset meanings (P0–P5):
+  P0 – No exploration   (coverage is already complete)
+  P1 – 1 round, balanced
+  P2 – 2 rounds: balanced → depth
+  P3 – 2 rounds: depth → breadth
+  P4 – 3 rounds: balanced → depth → breadth
+  P5 – 3 rounds: depth → breadth → depth
+
+Rules:
+  1. Use the article guideline to understand topic complexity and intended depth.
+  2. Use the gap profile to quantify which sections need more coverage.
+  3. Prefer fewer rounds unless the gap profile clearly justifies more.
+  4. Your final output MUST be valid JSON (no prose after the JSON block)."""
+
+_PLANNER_STANDALONE_USER_TEMPLATE = """\
+## Article Guideline
+
+<article_guideline>
+{article_guideline}
+</article_guideline>
+
+---
+
+## Coverage Gap Profile (from Exploitation Digest)
+
+<gap_profile>
+{digest_gap_profile}
+</gap_profile>
+
+---
+
+## Task
+
+Based solely on the article guideline and the coverage gap profile above, \
+choose the best exploration preset. Output ONLY the following JSON block \
+(no additional prose after it):
+
+```json
+{{
+  "preset": <integer 0-5>,
+  "name": "<preset_name>",
+  "reasoning": "<2-4 sentences: which evidence drove your final decision>"
+}}
+```"""
+
 _PLANNER_USER_TEMPLATE = """\
 ## RL Model Output
 
@@ -656,7 +708,64 @@ async def _call_grok_planner(
         }
 
 
-async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, Any]:
+async def _call_grok_planner_standalone(
+    api_key: str,
+    base_url: str,
+    article_guideline: str,
+    digest_gap_profile: str,
+) -> dict:
+    """Call Grok 4.2 to make an exploration-preset decision with NO RL signals.
+
+    Used for the Grok-alone baseline: Grok sees only the article guideline and
+    the structured gap profile, making its decision independently of any
+    Qwen3-4B output. Comparing this result to the full RL+Grok pipeline shows
+    how much value the RL section-level signals add.
+
+    Returns a dict with keys: preset, name, reasoning.
+    """
+    from openai import AsyncOpenAI  # noqa: PLC0415
+
+    client = AsyncOpenAI(api_key=api_key, base_url=base_url)
+
+    user_msg = _PLANNER_STANDALONE_USER_TEMPLATE.format(
+        article_guideline=article_guideline or "(not available)",
+        digest_gap_profile=digest_gap_profile or "(not available)",
+    )
+
+    response = await client.chat.completions.create(
+        model=_PLANNER_MODEL,
+        messages=[
+            {"role": "system", "content": _PLANNER_STANDALONE_SYSTEM},
+            {"role": "user", "content": user_msg},
+        ],
+        max_tokens=4096,
+    )
+    raw = (response.choices[0].message.content or "").strip()
+
+    m = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.DOTALL)
+    json_str = m.group(1) if m else ""
+    if not json_str:
+        m = re.search(r"\{[^{}]*\}", raw, re.DOTALL)
+        json_str = m.group(0) if m else ""
+
+    try:
+        parsed = _json.loads(json_str)
+        parsed_preset = int(parsed["preset"])
+        if parsed_preset not in range(_NUM_PRESETS):
+            raise ValueError(f"preset {parsed_preset} out of range 0-{_NUM_PRESETS - 1}")
+        return {
+            "preset": parsed_preset,
+            "name": _PRESET_NAMES[parsed_preset].replace("_", " "),
+            "reasoning": parsed.get("reasoning", ""),
+        }
+    except Exception:
+        logger.warning(
+            "Grok standalone planner response could not be parsed as JSON. raw=%s", raw[:300]
+        )
+        return None
+
+
+async def predict_exploration_preset_tool(research_directory: str, grok_only: bool = False) -> Dict[str, Any]:
     """
     Predict the optimal exploration preset for an article using the trained RL model.
 
@@ -682,23 +791,28 @@ async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, 
         research_directory: Path to the research directory. Must contain either:
           - exploitation_digest.md (pre-existing, used directly), or
           - article_guideline.md + .research/ subfolder (digest auto-generated).
+        grok_only: When True, skip the RL inference stage entirely and call Grok 4.2
+          with only the article guideline + coverage gap profile (no section-level
+          RL signals). Use this for the Grok-alone baseline to measure the RL
+          model's marginal contribution. rl_recommendation will be None in the result.
 
     Returns:
         Dict with keys:
           status               – "success" or "error"
           digest_generated     – True if the digest was generated on-the-fly
           rl_recommendation    – aggregate preset, name, confidence, entropy,
-                                 floor_correction_applied
-          section_signals      – per-section list of preset, name, top2 probs
-          guidance             – one-sentence synthesis for the client LLM
-          article_guideline    – full text of article_guideline.md (article intent,
-                                 section structure, golden/exploitation source list)
-          digest_gap_profile   – "## 3. Overall Gap Profile" section from the
-                                 exploitation digest (structured gap summary used
-                                 by the RL model to make its recommendation)
-          grok_recommendation  – Grok 4.2's final planning decision: preset, name,
-                                 reasoning, override (bool), override_reason. None
-                                 if XAI_API_KEY is unset or the call fails.
+                                 floor_correction_applied. None when grok_only=True.
+          section_signals      – per-section list of preset, name, top2 probs.
+                                 Empty list when grok_only=True.
+          guidance             – one-sentence synthesis for the client LLM.
+                                 Empty string when grok_only=True.
+          article_guideline    – full text of article_guideline.md
+          digest_gap_profile   – "## 3. Overall Gap Profile" section from the digest
+          grok_recommendation  – Grok 4.2's planning decision. When grok_only=False:
+                                 preset, name, reasoning, override, override_reason.
+                                 When grok_only=True: preset, name, reasoning (no
+                                 override fields — RL had no input to override).
+                                 None if XAI_API_KEY is unset or the call fails.
           message              – human-readable summary
     """
     research_path = Path(research_directory)
@@ -713,7 +827,6 @@ async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, 
     digest_generated = False
 
     if not digest_path.exists():
-        # Auto-generate the digest on-the-fly
         logger.info(f"exploitation_digest.md not found — generating on-the-fly for {research_directory}")
         if settings.xai_api_key is None:
             return {
@@ -741,7 +854,6 @@ async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, 
         except Exception as exc:
             return {"status": "error", "message": f"Failed to read digest: {exc}"}
 
-    # --- Supplementary context for the client LLM ---
     guideline_path = research_path / "article_guideline.md"
     article_guideline = (
         guideline_path.read_text(encoding="utf-8", errors="replace")
@@ -750,6 +862,46 @@ async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, 
     )
     digest_gap_profile = _extract_gap_profile(digest)
 
+    # -----------------------------------------------------------------------
+    # Branch: Grok-alone baseline (no RL inference)
+    # -----------------------------------------------------------------------
+    if grok_only:
+        grok_recommendation: dict | None = None
+        if settings.xai_api_key is not None:
+            try:
+                grok_recommendation = await _call_grok_planner_standalone(
+                    api_key=settings.xai_api_key.get_secret_value(),
+                    base_url="https://api.x.ai/v1",
+                    article_guideline=article_guideline,
+                    digest_gap_profile=digest_gap_profile,
+                )
+                if grok_recommendation:
+                    logger.info("Grok standalone chose P%d", grok_recommendation["preset"])
+            except Exception:
+                logger.warning("Grok standalone planner call failed.")
+        else:
+            logger.warning("XAI_API_KEY not set; cannot run Grok standalone planner.")
+
+        grok_preset = grok_recommendation["preset"] if grok_recommendation else "?"
+        return {
+            "status": "success",
+            "digest_generated": digest_generated,
+            "rl_recommendation": None,
+            "section_signals": [],
+            "guidance": "",
+            "grok_recommendation": grok_recommendation,
+            "article_guideline": article_guideline,
+            "digest_gap_profile": digest_gap_profile,
+            "message": (
+                f"Grok standalone (no RL) chose preset P{grok_preset}."
+                if grok_recommendation
+                else "Grok standalone call failed or XAI_API_KEY not set."
+            ),
+        }
+
+    # -----------------------------------------------------------------------
+    # Standard pipeline: RL inference → Grok 4.2
+    # -----------------------------------------------------------------------
     try:
         loop = asyncio.get_running_loop()
         preset, agg_probs, section_details, meta = await loop.run_in_executor(
@@ -759,7 +911,6 @@ async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, 
         logger.exception("RL inference failed")
         return {"status": "error", "message": f"RL inference failed: {exc}"}
 
-    # --- Derived signals ---
     confidence = round(agg_probs[preset], 4)
     h = round(_entropy(agg_probs), 4)
     section_vote = meta.get("section_vote", preset)
@@ -777,8 +928,7 @@ async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, 
 
     guidance_str = _guidance(preset, confidence, h, floor_applied)
 
-    # --- Grok 4.2 final planning decision ---
-    grok_recommendation: dict | None = None
+    grok_recommendation = None
     if settings.xai_api_key is not None:
         try:
             grok_recommendation = await _call_grok_planner(

@@ -14,16 +14,21 @@ MCP transport, but no LLM agent loop is involved.
 
 Modes
 -----
-  default     — reads grok_recommendation.preset (full pipeline)
+  default     — reads grok_recommendation.preset (full pipeline: RL → Grok 4.2)
   --rl-only   — reads rl_recommendation.preset   (Qwen3-4B only, no Grok 4.2)
+  --grok-only — reads grok_recommendation.preset (Grok 4.2 standalone, no RL signals)
+                Use as a baseline to measure the RL model's marginal contribution.
 
 Usage (from research_agent_local/)
 -----------------------------------
-  # Test-set articles only (default)
+  # Test-set articles only (default full pipeline)
   uv run python -m mcp_client.src.test_grok_planner
 
   # RL model only — faster, no Grok 4.2 call
   uv run python -m mcp_client.src.test_grok_planner --rl-only
+
+  # Grok 4.2 standalone baseline — no RL section signals
+  uv run python -m mcp_client.src.test_grok_planner --grok-only
 
   # All articles (train + test)
   uv run python -m mcp_client.src.test_grok_planner --all
@@ -161,17 +166,17 @@ def _parse_tool_result(tool_result) -> dict:
 # ---------------------------------------------------------------------------
 # Per-article runner
 # ---------------------------------------------------------------------------
-async def run_article(article: str, agent: Agent, rl_only: bool) -> dict:
+async def run_article(article: str, agent: Agent, rl_only: bool, grok_only: bool = False) -> dict:
     research_dir = _BASES_DIR / article
     if not research_dir.exists():
         return {"article": article, "error": f"Directory not found: {research_dir}"}
 
     # --- Direct MCP tool call (no LLM agent loop) ---
+    tool_args: dict = {"research_directory": str(research_dir)}
+    if grok_only:
+        tool_args["grok_only"] = True
     try:
-        tool_result = await agent.call_tool(
-            "predict_exploration_preset",
-            {"research_directory": str(research_dir)},
-        )
+        tool_result = await agent.call_tool("predict_exploration_preset", tool_args)
         data = _parse_tool_result(tool_result)
     except Exception as exc:
         return {"article": article, "error": str(exc)}
@@ -179,11 +184,16 @@ async def run_article(article: str, agent: Agent, rl_only: bool) -> dict:
     if data.get("status") == "error":
         return {"article": article, "error": data.get("message", "unknown error")}
 
-    rl = data["rl_recommendation"]
+    rl = data.get("rl_recommendation")   # None when grok_only=True
     grok = data.get("grok_recommendation")  # None if XAI_API_KEY unset or call failed
 
     # Determine which preset to evaluate
-    if rl_only or grok is None:
+    if grok_only:
+        if grok is None:
+            return {"article": article, "error": "Grok standalone call failed or XAI_API_KEY not set"}
+        chosen_preset = grok["preset"]
+        chosen_by = "Grok-only"
+    elif rl_only or grok is None:
         chosen_preset = rl["preset"]
         chosen_by = "RL"
     else:
@@ -197,15 +207,15 @@ async def run_article(article: str, agent: Agent, rl_only: bool) -> dict:
         return {
             "article": article,
             "split": "TRAIN" if article in _TRAIN_ARTICLES else "TEST",
-            "rl_preset": rl["preset"],
+            "rl_preset": rl["preset"] if rl else None,
             "grok_preset": grok["preset"] if grok else None,
             "chosen_preset": chosen_preset,
             "chosen_by": chosen_by,
             "oracle_preset": None,
             "verdict": "NO_ORACLE",
-            "entropy_bits": rl["entropy_bits"],
-            "confidence": rl["confidence"],
-            "floor_applied": rl["floor_correction_applied"],
+            "entropy_bits": rl["entropy_bits"] if rl else None,
+            "confidence": rl["confidence"] if rl else None,
+            "floor_applied": rl["floor_correction_applied"] if rl else None,
             "grok_override": grok.get("override") if grok else None,
             "grok_reasoning": grok.get("reasoning") if grok else None,
             "grok_override_reason": grok.get("override_reason") if grok else None,
@@ -222,16 +232,16 @@ async def run_article(article: str, agent: Agent, rl_only: bool) -> dict:
     return {
         "article": article,
         "split": "TRAIN" if article in _TRAIN_ARTICLES else "TEST",
-        "rl_preset": rl["preset"],
+        "rl_preset": rl["preset"] if rl else None,
         "grok_preset": grok["preset"] if grok else None,
         "chosen_preset": chosen_preset,
         "chosen_by": chosen_by,
         "oracle_preset": oracle_preset,
         "rewards": [round(r, 4) for r in rewards],
         "verdict": verdict,
-        "entropy_bits": rl["entropy_bits"],
-        "confidence": rl["confidence"],
-        "floor_applied": rl["floor_correction_applied"],
+        "entropy_bits": rl["entropy_bits"] if rl else None,
+        "confidence": rl["confidence"] if rl else None,
+        "floor_applied": rl["floor_correction_applied"] if rl else None,
         "grok_override": grok.get("override") if grok else None,
         "grok_reasoning": grok.get("reasoning") if grok else None,
         "grok_override_reason": grok.get("override_reason") if grok else None,
@@ -266,16 +276,24 @@ def _print_article_result(r: dict) -> None:
     conf = r.get("confidence")
     floor = r.get("floor_applied")
 
+    chosen_by = r.get("chosen_by", "?")
+    is_grok_only = (chosen_by == "Grok-only")
+
     if rl_p is not None:
         floor_tag = "  [floor applied]" if floor else ""
         print(f"  RL model   : P{rl_p}  ({_PRESET_NAMES.get(rl_p, '?')})  "
               f"conf={conf:.0%}  H={entropy:.2f}bits{floor_tag}")
+    elif is_grok_only:
+        print(f"  RL model   : (skipped -- --grok-only baseline)")
 
     if gp is not None:
-        override_tag = "  [OVERRIDE]" if r.get("grok_override") else "  [agrees with RL]"
-        print(f"  Grok 4.2   : P{gp}  ({_PRESET_NAMES.get(gp, '?')}){override_tag}")
-        if r.get("grok_override") and r.get("grok_override_reason"):
-            print(f"               reason: {r['grok_override_reason']}")
+        if is_grok_only:
+            print(f"  Grok 4.2   : P{gp}  ({_PRESET_NAMES.get(gp, '?')})  [standalone, no RL input]")
+        else:
+            override_tag = "  [OVERRIDE]" if r.get("grok_override") else "  [agrees with RL]"
+            print(f"  Grok 4.2   : P{gp}  ({_PRESET_NAMES.get(gp, '?')}){override_tag}")
+            if r.get("grok_override") and r.get("grok_override_reason"):
+                print(f"               reason: {r['grok_override_reason']}")
         if r.get("grok_reasoning"):
             print(f"               reasoning: {r['grok_reasoning']}")
     else:
@@ -295,8 +313,13 @@ def _print_article_result(r: dict) -> None:
     print(f"  Verdict    : {_VERDICT_SYM.get(verdict, verdict)}")
 
 
-def _print_summary(results: list[dict], rl_only: bool) -> None:
-    mode = "RL-only" if rl_only else "RL + Grok 4.2"
+def _print_summary(results: list[dict], rl_only: bool, grok_only: bool = False) -> None:
+    if rl_only:
+        mode = "RL-only"
+    elif grok_only:
+        mode = "Grok-only (standalone baseline)"
+    else:
+        mode = "RL + Grok 4.2"
     sep = "#" * 72
     print(f"\n{sep}")
     print(f"  SUMMARY  [{mode}]")
@@ -312,7 +335,7 @@ def _print_summary(results: list[dict], rl_only: bool) -> None:
         op = r.get("oracle_preset")
         v = r.get("verdict", "ERROR")
         counts[v] = counts.get(v, 0) + 1
-        rl_str = f"P{rl_p}" if rl_p is not None else "?"
+        rl_str = f"P{rl_p}" if rl_p is not None else "-"
         gp_str = f"P{gp}" if gp is not None else "-"
         ch_str = f"P{chosen}" if chosen is not None else "?"
         op_str = f"P{op}" if op is not None else "?"
@@ -372,8 +395,16 @@ async def main() -> None:
         "--rl-only", action="store_true",
         help="Evaluate rl_recommendation.preset only (skip Grok 4.2 stage)",
     )
+    parser.add_argument(
+        "--grok-only", action="store_true",
+        help="Grok 4.2 standalone baseline: no RL signals, Grok decides from guideline + gap profile only",
+    )
     parser.add_argument("--save-json", action="store_true", help="Save per-article JSON results")
     args = parser.parse_args()
+
+    if args.rl_only and args.grok_only:
+        print("ERROR: --rl-only and --grok-only are mutually exclusive.")
+        return
 
     if args.articles:
         article_list = [a.strip() for a in args.articles.split(",")]
@@ -383,7 +414,13 @@ async def main() -> None:
         article_list = _DEFAULT_TEST_ARTICLES
 
     rl_only = args.rl_only
-    mode = "RL-only (--rl-only)" if rl_only else "RL + Grok 4.2"
+    grok_only = args.grok_only
+    if rl_only:
+        mode = "RL-only (--rl-only)"
+    elif grok_only:
+        mode = "Grok-only standalone (--grok-only)"
+    else:
+        mode = "RL + Grok 4.2"
 
     print(f"\nPreset Planner Test")
     print(f"  Mode       : {mode}")
@@ -415,11 +452,11 @@ async def main() -> None:
                 print(f"  Article: {article}  [{split}]")
                 print("=" * 72)
 
-                result = await run_article(article, agent, rl_only)
+                result = await run_article(article, agent, rl_only, grok_only)
                 results.append(result)
                 _print_article_result(result)
 
-    _print_summary(results, rl_only)
+    _print_summary(results, rl_only, grok_only)
 
     if args.save_json:
         out_dir = _AGENT_DIR / "grok_planner_test_results"
