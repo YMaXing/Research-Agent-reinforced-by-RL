@@ -5,11 +5,21 @@ from typing import List
 from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
+# Shared constant so the handler's shorten loop uses the same limit as the schema hint.
+_MAX_QUERY_CHARS = 200
+
 
 class QueryAndReason(BaseModel):
     """A single web-search query and the reason for it."""
 
-    question: str = Field(description="The web-search question to research.")
+    question: str = Field(
+        description=(
+            "A concise web-search question (≤ 15 words). "
+            "Must address a single, specific concept. "
+            "Do NOT combine multiple sub-questions or paste guideline text verbatim."
+        ),
+        max_length=_MAX_QUERY_CHARS,
+    )
     reason: str = Field(description="The reason why this question is important for the research.")
 
 

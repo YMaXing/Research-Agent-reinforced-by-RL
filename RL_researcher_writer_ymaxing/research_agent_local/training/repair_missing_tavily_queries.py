@@ -37,7 +37,7 @@ from typing import List
 # Ensure the mcp_server package is importable
 # ---------------------------------------------------------------------------
 _THIS_DIR = Path(__file__).resolve().parent
-_MCP_SERVER_DIR = _THIS_DIR / "mcp_server"
+_MCP_SERVER_DIR = _THIS_DIR.parent / "mcp_server"
 if str(_MCP_SERVER_DIR) not in sys.path:
     sys.path.insert(0, str(_MCP_SERVER_DIR))
 

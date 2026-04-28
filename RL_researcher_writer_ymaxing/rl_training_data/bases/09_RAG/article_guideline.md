@@ -265,8 +265,8 @@ Lightly preview other relevant future topics touched here (e.g., evaluations for
 
 1. [What Is Retrieval-Augmented Generation, aka RAG?](https://blogs.nvidia.com/blog/what-is-retrieval-augmented-generation/)
 2. [A Complete Guide to RAG](https://towardsai.net/p/l/a-complete-guide-to-rag)
-3. [Retrieval-Augmented Generation (RAG) Fundamentals First](https://decodingml.substack.com/p/rag-fundamentals-first?utm_source=publication-search)
-4. [Your RAG is wrong: Here's how to fix it](https://decodingml.substack.com/p/your-rag-is-wrong-heres-how-to-fix?utm_source=publication-search)
+3. Retrieval-Augmented Generation (RAG) Fundamentals First ".research/urls_from_guidelines/rag-fundamentals-first-by-paul-iusztin-decoding-ml.md"
+4. Your RAG is wrong: Here's how to fix it ".research/urls_from_guidelines/advanced-rag-blueprint-optimize-llm-retrieval-systems.md"
 5. [From Local to Global: A GraphRAG Approach to Query-Focused Summarization](https://arxiv.org/html/2404.16130)
 
 ## Other Sources

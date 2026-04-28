@@ -114,6 +114,9 @@ are invalid.
   generate near-equivalents (e.g. "limitations of X" and "failure modes of X" — and both are forbidden anyway).
 • Never repeat or closely paraphrase any query that already appears in `<full_queries>`.
 • Web-search queries should be natural-language questions, not just keywords.
+• **Each query must be ≤ 20 words and address a single, focused concept.** Do NOT combine multiple
+  sub-questions into one query and do NOT paste verbatim guideline text as the query — long, multi-part
+  essay questions produce poor web-search results.
 • If you cannot find {n_queries} legitimate uncovered anchors, generate fewer queries rather than inventing
   exploration-flavored questions to fill the quota.
 
@@ -220,6 +223,8 @@ or wider contexts.
   queries from step 3.
 • Strictly follow the requested Depth/Breadth distribution.
 • Make questions natural, specific, and optimized for high-quality search results.
+• **Each query must be ≤ 20 words and address a single, focused concept.** Do NOT combine multiple
+  sub-questions into one query — long, multi-part essay questions produce poor web-search results.
 • Aim for diversity within the requested ratio.
 
 **Few-shot examples** (note the mandatory `Category: ...` and `Anchor: "..."` prefixes):
@@ -329,6 +334,14 @@ Return **only** a valid JSON object with this exact structure and nothing else:
   "reasoning": "One or two sentences explaining your most important deduplication decisions."
 }}
 
+""".strip()
+
+# Query shortening prompt — used when a generated query exceeds the character limit
+PROMPT_SHORTEN_QUERY = """
+Rewrite the following web-search query as a single, focused question of at most {max_chars} characters.
+Keep the single most important concept from the original. Return ONLY the rewritten query — no explanation, no quotes.
+
+Original query: {query}
 """.strip()
 
 # Web search prompt

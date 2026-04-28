@@ -35,7 +35,7 @@ from typing import List, Literal, Sequence
 # Ensure the mcp_server package is importable and .env is loaded from the
 # correct absolute path (settings uses env_file=".env" relative to CWD).
 # ---------------------------------------------------------------------------
-_THIS_DIR = Path(__file__).resolve().parent
+_THIS_DIR = Path(__file__).resolve().parent.parent
 _MCP_SERVER_DIR = _THIS_DIR / "mcp_server"
 if str(_MCP_SERVER_DIR) not in sys.path:
     sys.path.insert(0, str(_MCP_SERVER_DIR))
