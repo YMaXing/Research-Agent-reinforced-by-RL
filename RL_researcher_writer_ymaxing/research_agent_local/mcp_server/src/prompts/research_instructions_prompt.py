@@ -122,6 +122,15 @@ If the user doesn't provide a research directory, you should ask for it before e
 
 3. Exploitation Phase, repeat the following research loop for 3 rounds:
 
+    **Scope of step 3 (lookup-only):** This phase is *exclusively* prescribed coverage. Every query in this phase
+    must be derived from a concrete anchor named verbatim in the ARTICLE_GUIDELINE_FILE (an H2/H3 heading, a
+    bullet point, or an explicitly named entity such as a library, paper, or technique). Depth and breadth
+    exploration — limitations, latest advancements, theoretical foundations, real-world case studies, future
+    directions, cross-domain analogies, history, adjacent technologies — are *forbidden* in this phase. They are
+    handled exclusively in step 4. The dedup tool will reject any exploitation query that drifts into those
+    categories. If you notice a generated batch contains exploration-flavored queries, that is a generator bug;
+    do not paper over it by accepting them here.
+
     For each of the 3 exploitation rounds:
 
     3.1. Run the "generate_next_queries" tool to analyze the ARTICLE_GUIDELINE_FILE, the already-scraped guideline
@@ -188,6 +197,15 @@ If the user doesn't provide a research directory, you should ask for it before e
       both the RL and Grok recommendations
 
 4. Exploration Phase, repeat the following research loop for an indefinite number of rounds with a configurable maximum number of {settings.maximum_exploration_rounds} rounds:
+
+    **Scope of step 4 (gap-driven exploration only):** This phase is *exclusively* depth and breadth exploration
+    around the anchors that step 3 already covered. Every query here must target a depth or breadth category
+    (motivation, theoretical foundations, technical nuances, latest advancements, limitations/failure modes,
+    implementation challenges, real-world case studies, future implications, adjacent concepts, cross-domain
+    analogies, historical context, enabling/disrupting technologies, applications in other industries, emerging
+    trends in adjacent fields). Pure-coverage "What is X?" / "How does X work?" queries on guideline-named
+    concepts are *forbidden* here — those belong to step 3. The dedup tool will reject any exploration query that
+    is pure coverage of a guideline-anchored concept.
 
     The number of rounds and the per-round focus are determined by the preset chosen in step 3.4
     (or by the user's explicit override if provided). If preset is P0, skip this step entirely.

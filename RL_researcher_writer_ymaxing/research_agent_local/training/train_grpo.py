@@ -67,7 +67,7 @@ NUM_PRESETS = 6
 SYSTEM_PROMPT = """\
 You are a research exploration strategy selector for an AI course article.
 
-Given an exploitation digest describing current research coverage, source \
+Given a digest describing current research coverage, source \
 inventory, and gap analysis, select the optimal exploration preset (0-5).
 
 Presets:
@@ -83,7 +83,7 @@ Respond with ONLY the preset number (0-5)."""
 SECTION_SYSTEM_PROMPT = """\
 You are a research exploration strategy selector for a section of an AI course article.
 
-Given an exploitation digest excerpt describing current research coverage, \
+Given a digest excerpt describing current research coverage, \
 source inventory, and gap analysis for a specific article section, select \
 the optimal exploration preset (0-5).
 

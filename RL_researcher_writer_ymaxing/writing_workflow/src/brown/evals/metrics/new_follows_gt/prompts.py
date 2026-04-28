@@ -186,6 +186,13 @@ another criterion.
       - Score 1 if at least one high-quality depth element is present and meaningfully integrated.
       - Score 0 if no depth enhancements exist, the additions are shallow/superficial/off-topic, or they are irrelevant
         to the ground truth section.
+      - **Source attribution gate — mandatory when sources are listed:** When `<exploration_sources>` contains
+        a list of sources (i.e., it does NOT say "Not provided"), passing the quality check above is necessary
+        but not sufficient for a score of 1. You must separately verify traceability: the specific facts,
+        metrics, or concepts introduced by the addition must be consistent with content covered by at least one
+        of the listed exploration sources. Assign score 0 if you cannot match the addition to any listed
+        exploration source, even when the content quality is otherwise high. When `<exploration_sources>` says
+        "Not provided", this gate is inactive — apply only the standard criteria above.
    5. **BreadthEnhancement:** Evaluate whether the section contains valuable additions that expand outward to areas adjacent
       to the core topic.
       - **Breadth additions** (outward — connect to adjacent areas outside the core topic) include one or more of the following:
@@ -200,6 +207,13 @@ another criterion.
       - Score 1 if at least one high-quality breadth element is present and meaningfully integrated.
       - Score 0 if no breadth enhancements exist, the additions are shallow/superficial/off-topic, or they are irrelevant
         to the ground truth section.
+      - **Source attribution gate — mandatory when sources are listed:** When `<exploration_sources>` contains
+        a list of sources (i.e., it does NOT say "Not provided"), passing the quality check above is necessary
+        but not sufficient for a score of 1. You must separately verify traceability: the specific facts,
+        metrics, or concepts introduced by the addition must be consistent with content covered by at least one
+        of the listed exploration sources. Assign score 0 if you cannot match the addition to any listed
+        exploration source, even when the content quality is otherwise high. When `<exploration_sources>` says
+        "Not provided", this gate is inactive — apply only the standard criteria above.
    6. **CorePreservation:** Evaluate whether the depth or breadth additions identified in criteria 4 and 5 preserve the ground truth core.
         This criterion applies exclusively to content you already identified as a depth or breadth addition when
         scoring criteria 4 and 5 — it does not evaluate any other additions present in the generated section (those
@@ -225,7 +239,11 @@ score is 0, the reasoning should also contain what is good about the generated s
 follow the same flow of ideas," and what is problematic, such as "the generated section contains an additional 
 paragraph on AI Evals that is not present in the expected section." When scoring depth_enhancement and breadth_enhancement,
 for each criterion name the specific bullet(s) from the respective list that were present or absent, and briefly explain
-why the addition qualifies or does not qualify.
+why the addition qualifies or does not qualify. Additionally, when `<exploration_sources>` contains a list of sources,
+the reason field for depth_enhancement and breadth_enhancement must explicitly cite the full URL(s) of the exploration
+source(s) the addition traces to (e.g. "Traces to https://arxiv.org/abs/2310.09298 — empirical JSON error-rate study").
+If the traceability check fails, the reason must state that no matching exploration source was found and therefore
+the score is 0, even though the content quality would otherwise qualify.
 11. Important rules when comparing the content of sections:
       - Focus on substance, not superficial formatting differences
       - When comparing **media**, you only care about the placement of the media, not the content of the media. 
@@ -258,6 +276,12 @@ for all evaluation criteria listed in the instructions:
 If a required section is missing from the generated output, assign 0 to all six criteria.
 3.2. Justify why you assigned a score of 0 or 1 with a brief explanation that highlights the reasoning behind the score
 based on the given criterion.
+3.3. **[Mandatory when `<exploration_sources>` contains a list of sources — skip entirely when it says "Not provided"]**
+For every depth_enhancement or breadth_enhancement score of 1 you have assigned, you must run the traceability
+check as a separate step: name the specific exploration source URL(s) the addition traces to and confirm that the
+addition's content (facts, metrics, or concepts) is consistent with what those sources cover. If you cannot match
+the addition to any listed exploration source, revise the score to 0 and record the traceability failure in the
+reason field. Quality alone does not justify a score of 1 when sources are listed.
 
 ## WHAT TO AVOID
 
@@ -292,16 +316,69 @@ Here are few-shot examples demonstrating how to compute the scores for each sect
 {expected_output}
 </expected_output>
 
+<exploration_sources>
+{exploration_sources}
+</exploration_sources>
+
 Think through your answer step by step, and provide the requested evaluation.
 """
 
 EXAMPLES_DIR = Path(__file__).parent / "examples"
+
+_LESSON_04_EXPLORATION_SOURCES = """\
+The following sources were retrieved during the exploration phase (step 4: gap-driven research \
+beyond the article guideline scope). Depth and breadth additions score 1 only if the addition's \
+content is traceable to one or more of these sources.
+
+- https://increment.com/apis/interoperability-data-exchange-formats/ \u2014 Historical evolution of \
+structured data interchange formats from XML (1998) through JSON (2001) and YAML to modern \
+schema-validated APIs using Python type annotations and Pydantic
+- https://arxiv.org/abs/2310.09298 \u2014 Empirical study of LLM-generated JSON output reliability: \
+approximately 12% of outputs from frontier models contain syntax errors including trailing commas, \
+invalid comments, and unescaped special characters
+- https://docs.pydantic.dev/blog/pydantic-v2-final/ \u2014 Pydantic v2 architectural overhaul: \
+Rust-based core-validator achieves 5\u201350x performance improvements over v1 Python implementation; \
+key API changes and migration guidance
+- https://blog.outlines.ai/constrained-structured-generation \u2014 Grammar-based structured generation \
+using context-free grammars; comparison of OpenAI, Anthropic, Cohere, Mistral native structured \
+output APIs; Instructor library for schema-constrained LLM extraction
+- https://microsoft.github.io/graphrag/overview \u2014 GraphRAG: combining knowledge graph construction \
+with vector retrieval for multi-hop reasoning across document collections\
+"""
+
+_LESSON_07_EXPLORATION_SOURCES = """\
+The following sources were retrieved during the exploration phase (step 4: gap-driven research \
+beyond the article guideline scope). Depth and breadth additions score 1 only if the addition's \
+content is traceable to one or more of these sources.
+
+- https://en.wikipedia.org/wiki/History_of_artificial_intelligence \u2014 AI planning history: STRIPS \
+automated planner (1971, Stanford AI Lab) and SHRDLU natural-language parser (1970, Winograd); \
+transition from symbolic AI to connectionist and neural approaches
+- https://arxiv.org/abs/2309.15402 \u2014 Multi-step task benchmark: reasoning-augmented agents achieve \
+67% success on tasks with more than five sequential steps vs 23% for standard LLMs; near-zero \
+error-recovery rates for non-augmented models
+- https://arxiv.org/abs/2210.03629 \u2014 ReAct (Yao et al. 2022): HotpotQA and FEVER benchmark results \
+showing 8\u201314% accuracy improvements; human preference study rating ReAct reasoning traces 1.4x \
+more trustworthy than CoT-only baselines
+- https://en.wikipedia.org/wiki/OODA_loop \u2014 OODA loop (Observe-Orient-Decide-Act) decision-making \
+cycle developed by military strategist John Boyd in the 1970s; applications in competitive \
+strategy, crisis management, and autonomous decision-making
+- https://hbr.org/2024/ai-workflow-automation-enterprise \u2014 Case studies of AI plan-and-execute \
+workflows applied to healthcare clinical trial management, legal discovery document review, and \
+supply chain and logistics optimization
+- https://www.finextra.com/newsarticle/ai-regulated-financial-systems \u2014 AI in regulated financial \
+environments: MiFID II and SEC Rule 17a-4 compliance; Bloomberg and Reuters data feed integration \
+processing 250,000+ updates per second; T+2 settlement via DTCC; Basel III Value-at-Risk using \
+Monte Carlo simulations\
+"""
+
 DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
     examples=[
         # ── Lesson 4: Structured Outputs ────────────────────────────
         FollowsGTMetricExample.from_markdown(
             output_file=EXAMPLES_DIR / "04_structured_outputs" / "article_generated.md",
             expected_output_file=EXAMPLES_DIR / "04_structured_outputs" / "article_ground_truth.md",
+            exploration_sources=_LESSON_04_EXPLORATION_SOURCES,
             scores=FollowsGTArticleScores(
                 sections=[
                     SectionCriteriaScores(
@@ -707,6 +784,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
         FollowsGTMetricExample.from_markdown(
             output_file=EXAMPLES_DIR / "07_reasoning_planning" / "article_generated.md",
             expected_output_file=EXAMPLES_DIR / "07_reasoning_planning" / "article_ground_truth.md",
+            exploration_sources=_LESSON_07_EXPLORATION_SOURCES,
             scores=FollowsGTArticleScores(
                 sections=[
                     SectionCriteriaScores(
@@ -1291,24 +1369,38 @@ def get_eval_prompt(
     output: str,
     expected_output: str,
     few_shot_examples: FollowsGTMetricFewShotExamples,
+    exploration_sources: str | None = None,
 ) -> str:
     """Generate the evaluation prompt for the ground_truth metric.
 
     This function formats the system prompt with the provided generated output, expected output,
-    and few-shot examples to create a comprehensive prompt for the language model evaluation.
+    few-shot examples, and optional exploration sources to create a comprehensive prompt for
+    the language model evaluation.
 
     Args:
         output: The generated article content to be evaluated.
         expected_output: The expected article content for comparison.
         few_shot_examples: An instance of FollowsGTMetricFewShotExamples containing examples
          to guide the language model's evaluation.
+        exploration_sources: Optional formatted string listing the exploration-phase sources
+            for this episode. When provided, the judge applies source-attribution checks for
+            DepthEnhancement and BreadthEnhancement. When None, falls back to standard
+            criteria (backward compatible).
 
     Returns:
         The complete formatted prompt string ready for LLM invocation.
     """
+    _exploration_sources = (
+        exploration_sources
+        if exploration_sources
+        else (
+            "Not provided. No source attribution check is required — apply standard criteria for DepthEnhancement and BreadthEnhancement."
+        )
+    )
     # Path("context.md").write_text(few_shot_examples.to_context())
     return SYSTEM_PROMPT.format(
         examples=few_shot_examples.to_context(),
         output=output,
         expected_output=expected_output,
+        exploration_sources=_exploration_sources,
     )

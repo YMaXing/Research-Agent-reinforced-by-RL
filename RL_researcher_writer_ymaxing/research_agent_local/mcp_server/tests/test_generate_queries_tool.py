@@ -35,6 +35,9 @@ from src.config.constants import (
     LOCAL_FILES_FROM_RESEARCH_FOLDER,
     NEXT_QUERIES_FILE,
     RESEARCH_OUTPUT_FOLDER,
+    URLS_FROM_GUIDELINES_CODE_FOLDER,
+    URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER,
+    URLS_FROM_GUIDELINES_YOUTUBE_FOLDER,
 )
 
 _LLM_PATCH = "src.app.generate_queries_handler.get_chat_model"
@@ -179,7 +182,7 @@ class TestGenerateNextComplementaryQueriesTool:
         assert not (tmp_research_dir / RESEARCH_OUTPUT_FOLDER / FULL_QUERIES_FILE).exists()
 
     async def test_focus_depth_sends_80_percent_to_prompt(self, tmp_research_dir):
-        """focus='depth' overrides ratio to 0.80 → prompt must contain '80'."""
+        """focus='depth' overrides ratio to 1.0 → prompt must contain '100'."""
         recording = RecordingModel(FAKE_QUERIES_5)
         with patch(_LLM_PATCH, return_value=recording):
             await generate_next_complementary_queries_tool(
@@ -188,10 +191,10 @@ class TestGenerateNextComplementaryQueriesTool:
                 focus="depth",
             )
 
-        assert "80" in recording.last_prompt
+        assert "100" in recording.last_prompt
 
     async def test_focus_breadth_sends_20_percent_depth_to_prompt(self, tmp_research_dir):
-        """focus='breadth' overrides ratio to 0.20 → depth_pct=20 in prompt."""
+        """focus='breadth' overrides ratio to 0.0 → depth_pct=0 in prompt."""
         recording = RecordingModel(FAKE_QUERIES_5)
         with patch(_LLM_PATCH, return_value=recording):
             await generate_next_complementary_queries_tool(
@@ -200,7 +203,7 @@ class TestGenerateNextComplementaryQueriesTool:
                 focus="breadth",
             )
 
-        assert "20" in recording.last_prompt
+        assert "0" in recording.last_prompt
 
     async def test_focus_balanced_honours_provided_ratio(self, tmp_research_dir):
         """focus='balanced' clamps the user-supplied ratio to [0, 1] and uses it."""
@@ -276,3 +279,142 @@ class TestGenerateNextComplementaryQueriesTool:
             await generate_next_complementary_queries_tool(str(tmp_research_dir))
 
         assert "Critical local information." in recording.last_prompt
+
+
+# ---------------------------------------------------------------------------
+# Scraped-context completeness: all five guideline-source folders are read
+# by BOTH tools (regression tests for the "exploitation sources missing" bug)
+# ---------------------------------------------------------------------------
+
+class TestScrapedContextIncludesAllFolders:
+    """
+    Verify that generate_next_queries_tool and generate_next_complementary_queries_tool
+    include content from every folder that is populated in step 2 of the workflow:
+      - urls_from_guidelines          (golden other-URLs, step 2.2)
+      - urls_from_guidelines_code     (golden GitHub, step 2.3)
+      - urls_from_guidelines_youtube  (golden YouTube, step 2.4)
+      - urls_from_guidelines_exploitation  ("Other Sources", step 2.5)
+      - local_files_from_research     (local files, step 2.1)
+    """
+
+    # ---- exploitation tool --------------------------------------------------
+
+    async def test_exploitation_tool_reads_code_folder(self, tmp_research_dir):
+        code_dir = tmp_research_dir / RESEARCH_OUTPUT_FOLDER / URLS_FROM_GUIDELINES_CODE_FOLDER
+        code_dir.mkdir(parents=True, exist_ok=True)
+        (code_dir / "repo.md").write_text(
+            "# GitHub Repo\nGolden code context.", encoding="utf-8"
+        )
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_LLM_PATCH, return_value=recording):
+            await generate_next_queries_tool(str(tmp_research_dir))
+
+        assert "Golden code context." in recording.last_prompt
+
+    async def test_exploitation_tool_reads_youtube_folder(self, tmp_research_dir):
+        yt_dir = tmp_research_dir / RESEARCH_OUTPUT_FOLDER / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER
+        yt_dir.mkdir(parents=True, exist_ok=True)
+        (yt_dir / "video.md").write_text(
+            "# YouTube Transcript\nGolden video content.", encoding="utf-8"
+        )
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_LLM_PATCH, return_value=recording):
+            await generate_next_queries_tool(str(tmp_research_dir))
+
+        assert "Golden video content." in recording.last_prompt
+
+    async def test_exploitation_tool_reads_exploitation_folder(self, tmp_research_dir):
+        """Regression: 'Other Sources' exploitation URLs must be visible in scraped_ctx."""
+        exploit_dir = tmp_research_dir / RESEARCH_OUTPUT_FOLDER / URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER
+        exploit_dir.mkdir(parents=True, exist_ok=True)
+        (exploit_dir / "other_source.md").write_text(
+            "# Other Source\nExploitation source content.", encoding="utf-8"
+        )
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_LLM_PATCH, return_value=recording):
+            await generate_next_queries_tool(str(tmp_research_dir))
+
+        assert "Exploitation source content." in recording.last_prompt
+
+    async def test_exploitation_tool_reads_all_five_folders_together(self, tmp_research_dir):
+        """All five folders contribute content simultaneously."""
+        base = tmp_research_dir / RESEARCH_OUTPUT_FOLDER
+        sentinel_map = {
+            "urls_from_guidelines": "GOLDEN_OTHER_SENTINEL",
+            URLS_FROM_GUIDELINES_CODE_FOLDER: "GOLDEN_CODE_SENTINEL",
+            URLS_FROM_GUIDELINES_YOUTUBE_FOLDER: "GOLDEN_YOUTUBE_SENTINEL",
+            URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER: "EXPLOITATION_SENTINEL",
+            LOCAL_FILES_FROM_RESEARCH_FOLDER: "LOCAL_FILES_SENTINEL",
+        }
+        for folder_name, sentinel in sentinel_map.items():
+            folder = base / folder_name
+            folder.mkdir(parents=True, exist_ok=True)
+            (folder / "content.md").write_text(sentinel, encoding="utf-8")
+
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_LLM_PATCH, return_value=recording):
+            await generate_next_queries_tool(str(tmp_research_dir))
+
+        for sentinel in sentinel_map.values():
+            assert sentinel in recording.last_prompt
+
+    # ---- complementary tool -------------------------------------------------
+
+    async def test_complementary_tool_reads_code_folder(self, tmp_research_dir):
+        code_dir = tmp_research_dir / RESEARCH_OUTPUT_FOLDER / URLS_FROM_GUIDELINES_CODE_FOLDER
+        code_dir.mkdir(parents=True, exist_ok=True)
+        (code_dir / "repo.md").write_text(
+            "# GitHub Repo\nComplementary code context.", encoding="utf-8"
+        )
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_LLM_PATCH, return_value=recording):
+            await generate_next_complementary_queries_tool(str(tmp_research_dir))
+
+        assert "Complementary code context." in recording.last_prompt
+
+    async def test_complementary_tool_reads_youtube_folder(self, tmp_research_dir):
+        yt_dir = tmp_research_dir / RESEARCH_OUTPUT_FOLDER / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER
+        yt_dir.mkdir(parents=True, exist_ok=True)
+        (yt_dir / "video.md").write_text(
+            "# YouTube Transcript\nComplementary video content.", encoding="utf-8"
+        )
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_LLM_PATCH, return_value=recording):
+            await generate_next_complementary_queries_tool(str(tmp_research_dir))
+
+        assert "Complementary video content." in recording.last_prompt
+
+    async def test_complementary_tool_reads_exploitation_folder(self, tmp_research_dir):
+        """Regression: 'Other Sources' exploitation URLs must be visible in scraped_ctx."""
+        exploit_dir = tmp_research_dir / RESEARCH_OUTPUT_FOLDER / URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER
+        exploit_dir.mkdir(parents=True, exist_ok=True)
+        (exploit_dir / "other_source.md").write_text(
+            "# Other Source\nComplementary exploitation content.", encoding="utf-8"
+        )
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_LLM_PATCH, return_value=recording):
+            await generate_next_complementary_queries_tool(str(tmp_research_dir))
+
+        assert "Complementary exploitation content." in recording.last_prompt
+
+    async def test_complementary_tool_reads_all_five_folders_together(self, tmp_research_dir):
+        """All five folders contribute content simultaneously."""
+        base = tmp_research_dir / RESEARCH_OUTPUT_FOLDER
+        sentinel_map = {
+            "urls_from_guidelines": "COMP_GOLDEN_OTHER_SENTINEL",
+            URLS_FROM_GUIDELINES_CODE_FOLDER: "COMP_GOLDEN_CODE_SENTINEL",
+            URLS_FROM_GUIDELINES_YOUTUBE_FOLDER: "COMP_GOLDEN_YOUTUBE_SENTINEL",
+            URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER: "COMP_EXPLOITATION_SENTINEL",
+            LOCAL_FILES_FROM_RESEARCH_FOLDER: "COMP_LOCAL_FILES_SENTINEL",
+        }
+        for folder_name, sentinel in sentinel_map.items():
+            folder = base / folder_name
+            folder.mkdir(parents=True, exist_ok=True)
+            (folder / "content.md").write_text(sentinel, encoding="utf-8")
+
+        recording = RecordingModel(FAKE_QUERIES_5)
+        with patch(_LLM_PATCH, return_value=recording):
+            await generate_next_complementary_queries_tool(str(tmp_research_dir))
+
+        for sentinel in sentinel_map.values():
+            assert sentinel in recording.last_prompt

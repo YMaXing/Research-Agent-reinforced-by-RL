@@ -28,6 +28,7 @@ import argparse
 import asyncio
 import json
 import logging
+import re
 import time
 from pathlib import Path
 from typing import Sequence
@@ -109,15 +110,67 @@ _user_intent_metric = UserIntentMetric(
 # ---------------------------------------------------------------------------
 
 
+def _build_exploration_sources(research_dir: Path) -> str | None:
+    """Build a formatted exploration-sources string from url_phases.json.
+
+    Reads url_phases.json to identify which URLs were retrieved during the exploration
+    phase, then extracts their query and answer summary from tavily_results_selected.md.
+    Returns None when no exploration URLs exist or when required files are missing.
+    """
+    url_phases_file = research_dir / "url_phases.json"
+    tavily_file = research_dir / "tavily_results_selected.md"
+
+    if not url_phases_file.exists() or not tavily_file.exists():
+        return None
+
+    url_phases: dict[str, str] = json.loads(url_phases_file.read_text(encoding="utf-8"))
+    exploration_urls = {url for url, phase in url_phases.items() if "[EXPLORATION]" in phase}
+    if not exploration_urls:
+        return None
+
+    tavily_content = tavily_file.read_text(encoding="utf-8")
+    entries: list[str] = []
+    for block in tavily_content.split("-----"):
+        url_match = re.search(r"### Source \[\d+\]: (\S+)", block)
+        if not url_match:
+            continue
+        url = url_match.group(1).strip()
+        if url not in exploration_urls:
+            continue
+        query_match = re.search(r"Query: (.+?)(?=\n|$)", block)
+        query = query_match.group(1).strip() if query_match else ""
+        answer_match = re.search(r"Answer: (.+?)(?=\n-----|\Z)", block, re.DOTALL)
+        if answer_match:
+            answer = answer_match.group(1).strip()
+            sentences = re.split(r"(?<=[.!?])\s+", answer)
+            summary = " ".join(sentences[:2])
+            if len(summary) > 300:
+                summary = summary[:300] + "..."
+        else:
+            summary = ""
+        entries.append(f"- {url}\n  Query: {query}\n  Summary: {summary}")
+
+    if not entries:
+        return None
+
+    header = (
+        "The following sources were retrieved during the exploration phase "
+        "(gap-driven research beyond the article guideline scope). "
+        "Depth and breadth additions score 1 only if traceable to one or more of these sources."
+    )
+    return header + "\n\n" + "\n".join(entries)
+
+
 async def _grade_episode(episode_dir: Path, article_name: str) -> tuple[dict[str, float], dict[str, str]]:
     """Run FollowsGTMetric and UserIntentMetric concurrently; return merged scores and reasons."""
     article_md = (episode_dir / "article.md").read_text(encoding="utf-8")
     gt_md = (EVAL_DATA_DIR / article_name / "article_ground_truth.md").read_text(encoding="utf-8")
     guideline_md = (EVAL_DATA_DIR / article_name / "article_guideline.md").read_text(encoding="utf-8")
     research_md = (episode_dir / "research.md").read_text(encoding="utf-8")
+    exploration_sources = _build_exploration_sources(episode_dir / ".research")
 
     gt_results, ui_results = await asyncio.gather(
-        _follows_gt_metric.ascore(output=article_md, expected_output=gt_md),
+        _follows_gt_metric.ascore(output=article_md, expected_output=gt_md, exploration_sources=exploration_sources),
         _user_intent_metric.ascore(
             input=guideline_md,
             context={"research": research_md},

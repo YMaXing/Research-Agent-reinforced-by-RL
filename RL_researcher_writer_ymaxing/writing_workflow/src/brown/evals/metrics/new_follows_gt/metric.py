@@ -79,6 +79,7 @@ class FollowsGTMetric(BrownBaseMetric):
         self,
         output: str,
         expected_output: str,
+        exploration_sources: str | None = None,
         **ignored_kwargs: Any,
     ) -> list[score_result.ScoreResult]:
         """Asynchronously calculate the ground-truth evaluation scores across six dimensions.
@@ -97,6 +98,10 @@ class FollowsGTMetric(BrownBaseMetric):
         Args:
             output: The generated article content to be evaluated.
             expected_output: The expected article content to compare against.
+            exploration_sources: Optional formatted string listing the exploration-phase
+                sources for this episode. When provided, DepthEnhancement and
+                BreadthEnhancement scores only credit additions traceable to these
+                sources. When None, falls back to standard criteria (backward compatible).
             **ignored_kwargs: Additional keyword arguments that are ignored to maintain
                 compatibility with the base metric interface.
 
@@ -124,6 +129,7 @@ class FollowsGTMetric(BrownBaseMetric):
             output=output,
             expected_output=expected_output,
             few_shot_examples=self.few_shot_examples,
+            exploration_sources=exploration_sources,
         )
 
         article_response = cast(

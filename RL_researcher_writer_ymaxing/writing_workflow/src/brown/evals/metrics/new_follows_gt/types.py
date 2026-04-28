@@ -55,21 +55,33 @@ class FollowsGTMetricExample(BaseExample):
     Attributes:
         output: The generated article content.
         expected_output: The expected (ground-truth) article content.
+        exploration_sources: Optional formatted string listing the exploration-phase
+            sources available when the example was generated. When provided, the judge
+            is expected to verify depth/breadth additions against these sources.
         scores: The FollowsGTArticleScores associated with this example.
     """
 
     output: str
     expected_output: str
+    exploration_sources: str | None = None
     scores: FollowsGTArticleScores
 
     @classmethod
-    def from_markdown(cls, output_file: Path, expected_output_file: Path, scores: FollowsGTArticleScores) -> "FollowsGTMetricExample":
+    def from_markdown(
+        cls,
+        output_file: Path,
+        expected_output_file: Path,
+        scores: FollowsGTArticleScores,
+        exploration_sources: str | None = None,
+    ) -> "FollowsGTMetricExample":
         """Create a FollowsGTMetricExample instance from markdown files.
 
         Args:
             output_file: Path to the generated article content.
             expected_output_file: Path to the expected article content.
             scores: The FollowsGTArticleScores associated with this example.
+            exploration_sources: Optional formatted string of exploration-phase sources
+                used to calibrate depth/breadth scoring in this example.
 
         Returns:
             An instance of FollowsGTMetricExample populated with content from files and scores.
@@ -77,21 +89,28 @@ class FollowsGTMetricExample(BaseExample):
         output = output_file.read_text()
         expected_output = expected_output_file.read_text()
 
-        return cls(output=output, expected_output=expected_output, scores=scores)
+        return cls(
+            output=output,
+            expected_output=expected_output,
+            exploration_sources=exploration_sources,
+            scores=scores,
+        )
 
     def to_context(self) -> str:
         """Convert the example to a formatted string for use as context in prompts.
 
         Returns:
-            A string representation of the example, including output, expected output, and scores.
+            A string representation of the example, including output, expected output,
+            optional exploration sources, and scores.
         """
+        sources_block = f"\n<exploration_sources>\n{self.exploration_sources}\n</exploration_sources>" if self.exploration_sources else ""
         return f"""
 <output>
 {self.output}
 </output>
 <expected_output>
 {self.expected_output}
-</expected_output>
+</expected_output>{sources_block}
 {self.scores.to_context()}
 """
 

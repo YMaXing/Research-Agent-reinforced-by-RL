@@ -198,7 +198,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
 
 **Section length:** 300 words
 
-## Section - Building a Basic Routing Workflow
+## Section 6 - Building a Basic Routing Workflow
 
 - This section is practice-oriented.
 

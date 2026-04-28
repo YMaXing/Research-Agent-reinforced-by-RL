@@ -299,17 +299,45 @@ def test_get_eval_prompt_injects_few_shot_examples() -> None:
 
 def test_get_eval_prompt_no_unfilled_placeholders() -> None:
     """
-    The rendered prompt must contain none of the three known template
-    placeholders ({examples}, {output}, {expected_output}) in their
-    raw, unsubstituted form.
+    The rendered prompt must contain none of the four known template
+    placeholders ({examples}, {output}, {expected_output}, {exploration_sources})
+    in their raw, unsubstituted form.
     """
     rendered = follows_gt_prompts.get_eval_prompt(
         output="output",
         expected_output="expected",
         few_shot_examples=follows_gt_prompts.DEFAULT_FEW_SHOT_EXAMPLES,
     )
-    for placeholder in ("{examples}", "{output}", "{expected_output}"):
+    for placeholder in ("{examples}", "{output}", "{expected_output}", "{exploration_sources}"):
         assert placeholder not in rendered, f"Unfilled placeholder found: {placeholder}"
+
+
+def test_get_eval_prompt_exploration_sources_injected() -> None:
+    """
+    When exploration_sources is provided, it must appear verbatim in the
+    rendered prompt inside an <exploration_sources> block.
+    """
+    sources = "- https://example.com/paper — Some exploration source"
+    rendered = follows_gt_prompts.get_eval_prompt(
+        output="output",
+        expected_output="expected",
+        few_shot_examples=follows_gt_prompts.DEFAULT_FEW_SHOT_EXAMPLES,
+        exploration_sources=sources,
+    )
+    assert sources in rendered
+
+
+def test_get_eval_prompt_exploration_sources_not_provided_fallback() -> None:
+    """
+    When exploration_sources is None (default), the rendered prompt must
+    contain the 'Not provided' fallback string instead of the raw placeholder.
+    """
+    rendered = follows_gt_prompts.get_eval_prompt(
+        output="output",
+        expected_output="expected",
+        few_shot_examples=follows_gt_prompts.DEFAULT_FEW_SHOT_EXAMPLES,
+    )
+    assert "Not provided" in rendered
 
 
 # ---------------------------------------------------------------------------

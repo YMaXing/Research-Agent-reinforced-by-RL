@@ -69,39 +69,82 @@ important.
 {scraped_ctx}
 </scraped_context>
 
-Guidelines for the set of queries:
-• Give priority to sections/topics from the article guidelines that currently lack supporting sources in <past_research> and <scraped_context>.
-• Cover any remaining major sections to ensure balanced coverage.
-• **Strictly avoid semantic duplication**: each query must target a truly distinct aspect. Do not generate near-equivalents (e.g. "limitations of X" and "failure modes of X").
-• Never repeat or closely paraphrase any query that already appears in <full_queries>.
-• The web search queries should be natural language questions, not just keywords.
-• **Exploitation queries fill direct coverage gaps only.** They target sections or topics explicitly required by the article guidelines that are currently missing or underrepresented in past research. Do not generate depth or breadth exploration queries here — those belong exclusively to the complementary phase (`generate_next_complementary_queries_tool`).
+## SCOPE OF THIS PHASE (EXPLOITATION — LOOKUP ONLY)
 
-**Few-shot examples:**
+Exploitation queries fill direct coverage gaps only. This is the **exploitation phase**. Your sole purpose is to collect direct, authoritative coverage for material the
+article guideline already prescribes. You are NOT exploring — a separate **exploration phase** exists later for
+depth and breadth research, and stealing its scope here directly harms downstream learning signals.
+
+**Mandatory anchoring rule:** Every query you generate must derive from a concrete *anchor* found verbatim in
+`<article_guidelines>`. An anchor is one of:
+  (A) An H2 or H3 section heading.
+  (B) A bullet point listed under a section.
+  (C) A specifically named entity — algorithm, library, technique, paper title, or technical concept — explicitly
+      mentioned in the guideline prose.
+
+**Reason format (strictly required):** The `reason` field for every query must begin with the literal token
+`Anchor: "<verbatim quote from the guideline>"` followed by a sentence explaining what coverage gap this anchor
+still has in `<past_research>` and `<scraped_context>`. Queries whose reason field does not begin with `Anchor: "..."`
+are invalid.
+
+**Forbidden categories — these belong exclusively to the exploration phase, do NOT generate them here:**
+  ✖ "Limitations / failure modes / criticisms of X"
+  ✖ "Latest advancements / recent developments in X" (unless the guideline explicitly lists a specific recent technique by name)
+  ✖ "Real-world case studies / industry applications of X"
+  ✖ "History / evolution / origin of X"
+  ✖ "Future implications / open research directions / emerging trends in X"
+  ✖ "Cross-domain analogies / lessons from other fields"
+  ✖ "Enabling, disrupting, or adjacent technologies for X"
+  ✖ "Comparison with adjacent or competing approach Y" (where Y is not also listed in the guideline)
+  ✖ "Theoretical foundations / mathematical underpinnings of X" (unless the guideline explicitly lists them)
+
+**Allowed coverage questions** (the only categories that belong here):
+  ✓ "What is X?" / "How does X work?" — only when X is anchor-listed and not already covered.
+  ✓ "What are the components / key concepts of X?" — only for anchor-listed X.
+  ✓ "How is X implemented in <library/framework named in the guideline>?"
+  ✓ "What does <named paper/method from the guideline> say/do?"
+
+## RULES
+
+• Give priority to anchors that currently have **no** supporting sources in `<past_research>` and `<scraped_context>`.
+• If an anchor already has at least one strong source covering it, do not generate a query for it unless a clearly
+  distinct sub-aspect of that anchor is explicitly listed in the guideline and remains uncovered.
+• Cover the remaining major anchors to ensure balanced coverage across the guideline.
+• **Strictly avoid semantic duplication**: each query must target a truly distinct anchor or sub-aspect. Do not
+  generate near-equivalents (e.g. "limitations of X" and "failure modes of X" — and both are forbidden anyway).
+• Never repeat or closely paraphrase any query that already appears in `<full_queries>`.
+• Web-search queries should be natural-language questions, not just keywords.
+• If you cannot find {n_queries} legitimate uncovered anchors, generate fewer queries rather than inventing
+  exploration-flavored questions to fill the quota.
+
+**Few-shot examples** (note the mandatory `Anchor:` prefix in every reason):
 
 Example 1:
-Query: What are the most widely accepted evaluation metrics and benchmarks for measuring retrieval quality and generation faithfulness in modern RAG systems?
-Reason: This directly fills a major missing section in the article guidelines on evaluation, providing authoritative sources for quantitative assessment that are currently absent from past research.
+Query: What evaluation metrics and benchmarks does the RAGAS framework provide for measuring retrieval quality and generation faithfulness?
+Reason: Anchor: "### Evaluation — RAGAS framework". The guideline lists RAGAS as the evaluation toolkit for the article but no current source covers its specific metric definitions; this fills a direct prescribed-coverage gap.
 
 Example 2:
-Query: How do hybrid sparse-dense retrieval architectures improve recall-precision tradeoffs compared to pure dense retrieval in RAG pipelines?
-Reason: This targets an important remaining architectural component in the guidelines, ensuring balanced coverage of advanced retrieval strategies not yet addressed in existing material.
+Query: How does the BM25 + dense hybrid retrieval architecture described in the article guideline work?
+Reason: Anchor: "BM25 + dense hybrid retrieval" (bullet under "## Retrieval architectures"). The guideline names this exact architecture as a required topic but past research only covers pure dense retrieval; this query directly fills the prescribed BM25-hybrid gap.
 
 Example 3:
-Query: What are the primary data privacy and compliance challenges when deploying enterprise-scale RAG systems that access sensitive internal documents?
-Reason: This addresses a critical gap in the guidelines regarding production deployment considerations, supplying trustworthy sources on regulatory and security aspects.
+Query: What are the key components of LangChain's RetrievalQA chain referenced in the article guideline?
+Reason: Anchor: "LangChain RetrievalQA" (named entity in the implementation section). The guideline explicitly references this chain as the implementation example but no scraped source documents its components; this is a direct lookup query.
 
 Example 4:
-Query: How do advanced reranking techniques (such as cross-encoders or LLM-based rerankers) integrate into RAG pipelines to reduce hallucination rates?
-Reason: This covers a distinct optimization technique from the guidelines that is currently underrepresented, offering high-quality sources on a specific performance improvement vector.
+Query: What is the chunking strategy proposed in the LlamaIndex documentation listed under "Other Sources"?
+Reason: Anchor: "## Chunking strategies" (H2) and "LlamaIndex chunking docs" (named source). Past research mentions chunking generically but does not cover the specific LlamaIndex strategy named in the guideline; this fills a prescribed-coverage gap.
 
-Now generate exactly {n_queries} new queries following the same style and the rules above.
+Now generate exactly {n_queries} new queries (or fewer, if the guideline does not have that many uncovered anchors)
+following the rules above. Every reason must begin with `Anchor: "..."`.
 
 """.strip()
 
 # Complementary query generation prompt
 PROMPT_GENERATE_COMPLEMENTARY_QUERIES_AND_REASONS = """
-You are an expert research strategist whose job is to balance **exploitation** (filling direct gaps) with **exploration** (depth + breadth) to make the final article truly comprehensive.
+You are an expert research strategist whose job is to add **exploration** value (depth + breadth) on top of the
+prescribed coverage that the exploitation phase has already collected. Your sole purpose is to fill gaps that the
+exploitation phase, by design, was not allowed to fill.
 
 Your task: propose {n_queries} insightful, non-redundant web-search questions that will:
 - Dive deeper into topics already covered in the guidelines and past research, OR
@@ -111,7 +154,7 @@ Target distribution (follow this exactly):
 - Generate approximately **{depth_percentage}% Depth** queries
 - Generate approximately **{breadth_percentage}% Breadth** queries
 
-The queries, taken **as a group**, should add genuinely new value that cannot be easily inferred from existing material.
+The queries, taken **as a group**, must add genuinely new value that cannot be inferred from existing material.
 
 <article_guidelines>
 {article_guidelines}
@@ -129,41 +172,77 @@ The queries, taken **as a group**, should add genuinely new value that cannot be
 {scraped_ctx}
 </already_covered_context>
 
-**Exploration strategies** (respect the {depth_percentage}% / {breadth_percentage}% distribution above):
-*Depth* means intensifying understanding of a topic's inner workings — the query stays within the subject. *Breadth* means connecting outward to adjacent areas — the query moves beyond the subject to related concepts, other fields, or wider contexts.
-• **Depth** (inward — intensify understanding of the core topic): motivation for the topic (why it exists, what problem it solves), theoretical foundations or mathematical underpinnings, technical nuances or alternative implementation perspectives, latest advancements or recent developments, limitations, criticisms, or failure modes, implementation challenges or latency/scale trade-offs, real-world case studies or concrete metrics, future implications or open research directions.
-• **Breadth** (outward — connect to adjacent areas outside the core topic): adjacent or related concepts that expand the scope, cross-domain analogies or lessons from other fields, historical context or evolution of the topic, enabling or disrupting technologies that intersect with the core topic, practical applications of the core topic in other industries or domains, emerging trends in adjacent fields or the broader ecosystem.
+## SCOPE OF THIS PHASE (EXPLORATION — GAP-DRIVEN ONLY)
 
-**Rules**:
-• **Strictly avoid semantic duplication**: each query must target a truly distinct aspect. Do not generate near-equivalents (e.g. "limitations of X" and "failure modes of X").
-• Never repeat or closely paraphrase any query that already appears in <full_queries>.
+The exploitation phase (step 3) was strictly restricted to **lookup-only** coverage queries derived from explicit
+anchors in `<article_guidelines>` (H2/H3 headings, bullet points, named entities). Your job is the complement:
+you must generate queries that the exploitation phase was **forbidden** from generating.
+
+**Mandatory category labelling:** Each query you generate must target one of the depth or breadth bullets listed
+below. The `reason` field must begin with the literal token `Category: Depth—<bullet>` or
+`Category: Breadth—<bullet>`, followed by `Anchor: "<guideline anchor this query deepens or expands around>"`,
+followed by a sentence explaining the new value the query brings. Reasons that do not begin with
+`Category: Depth—...` or `Category: Breadth—...` are invalid.
+
+**Forbidden in this phase — these belong to the exploitation phase (step 3), do NOT generate them here:**
+  ✖ Pure-coverage questions like "What is X?", "How does X work?", "What are the components of X?" where X is
+    anchor-listed in the guideline. If `<past_research>` shows X is not yet covered, that is a step-3 problem,
+    not a step-4 problem — leave it alone.
+  ✖ Lookup queries for named libraries, papers, or methods that are explicitly listed in the guideline.
+
+**Required for this phase — every query must fall into one of these depth/breadth bullets:**
+*Depth* means intensifying understanding of a topic's inner workings — the query stays within the subject. *Breadth*
+means connecting outward to adjacent areas — the query moves beyond the subject to related concepts, other fields,
+or wider contexts.
+
+• **Depth bullets** (inward — intensify understanding of the core topic):
+    – motivation for the topic: why it exists, what problem it solves
+    – theoretical foundations or mathematical underpinnings
+    – technical nuances or alternative implementation perspectives
+    – latest advancements or recent developments
+    – limitations, criticisms, or failure modes
+    – implementation challenges or latency/scale trade-offs
+    – real-world case studies or concrete metrics
+    – future implications or open research directions
+• **Breadth bullets** (outward — connect to adjacent areas outside the core topic):
+    – adjacent or related concepts that expand the scope without straying from the core theme
+    – cross-domain analogies or lessons from other fields
+    – historical context or evolution of the topic
+    – enabling or disrupting technologies that intersect with the core topic
+    – practical applications in other industries or domains
+    – emerging trends in adjacent fields or the broader ecosystem
+
+## RULES
+
+• **Strictly avoid semantic duplication**: each query must target a truly distinct depth or breadth bullet. Do not
+  generate near-equivalents (e.g. "limitations of X" and "failure modes of X").
+• Never repeat or closely paraphrase any query that already appears in `<full_queries>`, including the exploitation
+  queries from step 3.
 • Strictly follow the requested Depth/Breadth distribution.
 • Make questions natural, specific, and optimized for high-quality search results.
 • Aim for diversity within the requested ratio.
 
-For each query, provide a short reason that explicitly states:
-- whether it is primarily **Depth** or **Breadth**
-- exactly what new value it brings to the article.
-
-**Few-shot examples:**
+**Few-shot examples** (note the mandatory `Category: ...` and `Anchor: "..."` prefixes):
 
 Example 1 (Depth):
 Query: What are the core mathematical and information-theoretic limitations of dense retrieval methods in RAG systems when scaling to millions of documents?
-Reason: **Depth** - This explores fundamental theoretical constraints of the core retrieval mechanism, revealing scalability bottlenecks not covered in basic guideline discussions.
+Reason: Category: Depth—theoretical foundations. Anchor: "## Dense retrieval" (H2 in guideline). Past research covers basic dense retrieval mechanics; this query reveals fundamental scalability constraints not addressed by any existing source and not coverable by step 3.
 
 Example 2 (Depth):
 Query: What are the main engineering challenges and latency tradeoffs when integrating real-time knowledge updates into production RAG pipelines?
-Reason: **Depth** - This targets practical implementation difficulties and system-level tradeoffs of the core topic, providing actionable insights for real-world deployment.
+Reason: Category: Depth—implementation challenges and latency/scale trade-offs. Anchor: "production RAG pipelines" (named in the deployment section). Provides practical engineering insights absent from existing sources; outside step 3's lookup-only scope.
 
 Example 3 (Breadth):
-Query: How have retrieval-augmented techniques originally developed for legal document analysis been adapted and applied in biomedical research and drug discovery?
-Reason: **Breadth** - This examines successful applications in adjacent high-stakes domains (biomedicine), offering powerful cross-domain analogies and lessons.
+Query: How have retrieval-augmented techniques originally developed for legal document analysis been adapted in biomedical research and drug discovery?
+Reason: Category: Breadth—cross-domain analogies. Anchor: "## Retrieval-augmented generation" (H2 in guideline). Examines successful applications in adjacent high-stakes domains (biomedicine), offering cross-domain analogies that step 3 cannot reach.
 
 Example 4 (Breadth):
 Query: How is the rise of long-context language models and memory-augmented agents changing the role and architecture of traditional RAG systems?
-Reason: **Breadth** - This explores an emerging adjacent trend (long-context + agentic systems) and how it intersects with and potentially disrupts core RAG approaches.
+Reason: Category: Breadth—emerging trends in adjacent fields. Anchor: "## RAG architectures" (H2 in guideline). Explores an emerging adjacent trend (long-context + agentic systems) that intersects with and potentially disrupts the core RAG approach; not coverable by step 3.
 
-Now generate exactly {n_queries} new queries following the same style, the exact Depth/Breadth distribution, and the rules above.
+Now generate exactly {n_queries} new queries following the same style, the exact Depth/Breadth distribution, and
+the rules above. Every reason must begin with `Category: Depth—...` or `Category: Breadth—...` followed by
+`Anchor: "..."`.
 
 """.strip()
 
@@ -185,11 +264,25 @@ Perform **two-stage deduplication** on the new queries:
 
 **Phase-specific rules for Stage 2:**
 - Exploitation round: Be strict. Prevent close duplicates with previous exploitation queries.
+  **Backstop rule (exploration leakage):** Also REJECT any new exploitation query whose intent clearly falls
+  into one of the depth or breadth categories listed below — those categories are reserved exclusively for
+  the complementary phase. An exploitation query is leakage if it asks about: limitations / criticisms /
+  failure modes; latest advancements / recent developments; theoretical foundations or mathematical
+  underpinnings; real-world case studies / industry applications; future implications / open research /
+  emerging trends; cross-domain analogies / lessons from other fields; history / evolution / origin;
+  enabling / disrupting / adjacent technologies; comparison with adjacent or competing approaches that are
+  not also explicitly listed in the article guideline. A legitimate exploitation query asks for direct
+  coverage of a concept named verbatim in the article guideline (e.g. "What is X?", "How does X work?",
+  "What are the components of X?", "How is X implemented in <named library>?").
 - Complementary round: Strongly protect all historical exploitation queries. Only keep new queries that add genuine new depth or breadth value.
   For this purpose use the following definitions — these mirror the downstream evaluation criteria:
   - *Depth* (inward — intensify understanding of the core topic): motivation for the topic (why it exists, what problem it solves), theoretical foundations or mathematical underpinnings, technical nuances or alternative implementation perspectives, latest advancements or recent developments, limitations/criticisms/failure modes, implementation challenges or latency/scale trade-offs, real-world case studies or concrete metrics, future implications or open research directions.
   - *Breadth* (outward — connect to adjacent areas outside the core topic): adjacent or related concepts that expand the scope, cross-domain analogies or lessons from other fields, historical context or evolution of the topic, enabling/disrupting technologies that intersect with the core topic, practical applications of the core topic in other industries or domains, emerging trends in adjacent fields or the broader ecosystem.
   A complementary query adds genuine new value if it clearly targets a depth or breadth category not already covered by any historical query.
+  **Backstop rule (exploitation leakage):** Also REJECT any new complementary query whose intent is pure
+  coverage — e.g. "What is X?" / "How does X work?" / "What are the components of X?" — when X is already
+  named in the article guideline. Pure coverage of guideline-named concepts belongs to the exploitation
+  phase, not here.
 
 **What counts as a semantic duplicate?**
 Queries that target essentially the same knowledge need, angle, or sub-topic and would produce highly overlapping search results, even if worded differently.

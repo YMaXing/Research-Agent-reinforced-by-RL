@@ -17,6 +17,9 @@ from ..config.constants import (
     RESEARCH_OUTPUT_FOLDER,
     TAVILY_RESULTS_FILE,
     URLS_FROM_GUIDELINES_FOLDER,
+    URLS_FROM_GUIDELINES_CODE_FOLDER,
+    URLS_FROM_GUIDELINES_YOUTUBE_FOLDER,
+    URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER,
 )
 from ..utils.file_utils import read_file_safe, validate_research_folder
 
@@ -86,22 +89,27 @@ async def generate_next_queries_tool(research_directory: str, n_queries: int = 5
     # Gather context from the research folder
     guidelines_path = research_path / ARTICLE_GUIDELINE_FILE
     results_path = research_output_path / TAVILY_RESULTS_FILE
-    urls_from_guidelines_dir = research_output_path / URLS_FROM_GUIDELINES_FOLDER
     full_queries_path = research_output_path / FULL_QUERIES_FILE
 
     article_guidelines = read_file_safe(guidelines_path)
     past_research = read_file_safe(results_path)
     full_queries = read_file_safe(full_queries_path)
 
+    # All five guideline-source folders must be visible to the LLM so it can
+    # tell which anchors already have coverage and avoid redundant queries.
+    # Ordering: golden first (highest authority), then exploitation sources.
+    scraped_ctx_folders = [
+        research_output_path / URLS_FROM_GUIDELINES_FOLDER,             # golden other-URLs (step 2.2)
+        research_output_path / URLS_FROM_GUIDELINES_CODE_FOLDER,        # golden GitHub repos (step 2.3)
+        research_output_path / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER,     # golden YouTube transcripts (step 2.4)
+        research_output_path / URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER, # "Other Sources" exploitation URLs (step 2.5)
+        research_output_path / LOCAL_FILES_FROM_RESEARCH_FOLDER,        # local files (step 2.1)
+    ]
     scraped_ctx_parts: List[str] = []
-    if urls_from_guidelines_dir.exists():
-        for md_file in sorted(urls_from_guidelines_dir.glob(f"*{MARKDOWN_EXTENSION}")):
-            scraped_ctx_parts.append(md_file.read_text(encoding="utf-8"))
-
-    local_files_dir = research_output_path / LOCAL_FILES_FROM_RESEARCH_FOLDER
-    if local_files_dir.exists():
-        for md_file in sorted(local_files_dir.glob(f"*{MARKDOWN_EXTENSION}")):
-            scraped_ctx_parts.append(md_file.read_text(encoding="utf-8"))
+    for folder in scraped_ctx_folders:
+        if folder.exists():
+            for md_file in sorted(folder.glob(f"*{MARKDOWN_EXTENSION}")):
+                scraped_ctx_parts.append(md_file.read_text(encoding="utf-8"))
 
     scraped_ctx_str = "\n\n".join(scraped_ctx_parts)
 
@@ -175,22 +183,27 @@ async def generate_next_complementary_queries_tool(research_directory: str,
         # Gather context from the research folder
         guidelines_path = research_path / ARTICLE_GUIDELINE_FILE
         results_path = research_output_path / TAVILY_RESULTS_FILE
-        urls_from_guidelines_dir = research_output_path / URLS_FROM_GUIDELINES_FOLDER
         full_queries_path = research_output_path / FULL_QUERIES_FILE
 
         article_guidelines = read_file_safe(guidelines_path)
         past_research = read_file_safe(results_path)
         full_queries = read_file_safe(full_queries_path)
 
+        # All five guideline-source folders must be visible to the LLM so it can
+        # tell which anchors already have coverage and avoid redundant queries.
+        # Ordering: golden first (highest authority), then exploitation sources.
+        scraped_ctx_folders = [
+            research_output_path / URLS_FROM_GUIDELINES_FOLDER,             # golden other-URLs (step 2.2)
+            research_output_path / URLS_FROM_GUIDELINES_CODE_FOLDER,        # golden GitHub repos (step 2.3)
+            research_output_path / URLS_FROM_GUIDELINES_YOUTUBE_FOLDER,     # golden YouTube transcripts (step 2.4)
+            research_output_path / URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER, # "Other Sources" exploitation URLs (step 2.5)
+            research_output_path / LOCAL_FILES_FROM_RESEARCH_FOLDER,        # local files (step 2.1)
+        ]
         scraped_ctx_parts: List[str] = []
-        if urls_from_guidelines_dir.exists():
-            for md_file in sorted(urls_from_guidelines_dir.glob(f"*{MARKDOWN_EXTENSION}")):
-                scraped_ctx_parts.append(md_file.read_text(encoding="utf-8"))
-
-        local_files_dir = research_output_path / LOCAL_FILES_FROM_RESEARCH_FOLDER
-        if local_files_dir.exists():
-            for md_file in sorted(local_files_dir.glob(f"*{MARKDOWN_EXTENSION}")):
-                scraped_ctx_parts.append(md_file.read_text(encoding="utf-8"))
+        for folder in scraped_ctx_folders:
+            if folder.exists():
+                for md_file in sorted(folder.glob(f"*{MARKDOWN_EXTENSION}")):
+                    scraped_ctx_parts.append(md_file.read_text(encoding="utf-8"))
 
         scraped_ctx_str = "\n\n".join(scraped_ctx_parts)
 
