@@ -1,8 +1,8 @@
 {
-  "ground_truth_core_content": 0.818182,
-  "ground_truth_flow": 0.363636,
-  "ground_truth_structure": 0.181818,
-  "ground_truth_depth_enhancement": 0.272727,
+  "ground_truth_core_content": 0.636364,
+  "ground_truth_flow": 0.272727,
+  "ground_truth_structure": 0.272727,
+  "ground_truth_depth_enhancement": 0.181818,
   "ground_truth_breadth_enhancement": 0.090909,
   "ground_truth_core_preservation": 0.818182,
   "user_intent_guideline_adherence": 0.833333,

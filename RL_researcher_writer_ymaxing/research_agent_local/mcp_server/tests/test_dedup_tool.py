@@ -32,6 +32,7 @@ from src.tools.dedup_new_queries_tool import deduplicate_new_queries_tool
 from src.config.constants import (
     FULL_QUERIES_FILE,
     NEXT_QUERIES_FILE,
+    REJECTED_QUERIES_FILE,
     RESEARCH_OUTPUT_FOLDER,
 )
 
@@ -235,3 +236,91 @@ class TestDeduplicateEdgeCases:
 
         assert result["status"] == "success"
         assert (tmp_research_dir / RESEARCH_OUTPUT_FOLDER).is_dir()
+
+
+# ---------------------------------------------------------------------------
+# Rejected queries file tests
+# ---------------------------------------------------------------------------
+
+class TestRejectedQueriesFile:
+    async def test_rejected_queries_file_written_when_queries_removed(
+        self, fake_plain_model_factory, tmp_research_dir
+    ):
+        """rejected_queries.md is created in .research/ when queries are rejected."""
+        _write_next_queries(tmp_research_dir, _SAMPLE_QUERIES)
+        # LLM keeps only 1 of 3 → 2 rejected
+        model = fake_plain_model_factory(
+            json.dumps({
+                "kept_queries": ["What is RAG?"],
+                "removed_queries": ["How does dense retrieval work?", "What are RAG limitations?"],
+                "reasoning": "Too similar to existing history.",
+            })
+        )
+        with patch(_DEDUP_LLM_PATCH, return_value=model):
+            await deduplicate_new_queries_tool(str(tmp_research_dir))
+
+        rejected_path = tmp_research_dir / RESEARCH_OUTPUT_FOLDER / REJECTED_QUERIES_FILE
+        assert rejected_path.exists()
+        content = rejected_path.read_text(encoding="utf-8")
+        assert "How does dense retrieval work?" in content
+        assert "What are RAG limitations?" in content
+        assert "Too similar to existing history." in content
+
+    async def test_rejected_queries_file_not_written_when_all_kept(
+        self, fake_plain_model_factory, tmp_research_dir
+    ):
+        """rejected_queries.md is NOT created when all new queries are kept."""
+        _write_next_queries(tmp_research_dir, _SAMPLE_QUERIES)
+        model = fake_plain_model_factory(_kept_json([q for q, _ in _SAMPLE_QUERIES]))
+
+        with patch(_DEDUP_LLM_PATCH, return_value=model):
+            await deduplicate_new_queries_tool(str(tmp_research_dir))
+
+        rejected_path = tmp_research_dir / RESEARCH_OUTPUT_FOLDER / REJECTED_QUERIES_FILE
+        assert not rejected_path.exists()
+
+    async def test_rejected_queries_file_contains_original_reasons(
+        self, fake_plain_model_factory, tmp_research_dir
+    ):
+        """Original generation reasons appear in the rejected queries log."""
+        _write_next_queries(tmp_research_dir, _SAMPLE_QUERIES)
+        model = fake_plain_model_factory(
+            json.dumps({
+                "kept_queries": ["What is RAG?"],
+                "removed_queries": ["How does dense retrieval work?"],
+                "reasoning": "Overlap with prior round.",
+            })
+        )
+        with patch(_DEDUP_LLM_PATCH, return_value=model):
+            await deduplicate_new_queries_tool(str(tmp_research_dir))
+
+        content = (tmp_research_dir / RESEARCH_OUTPUT_FOLDER / REJECTED_QUERIES_FILE).read_text(
+            encoding="utf-8"
+        )
+        assert "Technical deep dive" in content  # original reason for the rejected query
+
+    async def test_rejected_queries_file_appended_on_subsequent_calls(
+        self, fake_plain_model_factory, tmp_research_dir
+    ):
+        """Calling the tool twice appends a new section rather than overwriting."""
+        reject_one = json.dumps({
+            "kept_queries": ["What is RAG?", "What are RAG limitations?"],
+            "removed_queries": ["How does dense retrieval work?"],
+            "reasoning": "First round.",
+        })
+        reject_two = json.dumps({
+            "kept_queries": ["What are RAG limitations?"],
+            "removed_queries": ["What is RAG?", "How does dense retrieval work?"],
+            "reasoning": "Second round.",
+        })
+        for payload in (reject_one, reject_two):
+            _write_next_queries(tmp_research_dir, _SAMPLE_QUERIES)
+            model = fake_plain_model_factory(payload)
+            with patch(_DEDUP_LLM_PATCH, return_value=model):
+                await deduplicate_new_queries_tool(str(tmp_research_dir))
+
+        content = (tmp_research_dir / RESEARCH_OUTPUT_FOLDER / REJECTED_QUERIES_FILE).read_text(
+            encoding="utf-8"
+        )
+        assert "First round." in content
+        assert "Second round." in content

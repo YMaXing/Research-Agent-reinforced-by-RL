@@ -58,12 +58,14 @@ EPISODES_DIR = _THIS_DIR.parent / "rl_training_data" / "episodes"
 # Eval dataset with ground-truth articles and guidelines
 EVAL_DATA_DIR = _THIS_DIR / "inputs" / "evals" / "dataset" / "data"
 
-# Train articles (L2, L3, L5, L8, L11) -- must match Phase 1 / Phase 2a
+# Train articles (L2, L3, L5, L6, L8, L9, L11) -- must match Phase 1 / Phase 2a
 TRAIN_ARTICLES: list[str] = [
     "02_workflows_vs_agents",
     "03_context_engineering",
     "05_workflow_patterns",
+    "06_tools",
     "08_react_practice",
+    "09_RAG",
     "11_multimodal",
 ]
 
@@ -111,32 +113,28 @@ _user_intent_metric = UserIntentMetric(
 
 
 def _build_exploration_sources(research_dir: Path) -> str | None:
-    """Build a formatted exploration-sources string from url_phases.json.
+    """Build a formatted exploration-sources string from tavily_results_selected.md.
 
-    Reads url_phases.json to identify which URLs were retrieved during the exploration
-    phase, then extracts their query and answer summary from tavily_results_selected.md.
-    Returns None when no exploration URLs exist or when required files are missing.
+    Scans tavily_results_selected.md for blocks tagged 'Phase: [EXPLORATION]'.
+    This captures all exploration-phase Tavily results — both snippet-only entries
+    and those selected for full scraping — making url_phases.json unnecessary here.
+
+    Returns None when no exploration blocks exist or the file is missing.
     """
-    url_phases_file = research_dir / "url_phases.json"
     tavily_file = research_dir / "tavily_results_selected.md"
 
-    if not url_phases_file.exists() or not tavily_file.exists():
-        return None
-
-    url_phases: dict[str, str] = json.loads(url_phases_file.read_text(encoding="utf-8"))
-    exploration_urls = {url for url, phase in url_phases.items() if "[EXPLORATION]" in phase}
-    if not exploration_urls:
+    if not tavily_file.exists():
         return None
 
     tavily_content = tavily_file.read_text(encoding="utf-8")
+
     entries: list[str] = []
     for block in tavily_content.split("-----"):
+        if "[EXPLORATION]" not in block:
+            continue
+
         url_match = re.search(r"### Source \[\d+\]: (\S+)", block)
-        if not url_match:
-            continue
-        url = url_match.group(1).strip()
-        if url not in exploration_urls:
-            continue
+        url = url_match.group(1).strip() if url_match else ""
         query_match = re.search(r"Query: (.+?)(?=\n|$)", block)
         query = query_match.group(1).strip() if query_match else ""
         answer_match = re.search(r"Answer: (.+?)(?=\n-----|\Z)", block, re.DOTALL)

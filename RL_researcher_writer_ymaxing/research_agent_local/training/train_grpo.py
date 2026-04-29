@@ -37,6 +37,7 @@ _BASES_DIR = _REPO_ROOT / "rl_training_data" / "bases"
 _EPISODES_DIR = _REPO_ROOT / "rl_training_data" / "episodes"
 _MODEL_DIR = _REPO_ROOT / "models" / "Qwen3-4B"
 _OUTPUT_DIR = _REPO_ROOT / "rl_training_data" / "checkpoints"
+_EVAL_DIR = _REPO_ROOT / "writing_workflow" / "inputs" / "evals" / "dataset" / "data"
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -83,9 +84,9 @@ Respond with ONLY the preset number (0-5)."""
 SECTION_SYSTEM_PROMPT = """\
 You are a research exploration strategy selector for a section of an AI course article.
 
-Given a digest excerpt describing current research coverage, \
-source inventory, and gap analysis for a specific article section, select \
-the optimal exploration preset (0-5).
+Given the section guideline (what the section must cover and how it should be written) \
+and a digest excerpt describing current research coverage, source inventory, and gap \
+analysis for that section, select the optimal exploration preset (0-5).
 
 Presets:
 0: No exploration (baseline)
@@ -118,6 +119,10 @@ class Group:
 
     name: str
     digest: str
+    # Per-section guideline text extracted from article_guideline.md.
+    # Empty for article-level groups; populated by load_section_groups().
+    # Included in the model input to distinguish variant oracle signals.
+    section_guideline: str = ""
     input_ids: torch.Tensor | None = None
     rewards: list[float] = field(default_factory=list)
     advantages: torch.Tensor | None = None
@@ -143,8 +148,28 @@ class Group:
 # ---------------------------------------------------------------------------
 # Reward computation
 # ---------------------------------------------------------------------------
-def compute_reward(scores: dict, preset_id: int) -> float:
-    """Compute reward from scores.json using the finalized formula."""
+def compute_reward(
+    scores: dict,
+    preset_id: int,
+    variant_level: str = "standard",
+) -> float:
+    """Compute reward from scores.json using the variant-aware formula.
+
+    ``variant_level`` must be one of ``"minimal"``, ``"standard"``,
+    ``"demanding"``.  Each variant emphasises different output properties:
+
+    * **minimal** — the article must be a concise conceptual overview (~1500w).
+      Guideline adherence (``ga``) is the dominant signal; depth/breadth
+      enhancements are irrelevant (de=be=0) because the variant explicitly
+      forbids external examples/code; cost is unchanged.
+
+    * **standard** (default) — the balanced formula used in Phase 2b grading.
+
+    * **demanding** — the article must meet extended requirements (4000–4500w,
+      production code, named case studies, per-section industry anchors).
+      Depth/breadth enhancement weight is boosted; research-query cost is
+      halved to encourage thorough exploration.
+    """
     cc = scores["ground_truth_core_content"]
     fl = scores["ground_truth_flow"]
     de = scores["ground_truth_depth_enhancement"]
@@ -154,10 +179,24 @@ def compute_reward(scores: dict, preset_id: int) -> float:
     ra = scores["user_intent_research_anchoring"]
     nr = PRESET_ROUNDS[preset_id]
 
-    gt_base = 0.20 * cc + 0.20 * fl
-    explore = cp * (0.60 * de + 0.40 * be) * 0.30
-    user_intent = (0.50 * ga + 0.50 * ra) * 0.30
-    cost = -0.02 * nr
+    if variant_level == "minimal":
+        # Conceptual overview: ga dominant, de/be irrelevant, cost standard.
+        gt_base     = 0.05 * cc + 0.05 * fl
+        explore     = 0.0                           # de=be=0 for brief articles
+        user_intent = 0.80 * ga + 0.10 * ra
+        cost        = -0.02 * nr
+    elif variant_level == "demanding":
+        # Extended article: boost depth/breadth, halve exploration cost.
+        gt_base     = 0.12 * cc + 0.08 * fl
+        explore     = cp * (0.55 * de + 0.35 * be) * 0.50
+        user_intent = (0.60 * ga + 0.40 * ra) * 0.25
+        cost        = -0.01 * nr
+    else:  # "standard"
+        gt_base     = 0.20 * cc + 0.20 * fl
+        explore     = cp * (0.60 * de + 0.40 * be) * 0.30
+        user_intent = (0.50 * ga + 0.50 * ra) * 0.30
+        cost        = -0.02 * nr
+
     return gt_base + explore + user_intent + cost
 
 
@@ -232,6 +271,98 @@ def _match_reasoning_to_digest(
     return None
 
 
+def _extract_guideline_sections(
+    guideline: str,
+    digest_sections: list[tuple[str, str]],
+) -> list[str]:
+    """Slice ``article_guideline.md`` into per-section text blocks aligned to
+    the digest sections returned by :func:`_extract_digest_sections`.
+
+    Guideline sections are delimited by ``## Section N - Title`` or
+    ``## Section N: Title`` headers.  Each block runs from its header up to
+    (but not including) the next ``## Section`` header or end-of-file.
+
+    Matching is done in two stages:
+
+    1. **Positional** — if both lists have the same length, use index alignment
+       directly (guideline section *i* → digest section *i*).  This is the
+       common case because :func:`generate_digests._extract_content_sections`
+       reads the same guideline to produce digest section titles, so the two
+       orderings are guaranteed to agree.
+
+    2. **Title fuzzy-fallback** — for any digest section that has no positional
+       match (e.g., guideline and digest have different section counts due to
+       merging or splitting), the same three-pass fuzzy match used in
+       :func:`_match_reasoning_to_digest` is applied against each guideline
+       block's extracted title.
+
+    Returns a ``list[str]`` of length ``len(digest_sections)``.  Each entry is
+    the full ``## Section N`` block text for the matched guideline section, or
+    an empty string if no match was found.
+    """
+    # --- Step 1: split guideline by ## Section N headers ---
+    header_re = re.compile(r'^## Section \d+ ?[-:] ?(.+)$', re.MULTILINE)
+    matches = list(header_re.finditer(guideline))
+    if not matches:
+        log.warning("_extract_guideline_sections: no '## Section N' headers found in guideline")
+        return [""] * len(digest_sections)
+
+    guideline_blocks: list[tuple[str, str]] = []  # (title, full_block_text)
+    for i, m in enumerate(matches):
+        title = m.group(1).strip()
+        # Strip inline subsection prefix like "Introduction: " for matching
+        # (e.g., "Introduction: When prompt engineering breaks" → keep both)
+        start = m.start()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(guideline)
+        block = guideline[start:end].strip()
+        guideline_blocks.append((title, block))
+
+    n_g = len(guideline_blocks)
+    n_d = len(digest_sections)
+
+    result: list[str] = [""] * n_d
+
+    # --- Step 2a: positional alignment when counts match ---
+    if n_g == n_d:
+        for i, (_, block) in enumerate(guideline_blocks):
+            result[i] = block
+        return result
+
+    # --- Step 2b: title fuzzy-match fallback ---
+    log.warning(
+        f"_extract_guideline_sections: guideline has {n_g} sections, "
+        f"digest has {n_d} — falling back to title matching"
+    )
+    for d_idx, (d_title, _) in enumerate(digest_sections):
+        match_idx = _match_reasoning_to_digest(d_title, guideline_blocks)
+        if match_idx is not None:
+            result[d_idx] = guideline_blocks[match_idx][1]
+        else:
+            # Last resort: use positional if within range
+            if d_idx < n_g:
+                result[d_idx] = guideline_blocks[d_idx][1]
+            log.warning(
+                f"  _extract_guideline_sections: no match for digest section "
+                f"'{d_title}' (d_idx={d_idx}); {'used positional fallback' if d_idx < n_g else 'left empty'}"
+            )
+    return result
+
+
+def _article_variant_level(article: str) -> str:
+    """Infer the guideline variant level from the article directory name.
+
+    Standard articles (e.g. ``"03_context_engineering"``) return
+    ``"standard"``.  Variant articles generated by
+    ``generate_guideline_variants.py`` use the suffix ``__var_{level}``
+    (e.g. ``"03_context_engineering__var_minimal"``).
+    """
+    if "__var_minimal" in article:
+        return "minimal"
+    if "__var_demanding" in article:
+        return "demanding"
+    return "standard"
+
+
 # ---------------------------------------------------------------------------
 # Data loading — article level
 # ---------------------------------------------------------------------------
@@ -244,10 +375,11 @@ def load_groups(sigma_floor: float) -> list[Group]:
         digest = digest_path.read_text(encoding="utf-8")
         group = Group(name=article, digest=digest)
 
+        variant_level = _article_variant_level(article)
         for p in range(NUM_PRESETS):
             ep_dir = _EPISODES_DIR / f"{article}__preset{p}"
             scores = json.loads((ep_dir / "scores.json").read_text(encoding="utf-8"))
-            reward = compute_reward(scores, p)
+            reward = compute_reward(scores, p, variant_level)
             group.rewards.append(reward)
 
         # Within-group advantage normalization
@@ -332,11 +464,27 @@ def load_section_groups(
             log.warning(f"  {article}: no digest sections found, skipping")
             continue
 
+        # Load guideline and extract per-section text blocks.
+        guideline_path = _EVAL_DIR / article / "article_guideline.md"
+        if guideline_path.exists():
+            guideline_text = guideline_path.read_text(encoding="utf-8")
+            guideline_section_blocks = _extract_guideline_sections(
+                guideline_text, digest_sections
+            )
+        else:
+            log.warning(
+                f"  {article}: guideline not found at {guideline_path}; "
+                "section_guideline will be empty for all sections"
+            )
+            guideline_section_blocks = [""] * len(digest_sections)
+
         article_groups: list[Group] = []
+        variant_level = _article_variant_level(article)
         for sec_idx, (sec_title, sec_excerpt) in enumerate(digest_sections):
             group = Group(
                 name=f"{article}__S{sec_idx + 1}",
                 digest=sec_excerpt,
+                section_guideline=guideline_section_blocks[sec_idx],
                 word_weight=len(sec_excerpt.split()),  # raw word count; normalised below
             )
 
@@ -365,7 +513,7 @@ def load_section_groups(
                         matched_score if matched_score is not None else 0
                     )
 
-                reward = compute_reward(section_scores, p)
+                reward = compute_reward(section_scores, p, variant_level)
                 group.rewards.append(reward)
 
             # Within-group advantage normalization
@@ -434,11 +582,29 @@ def load_section_groups(
 def tokenize_groups(
     groups: list[Group], tokenizer, *, system_prompt: str = SYSTEM_PROMPT
 ) -> None:
-    """Tokenize prompts for all groups using the chat template."""
+    """Tokenize prompts for all groups using the chat template.
+
+    For section-level groups (``group.section_guideline`` is non-empty) the
+    user message is a composite of the guideline section and the digest
+    excerpt.  This ensures the model sees *what the section must cover* as
+    well as *what research coverage already exists*, making variant-level
+    training gradients non-degenerate (all three guideline variants of the
+    same article would otherwise produce identical ``input_ids``).
+    """
     for group in groups:
+        if group.section_guideline:
+            user_content = (
+                "## Section guideline\n"
+                f"{group.section_guideline}\n\n"
+                "## Current research coverage for this section\n"
+                f"{group.digest}"
+            )
+        else:
+            user_content = group.digest
+
         messages = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": group.digest},
+            {"role": "user", "content": user_content},
         ]
         prompt_str = tokenizer.apply_chat_template(
             messages,

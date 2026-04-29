@@ -16,7 +16,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from tests.conftest import FakePlainModel
-from src.app.dedup_new_queries_handler import deduplicate_new_queries_against_history
+from src.app.dedup_new_queries_handler import deduplicate_new_queries_against_history, DeduplicationResult
 
 _PATCH_TARGET = "src.app.dedup_new_queries_handler.get_chat_model"
 
@@ -53,7 +53,7 @@ class TestDeduplicateNewQueriesAgainstHistory:
                 _SAMPLE_NEW, history, "exploitation"
             )
 
-        assert len(result) == 3
+        assert len(result.kept) == 3
 
     async def test_removes_queries_not_in_kept_list(self, fake_plain_model_factory, tmp_path):
         model = fake_plain_model_factory(
@@ -67,8 +67,8 @@ class TestDeduplicateNewQueriesAgainstHistory:
                 _SAMPLE_NEW, history, "exploitation"
             )
 
-        assert len(result) == 1
-        assert result[0][0] == "What is RAG?"
+        assert len(result.kept) == 1
+        assert result.kept[0][0] == "What is RAG?"
 
     async def test_preserves_original_reasons_for_kept_queries(self, fake_plain_model_factory, tmp_path):
         model = fake_plain_model_factory(_kept_json(["What is RAG?"]))
@@ -80,7 +80,7 @@ class TestDeduplicateNewQueriesAgainstHistory:
                 _SAMPLE_NEW, history, "exploitation"
             )
 
-        assert result[0][1] == "Covers basics"  # original reason preserved
+        assert result.kept[0][1] == "Covers basics"  # original reason preserved
 
     async def test_returns_list_of_tuples(self, fake_plain_model_factory, tmp_path):
         model = fake_plain_model_factory(_kept_json([q for q, _ in _SAMPLE_NEW]))
@@ -92,8 +92,9 @@ class TestDeduplicateNewQueriesAgainstHistory:
                 _SAMPLE_NEW, history, "exploitation"
             )
 
-        assert isinstance(result, list)
-        assert all(isinstance(item, tuple) and len(item) == 2 for item in result)
+        assert isinstance(result, DeduplicationResult)
+        assert isinstance(result.kept, list)
+        assert all(isinstance(item, tuple) and len(item) == 2 for item in result.kept)
 
     async def test_complementary_source_passed_to_model(self, fake_plain_model_factory, tmp_path):
         """The query_source value must reach the prompt so the LLM knows the phase."""
@@ -158,9 +159,56 @@ class TestDeduplicateNewQueriesAgainstHistory:
                 _SAMPLE_NEW, history, "exploitation"
             )
 
-        returned_texts = [q for q, _ in result]
+        returned_texts = [q for q, _ in result.kept]
         assert "THIS QUERY DOES NOT EXIST" not in returned_texts
         assert "What is RAG?" in returned_texts
+
+    async def test_rejected_queries_populated(self, fake_plain_model_factory, tmp_path):
+        """result.rejected contains the queries that were not kept."""
+        model = fake_plain_model_factory(
+            _kept_json(["What is RAG?"], removed=["How does dense retrieval work?", "What are RAG limitations?"])
+        )
+        history = tmp_path / "full.md"
+        history.write_text("", encoding="utf-8")
+
+        with patch(_PATCH_TARGET, return_value=model):
+            result = await deduplicate_new_queries_against_history(
+                _SAMPLE_NEW, history, "exploitation"
+            )
+
+        rejected_texts = [q for q, _ in result.rejected]
+        assert "How does dense retrieval work?" in rejected_texts
+        assert "What are RAG limitations?" in rejected_texts
+        assert "What is RAG?" not in rejected_texts
+
+    async def test_rejected_preserves_original_reasons(self, fake_plain_model_factory, tmp_path):
+        """Original generation reasons are preserved for rejected queries."""
+        model = fake_plain_model_factory(
+            _kept_json(["What is RAG?"], removed=["How does dense retrieval work?"])
+        )
+        history = tmp_path / "full.md"
+        history.write_text("", encoding="utf-8")
+
+        with patch(_PATCH_TARGET, return_value=model):
+            result = await deduplicate_new_queries_against_history(
+                _SAMPLE_NEW, history, "exploitation"
+            )
+
+        rejected_map = {q: r for q, r in result.rejected}
+        assert rejected_map["How does dense retrieval work?"] == "Technical deep dive"
+
+    async def test_reasoning_string_returned(self, fake_plain_model_factory, tmp_path):
+        """result.reasoning contains the LLM's global dedup explanation."""
+        model = fake_plain_model_factory(_kept_json(["What is RAG?"]))
+        history = tmp_path / "full.md"
+        history.write_text("", encoding="utf-8")
+
+        with patch(_PATCH_TARGET, return_value=model):
+            result = await deduplicate_new_queries_against_history(
+                _SAMPLE_NEW, history, "exploitation"
+            )
+
+        assert result.reasoning == "Test reasoning"
 
 
 # ---------------------------------------------------------------------------
@@ -174,7 +222,9 @@ class TestDeduplicateEdgeCases:
 
         # No patch needed – function should short-circuit before calling LLM
         result = await deduplicate_new_queries_against_history([], history, "exploitation")
-        assert result == []
+        assert result.kept == []
+        assert result.rejected == []
+        assert result.reasoning == ""
 
     async def test_json_parse_failure_falls_back_to_all_queries(
         self, fake_plain_model_factory, tmp_path
@@ -189,7 +239,9 @@ class TestDeduplicateEdgeCases:
                 _SAMPLE_NEW, history, "exploitation"
             )
 
-        assert result == _SAMPLE_NEW
+        assert result.kept == _SAMPLE_NEW
+        assert result.rejected == []
+        assert result.reasoning == ""
 
     async def test_missing_kept_queries_key_falls_back_to_all(
         self, fake_plain_model_factory, tmp_path
@@ -207,7 +259,7 @@ class TestDeduplicateEdgeCases:
         # .get("kept_queries", []) returns [] → kept = [] → all removed; but
         # the implementation returns the matched subset (which is empty in this case).
         # The important assertion is: it does NOT raise.
-        assert isinstance(result, list)
+        assert isinstance(result.kept, list)
 
     async def test_nonexistent_history_file_still_works(self, fake_plain_model_factory, tmp_path):
         """Missing history file should be treated as empty history (<none>)."""
@@ -219,7 +271,7 @@ class TestDeduplicateEdgeCases:
                 _SAMPLE_NEW, missing, "exploitation"
             )
 
-        assert len(result) == 3
+        assert len(result.kept) == 3
 
     async def test_all_queries_removed_returns_empty_list(self, fake_plain_model_factory, tmp_path):
         model = fake_plain_model_factory(_kept_json([]))  # LLM keeps nothing
@@ -231,4 +283,5 @@ class TestDeduplicateEdgeCases:
                 _SAMPLE_NEW, history, "exploitation"
             )
 
-        assert result == []
+        assert result.kept == []
+        assert len(result.rejected) == len(_SAMPLE_NEW)

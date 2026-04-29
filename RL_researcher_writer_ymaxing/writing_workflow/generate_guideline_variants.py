@@ -44,15 +44,18 @@ Usage (from writing_workflow/):
   uv run python generate_guideline_variants.py --variants minimal demanding
   uv run python generate_guideline_variants.py --force-regen      # overwrite existing guidelines
 
-Implementation note on the training-signal coherence concern:
+Implementation note on training-signal coherence:
   All variants share the same research (copied from the original base) so the
-  exploitation digest is identical across variants of the same article. The policy
-  model (Qwen3-4B) therefore sees the same digest input for all three variants of
-  an article. The GRPO gradient from each variant's reward array will point in
-  slightly different directions (P0 for minimal, P2/P3 for demanding), but since
-  the ground truth was written WITHOUT exploration, c_c anchors all variants toward
-  low-exploration presets. The net effect is oracle diversity in the P0–P3 range,
-  which is exactly the gap in the current 7-article training set.
+  exploitation digest is identical across variants of the same article.  However,
+  train_grpo.py now includes the variant's section guideline in the model input
+  alongside the digest (composite format: "## Section guideline\n{guideline}\n\n
+  ## Current research coverage for this section\n{digest}").  Each variant therefore
+  produces a DISTINCT input to Qwen3-4B, eliminating the contradictory-gradient
+  problem that would arise if all three variants mapped to the same input_ids.
+  The GRPO gradient from each variant's reward array will point in different
+  directions (P0/P1 for minimal, P2/P3 for standard, P2/P4 for demanding), giving
+  oracle diversity across the P0–P4 range — exactly the gap in the current
+  7-article training set.
 """
 
 from __future__ import annotations
@@ -412,10 +415,6 @@ async def process_article(
                 # Overwrite the guideline in the copy with the variant version
                 dst_guideline = variant_base_dir / "article_guideline.md"
                 _write_file(dst_guideline, guideline_text)
-                # Copy exploitation_digest.md if present (same research → same digest)
-                src_digest = original_base / "exploitation_digest.md"
-                if src_digest.exists():
-                    _copy_file(src_digest, variant_base_dir / "exploitation_digest.md")
                 logger.info("  [BASE_DIR] %s  (copied from %s)", variant_name, article)
 
         processed[level] = variant_name

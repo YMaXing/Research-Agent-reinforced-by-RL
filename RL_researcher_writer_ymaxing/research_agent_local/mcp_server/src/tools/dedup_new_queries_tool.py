@@ -2,10 +2,12 @@
 
 
 import logging
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Tuple, Literal
 
 from ..app.dedup_new_queries_handler import (
+    DeduplicationResult,
     deduplicate_new_queries_against_history,
     parse_queries_from_file,
 )
@@ -20,10 +22,29 @@ from ..config.settings import settings
 from ..config.constants import (
     FULL_QUERIES_FILE,
     NEXT_QUERIES_FILE,
+    REJECTED_QUERIES_FILE,
     RESEARCH_OUTPUT_FOLDER,
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _append_rejected_queries(
+    rejected_path: Path,
+    rejected: List[Tuple[str, str]],
+    reasoning: str,
+    query_source: str,
+) -> None:
+    """Append a section for this dedup round's rejected queries to rejected_queries.md."""
+    timestamp = datetime.now().isoformat(timespec="seconds")
+    lines = [f"\n## [{query_source.capitalize()}] — {timestamp}\n\n"]
+    if reasoning:
+        lines.append(f"Dedup reasoning: {reasoning}\n\n")
+    for i, (query, original_reason) in enumerate(rejected, 1):
+        lines.append(f"{i}. {query}\n   Original reason: {original_reason}\n\n")
+    lines.append("-----\n")
+    with rejected_path.open("a", encoding="utf-8") as f:
+        f.write("".join(lines))
 
 async def deduplicate_new_queries_tool(
     research_directory: str,
@@ -62,31 +83,40 @@ async def deduplicate_new_queries_tool(
     if not new_queries:
         return {"status": "skipped", "message": "No new queries found."}
 
-    deduplicated = await deduplicate_new_queries_against_history(new_queries, full_queries_path, query_source)
+    dedup_result = await deduplicate_new_queries_against_history(new_queries, full_queries_path, query_source)
 
     # Write clean file for Tavily (overwrite)
-    write_queries_to_file(next_queries_path, deduplicated)
+    write_queries_to_file(next_queries_path, dedup_result.kept)
 
     # Append all generated queries with reasons to full_queries.md
     append_generated_queries_with_reasons(
             full_queries_path,
-            deduplicated,
+            dedup_result.kept,
             starting_id=compute_next_query_id(full_queries_path),
             query_source=query_source,
     )
 
-    removed_count = len(new_queries) - len(deduplicated)
+    # Persist rejected queries for inspection
+    if dedup_result.rejected:
+        _append_rejected_queries(
+            output_path / REJECTED_QUERIES_FILE,
+            dedup_result.rejected,
+            dedup_result.reasoning,
+            query_source,
+        )
+
+    removed_count = len(new_queries) - len(dedup_result.kept)
 
     message = (
         f"✅ Deduplicated {query_source} queries against full history.\n"
-        f"Kept: {len(deduplicated)} | Removed: {removed_count}\n"
+        f"Kept: {len(dedup_result.kept)} | Removed: {removed_count}\n"
         f"Ready for Tavily: {next_queries_path.relative_to(research_path)}"
     )
 
     return {
         "status": "success",
         "new_queries_count": len(new_queries),
-        "kept_count": len(deduplicated),
+        "kept_count": len(dedup_result.kept),
         "removed_duplicates": removed_count,
         "output_path": str(next_queries_path.resolve()),
         "message": message,
