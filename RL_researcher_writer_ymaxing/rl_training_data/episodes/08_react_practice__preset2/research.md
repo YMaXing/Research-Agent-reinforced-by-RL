@@ -6764,1959 +6764,983 @@ In future posts, we’ll explore a multi-agent scenario where a single steering 
 
 Phase: [EXPLOITATION]
 
-# From LLM Reasoning to Autonomous AI Agents - ArXiv
+Phase: [EXPLOITATION]
+
+# From LLM Reasoning to Autonomous AI Agents: A Comprehensive Review
 
 **Source URL:** <https://arxiv.org/pdf/2504.19678>
 
-# From LLM Reasoning to Autonomous AI Agents: A Comprehensive Review (2025)
+**Authors:** Mohamed Amine Ferrag, Norbert Tihanyi, and Merouane Debbah
+
+**Affiliations:** Department of Computer and Network Engineering, United Arab Emirates University, UAE; Technology Innovation Institute, UAE; Eötvös Loránd University, Hungary; Research Institute for Digital Future, Khalifa University, UAE
+
+**Corresponding author:** mohamed.ferrag@uaeu.ac.ae
+
+**arXiv:** 2504.19678v2 [cs.AI] 6 Mar 2026
+
+## Abstract
+
+Large language models and autonomous AI agents have evolved rapidly, resulting in a diverse array of evaluation benchmarks, frameworks, and collaboration protocols. Driven by the growing need for standardized evaluation and integration, we systematically consolidate these fragmented efforts into a unified framework. However, the landscape remains fragmented and lacks a unified taxonomy or comprehensive survey. Therefore, we present a side-by-side comparison of benchmarks developed between 2019 and 2025 that evaluate these models and agents across multiple domains. In addition, we propose a taxonomy of approximately 60 benchmarks that cover general and academic knowledge reasoning, mathematical problem-solving, code gener-ation and software engineering, factual grounding and retrieval, domain-specific evaluations, multimodal and embodied tasks, task orchestration, and interactive assessments. Furthermore, we review AI-agent frameworks introduced between 2023 and 2025 that integrate large language models with modular toolkits to enable autonomous decision-making and multi-step reasoning. Moreover, we present real-world applications of autonomous AI agents in materials science, biomedical research, academic ideation, software engineering, synthetic data generation, chem-ical reasoning, mathematical problem-solving, geographic in- formation systems, multimedia, healthcare, and finance. We then survey key agent-to-agent collaboration protocols, namely the Agent Communication Protocol (ACP), the Model Context Protocol (MCP), and the Agent-to-Agent Protocol (A2A). Finally, we discuss recommendations for future research, focusing on advanced reasoning strategies, failure modes in multi-agent LLM systems, automated scientific discovery, dynamic tool integration via reinforcement learning, integrated search capabilities, and security vulnerabilities in agent protocols.
+
+
+**Index Terms:** Large Language Models, Autonomous AI Agents, Agentic AI, Reasoning, Benchmarks.
+
+
+## 1 Introduction
+
+Large Language Models (LLMs) such as OpenAI’s GPT-4 [1], Qwen2.5-Omni [2], DeepSeek-R1 [3], and Meta’s LLaMA [4] have transformed AI by enabling human-like text generation and advanced natural language processing, spurring innovation in conversational agents, automated content cre-ation, and real-time translation [5]. Recent enhancements have extended their utility to multimodal tasks, including text-to-image and text-to-video generation that broaden the scope of generative AI applications [6], [7]. However, their dependence on static pre-training data can lead to outdated outputs and hallucinated responses [8], [9], a limitation that Retrieval- Augmented Generation (RAG) addresses by incorporating real-time data from knowledge bases, APIs, or the web [10], [11]. Building on this, the evolution of intelligent agents employing reflection, planning, and multi-agent collaboration has given rise to Agentic RAG systems, which dynamically orchestrate information retrieval and iterative refinement to manage complex workflows effectively [12], [13]. Recent advances in large language models have paved the way for highly autonomous AI systems that can independently handle complex research tasks. These systems, often referred to as agentic AI, can generate hypotheses, conduct literature reviews, design experiments, analyze data, accelerate scientific discovery, and reduce research costs [14], [15], [16], [17]. Several frameworks, such as LitSearch, ResearchArena, and Agent Laboratory, have been developed to automate various research tasks, including citation management and academic survey generation [18], [19], [20]. However, challenges persist, especially in executing domain-specific literature reviews and ensuring the reproducibility and reliability of automated pro-cesses [21], [22]. Parallel to these developments in research au- tomation, large language model-based agents have also begun to transform the medical field [23]. These agents are increas-ingly used for diagnostic support, patient communication, and medical education by integrating clinical guidelines, medical knowledge bases, and healthcare systems [24], [25], [26], [27], [28]. Despite their promise, these applications face significant hurdles, including concerns over reliability, reproducibility, ethical governance, and safety [29], [30], [31]. Addressing these issues is crucial for ensuring that LLM-based agents can be effectively and responsibly incorporated into clinical practice, underscoring the need for comprehensive evaluation frameworks that can reliably measure their performance across various healthcare tasks [32], [33], [34], [35]. LLM-based agents are emerging as a promising frontier in AI, combining reasoning and action to interact with complex digital environments [36], [37]. Therefore, various approaches have been explored to enhance LLM-based agents, from combining reasoning and acting using techniques like React [38] and Monte Carlo Tree Search [39] to synthesizing high-quality data with methods like Learn-by-Interact [40], which sidestep assumptions such as state reversals. Other strategies involve training on human-labeled or GPT-4 distilled data with systems like AgentGen [41] and AgentTuning [42] to generate trajectory data. At the same time, reinforcement learning
+
+methods utilize offline algorithms and iterative refinement through reward models and feedback to enhance efficiency and performance in realistic environments [43], [44]. LLM-based Multi-Agents harness the collective intelligence of multiple specialized agents, enabling advanced capabilities over single-agent systems by simulating complex real-world environments through collaborative planning, discussion, and decision-making. This approach leverages the communicative strengths and domain-specific expertise of LLMs, allowing distinct agents to interact effectively, much like human teams tackling problem-solving tasks [45], [46]. Recent research highlights promising applications across various fields, includ-ing software development [47], [48], multi-robot systems [49], [50], society simulation [51], policy simulation [52], and game simulation [53]. The main contributions of this study are: • We present a comparative table of benchmarks developed between 2019 and 2025 that rigorously evaluate large lan-guage models and autonomous AI agents across multiple domains. • We propose a taxonomy of approximately 60 LLM and AI-agent benchmarks, including general and aca-demic knowledge reasoning, mathematical problem solv- ing, code generation and software engineering, fac-tual grounding and retrieval, domain-specific evaluations, multimodal and embodied tasks, task orchestration, and interactive and agentic assessments. • We present prominent AI-agent frameworks from 2023 to 2025 that integrate large language models with mod-ular toolkits, enabling autonomous decision-making and multi-step reasoning. • We provide applications of autonomous AI agents in various fields, including materials science and biomedical research, academic ideation and software engineering, synthetic data generation and chemical reasoning, mathe-matical problem-solving and geographic information sys- tems, as well as multimedia, healthcare, and finance. • We survey agent-to-agent collaboration protocols, namely the Agent Communication Protocol (ACP), the Model Context Protocol (MCP), and the Agent-to-Agent Pro-tocol (A2A). • We outline recommendations for future research on au-tonomous AI agents, specifically advanced reasoning strategies, failure modes in multi-agent large language model (LLM) systems, automated scientific discovery, dynamic tool integration via reinforcement learning, inte-grated search capabilities, and security vulnerabilities in agent protocols. Fig. 1 illustrates the structure of this survey. Section II presents the related works. Section III provides a side-by-side tabular comparison of state-of-the-art LLM and Agentic AI benchmarks. Section IV reviews AI agent frameworks, AI agent applications, AI agent protocols, and training datasets across various domains. Section V highlights several critical research directions. Finally, Section VI concludes the paper.
+
+## 2 Related Works
+
+The growing field of autonomous AI agents powered by large language models has inspired a wide range of research efforts across multiple domains. In this section, we review the most relevant studies that investigate the integration of LLM-based agents into software engineering, propose agent architectures and evaluation frameworks, explore the devel-opment of multi-agent systems, and examine domain-specific applications, including healthcare, game-theoretic scenarios, GUI interactions, personal assistance, scientific discovery, and chemistry.
+
+### A. LLM-based Agents in Software Engineering
+
+Wang et al. [54] present a survey that bridges Large Lan-guage Model (LLM)-based agent technologies with software engineering (SE). It highlights how LLMs have achieved significant success in various domains and have been in-tegrated into SE tasks, often under the agent paradigm, whether explicitly or implicitly. The study presents a structured framework for LLM-based agents in SE, comprising three primary modules: perception, memory, and action. Jin et al. [55] investigate the use of large language models (LLMs) and LLM-based agents in software engineering, distinguishing between the traditional capabilities of LLMs and the enhanced functionalities offered by autonomous agents. It highlights the significant success of LLMs in tasks such as code genera-tion and vulnerability detection, while also addressing their limitations, specifically the issues of autonomy and self-improvement that LLM-based agents aim to overcome. The paper provides an extensive review of current practices across six key domains: requirement engineering, code generation, autonomous decision-making, software design, test generation, and software maintenance. In a complementary study, Jin et al. [55] investigate the use of large language models (LLMs) and LLM-based agents in software engineering, distinguishing between the traditional capabilities of LLMs and the enhanced functionalities offered by autonomous agents. It highlights the significant success of LLMs in tasks such as code gen-eration and vulnerability detection, while also addressing their limitations, specifically, issues of autonomy and self-improvement that LLM-based agents aim to overcome. The paper provides an extensive review of current practices across six key domains: requirement engineering, code generation, autonomous decision-making, software design, test generation, and software maintenance.
+
+### B. Agent Architectures and Evaluation Frameworks
+
+Singh et al. [56] delves into Agentic Retrieval-Augmented Generation (Agentic RAG), a sophisticated evolution of tra-ditional Retrieval-Augmented Generation systems that en- hances the capabilities of large language models (LLMs). While LLMs have transformed AI through human-like text generation and language understanding, their dependence on static training data often results in outdated or imprecise responses. The paper addresses these limitations by embed-ding autonomous agents within the RAG framework, enabling
+
+Recent advancements in LLMs Agentic AI Collaborative Multi-Agent Systems Main Contributions of the Paper Organization of the Paper How have recent advancements in LLMs and agentic AI impacted autonomous AI systems, and what are the main contributions of this study? Related Works What are the related surveys in the field of LLM-based agents and autonomous AI systems? LLM-based Agents in Software Engineering Agent Architectures and Evaluation Frameworks Multi-Agent Systems Comparison with Our Survey Domain-Specific Applications LLM and Agentic AI Benchmarks What are the key LLM benchmarks developed between 2019 and 2025 for evaluating large language models and agentic AI systems across various domains? MMLU benchmark ComplexFuncBench benchmark Introduction Humanity's Last Exam (HLE) benchmark FACTS Grounding benchmark ProcessBench benchmark OmniDocBench Benchmark Agent-as-a-Judge... AI Agents What are the key AI agent frameworks and applications developed between 2024 and 2025 for achieving autonomous decision-making and dynamic reasoning in real-world tasks? AI Agent frameworks AI Agent applications AI Agents protocols Training datasets Challenges and and Open Problems What are the key challenges and open problems in advancing AI agents and large language models? Conclusion What are the key conclusions and future directions for large language models (LLMs) and autonomous AI agents? AI Agents Reasoning Why Do Multi-Agent LLM Systems Fail? AI Agents in Automated Scientific Discovery Dynamic Tool Integration for Autonomous AI Agents Empowering LLM Agents with Integrated Search via Reinforcement Learning Vulnerabilities of AI Agents Protocols Key conclusions Challenges Future directions
+
+*Figure 1: Survey Structure*
+
+dynamic, real-time data retrieval and adaptive workflows. It details how agentic design patterns such as reflection, planning, tool utilization, and multi-agent collaboration equip these systems to manage complex tasks and support multi-step reasoning. The survey offers a comprehensive taxonomy of Agentic RAG architectures, highlights key applications across various sectors, including healthcare, finance, and education, and outlines practical implementation strategies. Complementing this architectural perspective, Yehudai et al. [57] mark a significant milestone in artificial intelligence by surveying evaluation methodologies for agents powered by large language models (LLMs). It thoroughly reviews the capabilities of these agents, focusing on core functions such as planning, tool utilization, self-reflection, and mem-ory, while assessing specialized applications ranging from web interactions to software engineering and conversational tasks. The authors uncover a clear trend toward developing more rigorous, dynamically updated evaluation frameworks by examining both targeted benchmarks for domain-specific applications and those designed for more generalist agents. Moreover, the paper critically highlights existing deficiencies in the field, notably the need for metrics that more effectively capture cost efficiency, safety, and robustness. In doing so, it maps the current landscape of agent evaluation and sets forth compelling directions for future inquiry, underscoring the importance of scalable and fine-grained evaluation techniques
+
+
+**Table 1: An overview of selected surveys on AI Agents.**
+
+
+| Reference | Year | Key Contribution |
+|---|---|---|
+| Applica-tions AI Agents Protocols & Open Problems LLM-based Agents in Software Engi-neering Wanget al. [54] 2024Survey o |
+| a |
+| c |
+| t |
+| i |
+| o |
+| n |
+| f |
+| r |
+| a |
+| m |
+| e |
+| w |
+| o |
+| r |
+| k. |
+| L |
+| L |
+| M- |
+| b |
+| a |
+| s |
+| e |
+| d |
+| A |
+| g |
+| e |
+| n |
+| t |
+| s |
+| i |
+| n |
+| S |
+| o |
+| f |
+| t |
+| w |
+| a |
+| r |
+| e |
+| E |
+| n |
+| g |
+| i- |
+| n |
+| e |
+| e |
+| r |
+| i |
+| n |
+| g |
+| J |
+| in et al. [55] | 2024 | Reviews LLM vs. autonomous-agent capabili-ties across six SE domains; highlights auton- omy gaps. Agent Architectures & |
+| c |
+| o |
+| v |
+| e |
+| r |
+| s |
+| m |
+| u |
+| l |
+| t |
+| i |
+| m |
+| o |
+| d |
+| a |
+| l |
+| u |
+| n |
+| d |
+| e |
+| r |
+| s |
+| t |
+| a |
+| n |
+| d |
+| i |
+| n |
+| g |
+| a |
+| n |
+| d |
+| l |
+| a |
+| r |
+| g |
+| e- |
+| a |
+| c |
+| t |
+| i |
+| o |
+| n |
+| m |
+| o |
+| d |
+| e |
+| l |
+| s. |
+| P |
+| e |
+| r |
+| s |
+| o |
+| n |
+| a |
+| l |
+| L |
+| L |
+| M |
+| A |
+| g |
+| e |
+| n |
+| t |
+| s |
+| Li et al. [62] | 2024 | Examines personal LLM agents integrating user data/devices; |
+| i |
+| n |
+| t |
+| r |
+| o |
+| d |
+| u |
+| c |
+| e |
+| s |
+| a |
+| g |
+| e |
+| n |
+| t |
+| s |
+| f |
+| o |
+| r |
+| l |
+| a |
+| b |
+| c |
+| o |
+| n |
+| t |
+| r |
+| o |
+| l. |
+| O |
+| u |
+| r |
+| S |
+| u |
+| r |
+| v |
+| e |
+| y |
+| F |
+| e |
+| r |
+| r |
+| ag et al.2025Unified end-to-end survey covering bench-marks, frameworks, applications, protocols, and challenges. in the |
+| C |
+| h |
+| en et al. [58] focus on Role-Playing Agents (RPAs), a growing class of LLM-based agents that mimic human behavior across |
+
+### C. Multi-Agent Systems
+
+Yan et al. [59] provides a comprehensive survey on integrat-ing LLMs into multi-agent systems (MAS). Their work em- phasizes the communication-centric aspects that enable agents to engage in both cooperative and competitive interactions, thereby tackling tasks that are unmanageable for individual agents. The paper examines system-level features, internal communication mechanisms, and challenges, including scala-bility, security, and multimodal integration. In a related study, Guo et al. [45] offer an extensive overview of LLM-based multi-agent systems, charting the evolution from single-agent decision-making to collaborative frameworks that enhance collective problem-solving and world simulation. In a related study, Guo et al. [45] provide an extensive overview of large language model (LLM)-based multi-agent systems, building on the success of LLMs in autonomous planning and reason-ing. The authors detail how the evolution from single-agent decision-making to collaborative multi-agent frameworks has enabled significant advances in complex problem-solving and world simulation. Key aspects of these systems are examined, including the domains and environments they simulate, the profiling and communication strategies employed by individ-ual agents, and the mechanisms that underpin the enhancement of their collective capacities.
+
+### D. Domain-Specific Applications
+
+
+#### 1. Healthcare: Wang et al. [34] explores the transforma-tive impact of LLM-based agents on healthcare, presenting
+
+a detailed review of their architectures, applications, and inherent challenges. It dissects the core components of medical agent systems, such as system profiles, clinical planning mechanisms, and medical reasoning frameworks, while also discussing methods to enhance external capacities. Major application areas include clinical decision support, medical documentation, training simulations, and overall healthcare service optimization. The survey further evaluates the per-formance of these agents using established frameworks and metrics, identifying persistent challenges such as hallucination management, multimodal integration, and ethical considera-tions.
+
+#### 2. Social Agents in Game-Theoretic Scenarios: Feng et al
+
+[60] provide a review of research on LLM-based social agents in game-theoretic scenarios. This area has gained prominence for assessing social intelligence in AI systems. The authors categorize the literature into three main components. First, the game framework is examined, highlighting various choice- and communication-focused scenarios. Second, the paper explores the attributes of social agents, examining their preferences, beliefs, and reasoning capabilities. Third, it discusses evalua-tion protocols incorporating game-agnostic and game-specific metrics to assess performance. By synthesizing current studies and outlining future research directions, the survey offers valuable insights to further the development and systematic evaluation of social agents within game-theoretic contexts.
+
+#### 3. GUI Agents: Zhang et al. [61] review LLM-brained
+
+GUI agents, marking a paradigm shift in human-computer interaction through integrating multimodal LLMs. It traces the historical evolution of GUI automation, detailing how advancements in natural language understanding, code gen-eration, and visual processing have enabled these agents to interpret complex graphical user interface (GUI) elements and execute multi-step tasks from conversational commands. The survey systematically examines the core components of these systems, including existing frameworks, data collection and utilization methods for training, and the development of specialized large-scale action models for GUI tasks.
+
+#### 4. Personal LLM Agents: Li et al. [62] explore the evo-lution of intelligent personal assistants (IPAs) by focusing on
+Personal LLM Agents, LLM-based agents that deeply inte-grate personal data and devices to provide enhanced personal assistance. The authors outline the limitations of traditional IPAs, including insufficient understanding of user intent, task planning, and tool utilization, which have hindered their practi-cality and scalability. In contrast, the emergence of foundation models like LLMs offers new possibilities by leveraging ad-vanced semantic understanding and reasoning for autonomous problem-solving. The survey systematically reviews the archi-tecture and design choices underlying Personal LLM Agents, informed by expert opinions, and examines key challenges related to intelligence, efficiency, and security. Furthermore, it comprehensively analyzes representative solutions addressing these challenges, laying the groundwork for Personal LLM Agents to become a major paradigm in next-generation end-user software.
+
+#### 5. Scientific Discovery: Gridach et al. [22] explore the
+
+transformative role of Agentic AI in scientific discovery, underscoring its potential to automate and enhance research processes. It reviews how these systems, endowed with reason-ing, planning, and autonomous decision-making capabilities, are revolutionizing traditional research activities, including literature reviews, hypothesis generation, experimental design, and data analysis. The paper highlights recent advancements across multiple scientific domains, such as chemistry, biology, and materials science, by categorizing existing Agentic AI systems and tools. It provides a detailed discussion on key evaluation metrics, implementation frameworks, and datasets used in the field, offering valuable insights into current prac-tices. Moreover, the paper critically addresses significant chal- lenges, including automating comprehensive literature reviews, ensuring system reliability, and addressing ethical concerns. It outlines future research directions, emphasizing the im-portance of human-AI collaboration and improved system calibration.
+
+#### 6. Chemistry: Ramos et al. [63] examine the transforma-tive impact of large language models (LLMs) in chemistry,
+focusing on their roles in molecule design, property prediction, and synthesis optimization. It highlights how LLMs not only accelerate scientific discovery through automation but also discuss the advent of LLM-based autonomous agents. These agents extend the functionality of LLMs by interfacing with their environment and performing tasks such as literature scraping, automated laboratory control, and synthesis plan-ning. Expanding the discussion beyond chemistry, the review also considers applications across other scientific domains.
+
+### E. Comparison with Our Survey
+
+Table I presents a consolidated view of how existing works cover key themes, benchmarks, AI agent frameworks, AI agent applications, AI agents protocols, and challenges & open prob-lems against our survey. While prior studies typically focus on one or two aspects (e.g., Yehudai et al. [57] on evaluation benchmarks, Singh et al. [56] on RAG architectures, Yan et al. [59] on multi-agent communication, or Wang et al. [34] on domain-specific applications), none integrate the full spectrum of developments in a single, unified treatment. In contrast, our survey is the first to systematically combine state-of-the-art benchmarks, framework design, application domains, communication protocols, and a forward-looking discussion of challenges and open problems, thereby providing researchers with a comprehensive roadmap for advancing LLM-based autonomous AI agents.
+
+## 3 LLM And Agentic AI Benchmarks
+
+This section provides a comprehensive overview of bench-marks developed between 2019 and 2025 that rigorously eval- uate large language models (LLMs) across diverse and chal-lenging domains. For instance, ENIGMAEVAL [64] assesses complex multimodal puzzle-solving by requiring the synthesis of textual and visual clues, while ComplexFuncBench [66] challenges models with multi-step function-calling tasks that mirror real-world scenarios. Humanity’s Last Exam (HLE) [67] further raises the bar by presenting expert-level aca-demic questions across a broad spectrum of subjects, thereby
+
+
+**Table 2: Summary of LLM Benchmarks (Part 1)**
+
+
+| Benchmark | Year | Evaluation Focus | Key Features & Details |
+|---|---|---|---|
+| ENIGMAEVAL [64] | 2025 | Multimodal Reasoning | Contains 1,184 puzzles combining text and images; state-of-the-art systems score only∼7% on standard puzzles and fail on the hardest ones. Evaluates multimodal and long-context reasoning using challenging puzzles from global competitions. Pushes models into unstructured, creative problem-solving scenarios requiring integration of visual and semantic clues. |
+| MMLU Benchmark [65] | 2021 | Multitask Knowledge | Comprises 57 diverse tasks (from elementary math to professional law) testing zero-shot and few-shot performance. Assesses broad world knowledge and problem-solving skills; uncovers calibration challenges and imbalances between procedural and declarative knowledge. Designed for general multitask language understanding without task-specific fine-tuning. |
+| ComplexFuncBench [66] | 2025 | Function CallingEvaluates complex function calling | tasks with multi-step operations and input lengths up to 128k tokens over more than 1,000 scenarios. Introduces an automatic evaluation framework (ComplexEval) for function calling, testing reasoning over implicit parameters and constraints. Highlights performance differences between closed models (e.g., Claude 3.5, GPT-4) and open models (e.g., Qwen 2.5, Llama 3.1). Humanity’s Last Exam |
+| Humanity’s Last Exam (HLE) [67] | 2025 | Academic Reasoning | Features 3,000 questions spanning over 100 subjects, including multi-modal challenges. Developed through a global collaborative effort with nearly 1,000 experts; includes both multiple-choice and short-answer formats with verifiable answers. Exposes significant performance gaps as state-of-the-art LLMs score below 10%, serving as a critical tool for assessing academic reasoning. |
+| FACTS Grounding [68] | 2023 | Factual GroundingContains 1,719 examples requiring | detailed responses grounded in source documents, with inputs reaching up to 32,000 tokens. Uses a two-phase evaluation (eligibility and factual grounding) with assessments from frontier LLM judges. Focuses on factual accuracy and information synthesis while excluding creative or complex reasoning tasks. |
+| ProcessBench [69] | 2024 | Error DetectionComprises 3,400 math problem cases | with step-by-step solutions and human-annotated error locations. Evaluates models’ ability to detect the earliest error in reasoning; compares process reward models with LLM-based critics. Targets granular error detection in mathematical problem solving. |
+| OmniDocBench [70] | 2024 | Document Understanding | A multi-source dataset spanning nine document types with 19 layout categories and 14 attribute labels. Provides a detailed, multi-level evaluation framework for document content extraction, contrasting modular pipelines with end-to-end methods. Addresses challenges such as fuzzy scans, watermarks, and complex layouts in document processing. Agent-as-a- |
+| Agent-as-a- Judge [71] | 2024 | Evaluation Methodology | Evaluated on 55 code generation tasks with 365 hierarchical user requirements. Leverages agentic systems to provide granular, intermediate feedback; achieves up to 90% alignment with human judgments. Reduces evaluation cost and time for agentic systems, particularly in code generation tasks. |
+| JudgeBench [72] | 2024 | Judgment Evaluation | Consists of 350 challenging response pairs across knowledge, reasoning, math, and coding domains. Transforms existing datasets into paired comparisons with objective correctness, mitigating positional bias through double evaluation. Aims to objectively assess LLM-based judges; fine-tuning can boost judge accuracy significantly. |
+| SimpleQA [73] | 2023 | Factual QAContains 4,326 fact-seeking questions | across domains; uses a strict three-tier grading system. Focuses on evaluating factual accuracy and reveals models’ overconfidence in incorrect responses through repeated testing. Highlights current limitations in handling straightforward, factual queries. |
+| FineTasks [74] | 2023 | Multilingual Task Selection | Evaluates 185 candidate tasks across nine languages, ultimately selecting 96 reliable tasks; supports over 550 tasks overall. Employs metrics such as monotonicity, low noise, non-random performance, and model ordering consistency to assess task quality. Provides a scalable, multilingual evaluation platform that highlights the impact of task formulation. |
+| FRAMES [75] | 2024 | Retrieval & Reasoning | Consists of 824 multi-hop questions requiring integration of 2–15 Wikipedia articles. Unifies evaluations of factual accuracy, retrieval, and reasoning; labels questions with specific reasoning types (e.g., numerical, tabular). Baseline experiments show improvements from 40% (without retrieval) to 66% (with multi-step retrieval). |
+| DABStep [76] | 2025 | Step-Based Reasoning | A step-based approach for multi-step reasoning tasks; the best model achieves only a 16% success rate. Decomposes complex problem solving into discrete steps with iterative refinement and self-correction. Highlights the significant challenges in training models for complex, iterative reasoning. |
+
+**Table 3: Summary of LLM Benchmarks (Part 2)**
+
+
+| Benchmark | Year | Evaluation Focus | Key Features & Details |
+|---|---|---|---|
+| BFCL v2 [77] | 2025 | Function CallingContains 2,251 | question-function-answer pairs covering simple to parallel function calls. Leverages real-world, user-contributed data to address issues like data contamination and bias in function calling evaluation. Demonstrates that models such as Claude 3.5 and GPT-4 outperform others, while some open models struggle. |
+| SWE-Lancer [78] | 2025 | Software Engineering | Consists of over 1,400 freelance software engineering tasks, including independent and managerial tasks with real-world payout data. Uses triple-verified tests for independent tasks and benchmarks managerial decisions against hiring manager selections. Indicates that even advanced models (e.g., Claude 3.5 Sonnet) have low pass rates (26.2%) on implementation tasks. |
+| CRAG Benchmark [79] | 2024 | Retrieval- Augmented Generation | Comprises 4,409 question-answer pairs across 5 domains; simulates retrieval with mock APIs. Evaluates the generative component of RAG pipelines; shows improvement from 34% to 63% accuracy with advanced RAG methods. Highlights performance drops for questions involving highly dynamic or less popular facts. |
+| OCCULT Benchmark [80] | 2025 | CybersecurityA lightweight framework for | operational evaluation of cybersecurity risks; includes three distinct OCO benchmarks. Simulates real-world threat scenarios to assess LLM capabilities in offensive cyber operations. Preliminary results indicate models like DeepSeek-R1 achieve over 90% in Threat Actor Competency Tests. |
+| DIA Benchmark [81] | 2024 | Dynamic Problem Solving | Uses dynamic question templates with mutable parameters across domains (math, cryptography, cybersecurity, computer science). Introduces innovative metrics for reliability and confidence over multiple attempts; emphasizes adaptive intelligence. Reveals gaps in handling complex tasks and compares models’ self-assessment abilities. |
+| CyberMetric Benchmark [82] | 2024 | Cybersecurity Knowledge | A suite of multiple-choice Q&A datasets (CyberMetric-80, -500, -2000, -10000) validated over 200 human expert hours. Generated using GPT-3.5 and RAG, it benchmarks cybersecurity knowledge against human performance. Demonstrates that larger, domain-specific models outperform smaller ones in cybersecurity understanding. |
+| BIG-Bench Extra Hard [83] | 2025 | Challenging Reasoning | An elevated-difficulty variant of BIG-Bench Hard; average accuracy is 9.8% for general models and 44.8% for reasoning-specialized models. Replaces each BBH task with a more challenging variant to probe reasoning capabilities robustly. Emphasizes substantial room for improvement in general-purpose reasoning skills. |
+| MultiAgentBench [84] | 2025 | Multi-AgentEncompasses six domains: research | proposal writing, Minecraft structure building, database error analysis, collaborative coding, competitive Werewolf gameplay, and resource bargaining. Investigates various coordination protocols (star, chain, tree, graph); peer-to-peer communication plus cognitive planning yields a 3% improvement in milestone achievement. Graph-based protocols outperform others in research tasks. GPT-4o-mini achieves the highest average task score; highlights synergy vs. complexity trade-offs in multi-agent LLM settings. |
+| GAIA [85] | 2024 | General AI Assistants | 466 curated questions with reference answers; humans achieve 92% accuracy while GPT-4 with plugins only reaches 15%. Emphasizes everyday reasoning tasks involving multi-modality, web browsing, and tool use. Targets AI robustness over specialized skills. Highlights the large performance gap between humans and SOTA models; aims to measure truly general-purpose AI capabilities. |
+| CASTLE [86] | 2025 | Vulnerability detection in source | code 250 hand-crafted micro-benchmark programs covering 25 common CWEs; introduces the novel CASTLE Score metric Integrates evaluations across 13 static analysis tools, 10 LLMs, and two formal verification tools; provides a unified framework for comparing diverse methods Formal verification tools (e.g., ESBMC) minimize false positives but miss vulnerabilities beyond model checking; static analyzers generate excessive false positives; LLMs perform well on small code snippets, but accuracy declines and hallucinations increase as code size grows |
+| SPIN-Bench [87] | 2025 | Strategic Planning, | Interaction, and Negotiation Evaluates reasoning and strategic behavior in diverse social settings by combining classical PDDL tasks, competitive board games, cooperative card games, and multi-agent negotiation scenarios. Systematically varies action spaces, state complexity, and the number of interacting agents to simulate realistic social interactions, providing both a benchmark and an arena for multi-agent evaluation. Reveals that while LLMs perform basic fact retrieval and short-range planning reasonably well, they struggle with deep multi-hop reasoning and socially adept coordination, highlighting a significant gap in robust multi-agent planning and human–AI teaming. |
+| τ -bench [88] | 2024 | Conversational Agent Evaluation | Evaluates dynamic, multi-turn conversations by comparing the final database state with an annotated goal state using a novel pass k metric. Integrates domain-specific API tool usage and strict policy adherence within simulated user interactions to assess agent reliability over multiple trials. Reveals that even state-of-the-art agents (e.g., GPT-4o) succeed on less than 50% of tasks, with marked inconsistency (e.g., pass < 25% in retail), highlighting the need for improved consistency and rule-following. reflecting the growing demand for deeper reasoning and domain-specific proficiency. Additional frameworks such as FACTS Grounding [68] and ProcessBench [69] scrutinize the models’ capacities for generating factually accurate long-form responses and detecting errors in multi-step reasoning. Meanwhile, innovative evaluation paradigms like Agent-as-a- Judge [71], JudgeBench [72], and CyberMetric [82] provide granular insights into cybersecurity competencies and error-detection capabilities. Tables III, II present a comprehensive overview of benchmarks developed between 2024 and 2025. |
+
+### A. ENIGMAEVAL benchmark
+
+ENIGMAEVAL [64] is a benchmark designed to rigorously evaluate advanced language models’ multimodal and long-context reasoning capabilities using challenging puzzles de- rived from global competitions. The dataset comprises 1,184 complex puzzles that combine text and images, requiring mod-els to synthesize disparate clues, perform multi-step deductive reasoning, and integrate visual and semantic information to arrive at unambiguous, verifiable solutions. Unlike conven-tional benchmarks focusing on well-structured academic tasks, ENIGMAEVAL pushes models into unstructured, creative problem-solving scenarios where even state-of-the-art systems achieve only about 7% accuracy on standard puzzles and fail on the hardest ones.
+
+### B. MMLU Benchmark
+
+Measuring Massive Multitask Language Understanding (MMLU) [65] is a comprehensive benchmark designed by Hendrycks et al. (2021) to evaluate large language models across a diverse range of subjects, from elementary mathe-matics to professional law. The benchmark comprises 57 tasks that test models’ ability to apply broad world knowledge and problem-solving skills in zero-shot and few-shot settings, em-phasizing generalization without task-specific fine-tuning. The study also uncovers challenges related to model calibration and the imbalance between procedural and declarative knowledge, highlighting critical areas where current models fall short of expert-level proficiency.
+
+### C. ComplexFuncBench Benchmark
+
+Zhong et al. [66] introduced ComplexFuncBench, a novel benchmark designed to evaluate large language models (LLMs) on complex function calling tasks in real-world set-tings. Unlike previous benchmarks, ComplexFuncBench chal- lenges models with multi-step operations within a single turn, adherence to user-imposed constraints, reasoning over implicit parameter values, and managing extensive input lengths that can exceed 500 tokens, including scenarios with a context win-dow of up to 128k tokens. Complementing the benchmark, the authors present an automatic evaluation framework, Complex- Eval, which quantitatively assesses performance across over 1,000 scenarios derived from five distinct aspects of function calling. Experimental results reveal significant limitations in current state-of-the-art LLMs, with closed models like Claude 3.5 and OpenAI’s GPT-4 outperforming open models such as Qwen 2.5 and Llama 3.1. Notably, the study identifies preva-lent issues, including value errors and premature termination in multi-step function calls, underscoring the need for further research to enhance the function-calling capabilities of LLMs in practical applications.
+
+### D. Humanity’s Last Exam (HLE) Benchmark
+
+Phan et al. [67] introduced Humanity’s Last Exam (HLE), a benchmark designed to push the limits of LLMs by challeng-ing them with expert-level academic tasks. Unlike traditional benchmarks such as MMLU, where LLMs have achieved over 90% accuracy, HLE presents a significantly more demanding test, featuring 3,000 questions spanning over 100 subjects including mathematics, humanities, and the natural sciences. This benchmark is the product of a global collaborative effort, with nearly 1,000 subject matter experts from over 500 institutions contributing questions that are both multi-modal and resistant to quick internet retrieval, ensuring that only genuine deep academic understanding can lead to success. The tasks, which include both multiple-choice and short-answer formats with clearly defined, verifiable answers, expose a sub-stantial performance gap: current state-of-the-art LLMs, such as DeepSeek R1, OpenAI’s models, Google DeepMind Gemini Thinking, and Anthropic Sonnet 3.5, perform at less than 10% accuracy and suffer from high calibration errors, indicating overconfidence in incorrect responses. The results underscore that while existing benchmarks may no longer provide a meaningful measure of progress, HLE serves as a critical tool for assessing the true academic reasoning capabilities of LLMs, potentially heralding a new era in benchmark design as the field moves toward more challenging and nuanced evaluations in the pursuit of artificial general intelligence.
+
+### E. FACTS Grounding benchmark
+
+Google DeepMind introduced FACTS Grounding [68], a comprehensive benchmark designed to evaluate how accu-rately LLMs ground their long-form responses in provided source documents while avoiding hallucinations. The bench-mark comprises 1,719 meticulously crafted examples split into 860 public and 859 private cases that require models to generate detailed answers strictly based on a corresponding context document, with inputs reaching up to 32,000 tokens. Covering diverse domains such as medicine, law, technology, finance, and retail, FACTS Grounding excludes tasks that re-quire creativity, mathematics, or complex reasoning, focusing squarely on factual accuracy and information synthesis. To ensure robust and unbiased evaluation, responses are assessed in two phases: eligibility and factual grounding using a panel of three frontier LLM judges (Gemini 1.5 Pro, GPT-4o, and Claude 3.5 Sonnet), with final scores derived from the aggregation of these assessments. With an online leaderboard hosted on Kaggle already populated with initial results where, for instance, Gemini 2.0 Flash leads with 83.6% accuracy FACTS Grounding aims to drive industry-wide advancements in grounding and factuality, ultimately fostering greater trust and reliability in LLM applications.
+
+
+### F. ProcessBench benchmark
+
+Qwen team [69] introduced ProcessBench, a novel bench-mark specifically designed to evaluate the ability of language models to detect errors within the reasoning process for mathematical problem solving. ProcessBench comprises 3,400 test cases, primarily drawn from competition- and Olympiad-level math problems, where each case includes a detailed, step-by-step solution with human-annotated error locations. Models are tasked with identifying the earliest erroneous step or confirming that all steps are correct, thereby providing a granular assessment of their reasoning accuracy. The bench-mark is employed to evaluate two classes of models: process reward models (PRMs) and critic models, the latter involving general large language models (LLMs) that are prompted to critique each solution step. Experimental results reveal two key findings. First, existing PRMs generally fail to generalize to more challenging math problems beyond standard datasets like GSM8K and MATH, often underperforming relative to both prompted LLM-based critics and a PRM fine-tuned on a larger, more complex PRM800K dataset. Second, the best open-source model tested, QwQ-32B-Preview, demonstrates error detection capabilities that rival those of the proprietary GPT-4o, although it still falls short compared to reasoning-specialized models like o1-mini.
+
+### G. OmniDocBench Benchmark
+
+Ouyang et al. [70] introduced OmniDocBench, a compre-hensive multi-source benchmark designed to advance auto- mated document content extraction a critical component for high-quality data needs in LLMs and RAG systems. Om-niDocBench features a meticulously curated and annotated dataset spanning nine diverse document types including aca-demic papers, textbooks, slides, notes, and financial documents and utilizes a detailed evaluation framework with 19 layout categories and 14 attribute labels to facilitate multi-level as-sessments. Through extensive comparative analysis of existing modular pipelines and multimodal end-to-end methods, the benchmark reveals that while specialized models (e.g., Nougat) outperform general vision-language models (VLMs) on stan-dard documents, general VLMs exhibit superior resilience and adaptability in challenging scenarios, such as those involving fuzzy scans, watermarks, or colorful backgrounds. Moreover, fine-tuning general VLMs with domain-specific data leads to enhanced performance, as evidenced by high accuracy scores in tasks like formula recognition (with models such as GPT-4o, Mathpix, and UniMERNet achieving around 85–86.8% accu-racy) and table recognition (RapidTable at 82.5%). Nonethe- less, the findings also highlight persistent challenges, notably that complex column layouts continue to degrade reading order accuracy across all evaluated models.
+
+### H. Agent-as-a-Judge
+
+Meta team proposed the Agent-as-a-Judge framework [71], an innovative evaluation approach explicitly designed for agentic systems that overcome the limitations of traditional methods, which either focus solely on outcomes or require extensive manual labor. This framework provides granular, intermediate feedback throughout the task-solving process by leveraging agentic systems to evaluate other agentic systems. The authors demonstrate its effectiveness on code generation tasks using DevAI, a new benchmark comprising 55 real-istic automated AI development tasks annotated with 365 hierarchical user requirements. Their evaluation shows that Agent-as-a-Judge not only dramatically outperforms the con-ventional LLM-as-a-Judge approach (which typically achieves a 60–70% alignment rate with human assessment) but also reaches an impressive 90% alignment with human judgments. Additionally, this method offers substantial cost and time savings, reducing evaluation costs to approximately 2.29% ($30.58 vs. $1,297.50) and cutting evaluation time down to 118.43 minutes compared to 86.5 hours for human assess-ments.
+
+### I. JudgeBench Benchmark
+
+Tan et al. [72] proposed JudgeBench, a novel benchmark designed to objectively evaluate LLM-based judges models that are increasingly employed to assess and improve the outputs of large language models by focusing on their ability to accurately discern factual and logical correctness rather than merely aligning with human stylistic preferences. Unlike prior benchmarks that rely primarily on crowdsourced human evalu-ations, JudgeBench leverages a carefully constructed set of 350 challenging response pairs spanning knowledge, reasoning, math, and coding domains. The benchmark employs a novel pipeline to transform challenging existing datasets into paired comparisons with preference labels based on objective correct-ness while mitigating positional bias through double evaluation with swapped order. Comprehensive testing across various judge architectures, including prompted, fine-tuned, multi-agent judges, and reward models, reveals that even strong models, such as GPT-4o, often perform only marginally better than random guessing, particularly on tasks requiring rigorous error detection in intermediate reasoning steps. Moreover, fine-tuning can significantly boost performance, as evidenced by a 14% improvement observed in Llama 3.1 8B, and reward models achieve accuracies in the 59–64% range.
+
+### J. SimpleQA Benchmark
+
+SimpleQA [73] is a benchmark introduced by OpenAI to assess and improve the factual accuracy of large language models on short, fact-seeking questions. Comprising 4,326 questions spanning domains such as science/tech, politics, art, and geography, SimpleQA challenges models to deliver a single correct answer under a strict three-tier grading system (”correct,” ”incorrect,” or ”not attempted”). While built on foundational datasets such as TriviaQA and Natural Questions, SimpleQA presents a more challenging task for LLMs. Early results indicate that even advanced models, such as OpenAI o1-preview, achieve only 42.7% accuracy (with Claude 3.5 Sonnet trailing at 28.9%), and models tend to exhibit over-confidence in their incorrect responses. Moreover, experiments that repeated the same question 100 times revealed a strong
+
+
+**Table 4: LLM Benchmark Comparison: Multimodal, Task Diversity, Reasoning & Agentic AI Evaluation**
+
+
+| Benchmark | Year | Multimodal | Task Description | Reasoning / Complexity | Agentic AI |
+|---|---|---|---|---|---|
+| DROP [89] | 2019 | No | English discrete reasoning comprehension | High / High | No |
+| MMLU [65] | 2020 | No | Academic/general knowledge | High / Moderate | No |
+| MATH [90] | 2021 | No | Evaluating mathematical reasoning | High / High | No |
+| Codex [91] | 2021 | No | Evaluating LLMs trained on code | Medium / Medium | No |
+| MGSM [92] | 2022 | No | Multilingual grade-school math problems | High / High | No |
+| FACTS Grounding [68] | 2023 | No | Factual grounding in long responses | High / Low | No |
+| SimpleQA [73] | 2023 | No | Factual Q&A | High / Low | No |
+| PersonaGym [93] | 2024 | No | Dynamic evaluation framework for persona agents | High / High | Yes |
+| FineTasks [74] | 2023 | No | Multilingual task selection | High / Medium | No |
+| GAIA [85] | 2023 | Yes | General AI assistant tasks | High / High | No |
+| OmniDocBench [70] | 2024 | Yes | Document content extraction | High / Medium | No |
+| ProcessBench [69] | 2024 | No | Error detection in math solutions | Low / High | No |
+| MIRAI [94] | 2024 | No | Evaluating llm agents for event forecasting | High / High | Yes |
+| AppWorld [95] | 2025 | No | Benchmarking Interactive Coding Agents | High / High | Yes |
+| VisualAgentBench[96] | 2024 | Yes | Benchmark for evaluating Large Multimodal Models | High / High | Yes |
+| ScienceAgentBench [97] | 2024 | No | Evaluation of language agents for Scientific Discovery | High / High | Yes |
+| Agent-SafetyBench [98] | 2024 | No | Safety evaluation of LLM agents | High / High | Yes |
+| DiscoveryBench [99] | 2024 | No | Data-Driven Discovery | High / High | Yes |
+| BLADE [100] | 2024 | No | Benchmark for data-driven scientific discovery | High / High | Yes |
+| Dyn-VQA [9] | 2024 | Yes | Adaptive VQA multimodal benchmark | High / High | Yes |
+| Agent-as-a-Judge [71] | 2024 | No | Code generation evaluation | Low / Low | Yes |
+| JudgeBench [72] | 2024 | No | Evaluation of LLM-based judges | High / High | No |
+| FRAMES [75] | 2024 | No | Factuality & retrieval for RAG | High / High | No |
+| MedChain [101] | 2024 | No | Interactive clinical decision adaptation | High / High | Yes |
+| CRAG [79] | 2024 | No | Factual Q&A for RAG systems | High / High | No |
+| DIA [81] | 2024 | Yes | Dynamic problem solving | High / High | No |
+| CyberMetric [82] | 2024 | No | Cybersecurity Q&A | Low / Low | No |
+| TeamCraft [102] | 2024 | Yes | Collaborative Minecraft multimodal evaluation | High / High | Yes |
+| AgentHarm [103] | 2024 | No | LLM jailbreak robustness evaluation | High / High | Yes |
+| τ -bench [88] | 2024 | No | Conversational Agent Evaluation | High / High | Yes |
+| LegalAgentBench [104] | 2024 | No | Evaluating LLM Agents in Legal Domain | High / High | Yes |
+| GPQA [105] | 2024 | No | Biology, physics, and chemistry | High / High | No |
+| ENIGMAEVAL [64] | 2025 | Yes | Complex multimodal puzzles | Low / High | No |
+| ComplexFuncBench [66] | 2025 | No | Function calling tasks | Medium / High | No |
+| MedAgentsBench [106] | 2025 | No | Complex medical reasoning & treatment planning | High / High | Yes |
+| Humanity’s Last Exam [67] | 2025 | Yes | Expert-level academic tasks | High / High | No |
+| DABStep [76] | 2025 | No | Step-based multi-step reasoning | Low / High | No |
+| BFCL v2 [77] | 2025 | No | Function calling evaluation | High / High | No |
+| SWE-Lancer [78] | 2025 | No | Freelance software engineering tasks | High / Moderate | No |
+| OCCULT [80] | 2025 | No | Cyber security operational tasks | Medium / High | No |
+| BIG-Bench Extra Hard [83] | 2025 | No | Challenging reasoning tasks | High / High | No |
+| MultiAgentBench [84] | 2025 | Yes | Multi-agent coordination tasks | High / High | Yes |
+| CASTLE [86] | 2025 | No | Software vulnerability detection | Low / Medium | No |
+| EmbodiedEval [107] | 2025 | Yes | 3D embodied tasks benchmark | Medium / High | Yes |
+| SPIN-Bench [87] | 2025 | Yes | Strategic planning & social reasoning | High / High | Yes |
+| OlympicArena [108] | 2025 | Yes | Olympic competition problems | Medium / High | No |
+| SciReplicate-Bench [109] | 2025 | No | Algorithm-driven code generation | High / High | Yes |
+| EconAgentBench [110] | 2025 | No | Decision-making tasks in economic environments | High / High | Yes |
+| VeriLA [111] | 2025 | No | Human-centered LLM failure verification | High / High | Yes |
+| CapaBench [112] | 2025 | No | Evaluation of modular contributions in LLM agents | High / High | Yes |
+| AgentOrca [113] | 2025 | No | Dual-system agent compliance evaluation | High / High | Yes |
+| ProjectEval [114] | 2025 | No | Project-level code generation evaluation | Medium / High | Yes |
+| RefactorBench [115] | 2025 | No | Autonomous multi-file refactoring evaluation | High / High | Yes |
+| BEARCUBS [116] | 2025 | Yes | Multimodal web agents evaluation | High / Medium | Yes |
+| Robotouille [117] | 2025 | No | Asynchronous Planning Benchmark | High / High | Yes |
+| DSGBench [118] | 2025 | No | Strategic games decision evaluation | Medium / High | Yes |
+| TheoremExplainBench [119] | 2025 | Yes | STEM theorem animation videos | Medium / High | Yes |
+| RefuteBench 2.0 [120] | 2025 | No | Multi-turn LLM feedback evaluation | High / High | Yes |
+| MLGym [121] | 2025 | Yes | ML agents automate research | High / High | Yes |
+| DataSciBench [122] | 2025 | No | LLM Data Science Benchmark | High / High | Yes |
+| EmbodiedBench [123] | 2025 | Yes | Vision-driven embodied agent evaluation | High / High | Yes |
+| BrowseComp [124] | 2025 | No | Benchmark for Browsing Agents | High / High | Yes |
+| Vending-Bench [125] | 2025 | No | Long-horizon business simulation | Medium / High | Yes |
+| MLE-bench [126] | 2025 | No | ML engineering-related competitions from Kaggle | Medium / High | Yes |
+| SWE-PolyBench [127] | 2025 | No | Evaluation of coding agents | High / High | Yes |
+| Multi-SWE-bench [128] | 2025 | No | Multilingual Benchmark for Issue Resolving | High / High | No |
+
+### K. FineTasks
+
+FineTasks [74] is a data-driven evaluation framework de-signed to systematically select reliable tasks for assessing LLMs across diverse languages. Developed as the first step toward the broader FineWeb Multilingual initiative, Fine- Tasks evaluates candidate tasks based on four critical metrics: monotonicity, low noise, non-random performance, and model ordering consistency to ensure robustness and reliability. In an extensive study, the Hugging Face team tested 185 candi-date tasks across nine languages (including Chinese, French, Arabic, Russian, Thai, Hindi, Turkish, Swahili, and Telugu), ultimately selecting 96 final tasks that cover domains such as reading comprehension, general knowledge, language un-derstanding, and reasoning. The work further reveals that the formulation of tasks has a significant impact on performance; for instance, Cloze format tasks are more effective during early training phases, while multiple-choice formats yield better evaluation results. Recommended evaluation metrics include length normalization for most tasks and pointwise mutual information (PMI) for complex reasoning challenges. Benchmarking 35 open and closed-source LLMs demonstrated that open models are narrowing the gap with their proprietary counterparts, with Qwen 2 models excelling in high- and mid-resource languages and Gemma-2 particularly strong in low- resource settings. Moreover, the FineTasks framework supports over 550 tasks across various languages, providing a scalable and comprehensive platform for advancing multilingual large language model (LLM) evaluation.
+
+### L. FRAMES benchmark
+
+Google team [75] propose FRAMES (Factuality, Retrieval, and Reasoning MEasurement Set), a comprehensive evaluation dataset specifically designed to assess the capabilities of retrieval-augmented generation (RAG) systems built on LLMs. FRAMES addresses a critical need by unifying evaluations of factual accuracy, retrieval effectiveness, and reasoning abil-ity in an end-to-end framework, rather than assessing these facets in isolation. The dataset comprises 824 challenging multi-hop questions spanning diverse topics, including history, sports, science, and health, each requiring the integration of information from between two and fifteen Wikipedia articles. By labeling questions with specific reasoning types, such as numerical or tabular. FRAMES provides a nuanced benchmark to identify the strengths and weaknesses of current RAG implementations. Baseline experiments reveal that state-of-the-art models like Gemini-Pro-1.5-0514 achieve only 40% accuracy when operating without retrieval mechanisms, but their performance increases significantly to 66% with a multi-step retrieval pipeline, representing a greater than 50% im- provement.
+
+### M. DABStep benchmark
+
+DabStep [76] is a new framework from Hugging Face that pioneers a step-based approach to enhance the performance and efficiency of language models on multi-step reasoning tasks. DabStep addresses the challenges of traditional end-to-end inference by decomposing complex problem-solving into discrete, manageable steps, enabling models to refine their outputs through step-level feedback and iterative dynamic adjustments. This method is designed to enable models to self-correct and navigate the complexities of multi-step reasoning processes more effectively. However, despite these innovative improvements, experimental results reveal that even the best-performing model under this framework only achieves a 16% success rate on the evaluated tasks. This modest accuracy un-derscores the significant challenges that remain in effectively training models for complex, iterative reasoning and highlights the need for further research and optimization.
+
+### N. BFCL v2 benchmark
+
+Mao et al. [77] propose BFCL v2, a novel benchmark and leaderboard designed to evaluate large language models’ function-calling abilities using real-world, user-contributed data. The benchmark comprises 2,251 question-function-answer pairs, enabling comprehensive assessments across a range of scenarios from multiple and straightforward function calls to parallel executions and irrelevance detection. By lever-aging authentic user interactions, BFCL v2 addresses prevalent issues such as data contamination, bias, and limited gener-alization in previous evaluation methods. Initial evaluations reveal that models like Claude 3.5 and GPT-4 consistently outperform others, with Mistral, Llama 3.1 FT, and Gemini following in performance. However, some open models, such as Hermes, struggle due to potential prompting and formatting challenges. Overall, BFCL v2 offers a rigorous and diverse platform for benchmarking the practical capabilities of LLMs in interfacing with external tools and APIs, thereby providing valuable insights for future advancements in function calling and interactive AI systems.
+
+### O. SWE-Lancer benchmark
+
+OpenAI team [78] presents SWE-Lancer, an innovative benchmark comprised of over 1,400 freelance software engi-neering tasks collected from Upwork, representing more than $1 million in real-world payouts. This benchmark encom-passes both independent engineering tasks, ranging from minor bug fixes to substantial feature implementations valued up to $32,000, and managerial tasks, where models must select the best technical proposals. Independent tasks are rigorously eval-uated using end-to-end tests that have been triple-verified by experienced engineers. At the same time, managerial decisions are benchmarked against the selections made by the original hiring managers. Experimental results indicate that state-of-the-art models, such as Claude 3.5 Sonnet, still struggle with the majority of these tasks, achieving a 26.2% pass rate on independent tasks and 44.9% on managerial tasks, which translates to an estimated earning of $403K a figure well below
+
+the total available value. Notably, the analysis highlights that while models tend to perform better in evaluative managerial roles than in direct code implementation, increasing inference-time computing can enhance performance.
+
+### P. Comprehensive RAG Benchmark (CRAG)
+
+Yang et al. [79] propose the Comprehensive RAG Bench-mark (CRAG), a novel dataset designed to evaluate the factual question-answering capabilities of Retrieval-Augmented Gen-eration systems rigorously. CRAG comprises 4,409 question- answer pairs across five domains and eight distinct question categories. It incorporates mock APIs to simulate web and Knowledge Graph retrieval, thereby reflecting the varied levels of entity popularity and temporal dynamism encountered in real-world scenarios. Empirical results show that state-of-the-art large language models without grounding achieve only around 34% accuracy on CRAG, and that incorporating simple RAG methods improves this to just 44%, whereas industry-leading RAG systems can reach 63% accuracy without hal- lucination. The benchmark also highlights significant perfor-mance drops for questions involving highly dynamic, lower- popularity, or more complex facts. Notably, CRAG focuses solely on evaluating the generative component of the RAG pipeline, and early findings indicate that Llama 3 70B nearly matches GPT-4 Turbo across these tasks.
 
-**Paper:** Ferrag, Tihanyi, Debbah — arXiv:2504.19678v2 (March 2026)
+### Q. OCCULT Benchmark
 
-## Overview
+Kouremetis et al. [80] present OCCULT, a novel and lightweight operational evaluation framework that rigorously measures the cybersecurity risks associated with using large language models (LLMs) for offensive cyber operations (OCO). Traditionally, evaluating AI in cybersecurity has relied on simplistic, all-or-nothing tests such as capture-the-flag exer-cises, which fail to capture the nuanced threats faced by mod- ern infrastructure. In contrast, OCCULT enables cybersecurity experts to craft repeatable and contextualized benchmarks by simulating real-world threat scenarios. The authors detail three distinct OCO benchmarks designed to assess the capability of LLMs to execute adversarial tactics, providing preliminary evaluation results that indicate a significant advancement in AI-enabled cyber threats. Most notably, the DeepSeek-R1 model correctly answered over 90% of questions in the Threat Actor Competency Test for LLMs (TACTL).
 
-A systematic survey consolidating ~60 benchmarks and agent frameworks developed 2019–2025. Proposes a unified taxonomy across general reasoning, code generation, factual grounding, multimodal tasks, and interactive/agentic assessments. Reviews agent-to-agent collaboration protocols (ACP, MCP, A2A) and discusses open research challenges.
+### R. DIA benchmark
 
-## How ReAct Fits Into the Agent Landscape
+Dynamic Intelligence Assessment (DIA) [81] is introduced as a novel methodology to more rigorously test and compare the problem-solving abilities of AI models across diverse do-mains such as mathematics, cryptography, cybersecurity, and computer science. Unlike traditional benchmarks that rely on static question-answer pairs, often allowing models to perform uniformly well or rely on memorization, DIA employs dy-namic question templates with mutable parameters, presented in various formats including text, PDFs, compiled binaries, visual puzzles, and CTF-style challenges. This framework also introduces four innovative metrics to evaluate a model’s reliability and confidence across multiple attempts, revealing that even simple questions are frequently answered incor-rectly when posed in different forms. Notably, the evaluation shows that while API models like GPT-4o may overestimate their mathematical capabilities, models such as ChatGPT-4o perform better due to practical tool usage, and OpenAI’s o1-mini excels in self-assessment of task suitability. Testing 25 state-of-the-art LLMs with DIA-Bench reveals significant gaps in handling complex tasks and in adaptive intelligence, establishing a new standard for evaluating both problem-solving performance and a model’s ability to recognize its own limitations.
 
-The paper explicitly positions ReAct (Yao et al., 2022) as a foundational technique for combining reasoning and acting in LLM-based agents. Key quote from the survey:
+### S. CyberMetric benchmark
 
-> "Various approaches have been explored to enhance LLM-based agents, from combining reasoning and acting using techniques like ReAct and Monte Carlo Tree Search, to synthesizing high-quality data with methods like Learn-by-Interact."
+Tihanyi et al. [82] introduce a suite of novel multiple-choice Q&A benchmark datasets, CyberMetric-80, CyberMetric-500, CyberMetric-2000, and CyberMetric-10000, designed to evaluate the cybersecurity knowledge of LLMs rigorously. By leveraging GPT-3.5 and Retrieval-Augmented Generation (RAG), the authors generated questions from diverse cyber-security sources such as NIST standards, research papers, publicly accessible books, and RFCs. Complete with four possible answers, each question underwent extensive rounds of error checking and refinement, with over 200 hours of human expert validation to ensure accuracy and domain rel-evance. Evaluations were conducted on 25 state-of-the-art large language models (LLMs), and the results were further benchmarked against human performance on CyberMetric-80 in a closed-book scenario. Findings reveal that models like GPT-4o, GPT-4-turbo, Mixtral-8x7 B-Instruct, Falcon-180 B- Chat, and GEMINI-pro 1.0 exhibit superior cybersecurity un-derstanding, outperforming humans on CyberMetric-80, while smaller models such as Llama-3-8B, Phi-2, and Gemma-7b lag behind, underscoring the value of model scale and domain-specific data in this challenging field.
 
-ReAct is categorized as a **reasoning strategy** that enables agents to interleave thought traces with external actions — the baseline pattern that more advanced frameworks (LangGraph, AutoGen, CrewAI) build upon.
+### T. BIG-Bench Extra Hard
 
-## Taxonomy of Agent Reasoning Strategies
+A team from Google DeepMind [83] addresses a critical gap in evaluating large language models by tackling the limi-tations of current reasoning benchmarks, which have primarily focused on mathematical and coding tasks. While the BIG- Bench dataset [129] and its more complex variant, BIG-Bench Hard (BBH) [130], have provided comprehensive assessments of general reasoning abilities, recent advances in LLMs have led to saturation, with state-of-the-art models achieving near-perfect scores on many BBH tasks. To overcome this, the authors introduce BIG-Bench Extra Hard (BBEH). This novel benchmark replaces each BBH task with a more challenging variant designed to probe similar reasoning capabilities at an elevated difficulty level. Evaluations on BBEH reveal that even the best general-purpose models only achieve an average accuracy of 9.8%, while reasoning-specialized models reach 44.8%, highlighting substantial room for improvement and underscoring the ongoing challenge of developing LLMs with robust, versatile reasoning skills.
 
-The survey identifies these key reasoning strategies relevant to ReAct-style agents:
 
-1. **ReAct (Reason + Act)** — Interleaved thought-action-observation loops. Enables planning, error correction, and interpretable trajectories. Foundation for most practical agent implementations.
+### U. MultiAgentBench benchmark
 
-2. **Chain-of-Thought (CoT)** — Internal reasoning traces without external action calls. ReAct extends CoT by adding the action/observation cycle.
+Zhu et al. [84] introduce MultiAgentBench, a benchmark specifically designed to evaluate the capabilities of multi-agent systems powered by LLMs in dynamic, interactive environments. Unlike traditional benchmarks that focus on single-agent performance or narrow domains, MultiAgent- Bench encompasses six diverse domains, including research proposal writing, Minecraft structure building, database error analysis, collaborative coding, competitive Werewolf game-play, and resource bargaining to measure both task comple- tion and the quality of agent coordination using milestone-based performance indicators. The study investigates various coordination protocols, such as star, chain, tree, and graph topologies, and finds that direct peer-to-peer communication and cognitive planning are particularly effective evidenced by a 3% improvement in milestone achievement when planning is employed while also noting that adding more agents can decrease performance. Among the models evaluated (GPT-4o-mini, 3.5, and Llama), GPT-4o-mini achieved the highest average task score, and graph-based coordination protocols outperformed other structures in research scenarios.
 
-3. **Tree Search (e.g., LATS, MCTS)** — Explores multiple reasoning paths simultaneously. More powerful but computationally expensive vs ReAct's linear trace.
+### V. GAIA Benchmark
 
-4. **Reflection / Self-Critique** — Agent reviews its own outputs and iterates. Often layered on top of ReAct loops (e.g., Reflexion framework).
+GAIA [85] is a groundbreaking benchmark designed to assess General AI Assistants on real-world questions that tap into fundamental abilities like reasoning, multi-modality handling, web browsing, and tool use. Unlike traditional benchmarks that focus on increasingly specialized tasks, GAIA features conceptually simple questions solvable by humans at 92% accuracy that current systems, such as GPT-4 with plugins, struggle with, achieving only 15%. Comprising 466 meticulously curated questions with reference answers, GAIA shifts the evaluation paradigm toward measuring AI robustness in everyday reasoning tasks, a critical step toward achieving true Artificial General Intelligence (AGI). This substantial performance gap between humans and state-of-the-art models emphasizes the need for AI systems that can mimic the general-purpose, resilient reasoning exhibited by average hu-man problem solvers.
 
-5. **Multi-Agent Collaboration** — Specialized agents (planner, executor, critic) coordinate. ReAct-style loops operate within each individual agent.
+### W. CASTLE Benchmark
 
-## Key Agent Frameworks (2023–2025)
+Dubniczky et al. [86] introduce CASTLE, a novel bench-marking framework for evaluating software vulnerability detection methods, addressing existing approaches’ critical weaknesses. CASTLE assesses 13 static analysis tools, 10 LLMs, and two formal verification tools using a meticulously curated dataset of 250 micro-benchmark programs that cover 25 common CWEs. The framework proposes a new evaluation metric, the CASTLE Score, to enable fair comparisons across different methods. Results reveal that while formal verification tools like ESBMC minimize false positives, they struggle with vulnerabilities beyond the scope of model checking. Static an-alyzers often generate excessive false positives, which burden developers with manual validation. LLMs perform strongly on small code snippets; however, their accuracy declines, and hallucinations increase as code size grows. These findings suggest that, despite current limitations, LLMs hold significant promise for integration into code completion frameworks, providing real-time vulnerability prevention and marking an important step toward more secure software systems.
 
-| Framework | Reasoning Pattern | Notes |
-|-----------|-------------------|-------|
-| LangGraph | ReAct + stateful graphs | Explicit node/edge control; used in this lesson |
-| AutoGen | Multi-agent conversation | Each agent can use ReAct internally |
-| CrewAI | Role-based multi-agent | Sequential/parallel task delegation |
-| Agentless | Direct LLM calls, no loop | Shows limits of non-ReAct approaches for complex tasks |
-| Agentic RAG | ReAct + retrieval | Dynamic retrieval integrated into thought-action cycle |
+### X. SPIN-Bench Benchmark
 
-## Failure Modes in ReAct Agents (from Challenges section)
-
-The survey identifies recurring failure patterns directly relevant to building ReAct agents:
-
-- **Hallucinated tool calls** — Agent generates plausible-sounding but invalid tool arguments. Mitigation: strict tool schema validation, structured output parsing.
-- **Reasoning–action misalignment** — The thought step says one thing but the action step does another. Mitigation: prompt engineering to force explicit action declaration.
-- **Infinite loops** — Agent repeats the same observation-thought-action cycle without progress. Mitigation: max_iterations guard, loop detection.
-- **Context window saturation** — Long observation outputs fill the context before the agent can complete its task. Mitigation: observation truncation, summarization nodes.
-- **Over-calling tools** — Agent calls search/retrieval for every step even when not needed. Mitigation: train on examples showing when to act from memory.
-
-## Why ReAct Outperforms Simpler Patterns
-
-The survey benchmarks show that ReAct-style agents (thought → action → observation loops) consistently outperform:
-- Pure prompting (no tools) — can't access real-time data or execute code
-- Direct tool calling (no reasoning trace) — poor at multi-step tasks requiring planning
-- Static pipelines — can't adapt to unexpected tool results
-
-Key benchmark result cited: ReAct outperforms imitation and reinforcement learning methods on interactive decision-making tasks (ALFWorld: +44% absolute success rate; WebShop: +10%).
-
-## Practical Implications for Building ReAct Agents
-
-From the frameworks and applications sections:
-
-1. **System prompt structure matters** — Explicitly label `Thought:`, `Action:`, `Observation:` in the prompt or use structured output to enforce the loop format.
-2. **Tool design is as important as model choice** — Clear docstrings, constrained input schemas, and deterministic outputs reduce hallucination risk.
-3. **Stateful checkpointing** — For multi-step tasks, persisting intermediate state (e.g., LangGraph's SQLite checkpointer) is essential for reliability.
-4. **Observation formatting** — Return observations in a concise format (< 500 tokens when possible); truncate or summarize raw API/search results before passing to the agent.
-
-
-**Source URL:** <https://ai.google.dev/gemini-api/docs/function-calling>
-
-Function calling lets you connect models to external tools and APIs.
-Instead of generating text responses, the model determines when to call specific
-functions and provides the necessary parameters to execute real-world actions.
-This allows the model to act as a bridge between natural language and real-world
-actions and data. Function calling has 3 primary use cases:
-
-- **Augment Knowledge:** Access information from external sources like
-databases, APIs, and knowledge bases.
-- **Extend Capabilities:** Use external tools to perform computations and
-extend the limitations of the model, such as using a calculator or creating
-charts.
-- **Take Actions:** Interact with external systems using APIs, such as
-scheduling appointments, creating invoices, sending emails, or controlling
-smart home devices.
-
-Get WeatherSchedule MeetingCreate Chart
-
-```python
-from google import genai
-from google.genai import types
-
-# Define the function declaration for the model
-schedule_meeting_function = {
-    "name": "schedule_meeting",
-    "description": "Schedules a meeting with specified attendees at a given time and date.",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "attendees": {
-                "type": "array",
-                "items": {"type": "string"},
-                "description": "List of people attending the meeting.",
-            },
-            "date": {
-                "type": "string",
-                "description": "Date of the meeting (e.g., '2024-07-29')",
-            },
-            "time": {
-                "type": "string",
-                "description": "Time of the meeting (e.g., '15:00')",
-            },
-            "topic": {
-                "type": "string",
-                "description": "The subject or topic of the meeting.",
-            },
-        },
-        "required": ["attendees", "date", "time", "topic"],
-    },
-}
-
-# Configure the client and tools
-client = genai.Client()
-tools = types.Tool(function_declarations=[schedule_meeting_function])
-config = types.GenerateContentConfig(tools=[tools])
-
-# Send request with function declarations
-response = client.models.generate_content(
-    model="gemini-3-flash-preview",
-    contents="Schedule a meeting with Bob and Alice for 03/14/2025 at 10:00 AM about the Q3 planning.",
-    config=config,
-)
-
-# Check for a function call
-if response.candidates[0].content.parts[0].function_call:
-    function_call = response.candidates[0].content.parts[0].function_call
-    print(f"Function to call: {function_call.name}")
-    print(f"ID: {function_call.id}")
-    print(f"Arguments: {function_call.args}")
-    #  In a real app, you would call your function here:
-    #  result = schedule_meeting(**function_call.args)
-else:
-    print("No function call found in the response.")
-    print(response.text)
-```
-
-```javascript
-import { GoogleGenAI, Type } from '@google/genai';
-
-// Configure the client
-const ai = new GoogleGenAI({});
-
-// Define the function declaration for the model
-const scheduleMeetingFunctionDeclaration = {
-  name: 'schedule_meeting',
-  description: 'Schedules a meeting with specified attendees at a given time and date.',
-  parameters: {
-    type: Type.OBJECT,
-    properties: {
-      attendees: {
-        type: Type.ARRAY,
-        items: { type: Type.STRING },
-        description: 'List of people attending the meeting.',
-      },
-      date: {
-        type: Type.STRING,
-        description: 'Date of the meeting (e.g., "2024-07-29")',
-      },
-      time: {
-        type: Type.STRING,
-        description: 'Time of the meeting (e.g., "15:00")',
-      },
-      topic: {
-        type: Type.STRING,
-        description: 'The subject or topic of the meeting.',
-      },
-    },
-    required: ['attendees', 'date', 'time', 'topic'],
-  },
-};
-
-// Send request with function declarations
-const response = await ai.models.generateContent({
-  model: 'gemini-3-flash-preview',
-  contents: 'Schedule a meeting with Bob and Alice for 03/27/2025 at 10:00 AM about the Q3 planning.',
-  config: {
-    tools: [{
-      functionDeclarations: [scheduleMeetingFunctionDeclaration]
-    }],
-  },
-});
-
-// Check for function calls in the response
-if (response.functionCalls && response.functionCalls.length > 0) {
-  const functionCall = response.functionCalls[0]; // Assuming one function call
-  console.log(`Function to call: ${functionCall.name}`);
-  console.log(`ID: ${functionCall.id}`);
-  console.log(`Arguments: ${JSON.stringify(functionCall.args)}`);
-  // In a real app, you would call your actual function here:
-  // const result = await scheduleMeeting(functionCall.args);
-} else {
-  console.log("No function call found in the response.");
-  console.log(response.text);
-}
-```
-
-```bash
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent" \
-  -H "x-goog-api-key: $GEMINI_API_KEY" \
-  -H 'Content-Type: application/json' \
-  -X POST \
-  -d '{
-    "contents": [
-      {
-        "role": "user",
-        "parts": [
-          {
-            "text": "Schedule a meeting with Bob and Alice for 03/27/2025 at 10:00 AM about the Q3 planning."
-          }
-        ]
-      }
-    ],
-    "tools": [
-      {
-        "functionDeclarations": [
-          {
-            "name": "schedule_meeting",
-            "description": "Schedules a meeting with specified attendees at a given time and date.",
-            "parameters": {
-              "type": "object",
-              "properties": {
-                "attendees": {
-                  "type": "array",
-                  "items": {"type": "string"},
-                  "description": "List of people attending the meeting."
-                },
-                "date": {
-                  "type": "string",
-                  "description": "Date of the meeting (e.g., '2024-07-29')"
-                },
-                "time": {
-                  "type": "string",
-                  "description": "Time of the meeting (e.g., '15:00')"
-                },
-                "topic": {
-                  "type": "string",
-                  "description": "The subject or topic of the meeting."
-                }
-              },
-              "required": ["attendees", "date", "time", "topic"]
-            }
-          }
-        ]
-      }
-    ]
-  }'
-```
-
-## How function calling works
-
-https://ai.google.dev/static/gemini-api/docs/images/function-calling-overview.png
-
-Function calling involves a structured interaction between your application, the
-model, and external functions. Here's a breakdown of the process:
-
-1.  **Define function declaration:** Define the function declaration in your
-    application code. Function Declarations describe the function's name,
-    parameters, and purpose to the model.
-2.  **Call API with function declarations:** Send user prompt along with the
-    function declaration(s) to the model. It analyzes the request and determines
-    if a function call would be helpful. If so, it responds with a structured
-    JSON object containing the function name, arguments, and a unique `id`
-    (this `id` is now always returned by the API for Gemini 3 models\*).
-3.  **Execute function code (your responsibility):** The Model _doesn't_
-    execute the function itself. It's your application's responsibility to
-    process the response and check for a function call. If
-    - **Yes**: Extract the name, args, and `id` of the function and execute
-      the corresponding function in your application.
-    - **No:** The model has provided a direct text response to the prompt
-      (this flow is less emphasized in the example but is a possible outcome).
-4.  **Create user friendly response:** If a function was executed, capture the
-    result and send it back to the model, ensuring you include the matching
-    `id`, in a subsequent turn of the conversation. It will use the result to
-    generate a final, user-friendly response that incorporates the information
-    from the function call.
-
-This process can be repeated over multiple turns, allowing for complex
-interactions and workflows. The model also supports calling multiple functions
-in a single turn ( [parallel function calling](https://ai.google.dev/gemini-api/docs/function-calling?example=meeting#parallel_function_calling)), in
-sequence ( [compositional function calling](https://ai.google.dev/gemini-api/docs/function-calling?example=meeting#compositional_function_calling)),
-and with built-in Gemini tools ( [multi-tool use](https://ai.google.dev/gemini-api/docs/function-calling?example=meeting#native-tools)).
-
-\* **Always map function IDs:** Gemini 3 now always returns a unique
-`id` with every `functionCall`. Include this exact `id` in your
-`functionResponse` so the model can accurately map your result back to the
-original request.
-
-### Step 1: Define a function declaration
-
-Define a function and its declaration within your application code that allows
-users to set light values and make an API request. This function could call
-external services or APIs.
-
-```python
-# Define a function that the model can call to control smart lights
-set_light_values_declaration = {
-    "name": "set_light_values",
-    "description": "Sets the brightness and color temperature of a light.",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "brightness": {
-                "type": "integer",
-                "description": "Light level from 0 to 100. Zero is off and 100 is full brightness",
-            },
-            "color_temp": {
-                "type": "string",
-                "enum": ["daylight", "cool", "warm"],
-                "description": "Color temperature of the light fixture, which can be `daylight`, `cool` or `warm`.",
-            },
-        },
-        "required": ["brightness", "color_temp"],
-    },
-}
-
-# This is the actual function that would be called based on the model's suggestion
-def set_light_values(brightness: int, color_temp: str) -> dict[str, int | str]:
-    """Set the brightness and color temperature of a room light. (mock API).
-
-    Args:
-        brightness: Light level from 0 to 100. Zero is off and 100 is full brightness
-        color_temp: Color temperature of the light fixture, which can be `daylight`, `cool` or `warm`.
-
-    Returns:
-        A dictionary containing the set brightness and color temperature.
-    """
-    return {"brightness": brightness, "colorTemperature": color_temp}
-```
-
-```javascript
-import { Type } from '@google/genai';
-
-// Define a function that the model can call to control smart lights
-const setLightValuesFunctionDeclaration = {
-  name: 'set_light_values',
-  description: 'Sets the brightness and color temperature of a light.',
-  parameters: {
-    type: Type.OBJECT,
-    properties: {
-      brightness: {
-        type: Type.NUMBER,
-        description: 'Light level from 0 to 100. Zero is off and 100 is full brightness',
-      },
-      color_temp: {
-        type: Type.STRING,
-        enum: ['daylight', 'cool', 'warm'],
-        description: 'Color temperature of the light fixture, which can be `daylight`, `cool` or `warm`.',
-      },
-    },
-    required: ['brightness', 'color_temp'],
-  },
-};
-
-/**
-
-*   Set the brightness and color temperature of a room light. (mock API)
-*   @param {number} brightness - Light level from 0 to 100. Zero is off and 100 is full brightness
-*   @param {string} color_temp - Color temperature of the light fixture, which can be `daylight`, `cool` or `warm`.
-*   @return {Object} A dictionary containing the set brightness and color temperature.
-*/
-function setLightValues(brightness, color_temp) {
-  return {
-    brightness: brightness,
-    colorTemperature: color_temp
-  };
-}
-```
-
-### Step 2: Call the model with function declarations
-
-Once you have defined your function declarations, you can prompt the model to
-use them. It analyzes the prompt and function declarations and decides whether
-to respond directly or to call a function. If a function is called, the response
-object will contain a function call suggestion.
-
-```python
-from google.genai import types
-
-# Configure the client and tools
-client = genai.Client()
-tools = types.Tool(function_declarations=[set_light_values_declaration])
-config = types.GenerateContentConfig(tools=[tools])
-
-# Define user prompt
-contents = [
-    types.Content(
-        role="user", parts=[types.Part(text="Turn the lights down to a romantic level")]
-    )
-]
-
-# Send request with function declarations
-response = client.models.generate_content(
-    model="gemini-3-flash-preview",
-    contents=contents,
-    config=config,
-)
-
-print(response.candidates[0].content.parts[0].function_call)
-```
-
-```javascript
-import { GoogleGenAI } from '@google/genai';
-
-// Generation config with function declaration
-const config = {
-  tools: [{
-    functionDeclarations: [setLightValuesFunctionDeclaration]
-  }]
-};
-
-// Configure the client
-const ai = new GoogleGenAI({});
-
-// Define user prompt
-const contents = [
-  {
-    role: 'user',
-    parts: [{ text: 'Turn the lights down to a romantic level' }]
-  }
-];
-
-// Send request with function declarations
-const response = await ai.models.generateContent({
-  model: 'gemini-3-flash-preview',
-  contents: contents,
-  config: config
-});
-
-console.log(response.functionCalls[0]);
-```
-
-The model then returns a `functionCall` object in an OpenAPI compatible
-schema specifying how to call one or more of the declared functions in order to
-respond to the user's question.
-
-```python
-id='8f2b1a3c' args={'color_temp': 'warm', 'brightness': 25} name='set_light_values'
-```
-
-```javascript
-{
-  id: '8f2b1a3c',
-  name: 'set_light_values',
-  args: { brightness: 25, color_temp: 'warm' }
-}
-```
-
-### Step 3: Execute set\_light\_values function code
-
-Extract the function call details from the model's response, parse the arguments
-, and execute the `set_light_values` function.
-
-```python
-# Extract tool call details, it may not be in the first part.
-tool_call = response.candidates[0].content.parts[0].function_call
-
-if tool_call.name == "set_light_values":
-    result = set_light_values(**tool_call.args)
-    print(f"Function execution result: {result}")
-```
-
-```javascript
-// Extract tool call details
-const tool_call = response.functionCalls[0]
-
-let result;
-if (tool_call.name === 'set_light_values') {
-  result = setLightValues(tool_call.args.brightness, tool_call.args.color_temp);
-  console.log(`Function execution result: ${JSON.stringify(result)}`);
-}
-```
-
-### Step 4: Create user friendly response with function result and call the model again
-
-Finally, send the result of the function execution back to the model so it can
-incorporate this information into its final response to the user.
-
-```python
-from google import genai
-from google.genai import types
-
-# Create a function response part
-function_response_part = types.Part.from_function_response(
-    name=tool_call.name,
-    response={"result": result},
-    id=tool_call.id,
-)
-
-# Append function call and result of the function execution to contents
-contents.append(response.candidates[0].content) # Append the content from the model's response.
-contents.append(types.Content(role="user", parts=[function_response_part])) # Append the function response
-
-client = genai.Client()
-final_response = client.models.generate_content(
-    model="gemini-3-flash-preview",
-    config=config,
-    contents=contents,
-)
-
-print(final_response.text)
-```
-
-```javascript
-// Create a function response part
-const function_response_part = {
-  name: tool_call.name,
-  response: { result },
-  id: tool_call.id
-}
-
-// Append function call and result of the function execution to contents
-contents.push(response.candidates[0].content);
-contents.push({ role: 'user', parts: [{ functionResponse: function_response_part }] });
-
-// Get the final response from the model
-const final_response = await ai.models.generateContent({
-  model: 'gemini-3-flash-preview',
-  contents: contents,
-  config: config
-});
-
-console.log(final_response.text);
-```
-
-This completes the function calling flow. The model successfully used the
-`set_light_values` function to perform the request action of the user.
-
-## Function declarations
-
-When you implement function calling in a prompt, you create a `tools` object,
-which contains one or more `function declarations`. You define functions using
-JSON, specifically with a [select subset](https://ai.google.dev/api/caching#Schema)
-of the [OpenAPI schema](https://spec.openapis.org/oas/v3.0.3#schemaw) format. A
-single function declaration can include the following parameters:
-
-- `name` (string): A unique name for the function (`get_weather_forecast`,
-`send_email`). Use descriptive names without spaces or special characters
-(use underscores or camelCase).
-- `description` (string): A clear and detailed explanation of the function's
-purpose and capabilities. This is crucial for the model to understand when
-to use the function. Be specific and provide examples if helpful ("Finds
-theaters based on location and optionally movie title which is currently
-playing in theaters.").
-- `parameters`(object): Defines the input parameters the function
-expects.
-  - `type` (string): Specifies the overall data type, such as `object`.
-  - `properties`(object): Lists individual parameters, each with:
-    - `type` (string): The data type of the parameter, such as `string`,
-      `integer`, `boolean, array`.
-    - `description` (string): A description of the parameter's purpose and
-      format. Provide examples and constraints ("The city and state,
-      e.g., 'San Francisco, CA' or a zip code e.g., '95616'.").
-    - `enum` (array, optional): If the parameter values are from a fixed
-      set, use "enum" to list the allowed values instead of just describing
-      them in the description. This improves accuracy ("enum":
-      \["daylight", "cool", "warm"\]).
-  - `required` (array): An array of strings listing the parameter names that
-    are mandatory for the function to operate.
-
-You can also construct `FunctionDeclarations` from Python functions directly using
-`types.FunctionDeclaration.from_callable(client=client, callable=your_function)`.
-
-## Function calling with thinking models
-
-Gemini 3 and 2.5 series models use an internal ["thinking"](https://ai.google.dev/gemini-api/docs/thinking) process to reason through requests. This
-significantly improves function calling performance,
-allowing the model to better determine when to call a function and which
-parameters to use. Because the Gemini API is stateless, models use
-[thought signatures](https://ai.google.dev/gemini-api/docs/thought-signatures) to maintain context
-across multi-turn conversations.
-
-This section covers advanced management of thought signatures and is only
-necessary if you're manually constructing API requests (e.g., via REST) or
-manipulating conversation history.
-
-**If you're using the [Google GenAI SDKs](https://ai.google.dev/gemini-api/docs/libraries) (our**
-**official libraries), you don't need to manage this process**. The SDKs
-automatically handle the necessary steps, as shown in the earlier
-[example](https://ai.google.dev/gemini-api/docs/function-calling#step-4).
-
-### Managing conversation history manually
-
-If you modify the conversation history manually, instead of sending the
-[complete previous response](https://ai.google.dev/gemini-api/docs/function-calling#step-4) you
-must correctly handle the `thought_signature` included in the model's turn.
-
-Follow these rules to ensure the model's context is preserved:
-
-- Always send the `thought_signature` back to the model inside its original
-[`Part`](https://ai.google.dev/api#request-body-structure).
-- **Always include the exact `id` from the `function_call` in your**
-**`function_response` so the API can map the result to the correct request.**
-- Don't merge a `Part` containing a signature with one that does not. This
-breaks the positional context of the thought.
-- Don't combine two `Parts` that both contain signatures, as the signature
-strings cannot be merged.
-
-#### Gemini 3 thought signatures
-
-In Gemini 3, any [`Part`](https://ai.google.dev/api#request-body-structure) of a model response
-may contain a thought signature.
-While we generally recommend returning signatures from all `Part` types,
-passing back thought signatures is mandatory for function calling. Unless you
-are manipulating conversation history manually, the Google GenAI SDK will
-handle thought signatures automatically.
-
-If you are manipulating conversation history manually, refer to the
-[Thoughts Signatures](https://ai.google.dev/gemini-api/docs/thought-signatures) page for complete
-guidance and details on handling thought signatures for Gemini 3.
-
-##### Inspecting thought signatures
-
-While not necessary for implementation, you can inspect the response to see the
-`thought_signature` for debugging or educational purposes.
-
-```python
-import base64
-# After receiving a response from a model with thinking enabled
-# response = client.models.generate_content(...)
-
-# The signature is attached to the response part containing the function call
-part = response.candidates[0].content.parts[0]
-if part.thought_signature:
-  print(base64.b64encode(part.thought_signature).decode("utf-8"))
-```
-
-```javascript
-// After receiving a response from a model with thinking enabled
-// const response = await ai.models.generateContent(...)
-
-// The signature is attached to the response part containing the function call
-const part = response.candidates[0].content.parts[0];
-if (part.thoughtSignature) {
-  console.log(part.thoughtSignature);
-}
-```
-
-Learn more about limitations and usage of thought signatures, and about thinking
-models in general, on the [Thinking](https://ai.google.dev/gemini-api/docs/thinking#signatures) page.
-
-## Parallel function calling
-
-In addition to single turn function calling, you can also call multiple
-functions at once. Parallel function calling lets you execute multiple functions
-at once and is used when the functions are not dependent on each other. This is
-useful in scenarios like gathering data from multiple independent sources, such
-as retrieving customer details from different databases or checking inventory
-levels across various warehouses or performing multiple actions such as
-converting your apartment into a disco.
-
-When the model initiates multiple function calls in a single turn, you don't
-need to return the `function_result` objects in the same order that the
-`function_call` objects were received. The Gemini API maps each result back to
-its corresponding call using the `id` from the model's output. This lets you
-execute your functions asynchronously and append the results to your list as
-they complete.
-
-```python
-power_disco_ball = {
-    "name": "power_disco_ball",
-    "description": "Powers the spinning disco ball.",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "power": {
-                "type": "boolean",
-                "description": "Whether to turn the disco ball on or off.",
-            }
-        },
-        "required": ["power"],
-    },
-}
-
-start_music = {
-    "name": "start_music",
-    "description": "Play some music matching the specified parameters.",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "energetic": {
-                "type": "boolean",
-                "description": "Whether the music is energetic or not.",
-            },
-            "loud": {
-                "type": "boolean",
-                "description": "Whether the music is loud or not.",
-            },
-        },
-        "required": ["energetic", "loud"],
-    },
-}
-
-dim_lights = {
-    "name": "dim_lights",
-    "description": "Dim the lights.",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "brightness": {
-                "type": "number",
-                "description": "The brightness of the lights, 0.0 is off, 1.0 is full.",
-            }
-        },
-        "required": ["brightness"],
-    },
-}
-```
-
-```javascript
-import { Type } from '@google/genai';
-
-const powerDiscoBall = {
-  name: 'power_disco_ball',
-  description: 'Powers the spinning disco ball.',
-  parameters: {
-    type: Type.OBJECT,
-    properties: {
-      power: {
-        type: Type.BOOLEAN,
-        description: 'Whether to turn the disco ball on or off.'
-      }
-    },
-    required: ['power']
-  }
-};
-
-const startMusic = {
-  name: 'start_music',
-  description: 'Play some music matching the specified parameters.',
-  parameters: {
-    type: Type.OBJECT,
-    properties: {
-      energetic: {
-        type: Type.BOOLEAN,
-        description: 'Whether the music is energetic or not.'
-      },
-      loud: {
-        type: Type.BOOLEAN,
-        description: 'Whether the music is loud or not.'
-      }
-    },
-    required: ['energetic', 'loud']
-  }
-};
-
-const dimLights = {
-  name: 'dim_lights',
-  description: 'Dim the lights.',
-  parameters: {
-    type: Type.OBJECT,
-    properties: {
-      brightness: {
-        type: Type.NUMBER,
-        description: 'The brightness of the lights, 0.0 is off, 1.0 is full.'
-      }
-    },
-    required: ['brightness']
-  }
-};
-```
-
-Configure the function calling mode to allow using all of the specified tools.
-To learn more, you can read about
-[configuring function calling](https://ai.google.dev/gemini-api/docs/function-calling#function_calling_modes).
-
-```python
-from google import genai
-from google.genai import types
-
-# Configure the client and tools
-client = genai.Client()
-house_tools = [
-    types.Tool(function_declarations=[power_disco_ball, start_music, dim_lights])
-]
-config = types.GenerateContentConfig(
-    tools=house_tools,
-    automatic_function_calling=types.AutomaticFunctionCallingConfig(
-        disable=True
-    ),
-    # Force the model to call 'any' function, instead of chatting.
-    tool_config=types.ToolConfig(
-        function_calling_config=types.FunctionCallingConfig(mode='ANY')
-    ),
-)
-
-chat = client.chats.create(model="gemini-3-flash-preview", config=config)
-response = chat.send_message("Turn this place into a party!")
-
-# Print out each of the function calls requested from this single call
-print("Example 1: Forced function calling")
-for fn in response.function_calls:
-    args = ", ".join(f"{key}={val}" for key, val in fn.args.items())
-    print(f"{fn.name}({args}) - ID: {fn.id}")
-```
-
-```javascript
-import { GoogleGenAI } from '@google/genai';
-
-// Set up function declarations
-const houseFns = [powerDiscoBall, startMusic, dimLights];
-
-const config = {
-    tools: [{
-        functionDeclarations: houseFns
-    }],
-    // Force the model to call 'any' function, instead of chatting.
-    toolConfig: {
-        functionCallingConfig: {
-            mode: 'any'
-        }
-    }
-};
-
-// Configure the client
-const ai = new GoogleGenAI({});
-
-// Create a chat session
-const chat = ai.chats.create({
-    model: 'gemini-3-flash-preview',
-    config: config
-});
-const response = await chat.sendMessage({message: 'Turn this place into a party!'});
-
-// Print out each of the function calls requested from this single call
-console.log("Example 1: Forced function calling");
-for (const fn of response.functionCalls) {
-    const args = Object.entries(fn.args)
-        .map(([key, val]) => `${key}=${val}`)
-        .join(', ');
-    console.log(`${fn.name}(${args}) - ID: ${fn.id}`);
-}
-```
-
-Each of the printed results reflects a single function call that the model has
-requested. To send the results back, include the responses in the same order as
-they were requested.
-
-The Python SDK supports [automatic function calling](https://ai.google.dev/gemini-api/docs/function-calling#automatic_function_calling_python_only),
-which automatically converts Python functions to declarations, handles the
-function call execution and response cycle for you. Following is an example for
-the disco use case.
-
-```python
-from google import genai
-from google.genai import types
-
-# Actual function implementations
-def power_disco_ball_impl(power: bool) -> dict:
-    """Powers the spinning disco ball.
-
-    Args:
-        power: Whether to turn the disco ball on or off.
-
-    Returns:
-        A status dictionary indicating the current state.
-    """
-    return {"status": f"Disco ball powered {'on' if power else 'off'}"}
-
-def start_music_impl(energetic: bool, loud: bool) -> dict:
-    """Play some music matching the specified parameters.
-
-    Args:
-        energetic: Whether the music is energetic or not.
-        loud: Whether the music is loud or not.
-
-    Returns:
-        A dictionary containing the music settings.
-    """
-    music_type = "energetic" if energetic else "chill"
-    volume = "loud" if loud else "quiet"
-    return {"music_type": music_type, "volume": volume}
-
-def dim_lights_impl(brightness: float) -> dict:
-    """Dim the lights.
-
-    Args:
-        brightness: The brightness of the lights, 0.0 is off, 1.0 is full.
-
-    Returns:
-        A dictionary containing the new brightness setting.
-    """
-    return {"brightness": brightness}
-
-# Configure the client
-client = genai.Client()
-config = types.GenerateContentConfig(
-    tools=[power_disco_ball_impl, start_music_impl, dim_lights_impl]
-)
-
-# Make the request
-response = client.models.generate_content(
-    model="gemini-3-flash-preview",
-    contents="Do everything you need to this place into party!",
-    config=config,
-)
-
-print("\nExample 2: Automatic function calling")
-print(response.text)
-# I've turned on the disco ball, started playing loud and energetic music, and dimmed the lights to 50% brightness. Let's get this party started!
-```
-
-## Compositional function calling
-
-Compositional or sequential function calling allows Gemini to chain multiple
-function calls together to fulfill a complex request. For example, to answer
-"Get the temperature in my current location", the Gemini API might first invoke
-a `get_current_location()` function followed by a `get_weather()` function that
-takes the location as a parameter.
-
-The following example demonstrates how to implement compositional function
-calling using the Python SDK and automatic function calling.
-
-This example uses the automatic function calling feature of the
-`google-genai` Python SDK. The SDK automatically converts the Python
-functions to the required schema, executes the function calls when requested
-by the model, and sends the results back to the model to complete the task.
-
-```python
-import os
-from google import genai
-from google.genai import types
-
-# Example Functions
-def get_weather_forecast(location: str) -> dict:
-    """Gets the current weather temperature for a given location."""
-    print(f"Tool Call: get_weather_forecast(location={location})")
-    # TODO: Make API call
-    print("Tool Response: {'temperature': 25, 'unit': 'celsius'}")
-    return {"temperature": 25, "unit": "celsius"}  # Dummy response
-
-def set_thermostat_temperature(temperature: int) -> dict:
-    """Sets the thermostat to a desired temperature."""
-    print(f"Tool Call: set_thermostat_temperature(temperature={temperature})")
-    # TODO: Interact with a thermostat API
-    print("Tool Response: {'status': 'success'}")
-    return {"status": "success"}
-
-# Configure the client and model
-client = genai.Client()
-config = types.GenerateContentConfig(
-    tools=[get_weather_forecast, set_thermostat_temperature]
-)
-
-# Make the request
-response = client.models.generate_content(
-    model="gemini-3-flash-preview",
-    contents="If it's warmer than 20°C in London, set the thermostat to 20°C, otherwise set it to 18°C.",
-    config=config,
-)
-
-# Print the final, user-facing response
-print(response.text)
-```
-
-**Expected Output**
-
-When you run the code, you will see the SDK orchestrating the function
-calls. The model first calls `get_weather_forecast`, receives the
-temperature, and then calls `set_thermostat_temperature` with the correct
-value based on the logic in the prompt.
-
-```
-Tool Call: get_weather_forecast(location=London)
-Tool Response: {'temperature': 25, 'unit': 'celsius'}
-Tool Call: set_thermostat_temperature(temperature=20)
-Tool Response: {'status': 'success'}
-OK. I've set the thermostat to 20°C.
-```
-
-This example shows how to use JavaScript/TypeScript SDK to do comopositional
-function calling using a manual execution loop.
-
-```javascript
-import { GoogleGenAI, Type } from "@google/genai";
-
-// Configure the client
-const ai = new GoogleGenAI({});
-
-// Example Functions
-function get_weather_forecast({ location }) {
-  console.log(`Tool Call: get_weather_forecast(location=${location})`);
-  // TODO: Make API call
-  console.log("Tool Response: {'temperature': 25, 'unit': 'celsius'}");
-  return { temperature: 25, unit: "celsius" };
-}
-
-function set_thermostat_temperature({ temperature }) {
-  console.log(
-    `Tool Call: set_thermostat_temperature(temperature=${temperature})`,
-  );
-  // TODO: Make API call
-  console.log("Tool Response: {'status': 'success'}");
-  return { status: "success" };
-}
-
-const toolFunctions = {
-  get_weather_forecast,
-  set_thermostat_temperature,
-};
-
-const tools = [
-  {
-    functionDeclarations: [
-      {
-        name: "get_weather_forecast",
-        description:
-          "Gets the current weather temperature for a given location.",
-        parameters: {
-          type: Type.OBJECT,
-          properties: {
-            location: {
-              type: Type.STRING,
-            },
-          },
-          required: ["location"],
-        },
-      },
-      {
-        name: "set_thermostat_temperature",
-        description: "Sets the thermostat to a desired temperature.",
-        parameters: {
-          type: Type.OBJECT,
-          properties: {
-            temperature: {
-              type: Type.NUMBER,
-            },
-          },
-          required: ["temperature"],
-        },
-      },
-    ],
-  },
-];
-
-// Prompt for the model
-let contents = [
-  {
-    role: "user",
-    parts: [
-      {
-        text: "If it's warmer than 20°C in London, set the thermostat to 20°C, otherwise set it to 18°C.",
-      },
-    ],
-  },
-];
-
-// Loop until the model has no more function calls to make
-while (true) {
-  const result = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents,
-    config: { tools },
-  });
-
-  if (result.functionCalls && result.functionCalls.length > 0) {
-    const functionCall = result.functionCalls[0];
-
-    const { name, args } = functionCall;
-
-    if (!toolFunctions[name]) {
-      throw new Error(`Unknown function call: ${name}`);
-    }
-
-    // Call the function and get the response.
-    const toolResponse = toolFunctions[name](args);
-
-    const functionResponsePart = {
-      name: functionCall.name,
-      response: {
-        result: toolResponse,
-      },
-      id: functionCall.id,
-    };
-
-    // Send the function response back to the model.
-    contents.push({
-      role: "model",
-      parts: [
-        {
-          functionCall: functionCall,
-        },
-      ],
-    });
-    contents.push({
-      role: "user",
-      parts: [
-        {
-          functionResponse: functionResponsePart,
-        },
-      ],
-    });
-  } else {
-    // No more function calls, break the loop.
-    console.log(result.text);
-    break;
-  }
-}
-```
-
-**Expected Output**
-
-When you run the code, you will see the SDK orchestrating the function
-calls. The model first calls `get_weather_forecast`, receives the
-temperature, and then calls `set_thermostat_temperature` with the correct
-value based on the logic in the prompt.
-
-```
-Tool Call: get_weather_forecast(location=London)
-Tool Response: {'temperature': 25, 'unit': 'celsius'}
-Tool Call: set_thermostat_temperature(temperature=20)
-Tool Response: {'status': 'success'}
-OK. It's 25°C in London, so I've set the thermostat to 20°C.
-```
-
-Compositional function calling is a native [Live\
-API](https://ai.google.dev/gemini-api/docs/live) feature. This means Live API
-can handle the function calling similar to the Python SDK.
-
-```python
-# Light control schemas
-turn_on_the_lights_schema = {'name': 'turn_on_the_lights'}
-turn_off_the_lights_schema = {'name': 'turn_off_the_lights'}
-
-prompt = """
-  Hey, can you write run some python code to turn on the lights, wait 10s and then turn off the lights?
-  """
-
-tools = [
-    {'code_execution': {}},
-    {'function_declarations': [turn_on_the_lights_schema, turn_off_the_lights_schema]}
-]
-
-await run(prompt, tools=tools, modality="AUDIO")
-```
-
-```javascript
-// Light control schemas
-const turnOnTheLightsSchema = { name: 'turn_on_the_lights' };
-const turnOffTheLightsSchema = { name: 'turn_off_the_lights' };
-
-const prompt = `
-  Hey, can you write run some python code to turn on the lights, wait 10s and then turn off the lights?
-`;
-
-const tools = [
-  { codeExecution: {} },
-  { functionDeclarations: [turnOnTheLightsSchema, turnOffTheLightsSchema] }
-];
-
-await run(prompt, tools=tools, modality="AUDIO")
-```
-
-## Function calling modes
-
-The Gemini API lets you control how the model uses the provided tools
-(function declarations). Specifically, you can set the mode within
-the.`function_calling_config`.
-
-- `VALIDATED`: Default mode for tool combination (when built-in tools or
-structured outputs also enabled). The model is constrained to predict either
-function calls or natural language, and ensures function schema adherence. If
-`allowed_function_names` is not provided, the model picks from all of the
-available function declarations. If `allowed_function_names` is provided, the
-model picks from the set of allowed functions. This mode reduces malformed
-function calls (compared to `AUTO` mode).
-- `AUTO`: Default mode when only function\_declarations tool enabled.
-The model decides whether to generate a natural language response or suggest
-a function call based on the prompt and context.
-- `ANY`: The model is constrained to always predict a function call and
-ensures function schema adherence. If `allowed_function_names` is not
-specified, the model can choose from any of the provided function declarations.
-If `allowed_function_names` is provided as a list, the model can only choose
-from the functions in that list. Use this mode when you require a function
-call response to every prompt (if applicable).
-- `NONE`: The model is _prohibited_ from making function calls. This is
-equivalent to sending a request without any function declarations. Use this to
-temporarily disable function calling without removing your tool definitions.
-
-```python
-from google.genai import types
-
-# Configure function calling mode
-tool_config = types.ToolConfig(
-    function_calling_config=types.FunctionCallingConfig(
-        mode="ANY", allowed_function_names=["get_current_temperature"]
-    )
-)
-
-# Create the generation config
-config = types.GenerateContentConfig(
-    tools=[tools],  # not defined here.
-    tool_config=tool_config,
-)
-```
-
-```javascript
-import { FunctionCallingConfigMode } from '@google/genai';
-
-// Configure function calling mode
-const toolConfig = {
-  functionCallingConfig: {
-    mode: FunctionCallingConfigMode.ANY,
-    allowedFunctionNames: ['get_current_temperature']
-  }
-};
-
-// Create the generation config
-const config = {
-  tools: tools, // not defined here.
-  toolConfig: toolConfig,
-};
-```
-
-## Automatic function calling (Python only)
-
-When using the Python SDK, you can provide Python functions directly as tools.
-The SDK converts these functions into declarations, manages the function call
-execution, and handles the response cycle for you. Define your function with
-type hints and a docstring. For optimal results, it is recommended to use
-[Google-style docstrings.](https://google.github.io/styleguide/pyguide.html#383-functions-and-methods)
-The SDK will then automatically:
-
-1.  Detect function call responses from the model.
-2.  Call the corresponding Python function in your code.
-3.  Send the function's response back to the model.
-4.  Return the model's final text response.
-
-The SDK currently doesn't parse argument descriptions into the property
-description slots of the generated function declaration. Instead, it sends the
-entire docstring as the top-level function description.
-
-```python
-from google import genai
-from google.genai import types
-
-# Define the function with type hints and docstring
-def get_current_temperature(location: str) -> dict:
-    """Gets the current temperature for a given location.
-
-    Args:
-        location: The city and state, e.g. San Francisco, CA
-
-    Returns:
-        A dictionary containing the temperature and unit.
-    """
-    # ... (implementation) ...
-    return {"temperature": 25, "unit": "Celsius"}
-
-# Configure the client
-client = genai.Client()
-config = types.GenerateContentConfig(
-    tools=[get_current_temperature]
-)  # Pass the function itself
-
-# Make the request
-response = client.models.generate_content(
-    model="gemini-3-flash-preview",
-    contents="What's the temperature in Boston?",
-    config=config,
-)
-
-print(response.text)  # The SDK handles the function call and returns the final text
-```
-
-You can disable automatic function calling with:
-
-```python
-config = types.GenerateContentConfig(
-    tools=[get_current_temperature],
-    automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True)
-)
-```
-
-### Automatic function schema declaration
-
-The API is able to describe any of the following types. `Pydantic` types are
-allowed, as long as the fields defined on them are also composed of allowed
-types. Dict types (like `dict[str: int]`) are not well supported here, don't
-use them.
-
-```python
-AllowedType = (
-  int | float | bool | str | list['AllowedType'] | pydantic.BaseModel)
-```
-
-To see what the inferred schema looks like, you can convert it using
-[`from_callable`](https://googleapis.github.io/python-genai/genai.html#genai.types.FunctionDeclaration.from_callable):
-
-```python
-from google import genai
-from google.genai import types
-
-def multiply(a: float, b: float):
-    """Returns a * b."""
-    return a * b
-
-client = genai.Client()
-fn_decl = types.FunctionDeclaration.from_callable(callable=multiply, client=client)
-
-# to_json_dict() provides a clean JSON representation.
-print(fn_decl.to_json_dict())
-```
-
-## Multi-tool use: Combine built-in tools with function calling
-
-You can enable multiple tools, combining built-in tools with function calling in
-the same request.
-
-Gemini 3 models can combine built-in tools with function calling out-of-the-box,
-thanks to the tool context circulation feature. Read the page on
-[Combining built-in tools and function calling](https://ai.google.dev/gemini-api/docs/tool-combination) to learn more.
-
-```python
-from google import genai
-from google.genai import types
-
-client = genai.Client()
-
-getWeather = {
-    "name": "getWeather",
-    "description": "Gets the weather for a requested city.",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "city": {
-                "type": "string",
-                "description": "The city and state, e.g. Utqiaġvik, Alaska",
-            },
-        },
-        "required": ["city"],
-    },
-}
-
-response = client.models.generate_content(
-    model="gemini-3-flash-preview",
-    contents="What is the northernmost city in the United States? What's the weather like there today?",
-    config=types.GenerateContentConfig(
-      tools=[
-        types.Tool(
-          google_search=types.ToolGoogleSearch(),  # Built-in tool
-          function_declarations=[getWeather]       # Custom tool
-        ),
-      ],
-      include_server_side_tool_invocations=True
-    ),
-)
-
-history = [
-    types.Content(
-        role="user",
-        parts=[types.Part(text="What is the northernmost city in the United States? What's the weather like there today?")]
-    ),
-    response.candidates[0].content,
-    types.Content(
-        role="user",
-        parts=[types.Part(
-            function_response=types.FunctionResponse(
-                name="getWeather",
-                response={"response": "Very cold. 22 degrees Fahrenheit."},
-                id=response.candidates[0].content.parts[2].function_call.id
-            )
-        )]
-    )
-]
-
-response_2 = client.models.generate_content(
-    model="gemini-3-flash-preview",
-    contents=history,
-    config=types.GenerateContentConfig(
-      tools=[
-        types.Tool(
-          google_search=types.ToolGoogleSearch(),
-          function_declarations=[getWeather]
-        ),
-      ],
-      include_server_side_tool_invocations=True
-    ),
-)
-```
-
-```javascript
-import { GoogleGenAI, Type } from '@google/genai';
-
-const client = new GoogleGenAI({});
-
-const getWeather = {
-    name: "getWeather",
-    description: "Get the weather in a given location",
-    parameters: {
-        type: "OBJECT",
-        properties: {
-            location: {
-                type: "STRING",
-                description: "The city and state, e.g. San Francisco, CA"
-            }
-        },
-        required: ["location"]
-    }
-};
-
-async function run() {
-    const model = client.models.generateContent({
-        model: "gemini-3-flash-preview",
-    });
-
-    const tools = [
-      { googleSearch: {} },
-      { functionDeclarations: [getWeather] }
-    ];
-    const toolConfig = { includeServerSideToolInvocations: true };
-
-    const result1 = await model.generateContent({
-        contents: [{role: "user", parts: [{text: "What is the northernmost city in the United States? What's the weather like there today?"}]}],
-        tools: tools,
-        toolConfig: toolConfig,
-    });
-
-    const response1 = result1.response;
-    const functionCallId = response1.candidates[0].content.parts.find(p => p.functionCall)?.functionCall?.id;
-
-    const history = [
-        {
-            role: "user",
-            parts:[{text: "What is the northernmost city in the United States? What's the weather like there today?"}]
-        },
-        response1.candidates[0].content,
-        {
-            role: "user",
-            parts: [{
-                functionResponse: {
-                    name: "getWeather",
-                    response: {response: "Very cold. 22 degrees Fahrenheit."},
-                    id: functionCallId
-                }
-            }]
-        }
-    ];
-
-    const result2 = await model.generateContent({
-        contents: history,
-        tools: tools,
-        toolConfig: toolConfig,
-    });
-}
-
-run();
-```
-
-For models before the Gemini 3 series, use the
-[Live API](https://ai.google.dev/gemini-api/docs/live-api/tools).
-
-## Multimodal function responses
-
-For Gemini 3 series models, you can include multimodal content in
-the function response parts that you send to the model. The model can process
-this multimodal content in its next turn to produce a more informed response.
-The following MIME types are supported for multimodal content in function
-responses:
-
--   **Images**: `image/png`, `image/jpeg`, `image/webp`
--   **Documents**: `application/pdf`, `text/plain`
-
-To include multimodal data in a function response, include it as one or more
-parts nested within the `functionResponse` part. Each multimodal part must
-contain `inlineData`. If you reference a multimodal part from
-within the structured `response` field, it must contain a unique `displayName`.
-
-You can also reference a multimodal part from within the structured `response`
-field of the `functionResponse` part by using the JSON reference format
-`{"$ref": "<displayName>"}`. The model substitutes the reference with the
-multimodal content when processing the response. Each `displayName` can only be
-referenced once in the structured `response` field.
-
-The following example shows a message containing a `functionResponse` for a
-function named `get_image` and a nested part containing image data with
-`displayName: "instrument.jpg"`. The `functionResponse`'s `response` field
-references this image part:
-
-```python
-from google import genai
-from google.genai import types
-
-import requests
-
-client = genai.Client()
-
-# This is a manual, two turn multimodal function calling workflow:
-
-# 1. Define the function tool
-get_image_declaration = types.FunctionDeclaration(
-  name="get_image",
-  description="Retrieves the image file reference for a specific order item.",
-  parameters={
-      "type": "object",
-      "properties": {
-          "item_name": {
-              "type": "string",
-              "description": "The name or description of the item ordered (e.g., 'instrument')."
-          }
-      },
-      "required": ["item_name"],
-  },
-)
-tool_config = types.Tool(function_declarations=[get_image_declaration])
-
-# 2. Send a message that triggers the tool
-prompt = "Show me the instrument I ordered last month."
-response_1 = client.models.generate_content(
-  model="gemini-3-flash-preview",
-  contents=[prompt],
-  config=types.GenerateContentConfig(
-      tools=[tool_config],
-  )
-)
-
-# 3. Handle the function call
-function_call = response_1.function_calls[0]
-requested_item = function_call.args["item_name"]
-print(f"Model wants to call: {function_call.name}")
-
-# Execute your tool (e.g., call an API)
-# (This is a mock response for the example)
-print(f"Calling external tool for: {requested_item}")
-
-function_response_data = {
-  "image_ref": {"$ref": "instrument.jpg"},
-}
-image_path = "https://goo.gle/instrument-img"
-image_bytes = requests.get(image_path).content
-function_response_multimodal_data = types.FunctionResponsePart(
-  inline_data=types.FunctionResponseBlob(
-    mime_type="image/jpeg",
-    display_name="instrument.jpg",
-    data=image_bytes,
-  )
-)
-
-# 4. Send the tool's result back
-# Append this turn's messages to history for a final response.
-history = [
-  types.Content(role="user", parts=[types.Part(text=prompt)]),
-  response_1.candidates[0].content,
-  types.Content(
-    role="user",
-    parts=[
-        types.Part.from_function_response(
-          id=function_call.id,
-          name=function_call.name,
-          response=function_response_data,
-          parts=[function_response_multimodal_data]
-        )
-    ],
-  )
-]
-
-response_2 = client.models.generate_content(
-  model="gemini-3-flash-preview",
-  contents=history,
-  config=types.GenerateContentConfig(
-      tools=[tool_config],
-      thinking_config=types.ThinkingConfig(include_thoughts=True)
-  ),
-)
-
-print(f"\nFinal model response: {response_2.text}")
-```
-
-```javascript
-import { GoogleGenAI, Type } from '@google/genai';
-
-const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
-// This is a manual, two turn multimodal function calling workflow:
-// 1. Define the function tool
-const getImageDeclaration = {
-  name: 'get_image',
-  description: 'Retrieves the image file reference for a specific order item.',
-  parameters: {
-    type: Type.OBJECT,
-    properties: {
-      item_name: {
-        type: Type.STRING,
-        description: "The name or description of the item ordered (e.g., 'instrument').",
-      },
-    },
-    required: ['item_name'],
-  },
-};
-
-const toolConfig = {
-  functionDeclarations: [getImageDeclaration],
-};
-
-// 2. Send a message that triggers the tool
-const prompt = 'Show me the instrument I ordered last month.';
-const response1 = await client.models.generateContent({
-  model: 'gemini-3-flash-preview',
-  contents: prompt,
-  config: {
-    tools: [toolConfig],
-  },
-});
-
-// 3. Handle the function call
-const functionCall = response1.functionCalls[0];
-const requestedItem = functionCall.args.item_name;
-console.log(`Model wants to call: ${functionCall.name}`);
-
-// Execute your tool (e.g., call an API)
-// (This is a mock response for the example)
-console.log(`Calling external tool for: ${requestedItem}`);
-
-const functionResponseData = {
-  image_ref: { $ref: 'instrument.jpg' },
-};
-
-const imageUrl = "https://goo.gle/instrument-img";
-const response = await fetch(imageUrl);
-const imageArrayBuffer = await response.arrayBuffer();
-const base64ImageData = Buffer.from(imageArrayBuffer).toString('base64');
-
-const functionResponseMultimodalData = {
-  inlineData: {
-    mimeType: 'image/jpeg',
-    displayName: 'instrument.jpg',
-    data: base64ImageData,
-  },
-};
-
-// 4. Send the tool's result back
-// Append this turn's messages to history for a final response.
-const history = [
-  { role: 'user', parts: [{ text: prompt }] },
-  response1.candidates[0].content,
-  {
-    role: 'user',
-    parts: [
-      {
-        functionResponse: {
-          id: functionCall.id,
-          name: functionCall.name,
-          response: functionResponseData,
-          parts: [functionResponseMultimodalData]
-        },
-      },
-    ],
-  },
-];
-
-const response2 = await client.models.generateContent({
-  model: 'gemini-3-flash-preview',
-  contents: history,
-  config: {
-    tools: [toolConfig],
-    thinkingConfig: { includeThoughts: true },
-  },
-});
-
-console.log(`\nFinal model response: ${response2.text}`);
-```
-
-```bash
-IMG_URL="https://goo.gle/instrument-img"
-
-MIME_TYPE=$(curl -sIL "$IMG_URL" | grep -i '^content-type:' | awk -F ': ' '{print $2}' | sed 's/\r$//' | head -n 1)
-if [[ -z "$MIME_TYPE" || ! "$MIME_TYPE" == image/* ]]; then
-  MIME_TYPE="image/jpeg"
-fi
-
-# Check for macOS
-if [[ "$(uname)" == "Darwin" ]]; then
-  IMAGE_B64=$(curl -sL "$IMG_URL" | base64 -b 0)
-elif [[ "$(base64 --version 2>&1)" = *"FreeBSD"* ]]; then
-  IMAGE_B64=$(curl -sL "$IMG_URL" | base64)
-else
-  IMAGE_B64=$(curl -sL "$IMG_URL" | base64 -w0)
-fi
-
-curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent" \
-  -H "x-goog-api-key: $GEMINI_API_KEY" \
-  -H 'Content-Type: application/json' \
-  -X POST \
-  -d '{
-    "contents": [
-      ...,
-      {
-        "role": "user",
-        "parts": [
-        {
-            "functionResponse": {
-              "name": "get_image",
-              "id": "UNIQUE_CALL_ID_HERE",
-              "response": {
-                "image_ref": {
-                  "$ref": "instrument.jpg"
-                }
-              },
-              "parts": [
-                {
-                  "inlineData": {
-                    "displayName": "instrument.jpg",
-                    "mimeType":"'"$MIME_TYPE"'",
-                    "data": "'"$IMAGE_B64"'"
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    ]
-  }'
-```
-
-## Function calling with Structured output
-
-For Gemini 3 series models, you can use function calling with
-[structured output](https://ai.google.dev/gemini-api/docs/structured-output). This lets the model
-predict function calls or outputs that adhere to a specific schema. As a result,
-you receive consistently formatted responses when the model doesn't generate
-function calls.
-
-## Model context protocol (MCP)
-
-[Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction) is
-an open standard for connecting AI applications with external tools and data.
-MCP provides a common protocol for models to access context, such as functions
-(tools), data sources (resources), or predefined prompts.
-
-The Gemini SDKs have built-in support for the MCP, reducing boilerplate code and
-offering
-[automatic tool calling](https://ai.google.dev/gemini-api/docs/function-calling#automatic_function_calling_python_only)
-for MCP tools. When the model generates an MCP tool call, the Python and
-JavaScript client SDK can automatically execute the MCP tool and send the
-response back to the model in a subsequent request, continuing this loop until
-no more tool calls are made by the model.
-
-Here, you can find an example of how to use a local MCP server with Gemini and
-`mcp` SDK.
-
-Make sure the latest version of the
-[`mcp` SDK](https://modelcontextprotocol.io/introduction) is installed on
-your platform of choice.
-
-```bash
-pip install mcp
-```
-
-```python
-import os
-import asyncio
-from datetime import datetime
-from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
-from google import genai
-
-client = genai.Client()
-
-# Create server parameters for stdio connection
-server_params = StdioServerParameters(
-    command="npx",  # Executable
-    args=["-y", "@philschmid/weather-mcp"],  # MCP Server
-    env=None,  # Optional environment variables
-)
-
-async def run():
-    async with stdio_client(server_params) as (read, write):
-        async with ClientSession(read, write) as session:
-            # Prompt to get the weather for the current day in London.
-            prompt = f"What is the weather in London in {datetime.now().strftime('%Y-%m-%d')}?"
-
-            # Initialize the connection between client and server
-            await session.initialize()
-
-            # Send request to the model with MCP function declarations
-            response = await client.aio.models.generate_content(
-                model="gemini-3-flash-preview",
-                contents=prompt,
-                config=genai.types.GenerateContentConfig(
-                    temperature=0,
-                    tools=[session],  # uses the session, will automatically call the tool
-                    # Uncomment if you **don't** want the SDK to automatically call the tool
-                    # automatic_function_calling=genai.types.AutomaticFunctionCallingConfig(
-                    #     disable=True
-                    # ),
-                ),
-            )
-            print(response.text)
-
-# Start the asyncio event loop and run the main function
-asyncio.run(run())
-```
-
-Make sure the latest version of the `mcp` SDK is installed on your platform
-of choice.
-
-```bash
-npm install @modelcontextprotocol/sdk
-```
-
-```javascript
-import { GoogleGenAI, FunctionCallingConfigMode , mcpToTool} from '@google/genai';
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-
-// Create server parameters for stdio connection
-const serverParams = new StdioClientTransport({
-  command: "npx", // Executable
-  args: ["-y", "@philschmid/weather-mcp"] // MCP Server
-});
-
-const client = new Client(
-  {
-    name: "example-client",
-    version: "1.0.0"
-  }
-);
-
-// Configure the client
-const ai = new GoogleGenAI({});
-
-// Initialize the connection between client and server
-await client.connect(serverParams);
-
-// Send request to the model with MCP tools
-const response = await ai.models.generateContent({
-  model: "gemini-3-flash-preview",
-  contents: `What is the weather in London in ${new Date().toLocaleDateString()}?`,
-  config: {
-    tools: [mcpToTool(client)],  // uses the session, will automatically call the tool
-    // Uncomment if you **don't** want the sdk to automatically call the tool
-    // automaticFunctionCalling: {
-    //   disable: true,
-    // },
-  },
-});
-console.log(response.text)
-
-// Close the connection
-await client.close();
-```
-
-### Limitations with built-in MCP support
-
-Built-in MCP support is a [experimental](https://ai.google.dev/gemini-api/docs/models#preview)
-feature in our SDKs and has the following limitations:
-
--   Only tools are supported, not resources nor prompts
--   It is available for the Python and JavaScript/TypeScript SDK.
--   Breaking changes might occur in future releases.
-
-Manual integration of MCP servers is always an option if these limit what you're
-building.
-
-## Supported models
-
-This section lists models and their function calling capabilities. Experimental
-models are not included. You can find a comprehensive capabilities overview on
-the [model overview](https://ai.google.dev/gemini-api/docs/models) page.
-
-| Model | Function calling | Parallel function calling | Compositional function calling |
-| --- | --- | --- | --- |
-| [Gemini 3.1 Pro Preview](https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview) | ✔️ | ✔️ | ✔️ |
-| [Gemini 3.1 Flash-Lite Preview](https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite-preview) | ✔️ | ✔️ | ✔️ |
-| [Gemini 3 Flash Preview](https://ai.google.dev/gemini-api/docs/models/gemini-3-flash-preview) | ✔️ | ✔️ | ✔️ |
-| [Gemini 2.5 Pro](https://ai.google.dev/gemini-api/docs/models/gemini-2.5-pro) | ✔️ | ✔️ | ✔️ |
-| [Gemini 2.5 Flash](https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash) | ✔️ | ✔️ | ✔️ |
-| [Gemini 2.5 Flash-Lite](https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite) | ✔️ | ✔️ | ✔️ |
-| [Gemini 2.0 Flash](https://ai.google.dev/gemini-api/docs/models/gemini-2.0-flash) | ✔️ | ✔️ | ✔️ |
-
-## Best practices
-
--   **Function and Parameter Descriptions:** Be extremely clear and specific in
-    your descriptions. The model relies on these to choose the correct function
-    and provide appropriate arguments.
--   **Naming:** Use descriptive function names (without spaces, periods, or
-    dashes).
--   **Strong Typing:** Use specific types (integer, string, enum) for parameters
-    to reduce errors. If a parameter has a limited set of valid values, use an
-    enum.
--   **Tool Selection:** While the model can use an arbitrary number of tools,
-    providing too many can increase the risk of selecting an incorrect or
-    suboptimal tool. For best results, aim to provide only the relevant tools
-    for the context or task, ideally keeping the active set to a maximum of
-    10-20. Consider dynamic tool selection based on conversation context if you
-    have a large total number of tools.
--   **Prompt Engineering:**
-    -   Provide context: Tell the model its role (e.g., "You are a helpful
-        weather assistant.").
-    -   Give instructions: Specify how and when to use functions (e.g., "Don't
-        guess dates; always use a future date for forecasts.").
-    -   Encourage clarification: Instruct the model to ask clarifying questions
-        if needed.
-    -   See [Agentic workflows](https://ai.google.dev/gemini-api/docs/prompting-strategies#agentic-workflows)
-        for further strategies on designing these prompts. Here is an example of a tested
-        [system instruction](https://ai.google.dev/gemini-api/docs/prompting-strategies#agentic-si-template).
--   **Temperature:** Use a low temperature (e.g., 0) for more deterministic and
-    reliable function calls.
--   **Validation:** If a function call has significant consequences (e.g.,
-    placing an order), validate the call with the user before executing it.
--   **Check Finish Reason:** Always check the [`finishReason`](https://ai.google.dev/api/generate-content#FinishReason)
-    in the model's response to handle cases where the model failed to generate a
-    valid function call.
--   **Error Handling**: Implement robust error handling in your functions to
-    gracefully handle unexpected inputs or API failures. Return informative
-    error messages that the model can use to generate helpful responses to the
-    user.
--   **Security:** Be mindful of security when calling external APIs. Use
-    appropriate authentication and authorization mechanisms. Avoid exposing
-    sensitive data in function calls.
--   **Token Limits:** Function descriptions and parameters count towards your
-    input token limit. If you're hitting token limits, consider limiting the
-    number of functions or the length of the descriptions, break down complex
-    tasks into smaller, more focused function sets.
--   **Mix of bash and custom tools** For those building with a mix of bash and
-    custom tools, Gemini 3.1 Pro Preview
-    comes with a separate endpoint available via the API called
-    [`gemini-3.1-pro-preview-customtools`](https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview#gemini-31-pro-preview-customtools).
-
-## Notes and limitations
-
--   Positioning of function call parts: When using custom function declarations
-    [alongside built-in tools](https://ai.google.dev/gemini-api/docs/tool-combination) (like Google
-    Search), the model may return a mix of `functionCall`, `toolCall`, and
-    `toolResponse` parts in a single turn. Because of this, don't assume the
-    `functionCall` will always be the last item in the parts array. If you are
-    manually parsing the JSON response, always iterate through the parts array
-    rather than relying on position.
--   Only a [subset of the OpenAPI\
-    schema](https://ai.google.dev/api/caching#FunctionDeclaration) is supported.
--   For `ANY` mode, the API may reject very large or deeply nested schemas. If
-    you encounter errors, try simplifying your function parameter and response
-    schemas by shortening property names, reducing nesting, or limiting the
-    number of function declarations.
--   Supported parameter types in Python are limited.
--   Automatic function calling is a Python SDK feature only.
+Yao et al. [87] introduce a comprehensive evaluation frame-work, SPIN-Bench, highlighting the challenges of strategic planning and social reasoning in AI agents. Unlike traditional benchmarks focused on isolated tasks, SPIN-Bench combines classical planning, competitive board games, cooperative card games, and negotiation scenarios to simulate real-world social interactions. This multifaceted approach reveals significant performance bottlenecks in current large language models (LLMs), which, while adept at factual retrieval and short-range planning, struggle with deep multi-hop reasoning, spa- tial inference, and socially coordinated decision-making. For instance, models perform reasonably well on simple tasks like Tic-Tac-Toe but falter in complex environments such as Chess or Diplomacy, and even the best models achieve only around 58.59% accuracy on classical planning tasks. Y.τ -bench Yao et al. [88] presentτ -bench, a benchmark designed to evaluate language agents in realistic, dynamic, multi-turn conversational settings that emulate real-world environments. Inτ -bench, agents are challenged to interact with a simulated user to understand needs, utilize domain-specific API tools (such as booking flights or returning items), and adhere to provided policy guidelines, while performance is measured by comparing the final database state with an annotated goal state. A novel metric, pass k , is introduced to assess reliability over multiple trials. Experimental findings reveal that even state-of-the-art function-calling agents like GPT-4o succeed on less than 50% of tasks, with significant inconsistency (for example, pass scores below 25% in retail domains) and markedly lower success rates for tasks requiring multiple database writes. These results underscore the need for enhanced methods that improve consistency, adherence to rules, and overall reliability in language agents for real-world applications.
 
+### Z. Discussion and Comparison of LLM Benchmarks
+
+Table IV presents an extensive overview of benchmarks de-veloped from 2019 to 2025 for evaluating large language mod- els (LLMs) concerning multimodal capabilities, task scope, diversity, reasoning, and agentic behaviors. Early benchmarks, such as DROP [89], MMLU [65], MATH [90], Codex [91], MGSM [92], FACTS Grounding [68], and SimpleQA [73], concentrated on core competencies like discrete reasoning, academic knowledge, mathematical problem solving, and fac-tual grounding. These pioneering efforts lay the groundwork for performance evaluation in language understanding and reasoning tasks, setting a baseline against which later, more sophisticated benchmarks have been compared. A notable progression in benchmark design is observed with the emergence of frameworks that target more complex
+
+LLM Benchmark Academic & General Knowledge Reasoning DROP [89] MMLU [65] BIG-Bench Extra Hard [83] Humanity’s Last Exam [67] DABStep [76] Mathematical Problem Solving MATH [90] MGSM [92] ProcessBench [69] Code & Software Engineering Codex [91] Agent-as-a-Judge [71] AppWorld [95] SciReplicate- Bench [109] ProjectEval [114] RefactorBench [115] SWE- Lancer [78] CASTLE [86] SWE- PolyBench [127] MLE-bench [126] ComplexFuncBench [66] BFCL v2 [77] Factual Grounding & Retrieval FACTS Grounding [68] SimpleQA [73] FRAMES [75] CRAG [79] GPQA [105] Domain- Specific Evaluations MedChain [101] LegalAgentBench [104] MedAgentsBench [106] CyberMetric [82] OCCULT [80] EconAgentBench [110] Multimodal, Visual & Embodied Evaluations GAIA [85] OmniDocBench [70] Dyn-VQA [9] DIA [81] OlympicArena [108] BEARCUBS [116] EmbodiedEval [107] EmbodiedBench [123] ENIGMAEVAL [64] TheoremExplainBench [119] VisualAgentBench [96] Task Selection FineTasks [74] Multi- SWE-bench [128] Agentic & Interactive Evaluations PersonaGym [93] MIRAI [94] ScienceAgentBench [97] Agent- SafetyBench [98] DiscoveryBench [99] BLADE [100] JudgeBench [72] TeamCraft [102] AgentHarm [103] τ -bench [88] MultiAgentBench [84] SPIN- Bench [87] VeriLA [111] CapaBench [112] AgentOrca [113] Robotouille [117] DSGBench [118] RefuteBench 2.0 [120] MLGym [121] DataSciBench [122] BrowseComp [124]
+
+*Figure 2: Classification of LLM Benchmarks for AI Agents Applications*
+
+agentic and multimodal tasks. For instance, PersonaGym [93] and FineTasks [74] introduce dynamic persona evaluation and multilingual task selection. GAIA [85] expands the evaluative scope to general AI assistant tasks while OmniDocBench [70] and ProcessBench [69] address document extraction and error detection in mathematical solutions. Further, MIRAI [94], AppWorld [95], VisualAgentBench [96], and ScienceAgent- Bench [97] explore various facets of multimodal and scientific discovery tasks. This decade-spanning evolution is comple-mented by additional evaluations focusing on safety (Agent- SafetyBench [98]), discovery (DiscoveryBench [99]), code generation (BLADE [100], Dyn-VQA [9], and Agent-as-a- Judge [71]), judicial reasoning (JudgeBench [72]), and clinical decision making (MedChain [101]), among others including FRAMES [75], CRAG [79], DIA [81], CyberMetric [82], TeamCraft [102], AgentHarm [103],τ -bench [88], LegalA-gentBench [104], and GPQA [105]. Recent benchmarks from 2025 further indicate a sub-stantial expansion in the depth and breadth of large lan- guage model (LLM) evaluations. ENIGMAEVAL [64] and ComplexFuncBench [66] target complex puzzles and func-tion calling tasks, while MedAgentsBench [106] and Hu- manity’s Last Exam [67] focus on advanced medical rea-soning and expert-level academic tasks. Additional bench- marks such as DABStep [76], BFCL v2 [77], SWE- Lancer [78], and OCCULT [80] further diversify evalua-tive criteria by incorporating multi-step reasoning, cyberse- curity, and freelance software engineering challenges. The table also includes BIG-Bench Extra Hard [83], MultiA-gentBench [84], CASTLE [86], EmbodiedEval [107], SPIN- Bench [87], OlympicArena [108], SciReplicate-Bench [109], EconAgentBench [110], VeriLA [111], CapaBench [112], AgentOrca [113], ProjectEval [114], RefactorBench [115], BEARCUBS [116], Robotouille [117], DSGBench [118], TheoremExplainBench [119], RefuteBench 2.0 [120], ML- Gym [121], DataSciBench [122], EmbodiedBench [123], BrowseComp [124], and MLE-bench [126]. Collectively, these benchmarks exemplify the field’s shift towards more compre-hensive and nuanced evaluation metrics, supporting the de- velopment of LLMs that can tackle increasingly multifaceted,
+
+Strategy Development (Planning) Self-Evaluation Thinking (Reasoning) & Prompt (Instructions) Task (Assigned Objective) Designated Function AI Query Engines Utility Functions & Knowledge Store Knowledge Store Agent Execution Environment
+
+*Figure 3: Core Elements of AI Agents*
+
+real-world challenges. Fig. 2 groups benchmarks into categories such as Academic & General Knowledge Reasoning, Mathematical Problem Solving, Code & Software Engineering, Factual Grounding & Retrieval, Domain-Specific Evaluations, Multimodal/Visual & Embodied Evaluations, Task Selection, and Agentic & Interactive Evaluations, illustrating the full range of tasks used to assess LLMs in AI agent settings.
+
+## 4 AI Agents
+
+This section presents a comprehensive overview of AI agent frameworks and applications developed between 2024 and 2025, highlighting transformative approaches that integrate large language models with modular tools to achieve au-tonomous decision-making and dynamic multi-step reason- ing. The frameworks discussed include LangChain [131], LlamaIndex [132], CrewAI [133], and Swarm [134], which abstract complex functionalities into reusable components that enable context management, tool integration, and iterative refinement of outputs. Additionally, pioneering efforts in GUI control [135] and agentic reasoning [136], [137] demonstrate the increasing capabilities of these systems to interact with external environments and tools in real-time. In parallel, this section presents a diverse range of AI agent applications that span materials science, biomedical research, academic ideation, software engineering, synthetic data generation, and chemical reasoning. Systems such as the StarWhisper Telescope System [139] and HoneyComb [140] have revolutionized operational workflows by automat-ing observational and analytical tasks in materials science. In the biomedical domain, platforms like GeneAgent [141] and frameworks such as PRefLexOR [142] demonstrate enhanced reliability through self-verification and iterative refinement. Moreover, innovative solutions for research ideation, exem-plified by SurveyX [143] and Chain-of-Ideas [144], as well as specialized frameworks for synthetic data generation [145] and chemical reasoning [146], collectively underscore the significant strides made in leveraging autonomous AI agents for complex, real-world tasks. Table V presents an overview of AI Agent frameworks.
+
+### A. AI Agent frameworks
+
+AI agent frameworks represent a transformative paradigm in developing intelligent systems, combining the power of large language models with modular tools and utilities to build autonomous software agents. These frameworks abstract complex functionalities such as natural language understand-ing, multi-step reasoning, and dynamic decision-making into reusable components that streamline prototyping, iterative refinement, and deployment. By integrating advanced LLMs with external tools and specialized functions, developers can create agents that process and generate language and adapt to complex workflows and diverse operational contexts [147]. Fig. 3 illustrates a comprehensive AI agent framework where each component plays a crucial role in achieving adaptive, autonomous decision-making. An assigned task is first approached through a designated function that defines the agent’s role, followed by strategy development, essentially the planning phase, where the agent breaks down complex objectives into actionable steps. This is supported by an iterative thinking process, driven by reasoning and guided by prompts, which enables the agent to reflect on its ac-tions and refine its approach. Core operational support comes from AI query engines and utility functions that interface with an integrated knowledge store, ensuring that both static and real-time information is readily accessible. Ultimately, these elements operate within an agent execution environment, seamlessly combining planning, reasoning, and execution into a responsive and self-evolving system. Agentic workflows transform traditional, rigid processes into dynamic, adaptive systems. As illustrated in Fig. 4, these workflows begin at the user interface, where a user query is submitted and receives a system reply. Unlike deterministic workflows that follow fixed, unchanging rules, an agent-based process involves AI agents who actively formulate a strategy, carry out tasks using available tools, and evaluate the outcomes. This cycle, ranging from planning to execution and ultimately to assessment, where outcomes are marked as either satisfactory or unsatisfactory, empowers the system to respond to real-world challenges more flexibly and autonomously [148]. Agentic Retrieval-Augmented Generation (RAG) integrates a language model’s advanced capabilities with dynamic data retrieval and processing. As shown in Fig. 5, the process begins at the user interface, where a query is submitted and a system reply is generated. The system first checks its internal knowledge store to determine whether the query has been addressed or needs more data. When necessary, the query is decomposed into smaller, manageable sub-questions that are individually routed and processed through retrieval utilities [149]. These utilities fetch relevant external data, and the system evaluates whether the retrieved information is applicable before producing a final output. This layered, agentic approach ensures that responses are accurate, context-aware, and continuously refined throughout the process [150]. Tab. VI demonstrates that retrieval-augmented generation (RAG) is highly effective at producing up-to-date, accurate responses, making it ideal for fields like healthcare or law,
+
+
+**Table 5: Overview of AI Agent Frameworks: Core Concepts, Workflow, and Advantages**
+
+
+| Framework | Core Idea | Workflow & Components | Key Advantages |
+|---|---|---|---|
+| LangChain [131] | Integrates LLMs with diverse tools to build autonomous agents. | Combines conversational LLMs, search integrations, and utility functions into iterative workflows. | Customizable roles and streamlined agent prototyping. |
+| LlamaIndex [132] | Enables autonomous agent creation via external tool integration. | Wraps functions into FunctionTool objects and employs a ReActAgent for stepwise tool selection. | Simplifies agent development with a dynamic, modular pipeline. |
+| CrewAI [133] | Orchestrates teams of specialized AI agents for complex tasks. | Structures systems into Crew (oversight), AI Agents (specialized roles), Process (collaboration), and Tasks (assignments). | Mimics human team collaboration with flexible, parallel workflows. |
+| Swarm [134] | Provides a lightweight, stateless abstraction for multi-agent systems. | Defines multiple agents with specific instructions and roles; enables dynamic handoffs and context management. | Fine-grained control and compatibility with various backends. |
+| GUI Agent [135] | Facilitates computer control via natural language and visual inputs. | Translates user instructions and screenshots into desktop actions (e.g., cursor movements, clicks). | Demonstrates end-to-end performance in real-world desktop workflows. |
+| Agentic Reasoning [136] | Enhances reasoning by integrating specialized external tool-using agents. | Leverages web-search, coding, and Mind Map agents to iteratively refine multi-step reasoning. | Achieves improved multi-step problem-solving and structured knowledge synthesis. |
+| OctoTools [137] | Empowers LLMs for complex reasoning via training-free tool integration. | Combines standardized tool cards, a strategic planner, and an executor for effective tool usage. | Outperforms similar frameworks by up to 10.6% on varied tasks. |
+| Agents SDK [138] | Provides a modular framework for building autonomous agent applications that integrate LLMs with external tools and advanced features. | Offers core primitives such as Agents (LLMs with instructions, tools, handoffs, and guardrails), Tools (wrapped functions/APIs), Context for state management, along with support for Streaming, Tracing, and Guardrails to manage multi-turn interactions. | Streamlines development with an extensible, robust architecture that enhances debuggability and scalability, enabling rapid prototyping and seamless integration of complex, multi-agent workflows. |
+
+**Table 6: Comparative Analysis of LLM Strategies in RAG, AI Agents, and Agentic RAG**
+
+
+| Feature | LLM Pre-trained | LLM Post-Training & Fine-Tuning | RAG | AI Agents | Agentic RAG |
+|---|---|---|---|---|---|
+| Core Function | Uses LLM for text generation. | Applies task-specific tuning. | Retrieves data and generates text. | Automates tasks and decisions. | Integrates retrieval with adaptive reasoning. |
+| Autonomy | Basic language understanding. | Enhances autonomy through tuning. | Limited; user-driven. | Moderately autonomous. | Highly autonomous. |
+| Learning | Relies on pre-training. | Uses fine-tuning for precision. | Static pre-trained knowledge. | Incorporates user feedback. | Adapts using real-time data. |
+| Use Cases | General applications. | Domain-specific enhancements. | Q&A, summaries, guidance. | Chatbots, automation, workflow. | Complex decision-making tasks. |
+| Complexity | Provides baseline complexity. | Adds refined capabilities. | Simple integration. | More sophisticated. | Highly complex. |
+| Reliability | Depends on static training data. | Improves consistency with updates. | Consistent for known queries. | May vary with dynamic inputs. | Reliability boosted by adaptive methods. |
+| Scalability | Scales with model size. | Scales with domain-specific tuning. | Easily scalable for static tasks. | Scales moderately with added features. | Scalable for complex systems (with extra resources). |
+
+#### 1. LangChain: LangChain [131] is a robust framework
+
+designed to simplify the development of autonomous AI agents by seamlessly integrating large language models with a diverse array of tools and data sources. In LangChain, agents combine prepackaged components, such as conversational large language models (LLMs), search engine integrations, and specialized utility functions, into coherent workflows that enable multi-step reasoning and decision-making. Developers can build custom agents by defining specific roles, tasks, and tools, allowing the agent to analyze a given prompt, select the appropriate tool for each subtask, and iteratively refine its response until a final answer is produced. Fig. 6 illustrates the architecture of a LangChain-powered scheduling agent that processes email requests to perform calendar-related operations [151]. Incoming emails are first parsed to extract relevant content and convert unstructured text into structured data. This data is then passed to the chat model, guided by a contextual prompt that defines the assistant’s role. The agent uses a scratchpad to reason through the request and
+
+
+*Figure 4: What are Agentic Workflows?*
+
+determine the appropriate tool from a predefined set (such as checkAvailability, initiateBooking, or modifyBooking). These tools interact with the backend booking API to execute the requested actions, enabling seamless AI-driven scheduling.
+
+#### 2. LlamaIndex: The LlamaIndex framework [132] provides
+
+a powerful and flexible platform for building autonomous AI agents by seamlessly integrating large language models with external tools. In this framework, a basic AI agent is defined as a semi-autonomous software component that receives a task and a set of tools ranging from simple Python functions to complete query engines and iteratively selects the appropriate tool to process each step of the task. To build such an agent, developers first set up a clean Python environment and install LlamaIndex along with necessary dependencies, then configure an LLM (for example, GPT-4 via an API key). Next, they wrap simple functions (such as addition and multiplication) into FunctionTool objects that the agent can call, and instantiate a ReActAgent with these tools. When prompted with a task, the agent evaluates its reasoning process, chooses a tool to execute the necessary operations, and loops through these steps until the final answer is generated. This structured yet dynamic approach allows for the creation of customizable, agentic workflows capable of tackling complex tasks.
+
+#### 3. CrewAI: CrewAI [133] is a framework designed to
+
+orchestrate autonomous teams of AI agents, each with spe-cialized roles, tools, and objectives, to collaboratively tackle
+
+*Figure 5: Agent-Driven RAG Framework*
+
+complex tasks. The system is organized around four key components: the Crew, which oversees the overall operation and workflow; AI Agents, which serve as specialized team members such as researchers, writers, and analysts that make autonomous decisions and delegate tasks; the Process, which manages collaboration patterns and task assignments to ensure efficient execution; and Tasks, which are individual assign-ments with clear objectives that contribute to a larger goal. Key features of CrewAI include role-based agent specializa-tion, flexible integration of custom tools and APIs, intelligent collaboration that mimics natural human interaction, and ro-bust task management supporting both sequential and parallel workflows. Together, these elements enable the creation of dynamic, production-ready AI teams capable of achieving sophisticated, multi-step objectives in real-world applications.
+
+Email Parser Email A Email B You are a bleeding-edge scheduling assistant that interfaces via email...etc. -.... -... Convert unstructured email content into structured data for easier processing and automation. Chat Model Can you book a meeting with ferrag.mohamedamine@univ-guelma.dz sometime tomorrow? Tools \- initiateBooking \- removeBooking \- checkAvailability \- retrieveBookings \- dispatchBookingLink \- modifyBooking Tool checkAvailability API for Bookings Agent Scratchpad Prompting
+
+*Figure 6: Agent architecture using Langchain framework*
+
+
+#### 4. Swarm: Swarm [134] is a lightweight, experimental
+
+library from OpenAI designed to build and manage multi-agent systems without relying on the Assistants API. Swarm provides a stateless abstraction that orchestrates a continu-ous loop of agent interactions, function calls, and dynamic handoffs, offering fine-grained control and transparency. Key features include: • Agent Definition: Developers can define multiple agents, each equipped with its own set of instructions, designated role (e.g., ”Sales Agent”), and available functions, which are converted into standardized JSON structures. • Dynamic Handoffs: Agents can transfer control to one an-other based on the conversation flow or specific function criteria, simply by returning the next agent to call. • Context Management: Context variables are used to ini-tialize and update state throughout the conversation, en- suring continuity and effective information sharing across agents. • Client Orchestration: The Client.run() function initiates and manages the multi-agent dialogue by taking an initial agent, user messages, and context, and then returning updated messages, context variables, and the last active agent. • Direct Function Calling & Streaming: Swarm supports direct Python function calls within agents and provides streaming responses for real-time interactions. • Flexibility: The framework is designed to be agnostic to the underlying OpenAI client, working seamlessly with tools such as Hugging Face TGI or vLLM hosted models.
+
+#### 5. GUI Agent: Hu et al. [135] introduced Claude 3.5
+
+Computer Use, marking a significant milestone as the first frontier AI model to offer computer control via a graphical user interface in a public beta setting. The study assembles a diverse set of tasks, ranging from web search and productivity workflows to gaming and file management, to rigorously evaluate the model’s ability to translate natural language instructions and screenshots into precise desktop actions, such as cursor movements, clicks, and keystrokes. The evaluation framework not only demonstrates Claude 3.5’s unprecedented end-to-end performance, with a success rate of 16 out of 20 test cases, but also highlights critical areas for future refinement, including improved planning, action execution, and self-critique capabilities. Moreover, the performance is shown to be influenced by factors like screen resolution, and the study reveals that while the model can perform a wide range of operations, it still struggles with replicating subtle human-like behaviors such as natural scrolling and browsing. Overall, this preliminary exploration underscores the potential of LLMs to control computers via GUI, while also identifying the need for more comprehensive, multimodal datasets to capture real-world complexities. The paper by Sun et al. [152] tackles a major challenge in training GUI agents powered by Vision-Language Models (VLMs): collecting high-quality trajectory data. Traditional methods relying on human supervision or synthetic data generation via pre-defined tasks are either resource-intensive or fail to capture the complexity and diversity of real-world environments. The authors propose OS-Genesis, a novel data synthesis pipeline that reverses the conventional trajectory collection process to overcome these limitations. Rather than starting with fixed tasks, OS-Genesis enables agents to explore environments through step-by-step interactions and then derive high-quality tasks retrospectively, with a trajectory reward model ensuring data quality.
+
+#### 6. Agentic Reasoning: Wu et al. [136] presents a novel
+
+framework that significantly enhances the reasoning capa-bilities of large language models by integrating external tool-using agents into the inference process. The approach leverages three key agents: a web-search agent for real-time retrieval of pertinent information, a coding agent for executing computational tasks, and a Mind Map agent that constructs structured knowledge graphs to track and organize logical relationships during reasoning. By dynamically engaging these specialized agents, the framework enables LLMs to perform multi-step, expert-level problem solving and deep research, addressing limitations in conventional internal reasoning ap-proaches. Evaluations on challenging benchmarks such as the GPQA dataset and domain-specific deep research tasks demonstrate that Agentic Reasoning substantially outperforms traditional retrieval-augmented generation systems and closed-source models, highlighting its potential for improved knowl- edge synthesis, test-time scalability, and structured problem-solving. OctoTools [137] is a robust, training-free, and user-friendly framework designed to empower large language models to tackle complex reasoning tasks across diverse domains. By integrating standardized tool cards that encapsulate various tool functionalities, a planner for orchestrating both high-level and low-level strategies, and an executor for effective tool us-age, OctoTools overcomes the limitations of prior methods that were confined to specialized domains or required extra training data. Validated across 16 varied tasks including MathVista, MMLU-Pro, MedQA, and GAIA-Text OctoTools achieves an
+
+average accuracy improvement of 9.3% over GPT-4o and outperforms frameworks like AutoGen, GPT-Functions, and LangChain by up to 10.6% when using the same toolset. Comprehensive analysis and ablation studies demonstrate its advantages in task planning, effective tool integration, and multi-step problem solving, positioning it as a significant advancement for general-purpose, complex reasoning appli-cations.
+
+#### 7. Agents SDK: The OpenAI Agents SDK [138] provides a
+
+comprehensive framework for building autonomous, multi-step agent applications that harness the power of large language models alongside external tools. This SDK abstracts the core components necessary for agentic workflows, including agents themselves which are LLMs configured with instructions, tools, handoffs, and guardrails as well as the tools that enable these agents to perform external actions (such as API calls or computations). It also supports context management to maintain state over multi-turn interactions, structured output types for reliable data exchange, and advanced features like streaming, tracing, and guardrails to ensure safety and debuga-bility.
+
+### B. AI Agent applications
+
+AI Agents are autonomous systems that combine large language models (LLMs), data retrieval mechanisms, and decision-making pipelines to tackle a wide array of tasks across industries. In healthcare, they assist with clinical di-agnosis and personalized treatment planning; in finance, they support forecasting and risk analysis; in scientific research, they automate literature review and experimental design; and in software engineering, they generate, analyze, and repair code. Using domain-specific fine-tuning and structured data sources, AI agents can also drive the generation of syn-thetic data, facilitate chemical reasoning, support mathematical problem-solving, and enable creative multimedia production, thereby expanding the reach of AI-powered automation and insight generation. Fig. 7 presents both the architectural back-bone and the application landscape of AI Agents.
+
+#### 1. Healthcare Applications: The healthcare sector has wit-nessed significant advancements through the integration of
+large language model-based agents across a wide range of applications. In this subsection, we present recent develop-ments organized into key categories, as presented in Fig. 8, in- cluding clinical diagnosis and decision support, mental health and therapy agents, general medical assistants for workflow optimization, and pharmaceutical and drug discovery agents. These works demonstrate how AI agents are increasingly sup-porting medical professionals, enhancing diagnostic accuracy, improving patient care, and accelerating research in diverse healthcare domains. Tab. reviews AI agent applications for Healthcare.
+
+##### a. Clinical Diagnosis, Imaging & Decision Support
+
+Chen et al. [153] introduce Chain-of-Diagnosis (CoD), a novel approach designed to enhance the interpretability of LLM-based medical diagnostics. By transforming the diagnostic process into a transparent, step-by-step chain that mirrors a physician’s reasoning, CoD provides a clear reasoning path-way alongside a disease confidence distribution, which aids in identifying critical symptoms through entropy reduction. This transparent methodology not only makes the diagnostic process controllable but also boosts rigor in decision-making. Leveraging CoD, the authors developed DiagnosisGPT, an advanced system capable of diagnosing 9,604 diseases. Exper-imental results demonstrate that DiagnosisGPT outperforms existing large language models (LLMs) on diagnostic bench-marks, achieving both high diagnostic accuracy and enhanced interpretability. Zhou et al. [154] present ZODIAC, an innovative LLM-powered framework that elevates cardiological diagnostics to a level of professionalism comparable to that of expert cardiologists. Designed to address the limitations of general-purpose large language models (LLMs) in clinical settings, ZODIAC leverages a multi-agent collaboration architecture to process patient data across multiple modalities. Each agent is fine-tuned using real-world patient data adjudicated by cardiologists, ensuring the system’s diagnostic outputs, such as the extraction of clinically relevant characteristics, arrhythmia detection, and preliminary report generation, are accurate and reliable. Rigorous clinical validation, conducted by in-dependent cardiologists and evaluated across eight metrics addressing clinical effectiveness and security, demonstrates that ZODIAC outperforms industry-leading models, including GPT-4o, Llama-3.1-405B, Gemini-pro, and even specialized medical LLMs like BioGPT. Notably, the successful inte-gration of ZODIAC into electrocardiography (ECG) devices underscores its potential to transform healthcare delivery, exemplifying the emerging trend of embedding LLMs within Software-as-Medical-Device (SaMD) solutions. Wang et al. [155] introduce MedAgent-Pro, an evidence-based, agentic system designed to enhance multi-modal med- ical diagnosis by addressing key limitations of current Multi-modal Large Language Models (MLLMs). While MLLMs have demonstrated strong reasoning and task-performing capa-bilities, they often struggle with detailed visual perception and exhibit reasoning inconsistencies, both of which are critical in clinical settings. MedAgent-Pro employs a hierarchical work-flow: at the task level, it leverages knowledge-based reasoning to generate reliable diagnostic plans grounded in retrieved clinical criteria, and at the case level, it utilizes multiple tool agents to process multi-modal inputs and analyze diverse indicators. The final diagnosis is derived from a synthesis of quantitative and qualitative evidence. Comprehensive experi-ments on both 2D and 3D medical diagnosis tasks demonstrate that MedAgent-Pro not only outperforms existing methods but also offers enhanced reliability and interpretability, marking a significant step forward in AI-assisted clinical diagnostics. Feng et al. [157] introduce M3Builder. This novel multi-agent system automates machine learning workflows in the medical imaging domain, a field that has traditionally needed specialized models and tools. M3Builder is structured around four specialized agents that collaboratively manage complex, multi-step ML tasks, including automated data processing, environment configuration, self-contained auto-debugging, and model training, all within a dedicated medical imaging ML workspace. To assess progress in this area, the authors propose M3Bench, a comprehensive benchmark featuring four general
+
+
+**Table 7: Overview of AI Agent Applications for Healthcare**
+
+
+| Application | Year | Category | Core Objective & Details |
+|---|---|---|---|
+| DiagnosisGPT [153] | 2024 | Medical Diagnos-tics | Enhance interpretability via a transparent, step-by-step chain. Implements CoD to yield confidence scores and entropy reduction. Diagnoses 9,604 diseases; outperforms existing LLMs. |
+| ZODIAC [154] | 2024 | CardiologyDeliver expert-level | cardiological diagnostics. Multi-agent LLM fine-tuned on adjudicated patient data. Outperforms leading models; integrated into ECG devices. MedAgent- |
+| MedAgent- Pro [155] | 2025 | Medical Diagnosis | Enhance multi-modal diagnosis by addressing visual and reasoning gaps. Hierarchical workflow with knowledge-based reasoning and multi-modal agents. Outperforms existing methods on 2D/3D tasks with improved reliability. Steenstra et |
+| Steenstra et al. [156] | 2025 | Therapeutic Counsel-ing | Improve counseling training with continuous, detailed feedback. LLM-powered simulated patients with turn-by-turn visualizations. High usability and satisfaction; enhances learning vs. traditional methods. |
+| M3Builder [157] | 2025 | Medical Imaging ML | Automate ML workflows in medical imaging. Four agents manage data processing, configuration, debugging, and training. Achieves 94.29% success with state-of-the-art LLM cores. |
+| MEDDxAgent [158] | 2025 | Differential Diagnosis | Enable iterative, interactive differential diagnosis. Integrates a DDxDriver, history simulator, and specialized retrieval/diagnosis agents. Boosts diagnostic accuracy by over 10% with enhanced explainability. |
+| PathFinder [159] | 2025 | AI-assisted Diagnos-tics | Replicate holistic WSI analysis as done by expert pathologists. Four agents collaboratively generate importance maps and diagnoses. Outperforms state-of-the-art by 8%, exceeding average pathologist performance by 9%. |
+| HamRaz [160] | 2025 | Therapeutic Counsel-ing | Provide the first Persian PCT dataset for LLMs with culturally adapted therapy sessions. Combines scripted dialogues and adaptive LLM role-play. Produces more empathetic, nuanced, and realistic counseling interactions. |
+| CAMI [161] | 2025 | Therapeutic Counsel-ing | Automate MI-based counseling with client state inference, topic exploration, and empathetic response generation. STAR framework with three LLM modules for state, topic, and response. Outperforms baselines in MI competency and counseling realism. |
+| AutoCBT [162] | 2025 | Therapeutic Counsel-ing | Deliver dynamic CBT via multi-agent routing and supervision. Uses single-turn agents and dynamic supervisory routing for tailored interventions. Generates higher-quality CBT responses vs. fixed systems. |
+| PSYCHE [163] | 2025 | Psychiatric Assess-ment | Benchmark PACAs with simulated patient profiles and multi-turn interactions. Uses detailed psychiatric constructs and board-certified psychiatrist evaluations. Validated for clinical appropriateness and safety. |
+| PsyDraw [164] | 2024 | Mental Health Screening | Analyze HTP drawings with multimodal agents for early screening of LBCs. Two-stage feature extraction and report generation; evaluated on 290 submissions; pilot deployment in schools. 71.03% high consistency with experts; scalable screening tool. |
+| EvoPatient [165] | 2024 | Medical Training | Simulate patient–doctor dialogues for training via unsupervised LLM agents. Iterative multi-turn consultations refine patient responses and physician questions over 200 case simulations. Improves requirement alignment by >10% and achieves higher human preference. |
+| Scripted Therapy Agents [166] | 2024 | Therapeutic Counsel-ing | Constrain LLM responses via expert-written scripts and finite conversational states. Two prompting variants execute 100 simulated sessions following deterministic therapeutic scripts. Demonstrates reliable script adherence and transparent decision paths. |
+| LIDDiA [167] | 2025 | Drug Discov-ery | Automate end-to-end drug discovery from target selection to lead optimization. Orchestrates LLM-driven reasoning across all pipeline steps; evaluated on 30 targets. Generates valid candidates >70% of cases; identifies novel EGFR inhibitors. |
+| PatentAgent [168] | 2024 | Pharmaceutical Patents | Streamline patent analysis with LLM-driven QA, image-to-molecule, and scaffold ID. PA-QA, PA-Img2Mol, PA-CoreId modules for comprehensive patent insights. Improves image-to-molecule accuracy by up to 8.37% and scaffold ID by up to 7.62%. |
+| DrugAgent [169] | 2024 | Drug Re-purposing | Accelerate drug repurposing via multi-agent ML and knowledge integration. Combines DTI modeling, KG extraction, and literature mining agents. Improves prediction accuracy and reduces discovery time/cost. |
+| MAP [170] | 2025 | Inpatient Decision Support | Support complex inpatient pathways with specialized triage, diagnosis, and treatment agents. Uses IPDS benchmark; coordinated by a chief agent for end-to-end care planning. +25.10% diagnostic accuracy vs. HuatuoGPT2-13B; +10–12% clinical compliance over clinicians. |
+| SynthUserEval [171] | 2025 | Health Coaching | Generate synthetic users for evaluating behavior-change agents. Creates structured profiles and simulates interactions with coaching agents. Enables realistic, health-grounded dialogues; validated by expert evaluations. C: Clinical Validation; W: Workflow Integration; R: Regulatory Compliance;: Partial;: Not Supported;: Supported. Users AI Agent Action Vector Database Software Engineering Finance Applications Solving mathematical problems Synthetic data generation Chemical Reasoning Geography Applications LLM model Sub - AI Agent applications Agentic AI Customized LLM model Healthcare Applications Materials ScienceBiomedical Science Research Applications Multimedia Applications AI Agent applications Mental Health, Counseling & Therapy Agents Pharmaceutical & Drug-Related Agents Agents for Astronomical Observations Gene Set Knowledge Discovery Biomedical AI Scientist Agents Mathematical Reasoning and Problem Solving ....... Database *Figure 7: Architecture and Application Domains of AI Agents* tasks across 14 training datasets, covering five anatomies, three imaging modalities, and both 2D and 3D data. Evaluations using seven state-of-the-art large language models as agent cores, such as the Claude series, GPT-4o, and DeepSeek-V3, demonstrate that M3Builder significantly outperforms existing ML agent designs, achieving a remarkable 94.29% success rate with Claude-3.7-Sonnet. Rose et al. [158] tackles the complexities of differential diagnosis (DDx) by introducing the Modular Explainable DDx Agent (MEDDxAgent) framework, which facilitates interac-tive, iterative diagnostic reasoning rather than relying on com- plete patient profiles from the outset. Addressing limitations in previous approaches such as evaluations on single datasets, isolated component optimization, and single-attempt diag-noses MEDDxAgent integrates three modular components: an orchestrator (DDxDriver), a history-taking simulator, and two specialized agents for knowledge retrieval and diagnosis strategy. To ensure robust evaluation, the authors also present a comprehensive DDx benchmark covering respiratory, skin, and rare diseases. Their findings reveal that iterative refinement significantly enhances diagnostic accuracy, with MEDDxA-gent achieving over a 10% improvement across both large and small LLMs while providing critical explainability in its reasoning process. Ghezloo et al. [159] introduce Pathfinder, a novel multi-modal, multi-agent framework designed to replicate the holis- tic diagnostic process of expert pathologists when analyz-ing whole-slide images (WSIs). Recognizing that WSIs are characterized by their gigapixel scale and complex structure, PathFinder employs four specialized agents a Triage Agent, Navigation Agent, Description Agent, and Diagnosis Agent that collaboratively navigate and interpret the image data. The Triage Agent first determines whether a slide is benign or risky; if deemed risky, the Navigation and Description Agents iteratively focus on and characterize significant re-gions, generating importance maps and detailed natural lan- guage descriptions. Finally, the Diagnosis Agent synthesizes these findings to provide a comprehensive diagnostic classi-fication that is inherently explainable. Experimental results indicate that PathFinder outperforms state-of-the-art methods in skin melanoma diagnosis by 8% and, notably, surpasses the average performance of pathologists by 9%, establishing a new benchmark for accurate, efficient, and interpretable AI-assisted diagnostics in pathology. |
+
+##### b. Mental Health, Counseling & Therapy Agents
+
+Wasenm ̈ uller et al. [166] present a script-based dialog policy planning paradigm that enables LLM-powered conversational agents to function as AI therapists by adhering to expert-written therapeutic scripts and transitioning through a finite set of conversational states. By treating the script as a deter-ministic guide, the approach constrains the model’s responses to align with a defined therapeutic framework, making decision paths transparent for clinical evaluation and risk management. The authors implement two variants of this paradigm, utilizing
+
+different prompting strategies, and generate 100 simulated therapy sessions with LLM-driven patient agents. Experimen-tal results demonstrate that both implementations can reliably follow the scripted policy, providing insights into their relative efficiency and effectiveness, and underscoring the feasibility of building inspectable, rule-aligned AI therapy systems. Du et al. [165] introduce EvoPatient, a framework for gen-erating simulated patients using large language models to train medical personnel through multi-turn diagnostic dialogues. Existing approaches focus on data retrieval accuracy or prompt tuning, but EvoPatient emphasizes unsupervised simulation to teach patient agents standardized presentation patterns. In this system, a patient agent and doctor agents engage in iterative consultations, with each dialogue cycle serving to both train the agents and gather experience that refines patient responses and physician questions. Extensive experiments across di-verse clinical scenarios show that EvoPatient improves re- quirement alignment by more than 10 percent compared to state-of-the-art methods and achieves higher human preference ratings. After evolving through 200 case simulations over ten hours, the framework achieves an optimal balance between resource efficiency and performance, demonstrating strong generalizability for scalable medical training. Zhang et al. [164] present PsyDraw, a multimodal LLM-driven multi-agent system designed to support mental health professionals in analyzing House-Tree-Person (HTP) drawings for early screening of left-behind children (LBCs) in rural China. Recognizing the acute shortage of clinicians, PsyDraw employs specialized agents for detailed feature extraction and psychological interpretation in two stages: comprehensive analysis of drawing elements and automated generation of professional reports. Evaluated on 290 primary-school HTP submissions, PsyDraw achieved High Consistency with expert evaluations in 71.03% of cases and Moderate Consistency in 26.21%, flagging 31.03% of children as needing further attention. Deployed in pilot schools, PsyDraw demonstrates strong potential as a scalable, preliminary screening tool that maintains high professional standards and addresses critical mental health gaps in resource-limited settings. Lee et al. [163] introduce PSYCHE, a comprehensive frame-work for benchmarking psychiatric assessment conversational agents (PACAs) built on large language models. Recognizing that psychiatric evaluations rely on nuanced, multi-turn inter-actions between clinicians and patients, PSYCHE simulates patients using a detailed psychiatric construct that specifies their profiles, histories, and behavioral patterns. This approach enables clinically relevant assessments, ensures ethical safety checks, facilitates cost-efficient deployment, and provides quantitative evaluation metrics. The framework was validated in a study involving ten board-certified psychiatrists who reviewed and rated the simulated interactions, demonstrating PSYCHE’s ability to evaluate PACAs’ clinical appropriateness and safety rigorously. Xu et al. [162] addresses the limitations of existing LLM-based Cognitive Behavioral Therapy (CBT) systems, namely their rigid agent structures and tendency toward redundant, un-helpful suggestions, by proposing AutoCBT, a dynamic multi- agent framework for automated psychological counseling. Ini-tially, the authors develop a general single-turn consultation agent using Quora-like and YiXinLi models, evaluated on a bilingual dataset to benchmark response quality in single-round interactions. Building on these insights, they introduce dynamic routing and supervisory mechanisms modeled af-ter real-world counseling practices, enabling agents to self- optimize and tailor interventions more effectively. Experimen-tal results demonstrate that AutoCBT generates higher-quality CBT-oriented responses compared to fixed-structure systems, highlighting its potential to deliver scalable, empathetic, and contextually appropriate psychological support for users who might otherwise avoid in-person therapy. Yang et al. [161] present CAMI, an automated conversa-tional counselor agent grounded in Motivational Interviewing (MI), a client-centered approach designed to resolve ambiva-lence and promote behavior change. CAMI’s novel STAR framework integrates three LLM-powered modules client State inference, motivation Topic exploration, and response gEner-ation to evoke “change talk” in line with MI principles. By accurately inferring a client’s emotional and motivational state, exploring relevant topics, and generating empathetic, directive responses, CAMI facilitates more effective counseling across diverse populations. The authors evaluate CAMI using both automated metrics and manual assessments with simulated clients, measuring MI skill competency, state inference ac-curacy, topic exploration proficiency, and overall counseling success. Results demonstrate that CAMI outperforms existing methods and exhibits counselor-like realism, while ablation studies highlight the essential contributions of the state in-ference and topic exploration modules to its superior perfor- mance. Steenstra et al. [156] address the challenges in therapeutic counseling training, confined mainly to an innovative LLM-powered system that provides continuous, detailed feedback during simulated patient interactions. Focusing on motivational interviewing a counseling approach emphasizing empathy and collaborative behavior change the framework features a sim-ulated patient and visualizations of turn-by-turn performance to guide counselors through role-play scenarios. The system was evaluated with both professional and student counselors, who reported high usability and satisfaction, indicating that frequent and granular feedback can significantly enhance the learning process compared to traditional, intermittent methods. Abbasi et al. [160] introduce HamRaz, the first Persian-language dataset tailored for Person-Centered Therapy (PCT) with large language models (LLMs), addressing a critical gap in culturally and linguistically appropriate mental health resources. Recognizing that existing counseling datasets are largely confined to Western and East Asian contexts, the authors design HamRaz by blending scripted therapeutic dia-logues with adaptive LLM-driven role-playing to foster coher- ent, dynamic therapy sessions in Persian. To rigorously assess performance, they propose HamRazEval, a dual evaluation framework combining general dialogue quality metrics with the Barrett–Lennard Relationship Inventory (BLRI) to measure therapeutic rapport and effectiveness. Experimental compar-isons demonstrate that LLMs trained on HamRaz generate more empathetic, contextually nuanced, and realistic counsel-ing interactions than conventional Script Mode or Two-Agent Mode approaches.
+
+##### c. General Medical Assistants, Clinical Workflow & De-cision Making: Yun et al. [171] introduce an end-to-end
+framework for generating synthetic users to evaluate inter-active agents aimed at promoting positive behavior change, focusing on sleep and diabetes management. The framework first generates structured data based on real-world health and lifestyle factors, demographics, and behavioral attributes. Next, it creates complete user profiles conditioned on this structured data. Interactions between synthetic users and health coaching agents are simulated using generative agent models such as Concordia or by directly prompting a language model. Case studies with sleep and diabetes coaching agents demonstrate that the synthetic users enable realistic dialogue by accurately reflecting users’ needs and challenges. Blinded evaluations by human experts confirm that these health-grounded synthetic users portray real human users more faithfully than generic synthetic users. This approach provides a scalable and realistic testing ground for developing and refining conversational agents in health and lifestyle coaching. Chen et al. [170] address the complexity of clinical decision-making in inpatient pathways by introducing both a new benchmark and a multi-agent AI framework. The authors con-struct the Inpatient Pathway Decision Support (IPDS) bench- mark from the MIMIC-IV database, comprising 51,274 cases across nine triage departments, 17 disease categories, and 16 standardized treatment options to capture the multifaceted na-ture of inpatient care. Building on this resource, they propose the Multi-Agent Inpatient Pathways (MAP) framework, which employs a triage agent for patient admission, a diagnosis agent for department-level decision-making, and a treatment agent for care planning, all coordinated by a chief agent that oversees the entire pathway. In extensive experiments, MAP achieves a 25.10% improvement in diagnostic accuracy over the state-of-the-art LLM HuatuoGPT2-13B and surpasses three board- certified clinicians in clinical compliance by 10–12%. These results demonstrate the potential of multi-agent systems to support complex inpatient workflows and lay the groundwork for future AI-driven decision support in hospital settings.
+
+##### d. Pharmaceutical & Drug-Related Agents: Wang et al
+
+[168] introduce PatentAgent, the first end-to-end intelligent agent designed to streamline pharmaceutical patent analysis by leveraging large language models. PatentAgent integrates three core modules: PA-QA for patent question answering, PA-Img2Mol for converting chemical structure images into molecular representations, and PA-CoreId for identifying core chemical scaffolds. PA-Img2Mol achieves accuracy gains of 2.46 to 8.37 percent across CLEF, JPO, UOB, and USPTO patent image benchmarks, while PA-CoreId delivers improve-ments of 7.15 to 7.62 percent on the PatentNetML scaffold identification task. By combining these modules within a unified framework, PatentAgent addresses the full spectrum of patent analysis needs, from extracting detailed experimental insights to pinpointing key molecular structures, and offers a powerful tool to accelerate research and innovation in drug discovery. Averly et al. [167] introduce LIDDiA, an autonomous in Healthcare Applications Clinical Diagnosis, Imaging & Decision Support CoD [153] ZODIAC [154] MedAgent-Pro [155] M3Builder [157] MEDDxAgent [158] PathFinder [159] Mental Health, Counseling & Therapy Agents Script Planning [166] EvoPatient [165] PsyDraw [164] PSYCHE [163] AutoCBT [162] CAMI [161] Scaffolding [156] HamRaz [160] General Medical Assistants, Clinical Workflow & Decision Making Synthetic Users [171] MAP Framework [170] Pharmaceutical & Drug-Related Agents PatentAgent [168] LIDDiA [167] Drug Repurposing [169]
+
+*Figure 8: Agent LLM Applications for Healthcare*
+
+silico agent designed to navigate the entire drug discovery pipeline by leveraging the reasoning capabilities of large language models. Unlike prior AI tools that address individual steps such as molecule generation or property prediction, LIDDiA orchestrates the end-to-end process from target selec-tion through lead optimization. The authors evaluate LIDDiA on 30 clinically relevant targets and show that it generates candidate molecules satisfying key pharmaceutical criteria in over 70 percent of cases. Furthermore, LIDDiA demonstrates an intelligent balance between exploring novel chemical space and exploiting known scaffolds and successfully identifies promising new inhibitors for the epidermal growth factor receptor (EGFR), a major oncology target. Inoue et al. [169] present a multi-agent framework designed to accelerate drug repurposing by combining machine learning and knowledge integration. The system includes three spe-cialized agents: an AI Agent that trains robust drug–target interaction (DTI) models, a Knowledge Graph Agent that extracts DTIs from databases such as DGIdb, DrugBank, CTD and STITCH, and a Search Agent that mines biomedical literature to validate computational predictions. By integrating outputs from these agents, the framework leverages diverse data sources to identify promising candidates for repurposing. Preliminary evaluations indicate that this approach not only enhances the accuracy of drug–disease interaction predictions compared to existing methods but also reduces the time and cost associated with traditional drug discovery. The in-terpretable results and scalable architecture demonstrate the potential of multi-agent systems to drive innovation and effi-ciency in biomedical research.
+
+#### 2. Materials Science: Materials science has recently ben-efited from the integration of LLM-based agents, which are
+helping to automate complex scientific workflows and enhance
+
+research efficiency. In this subsection, we highlight two no-table developments, including the application of AI agents in astronomical observations to streamline data collection and analysis, and the creation of specialized agent systems tailored to address the unique challenges of materials science research.
+
+##### a. LLM-Based Agents for Astronomical Observations
+
+The StarWhisper Telescope System [139] leverages LLM-based agents to streamline the complex workflow of astro- nomical observations within the Nearby Galaxy Supernovae Survey (NGSS) project. This innovative system automates crit-ical tasks including generating customized observation lists, initiating telescope observations, real-time image analysis, and formulating follow-up proposals to reduce the operational burden on astronomers and lower training costs. By integrating these agents into the observation process, the system can effi-ciently verify and dispatch observation lists, analyze transient phenomena in near real-time, and seamlessly communicate results to observatory teams for subsequent scheduling.
+
+##### b. Materials Science Research: HoneyComb [140] is
+
+introduced as the first LLM-based agent system tailored ex-plicitly for materials science, addressing the unique challenges posed by complex computational tasks and outdated implicit knowledge that often lead to inaccuracies and hallucinations in general-purpose LLMs. The system leverages a novel, high-quality materials science knowledge base (MatSciKB) curated from reliable literature and a sophisticated tool hub (Tool- Hub) that employs an Inductive Tool Construction method to generate, decompose, and refine specialized API tools. Additionally, the retriever module adaptively selects the most relevant knowledge sources and tools for each task, ensuring high accuracy and contextual relevance.
+
+#### 3. Biomedical Science: The biomedical field has seen
+
+important progress through the development of LLM-based agents designed to support knowledge discovery, enhance reasoning capabilities, and evaluate scientific literature. In this subsection, we review recent contributions that focus on gene set analysis, iterative learning for improved reasoning, and the evaluation of AI scientist agents through specialized biomedical benchmarks.
+
+##### a. Gene Set Knowledge Discovery: Gene set knowl-edge discovery is crucial for advancing human functional
+genomics, yet traditional LLM approaches often suffer from issues like hallucinations. To address this, Wang et al. [141] introduce GeneAgent a pioneering language agent with self-verification capabilities that autonomously interacts with bio- logical databases and leverages specialized domain knowledge to enhance accuracy. Benchmarking on 1,106 gene sets from diverse sources, GeneAgent consistently outperforms standard GPT-4, and a detailed manual review confirms that its self-verification module effectively minimizes hallucinations and produces more reliable analytical narratives. Moreover, when applied to seven novel gene sets derived from mouse B2905 melanoma cell lines, expert evaluations reveal that GeneAgent offers novel insights into gene functions, significantly ex-pediting the process of knowledge discovery in functional genomics.
+
+##### b. Reasoning with Recursive Learning: Buehler et al
+
+[142] proposed a framework, named PRefLexOR, that fuses preference optimization with reinforcement learning concepts to enable language models to self-improve through iterative, multi-step reasoning. The approach employs a recursive learn-ing strategy in which the model repeatedly revisits and refines intermediate reasoning steps before producing a final output, both during training and inference. Initially, the model aligns its reasoning with accurate decision paths by optimizing the log odds between preferred and non-preferred responses while constructing a dynamic knowledge graph through question generation and retrieval augmentation. In a subsequent stage, rejection sampling is employed to refine the reasoning quality by generating in-situ training data and masking intermediate steps, all within a thinking token framework that fosters iterative feedback loops.
+
+##### c. Biomedical AI Scientist Agents: Lin et al. [172] intro-duce BioKGBench, a novel benchmark designed to evaluate
+biomedical AI scientist agents from the perspective of litera-ture understanding. Unlike traditional evaluation methods that rely solely on direct QA or biomedical experiments, BioKG- Bench decomposes the critical ability of “understanding liter-ature” into two atomic tasks: one that verifies scientific claims in unstructured text from research papers and another that in-volves interacting with structured knowledge-graph question- answering (KGQA) for literature grounding. Building on these components, the authors propose a new agent task called KGCheck, which uses domain-based retrieval-augmented gen-eration to identify factual errors in large-scale knowledge graph databases. With a dataset of over 2,000 examples for the atomic tasks and 225 high-quality annotated samples for the agent task, the study reveals that state-of-the-art agents both in everyday and biomedical settings perform poorly or suboptimally on this benchmark.
+
+#### 4. Research Applications: LLM-based agents are increas-ingly being developed to support and automate various aspects
+of the scientific research process. This subsection presents a selection of recent applications, including collaborative re-search environments, automated survey generation, structured literature analysis for ideation, workflow management in data science, and AI-driven hypothesis generation.
+
+##### a. Collaborative Research Among LLM Agents
+
+Schmidgall and Moor [173] introduces AgentRxiv, a frame-work designed to enable collaborative research among au- tonomous LLM agent laboratories by leveraging a shared preprint server. Recognizing that scientific discovery is inher-ently incremental and collaborative, AgentRxiv allows agents to upload and retrieve research reports, thereby sharing in-sights and building upon previous work in an iterative manner. The study demonstrates that agents with access to prior research achieve a significant performance boost an 11.4% relative improvement on the MATH-500 dataset compared to those operating in isolation. Furthermore, the best-performing collaborative strategy generalizes to other domains with an average improvement of 3.3%, and when multiple agent lab-oratories share their findings, overall accuracy increases by 13.7% relative to the baseline. These findings highlight the potential of autonomous agents to collaborate with humans, paving the way for more efficient and accelerated scientific discovery.
+
+
+**Table 8: Overview of AI Agent Applications for Research**
+
+
+| Agent / Tool | Year | Use Case | Primary Aim & Details |
+|---|---|---|---|
+| AgentRxiv [173] | 2025 | Collaborative Research | Share and build upon preprints across autonomous LLM labs. Upload/retrieve via shared preprint server with iterative updates. +11.4% on MATH-500; +3.3% cross-domain; +13.7% multi-lab. MATH-500 benchmark AgentRxiv server Preprint sharing |
+| SurveyX [143] | 2025 | Survey Generation | Automate systematic literature surveys with high quality. Preparation (retrieval \+ AttributeTree) + Generation (repolishing). +0.259 content quality; +1.76 citation precision vs. baselines. Content & citation scoring Bibliographic APIs Structured citations |
+| CoI Agent [144] | 2024 | Research Ideation | Structure literature into progressive idea chains. Sequential Chain-of-Ideas + Idea Arena evaluation protocol. Expert-comparable idea quality at $0.50 per idea. Idea ArenaCoI framework Cost-efficient ideation |
+| Data Interpreter [174] | 2024 | Data Science Workflows | Manage end-to-end, dynamic DS pipelines robustly. Hierarchical Graph Modeling + Programmable Node Generation. +25% on InfiAgent-DABench (75.9→94.9%); ML & MATH gains. InfiAgent DABench Pipeline APIsReproducible workflows |
+| AI Co-Scientist [175] | 2025 | Scientific Discovery | Generate and refine research hypotheses autonomously. Seven specialized agents with Elo tournaments and meta-review. +300 Elo hypothesis quality; +27% novelty scores. Elo & novelty scoring Multi-agent pipeline Hypothesis publication Eval. Framework: Evaluation Framework; Collab. Platform: Collaboration Platform; Open Sci.: Open Science Support. |
+
+##### b. Automated Survey Generation: Liang et al. [143]
+
+developed the SurveyX platform, which leverages the excep-tional comprehension and knowledge capabilities of LLMs to overcome critical limitations in automated survey gener-ation, including finite context windows, superficial content discussions, and the lack of systematic evaluation frameworks. Inspired by human writing processes, SurveyX decomposes the survey composition process into two distinct phases: Preparation and Generation. During the preparation phase, the system incorporates online reference retrieval and applies a novel preprocessing method, AttributeTree, to effectively structure the survey’s content. In the subsequent Generation phase, a repolishing process refines the output to enhance the depth and accuracy of the study generated, particularly improving content quality and citation precision. Experimental evaluations reveal that SurveyX achieves a content quality improvement of 0.259 and a citation quality enhancement of 1.76 over existing systems, bringing its performance close to that of human experts across multiple evaluation dimensions.
+
+##### c. Structuring Literature for Research Ideation: Li et
+
+al. [144] introduce the Chain-of-Ideas (CoI) agent, a novel LLM-based framework for automating research ideation by structuring relevant literature into a chain that mirrors the progressive development within a research domain. The CoI agent addresses the challenge posed by the exponential growth of scientific literature, which overwhelms traditional idea-generation methods that rely on simple prompts or expose models to raw, unfiltered text. By organizing information in a sequential chain, the CoI agent enables LLMs to capture cur-rent advancements more effectively, enhancing their ability to generate innovative research ideas. Complementing this frame-work is the Idea Arena, an evaluation protocol that assesses the quality of generated ideas from multiple perspectives, aligning closely with the preferences of human researchers. Experimental results indicate that the CoI agent outperforms existing methods and achieves quality comparable to human experts, all while maintaining a low cost approximately $0.50 per candidate idea and corresponding experimental design.
+
+##### d. Managing Data Science Workflows: Hong et al. [174]
+
+propose Data Interpreter, an LLM-based agent that tackles end-to-end data science workflows by addressing challenges in solving long-term, interconnected tasks and adapting to dynamic data environments. Unlike previous methods that focus on individual tasks, Data Interpreter leverages two key modules: Hierarchical Graph Modeling, which decomposes complex problems into manageable subproblems through dy-namic node generation and graph optimization, and Pro- grammable Node Generation, which iteratively refines and verifies each subproblem to boost the robustness of code generation. Extensive experiments demonstrate significant per-formance gains achieving up to a 25% boost on InfiAgent- DABench (increasing accuracy from 75.9% to 94.9%), as well as improvements on machine learning, open-ended tasks, and the MATH dataset highlighting its superior capability in managing evolving task dependencies and real-time data adjustments.
+
+##### e. Automating Scientific Discovery: Google [175] intro-duced the AI co-scientist, a multi-agent system built on Google
+DeepMind Gemini 2.0, designed to automate scientific dis-covery by generating and refining novel research hypotheses. The framework comprises seven specialized agents Supervisor, Generation, Reflection, Ranking, Evolution, Proximity, and Meta-review that collaboratively manage tasks ranging from parsing research goals to conducting simulated debates and organizing hypotheses. For example, the system employs a Ranking Agent that uses pairwise Elo tournaments, boosting hypothesis quality by over 300 Elo points. At the same time, the Meta-review Agent’s feedback has been shown to increase hypothesis novelty scores by 27%. In practical applications, such as drug repurposing for acute myeloid leukemia and novel target discovery for liver fibrosis, the framework demonstrates significant performance improvements, paving the way for
+
+AI systems that can generate and iteratively refine scientific hypotheses with expert-level precision. Software Engineering Agent Pro-gramming Architectures Ann Arbor Archi-tecture [176] Postline Platform [176] Verification & Supervision Agents AgentGym [177] TRAVER & DICT [178] CURA (VPS) [179] Adaptive Control & Performance Enhance-ment DARS [180] Code Localiza-tion & Software Analytics LocAgent [181] GateLens [182] Domain-Specific SWE Agents Repo2Run [183] UXAgent [184] TRAVER & DICT [178] SWE-Gym [185] Multi-Agent Collab-oration & Simulation Multi-Agent Collab Framework [186] SyncMind [187] CodeSim [188]
+
+*Figure 9: Agent LLM Applications in Software Engineering*
+
+
+#### 5. Software Engineering: Software engineering has be-come a significant area of application for LLM-based agents,
+with innovations spanning architecture design and verification systems, adaptive control, software analytics, and multi-agent collaboration. This subsection presents recent developments across a wide range of tasks, including agent programming frameworks, tutoring systems, automated environment config-uration, usability testing, and multilingual code generation. Fig. 9 presents a classification of Agent LLM Applications for Software Engineering.
+
+##### a. Agent Programming Architectures: Dong et al. [176]
+
+explore prompt engineering for large language models (LLMs) from the perspective of automata theory, arguing that LLMs can be viewed as automata. They assert that just as automata must be programmed using the languages they accept, LLMs should similarly be programmed within the scope of both natural and formal languages. This insight challenges tradi-tional software engineering practices, which often distinguish between programming and natural languages. The paper in-troduces the Ann Arbor Architecture, a conceptual framework designed for agent-oriented programming of language models, which serves as a higher-level abstraction to enhance in-context learning beyond basic token generation. The authors also present Postline, their agent platform, and discuss early results from experiments conducted to train agents within this framework.
+
+##### b. Verification & Supervision Agents: The papers by Jain
+
+et al. [177] , Wang et al.[178], and Chen et al. [179] contribute to advancing the use of large language models (LLMs) for real-world software engineering (SWE) tasks, intelligent tutoring, and code generation. Jain et al. [177] introduce AgentGym, a comprehensive environment for training SWE-agents, address-ing challenges in scalable curation of executable environments and test-time compute scaling. Their approach leverages SYN- GEN, a synthetic data curation method, and Hybrid Test-time Scaling to improve performance on the SWE-Bench Verified benchmark, achieving a state-of-the-art pass rate of 51%. Wang et al. [178] propose a novel coding tutoring framework, Trace-and-Verify (TRAVER), combining knowledge tracing and turn-by-turn verification to enhance tutor agents’ guid-ance toward task completion. Their work introduces DICT, a holistic evaluation protocol for tutoring agents, demonstrating significant improvements in coding tutoring success rates. Finally, Chen et al. present CURA, a code understanding and reasoning system augmented with verbal process supervision (VPS). CURA achieves a 3.65% improvement on benchmarks like BigCodeBench and demonstrates enhanced performance when paired with the o3-mini model. These works collectively push the boundaries of LLM applications in complex software engineering tasks, intelligent tutoring, and reasoning-driven code generation.
+
+##### c. Adaptive Control & Performance Enhancement: Ag-garwal et al. [180] introduce Dynamic Action Re-Sampling
+(DARS), a novel approach for scaling compute during infer-ence in coding agents, aimed at improving their decision- making capabilities. While existing methods often rely on linear trajectories or random sampling, DARS enhances agent performance by branching out at key decision points and selecting alternative actions based on the history of previous attempts and execution feedback. This enables coding agents to recover more effectively from sub-optimal decisions, lead-ing to faster and more efficient problem-solving. The authors evaluate DARS on the SWE-Bench Lite benchmark, achieving an impressive pass@k score of 55% with Claude 3.5 Sonnet V2 and a pass@1 rate of 47%, surpassing current state-of-the-art open-source frameworks. This approach provides a significant advancement in optimizing coding agent perfor-mance, reducing the need for extensive manual intervention and improving overall efficiency.
+
+##### d. Code Localization & Software Analytics: The works
+
+by Chen et al. [181] and Gholamzadeh et al. [182] contribute significant advancements in the application of Large Language Models (LLMs) to improve software engineering tasks, such as code localization and release validation. Chen et al. [181] introduce LocAgent, a framework for code localization that utilizes graph-based representations of codebases. By parsing code into directed heterogeneous graphs, LocAgent captures the relationships between various code structures and their dependencies, enabling more efficient and accurate local-
+
+
+**Table 9: Overview of AI Agent Applications for Software Engineering**
+
+
+| Agent / Tool | Year | Domain | Primary Objective & Details |
+|---|---|---|---|
+| Ann Arbor Architec-ture [176] | 2025 | Agent Program-ming Arch. | Treat LLMs as automata, enabling programming via formal and natural languages. Introduces the Ann Arbor conceptual framework and Postline platform. Early experiments show improved in-context learning. |
+| AgentGym [177] | 2025 | Verification & Super-vision | Scalable training of SWE-agents via SYNGEN data curation and Hybrid Test-time Scaling. Leverages SYNGEN synthetic data and Hybrid Test-time Scaling on SWE-Gym; trained on SWE-Bench Verified. Achieves 51% pass rate on SWE-Bench Verified. |
+| TRAVER&DICT [178] | 2025 | Intelligent Tutoring | Trace-and-Verify workflow for stepwise coding guidance; DICT evaluation protocol. Combines knowledge tracing with turn-by-turn verification; evaluated via DICT protocol. Significant improvements in coding-tutoring success rates. |
+| CURA [179] | 2025 | Code Reason-ing | Verbal Process Supervision for code understanding and reasoning. Integrates VPS modules with LLM to guide reasoning over code. +3.65% on BigCodeBench with o3-mini. |
+| DARS [180] | 2025 | Performance Enhance-ment | Dynamic Action Re-Sampling to branch inference at decision points. Branches on execution feedback to explore alternative actions. 55% pass@k and 47% pass@1 on SWE-Bench Lite (Claude 3.5 Sonnet V2). |
+| LocAgent [181] | 2025 | Code Lo-calization | Graph-based code representation for multi-hop localization. Parses code into heterogeneous graphs for reasoning over dependencies. 92.7% file-level accuracy; +12% GitHub issue resolution. |
+| GateLens [182] | 2025 | Release Valida-tion | NL→Relational-Algebra conversion and Python code generation for test-data analysis. Automates query translation and optimized code for data processing. 80% reduction in analysis time (automotive software). |
+| Repo2Run [183] | 2025 | Env. Con-figuration | Atomic Docker setup synthesis with dual-environment rollback. Synthesizes and tests Dockerfiles; isolates failures via dual environments. 86.0% success on 420 Python repos; +63.9% vs. baselines. |
+| UXAgent [184] | 2025 | Usability Testing | LLM-agent with browser connector to simulate thousands of users. Generates qualitative insights, action logs, and recordings before user studies. Accelerates UX iteration and reduces upfront user recruitment. |
+| SWE-Gym [185] | 2024 | Training Environ-ment | Realistic Python tasks and unit tests for SWE-agent training. Provides executable environments with tests and natural language descriptions. +19% resolve rate; 32.0% on SWE-Bench Verified; 26.0% on Lite. |
+| Qwen2.5-xCoder [186] | 2025 | Multi-Agent Collabo-ration | Multilingual instruction tuning via language-specific agents with memory. Agents collaborate to generate and refine multilingual instructions. Outperforms on multilingual programming benchmarks. |
+| SyncMind [187] | 2025 | Collaboration Simula-tion | Defines and benchmarks out-of-sync scenarios to improve agent coordination. Introduces SyncBench with 24 k real-world instances. Exposes performance gaps and guides improvements. |
+| CodeSim [188] | 2025 | Code Genera-tion | Plan verification and I/O simulation for multi-agent synthesis & debugging. Incorporates plan verification and internal debugging via input/output simulation. SOTA on HumanEval, MBPP, APPS, CodeContests. Bench.: Benchmarking; Intgr.: Integration & Deployment; Std.: Standards Compliance;: Partial;: Not Supported;: Supported. ization through multi-hop reasoning. Their approach, when applied to real-world benchmarks, demonstrates substantial improvements in localization accuracy, achieving up to 92.7% on file-level localization and enhancing GitHub issue res-olution success rates by 12%. In comparison to state-of- the-art models, LocAgent provides similar performance at a significantly lower cost. On the other hand, Gholamzadeh et al. [182] present GateLens, an LLM-based tool designed to improve release validation in safety-critical systems like automotive software. GateLens automates the analysis of test data by converting natural language queries into Relational Algebra expressions and generating optimized Python code, which significantly accelerates data processing. In industrial evaluations, GateLens reduced analysis time by over 80%, demonstrating strong robustness and generalization across different query types. This tool improves decision-making in safety-critical environments by automating test result analysis, thereby enhancing the scalability and reliability of software systems in automotive applications. |
+
+##### e. Domain-Specific SWE Agents: Hu et al. [183] in-troduce Repo2Run, a novel LLM-based agent aimed at au-
+tomating the environment configuration process in software development. Traditional methods for setting up environments often involve manual work or rely on fragile scripts, which can lead to inefficiencies and errors. Repo2Run addresses these challenges by fully automating the configuration of Docker containers for Python repositories. The key innova-tions of Repo2Run are its atomic configuration synthesis and a dual-environment architecture, which isolates internal and external environments to prevent contamination from failed commands. A rollback mechanism ensures that only fully executed configurations are applied, and the agent generates executable Dockerfiles from successful configurations. Eval-uated on a benchmark of 420 Python repositories with unit
+
+tests, Repo2Run achieved an impressive success rate of 86.0%, outperforming existing baselines by 63.9%. Lu et al. [184] developed UXAgent, a tool that uses LLM-Agent technology and a universal browser connector to simulate thousands of users for automated usability testing. It enables user experience (UX) researchers to quickly iterate on study designs by providing qualitative insights, quantitative action data, and video recordings before engaging participants. Wang et al. [178] introduce TRAVER (Trace-and-Verify), a novel agent workflow that combines knowledge tracing estimating a student’s evolving knowledge state with turn-by-turn verification to ensure effective step-by-step guidance toward task completion. Alongside TRAVER, they propose DICT, an automatic evaluation protocol that utilizes controlled student simulation and code generation tests to assess the performance of tutoring agents holistically. SWE-Gym [185] is introduced as the first dedicated environment for training real-world software engineering (SWE) agents, designed around 2,438 Python task instances that include complete code-bases, executable runtime environments, unit tests, and natural language task descriptions. This realistic setup allows for training language model–based SWE agents that significantly improve performance achieving up to 19% absolute gains in resolve rate on popular test sets like SWE-Bench Verified and Lite. Furthermore, the authors explore inference-time scaling by employing verifiers trained on agent trajectories sampled from SWE-Gym, which, when combined with their fine-tuned agents, achieve state-of-the-art performance of 32.0% on SWE-Bench Verified and 26.0% on SWE-Bench Lite.
+
+##### f. Multi-Agent Collaboration & Simulation: The works
+
+by Yang et al. [186], Guo et al. [187], and Islam et al. [188] contribute significant advancements to the application of Large Language Models (LLMs) in code understanding, collabora-tive software engineering, and code generation. Yang et al. [187] propose a novel multi-agent collaboration framework to bridge the gap between different programming languages. By leveraging language-specific agents that collaborate and share knowledge, their approach enhances multilingual instruction tuning, enabling the efficient transfer of knowledge across languages. The Qwen2.5-xCoder model demonstrates supe-rior performance in multilingual programming benchmarks, showcasing its potential to reduce cross-lingual gaps. Guo et al. [187] introduce SyncMind, a framework that defines the out-of-sync problem in collaborative software engineer-ing. Through their SyncBench benchmark, which includes over 24,000 instances of out-of-sync scenarios from real-world codebases, they highlight performance gaps in current LLM agents and emphasize the need for better collabora-tion and resource-awareness in AI systems. Finally, Islam et al. [188] present CodeSim, a multi-agent code generation framework that addresses program synthesis, coding, and debugging through a human-like perception approach. By incorporating plan verification and internal debugging via input/output simulation, CodeSim achieves state-of-the-art per-formance across multiple competitive benchmarks, including HumanEval, MBPP, APPS, and CodeContests. Their approach demonstrates the potential for further enhancement when cou-pled with external debuggers, advancing the effectiveness of code generation systems.
+
+#### 6. Synthetic data generation: Mitra et al. [145] propose
+
+AgentInstruct, a novel framework that leverages synthetic data for post-training large language models through a process termed ”Generative Teaching.” Recognizing the challenges posed by the varying quality and diversity of synthetic data and the extensive manual curation typically required AgentInstruct automates the creation of high-quality instructional datasets using a multi-agent workflow. Starting from raw unstructured text and source code, the framework employs successive stages of content transformation, seed instruction generation across over 100 subcategories, and iterative instruction refinement via suggester-editor pairs. This process yields a dataset of 25 million prompt-response pairs covering diverse skills such as text editing, coding, creative writing, and reading compre-hension. When applied to fine-tune a Mistral-7B model, the resulting Orca-3 model demonstrated significant performance improvements ranging from 19% to 54% across benchmarks like MMLU, AGIEval, GSM8K, BBH, and AlpacaEval as well as a notable reduction in hallucinations for summarization tasks. These findings underscore the potential of automated, agentic synthetic data generation to enhance model capabili-ties while reducing reliance on labor-intensive data curation, positioning AgentInstruct as a promising tool for advancing LLM instruction tuning. Finance Applications Structured Finance & Automation Structured Finance Automation [189] Market Simulation TwinMarket [190] Sequential Investment Decision-Making FinCon [191] Strategic Behavior in Competitive Markets Strategic Behavior [192] Financial Reasoning & QA Multi-Agent Financial QA [193] Stock Analysis & Evaluation Multi-Agent Collaboration [194] FinSphere [195] MarketSenseAI [196] Agentic Financial Modeling & Risk Management Agentic Crews [197] Trustworthy Conversational Shopping Agents Citation-Enhanced CSA [198]
+
+*Figure 10: Agent LLM Applications in Finance*
+
+
+#### 7. Finance Applications: Finance is a dynamic domain
+
+where the adoption of LLM-based agents has opened new avenues for automation, simulation, analysis, and decision support. This subsection presents recent innovations that span structured finance automation, market simulation, investment decision-making, financial reasoning, stock analysis, and risk management. Fig. 10 presents a classification of Agent LLM Applications for Finance.
+
+
+##### a. Structured Finance and Automation: Wan et al. [189]
+
+investigate the integration of artificial intelligence into struc-tured finance, where the process of restructuring diverse as- sets into securities such as MBS, ABS, and CDOs presents substantial due diligence challenges. The authors demonstrate that AI, specifically large language models (LLMs), can effec-tively automate the verification of information between loan applications and bank statements. While close-sourced mod-els like GPT-4 achieve superior performance, open-sourced alternatives such as LLAMA3 provide a more cost-effective option. Furthermore, implementing dual-agent systems has been shown to further increase accuracy, albeit with higher operational costs.
+
+##### b. Market Simulation: Yang et al. [190] introduce Twin-
+
+Market, a multi-agent framework that harnesses large language models (LLMs) to simulate complex socio-economic systems, addressing longstanding challenges in modeling human behav-ior. Traditional rule-based agent-based models often fall short in capturing the irrational and emotionally driven aspects of decision-making emphasized in behavioral economics. Twin- Market leverages the cognitive biases and dynamic emotional responses inherent in LLMs to create more realistic simula-tions of socio-economic interactions. The study illustrates how individual agent behaviors can lead to emergent phenomena such as financial bubbles and recessions when combined through feedback mechanisms through experiments conducted in a simulated stock market environment.
+
+##### c. Sequential Investment Decision-Making: Yu et al
+
+[191] propose FinCon, an LLM-based multi-agent framework designed to tackle the complexities of sequential financial investment decision-making. Recognizing that effective in-vestment requires dynamic interaction with volatile environ- ments, FinCon draws inspiration from real-world investment firm structures by establishing a manager-analyst communi-cation hierarchy. This design facilitates synchronized, cross- functional collaboration through natural language interactions while endowing each agent with enhanced memory capacity. A key component is the risk-control module, which periodically triggers a self-critiquing mechanism to update systematic investment beliefs, thereby reinforcing future agent behavior and reducing unnecessary communication overhead. FinCon exhibits strong generalization across various financial tasks, such as stock trading and portfolio management, and offers a promising approach to synthesizing multi-source information for optimized decision-making in dynamic financial markets.
+
+##### d. Strategic Behavior in Competitive Markets: Li et al
+
+[192] investigate the strategic behavior of large language models (LLMs) when deployed as autonomous agents in multi-commodity markets within the framework of Cournot competition. The authors examine whether these models can independently engage in anti-competitive practices, such as collusion or market division, without explicit human interven-tion. Their findings reveal that LLMs can monopolize specific commodities by dynamically adjusting pricing and resource allocation strategies, thereby maximizing profitability through self-directed strategic decisions. These results present signif-icant challenges and potential opportunities for businesses incorporating AI into strategic roles and regulatory bodies responsible for maintaining fair market competition.
+
+##### e. Financial Reasoning and QA: Fatemi et al. [193]
+
+address the limitations of large language models (LLMs) in financial question-answering (QA) tasks that require complex numerical reasoning. Recognizing that multi-step reasoning is essential for extracting and processing information from tables and text, the authors propose a multi-agent framework incorporating a critical agent to evaluate the reasoning process and final answers. The framework is further enhanced with multiple critic agents specializing in distinct aspects of the answer evaluation. Experimental results show that this multi-agent approach significantly boosts performance, with an av- erage increase of 15% for the LLaMA3-8B model and 5% for the LLaMA3-70B model, compared to single-agent systems. Moreover, the proposed system performs comparably to and sometimes exceeds the capabilities of much larger single-agent models such as LLaMA3.1-405B and GPT-4o-mini, although it slightly lags behind Claude-3.5 Sonnet.
+
+##### f. Stock Analysis and Evaluation: Han et al. [194]
+
+present a novel multi-agent collaboration system designed to enhance financial analysis and investment decision-making by leveraging the collaborative potential of multiple AI agents. Moving beyond traditional single-agent models, the system features configurable agent groups with diverse collaboration structures that dynamically adapt to varying market conditions and investment scenarios through a sub-optimal combination strategy. The study focuses on three key sub-tasks funda-mentals, market sentiment, and risk analysis applied to the 2023 SEC 10-K forms of 30 companies from the Dow Jones Index. Experimental findings reveal significant performance improvements with multi-agent configurations compared to single-agent approaches, demonstrating enhanced accuracy, efficiency, and adaptability. In a related study, Han et al. [195] introduce FinSphere, a conversational stock analysis agent designed to overcome two major challenges faced by current financial LLMs: their insufficient depth in stock analysis and the lack of objec-tive metrics for evaluating the quality of analysis reports. The authors make three significant contributions. First, they present Stocksis, a dataset curated by industry experts to enhance the stock analysis capabilities of LLMs. Second, they propose Analyscore, a systematic evaluation framework that objectively assesses the quality of stock analysis reports. Third, they develop FinSphere, an AI agent that leverages real-time data feeds, quantitative tools, and an instruction-tuned LLM to generate high-quality stock analysis in response to user queries. Experimental results indicate that FinSphere outperforms general and domain-specific LLMs and existing agent-based systems, even when these systems are enhanced with real-time data and few-shot guidance. Fatouros et al. [196] introduce MarketSenseAI, an inno-vative framework for comprehensive stock analysis that har- nesses large language models (LLMs) to integrate diverse financial data sources ranging from financial news, historical prices, and company fundamentals to macroeconomic indica-tors. Leveraging a novel architecture that combines Retrieval- Augmented Generation with LLM agents, MarketSenseAI processes SEC filings, earnings calls, and institutional reports
+
+to enhance macroeconomic analysis. The latest advancements in the framework yield significant improvements in funda-mental analysis accuracy over its previous iteration. Empirical evaluations on S&P 100 stocks (2023–2024) reveal cumulative returns of 125.9% versus the index’s 73.5%, while tests on S&P 500 stocks in 2024 show a 33.8% higher Sortino ratio, underscoring the scalability and robustness of this LLM-driven investment strategy.
+
+##### g. Agentic Financial Modeling and Risk Management
+
+Okpala et al. [197] examine integrating large language models into agentic systems within the financial services industry, focusing on automating complex modeling and model risk management (MRM) tasks. The authors introduce the concept of agentic crews, where teams of specialized agents, coordi-nated by a manager, collaboratively execute distinct functions. The modeling crew handles tasks such as exploratory data analysis, feature engineering, model selection, hyperparameter tuning, training, evaluation, and documentation, while the MRM crew focuses on compliance checks, model replication, conceptual validation, outcome analysis, and documentation. The effectiveness and robustness of these agentic workflows are demonstrated through numerical examples applied to datasets in credit card fraud detection, credit card approval, and portfolio credit risk modeling, highlighting the potential for autonomous decision-making in financial applications.
+
+##### h. Trustworthy Conversational Shopping Agents: Zeng
+
+et al. [198] focuses on enhancing the trustworthiness of LLM-based Conversational Shopping Agents (CSAs) by addressing two key challenges: the generation of hallucinated or unsup-ported claims and the lack of knowledge source attribution. To combat these issues, the authors propose a production-ready solution that integrates a ”citation experience” through In-context Learning (ICL) and Multi-UX-Inference (MUI). This approach enables CSAs to include citation marks linked to relevant product information without disrupting user experi-ence features. Additionally, the work introduces automated metrics and scalable benchmarks to evaluate the grounding and attribution capabilities of LLM responses holistically. Exper-imental results on real-world data indicate that incorporating this citation generation paradigm enhances response grounding by 13.83%, ultimately improving transparency and building customer trust in conversational AI within the e-commerce domain.
+
+#### 8. Chemical Reasoning: The domain of chemical reasoning
+
+poses complex challenges for large language models, includ-ing precise information processing, task decomposition, and integrating scientific knowledge and code. In this subsection, we highlight recent advances in developing LLM-based agents for chemical reasoning and materials discovery.
+
+##### a. Chemical Reasoning & Information Processing: The
+
+paper by Cho et al. [199] addresses the challenges of deploying large language model (LLM)–powered agents in resource-constrained environments, particularly for specialized domains and less-common languages, by introducing Tox-chat a Korean chemical toxicity information agent. It presents a context-efficient architecture utilizing hierarchical section search to reduce token consumption and a scenario-based dialogue generation methodology that distills tool-using capabilities from larger models. Experimental evaluations reveal that the fine-tuned 8B-parameter model significantly surpasses untuned models and baseline approaches in database faithfulness and user preference, offering promising strategies for developing efficient, domain-specific language agents under practical con-straints. Chemical reasoning tasks, which involve complex multi-step processes and require precise calculations, pose unique challenges for LLMs, especially in handling domain-specific formulas and integrating code accurately. ChemAgent [146] addresses these challenges by decomposing chemical tasks into manageable sub-tasks and compiling them into a struc-tured memory library that can be referenced and refined in future queries. The framework incorporates three types of memory and a library-enhanced reasoning component, en-abling the system to improve over time through experience. Evaluations on four SciBench chemical reasoning datasets reveal that ChemAgent achieves performance gains of up to 46% with GPT-4, significantly outperforming existing methods and suggesting promising applications in fields such as drug discovery and materials science.
+
+##### b. Materials Discovery & Design: By collaborating with
+
+materials science experts, Kumbhar et al. [200] curate a novel dataset from recent journal publications that encapsulate real-world design goals, constraints, and methodologies. Using this dataset, they test LLM-based agents to generate viable hypotheses to achieve specified objectives under given con-straints. To rigorously assess the relevance and quality of these hypotheses, a novel scalable evaluation metric is proposed that mirrors the critical assessment process of materials scien-tists. Together, the curated dataset, the hypothesis generation method, and the evaluation framework provide a promising foundation for future research to accelerate materials discovery and design using LLM. ChemAgent is a novel framework that aims to enhance chemical reasoning by leveraging large language models through a dynamic, self-updating library.
+
+#### 9. Solving mathematical problems: Mathematical problem-solving remains a fundamental challenge for large language
+models due to the need for structured reasoning, formal logic, and precise numerical computation. In this subsection, we present recent efforts to enhance the mathematical capabilities of LLM-based agents through novel prompting strategies, collaborative agent systems, theorem proving, and knowledge integration. Fig. 11 presents a classification of agent LLM applications for solving mathematical problems.
+
+##### a. Mathematical Reasoning and Problem Solving: The
+
+paper by Lei et al. [201] tackles the challenge of ad-vanced mathematical problem-solving in large language mod- els (LLMs), where performance significantly declines despite recent advancements like GPT-4. While methods such as Tree of Thought and Graph of Thought have been explored to enhance logical reasoning, they face notable limitations: their effectiveness on complex problems is limited, and the need for custom prompts for each problem restricts generalizability. In response, the authors introduce the Multi-Agent System for Conditional Mining (MACM) prompting method. MACM successfully addresses intricate, multi-step mathematical chal-lenges and exhibits robust generalization across diverse mathe-
+
+
+**Table 10: Overview of AI Agent Applications for Mathematical Problem Solving**
+
+
+| Agent / Tool | Year | Domain | Primary Objective & Details |
+|---|---|---|---|
+| MACM [201] | 2024 | Advanced Reasoning | Solve multi-step math problems with robust generalization. Multi-Agent Conditional Mining prompting for iterative refinement. MATH level 5 accuracy increase from 54.68% to 76.73% on GPT-4 Turbo. |
+| MathLearner [202] | 2024 | Inductive Reasoning Enhance LLM | reasoning via inductive retrieval and application. Retrieval module plus procedural knowledge injection in inductive loop. +20.96% global accuracy; solves 17.54% previously unsolved problems. |
+| Prompt Sampling [203] | 2024 | Search Space Expansion | Combine diverse prompting methods to expand search space efficiently. Uniform sampling over multiple prompt strategies; fewer inference runs. 43% fewer runs for MATH-hard with maximal coverage. |
+| Flows [204] | 2024 | Reasoning Trace Generate detailed | math reasoning traces online. Collaborative LLM ensemble with online DPO and rollouts. Significant improvement in reasoning quality versus direct inference. |
+| KG-Proof Agent [205] | 2025 | Proof Con-struction Automate | formalization of proofs using knowledge graphs. Integrates concept KG with LLM to structure lemmas and steps. 34% success on MUSTARDSAUCE; 2–11% improvement over baselines. |
+| MA-LoT [206] | 2025 | Theorem Proving Synergize | natural-language reasoning with Lean4 verification feedback. Multi-agent chain-of-thought plus LoT-Transfer pipeline in Lean4. 61.07% on MiniF2F-Test (Lean4) versus 22.95% for GPT-4. |
+| MATHVC [207] | 2024 | Educational Modeling Simulate group | discussions for mathematical modeling skills. Virtual classroom with diverse student-agents and meta planning. Realistic dialog; improves modeling task performance. |
+| PACE [208] | 2025 | Personalized Tutoring | Tailor math instruction to learning styles with Socratic feedback. Felder-Silverman personas plus Socratic method and tailored data. Higher engagement and outcomes versus traditional tutors. Agent Trading |
+| Agent Trading Arena [209] | 2025 | Numerical Reasoning Improve numeric | inference with visual data and reflection. Virtual stock game plus analysis over plots and charts. Enhanced geometric reasoning; validated on NASDAQ dataset. Proof Val.: Proof Validation; Solver Integr.: Solver & Assistant Integration; Notation Sup.: Notation & Formalism Support:: Partial;: Not Supported;: Supported. matical contexts. Notably, using MACM, the accuracy of GPT-4 Turbo on level five problems in the MATH dataset improves markedly from 54.68% to 76.73%, demonstrating its potential to elevate LLM inferential capabilities substantially. Xie et al. [202] present an agent framework designed to enhance the mathematical reasoning abilities of large lan-guage models (LLMs) through inductive reasoning. Drawing inspiration from the human learning process of generaliz-ing information and applying prior knowledge to new tasks, the framework significantly outperforms traditional chain-of-thought approaches. Specifically, it improves global accuracy by 20.96% and can solve 17.54% of mathematical problems that the baseline fails to address. A key framework component is its efficient retrieval method, which enables the model to effectively incorporate external knowledge and support math-ematical computations based on explicit written procedures. Lee et al. [203] investigate the limitations of traditional single prompting methods in large language models (LLMs) for mathematical reasoning and explore alternative prompting strategies. It experimentally demonstrates that distinct prompt-ing methods each probe unique search spaces, a differentiation that becomes more pronounced with increased problem com-plexity. To capitalize on this diversity, the study introduces an efficient sampling process that uniformly combines outputs from these varied methods, thereby expanding the overall search space and achieving improved performance with fewer inference runs. Notably, for the particularly challenging prob-lems in the MATH-hard subset, the approach reached maximal search space utilization with approximately 43% fewer runs compared to individual methods. Deng et al. [204] introduce a novel approach to enhance the generation of detailed and accurate reasoning traces in large language models (LLMs), particularly for mathemati-cal reasoning tasks. The authors propose an online learning framework termed ”Flows,” where component LLMs work collaboratively and iteratively, engaging in incremental output production to build coherent solutions. Central to the approach is online Direct Preference Optimization (DPO) with rollouts, which generates DPO pairs for each training example and updates the models in real-time. By directly comparing the quality of reasoning traces produced by this method against those generated by standard direct model inference, the study demonstrates that the proposed Flow framework significantly improves LLM performance in mathematical reasoning. Li et al. [205] introduce a novel framework that augments large language models (LLMs) with knowledge graphs to improve the construction and formalization of mathematical proofs. The proposed approach tackles persistent challenges Solving Mathematical Problems Mathematical Reasoning & Problem Solving |
+
+##### b. Educational and Tutoring Applications: Yue et al
+
+[207] introduce MATHVC, a pioneering virtual classroom powered by large language models (LLMs) designed to en-hance students’ mathematical modeling (MM) skills through collaborative group discussions. Recognizing that traditional MM practice often suffers from uneven access to qualified teachers and resources, the authors leverage LLMs’ capabil-ities to simulate diverse student characters, each embody- ing distinct math-relevant properties. To ensure that these simulated interactions mirror authentic student discussions, the framework incorporates three key innovations: integrating domain-specific MM knowledge into the simulation, defining a symbolic schema to ground character behaviors, and em-ploying a meta planner to guide the conversational flow. Liu et al. [208] introduce the Personalized Conversational Tutoring Agent (PACE) for mathematics instruction, address-ing a critical gap in intelligent educational systems by adapting to individual learner characteristics. PACE leverages the Felder and Silverman learning style model to simulate distinct student personas, enabling the system to tailor teaching strategies to diverse learning styles, a crucial factor for enhancing engagement and comprehension in mathematics. Integrating the Socratic teaching method, PACE provides instant, reflective feedback that encourages deeper cognitive processing and critical thinking. The framework also involves constructing personalized teaching datasets and training specialized mod-els, which facilitate identifying and adapting each student’s unique needs. Extensive evaluations using multi-aspect criteria demonstrate that PACE outperforms traditional methods in personalizing the educational experience and boosting student motivation and learning outcomes.
+
+##### c. Numerical Reasoning: Ma et al. [209] investigate
+
+the limitations of large language models (LLMs) in handling dynamic and unseen numerical reasoning tasks, mainly when operating on plain-text data. To address this, the authors intro-duce the Agent Trading Arena, a virtual numerical game simu- lating complex economic systems via zero-sum stock portfolio investments, which better reflects real-world scenarios where optimal solutions are not clearly defined. Experimental results indicate that LLMs, including GPT-4o, face challenges with algebraic reasoning in textual formats, often focusing on local details at the expense of broader trends. In contrast, when LLMs are provided with visual data representations, such as scatter plots or K-line charts, they exhibit significantly enhanced geometric reasoning capabilities. This improvement is further enhanced by incorporating a reflection module that facilitates the analysis and interpretation of complex data. These findings are validated using the NASDAQ Stock dataset, underscoring the value of visual inputs for bolstering numer-ical reasoning in LLMs.
+
+#### 10. Geography Applications: Yu et al. [210] introduce
+
+MineAgent, a modular framework designed to enhance the capabilities of multimodal large language models (MLLMs) in the domain of remote-sensing mineral exploration. This field presents significant challenges, including the need for domain-specific geological knowledge and the complexity of reasoning across multiple remote-sensing images, which is further complicated by long-context issues. MineAgent ad-dresses these challenges by incorporating hierarchical judg- ing and decision-making modules to improve multi-image reasoning and spatial-spectral integration. In addition, the authors propose MineBench, a specialized benchmark to eval-uate MLLMs on mineral exploration tasks using geological and hyperspectral data. Extensive experiments demonstrate
+
+the effectiveness of MineAgent, showcasing its potential to significantly advance the use of MLLMs in the critical area of remote-sensing mineral exploration Ning et al. [211] introduce an autonomous geographic information system (GIS) agent framework that utilizes large language models (LLMs) to perform spatial analyses and cartographic tasks. A significant research gap in the field has been the ability of these agents to autonomously discover and retrieve the necessary geospatial data. The proposed framework addresses this by generating, executing, and de-bugging programs to select data sources from a predefined list, using source-specific handbooks that document metadata and retrieval details. The framework is designed in a plug-and-play style, allowing users or automated crawlers to easily add new data sources by creating additional handbooks. A prototype of the agent has been developed as a QGIS plugin and Python program. Experimental results demonstrate its capability to retrieve data from various sources, including OpenStreetMap, U.S. Census Bureau demographic data, satel-lite basemaps from ESRI, global digital elevation models from OpenTopography, weather data, and COVID-19 case data from the NYTimes GitHub. This work is one of the first efforts to create an autonomous GIS agent for geospatial data retrieval, marking a significant advancement in spatial data automation.
+
+#### 11. Multimedia Applications: Multimedia is an emerging
+
+frontier for LLM-based agents, where creative and interpretive tasks require coordination across diverse modalities, including text, audio, image, and video. In this subsection, we present recent advancements in applying agent-based language learn-ing and machine learning (LLM) systems to domains such as film production, music and poetry generation, drama scripting, fashion assistance, and lyric composition. Fig. 12 presents a classification of agent LLM applications for Multimedia.
+
+##### a. Film Automation Agents: Xu et al. [212] introduce
+
+FilmAgent, an innovative LLM-based multi-agent collabora-tive framework designed to automate end-to-end film pro- duction within 3D virtual spaces. Virtual film production involves complex decision-making, including scriptwriting, cinematography, and actor positioning. FilmAgent simulates various crew roles such as directors, screenwriters, actors, and cinematographers, covering crucial stages of the film production process. These stages include idea development, where brainstormed ideas are transformed into structured story outlines; scriptwriting, which generates dialogues and character actions; and cinematography, which determines the camera setups for each shot. The agents collaborate iteratively, providing feedback and revisions to verify intermediate scripts and reduce hallucinations. Evaluations of the generated videos on 15 ideas across four key aspects show that FilmAgent outperforms all baselines, achieving an average score of 3.98 out of 5. Despite using the GPT-4o model, FilmAgent sur-passes the single-agent o1, demonstrating the benefits of a coordinated multi-agent system.
+
+##### b. Story-to-Video Production Agents: Wang et al. [213]
+
+introduce AesopAgent, an Agent-driven Evolutionary Sys-tem designed for story-to-video production, leveraging the advancements in Agent and Artificial Intelligence Generated Content (AIGC) technologies. AesopAgent integrates multiple Multimedia Applications Film Au-tomation Agents FilmAgent [212] Story-to-Video Production Agents AesopAgent [213] Drama Script Generation Agents IBSEN [214] Fashion-Domain Conver-sational Agents Fashion Assis-tant Eval. [215] Symbolic Music Composition Agents ComposerX [216] Music Under-standing & Generation Agents MusicAgent [217] Poetry Generation Agents Multi-Agent Poetry Framework [218] Lyric Generation Agents Melody-Lyric Agents [219]
+
+*Figure 12: Agent LLM Applications in Multimedia*
+
+generative capabilities within a unified framework, enabling users to easily convert story proposals into scripts, images, audio, and videos. The system orchestrates the entire video generation workflow, ensuring that the generated content is both rich and coherent. The system consists of two layers: the Horizontal Layer and the Utility Layer. The Horizontal Layer incorporates a novel RAG-based evolutionary system that continuously optimizes the video production process by accumulating expert knowledge and refining workflow steps, such as LLM prompt optimization. The Utility Layer provides essential tools for consistent image generation, ensuring visual coherence in terms of composition, characters, and style, while also integrating audio and special effects.
+
+##### c. Drama Script Generation Agents: Han et al. [214]
+
+introduce IBSEN, a director-actor coordination agent frame-work designed to generate drama scripts and provide greater control over the plot development, especially in scenarios where human players are involved. While current language
+
+
+**Table 11: Overview of AI Agent Applications for Multimedia**
+
+
+| Agent / Tool | Year | Domain | Primary Objective & Details |
+|---|---|---|---|
+| FilmAgent [212] | 2025 | Film Automation Fully automate | end-to-end 3D virtual film production. Multi-agent roles (director, screenwriter, actors, cinematographer) with iterative feedback loops. Outperforms single-agent baselines with coherent video across 15 scenarios. Mean user score 3.98/5 Virtual studio pipeline support |
+| Exports MP4/WebM AesopAgent [213] | 2024 | VideoConvert story drafts | into scripts, images, audio, and video. Two-layer RAG-evolutionary workflow plus utility layer for image/audio/effects. Rich, coherent multimodal outputs with continuous optimization. Workflow convergence rate≈ 85 % Integrates with AIGC asset generators Supports PNG, WAV, MP4 |
+| MP4 IBSEN [214] | 2024 | Drama Scripts Generate coherent | drama scripts via director–actor coordination. Director agent outlines plot; actor agents role-play and adjust narrative. Diverse, complete scripts preserving character traits. Narrative coherence ¿ 90% (human eval) Scriptwriting toolchain compatible Plain-text script output |
+| Fashion-Agent [215] | 2024 | Conversational Retail | Enhance online fashion discovery with LLM dialogue agents. LLM front-end connects to search & recommendation backends. 4 000-dialog dataset; improves retrieval relevance by 18 %. Precision@5: 78% E-commerce API integration JSON / HTML widget |
+| JSON / HTML widget ComposerX [216] | 2024 | Music Composi-tion | Multi-agent symbolic music generation with harmony constraints. Agents specialize in melody, harmony, and structure using LLM reasoning. Coherent polyphonic pieces rated high on musicality. Subjective rating 4.2/5 MIDI pipeline plugin |
+| Standard MIDI files MusicAgent [217] | 2023 | Music Processing | Orchestrate diverse music tasks via unified LLM agent. Autonomous task decomposition and tool invocation over HF/GitHub/APIs. Simplifies tool use; reduces development effort by 40 %. Task completion time ↓ 40 % Integrates FFmpeg, Librosa, Web APIs WAV, MP3, |
+| MIDI PoetryAgents [218] | 2024 | Poetry Generation Boost diversity & | novelty in LLM-generated poetry via multi-agent social learning. Cooperative & non-cooperative agent interactions on GPT-2/3/4. +3.0–3.7 pp diversity; +5.6–11.3 pp novelty. Distinct n-gram ↑ 11% Text pipeline integration |
+| UTF-8 text LyricAgents [219] | 2024 | Lyric Generation Melody-to-lyric | alignment in tonal languages with multi-agent sub-tasks. Agents for rhyme, syllable, alignment & consistency; evaluated via singing synth. Listening test accuracy 85 %. Alignment score 0.87 Singing-synth pipeline ready LRC / JSON lyric files Eval. Metrics: Evaluation Metrics; Pipeline Integr.: Pipeline Integration; Fmt. Compat.: Format Compatibility. model agents excel at creating individual behaviors for char-acters, they often struggle with maintaining consistency and coherence at the storyline level. IBSEN addresses this by introducing a director agent that writes plot outlines based on user input, instructs actor agents to role-play their respective characters, and adjusts the plot as needed to ensure that the narrative progresses toward the intended objective. The framework was evaluated using a novel drama plot involving multiple actor agents, where the director agent guided the interactions. The results demonstrate that IBSEN is capable of generating diverse and complete drama scripts from a rough plot outline, while preserving the unique characteristics of each character, showing the effectiveness of the framework in producing controlled, dynamic narrative content. |
+
+##### d. Fashion-Domain Conversational Agents: Maroniko-lakis et al. [215] focus on the potential of Large Language
+Models (LLMs) to revolutionize online fashion retail by en-hancing customer experiences and improving product discov- ery through conversational agents. These LLM-powered agents allow customers to interact naturally, refining their needs and receiving personalized fashion and shopping advice. For tasks like finding specific products, conversational agents must translate customer interactions into calls to various backend systems, such as search engines, to display relevant product options. The authors emphasize the importance of evaluating the capabilities of LLMs in these tasks, particularly in integrat-ing with backend systems. However, existing evaluations are often complex due to the lack of high-quality, relevant datasets that align with business needs. To address this, the authors developed a multilingual evaluation dataset comprising 4,000 conversations between customers and a fashion assistant on a large e-commerce platform.
+
+##### e. Symbolic Music Composition Agents: Deng et al
+
+[216] introduce ComposerX, an agent-based symbolic music generation framework designed to enhance the music compo-sition capabilities of Large Language Models (LLMs). While LLMs have demonstrated impressive performance in STEM domains, they often struggle with music composition, par-ticularly when dealing with long dependencies and harmony constraints. Even when equipped with advanced techniques like In-Context Learning and Chain-of-Thought, LLMs typi-cally generate poorly structured music. ComposerX aims to address this by leveraging the reasoning abilities of LLMs and their extensive knowledge of music history and theory. By employing a multi-agent approach, the framework significantly enhances the music composition quality of GPT-4. The results show that ComposerX is capable of generating coherent, polyphonic music compositions with engaging melodies that
+
+follow user instructions, marking a substantial improvement in the application of LLMs to creative music composition tasks.
+
+##### f. Music Understanding & Generation Agents: Yu et al
+
+[217] present MusicAgent, a system designed to streamline AI-powered music processing by organizing and integrat-ing diverse music-related tasks. Music processing spans a wide range of activities, from generation tasks like timbre synthesis to comprehension tasks like music classification. However, developers and amateurs often struggle to navigate the complexity of these tasks, particularly due to the varying representations of music data and the applicability of different models across platforms. MusicAgent addresses this challenge by offering an integrated solution that simplifies the process for users. The system includes a comprehensive toolset that gathers music tools from diverse sources such as Hugging Face, GitHub, and Web APIs. Additionally, it incorporates an autonomous workflow powered by Large Language Models (LLMs), like ChatGPT, which organizes these tools and au-tomatically decomposes user requests into sub-tasks, invoking the appropriate tools. The primary goal of MusicAgent is to alleviate users from the technicalities of using AI-based music tools, allowing them to focus on the creative aspects of music.
+
+##### g. Poetry Generation Agents: Zhang et al. [218] intro-duces a framework for enhancing the diversity and novelty of
+poetry generated by Large Language Models (LLMs) by in-corporating social learning principles. While LLMs have made significant strides in automatic poetry generation, their outputs often lack the diversity and creativity seen in human-generated poetry. The proposed framework emphasizes both cooperative and non-cooperative interactions among multiple agents to foster diversity in generated poetry. This is the first attempt to apply multi-agent systems in non-cooperative environments for poetry generation, utilizing both TRAINING-BASED agents (GPT-2) and PROMPTING-BASED agents (GPT-3 and GPT-4). Experiments based on 96k generated poems show sig- nificant improvements, particularly for TRAINING-BASED agents, with a 3.0–3.7 percentage point increase in diver-sity and a 5.6–11.3 percentage point increase in novelty, as measured by distinct and novel n-grams. The results also reveal that poetry generated by these agents shows increased divergence in terms of lexicons, styles, and semantics. For PROMPTING-BASED agents, the non-cooperative environ-ment helps enhance diversity, with an increase of 7.0–17.5 percentage points, though these agents showed a decrease in lexical diversity over time and did not exhibit the desired group-based divergence.
+
+##### h. Lyric Generation Agents: Liu et al. [219] address
+
+the challenges of melody-to-lyric generation by leveraging Generative Large Language Models (LLMs) and multi-agent systems. Previous research in this area has been constrained by limited high-quality aligned data and unclear standards for creativity. Many studies focused on broad themes or emotions, which have limited value given the advanced capabilities of current language models. In tonal contour languages like Mandarin, where pitch contours are influenced by both melody and tone, achieving a good fit between lyrics and melody becomes more complex. The study, validated by the Mpop600 dataset, demonstrates that lyricists and melody writers care-fully consider this fit during their composition process. To tackle this, the authors developed a multi-agent system that de-composes the melody-to-lyric task into specific sub-tasks, with individual agents managing aspects such as rhyme, syllable count, lyric-melody alignment, and consistency. The quality of the generated lyrics was evaluated through listening tests using a diffusion-based singing voice synthesizer, assessing how different agent groups performed in terms of lyric creation. This work introduces a more structured approach to melody-to-lyric generation, offering a deeper understanding of the interaction between melody and lyrics in tonal languages.
+
+### C. AI Agents Protocols
+
+Recent advances in autonomous AI systems have under-scored the importance of standardized communication proto- cols in facilitating seamless interaction among agents, tools, and external services. In this subsection, we present three prominent protocols developed between 2024 and 2025: the Agent Communication Protocol (ACP), the Model Context Protocol (MCP), and the Agent-to-Agent Protocol (A2A).
+
+#### 1. Agent Communication Protocol (ACP): In 2025, IBM
+
+Research proposed the agent-to-agent communication protocol named ACP, which is central to the operation of BeeAI , an experimental platform designed to streamline the orches-tration and execution of open-source AI agents, regardless of their underlying framework or code base. The primary goal of ACP is to standardize communication between agents, addressing challenges posed by inconsistent interfaces and enabling seamless interaction across diverse agents and client systems. Inspired by Anthropic’s MCP, ACP initially aimed to connect agents to data and tools but has since evolved to include advanced features such as discovery, delegation, and multi-agent orchestration. Core components of BeeAI include the BeeAI Server, which orchestrates agent processes in a local-first environment and provides a unified REST endpoint for external apps and UIs, and the ACP SDKs, which offer libraries in Python and TypeScript, along with a command-line interface and UI for easy agent discovery and launch [221]. ACP messages are custom JSON objects containing a top-level "role" field and a "parts" array, where each part encodes MIME-type metadata along with either inline con-tent or content URLs, optional encoding hints, and arbitrary metadata fields. Context is maintained via a session\_id issued on the first call; reusing that same ID causes the full turn history to be prepended to each request, enabling stateful conversational sessions. In the event of errors, ACP delivers structured payloads with "code" and "message" in either HTTP response bodies, within run-result envelopes, or as real-time stream events; clients are responsible for implementing retry or fallback logic.
+
+#### 2. Model Context Protocol (MCP): In late 2024, Anthropic
+
+introduced the Model Context Protocol (MCP), an open and flexible protocol that standardizes how AI systems interact with external tools and data sources, much like a USB-C port provides a universal connection for devices. Inspired by the Language Server Protocol, MCP enables AI agents to https://github.com/i-am-bee/beeai-framework
+
+A2A Client A2A Client A2A Client A2A Client Remote Agent Remote Agent Remote Agent Remote Agent A2A Server CrewAI Agent A2A Server LangChain Agent A2A Server Haystack Agent A2A Server Microsoft AutoGen Agent A2A protocol A2A protocol MCP Client MCP protocol A2A protocol Large Language Model (e.g., DeepSeek, Qwen, ...etc.) Agent Framework OpenRouter API Agent Development Kit Enabling dynamic, multimodal interactions among various agents without requiring shared memory, resources, or tools. MCP Client MCP Client MCP Client MCP Client MCP Client MCP Server MCP Server MCP Server MCP Server MCP Server MCP Server Enable agents to interface with tools, APIs, and resources using standardized structured inputs and outputs. MCP protocol MCP protocol MCP protocol MCP protocol MCP protocol Agent A MCP Host Agent B MCP Host Allow a diverse selection of MCP servers to be integrated with agents. Front-EndFront-End Web Browser - User Local Data Source 1 Local Data Source 2 Local Data Source 3 Local Data Source 4 Remote Service Remote Service Web Browser - User A2A protocol
+
+*Figure 13: Multi-Agent Integration Framework: Enabling dynamic collaboration through the A2A and MCP Protocols*
+
+autonomously identify, select, and manage a wide range of ser-vices based on the specific context of each task. The protocol facilitates the development of complex workflows by offering a growing catalog of pre-built integrations, the flexibility to switch between different LLM providers, and best practices for securing data within an organization’s infrastructure [223]. An expanding ecosystem of servers highlights the protocol’s potential. For example, official reference servers demonstrate MCP’s core capabilities through secure file management and database access, utilizing PostgreSQL, SQLite, and Google Drive. At the same time, development environments benefit from integration with tools such as Git, GitHub, and GitLab. Moreover, MCP supports productivity and communication enhancements via integrations with platforms like Slack and Google Maps and even extends to specialized AI tools, includ-ing image generators and sophisticated search APIs . MCP is designed around a client-server architecture in which host applications connect to multiple lightweight servers [220]. This allows secure access to local data sources such as files and databases and remote services available through web APIs. By unifying these interfaces, MCP transforms everyday platforms into versatile, multi-modal AI agents, simplifying the creation of AI-native applications and accelerating inno-vation across diverse domains. MCP messages conform to the JSON-RPC 2.0 standard, with each request carrying the fields "jsonrpc":"2.0", "id", "method" and an optional "params" object, and each response echoing the same "id" alongside either a "result" or an "error". Context sharing is host-mediated https://github.com/modelcontextprotocol/servers and stateful: the MCP hub aggregates the full conversation history. It selectively forwards only those context fragments that each server has declared it can consume, ensuring isolation between adapters. For failure recovery, MCP builds on JSON- RPC’s native error objects by providing built-in cancella-tion requests and structured error-reporting utilities, allowing clients to cancel operations or receive detailed diagnostics when calls fail.
+
+#### 3. Agent-to-Agent Protocol (A2A): In 2025, Google intro-duced the Agent2Agent (A2A) protocol to usher in a new
+era of seamless interoperability among AI agents, significantly enhancing workplace productivity and automation [222]. The protocol is designed to facilitate dynamic collaboration be-tween autonomous agents, enabling them to work together across isolated data systems and diverse applications regard-less of their underlying frameworks or vendors. Using familiar standards such as HTTP, SSE, and JSON-RPC, A2A simplifies integration with existing IT infrastructures while also ensuring robust enterprise-grade security through proven authentication and authorization practices. A2A supports both swift and long-duration tasks by allowing agents to exchange real-time updates, negotiate user interface requirements, and perform capability discovery via structured ”Agent Cards. A2A extends JSON-RPC 2.0 with a TypeScript interface that includes optional fields "jsonrpc", "id", "method", "params", "result", and "error". A shared task ID groups interactions passed both as the JSON-RPC "id" and within "params.id", and agents consume context updates by subscribing to Server-Sent Events streams (e.g. via tasks/sendSubscribe). For failure recovery, A2A defines standard JSON-RPC error codes (such as−32700 for
+
+
+**Table 12: Comparison of MCP, ACP, and A2A Protocols**
+
+
+| Feature | MCP (Model Context Protocol) | ACP (Agent Communication Protocol) | A2A (Agent-to-Agent Protocol) |
+|---|---|---|---|
+| Main Purpose | Facilitates access to context and data for LLMs. | Enables communication between multiple agents within BeeAI. | Facilitates communication and task-sharing between agents across frameworks. |
+| Common Setup | Distributed servers providing specific data, connected via an MCP hub. | BeeAI Server coordinates and manages multiple agents within a local environment. | Agents from different frameworks discover and connect through HTTP interfaces. |
+| Key Capabilities | Standardized interface for connecting data and services to LLMs. | Simplifies agent deployment, discovery, and offers deep telemetry within BeeAI. | Allows agents to discover each other's capabilities and share tasks with updates. |
+| Typical Application | Managing context for LLMs and integrating data streams. | Managing multiple agents within BeeAI's environment. | Enabling interaction and collaboration between agents from diverse systems. |
+| Core Objective | Uniformly managing how LLMs receive context and external tools. | Standardizing communication between BeeAI agents and external systems. | Creating a standardized method for agents from different systems to communicate and collaborate. |
+| Architecture | Client-server model where LLMs hook into servers for data and tools. | BeeAI Server orchestrates the interaction of local agents and integrates external frameworks. | Agents connect through agent cards and HTTP for task execution and communication. |
+| Key Differences | Focuses on integrating tools and data into a single LLM process. | Primarily focused on internal coordination of agents within BeeAI. | Aims at linking agents across different ecosystems to collaborate effectively. |
+| Ideal Usage Scenario | Integrating multiple data sources or services into an LLM workflow. | Running and managing various agents within BeeAI's environment. | Connecting agents from different platforms to enable collaboration and task-sharing. |
+| Common Use Cases | Implementing controlled, secure LLM workflows with external data. | Orchestrating multi-agent environments with BeeAI's platform. | Enabling task sharing and agent communication across different vendor systems. |
+| Message Structure | JSON-RPC 2.0 requests/responses with fields "jsonrpc", "id", "method", "params", and "result"/"error". | Custom JSON objects with top-level "role" and an array of "parts" supporting MIME types, content URLs, encoding, and metadata. | JSON-RPC extension in TypeScript with id, method, params, result/error and optional SSE streaming. |
+| Context Sharing | Host-mediated, stateful sessions aggregating full conversation and forwarding only declared context fragments. | Stateful sessions via a session_id; full history is prepended on each call when the same ID is reused. | Task ID grouping in both id and params.id; context streamed via Server-Sent Events with resubscription support. |
+
+### D. Training datasets
+
+High-quality training datasets are crucial for enhancing the reasoning, multilingual understanding, and instruction-following abilities of large language models. In this subsection, we present three recently developed datasets: NaturalReason-ing, FineWeb2, and MagPie-Ultra. Each dataset addresses different aspects of model training, ranging from expanding reasoning across multiple domains to enhancing multilingual capabilities and advancing the generation of synthetic instruc-tions.
+
+#### 1. NaturalReasoning dataset: Scaling reasoning capabili-ties beyond traditional domains such as math and coding has
+been challenging due to the scarcity of diverse, high-quality questions. In response, [224] introduces NaturalReasoning a comprehensive dataset comprising 2.8 million questions that span multiple domains, including STEM fields (like Physics and Computer Science), Economics, and Social Sciences, com-plete with reference answers. The dataset is designed not only to serve as a resource for knowledge distillation experiments, where it effectively transfers reasoning capabilities from a strong teacher model, but also for unsupervised self-training using external reward models. When training the Llama3.1- 8B-Instruct model, NaturalReasoning demonstrates superior scaling effects, achieving notably higher average performance on benchmarks such as MATH, GPQA, and MMLU-Pro compared to other datasets. This work highlights the potential of a large, diverse question dataset to expand the boundaries of LLM reasoning across a broader range of fields.
+
+#### 2. FineWeb2 dataset: Hugging Face’s team introduced
+
+[225] FineWeb2, a groundbreaking multilingual dataset com-prising 8TB of meticulously cleaned text data with over 3 trillion non-English words drawn from more than 1,000 languages. FineWeb2 supports a total of 1,893 languages, with substantial coverage of 486 languages, including more than 1MB of data, and 80 languages boast over 1GB each, demonstrating its extensive linguistic diversity. Built upon 96 snapshots of CommonCrawl data spanning 2013 to 2024 and processed using the ”datatrove” alongside sophisticated filtering code and configurations, FineWeb2 employs inno-vative techniques such as ”re-hydration,” deduplication, and language-specific filtering to ensure high data quality. Ex-tensive ablation experiments, conducted with a 1.45 billion- parameter model trained on 30 billion tokens, further validate the dataset’s robustness. In comparative evaluations against established datasets like CC-100, mC4, CulturaX, and HPLT, FineWeb2 consistently outperforms across diverse languages. Additionally, specialized evaluations using the FineTasks benchmark on 9 varied languages underscore its potential for advancing multilingual natural language processing and retrieval-augmented generation applications.
+
+#### 3. MagPie-Ultra dataset: MagPie-Ultra [226] is a synthetic
+
+dataset generated using Meta Llama 3.1 405 B-Instruct FP8, representing the first open dataset of its kind. It comprises 50,000 synthetic instruction pairs, created by prompting the language model with minimal ”empty” prompts (only initial special tokens) that allow it to generate both user queries and corresponding responses auto-regressively. These generated pairs, filtered according to the MagPie recipe and refined via Argilla distilabel, cover a diverse range of challenging tasks, including coding, mathematics, data analysis, creative writing, advice seeking, and brainstorming. In addition to the raw instruction pairs, the dataset includes detailed metadata quality and difficulty scores, embeddings, topic labels, and safety as-sessments from tools like ArmorRM and LlamaGuard, which further support its use in training and evaluating large language models across complex instruction-following scenarios.
+
+### E. Human-in-the-Loop AI Agents
+
+Human-in-the-loop (HITL) interactions provide essential safeguards for autonomous agents, particularly in business-critical scenarios where incorrect tool selection or param- eter misinterpretation can lead to unintended side effects. HITL mechanisms maintain human oversight throughout the orchestration of an agent by interposing confirmation steps between the decision-making of the model and the execution of sensitive operations. Recently, the Amazon team proposed Amazon Bedrock Agents [227], which supports two primary HITL frameworks: • User Confirmation. This mechanism pauses the orchestra-tion to expose the intended function call and parameter values to the end user for approval. Non-critical read operations—such as retrieving PTO balances—execute automatically, while write operations—such as creating, updating, or canceling a PTO request—are gated by a Boolean confirm/reject prompt. Upon confirmation, the agent proceeds; upon rejection, the workflow either aborts or generates an alternative plan. Developers can configure at a per-action level which tools require confirmation, striking a balance between automation and safety. • Return of Control (ROC). ROC elevates human involve-ment by returning entire action groups to the applica- tion layer, allowing users not only to approve but also to edit parameters or provide additional context before execution. Configured at the action-group level, ROC enables more nuanced workflows—such as adjusting PTO dates via an interactive form—where a simple yes/no decision is insufficient. Final validation and execution are performed by the application’s API, ensuring compliance with business rules and regulatory requirements. By integrating these HITL patterns, developers can harness the efficiency of autonomous agents while preserving accuracy, accountability, and user trust.
+
+### F. Collaborative LLM frameworks
+
+Wang et al. [228] proposed TalkHier, which is a col-laborative framework that integrates a rigorously structured messaging protocol with a hierarchical refinement process to improve inter-agent communication. It defines three message types, raw input, intermediate output, and background context, to organize information flow, improving clarity, and reducing misunderstandings common in unstructured exchanges. The hierarchical refinement mechanism allows agents to iteratively improve their contributions at successive levels, balancing diverse perspectives and mitigating biases introduced by feed-back ordering. Experimental results on complex subdomain problem solving, open question answering, and Japanese text generation show that TalkHier outperforms current approaches
+
+and that each protocol element and refinement layer con-tributes meaningfully to its overall success. Chen et al. [229] tackles the challenge of using large lan-guage models for complex scientific problem solving by intro- ducing CoMM, a collaborative multi-agent, multi-reasoning-path prompting framework. In CoMM, each agent assumes a distinct expert role and follows its reasoning trajectory, which together foster a richer exploration of the problem space than single-chain prompts allow. By distributing few-shot exem-plars across these role-play agents, the framework balances diverse analytical approaches and mitigates biases that arise when feedback is processed sequentially. Evaluation of two undergraduate-level science questions shows that CoMM not only exceeds competitive baselines, but also that independently prompting agents as different specialists is critical to achieving its improved performance.
+
+## 5 Challenges And Open Problems
+
+As the capabilities of AI agents and large language models continue to grow, new challenges and open problems emerge that limit their effectiveness, reliability, and security [230]. In this section, we highlight several critical research directions, including advancing the reasoning abilities of AI agents, understanding the failure modes of multi-agent systems, sup-porting automated scientific discovery, enabling dynamic tool integration, reinforcing autonomous search capabilities, and addressing the vulnerabilities of emerging communication protocols.
+
+### A. AI Agents Reasoning
+
+The primary challenge addressed in [231] is the inherent limitation of traditional Chain-of-Thought (CoT) methods, which only reveal the final reasoning steps without explicitly modeling the underlying cognitive process that leads to those steps. Meta Chain-of-Thought (Meta-CoT) aims to fill this gap by capturing and formalizing the latent reasoning that underlies a Chain-of-Thought (CoT). This involves not only generating the visible chain of thought but also understanding the in-context search behavior and iterative reasoning steps that contribute to it. To overcome these challenges, the authors explore innovative approaches, including process supervision, synthetic data generation, and search algorithms, to produce robust Meta-CoTs. Moreover, they propose a concrete train-ing pipeline that integrates instruction tuning with linearized search traces and reinforcement learning post-training. Open research questions remain regarding scaling laws, the role of verifiers, and the discovery of novel reasoning algorithms, underscoring the complexity and potential of advancing more human-like reasoning in large language models.
+
+### B. Why Do Multi-Agent LLM Systems Fail?
+
+Pan et al. [232] present a critical examination of why multi-agent LLM systems, despite the theoretical benefits of collaboration, continue to underperform compared to their single-agent counterparts. Through a rigorous study of five open-source frameworks across 150 tasks, the authors enlist expert human annotators to identify fourteen distinct failure modes ranging from ignoring task or role specifications and unnecessary repetition, to lapses in memory and flawed verifi-cation processes. These issues are systematically grouped into three categories: design and specification shortcomings, inter-agent misalignment, and challenges in task verification and termination. Moreover, the study explores interventions such as refining agent role definitions and orchestration strategies, but finds that these measures alone are insufficient; thereby, it outlines a clear roadmap for future research to address the intricate challenges inherent in multi-agent coordination.
+
+### C. AI Agents in Automated Scientific Discovery
+
+Liu et al. [233] introduce a large-scale benchmark for evaluating the capability of large language models (LLMs) in generating high-quality scientific research hypotheses. It tack-les this gap by focusing on three pivotal sub-tasks: inspiration retrieval, hypothesis composition, and hypothesis ranking. The authors have developed an automated framework that extracts key components from scientific papers, including research questions, background surveys, inspirations, and hypotheses, across 12 disciplines. Expert validation ensures the reliability of this framework. By exclusively using papers published in 2024, the study minimizes data contamination from large lan-guage model (LLM) pretraining datasets, revealing that LLMs perform notably well in retrieving novel inspirations. This positions LLMs as promising “research hypothesis mines” that can facilitate the automation of scientific discovery by generating innovative hypotheses at scale. Despite these advances, significant challenges remain for AI agents employing LLMs to automate scientific discovery. One key obstacle is ensuring that these agents generate novel and scientifically valid hypotheses, as they must navigate the risk of producing biased or spurious associations without sufficient human oversight. Furthermore, the complexity and diversity of scientific literature across various disciplines demand that these agents not only understand domain-specific nuances but also adapt dynamically to evolving research contexts. The risk of data contamination, particularly when recent publications might overlap with pretraining data, further complicates the extraction of truly innovative insights. In addition, scaling these systems while preserving transparency, interpretability, and ethical standards poses a multifaceted challenge that must be addressed to harness the potential of AI-driven scientific discovery fully.
+
+### D. Dynamic Tool Integration for Autonomous AI Agents
+
+Wu et al. [234] introduce Chain-of-Tools, a novel tool learning approach that leverages the robust semantic represen-tation capabilities of frozen large language models (LLMs) to perform tool calling as part of a chain-of-thought reasoning process. By utilizing a vast and flexible tool pool that can include previously unseen tools, this method addresses the inefficiencies and highlights key challenges, including man-aging vast prompt-based demonstrations. The authors validate their approach on a range of datasets, including a newly
+
+constructed dataset, SimpleToolQuestions, as well as GSM8K- XL, FuncQA, and KAMEL, demonstrating that Chain-of- Tools outperforms conventional baselines. Additionally, the method holds promise for enhancing autonomous AI agents by enabling them to select and utilize external tools dynamically, thereby broadening their capability to solve complex, multi-step tasks independently. This work prompts several questions: How can the integration of unseen tools further enhance LLM adaptability in diverse scenarios? What critical dimensions of the model output influence effective tool selection, and how can they be optimized for greater interpretability? More-over, how might this methodology be extended to enable more robust autonomous decision-making in AI agents facing increasingly complex reasoning challenges? Notably, these questions also underscore key challenges such as managing a huge tool pool, ensuring efficient tool selection, enhancing model interpretability, and integrating autonomous AI agents capable of dynamic, independent operation.
+
+### E. Empowering LLM Agents with Integrated Search via Rein-forcement Learning
+ReSearch [235] represents a significant step toward endow-ing LLM-based agents with the ability to decide autonomously when and how to consult external knowledge sources, seam-lessly weaving search operations into their reasoning chains via reinforcement learning. By framing search as an action-able tokenized operation rather than a separate retrieval step ReSearch trains models like Qwen2.5 through a reward signal that emphasizes final-answer accuracy and adherence to a structured think/search/result format. This paradigm eliminates the need for painstakingly annotated reasoning traces and yields strong multi-hop question–answering performance and cross-domain generalization. Yet, several challenges remain for deploying such agents in the wild: how to scale the ap-proach to richer, real-time toolsets (e.g., calculators, databases, code execution environments) without blowing up action spaces; how to design more nuanced reward functions that capture partial credit for intermediate reasoning or mitigate reward hacking; how to ensure robustness and interpretability when agents autonomously interleave reasoning and tool use; and how to balance exploration of novel tool sequences against exploitation of known effective patterns. Addressing these questions will be crucial for realizing truly versatile, trust-worthy LLM agents capable of complex, multi-step problem- solving.
+
+### F. Vulnerabilities of AI Agents Protocols
+
+MCP protocol standardizes how AI applications provide context to LLMs. The MCP protocol faces critical vulnera-bilities in Agent AI communications due to its fundamentally decentralized design [223]. Without a central authority over-seeing security, disparate implementation practices can lead to uneven defenses, making it easier for attackers to exploit weak links. In particular, the absence of a standardized authentica-tion mechanism across different nodes hinders reliable identity verification, thereby increasing the risk of unauthorized access and potential data breaches. Moreover, deficiencies in robust logging and debugging tools further complicate the timely detection of anomalies and errors, which is vital for preventing and mitigating attacks. Additionally, the complexity inherent in managing multi-step, distributed workflows can lead to state inconsistencies and operational glitches, amplifying the po-tential impact of a security compromise across interconnected systems.
+
+## 6 Conclusion
+
+In this paper, we have surveyed recent advances in large language model reasoning and autonomous AI agents, demon-strating that multi-step, intermediate processing, exposed through models such as DeepSeek-R1, OpenAI o1 and o3, and GPT-4o, yields marked improvements in accuracy and reliability across complex tasks in mathematics, code genera-tion and logical reasoning. We examined a range of training and inference strategies, including inference-time scaling, pure reinforcement learning (for example, DeepSeek-R1-Zero), su-pervised fine-tuning combined with reinforcement learning, and distillation-based fine-tuning. We demonstrated that hy-brids of these methods, applied to Qwen-32B and Llama- based architectures, foster emergent reasoning behaviors while curbing overthinking and verbosity. Our unified comparison of some 60 benchmarks from 2019 to 2025, organized into a structured taxonomy, highlights the impact of mixture-of-experts, retrieval-augmented generation, and reinforcement learning frameworks, as well as key architectural enhance-ments, on model performance. We also reviewed AI agent frameworks introduced between 2023 and 2025, illustrating their applications in materials science, biomedical research, synthetic data generation, and financial forecasting. Despite these successes, significant challenges remain, most notably automating multi-step reasoning without human oversight, balancing structured guidance with model flexibility, and inte-grating long-context retrieval at scale. We anticipate that future work will increasingly focus on domain- and application-specific optimizations, as early systems such as DeepSeek- R1-Distill, Sky-T1, and TinyZero begin to demonstrate how specialized reasoning systems can achieve optimal trade-offs between computational cost and accuracy.
 </details>
-
 </research_source>
 
 <golden_source type="local_files">

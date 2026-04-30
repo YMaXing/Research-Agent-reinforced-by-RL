@@ -138,30 +138,55 @@ ORIGINAL GUIDELINE (full version):
 
 ---
 
-Create a MINIMAL version of this guideline following these rules exactly:
+GROUND TRUTH ARTICLE (written from the original guideline without additional research):
+{ground_truth}
 
-1. **Total length**: 2–3 short paragraphs only.  No lesson outline, no narrative flow,
-   no per-section breakdown, no headers beyond a single title line.
+---
 
-2. **Content**: State the article topic, target audience (from the original), a hard
-   word-count ceiling ("keep the article under 1,500 words"), and the single main theme
-   in plain prose.
+Create a MINIMAL version of the original guideline following these rules exactly.
+This is the OPPOSITE of a "demanding" rewrite: the structure of the guideline must be
+preserved exactly, but the *content depth* requested by each section must be reduced
+so the resulting article is a brief conceptual overview.
 
-3. **Restriction sentence** (include verbatim):
-   "Use only concepts already established in the course — do not reference external
-   libraries, real-world case studies, or production systems not already introduced in
-   this lesson. External examples are out of scope."
+1. **Keep the complete structure**: Preserve all top-level sections from the original
+   (Global Context, Lesson Scope, Narrative Flow, Lesson Outline, etc.) without removal.
+   CRITICAL: every `## Section N - Title` block that exists as a separate top-level
+   heading in the original MUST remain a separate top-level `## Section N - Title`
+   heading in the output — do NOT collapse or merge section blocks into a nested list
+   under `## Lesson Outline`. Keep every `### subsection` heading from each section
+   block as well; sub-structure must be preserved verbatim.
 
-4. **Framing**: Explicitly describe the article as a "conceptual overview" where
-   surface-level treatment is expected. Signal that depth, exhaustive coverage, and
-   code examples are NOT required.
+2. **Per-section word targets (shrink, not remove)**: For every numbered item in the
+   Lesson Outline, add or replace the word-count target in parentheses with a much
+   smaller value (e.g., "~150 words", "~200 words"). Distribute totals so all sections
+   sum to **at most 1,500 words overall**. Do not delete any section to meet the cap —
+   shrink each one proportionally.
 
-5. **Course voice**: Preserve the we/you/our point-of-view convention and one sentence
-   stating the lesson's position in the course (e.g., "This is lesson N of module M").
-   Remove everything else from the Global Context section.
+3. **Brevity Requirements block**: Append a new "## Brevity Requirements" section
+   AFTER the last `## Section N - Title` block (not before it) containing exactly these
+   three bullet points:
+   - "Total article length must not exceed 1,500 words. This is a hard ceiling."
+   - "Do NOT introduce external libraries, real-world case studies, named production
+     systems, or benchmark papers that are not already established in the course.
+     External examples are explicitly out of scope."
+   - "No production code examples. Pseudocode or short illustrative snippets (under 10
+     lines) are allowed only if the original section already implied code; otherwise
+     omit code entirely."
 
-6. **No outline**: Do NOT include a lesson outline, narrative flow, theory/practice
-   ratio, per-section word counts, or sub-section requirements of any kind.
+4. **Must-stay-brief additions**: Examine the ground truth article section by section.
+   For each section where the ground truth covers a topic in over 200 words, add a
+   "Must stay brief:" line inside that section's outline entry naming the specific
+   aspects to compress to a single sentence or short paragraph. Use only topics already
+   present in the ground truth — do NOT invent subjects absent from the article.
+
+5. **Reframe as conceptual overview**: In the Global Context or Lesson Scope section
+   (whichever exists), add one sentence: "This article is a conceptual overview;
+   surface-level treatment is expected and depth, exhaustive coverage, or production
+   code are explicitly NOT required."
+
+6. **Preserve all course instructions**: Keep the point-of-view rules, concepts
+   introduced/future lessons, course context, and golden-source references exactly as
+   in the original. Reduce per-section depth on top; do not remove structural elements.
 
 Return ONLY the minimal guideline text.\
 """
@@ -186,13 +211,20 @@ Create a DEMANDING version of the original guideline following these rules exact
 
 1. **Keep the complete structure**: Preserve all top-level sections from the original
    (Global Context, Lesson Scope, Narrative Flow, Lesson Outline, etc.) without removal.
+   CRITICAL: every `## Section N - Title` block that exists as a separate top-level
+   heading in the original MUST remain a separate top-level `## Section N - Title`
+   heading in the output — do NOT collapse or merge section blocks into a nested list
+   under `## Lesson Outline`. The `## Lesson Outline` heading should contain only the
+   short numbered summary list; full section content lives in the separate
+   `## Section N - Title` blocks that follow it.
 
 2. **Per-section word targets**: For every numbered item in the Lesson Outline, add an
    estimated word count target in parentheses (e.g., "~450 words").  Distribute the
    total so sections sum to approximately 4,000–4,500 words overall.
 
 3. **Additional Requirements block**: Append a new "## Additional Requirements" section
-   after the Lesson Outline containing exactly these three bullet points:
+   AFTER the last `## Section N - Title` block (not before it) containing exactly these
+   three bullet points:
    - "Include at least 2 production code examples showing real-world library usage with
      concrete comparisons to named alternatives (e.g., Library A vs Library B in a
      production context)."
@@ -343,7 +375,10 @@ async def process_article(
             # Generate via LLM
             if level == "minimal":
                 sys_prompt = _MINIMAL_SYSTEM
-                user_prompt = _MINIMAL_USER.format(original_guideline=original_guideline)
+                user_prompt = _MINIMAL_USER.format(
+                    original_guideline=original_guideline,
+                    ground_truth=ground_truth,
+                )
                 gen_source = f"LLM-generated ({_GENERATION_MODEL.split(':')[-1]})"
             elif level == "demanding":
                 sys_prompt = _DEMANDING_SYSTEM
