@@ -10,7 +10,7 @@ Pipeline (6 stages):
   3. ASSEMBLE — Build XML-tagged context from all summaries + tavily + query history
   4. GENERATE — Single API call → structured 3-section digest (grok-4-1-fast-reasoning)
   5. VALIDATE — Check section completeness; retry up to 2 times on failure
-  6. STORE    — Write to rl_training_data/bases/<article>/exploitation_digest.md
+  6. STORE    — Write to rl_training_data/bases/<article>/research_digest.md
 
 Usage (from research_agent_local/):
   uv run --project mcp_client python generate_digests.py
@@ -34,8 +34,10 @@ from dotenv import load_dotenv
 # Paths and env loading
 # ---------------------------------------------------------------------------
 _THIS_DIR = Path(__file__).resolve().parent
-_ENV_FILE = _THIS_DIR / "mcp_client" / ".env"
-_BASES_DIR = _THIS_DIR.parent / "rl_training_data" / "bases"
+_AGENT_DIR = _THIS_DIR.parent          # research_agent_local/
+_REPO_ROOT = _AGENT_DIR.parent         # RL_researcher_writer_ymaxing/
+_ENV_FILE = _AGENT_DIR / "mcp_client" / ".env"
+_BASES_DIR = _REPO_ROOT / "rl_training_data" / "bases"
 
 load_dotenv(_ENV_FILE, override=False)
 
@@ -449,14 +451,14 @@ async def process_article(
 ) -> bool:
     """Run the full 6-stage pipeline for one article. Returns True on success."""
     base_dir = _BASES_DIR / article_dir
-    output_path = base_dir / "exploitation_digest.md"
+    output_path = base_dir / "research_digest.md"
     article_title = ARTICLES[article_dir]
 
     log.info("=" * 65)
     log.info(f"Article: {article_dir}  ({article_title})")
 
     if output_path.exists() and not force:
-        log.info(f"  SKIP — exploitation_digest.md already exists (use --force to overwrite)")
+        log.info(f"  SKIP — research_digest.md already exists (use --force to overwrite)")
         return True
 
     # Stage 1
@@ -559,7 +561,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--force",
         action="store_true",
-        help="Overwrite existing exploitation_digest.md files.",
+        help="Overwrite existing research_digest.md files.",
     )
     args = parser.parse_args()
 

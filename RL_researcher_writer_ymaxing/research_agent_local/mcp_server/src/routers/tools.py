@@ -527,7 +527,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         """
         Predict the optimal exploration preset using the GRPO-trained RL model.
 
-        Reads exploitation_digest.md from the research directory and runs two-stage
+        Reads research_digest.md from the research directory and runs two-stage
         inference:
 
         Stage 1 — RL model (Qwen3-4B + LoRA, NF4 quantised):
@@ -576,7 +576,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
         Args:
             research_directory: Path to the research directory containing
-                                exploitation_digest.md at its root.
+                                research_digest.md at its root.
             grok_only: When True, skip the RL inference stage. Grok 4.2 decides
                        solely from the article guideline and coverage gap profile.
                        rl_recommendation will be None in the returned dict.

@@ -59,13 +59,20 @@ EPISODES_DIR = _THIS_DIR.parent / "rl_training_data" / "episodes"
 EVAL_DATA_DIR = _THIS_DIR / "inputs" / "evals" / "dataset" / "data"
 
 # Train articles (L2, L3, L5, L6, L8, L9, L11) -- must match Phase 1 / Phase 2a
+# Variant articles (var_demanding, var_minimal, var_standard) for L8 and L9
 TRAIN_ARTICLES: list[str] = [
     "02_workflows_vs_agents",
     "03_context_engineering",
     "05_workflow_patterns",
     "06_tools",
     "08_react_practice",
+    "08_react_practice__var_demanding",
+    "08_react_practice__var_minimal",
+    "08_react_practice__var_standard",
     "09_RAG",
+    "09_RAG__var_demanding",
+    "09_RAG__var_minimal",
+    "09_RAG__var_standard",
     "11_multimodal",
 ]
 
@@ -73,12 +80,12 @@ N_PRESETS = 6  # preset IDs 0-5
 MAX_RETRIES = 3
 RETRY_BACKOFF_BASE = 30  # seconds; attempt N waits N * 30s
 
-# Minimum pause between episodes (seconds).
-# Each episode fires 2 concurrent Pro calls.  The UserIntentMetric prompt
-# includes the full research.md (~130K-300K tokens), so back-to-back
-# episodes can sustain high TPM.  20s provides a reasonable cooldown;
-# increase to 30s if quota errors are observed.
-INTER_EPISODE_DELAY_SECS: float = 20.0
+DEFAULT_CONCURRENCY = 2  # concurrent episodes; Tier 2: 1K RPM / 5M TPM
+
+# Small stagger between episode launches to soften the initial burst.
+# With DEFAULT_CONCURRENCY=2 each episode fires 2 concurrent Pro calls
+# (4 simultaneous at peak), well within Tier 2 limits.
+INTER_EPISODE_DELAY_SECS: float = 5.0
 
 # Grading model: Gemini 2.5 Pro (LLM-as-judge)
 GRADING_MODEL = SupportedModels.GOOGLE_GEMINI_25_PRO
@@ -240,6 +247,7 @@ async def run_pipeline(
     articles: Sequence[str],
     presets: Sequence[int],
     dry_run: bool = False,
+    max_concurrent: int = DEFAULT_CONCURRENCY,
 ) -> None:
     """Iterate over all (article, preset) combinations and grade each episode."""
     ready: list[tuple[Path, str, str]] = []  # (ep_dir, article_name, ep_name) -- has article.md, no scores.json
@@ -277,6 +285,7 @@ async def run_pipeline(
     logger.info(f"  Already done: {len(done)}")
     logger.info(f"  Missing article.md : {len(missing_article)}")
     logger.info(f"  Missing research.md: {len(missing_research)}")
+    logger.info(f"  Max concurrent  : {max_concurrent}")
     if missing_article:
         logger.info(f"  [no article.md] {missing_article}")
     if missing_research:
@@ -289,20 +298,26 @@ async def run_pipeline(
             logger.info(f"  would grade: {ep_name}")
         return
 
-    succeeded = 0
-    failed = 0
-    for i, (ep_dir, article_name, ep_name) in enumerate(ready):
-        if i > 0:
-            logger.info(f"Waiting {INTER_EPISODE_DELAY_SECS:.0f}s before next episode (TPM cooldown) ...")
-            await asyncio.sleep(INTER_EPISODE_DELAY_SECS)
-        ok = await run_episode(ep_dir, article_name, ep_name)
-        if ok:
-            succeeded += 1
-        else:
-            failed += 1
+    sem = asyncio.Semaphore(max_concurrent)
+
+    async def _bounded_grade(ep_dir: Path, article_name: str, ep_name: str) -> tuple[str, bool]:
+        async with sem:
+            ok = await run_episode(ep_dir, article_name, ep_name)
+            return ep_name, ok
+
+    grading_tasks = [_bounded_grade(ep_dir, article_name, ep_name) for ep_dir, article_name, ep_name in ready]
+    logger.info(f"Launching {len(grading_tasks)} episode(s) with max_concurrent={max_concurrent} ...")
+    results: list[tuple[str, bool]] = await asyncio.gather(*grading_tasks)
+
+    succeeded = sum(1 for _, ok in results if ok)
+    failed = sum(1 for _, ok in results if not ok)
 
     logger.info("=" * 60)
     logger.info(f"Grading complete: {succeeded} succeeded, {failed} failed, {len(done)} already done")
+    if failed:
+        for ep_name, ok in results:
+            if not ok:
+                logger.warning(f"  FAILED: {ep_name}")
     logger.info("=" * 60)
 
 
@@ -333,6 +348,13 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help="Show what would be graded without running any LLM calls",
     )
+    parser.add_argument(
+        "--concurrency",
+        type=int,
+        default=DEFAULT_CONCURRENCY,
+        metavar="N",
+        help=f"Max concurrent episodes (default: {DEFAULT_CONCURRENCY}; raise carefully — Gemini RPM limits apply)",
+    )
     return parser.parse_args()
 
 
@@ -343,6 +365,7 @@ def main() -> None:
             articles=args.articles,
             presets=args.presets,
             dry_run=args.dry_run,
+            max_concurrent=args.concurrency,
         )
     )
 

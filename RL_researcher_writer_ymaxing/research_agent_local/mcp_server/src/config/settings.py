@@ -54,9 +54,6 @@ class Settings(BaseSettings):
     firecrawl_api_key: SecretStr | None = Field(
         default=None, alias="FIRECRAWL_API_KEY", description="The API key for the Firecrawl API"
     )
-    firecrawl_api_key_2: SecretStr | None = Field(
-        default=None, alias="FIRECRAWL_API_KEY_2", description="The second API key for the Firecrawl API"
-    )
     github_token: SecretStr | None = Field(default=None, alias="GITHUB_TOKEN", description="The GitHub token")
     xai_api_key: SecretStr | None = Field(
         default=None, alias="XAI_API_KEY", description="The API key for the xAI (Grok) API"

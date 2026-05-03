@@ -1,11 +1,41 @@
 """Markdown processing utilities."""
 
+import re
 from typing import Dict, List, Tuple
+
+
+def _is_fence_open(text: str) -> str | None:
+    """Simulate CommonMark code-fence toggling.
+
+    Returns the fence character that is still open ('`' or '~'), or None if
+    all fences are balanced.  Only lines whose first non-space characters are
+    three-or-more backticks or three-or-more tildes (at most 3 leading spaces)
+    act as fence toggles — inline occurrences are ignored.
+    """
+    in_fence: bool = False
+    fence_char: str | None = None
+    for line in text.splitlines():
+        m = re.match(r"^( {0,3})(`{3,}|~{3,})", line)
+        if m:
+            ch = m.group(2)[0]  # '`' or '~'
+            if not in_fence:
+                in_fence = True
+                fence_char = ch
+            elif ch == fence_char:
+                in_fence = False
+                fence_char = None
+            # Inside a fence, a different-type marker is just content — ignore.
+    return fence_char  # None = balanced
 
 
 def markdown_collapsible(title: str, body: str) -> str:
     """Return a Markdown collapsible block using <details> / <summary>."""
-    return f"<details>\n<summary>{title}</summary>\n\n{body.strip()}\n\n</details>\n"
+    stripped_body = body.strip()
+    # Balance any unclosed code fence so </details> is not swallowed into a <pre> block.
+    open_char = _is_fence_open(stripped_body)
+    if open_char is not None:
+        stripped_body += f"\n{open_char * 3}"
+    return f"<details>\n<summary>{title}</summary>\n\n{stripped_body}\n\n</details>\n"
 
 
 def get_first_line_title(markdown: str) -> str:
@@ -32,7 +62,7 @@ def build_research_results_section(grouped_queries: Dict[str, List[str]]) -> str
     """
     research_results_blocks: List[str] = []
     for query, blocks in grouped_queries.items():
-        body = "\n\n-----\n\n".join(blocks)
+        body = "\n\n".join(blocks)
         research_results_blocks.append(markdown_collapsible(query, body))
 
     if research_results_blocks:

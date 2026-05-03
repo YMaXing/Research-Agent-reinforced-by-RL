@@ -11,14 +11,13 @@ Usage:
   preset = selector.predict(digest_text)            # returns int 0-5
 
   # As CLI (useful for testing):
-  uv run python infer.py --digest path/to/exploitation_digest.md
-  uv run python infer.py --digest path/to/exploitation_digest.md --verbose
+  uv run python infer.py --digest path/to/research_digest.md
+  uv run python infer.py --digest path/to/research_digest.md --verbose
 """
 
 from __future__ import annotations
 
 import argparse
-import math
 import re
 import sys
 from pathlib import Path
@@ -35,7 +34,7 @@ _LOCAL_MODEL_DIR = _REPO_ROOT / "models" / "Qwen3-4B"
 # Fall back to HuggingFace Hub when the local weights are not present
 # (e.g. after a fresh clone — the base model is too large for git).
 _DEFAULT_MODEL_DIR: Path | str = _LOCAL_MODEL_DIR if _LOCAL_MODEL_DIR.exists() else "Qwen/Qwen3-4B"
-_DEFAULT_ADAPTER_DIR = _REPO_ROOT / "rl_training_data" / "checkpoints" / "tasks" / "task_20260420_223150" / "best"
+_DEFAULT_ADAPTER_DIR = _REPO_ROOT / "rl_training_data" / "checkpoints" / "tasks" / "task_20260502_123123" / "best"
 
 # ---------------------------------------------------------------------------
 # System prompt — must match train_grpo.py exactly
@@ -60,9 +59,9 @@ Respond with ONLY the preset number (0-5)."""
 _SECTION_SYSTEM_PROMPT = """\
 You are a research exploration strategy selector for a section of an AI course article.
 
-Given a digest excerpt describing current research coverage, \
-source inventory, and gap analysis for a specific article section, select \
-the optimal exploration preset (0-5).
+Given the section guideline (what the section must cover and how it should be written) \
+and a digest excerpt describing current research coverage, source inventory, and gap \
+analysis for that section, select the optimal exploration preset (0-5).
 
 Presets:
 0: No exploration (baseline)
@@ -110,6 +109,78 @@ def _extract_digest_sections(digest: str) -> list[tuple[str, str]]:
             excerpt = excerpt[:gap_idx].strip()
         sections.append((title, excerpt))
     return sections
+
+
+def _extract_guideline_preamble(guideline: str) -> str:
+    """Return the text of ``article_guideline.md`` that precedes the first
+    ``## Section N`` header — the global context block that carries the total
+    word target, variant scope note, audience description, and course anchoring.
+
+    Returns an empty string when no section headers are found.
+    """
+    header_re = re.compile(r'^## Section \d+ ?[-:] ?', re.MULTILINE)
+    m = header_re.search(guideline)
+    if m:
+        return guideline[:m.start()].strip()
+    return ""
+
+
+def _extract_guideline_sections(
+    guideline: str,
+    digest_sections: list[tuple[str, str]],
+) -> list[str]:
+    """Slice article_guideline.md into per-section blocks aligned to digest sections.
+
+    Mirrors train_grpo._extract_guideline_sections.  Uses positional alignment
+    when counts match, falls back to title substring-matching otherwise.
+    Returns a list of the same length as ``digest_sections``; empty string
+    when no match is found for a section.
+    """
+    header_re = re.compile(r'^## Section \d+ ?[-:] ?(.+)$', re.MULTILINE)
+    matches = list(header_re.finditer(guideline))
+    if not matches:
+        return [""] * len(digest_sections)
+
+    guideline_blocks: list[tuple[str, str]] = []
+    for i, m in enumerate(matches):
+        title = m.group(1).strip()
+        start = m.start()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(guideline)
+        guideline_blocks.append((title, guideline[start:end].strip()))
+
+    n_g = len(guideline_blocks)
+    n_d = len(digest_sections)
+    result: list[str] = [""] * n_d
+
+    if n_g == n_d:
+        for i, (_, block) in enumerate(guideline_blocks):
+            result[i] = block
+        return result
+
+    # Fuzzy fallback: three-pass substring matching
+    for d_idx, (d_title, _) in enumerate(digest_sections):
+        rn = d_title.lower().strip()
+        # Pass 1: exact
+        for g_title, block in guideline_blocks:
+            if rn == g_title.lower().strip():
+                result[d_idx] = block
+                break
+        else:
+            # Pass 2: substring containment
+            for g_title, block in guideline_blocks:
+                g = g_title.lower().strip()
+                if rn in g or g in rn:
+                    result[d_idx] = block
+                    break
+            else:
+                # Pass 3: strip "the " prefix and punctuation
+                rn_norm = re.sub(r'^the\s+', '', rn).replace(',', '')
+                for g_title, block in guideline_blocks:
+                    g_norm = re.sub(r'^the\s+', '', g_title.lower().strip()).replace(',', '')
+                    if rn_norm in g_norm or g_norm in rn_norm:
+                        result[d_idx] = block
+                        break
+    return result
 
 
 class ExplorationStrategySelector:
@@ -192,7 +263,7 @@ class ExplorationStrategySelector:
     # Public API
     # ------------------------------------------------------------------
 
-    def predict(self, digest: str) -> int:
+    def predict(self, digest: str, guideline: str = "") -> int:
         """
         Predict the best exploration preset for the given digest.
 
@@ -201,12 +272,15 @@ class ExplorationStrategySelector:
         the full digest as a single context (article-level mode).
 
         Args:
-            digest: Exploitation digest text (content of exploitation_digest.md).
+            digest: Research digest text (content of research_digest.md).
+            guideline: Optional article_guideline.md text.  When provided,
+                each section call receives its matching guideline block,
+                matching the training-time input distribution exactly.
 
         Returns:
             int: Chosen preset ID (0-5).
         """
-        preset, _ = self.predict_article(digest)
+        preset, _ = self.predict_article(digest, guideline=guideline)
         return preset
 
     def predict_with_probs(self, digest: str) -> tuple[int, list[float]]:
@@ -236,38 +310,37 @@ class ExplorationStrategySelector:
     def predict_article(
         self,
         digest: str,
+        guideline: str = "",
     ) -> tuple[int, list[float]]:
         """
-        Predict the best article-level preset via per-section weighted vote
-        with two safety corrections:
-
-          #1  Max-preset floor — the article preset can never be lower than
-              the most demanding section's individual prediction.  This
-              prevents intro-section dominance from burying strong signals
-              from technical sections.
+        Predict the best article-level preset via per-section weighted vote.
 
         Algorithm:
           1. Split the digest into per-section excerpts.
           2. For each section, run ``_predict_section``; weight by word count.
           3. Normalise the summed probability vector → section aggregate.
-          4. chosen = max(section_argmax, section_max_floor)
+          4. chosen = argmax of the aggregate.
 
         Falls back to the full-digest article-level prompt when the digest
         contains no Per-Section headings (e.g. legacy digest format).
 
         Args:
             digest: Full exploitation digest text.
+            guideline: Optional article_guideline.md text.  When provided,
+                each section call receives its matching guideline block,
+                reproducing the training-time input distribution exactly.
 
         Returns:
             tuple[int, list[float]]:
                 (chosen_preset, aggregated_probabilities_over_0_to_5)
         """
-        preset, agg_normalised, _, _meta = self._aggregate(digest, verbose=False)
+        preset, agg_normalised, _, _meta = self._aggregate(digest, guideline=guideline, verbose=False)
         return preset, agg_normalised
 
     def predict_article_verbose(
         self,
         digest: str,
+        guideline: str = "",
     ) -> tuple[int, list[float], list[dict]]:
         """
         Like ``predict_article`` but also returns per-section detail.
@@ -283,28 +356,30 @@ class ExplorationStrategySelector:
                 ``chosen``      — argmax preset for this section alone
                 ``weight``      — word-count weight applied
 
-            The ``chosen_preset`` already incorporates the max-preset floor
-            (#1) and article-level cross-check (#4).  Callers can inspect
+            The ``chosen_preset`` is the argmax of the section-weighted
+            aggregate probability vector.  Callers can inspect
             ``section_details[i]["chosen"]`` to see individual section calls.
         """
-        preset, probs, details, _meta = self._aggregate(digest, verbose=True)
+        preset, probs, details, _meta = self._aggregate(digest, guideline=guideline, verbose=True)
         return preset, probs, details, _meta
 
     def _aggregate(
         self,
         digest: str,
         *,
+        guideline: str = "",
         verbose: bool,
-    ) -> tuple[int, list[float], list[dict]]:
+    ) -> tuple[int, list[float], list[dict], dict]:
         """
         Core aggregation logic shared by predict_article and
         predict_article_verbose.
 
-        Applies one correction after the section-weighted vote:
-          #1  max-preset floor from the most demanding section prediction,
-              but only when the aggregate vote is P0–P2.  When the vote
-              is already ≥ P3 the floor is skipped to avoid outlier sections
-              causing systematic over-exploration.
+        Section probabilities are weighted by word count, normalised, and
+        the argmax of the aggregate is returned directly.
+
+        When ``guideline`` is provided, each section call receives its
+        matching guideline block (positional or fuzzy-matched), reproducing
+        the training-time input format exactly.
         """
         sections = _extract_digest_sections(digest)
 
@@ -313,16 +388,26 @@ class ExplorationStrategySelector:
             preset, probs = self.predict_with_probs(digest)
             return preset, probs, [], {}
 
+        # Per-section guideline blocks (empty strings when no guideline provided)
+        guideline_blocks = (
+            _extract_guideline_sections(guideline, sections)
+            if guideline
+            else [""] * len(sections)
+        )
+
+        # Preamble (global context) extracted once and reused for every section
+        guideline_preamble = _extract_guideline_preamble(guideline) if guideline else ""
+
         # --- Section-level weighted vote ---
         agg = [0.0] * _NUM_PRESETS
         details: list[dict] = []
-        section_max_floor = 0  # #1: highest individual section preset
-        for title, excerpt in sections:
-            sec_chosen, sec_probs = self._predict_section(excerpt)
+        for (title, excerpt), g_block in zip(sections, guideline_blocks):
+            sec_chosen, sec_probs = self._predict_section(
+                excerpt, guideline_block=g_block, guideline_preamble=guideline_preamble
+            )
             weight = max(len(excerpt.split()), 1)
             for i, p in enumerate(sec_probs):
                 agg[i] += p * weight
-            section_max_floor = max(section_max_floor, sec_chosen)
             if verbose:
                 details.append({
                     "title": title,
@@ -334,37 +419,47 @@ class ExplorationStrategySelector:
 
         total = sum(agg)
         agg_normalised = [v / total for v in agg]
-        section_chosen = int(agg_normalised.index(max(agg_normalised)))
+        chosen = int(agg_normalised.index(max(agg_normalised)))
 
-        # --- Final decision: #1 max-preset floor ---
-        # Only apply the floor when the aggregate vote is in the
-        # under-exploration zone (P0–P2).  When the vote is already ≥ P3
-        # the model has committed to 2+ rounds; letting one outlier section
-        # drag it higher causes systematic over-shooting.
-        # Additionally, suppress the floor when the model is already
-        # uncertain (entropy > 1.5 bits): in that state the guidance tells
-        # the client to apply its own judgement, so letting a single
-        # outlier section hijack the aggregate makes things worse.
-        _eps = 1e-12
-        _agg_entropy = -sum(p * math.log2(p + _eps) for p in agg_normalised)
-        if section_chosen <= 2 and _agg_entropy <= 1.5:
-            chosen = max(section_chosen, section_max_floor)
-        else:
-            chosen = section_chosen
-
-        _meta = {
-            "section_vote": section_chosen,
-            "section_floor": section_max_floor,
-        }
+        _meta: dict = {}
         return chosen, agg_normalised, details, _meta
 
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _predict_section(self, excerpt: str) -> tuple[int, list[float]]:
-        """Run predict_with_probs with the section-level system prompt."""
-        input_ids = self._build_input_ids(excerpt, system_prompt=_SECTION_SYSTEM_PROMPT)
+    def _predict_section(
+        self,
+        excerpt: str,
+        guideline_block: str = "",
+        guideline_preamble: str = "",
+    ) -> tuple[int, list[float]]:
+        """Run inference for one section with the section-level system prompt.
+
+        When ``guideline_block`` is provided the user message is a composite
+        of the guideline and the digest excerpt, exactly matching the
+        training-time tokenization in ``train_grpo.tokenize_groups``.
+
+        When ``guideline_preamble`` is also provided it is prepended before
+        the section block so the model sees the global context (total word
+        target, variant scope note, audience) for every section call.
+        """
+        if guideline_block:
+            preamble_prefix = (
+                f"## Global guideline context\n{guideline_preamble}\n\n"
+                if guideline_preamble
+                else ""
+            )
+            user_content = (
+                f"{preamble_prefix}"
+                "## Section guideline\n"
+                f"{guideline_block}\n\n"
+                "## Current research coverage for this section\n"
+                f"{excerpt}"
+            )
+        else:
+            user_content = excerpt
+        input_ids = self._build_input_ids(user_content, system_prompt=_SECTION_SYSTEM_PROMPT)
         with torch.no_grad():
             logits = self._model(input_ids.to(self.device)).logits[0, -1, :]
             probs = F.softmax(logits.float()[self._action_ids_t.to(self.device)], dim=-1)
@@ -399,18 +494,8 @@ def _print_result(
     section_details: list[dict],
     *,
     verbose: bool = True,
-    section_vote: int | None = None,
-    section_floor: int | None = None,
 ) -> None:
-    # Build correction annotation if any correction fired
-    corrections: list[str] = []
-    if section_vote is not None and section_floor is not None:
-        # Floor only fires when vote was ≤ P2 (under-exploration guard)
-        floor_applied = section_vote <= 2 and section_floor > section_vote
-        if floor_applied:
-            corrections.append(f"#1 floor: P{section_vote}→P{section_floor} (section max)")
-    correction_str = "  [" + ", ".join(corrections) + "]" if corrections else ""
-    print(f"\nChosen preset: {preset} — {_PRESET_NAMES[preset]}{correction_str}")
+    print(f"\nChosen preset: {preset} — {_PRESET_NAMES[preset]}")
     if verbose:
         if section_details:
             print(f"\nPer-section breakdown ({len(section_details)} sections):")
@@ -421,17 +506,138 @@ def _print_result(
                 )
                 print(f"  [{d['weight']:4d} words]  {d['title']}")
                 print(f"              {bar}")
-        print("\nAggregated preset probabilities (section vote):")
+        print("\nAggregated preset probabilities:")
         for i, name in _PRESET_NAMES.items():
-            markers = []
-            if section_vote is not None and i == section_vote:
-                markers.append("vote")
-            if section_floor is not None and i == section_floor and section_floor > (section_vote or 0):
-                markers.append("floor")
-            if i == preset:
-                markers.append("chosen")
-            suffix = "  <-- " + ", ".join(markers) if markers else ""
+            suffix = "  <-- chosen" if i == preset else ""
             print(f"  P{i} ({name}): {probs[i]:.4f}{suffix}")
+
+
+# ---------------------------------------------------------------------------
+# Batch mode  (--batch)
+# ---------------------------------------------------------------------------
+
+def _run_batch(
+    selector: ExplorationStrategySelector,
+    batch_file: str,
+    verbose: bool,
+    output_json: str | None,
+) -> None:
+    """Run inference over a batch of digest/guideline pairs without reloading
+    the model.
+
+    ``batch_file`` is either:
+
+    * A **JSON file** — an array of objects, each with:
+        ``"digest"``    (required) path to research_digest.md
+        ``"guideline"`` (optional) path to article_guideline.md
+        ``"label"``     (optional) human-readable name printed in output
+
+    * A **plain-text file** — alternating lines:
+        Line 1: path to digest
+        Line 2: path to guideline (or empty line to skip)
+        (repeat for each article)
+
+    If ``output_json`` is given, results are also written as a JSON array.
+    """
+    import json as _json
+
+    path = Path(batch_file)
+    if not path.exists():
+        sys.exit(f"ERROR: batch file not found: {path}")
+
+    raw = path.read_text(encoding="utf-8").strip()
+
+    # Parse batch entries
+    entries: list[dict] = []
+    if raw.startswith("[") or raw.startswith("{"):
+        data = _json.loads(raw)
+        if isinstance(data, dict):
+            data = [data]
+        for item in data:
+            entries.append({
+                "digest": item.get("digest", ""),
+                "guideline": item.get("guideline", ""),
+                "label": item.get("label", item.get("digest", "")),
+            })
+    else:
+        lines = [ln.rstrip() for ln in raw.splitlines()]
+        i = 0
+        while i < len(lines):
+            digest_line = lines[i].strip()
+            i += 1
+            guideline_line = lines[i].strip() if i < len(lines) else ""
+            if guideline_line and not Path(guideline_line).exists():
+                # treat as another digest line — no guideline was given
+                guideline_line = ""
+                i -= 1  # rewind
+            else:
+                i += 1
+            if digest_line:
+                entries.append({
+                    "digest": digest_line,
+                    "guideline": guideline_line,
+                    "label": digest_line,
+                })
+
+    if not entries:
+        sys.exit("ERROR: batch file contains no entries.")
+
+    print(f"Batch mode — {len(entries)} article(s), model already loaded.\n")
+    results = []
+
+    for idx, entry in enumerate(entries, 1):
+        d_path = Path(entry["digest"])
+        g_path = Path(entry["guideline"]) if entry["guideline"] else None
+        label = entry["label"]
+
+        print(f"[{idx}/{len(entries)}] {label}")
+
+        if not d_path.exists():
+            print(f"  ERROR: digest not found: {d_path}\n")
+            results.append({"label": label, "error": f"digest not found: {d_path}"})
+            continue
+
+        digest = d_path.read_text(encoding="utf-8")
+        guideline = ""
+        if g_path:
+            if g_path.exists():
+                guideline = g_path.read_text(encoding="utf-8")
+            else:
+                print(f"  WARNING: guideline not found: {g_path}, running without it")
+
+        preset, probs, section_details, _meta = selector.predict_article_verbose(
+            digest, guideline=guideline
+        )
+        _print_result(preset, probs, section_details, verbose=verbose)
+        print()
+        print()
+
+        rec: dict = {
+            "label": label,
+            "digest": str(d_path),
+            "guideline": str(g_path) if g_path else "",
+            "preset": preset,
+            "preset_name": _PRESET_NAMES[preset],
+            "probs": probs,
+        }
+        if verbose:
+            rec["sections"] = [
+                {
+                    "title": s["title"],
+                    "chosen": s["chosen"],
+                    "probs": s["probs"],
+                    "weight": s["weight"],
+                }
+                for s in section_details
+            ]
+        results.append(rec)
+
+    print(f"Done. {sum(1 for r in results if 'error' not in r)}/{len(results)} succeeded.")
+
+    if output_json:
+        out = Path(output_json)
+        out.write_text(_json.dumps(results, indent=2), encoding="utf-8")
+        print(f"Results written to {out}")
 
 
 # ---------------------------------------------------------------------------
@@ -456,8 +662,22 @@ def _run_interactive(selector: ExplorationStrategySelector) -> None:
             print(f"  ERROR: file not found: {digest_path}")
             continue
         digest = digest_path.read_text(encoding="utf-8")
-        preset, probs, sections, meta = selector.predict_article_verbose(digest)
-        _print_result(preset, probs, sections, verbose=True, **meta)
+
+        # Optionally accept a guideline path to match training-time input
+        try:
+            g_raw = input("Guideline path (Enter to skip): ").strip()
+        except (EOFError, KeyboardInterrupt):
+            g_raw = ""
+        guideline = ""
+        if g_raw and Path(g_raw).exists():
+            guideline = Path(g_raw).read_text(encoding="utf-8")
+        elif g_raw:
+            print(f"  WARNING: guideline not found: {g_raw}, running without it")
+
+        preset, probs, sections, meta = selector.predict_article_verbose(digest, guideline=guideline)
+        _print_result(preset, probs, sections, verbose=True)
+        print()
+        print()
 
 
 # ---------------------------------------------------------------------------
@@ -505,23 +725,25 @@ def _run_serve(selector: ExplorationStrategySelector, port: int) -> None:
                         self._send_json({"error": f"File not found: {fpath}"}, 400)
                         return
                     digest = fpath.read_text(encoding="utf-8")
+                    g_path = body.get("guideline_path", "")
+                    guideline = Path(g_path).read_text(encoding="utf-8") if g_path and Path(g_path).exists() else ""
                 else:
                     digest = body.get("digest", "")
                     if not digest:
                         self._send_json({"error": "Missing 'digest' field"}, 400)
                         return
+                    guideline = body.get("guideline", "")
 
                 if verbose:
-                    preset, probs, sections, meta = selector.predict_article_verbose(digest)
+                    preset, probs, sections, _meta = selector.predict_article_verbose(digest, guideline=guideline)
                     result = {
                         "preset": preset,
                         "preset_name": _PRESET_NAMES[preset],
                         "probs": probs,
                         "sections": sections,
-                        "corrections": meta,
                     }
                 else:
-                    preset, probs = selector.predict_article(digest)
+                    preset, probs = selector.predict_article(digest, guideline=guideline)
                     result = {
                         "preset": preset,
                         "preset_name": _PRESET_NAMES[preset],
@@ -553,7 +775,13 @@ def main() -> None:
     )
     parser.add_argument(
         "--digest",
-        help="Path to exploitation_digest.md (or '-' for stdin). Required unless --serve or --interactive.",
+        help="Path to research_digest.md (or '-' for stdin). Required unless --serve or --interactive.",
+    )
+    parser.add_argument(
+        "--guideline",
+        default=None,
+        help="Path to article_guideline.md.  When provided, section calls use the "
+             "guideline+digest composite input that matches training exactly.",
     )
     parser.add_argument(
         "--model-dir", default=str(_DEFAULT_MODEL_DIR),
@@ -566,6 +794,22 @@ def main() -> None:
     parser.add_argument(
         "--verbose", action="store_true",
         help="Show per-section breakdown and all preset probabilities.",
+    )
+    parser.add_argument(
+        "--batch",
+        default=None,
+        metavar="BATCH_FILE",
+        help=(
+            "Path to a batch file (JSON array or plain-text pairs) listing "
+            "digest/guideline paths. Model is loaded once for the whole batch. "
+            "See _run_batch docstring for format details."
+        ),
+    )
+    parser.add_argument(
+        "--batch-output",
+        default=None,
+        metavar="OUTPUT_JSON",
+        help="Write batch results to this JSON file (only used with --batch).",
     )
     parser.add_argument(
         "--interactive", action="store_true",
@@ -581,8 +825,8 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    if not args.serve and not args.interactive and not args.digest:
-        parser.error("--digest is required unless --serve or --interactive is used.")
+    if not args.serve and not args.interactive and not args.batch and not args.digest:
+        parser.error("--digest is required unless --serve, --interactive, or --batch is used.")
 
     print("Loading model (this takes ~90s on first run)...")
     selector = ExplorationStrategySelector(
@@ -594,6 +838,8 @@ def main() -> None:
         _run_serve(selector, args.port)
     elif args.interactive:
         _run_interactive(selector)
+    elif args.batch:
+        _run_batch(selector, args.batch, verbose=args.verbose, output_json=args.batch_output)
     else:
         if args.digest == "-":
             digest = sys.stdin.read()
@@ -603,13 +849,20 @@ def main() -> None:
                 sys.exit(f"ERROR: digest file not found: {digest_path}")
             digest = digest_path.read_text(encoding="utf-8")
 
+        guideline = ""
+        if args.guideline:
+            g_path = Path(args.guideline)
+            if not g_path.exists():
+                sys.exit(f"ERROR: guideline file not found: {g_path}")
+            guideline = g_path.read_text(encoding="utf-8")
+
         if args.verbose:
-            preset, probs, section_details, meta = selector.predict_article_verbose(digest)
+            preset, probs, section_details, meta = selector.predict_article_verbose(digest, guideline=guideline)
         else:
-            preset, probs = selector.predict_article(digest)
+            preset, probs = selector.predict_article(digest, guideline=guideline)
             section_details, meta = [], {}
 
-        _print_result(preset, probs, section_details, verbose=args.verbose, **meta)
+        _print_result(preset, probs, section_details, verbose=args.verbose)
 
 
 if __name__ == "__main__":

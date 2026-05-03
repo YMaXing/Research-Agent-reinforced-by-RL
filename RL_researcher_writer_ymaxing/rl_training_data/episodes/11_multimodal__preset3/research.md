@@ -7415,7 +7415,6 @@ known as multimodal prompting.
 AI models produce unexpected outputs, such as outputs that are inaccurate,
 biased, or offensive. Post-processing and human evaluation are essential to
 limit the risk of harm from such outputs.
-```
 
 </details>
 

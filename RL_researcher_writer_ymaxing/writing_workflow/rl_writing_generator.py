@@ -72,8 +72,8 @@ TRAIN_ARTICLES: list[str] = [
 N_PRESETS = 6  # preset IDs 0-5
 MAX_RETRIES = 3
 RETRY_BACKOFF_BASE = 60  # seconds; attempt N waits N * 60s
-DEFAULT_CONCURRENCY = 2  # concurrent episodes; Gemini 2.5 Pro is 150 RPM / 2M TPM — keep low
-DEFAULT_LLM_CONCURRENCY = 1  # concurrent LLM API calls; each call can be 100K-500K tokens
+DEFAULT_CONCURRENCY = 4  # concurrent episodes; Tier 2: 1K RPM / 5M TPM
+DEFAULT_LLM_CONCURRENCY = 2  # concurrent LLM API calls; each call can be 100K-500K tokens
 
 
 # ---------------------------------------------------------------------------

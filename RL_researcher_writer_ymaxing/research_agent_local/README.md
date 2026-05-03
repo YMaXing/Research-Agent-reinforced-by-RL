@@ -13,7 +13,7 @@ This subproject contains:
   GRPO training.
 - The **digest builder** ([`generate_digests.py`](generate_digests.py)) that
   turns an exploitation run into the structured
-  `exploitation_digest.md` consumed by the RL policy at inference time.
+  `research_digest.md` consumed by the RL policy at inference time.
 - The **GRPO + QLoRA trainer** and inference / eval scripts under
   [`training/`](training).
 
@@ -46,7 +46,7 @@ research_agent_local/
 ├── mcp_server/                   # FastMCP server (tools, prompts, resources)
 ├── mcp_client/                   # Interactive REPL + batch runner
 ├── rl_data_generator.py          # Phase 1: research.md per (article × preset)
-├── generate_digests.py           # Build exploitation_digest.md per article
+├── generate_digests.py           # Build research_digest.md per article
 ├── repair_missing_tavily_queries.py  # One-shot maintenance for stale episodes
 ├── training/                     # GRPO + QLoRA trainer, inference, eval
 │   ├── train_grpo.py
@@ -228,7 +228,7 @@ exploitation run. To (re)generate them:
 uv run python generate_digests.py
 ```
 
-Digests land at `../rl_training_data/bases/<article>/exploitation_digest.md`.
+Digests land at `../rl_training_data/bases/<article>/research_digest.md`.
 
 ---
 
@@ -266,7 +266,7 @@ uv run python train_grpo.py                  # full training
 
 # Inference on a single digest
 uv run python infer.py \
-    --digest ../../rl_training_data/bases/02_workflows_vs_agents/exploitation_digest.md \
+    --digest ../../rl_training_data/bases/02_workflows_vs_agents/research_digest.md \
     --verbose
 
 # Section + article accuracy on train and test splits

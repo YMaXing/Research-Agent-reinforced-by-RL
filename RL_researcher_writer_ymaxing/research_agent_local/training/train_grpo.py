@@ -53,14 +53,21 @@ log = logging.getLogger(__name__)
 # Constants
 # ---------------------------------------------------------------------------
 ARTICLES = [
-    "03_context_engineering",
-    "05_workflow_patterns",
-    "08_react_practice",
-    "11_multimodal",
+    "02_workflows_vs_agents__var_minimal",
+    "02_workflows_vs_agents__var_standard", "02_workflows_vs_agents__var_demanding",
+    "03_context_engineering__var_minimal",
+    "03_context_engineering__var_standard", "03_context_engineering__var_demanding",
+    "05_workflow_patterns__var_minimal",
+    "05_workflow_patterns__var_standard", "05_workflow_patterns__var_demanding",
+    "06_tools__var_minimal",
+    "06_tools__var_standard", "06_tools__var_demanding",
+    "08_react_practice__var_minimal",
+    "08_react_practice__var_standard", "08_react_practice__var_demanding",
+    "09_RAG__var_minimal",
+    "09_RAG__var_standard", "09_RAG__var_demanding",
+    "11_multimodal__var_minimal",
+    "11_multimodal__var_standard", "11_multimodal__var_demanding",
 ]
-
-# Hold-out test articles (not used in training):
-# "02_workflows_vs_agents", "06_tools", "09_RAG"
 
 PRESET_ROUNDS = {0: 0, 1: 1, 2: 2, 3: 2, 4: 3, 5: 3}
 NUM_PRESETS = 6
@@ -348,6 +355,20 @@ def _extract_guideline_sections(
     return result
 
 
+def _extract_guideline_preamble(guideline: str) -> str:
+    """Return the text of ``article_guideline.md`` that precedes the first
+    ``## Section N`` header — the global context block that carries the total
+    word target, variant scope note, and audience description.
+
+    Returns an empty string when no section headers are found.
+    """
+    header_re = re.compile(r'^## Section \d+ ?[-:] ?', re.MULTILINE)
+    m = header_re.search(guideline)
+    if m:
+        return guideline[:m.start()].strip()
+    return ""
+
+
 def _article_variant_level(article: str) -> str:
     """Infer the guideline variant level from the article directory name.
 
@@ -371,7 +392,7 @@ def load_groups(sigma_floor: float) -> list[Group]:
     groups: list[Group] = []
 
     for article in ARTICLES:
-        digest_path = _BASES_DIR / article / "exploitation_digest.md"
+        digest_path = _BASES_DIR / article / "research_digest.md"
         digest = digest_path.read_text(encoding="utf-8")
         group = Group(name=article, digest=digest)
 
@@ -456,7 +477,7 @@ def load_section_groups(
     groups: list[Group] = []
 
     for article in ARTICLES:
-        digest_path = _BASES_DIR / article / "exploitation_digest.md"
+        digest_path = _BASES_DIR / article / "research_digest.md"
         digest = digest_path.read_text(encoding="utf-8")
         digest_sections = _extract_digest_sections(digest)
 
@@ -841,7 +862,10 @@ def train(
                     rewards_t = torch.tensor(
                         group.rewards, device=device, dtype=torch.float32
                     )
-                    entropy = -(probs_6 * probs_6.log()).sum().item()
+                    # Use log_softmax for entropy to avoid 0*log(0)=NaN when
+                    # any action probability is numerically zero.
+                    lp6_eval = F.log_softmax(logits.float()[action_ids], dim=-1)
+                    entropy = -(probs_6 * lp6_eval).sum().item()
                     expected_reward = (probs_6 * rewards_t).sum().item()
                     top1 = probs_6.argmax().item()
 

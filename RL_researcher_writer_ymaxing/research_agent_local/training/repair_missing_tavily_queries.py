@@ -55,6 +55,44 @@ from src.config.constants import (  # noqa: E402
     TAVILY_RESULTS_SELECTED_FILE,
 )
 from src.tools.create_research_file_tool import create_research_file_tool  # noqa: E402
+from src.utils.llm_utils import get_tavily_tool  # noqa: E402
+
+
+async def _run_tavily_direct(query: str) -> tuple[dict[int, str], dict[int, str]]:
+    """Fallback: call Tavily directly without LLM structuring.
+
+    Returns (answer_by_source, citations) built from the raw Tavily results,
+    using the 'content' field (or 'raw_content' if present) as the answer.
+    """
+    tavily_tool = get_tavily_tool("tavily")
+    results = await tavily_tool.ainvoke({"query": query})
+    # TavilySearch.ainvoke() may return a list, a dict with a 'results' key,
+    # or a TrackedTavilyTool wrapper result — normalise to a list.
+    if isinstance(results, dict):
+        results = results.get("results", [])
+    if not isinstance(results, list):
+        logger.warning("  Tavily direct fallback: unexpected result type %s", type(results))
+        return {}, {}
+
+    answer_by_source: dict[int, str] = {}
+    citations: dict[int, str] = {}
+    for i, result in enumerate(results, 1):
+        if not isinstance(result, dict):
+            continue
+        url = result.get("url", "")
+        if not url:
+            continue
+        # Prefer 'content' (summary); fall back to truncated raw_content
+        content = (
+            result.get("content")
+            or (result.get("raw_content") or "")[:4000]
+        ).strip()
+        if not content:
+            content = f"(No content extracted for {url})"
+        citations[i] = url
+        answer_by_source[i] = content
+
+    return answer_by_source, citations
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -69,7 +107,7 @@ logger = logging.getLogger("repair_missing_tavily")
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-_TRAINING_DATA_DIR = _THIS_DIR.parent / "rl_training_data"
+_TRAINING_DATA_DIR = _THIS_DIR.parent.parent / "rl_training_data"
 # Both subdirectories that can contain episode-like dirs with .research/ folders
 _SEARCH_ROOTS = [
     _TRAINING_DATA_DIR / "episodes",
@@ -160,8 +198,15 @@ async def repair_query(mq: MissingQuery, dry_run: bool) -> bool:
         logger.info("  [DRY-RUN] Would run Tavily and patch files.")
         return False
 
-    # 1. Run Tavily search
+    # 1. Run Tavily search (with LLM structuring)
     _, answer_by_source, citations = await run_tavily_search(mq.text)
+
+    if not citations:
+        # LLM structuring failed — fall back to raw Tavily results without LLM
+        logger.warning(
+            "  ⚠️  LLM structuring failed. Trying direct Tavily fallback (no LLM)…"
+        )
+        answer_by_source, citations = await _run_tavily_direct(mq.text)
 
     if not citations:
         logger.warning(
@@ -185,7 +230,13 @@ async def repair_query(mq: MissingQuery, dry_run: bool) -> bool:
     logger.info(f"  Appended {len(citations)} source(s) to {tr_path.name} (IDs {next_id}–{next_id + len(citations) - 1}).")
 
     # 3. Append to tavily_results_selected.md (selection step already ran)
-    if sel_path.exists():
+    # Only append if the file exists AND already has source content — an empty
+    # (or zero-source) file means the selection step never ran / was cleared, so
+    # create_research_file_tool is currently falling back to the full
+    # tavily_results.md.  Populating a near-empty selected file would cause the
+    # tool to switch to that tiny file on the next research.md regeneration.
+    sel_has_content = sel_path.exists() and compute_next_source_id(sel_path) > 1
+    if sel_has_content:
         sel_next_id = compute_next_source_id(sel_path)
         append_tavily_results(
             sel_path,
@@ -196,8 +247,13 @@ async def repair_query(mq: MissingQuery, dry_run: bool) -> bool:
             phase=mq.phase,
         )
         logger.info(f"  Appended {len(citations)} source(s) to {sel_path.name} (IDs {sel_next_id}–{sel_next_id + len(citations) - 1}).")
-    else:
+    elif not sel_path.exists():
         logger.warning(f"  {sel_path.name} does not exist — skipping selected-file update.")
+    else:
+        logger.warning(
+            f"  {sel_path.name} exists but has no prior sources (selection step may not have run). "
+            "Skipping selected-file update to avoid breaking create_research_file_tool fallback."
+        )
 
     return True
 

@@ -1,11 +1,11 @@
 """
 Meta-reasoner tool: RL-guided exploration preset prediction.
 
-Uses a GRPO-trained Qwen3-4B + LoRA adapter to analyse the exploitation
+Uses a GRPO-trained Qwen3-4B + LoRA adapter to analyse the research
 digest and produce structured section-level signals that help the client
 LLM (Grok) decide how many rounds of exploration to run and in what order.
 
-If exploitation_digest.md does not yet exist in the research directory, the
+If research_digest.md does not yet exist in the research directory, the
 tool generates it on-the-fly via a 4-stage pipeline (COLLECT → COMPRESS →
 ASSEMBLE → GENERATE) before running RL inference.
 
@@ -769,14 +769,14 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
     """
     Predict the optimal exploration preset for an article using the trained RL model.
 
-    Reads (or auto-generates) exploitation_digest.md from the research directory,
+    Reads (or auto-generates) research_digest.md from the research directory,
     runs per-section inference through the GRPO-trained Qwen3-4B + LoRA model,
     and returns structured signals to help the client LLM decide how many rounds
     of exploration to run and in what order.
 
-    If exploitation_digest.md does not yet exist in the research directory, the tool
+    If research_digest.md does not yet exist in the research directory, the tool
     generates it on-the-fly via a 4-stage pipeline (COLLECT→COMPRESS→ASSEMBLE→GENERATE)
-    using the XAI API and writes it to exploitation_digest.md before running inference.
+    using the XAI API and writes it to research_digest.md before running inference.
     This requires the XAI_API_KEY environment variable to be set and the .research/
     subfolder to contain the exploitation sources collected during step 3.
 
@@ -789,7 +789,7 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
 
     Args:
         research_directory: Path to the research directory. Must contain either:
-          - exploitation_digest.md (pre-existing, used directly), or
+          - research_digest.md (pre-existing, used directly), or
           - article_guideline.md + .research/ subfolder (digest auto-generated).
         grok_only: When True, skip the RL inference stage entirely and call Grok 4.2
           with only the article guideline + coverage gap profile (no section-level
@@ -816,7 +816,7 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
           message              – human-readable summary
     """
     research_path = Path(research_directory)
-    digest_path = research_path / "exploitation_digest.md"
+    digest_path = research_path / "research_digest.md"
 
     if not research_path.exists():
         return {
@@ -827,12 +827,12 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
     digest_generated = False
 
     if not digest_path.exists():
-        logger.info(f"exploitation_digest.md not found — generating on-the-fly for {research_directory}")
+        logger.info(f"research_digest.md not found — generating on-the-fly for {research_directory}")
         if settings.xai_api_key is None:
             return {
                 "status": "error",
                 "message": (
-                    "exploitation_digest.md not found and XAI_API_KEY is not configured. "
+                    "research_digest.md not found and XAI_API_KEY is not configured. "
                     "Either run the exploitation phase first or provide an XAI API key."
                 ),
             }

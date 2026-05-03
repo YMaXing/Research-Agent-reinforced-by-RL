@@ -69,6 +69,7 @@ async def _select_sources_for_phase(
     parsed_phase: Dict[int, Dict[str, str]],
     prompt_template: str,
     phase_label: str,
+    is_exploitation: bool = False,
 ) -> List[int]:
     """Run source selection for a single phase subset."""
     if not parsed_phase:
@@ -99,6 +100,13 @@ async def _select_sources_for_phase(
         return sorted(parsed_phase.keys())
 
     if response.selection_type == "none":
+        if is_exploitation:
+            logger.warning(
+                f"⚠️ LLM returned 'none' for {phase_label} sources — this violates the "
+                f"70-90%% expected acceptance rate. Falling back to accepting all "
+                f"{len(parsed_phase)} exploitation sources."
+            )
+            return sorted(parsed_phase.keys())
         logger.info(f"No {phase_label} sources accepted.")
         return []
     if response.selection_type == "all":
@@ -141,6 +149,7 @@ async def select_sources(article_guidelines: str, md_results: str) -> List[int]:
         exploitation,
         PROMPT_AUTO_SOURCE_SELECTION_EXPLOITATION,
         "exploitation",
+        is_exploitation=True,
     )
     if exploration:
         exploration_ids = await _select_sources_for_phase(

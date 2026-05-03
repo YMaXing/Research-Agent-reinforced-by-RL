@@ -1,0 +1,107 @@
+[
+  {
+    "label": "02_workflows_vs_agents__minimal",
+    "digest": "../../rl_training_data/bases/02_workflows_vs_agents__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/02_workflows_vs_agents__var_minimal/article_guideline.md"
+  },
+  {
+    "label": "02_workflows_vs_agents__standard",
+    "digest": "../../rl_training_data/bases/02_workflows_vs_agents__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/02_workflows_vs_agents__var_standard/article_guideline.md"
+  },
+  {
+    "label": "02_workflows_vs_agents__demanding",
+    "digest": "../../rl_training_data/bases/02_workflows_vs_agents__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/02_workflows_vs_agents__var_demanding/article_guideline.md"
+  },
+  {
+    "label": "03_context_engineering__minimal",
+    "digest": "../../rl_training_data/bases/03_context_engineering__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/03_context_engineering__var_minimal/article_guideline.md"
+  },
+  {
+    "label": "03_context_engineering__standard",
+    "digest": "../../rl_training_data/bases/03_context_engineering__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/03_context_engineering__var_standard/article_guideline.md"
+  },
+  {
+    "label": "03_context_engineering__demanding",
+    "digest": "../../rl_training_data/bases/03_context_engineering__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/03_context_engineering__var_demanding/article_guideline.md"
+  },
+  {
+    "label": "05_workflow_patterns__minimal",
+    "digest": "../../rl_training_data/bases/05_workflow_patterns__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/05_workflow_patterns__var_minimal/article_guideline.md"
+  },
+  {
+    "label": "05_workflow_patterns__standard",
+    "digest": "../../rl_training_data/bases/05_workflow_patterns__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/05_workflow_patterns__var_standard/article_guideline.md"
+  },
+  {
+    "label": "05_workflow_patterns__demanding",
+    "digest": "../../rl_training_data/bases/05_workflow_patterns__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/05_workflow_patterns__var_demanding/article_guideline.md"
+  },
+  {
+    "label": "06_tools__minimal",
+    "digest": "../../rl_training_data/bases/06_tools__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/06_tools__var_minimal/article_guideline.md"
+  },
+  {
+    "label": "06_tools__standard",
+    "digest": "../../rl_training_data/bases/06_tools__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/06_tools__var_standard/article_guideline.md"
+  },
+  {
+    "label": "06_tools__demanding",
+    "digest": "../../rl_training_data/bases/06_tools__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/06_tools__var_demanding/article_guideline.md"
+  },
+  {
+    "label": "08_react_practice__minimal",
+    "digest": "../../rl_training_data/bases/08_react_practice__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/08_react_practice__var_minimal/article_guideline.md"
+  },
+  {
+    "label": "08_react_practice__standard",
+    "digest": "../../rl_training_data/bases/08_react_practice__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/08_react_practice__var_standard/article_guideline.md"
+  },
+  {
+    "label": "08_react_practice__demanding",
+    "digest": "../../rl_training_data/bases/08_react_practice__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/08_react_practice__var_demanding/article_guideline.md"
+  },
+  {
+    "label": "09_RAG__minimal",
+    "digest": "../../rl_training_data/bases/09_RAG__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/09_RAG__var_minimal/article_guideline.md"
+  },
+  {
+    "label": "09_RAG__standard",
+    "digest": "../../rl_training_data/bases/09_RAG__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/09_RAG__var_standard/article_guideline.md"
+  },
+  {
+    "label": "09_RAG__demanding",
+    "digest": "../../rl_training_data/bases/09_RAG__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/09_RAG__var_demanding/article_guideline.md"
+  },
+  {
+    "label": "11_multimodal__minimal",
+    "digest": "../../rl_training_data/bases/11_multimodal__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/11_multimodal__var_minimal/article_guideline.md"
+  },
+  {
+    "label": "11_multimodal__standard",
+    "digest": "../../rl_training_data/bases/11_multimodal__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/11_multimodal__var_standard/article_guideline.md"
+  },
+  {
+    "label": "11_multimodal__demanding",
+    "digest": "../../rl_training_data/bases/11_multimodal__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/11_multimodal__var_demanding/article_guideline.md"
+  }
+]

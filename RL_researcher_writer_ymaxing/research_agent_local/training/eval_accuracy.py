@@ -150,7 +150,7 @@ def _match_reasoning_to_digest(
 
 def compute_oracle_section_presets(article: str) -> list[tuple[str, int, list[float]]]:
     """Return [(section_title, oracle_preset, rewards[0..5])] for each section."""
-    digest = (_BASES_DIR / article / "exploitation_digest.md").read_text(encoding="utf-8")
+    digest = (_BASES_DIR / article / "research_digest.md").read_text(encoding="utf-8")
     digest_sections = _extract_digest_sections(digest)
     results = []
     for sec_idx, (sec_title, _) in enumerate(digest_sections):
@@ -223,7 +223,7 @@ def evaluate(
 
         for article in articles:
             print(f"\n--- {article} ---")
-            digest = (_BASES_DIR / article / "exploitation_digest.md").read_text(encoding="utf-8")
+            digest = (_BASES_DIR / article / "research_digest.md").read_text(encoding="utf-8")
 
             # Oracle per section
             oracle_sections = compute_oracle_section_presets(article)

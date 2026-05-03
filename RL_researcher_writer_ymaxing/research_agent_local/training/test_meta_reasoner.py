@@ -3,7 +3,7 @@ Meta-reasoner integration test.
 
 For each test article (held-out from RL training), this script:
 
-  1. Reads the exploitation_digest.md that already exists in rl_training_data/bases/
+  1. Reads the research_digest.md that already exists in rl_training_data/bases/
   2. Runs the Qwen3-4B LoRA model inference via ExplorationStrategySelector
   3. Prints the full structured RL signal JSON (exactly what Grok would receive)
   4. Computes the oracle preset from the offline reward data
@@ -170,7 +170,7 @@ def _guidance(preset: int, confidence: float, entropy: float, floor_applied: boo
 
 def run_article(article: str, selector) -> dict:
     """Run RL inference on one article and return the full result dict."""
-    digest_path = _BASES_DIR / article / "exploitation_digest.md"
+    digest_path = _BASES_DIR / article / "research_digest.md"
     if not digest_path.exists():
         return {"article": article, "status": "error", "message": f"Digest not found: {digest_path}"}
 

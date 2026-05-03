@@ -1,0 +1,161 @@
+# Article Guideline Brief — Template
+# ====================================
+# Copy this file to inputs/briefs/{article_name}.yaml and fill in all fields.
+# Article name convention: NN_topic_slug  e.g. 12_fine_tuning
+#
+# Required fields are marked with (REQUIRED).
+# Optional fields are marked with (OPTIONAL) and may be omitted entirely.
+#
+# Once the brief is ready, run:
+#   uv run python generate_article_guideline.py --article 12_fine_tuning
+# Then review the generated inputs/evals/dataset/data/12_fine_tuning/article_guideline.md
+# and iterate with --force if needed.
+#
+# After generating the guideline you still need to provide:
+#   - article_ground_truth.md  (reference article written from the guideline)
+#   - research.md              (research notes used when writing the GT article)
+# before the RL pipeline (Phase 1 onward) can run for this article.
+
+# ---------------------------------------------------------------------------
+# Lesson identity
+# ---------------------------------------------------------------------------
+lesson_number: 12 # (REQUIRED) integer — used for course ordering
+title: "Fine-Tuning LLMs: From Concept to Production" # (REQUIRED)
+
+# ---------------------------------------------------------------------------
+# Core content planning
+# ---------------------------------------------------------------------------
+topic_summary: | # (REQUIRED) multi-line description of what the lesson covers
+  We will explore fine-tuning as a targeted complement to prompting and RAG.
+  We'll cover when fine-tuning is the right architectural choice (versus in-context
+  learning or retrieval), how LoRA/QLoRA work mechanically, and walk through a
+  hands-on fine-tuning run with Hugging Face PEFT on a real domain dataset.
+  We will close with merging, serving, and evaluating the fine-tuned adapter.
+
+why_valuable: | # (REQUIRED)
+  Fine-tuning gives AI Engineers precise, low-latency control over model behavior
+  for domain-specific tasks — reducing inference cost and improving reliability
+  compared to long few-shot prompts or RAG look-ups alone.
+
+# ---------------------------------------------------------------------------
+# Format
+# ---------------------------------------------------------------------------
+target_length_words: 4000 # (REQUIRED) total article word target (excl. titles/refs)
+theory_practice_ratio: "50% theory - 50% practice" # (REQUIRED) e.g. "60% theory - 40% practice"
+
+# ---------------------------------------------------------------------------
+# Course context
+# ---------------------------------------------------------------------------
+lesson_scope:
+  > # (REQUIRED) one sentence: lesson position + what came before/after
+  Lesson 12 of module 2; follows agent memory (lesson 10) and multi-modal agents
+  (lesson 11); precedes model evaluation and RLHF (lessons 13–14).
+
+audience: > # (REQUIRED) who reads this lesson
+  AI Engineers familiar with LLM APIs, context engineering (lesson 03),
+  RAG (lesson 09), and basic agent patterns (lessons 05–08).
+
+concepts_from_previous_lessons: # (REQUIRED) list — what the reader already knows
+  - LLMs, transformer architecture basics (lesson 01)
+  - Context engineering and prompt design (lesson 03)
+  - Retrieval-Augmented Generation (lesson 09)
+  - Agent memory: short-term and long-term stores (lesson 10)
+  - LLM workflows and routing (lesson 05)
+
+concepts_for_future_lessons: # (REQUIRED) list — what we will cover later
+  - RLHF and preference optimization (lesson 13)
+  - Model evaluation at scale and red-teaming (lesson 14)
+  - LLM observability and production monitoring (lesson 16)
+  - Deployment optimization: quantization, distillation (lesson 17)
+
+# ---------------------------------------------------------------------------
+# Article structure
+# ---------------------------------------------------------------------------
+# Each section needs: title, target_words, key_points (list of strings).
+# Optional per-section: code_examples (list of strings).
+sections: # (REQUIRED) list of section objects
+  - title: "Introduction: When Fine-Tuning Is the Right Tool"
+    target_words: 500
+    key_points:
+      - Decision framework: prompting vs. RAG vs. fine-tuning — cost, latency, domain specificity
+      - When each approach wins; identify the "fine-tuning zone" (narrow domain, high call volume, fixed behavior)
+      - Brief history: instruction tuning, chat fine-tuning, RLHF as a spectrum of adaptation methods
+      - Set expectations for the lesson (theory + hands-on QLoRA example)
+
+  - title: "Understanding Fine-Tuning Fundamentals"
+    target_words: 800
+    key_points:
+      - Supervised fine-tuning (SFT) pipeline: dataset → tokenization → training loop → checkpoint
+      - Instruction format: system / user / assistant chat template; why format matters for generalization
+      - Catastrophic forgetting: cause, severity, mitigation (regularization, replay buffers, LoRA)
+      - Full fine-tuning vs. parameter-efficient methods — memory footprint comparison table
+      - PEFT taxonomy: LoRA, adapters, prefix tuning, prompt tuning — when each applies
+
+  - title: "LoRA and QLoRA in Depth"
+    target_words: 700
+    key_points:
+      - Low-rank decomposition intuition — replacing ΔW with A × B; why rank r << d
+      - Rank r and alpha hyperparameters: practical rules of thumb for choosing them
+      - QLoRA mechanics: NF4 4-bit quantization of the frozen base + LoRA in BF16
+      - Memory footprint walkthrough for a 7B model: full fine-tune vs. LoRA vs. QLoRA
+      - Trade-offs: training speed, final quality, merge complexity
+    code_examples:
+      - "LoraConfig instantiation showing r, lora_alpha, target_modules, lora_dropout"
+
+  - title: "Hands-On Fine-Tuning with PEFT"
+    target_words: 900
+    key_points:
+      - Dataset preparation: converting raw examples to the instruction chat format
+      - Tokenization pipeline with padding/truncation strategy for SFT
+      - LoraConfig + get_peft_model wrapper; inspecting trainable parameter count
+      - SFTTrainer setup: TrainingArguments, eval_strategy, gradient checkpointing
+      - Monitoring: loss curves, overfitting signals, when to stop
+    code_examples:
+      - "Full QLoRA fine-tuning script for Gemma-2-2B on a classification dataset using PEFT + SFTTrainer"
+
+  - title: "Merging, Serving, and Evaluating the Adapter"
+    target_words: 650
+    key_points:
+      - Merging LoRA weights into the base: merge_and_unload() — when to merge vs. keep separate
+      - Serving options: vLLM with LoRA, HF Text Generation Inference, Ollama
+      - Evaluation strategy: task-specific metrics vs. MMLU regression; avoid evaluation contamination
+      - A/B testing fine-tuned vs. baseline on production traffic slice
+      - Common failure modes: over-fitting to format, style drift, benchmark regression
+
+  - title: "Conclusion: Fine-Tuning as a Production AI Engineering Skill"
+    target_words: 350
+    key_points:
+      - Summarize the decision framework and the LoRA/QLoRA trade-off
+      - Position fine-tuning within the broader context engineering toolkit (lesson 03 callback)
+      - Bridge to RLHF/preference optimization in the next module
+      - Practical checklist: dataset quality gates, evaluation before merge, production A/B protocol
+
+# ---------------------------------------------------------------------------
+# Sources
+# ---------------------------------------------------------------------------
+golden_sources: # (REQUIRED) list of {title, url} — primary references used in writing
+  - title: "LoRA: Low-Rank Adaptation of Large Language Models"
+    url: "https://arxiv.org/abs/2106.09685"
+  - title: "QLoRA: Efficient Finetuning of Quantized LLMs"
+    url: "https://arxiv.org/abs/2305.14314"
+  - title: "Hugging Face PEFT documentation"
+    url: "https://huggingface.co/docs/peft"
+  - title: "TRL SFTTrainer documentation"
+    url: "https://huggingface.co/docs/trl/sft_trainer"
+
+other_sources: # (OPTIONAL) list of {title, url} — supporting references
+  - title: "Axolotl fine-tuning framework"
+    url: "https://github.com/axolotl-org/axolotl"
+  - title: "LLaMA Factory unified fine-tuning framework"
+    url: "https://github.com/hiyouga/LLaMA-Factory"
+
+# ---------------------------------------------------------------------------
+# Optional extras
+# ---------------------------------------------------------------------------
+code_examples: # (OPTIONAL) top-level list of code examples for the full article
+  - "End-to-end QLoRA pipeline: dataset → LoraConfig → SFTTrainer → merge → vLLM serve"
+
+additional_notes: | # (OPTIONAL) free-form notes for the LLM synthesizer
+  Emphasise that QLoRA is the practical default for AI Engineers without A100/H100 access.
+  Include a concrete memory comparison table: 7B full FT ~112 GB vs QLoRA ~10 GB.
+  The code example in Section 4 should use Gemma-2-2B (consistent with other course examples).

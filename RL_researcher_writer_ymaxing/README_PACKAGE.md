@@ -21,7 +21,7 @@ For project context, the three-phase pipeline, and credits, see the top-level
 | Folder | Purpose |
 |---|---|
 | `models/Qwen3-4B/` | Local copy of the Qwen3-4B base weights used by the GRPO trainer and the inference wrapper. Falls back to `Qwen/Qwen3-4B` on the Hugging Face Hub if missing. |
-| `rl_training_data/` | Offline RL artifacts: `bases/<article>/exploitation_digest.md`, `episodes/<article>__preset<N>/{research.md,article.md,scores.json}`, and `checkpoints/tasks/task_<timestamp>/{best,epoch_*,final}/`. |
+| `rl_training_data/` | Offline RL artifacts: `bases/<article>/research_digest.md`, `episodes/<article>__preset<N>/{research.md,article.md,scores.json}`, and `checkpoints/tasks/task_<timestamp>/{best,epoch_*,final}/`. |
 | `utils/` | Tiny shared helpers (`utils.env.load`, `utils.pretty_print.wrapped` / `function_call`) consumed by the notebooks and CLI scripts. |
 | `evak_offline_metrics.ipynb`, `eval_offline_dataset.ipynb` | Notebooks for inspecting the offline reward dataset and metric calibration. |
 

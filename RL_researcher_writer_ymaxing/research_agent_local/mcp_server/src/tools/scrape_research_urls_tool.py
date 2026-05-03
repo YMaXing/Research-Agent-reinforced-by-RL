@@ -21,6 +21,12 @@ from ..config.constants import (
 )
 from ..utils.file_utils import read_file_safe, validate_research_folder
 from ..utils.llm_utils import get_chat_model
+from ..utils.scraping_cache_utils import (
+    copy_cached_files,
+    find_cached_github_files,
+    find_cached_web_files,
+    find_cached_youtube_files,
+)
 from ..config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -414,23 +420,50 @@ async def scrape_research_urls_tool(research_directory: str, concurrency_limit: 
         except (json.JSONDecodeError, OSError) as _e:
             logger.warning(f"Could not read {URL_PHASES_FILE}: {_e}. Phase tagging will be skipped.")
 
-    # Process and save URLs
+    # --- Sibling-episode cache lookup ---
+    # For each URL type, check if a sibling episode (same article, different preset)
+    # already has a scraped file.  Copy matches instead of re-scraping.
+    web_arxiv_urls = other_urls + arxiv_urls
+    cached_web, uncached_web_arxiv = find_cached_web_files(web_arxiv_urls, research_path)
+    cached_gh, uncached_github = find_cached_github_files(github_urls, research_path)
+    cached_yt, uncached_youtube = find_cached_youtube_files(youtube_urls, research_path)
+
+    other_urls_set = set(other_urls)
+    arxiv_urls_set = set(arxiv_urls)
+    uncached_other = [u for u in uncached_web_arxiv if u in other_urls_set]
+    uncached_arxiv = [u for u in uncached_web_arxiv if u in arxiv_urls_set]
+
+    total_cache_hits = 0
+    for cached_map in (cached_web, cached_gh, cached_yt):
+        copied = copy_cached_files(cached_map, output_dir, url_to_phase=url_to_phase or None)
+        total_cache_hits += len(copied)
+    if total_cache_hits:
+        logger.info(
+            f"Reused {total_cache_hits} already-scraped file(s) from sibling episodes "
+            f"(skipped redundant scraping)."
+        )
+
+    # Process and save only the URLs that were not found in any sibling episode.
     saved_files, successful_scrapes, report_parts = await process_and_save_urls(
-        other_urls, arxiv_urls, github_urls, youtube_urls, article_guidelines, output_dir, concurrency_limit,
+        uncached_other, uncached_arxiv, uncached_github, uncached_youtube,
+        article_guidelines, output_dir, concurrency_limit,
         url_to_phase=url_to_phase or None,
     )
 
-    # Final Report
+    # Include cache hits in the totals reported back to the agent.
     total_urls_processed = len(youtube_urls) + len(other_urls) + len(github_urls) + len(arxiv_urls)
+    total_successful = successful_scrapes + total_cache_hits
     base_message = (
         f"Processed {total_urls_processed} new URLs "
-        f"from {URLS_TO_SCRAPE_FROM_RESEARCH_FILE} in '{research_directory}'."
+        f"from {URLS_TO_SCRAPE_FROM_RESEARCH_FILE} in '{research_directory}' "
+        f"({total_cache_hits} reused from sibling episodes, {successful_scrapes} freshly scraped)."
     )
 
     return {
-        "status": "success" if len(report_parts) > 0 else "warning",
-        "urls_processed": successful_scrapes,
+        "status": "success" if (len(report_parts) > 0 or total_cache_hits > 0) else "warning",
+        "urls_processed": total_successful,
         "urls_total": total_urls_processed,
+        "cache_hits": total_cache_hits,
         "original_urls_count": original_count,
         "deduplicated_count": deduplicated_count,
         "files_saved": len(saved_files),

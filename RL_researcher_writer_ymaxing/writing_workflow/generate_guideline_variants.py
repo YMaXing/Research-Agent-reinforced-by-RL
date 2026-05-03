@@ -21,7 +21,7 @@ What is created for each (article, level) pair:
 
   BASES_DIR/{article}__var_{level}/   [only for articles with an existing base]
       <deep copy of BASES_DIR/{article}> with article_guideline.md overwritten
-      exploitation_digest.md           ← copy from original (same research → same digest)
+      research_digest.md               ← copy from original (same research → same digest)
 
 The exploitation base copy preserves all step-sentinels (_step1.done, etc.) so that
 Phase 1 (rl_data_generator.py) skips the expensive exploitation re-run and proceeds
@@ -220,7 +220,11 @@ Create a DEMANDING version of the original guideline following these rules exact
 
 2. **Per-section word targets**: For every numbered item in the Lesson Outline, add an
    estimated word count target in parentheses (e.g., "~450 words").  Distribute the
-   total so sections sum to approximately 4,000–4,500 words overall.
+   total so sections sum to approximately {word_target_range} overall.
+   IMPORTANT: every `**Section length:**` field inside each `## Section N - Title` block
+   MUST also be updated to match the new larger targets — do NOT copy the section-length
+   values from the original guideline.  The demanding variant must have a strictly larger
+   total word count than the standard variant ({std_total_words} words).
 
 3. **Additional Requirements block**: Append a new "## Additional Requirements" section
    AFTER the last `## Section N - Title` block (not before it) containing exactly these
@@ -381,10 +385,26 @@ async def process_article(
                 )
                 gen_source = f"LLM-generated ({_GENERATION_MODEL.split(':')[-1]})"
             elif level == "demanding":
+                # Compute word-count target: exceed the standard variant's section total
+                import re as _re
+
+                std_path = variant_guideline_path.parent.parent / f"{article}__var_standard" / "article_guideline.md"
+                std_total = 0
+                if std_path.exists():
+                    _lengths = [
+                        int(length_str.replace(",", ""))
+                        for length_str in _re.findall(r"[Ss]ection\s+length[:\*\s]+~?(\d[\d,]*)", std_path.read_text(encoding="utf-8"))
+                    ]
+                    std_total = sum(_lengths)
+                lo = max(4000, std_total + 500)
+                hi = max(4500, std_total + 1000)
+                word_target_range = f"{lo:,}\u2013{hi:,} words"
                 sys_prompt = _DEMANDING_SYSTEM
                 user_prompt = _DEMANDING_USER.format(
                     original_guideline=original_guideline,
                     ground_truth=ground_truth,
+                    word_target_range=word_target_range,
+                    std_total_words=f"{std_total:,}",
                 )
                 gen_source = f"LLM-generated ({_GENERATION_MODEL.split(':')[-1]})"
             else:

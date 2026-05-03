@@ -372,6 +372,7 @@ self-promotion blocks, social-media share buttons, "related articles" sections, 
 - Do NOT filter or remove sections based on topic relevance. Your job is boilerplate removal, not content curation.
 - Do NOT summarize, condense, paraphrase, or rewrite any kept content. Return it verbatim.
 - When in doubt, **keep** the content. Err on the side of preserving too much rather than too little.
+- If the entire input consists of boilerplate with no substantive article content at all, return exactly the string `<!-- NO_CONTENT -->` and nothing else. Do NOT explain or describe what you removed.
 
 The article guidelines below are provided only so you can confirm the page is on-topic (i.e., not a completely unrelated page). Do NOT use them to decide which sections of the article to keep or remove.
 
