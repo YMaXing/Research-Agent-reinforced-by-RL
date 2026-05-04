@@ -74,6 +74,11 @@ Presets:
 Respond with ONLY the preset number (0-5)."""
 
 _NUM_PRESETS = 6
+# Minimum confidence (top − second probability) used in the confidence-gated
+# soft vote.  Prevents total erasure of a section's signal when the model is
+# nearly uniform over its top two choices, while still down-weighting genuine
+# uncertainty relative to decisive sections.
+_MIN_CONFIDENCE = 0.05
 _PRESET_NAMES = {
     0: "baseline (no exploration)",
     1: "single_balanced (1 round, balanced)",
@@ -123,6 +128,41 @@ def _extract_guideline_preamble(guideline: str) -> str:
     if m:
         return guideline[:m.start()].strip()
     return ""
+
+
+def _extract_compact_preamble(preamble: str) -> str:
+    """Distil the key variant-signal fields from the full guideline preamble.
+
+    Returns a compact 2–3 line string containing only:
+    - Expected length (total word target)
+    - Theory / practice ratio
+    - Scope constraint sentence (minimal variant only; absent for standard/demanding)
+
+    This replaces the full preamble blob (~2000-4400 tokens) in the model input
+    so the section guideline is not buried in preamble noise.  Mirrors the
+    identical function in ``train_grpo.py``.
+    """
+    lines: list[str] = []
+
+    # Expected Length of the Lesson → word count line
+    m = re.search(r'### Expected Length[^\n]*\n+(.*?)(?=\n###|\n##|\Z)', preamble, re.DOTALL)
+    if m:
+        first_line = next((l for l in m.group(1).split('\n') if l.strip()), '')
+        lines.append(f"Expected length: {first_line}")
+
+    # Theory / Practice Ratio → ratio line
+    m = re.search(r'### Theory[^\n]*\n+(.*?)(?=\n###|\n##|\Z)', preamble, re.DOTALL)
+    if m:
+        first_line = next((l for l in m.group(1).split('\n') if l.strip()), '')
+        lines.append(f"Theory / practice: {first_line}")
+
+    # Scope constraint (minimal only): search full preamble for the distinctive
+    # phrase — appears in different subsections depending on the article.
+    m = re.search(r'surface-level treatment[^.!?]*[.!?]', preamble, re.IGNORECASE)
+    if m:
+        lines.append(f"Scope: {m.group(0).strip()}")
+
+    return '\n'.join(lines)
 
 
 def _extract_guideline_sections(
@@ -354,7 +394,10 @@ class ExplorationStrategySelector:
                 ``excerpt``     — section text fed to the model
                 ``probs``       — probability vector (list[float] length 6)
                 ``chosen``      — argmax preset for this section alone
-                ``weight``      — word-count weight applied
+                ``word_count``  — raw word count of the section excerpt
+                ``margin``      — top_prob − second_prob (raw confidence signal)
+                ``confidence``  — max(margin, _MIN_CONFIDENCE)
+                ``weight``      — effective_weight = word_count × confidence
 
             The ``chosen_preset`` is the argmax of the section-weighted
             aggregate probability vector.  Callers can inspect
@@ -395,26 +438,47 @@ class ExplorationStrategySelector:
             else [""] * len(sections)
         )
 
-        # Preamble (global context) extracted once and reused for every section
-        guideline_preamble = _extract_guideline_preamble(guideline) if guideline else ""
+        # Compact article context (word target + theory/practice ratio + scope
+        # constraint) extracted once and reused for every section.  The full
+        # preamble is distilled to ~3 lines to avoid burying the section
+        # guideline in thousands of preamble tokens (lost-in-the-middle risk).
+        guideline_preamble = (
+            _extract_compact_preamble(_extract_guideline_preamble(guideline))
+            if guideline
+            else ""
+        )
 
-        # --- Section-level weighted vote ---
+        # --- Section-level confidence-gated soft vote ---
+        # Each section's contribution is scaled by:
+        #   effective_weight = word_count × confidence
+        # where confidence = max(top_prob − second_prob, _MIN_CONFIDENCE).
+        # This preserves the full soft probability distribution (no hard-vote
+        # information loss) while down-weighting sections where the model is
+        # nearly uniform over its top two choices.  Decisive sections (large
+        # margin) dominate; near-tied sections contribute proportionally less.
         agg = [0.0] * _NUM_PRESETS
         details: list[dict] = []
         for (title, excerpt), g_block in zip(sections, guideline_blocks):
             sec_chosen, sec_probs = self._predict_section(
                 excerpt, guideline_block=g_block, guideline_preamble=guideline_preamble
             )
-            weight = max(len(excerpt.split()), 1)
+            word_count = max(len(excerpt.split()), 1)
+            sorted_probs = sorted(sec_probs, reverse=True)
+            margin = sorted_probs[0] - sorted_probs[1]
+            confidence = max(margin, _MIN_CONFIDENCE)
+            effective_weight = word_count * confidence
             for i, p in enumerate(sec_probs):
-                agg[i] += p * weight
+                agg[i] += p * effective_weight
             if verbose:
                 details.append({
                     "title": title,
                     "excerpt": excerpt,
                     "probs": sec_probs,
                     "chosen": sec_chosen,
-                    "weight": weight,
+                    "word_count": word_count,
+                    "margin": margin,
+                    "confidence": confidence,
+                    "weight": effective_weight,
                 })
 
         total = sum(agg)
@@ -440,20 +504,24 @@ class ExplorationStrategySelector:
         of the guideline and the digest excerpt, exactly matching the
         training-time tokenization in ``train_grpo.tokenize_groups``.
 
-        When ``guideline_preamble`` is also provided it is prepended before
-        the section block so the model sees the global context (total word
-        target, variant scope note, audience) for every section call.
+        Input ordering (lost-in-the-middle mitigation):
+          1. Section guideline  — task definition; front-loaded for strong attention
+          2. Article context    — compact variant signal (~3 lines) in the middle
+          3. Research coverage  — evidence; last, immediately before generation
+
+        ``guideline_preamble`` must already be the *compact* form produced by
+        ``_extract_compact_preamble`` (done once in ``_aggregate``).
         """
         if guideline_block:
-            preamble_prefix = (
-                f"## Global guideline context\n{guideline_preamble}\n\n"
+            article_ctx = (
+                f"## Article context\n{guideline_preamble}\n\n"
                 if guideline_preamble
                 else ""
             )
             user_content = (
-                f"{preamble_prefix}"
                 "## Section guideline\n"
                 f"{guideline_block}\n\n"
+                f"{article_ctx}"
                 "## Current research coverage for this section\n"
                 f"{excerpt}"
             )
@@ -504,7 +572,9 @@ def _print_result(
                     f"P{i}={d['probs'][i]:.3f}{'*' if i == d['chosen'] else ' '}"
                     for i in range(_NUM_PRESETS)
                 )
-                print(f"  [{d['weight']:4d} words]  {d['title']}")
+                word_c = d.get('word_count', int(d.get('weight', 0)))
+                conf_s = f"  m={d['margin']:.2f}" if 'margin' in d else ''
+                print(f"  [{word_c:4d}w{conf_s}]  {d['title']}")
                 print(f"              {bar}")
         print("\nAggregated preset probabilities:")
         for i, name in _PRESET_NAMES.items():
@@ -626,6 +696,9 @@ def _run_batch(
                     "title": s["title"],
                     "chosen": s["chosen"],
                     "probs": s["probs"],
+                    "word_count": s.get("word_count", 0),
+                    "margin": s.get("margin", 0.0),
+                    "confidence": s.get("confidence", 0.0),
                     "weight": s["weight"],
                 }
                 for s in section_details

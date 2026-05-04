@@ -1,0 +1,2711 @@
+[
+  {
+    "label": "02_workflows_vs_agents__minimal",
+    "digest": "../../rl_training_data/bases/02_workflows_vs_agents__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/02_workflows_vs_agents__var_minimal/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      2.0440751799536443e-30,
+      1.8779539791599313e-13,
+      0.1987071208038575,
+      0.8000257824146431,
+      0.001267082627676293,
+      1.4153635276238359e-08
+    ],
+    "sections": [
+      {
+        "title": "Introduction: The Critical Decision Every AI Engineer Faces",
+        "chosen": 2,
+        "probs": [
+          9.952287374287728e-30,
+          9.173837904608018e-13,
+          0.970687747001648,
+          0.02931223064661026,
+          1.346895627143935e-30,
+          9.952287374287728e-30
+        ],
+        "word_count": 136,
+        "margin": 0.9413755163550377,
+        "confidence": 0.9413755163550377,
+        "weight": 128.02707022428513
+      },
+      {
+        "title": "Understanding the Spectrum: From Workflows to Agents",
+        "chosen": 3,
+        "probs": [
+          7.468920814851275e-43,
+          9.165791500701421e-35,
+          2.978326396525934e-16,
+          1.0,
+          8.365505526405104e-19,
+          2.5012408935310276e-21
+        ],
+        "word_count": 110,
+        "margin": 0.9999999999999997,
+        "confidence": 0.9999999999999997,
+        "weight": 109.99999999999996
+      },
+      {
+        "title": "Choosing Your Path",
+        "chosen": 3,
+        "probs": [
+          6.726092498912689e-41,
+          2.9756967944000553e-35,
+          4.310105490831864e-26,
+          1.0,
+          1.9316553489259102e-25,
+          2.7470757000178413e-21
+        ],
+        "word_count": 101,
+        "margin": 1.0,
+        "confidence": 1.0,
+        "weight": 101.0
+      },
+      {
+        "title": "Exploring Common Patterns",
+        "chosen": 3,
+        "probs": [
+          3.484182896503368e-38,
+          2.6260434742718215e-35,
+          8.282971771330036e-20,
+          1.0,
+          5.905304023556823e-10,
+          3.1533408135335675e-26
+        ],
+        "word_count": 93,
+        "margin": 0.9999999994094696,
+        "confidence": 0.9999999994094696,
+        "weight": 92.99999994508067
+      },
+      {
+        "title": "Zooming In on Our Favorite Examples",
+        "chosen": 3,
+        "probs": [
+          4.190092519049849e-32,
+          5.274548303782705e-34,
+          4.0708887842008385e-16,
+          0.9999998807907104,
+          1.5368153665720298e-26,
+          8.764247638737288e-08
+        ],
+        "word_count": 101,
+        "margin": 0.9999997931482341,
+        "confidence": 0.9999997931482341,
+        "weight": 100.99997910797164
+      },
+      {
+        "title": "Conclusion: The Challenges of Every AI Engineer",
+        "chosen": 3,
+        "probs": [
+          2.095137105690914e-38,
+          1.796351265553789e-22,
+          1.8561655511198184e-25,
+          0.9914224743843079,
+          0.008577484637498856,
+          9.520312614396416e-24
+        ],
+        "word_count": 94,
+        "margin": 0.982844989746809,
+        "confidence": 0.982844989746809,
+        "weight": 92.38742903620005
+      }
+    ]
+  },
+  {
+    "label": "02_workflows_vs_agents__standard",
+    "digest": "../../rl_training_data/bases/02_workflows_vs_agents__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/02_workflows_vs_agents__var_standard/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      2.861631642263756e-20,
+      0.20396528010585832,
+      0.006159217887513025,
+      0.7780966229335899,
+      6.224060342456491e-11,
+      0.011778879010798056
+    ],
+    "sections": [
+      {
+        "title": "Introduction: The Critical Decision Every AI Engineer Faces",
+        "chosen": 1,
+        "probs": [
+          5.327075582559254e-30,
+          0.970687747001648,
+          0.02931223064661026,
+          3.543259274507561e-27,
+          5.727145699714722e-29,
+          3.661241348686937e-30
+        ],
+        "word_count": 136,
+        "margin": 0.9413755163550377,
+        "confidence": 0.9413755163550377,
+        "weight": 128.02707022428513
+      },
+      {
+        "title": "Understanding the Spectrum: From Workflows to Agents",
+        "chosen": 3,
+        "probs": [
+          1.5820659662227185e-42,
+          3.026169040040954e-27,
+          5.564245721995e-16,
+          1.0,
+          4.953439061890934e-23,
+          5.602796449011294e-09
+        ],
+        "word_count": 110,
+        "margin": 0.9999999943972036,
+        "confidence": 0.9999999943972036,
+        "weight": 109.9999993836924
+      },
+      {
+        "title": "Choosing Your Path",
+        "chosen": 3,
+        "probs": [
+          8.525514564980869e-36,
+          1.6572140516790924e-31,
+          1.902299480234194e-36,
+          1.0,
+          2.6102790464535398e-23,
+          1.482821336855421e-17
+        ],
+        "word_count": 101,
+        "margin": 1.0,
+        "confidence": 1.0,
+        "weight": 101.0
+      },
+      {
+        "title": "Exploring Common Patterns",
+        "chosen": 3,
+        "probs": [
+          4.930507434668361e-37,
+          1.6988156196007387e-31,
+          1.3242078874403651e-12,
+          0.9046505093574524,
+          4.714507118031008e-10,
+          0.09534946084022522
+        ],
+        "word_count": 93,
+        "margin": 0.8093010485172272,
+        "confidence": 0.8093010485172272,
+        "weight": 75.26499751210213
+      },
+      {
+        "title": "Zooming In on Our Favorite Examples",
+        "chosen": 3,
+        "probs": [
+          1.7263146939117169e-19,
+          4.8430754696816276e-30,
+          6.178533900894992e-21,
+          0.9999971389770508,
+          3.263238439439904e-32,
+          2.9023121896898374e-06
+        ],
+        "word_count": 101,
+        "margin": 0.9999942366648611,
+        "confidence": 0.9999942366648611,
+        "weight": 100.99941790315097
+      },
+      {
+        "title": "Conclusion: The Challenges of Every AI Engineer",
+        "chosen": 3,
+        "probs": [
+          2.6078164421084846e-42,
+          3.912599194057913e-20,
+          3.6866289662416465e-26,
+          1.0,
+          2.5946095966178362e-11,
+          3.650256623683927e-27
+        ],
+        "word_count": 94,
+        "margin": 0.9999999999740539,
+        "confidence": 0.9999999999740539,
+        "weight": 93.99999999756106
+      }
+    ]
+  },
+  {
+    "label": "02_workflows_vs_agents__demanding",
+    "digest": "../../rl_training_data/bases/02_workflows_vs_agents__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/02_workflows_vs_agents__var_demanding/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      3.0171549384192165e-12,
+      2.4777646391703398e-24,
+      1.743516496872319e-14,
+      0.5409693224129305,
+      1.4345330022630792e-18,
+      0.4590306775840349
+    ],
+    "sections": [
+      {
+        "title": "Introduction: The Critical Decision Every AI Engineer Faces",
+        "chosen": 3,
+        "probs": [
+          2.1132637421060342e-38,
+          2.2427951730373347e-32,
+          1.9421125050902077e-15,
+          1.0,
+          6.5799798225301634e-18,
+          5.004353121229029e-33
+        ],
+        "word_count": 136,
+        "margin": 0.9999999999999981,
+        "confidence": 0.9999999999999981,
+        "weight": 135.99999999999974
+      },
+      {
+        "title": "Understanding the Spectrum: From Workflows to Agents",
+        "chosen": 5,
+        "probs": [
+          9.92242496985006e-27,
+          4.747996537755904e-32,
+          2.2966381848681645e-17,
+          1.855391076333035e-07,
+          3.508321194548918e-31,
+          0.9999997615814209
+        ],
+        "word_count": 110,
+        "margin": 0.9999995760423133,
+        "confidence": 0.9999995760423133,
+        "weight": 109.99995336465446
+      },
+      {
+        "title": "Choosing Your Path",
+        "chosen": 3,
+        "probs": [
+          1.4140721234047199e-21,
+          1.316487017689293e-29,
+          5.0390194383806923e-26,
+          0.9999991655349731,
+          1.8778679770629053e-31,
+          8.315280410897685e-07
+        ],
+        "word_count": 101,
+        "margin": 0.999998334006932,
+        "confidence": 0.999998334006932,
+        "weight": 100.99983173470014
+      },
+      {
+        "title": "Exploring Common Patterns",
+        "chosen": 5,
+        "probs": [
+          3.15807305451852e-26,
+          6.793036225981432e-37,
+          3.1981626527610094e-20,
+          0.02931223064661026,
+          9.399923445983192e-20,
+          0.970687747001648
+        ],
+        "word_count": 93,
+        "margin": 0.9413755163550377,
+        "confidence": 0.9413755163550377,
+        "weight": 87.5479230210185
+      },
+      {
+        "title": "Zooming In on Our Favorite Examples",
+        "chosen": 3,
+        "probs": [
+          2.2515453023144794e-19,
+          1.4872921605216423e-23,
+          1.0603575851565739e-13,
+          1.0,
+          1.902299480234194e-36,
+          5.211412412720051e-10
+        ],
+        "word_count": 101,
+        "margin": 0.9999999994788588,
+        "confidence": 0.9999999994788588,
+        "weight": 100.99999994736473
+      },
+      {
+        "title": "Conclusion: The Challenges of Every AI Engineer",
+        "chosen": 5,
+        "probs": [
+          2.020683967374204e-11,
+          6.138788360608947e-25,
+          2.541420255845724e-32,
+          3.3057005200372102e-37,
+          2.7512137408936596e-24,
+          1.0
+        ],
+        "word_count": 94,
+        "margin": 0.9999999999797932,
+        "confidence": 0.9999999999797932,
+        "weight": 93.99999999810056
+      }
+    ]
+  },
+  {
+    "label": "03_context_engineering__minimal",
+    "digest": "../../rl_training_data/bases/03_context_engineering__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/03_context_engineering__var_minimal/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      1.4372239389259192e-26,
+      4.6965628171980926e-05,
+      0.10903862410476244,
+      0.8908607204894721,
+      5.323950018696245e-05,
+      4.5027740660007715e-07
+    ],
+    "sections": [
+      {
+        "title": "Introduction: When prompt engineering breaks",
+        "chosen": 3,
+        "probs": [
+          9.102834824254012e-42,
+          8.250782358794159e-33,
+          1.6636795181040418e-18,
+          1.0,
+          1.9810088085995409e-13,
+          3.224186784223093e-08
+        ],
+        "word_count": 175,
+        "margin": 0.9999999677581322,
+        "confidence": 0.9999999677581322,
+        "weight": 174.99999435767313
+      },
+      {
+        "title": "From prompt to context engineering",
+        "chosen": 3,
+        "probs": [
+          1.1535014534713812e-36,
+          2.2871157240446223e-30,
+          9.053711946815923e-11,
+          0.9997387528419495,
+          0.00026119028916582465,
+          1.1580017393875804e-23
+        ],
+        "word_count": 134,
+        "margin": 0.9994775625527836,
+        "confidence": 0.9994775625527836,
+        "weight": 133.929993382073
+      },
+      {
+        "title": "Understanding context engineering",
+        "chosen": 3,
+        "probs": [
+          7.468920814851275e-43,
+          7.04665266583478e-30,
+          2.882350662401084e-13,
+          1.0,
+          2.2447771723041465e-13,
+          7.194133289090132e-09
+        ],
+        "word_count": 122,
+        "margin": 0.9999999928058667,
+        "confidence": 0.9999999928058667,
+        "weight": 121.99999912231574
+      },
+      {
+        "title": "What makes up the context",
+        "chosen": 3,
+        "probs": [
+          0.0,
+          7.489840634992874e-27,
+          9.892599488961878e-21,
+          1.0,
+          2.2515453023144794e-19,
+          1.0956650428909173e-16
+        ],
+        "word_count": 106,
+        "margin": 0.9999999999999999,
+        "confidence": 0.9999999999999999,
+        "weight": 105.99999999999999
+      },
+      {
+        "title": "Production implementation challenges",
+        "chosen": 2,
+        "probs": [
+          1.623976118716707e-33,
+          0.0004305570910219103,
+          0.9995694756507874,
+          2.8985096519013006e-25,
+          5.89755077748789e-29,
+          3.054056488905948e-15
+        ],
+        "word_count": 99,
+        "margin": 0.9991389185597654,
+        "confidence": 0.9991389185597654,
+        "weight": 98.91475293741678
+      },
+      {
+        "title": "Key strategies for context optimization",
+        "chosen": 3,
+        "probs": [
+          7.375679536073873e-38,
+          2.71167380728538e-16,
+          4.539786823443137e-05,
+          0.9999545812606812,
+          1.1850111169753583e-27,
+          8.756113380780238e-27
+        ],
+        "word_count": 104,
+        "margin": 0.9999091833924467,
+        "confidence": 0.9999091833924467,
+        "weight": 103.99055507281446
+      },
+      {
+        "title": "Here is an example",
+        "chosen": 3,
+        "probs": [
+          8.636202435633848e-41,
+          4.363307937182981e-09,
+          2.853812902680643e-14,
+          0.9999645948410034,
+          3.535625000949949e-05,
+          8.120053016301783e-22
+        ],
+        "word_count": 83,
+        "margin": 0.9999292385909939,
+        "confidence": 0.9999292385909939,
+        "weight": 82.9941268030525
+      },
+      {
+        "title": "Conclusion - Wrap-up: Connecting context engineering to AI engineering",
+        "chosen": 3,
+        "probs": [
+          1.5519256890627472e-25,
+          4.0266410472201016e-36,
+          2.5609538170101587e-06,
+          0.9998692274093628,
+          0.00012339366367086768,
+          4.784491920872824e-06
+        ],
+        "word_count": 84,
+        "margin": 0.9997458337456919,
+        "confidence": 0.9997458337456919,
+        "weight": 83.97865003463812
+      }
+    ]
+  },
+  {
+    "label": "03_context_engineering__standard",
+    "digest": "../../rl_training_data/bases/03_context_engineering__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/03_context_engineering__var_standard/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      1.5221188541737233e-25,
+      1.2080482668784113e-11,
+      0.34804788824655325,
+      0.4663514791779582,
+      9.060774240084793e-06,
+      0.18559157178916796
+    ],
+    "sections": [
+      {
+        "title": "Introduction: When prompt engineering breaks",
+        "chosen": 3,
+        "probs": [
+          1.0573008183042051e-32,
+          1.330945328318251e-34,
+          6.1782382484494895e-21,
+          0.7772418260574341,
+          7.470199489034712e-05,
+          0.22268351912498474
+        ],
+        "word_count": 175,
+        "margin": 0.5545583069324493,
+        "confidence": 0.5545583069324493,
+        "weight": 97.04770371317863
+      },
+      {
+        "title": "From prompt to context engineering",
+        "chosen": 5,
+        "probs": [
+          3.421512625283369e-38,
+          1.544039477432206e-30,
+          2.9538978075084425e-15,
+          0.017986195161938667,
+          8.165719691533013e-07,
+          0.982012927532196
+        ],
+        "word_count": 134,
+        "margin": 0.9640267323702574,
+        "confidence": 0.9640267323702574,
+        "weight": 129.1795821376145
+      },
+      {
+        "title": "Understanding context engineering",
+        "chosen": 3,
+        "probs": [
+          1.0580126532962083e-24,
+          2.8280090111856626e-32,
+          3.827294628236178e-33,
+          0.9820137619972229,
+          3.337145892956528e-09,
+          0.01798621006309986
+        ],
+        "word_count": 122,
+        "margin": 0.964027551934123,
+        "confidence": 0.964027551934123,
+        "weight": 117.61136133596301
+      },
+      {
+        "title": "What makes up the context",
+        "chosen": 2,
+        "probs": [
+          1.3361198688536769e-39,
+          2.347036938620419e-20,
+          0.989012598991394,
+          2.021435726055551e-13,
+          4.988061732547067e-07,
+          0.010986938141286373
+        ],
+        "word_count": 106,
+        "margin": 0.9780256608501077,
+        "confidence": 0.9780256608501077,
+        "weight": 103.67072005011141
+      },
+      {
+        "title": "Production implementation challenges",
+        "chosen": 2,
+        "probs": [
+          4.526194039769159e-43,
+          2.2671443715427397e-12,
+          1.0,
+          4.111452609709696e-15,
+          3.047135305662739e-20,
+          3.4632670068626013e-26
+        ],
+        "word_count": 99,
+        "margin": 0.9999999999977328,
+        "confidence": 0.9999999999977328,
+        "weight": 98.99999999977555
+      },
+      {
+        "title": "Key strategies for context optimization",
+        "chosen": 3,
+        "probs": [
+          8.809393116735145e-39,
+          3.371906406291508e-35,
+          2.3874431324522758e-32,
+          1.0,
+          4.030726386134531e-17,
+          6.305116853596367e-16
+        ],
+        "word_count": 104,
+        "margin": 0.9999999999999993,
+        "confidence": 0.9999999999999993,
+        "weight": 103.99999999999993
+      },
+      {
+        "title": "Here is an example",
+        "chosen": 2,
+        "probs": [
+          3.0144031915323302e-40,
+          1.1628233792526643e-10,
+          1.0,
+          3.6283439801114165e-15,
+          2.940077695190446e-11,
+          9.727604926320145e-29
+        ],
+        "word_count": 83,
+        "margin": 0.9999999998837177,
+        "confidence": 0.9999999998837177,
+        "weight": 82.99999999034857
+      },
+      {
+        "title": "Conclusion - Wrap-up: Connecting context engineering to AI engineering",
+        "chosen": 3,
+        "probs": [
+          2.713449122946218e-38,
+          1.2245088917487504e-30,
+          1.7832240892246e-11,
+          0.999987006187439,
+          2.136179042667168e-18,
+          1.3007128472963814e-05
+        ],
+        "word_count": 84,
+        "margin": 0.999973999058966,
+        "confidence": 0.999973999058966,
+        "weight": 83.99781592095314
+      }
+    ]
+  },
+  {
+    "label": "03_context_engineering__demanding",
+    "digest": "../../rl_training_data/bases/03_context_engineering__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/03_context_engineering__var_demanding/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      9.611262681212559e-15,
+      1.5101930874300677e-25,
+      0.1162060359678963,
+      0.48437504616757737,
+      1.4243803965632968e-13,
+      0.3994189178643743
+    ],
+    "sections": [
+      {
+        "title": "Introduction: When prompt engineering breaks",
+        "chosen": 3,
+        "probs": [
+          4.416325663883611e-33,
+          1.4815121963806348e-36,
+          1.3738785357297722e-31,
+          1.0,
+          4.212776989999074e-22,
+          4.8473686869998645e-11
+        ],
+        "word_count": 175,
+        "margin": 0.9999999999515263,
+        "confidence": 0.9999999999515263,
+        "weight": 174.99999999151711
+      },
+      {
+        "title": "From prompt to context engineering",
+        "chosen": 3,
+        "probs": [
+          3.532618135623296e-24,
+          5.170971237660619e-36,
+          1.0594184713772114e-32,
+          0.9999971389770508,
+          2.067362419967754e-15,
+          2.9023121896898374e-06
+        ],
+        "word_count": 134,
+        "margin": 0.9999942366648611,
+        "confidence": 0.9999942366648611,
+        "weight": 133.9992277130914
+      },
+      {
+        "title": "Understanding context engineering",
+        "chosen": 5,
+        "probs": [
+          1.1020784851999512e-15,
+          6.52773124890157e-31,
+          3.4254386600961326e-33,
+          0.004070138093084097,
+          1.2552201646995804e-20,
+          0.9959298968315125
+        ],
+        "word_count": 122,
+        "margin": 0.9918597587384284,
+        "confidence": 0.9918597587384284,
+        "weight": 121.00689056608826
+      },
+      {
+        "title": "What makes up the context",
+        "chosen": 5,
+        "probs": [
+          2.9873061861984753e-22,
+          2.879805994260296e-32,
+          2.908501221957089e-31,
+          2.646573848963385e-09,
+          3.328603530794073e-30,
+          1.0
+        ],
+        "word_count": 106,
+        "margin": 0.9999999973534262,
+        "confidence": 0.9999999973534262,
+        "weight": 105.99999971946318
+      },
+      {
+        "title": "Production implementation challenges",
+        "chosen": 2,
+        "probs": [
+          1.7816569147729613e-30,
+          1.2995698496915475e-24,
+          0.9999910593032837,
+          7.360275041355668e-13,
+          2.7869804215284037e-29,
+          8.939696272136644e-06
+        ],
+        "word_count": 99,
+        "margin": 0.9999821196070116,
+        "confidence": 0.9999821196070116,
+        "weight": 98.99822984109414
+      },
+      {
+        "title": "Key strategies for context optimization",
+        "chosen": 5,
+        "probs": [
+          2.1491077972015863e-30,
+          3.6612626633382536e-33,
+          1.2906395473087794e-31,
+          2.3174752027302318e-35,
+          6.036401529078488e-33,
+          1.0
+        ],
+        "word_count": 104,
+        "margin": 1.0,
+        "confidence": 1.0,
+        "weight": 104.0
+      },
+      {
+        "title": "Here is an example",
+        "chosen": 3,
+        "probs": [
+          5.893190351723175e-29,
+          3.0317435614866706e-33,
+          6.089419850783626e-32,
+          0.9988304972648621,
+          1.4620665789166765e-12,
+          0.0011695101857185364
+        ],
+        "word_count": 83,
+        "margin": 0.9976609870791435,
+        "confidence": 0.9976609870791435,
+        "weight": 82.80586192756891
+      },
+      {
+        "title": "Conclusion - Wrap-up: Connecting context engineering to AI engineering",
+        "chosen": 3,
+        "probs": [
+          2.6757648831018943e-13,
+          2.2163283299813955e-32,
+          3.916726934934664e-25,
+          0.6791787147521973,
+          7.390321905983645e-24,
+          0.3208213150501251
+        ],
+        "word_count": 84,
+        "margin": 0.35835739970207214,
+        "confidence": 0.35835739970207214,
+        "weight": 30.10202157497406
+      }
+    ]
+  },
+  {
+    "label": "05_workflow_patterns__minimal",
+    "digest": "../../rl_training_data/bases/05_workflow_patterns__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/05_workflow_patterns__var_minimal/article_guideline.md",
+    "preset": 0,
+    "preset_name": "baseline (no exploration)",
+    "probs": [
+      0.7275047846989443,
+      0.015429668823040607,
+      1.6628044049958914e-06,
+      0.14246903896318194,
+      5.608632059836863e-08,
+      0.11459478862410749
+    ],
+    "sections": [
+      {
+        "title": "The Challenge with Complex Single LLM Calls",
+        "chosen": 0,
+        "probs": [
+          0.562176525592804,
+          0.43782350420951843,
+          3.106565168107829e-23,
+          9.745856866350798e-18,
+          2.386216672414438e-37,
+          4.2589740947015366e-29
+        ],
+        "word_count": 183,
+        "margin": 0.12435302138328552,
+        "confidence": 0.12435302138328552,
+        "weight": 22.75660291314125
+      },
+      {
+        "title": "The Power of Modularity: Why Chain LLM Calls?",
+        "chosen": 0,
+        "probs": [
+          0.9999971389770508,
+          2.9023121896898374e-06,
+          7.553071799339792e-23,
+          2.463558724347027e-18,
+          1.1089455657127305e-40,
+          1.3875644402982038e-30
+        ],
+        "word_count": 134,
+        "margin": 0.9999942366648611,
+        "confidence": 0.9999942366648611,
+        "weight": 133.9992277130914
+      },
+      {
+        "title": "Building a Sequential Workflow: FAQ Generation Pipeline",
+        "chosen": 0,
+        "probs": [
+          0.9999898672103882,
+          3.3315107617060136e-11,
+          1.012999018712435e-05,
+          1.4393503267158142e-20,
+          6.726092498912689e-41,
+          1.3875542840270127e-30
+        ],
+        "word_count": 106,
+        "margin": 0.9999797372202011,
+        "confidence": 0.9999797372202011,
+        "weight": 105.99785214534131
+      },
+      {
+        "title": "Optimizing Sequential Workflows With Parallel Processing",
+        "chosen": 0,
+        "probs": [
+          1.0,
+          1.2790354712854946e-13,
+          1.2790354712854946e-13,
+          4.452237194930424e-18,
+          5.238193789492599e-41,
+          4.244603898090227e-37
+        ],
+        "word_count": 123,
+        "margin": 0.9999999999998721,
+        "confidence": 0.9999999999998721,
+        "weight": 122.99999999998427
+      },
+      {
+        "title": "Introducing Dynamic Behavior: Routing and Conditional Logic",
+        "chosen": 3,
+        "probs": [
+          1.0946973378095241e-35,
+          6.138786388456684e-25,
+          4.8473669522763885e-11,
+          0.9999996423721313,
+          3.9278620533877984e-07,
+          3.697743175426863e-32
+        ],
+        "word_count": 92,
+        "margin": 0.999999249585926,
+        "confidence": 0.999999249585926,
+        "weight": 91.99993096190519
+      },
+      {
+        "title": "Building a Basic Routing Workflow",
+        "chosen": 5,
+        "probs": [
+          3.047135305662739e-20,
+          7.37601472666654e-38,
+          6.998167936122733e-37,
+          9.922427280965994e-27,
+          1.1032560420787263e-09,
+          1.0
+        ],
+        "word_count": 74,
+        "margin": 0.999999998896744,
+        "confidence": 0.999999998896744,
+        "weight": 73.99999991835905
+      },
+      {
+        "title": "Orchestrator-Worker Pattern: Dynamic Task Decomposition",
+        "chosen": 0,
+        "probs": [
+          1.0,
+          8.016056438507662e-17,
+          3.098819161342914e-12,
+          9.229294145851766e-28,
+          1.3032075718220799e-43,
+          8.870427308098834e-32
+        ],
+        "word_count": 94,
+        "margin": 0.9999999999969011,
+        "confidence": 0.9999999999969011,
+        "weight": 93.9999999997087
+      }
+    ]
+  },
+  {
+    "label": "05_workflow_patterns__standard",
+    "digest": "../../rl_training_data/bases/05_workflow_patterns__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/05_workflow_patterns__var_standard/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      2.797698533996636e-21,
+      1.0136356972574835e-13,
+      0.22705368074309934,
+      0.4330293281639247,
+      2.0342573453536868e-10,
+      0.3399169908894489
+    ],
+    "sections": [
+      {
+        "title": "The Challenge with Complex Single LLM Calls",
+        "chosen": 2,
+        "probs": [
+          2.6078164421084846e-42,
+          4.4642721051986467e-13,
+          1.0,
+          1.1338535080101893e-22,
+          4.1524201205333025e-14,
+          1.6969991431351627e-16
+        ],
+        "word_count": 183,
+        "margin": 0.9999999999995536,
+        "confidence": 0.9999999999995536,
+        "weight": 182.99999999991832
+      },
+      {
+        "title": "The Power of Modularity: Why Chain LLM Calls?",
+        "chosen": 3,
+        "probs": [
+          1.500790655291879e-41,
+          3.771801388398725e-30,
+          1.522107856181041e-25,
+          1.0,
+          8.201252627599619e-21,
+          1.5229980832032197e-08
+        ],
+        "word_count": 134,
+        "margin": 0.9999999847700192,
+        "confidence": 0.9999999847700192,
+        "weight": 133.99999795918256
+      },
+      {
+        "title": "Building a Sequential Workflow: FAQ Generation Pipeline",
+        "chosen": 5,
+        "probs": [
+          2.3174752027302318e-35,
+          1.4239014085543764e-40,
+          5.749522023787777e-19,
+          2.1151310700892382e-19,
+          1.806446255483361e-16,
+          1.0
+        ],
+        "word_count": 106,
+        "margin": 0.9999999999999998,
+        "confidence": 0.9999999999999998,
+        "weight": 105.99999999999997
+      },
+      {
+        "title": "Optimizing Sequential Workflows With Parallel Processing",
+        "chosen": 3,
+        "probs": [
+          3.531272130098539e-43,
+          4.117645945875174e-18,
+          4.658885768355414e-15,
+          1.0,
+          6.691586174056852e-10,
+          5.6536282111349735e-27
+        ],
+        "word_count": 123,
+        "margin": 0.9999999993308414,
+        "confidence": 0.9999999993308414,
+        "weight": 122.99999991769349
+      },
+      {
+        "title": "Introducing Dynamic Behavior: Routing and Conditional Logic",
+        "chosen": 3,
+        "probs": [
+          4.526194039769159e-43,
+          4.446922937783551e-26,
+          3.8798332909040614e-24,
+          1.0,
+          1.169845886345186e-22,
+          4.5990555808117506e-10
+        ],
+        "word_count": 92,
+        "margin": 0.9999999995400944,
+        "confidence": 0.9999999995400944,
+        "weight": 91.99999995768869
+      },
+      {
+        "title": "Building a Basic Routing Workflow",
+        "chosen": 5,
+        "probs": [
+          3.047135305662739e-20,
+          7.37601472666654e-38,
+          6.998167936122733e-37,
+          9.922427280965994e-27,
+          1.1032560420787263e-09,
+          1.0
+        ],
+        "word_count": 74,
+        "margin": 0.999999998896744,
+        "confidence": 0.999999998896744,
+        "weight": 73.99999991835905
+      },
+      {
+        "title": "Orchestrator-Worker Pattern: Dynamic Task Decomposition",
+        "chosen": 5,
+        "probs": [
+          6.725251719834095e-41,
+          1.896346983356702e-30,
+          4.212257225325842e-22,
+          0.00012339458044152707,
+          1.4348609377479865e-14,
+          0.9998766183853149
+        ],
+        "word_count": 94,
+        "margin": 0.9997532238048734,
+        "confidence": 0.9997532238048734,
+        "weight": 93.9768030376581
+      }
+    ]
+  },
+  {
+    "label": "05_workflow_patterns__demanding",
+    "digest": "../../rl_training_data/bases/05_workflow_patterns__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/05_workflow_patterns__var_demanding/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      2.7987769979423052e-21,
+      4.265306519949796e-16,
+      0.22659353079443753,
+      0.5499645051291681,
+      3.9112682025083725e-07,
+      0.22344157294957365
+    ],
+    "sections": [
+      {
+        "title": "The Challenge with Complex Single LLM Calls",
+        "chosen": 2,
+        "probs": [
+          2.8209924394878563e-34,
+          1.880846612015304e-15,
+          0.9991958737373352,
+          0.0008040859247557819,
+          1.9522705030506312e-27,
+          3.6505444001022624e-08
+        ],
+        "word_count": 183,
+        "margin": 0.9983917878125794,
+        "confidence": 0.9983917878125794,
+        "weight": 182.70569716970203
+      },
+      {
+        "title": "The Power of Modularity: Why Chain LLM Calls?",
+        "chosen": 3,
+        "probs": [
+          5.6706471965041024e-33,
+          6.639645387713597e-36,
+          7.287689874312109e-14,
+          0.999995231628418,
+          2.818125829433458e-20,
+          4.7850949158601e-06
+        ],
+        "word_count": 134,
+        "margin": 0.9999904465335021,
+        "confidence": 0.9999904465335021,
+        "weight": 133.99871983548928
+      },
+      {
+        "title": "Building a Sequential Workflow: FAQ Generation Pipeline",
+        "chosen": 5,
+        "probs": [
+          2.618149189631665e-29,
+          4.526194039769159e-43,
+          3.2300481530658433e-22,
+          1.2577028778379115e-21,
+          4.974311602001936e-21,
+          1.0
+        ],
+        "word_count": 106,
+        "margin": 1.0,
+        "confidence": 1.0,
+        "weight": 106.0
+      },
+      {
+        "title": "Optimizing Sequential Workflows With Parallel Processing",
+        "chosen": 3,
+        "probs": [
+          2.508775856794095e-27,
+          4.4469112281294894e-26,
+          2.5109924806088202e-08,
+          0.9999973773956299,
+          2.5612819172238233e-06,
+          4.504763305458474e-31
+        ],
+        "word_count": 123,
+        "margin": 0.9999948161137127,
+        "confidence": 0.9999948161137127,
+        "weight": 122.99936238198666
+      },
+      {
+        "title": "Introducing Dynamic Behavior: Routing and Conditional Logic",
+        "chosen": 3,
+        "probs": [
+          7.374514216270941e-38,
+          1.5720010085749898e-30,
+          1.63559877860998e-26,
+          0.9997965693473816,
+          1.2012980399930123e-13,
+          0.00020342697098385543
+        ],
+        "word_count": 92,
+        "margin": 0.9995931423763977,
+        "confidence": 0.9995931423763977,
+        "weight": 91.96256909862859
+      },
+      {
+        "title": "Building a Basic Routing Workflow",
+        "chosen": 5,
+        "probs": [
+          3.047135305662739e-20,
+          7.37601472666654e-38,
+          6.998167936122733e-37,
+          9.922427280965994e-27,
+          1.1032560420787263e-09,
+          1.0
+        ],
+        "word_count": 74,
+        "margin": 0.999999998896744,
+        "confidence": 0.999999998896744,
+        "weight": 73.99999991835905
+      },
+      {
+        "title": "Orchestrator-Worker Pattern: Dynamic Task Decomposition",
+        "chosen": 3,
+        "probs": [
+          9.854154449263851e-34,
+          1.240455049987419e-35,
+          1.84099845715941e-33,
+          1.0,
+          2.2447771723041465e-13,
+          1.1176086437054457e-14
+        ],
+        "word_count": 94,
+        "margin": 0.9999999999997755,
+        "confidence": 0.9999999999997755,
+        "weight": 93.9999999999789
+      }
+    ]
+  },
+  {
+    "label": "06_tools__minimal",
+    "digest": "../../rl_training_data/bases/06_tools__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/06_tools__var_minimal/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      4.6764093890621227e-07,
+      1.6650272925267008e-31,
+      6.825249443083042e-13,
+      0.7325253247726023,
+      0.09856019318756574,
+      0.1689140143982105
+    ],
+    "sections": [
+      {
+        "title": "Introduction",
+        "chosen": 3,
+        "probs": [
+          5.3431678600520994e-39,
+          2.0451645895225563e-35,
+          2.3195229636950566e-16,
+          1.0,
+          3.7491597304496456e-18,
+          3.158090871777918e-29
+        ],
+        "word_count": 158,
+        "margin": 0.9999999999999998,
+        "confidence": 0.9999999999999998,
+        "weight": 157.99999999999997
+      },
+      {
+        "title": "Understanding why agents need tools",
+        "chosen": 3,
+        "probs": [
+          9.643142738069269e-22,
+          4.9699151984976125e-40,
+          5.206811789961654e-29,
+          1.0,
+          2.998960857425459e-09,
+          4.861984337362955e-17
+        ],
+        "word_count": 119,
+        "margin": 0.9999999970010391,
+        "confidence": 0.9999999970010391,
+        "weight": 118.99999964312366
+      },
+      {
+        "title": "Implementing tool calls from scratch",
+        "chosen": 5,
+        "probs": [
+          6.041735579713492e-14,
+          4.9699151984976125e-40,
+          3.835776955514842e-22,
+          9.23744991609965e-09,
+          4.1238491671591654e-21,
+          1.0
+        ],
+        "word_count": 159,
+        "margin": 0.9999999907625501,
+        "confidence": 0.9999999907625501,
+        "weight": 158.99999853124547
+      },
+      {
+        "title": "Implementing a tool calling framework from scratch",
+        "chosen": 3,
+        "probs": [
+          6.157297243929202e-31,
+          4.9699151984976125e-40,
+          2.697195245487535e-26,
+          1.0,
+          5.008774495965547e-14,
+          4.5990555808117506e-10
+        ],
+        "word_count": 120,
+        "margin": 0.9999999995400944,
+        "confidence": 0.9999999995400944,
+        "weight": 119.99999994481134
+      },
+      {
+        "title": "Implementing production-level tool calls with Gemini",
+        "chosen": 3,
+        "probs": [
+          6.154667053781537e-11,
+          3.1013517882154474e-36,
+          1.3679550182737991e-24,
+          0.988837480545044,
+          0.010984992608428001,
+          0.00017755586304701865
+        ],
+        "word_count": 73,
+        "margin": 0.9778524879366159,
+        "confidence": 0.9778524879366159,
+        "weight": 71.38323161937296
+      },
+      {
+        "title": "Using Pydantic models as tools for on-demand structured outputs",
+        "chosen": 4,
+        "probs": [
+          4.7850949158601e-06,
+          1.1537974077070466e-36,
+          6.983263359933156e-12,
+          1.344034572525743e-08,
+          0.999995231628418,
+          4.7194728456901906e-20
+        ],
+        "word_count": 92,
+        "margin": 0.9999904465335021,
+        "confidence": 0.9999904465335021,
+        "weight": 91.9991210810822
+      },
+      {
+        "title": "The downsides of running tools in a loop",
+        "chosen": 3,
+        "probs": [
+          1.4524234374972437e-38,
+          3.240794168831719e-39,
+          9.698363253870229e-23,
+          1.0,
+          6.645544556704893e-17,
+          4.47773234897538e-19
+        ],
+        "word_count": 94,
+        "margin": 0.9999999999999999,
+        "confidence": 0.9999999999999999,
+        "weight": 93.99999999999999
+      },
+      {
+        "title": "Going through popular tools used within the industry",
+        "chosen": 3,
+        "probs": [
+          1.500790655291879e-41,
+          1.2245247844323735e-30,
+          2.0469715840702642e-16,
+          1.0,
+          7.144633971630562e-16,
+          1.5723209311175096e-30
+        ],
+        "word_count": 128,
+        "margin": 0.9999999999999993,
+        "confidence": 0.9999999999999993,
+        "weight": 127.99999999999991
+      }
+    ]
+  },
+  {
+    "label": "06_tools__standard",
+    "digest": "../../rl_training_data/bases/06_tools__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/06_tools__var_standard/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      5.7739372443970684e-11,
+      1.2745427478858514e-33,
+      4.641856333464793e-18,
+      0.529172250306035,
+      2.59650835070577e-05,
+      0.4708017845527186
+    ],
+    "sections": [
+      {
+        "title": "Introduction",
+        "chosen": 3,
+        "probs": [
+          8.194008692231508e-40,
+          2.9756967944000553e-35,
+          2.7702750207350052e-17,
+          1.0,
+          6.7990772839521e-21,
+          1.879528650772233e-12
+        ],
+        "word_count": 158,
+        "margin": 0.9999999999981205,
+        "confidence": 0.9999999999981205,
+        "weight": 157.99999999970305
+      },
+      {
+        "title": "Understanding why agents need tools",
+        "chosen": 3,
+        "probs": [
+          3.280913904234494e-22,
+          2.713484435667519e-38,
+          4.107822865311063e-34,
+          1.0,
+          3.3086215341773792e-18,
+          2.825757392698391e-15
+        ],
+        "word_count": 119,
+        "margin": 0.9999999999999972,
+        "confidence": 0.9999999999999972,
+        "weight": 118.99999999999967
+      },
+      {
+        "title": "Implementing tool calls from scratch",
+        "chosen": 5,
+        "probs": [
+          1.3176514046531196e-10,
+          1.4815121963806348e-36,
+          9.536607933475374e-31,
+          2.5659449562950358e-20,
+          2.333531109663677e-28,
+          1.0
+        ],
+        "word_count": 159,
+        "margin": 0.9999999998682348,
+        "confidence": 0.9999999998682348,
+        "weight": 158.99999997904933
+      },
+      {
+        "title": "Implementing a tool calling framework from scratch",
+        "chosen": 5,
+        "probs": [
+          6.720807321817316e-19,
+          4.714581802716059e-39,
+          2.287351010993883e-30,
+          4.846600898389397e-11,
+          0.00015843621804378927,
+          0.999841570854187
+        ],
+        "word_count": 120,
+        "margin": 0.9996831346361432,
+        "confidence": 0.9996831346361432,
+        "weight": 119.96197615633719
+      },
+      {
+        "title": "Implementing production-level tool calls with Gemini",
+        "chosen": 5,
+        "probs": [
+          7.433680407342713e-12,
+          6.998167936122733e-37,
+          1.2245247844323735e-30,
+          4.5990555808117506e-10,
+          5.355944610271644e-23,
+          1.0
+        ],
+        "word_count": 73,
+        "margin": 0.9999999995400944,
+        "confidence": 0.9999999995400944,
+        "weight": 72.9999999664269
+      },
+      {
+        "title": "Using Pydantic models as tools for on-demand structured outputs",
+        "chosen": 5,
+        "probs": [
+          3.581747953784742e-10,
+          2.0050087834260406e-37,
+          3.820870344979068e-35,
+          2.0661340604804253e-19,
+          6.164405187512317e-20,
+          1.0
+        ],
+        "word_count": 92,
+        "margin": 0.9999999996418252,
+        "confidence": 0.9999999996418252,
+        "weight": 91.99999996704791
+      },
+      {
+        "title": "The downsides of running tools in a loop",
+        "chosen": 3,
+        "probs": [
+          7.20713546647248e-23,
+          2.4425752375122004e-36,
+          4.27396655653893e-30,
+          0.9999895095825195,
+          1.0129986549145542e-05,
+          3.058991069337935e-07
+        ],
+        "word_count": 94,
+        "margin": 0.9999793795959704,
+        "confidence": 0.9999793795959704,
+        "weight": 93.99806168202122
+      },
+      {
+        "title": "Going through popular tools used within the industry",
+        "chosen": 3,
+        "probs": [
+          6.639441627706497e-36,
+          9.349030567720098e-33,
+          6.562008804715082e-23,
+          0.9999645948410034,
+          3.535625000949949e-05,
+          3.4631443636437427e-26
+        ],
+        "word_count": 128,
+        "margin": 0.9999292385909939,
+        "confidence": 0.9999292385909939,
+        "weight": 127.99094253964722
+      }
+    ]
+  },
+  {
+    "label": "06_tools__demanding",
+    "digest": "../../rl_training_data/bases/06_tools__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/06_tools__var_demanding/article_guideline.md",
+    "preset": 5,
+    "preset_name": "depth_breadth_depth (3 rounds)",
+    "probs": [
+      1.4404134748776772e-11,
+      4.091718671223967e-28,
+      8.422959842886941e-07,
+      0.38274238030151947,
+      0.004295663681912558,
+      0.6129611137061796
+    ],
+    "sections": [
+      {
+        "title": "Introduction",
+        "chosen": 3,
+        "probs": [
+          6.165713243029195e-44,
+          1.4458794172967342e-29,
+          9.712973155050149e-26,
+          1.0,
+          2.4279377530731837e-24,
+          9.173890920400186e-16
+        ],
+        "word_count": 158,
+        "margin": 0.9999999999999991,
+        "confidence": 0.9999999999999991,
+        "weight": 157.99999999999986
+      },
+      {
+        "title": "Understanding why agents need tools",
+        "chosen": 3,
+        "probs": [
+          2.1286078368681904e-12,
+          1.0380460004325452e-34,
+          1.38680130936565e-30,
+          0.9994471669197083,
+          1.522156090061344e-08,
+          0.000552778597921133
+        ],
+        "word_count": 119,
+        "margin": 0.9988943883217871,
+        "confidence": 0.9988943883217871,
+        "weight": 118.86843221029267
+      },
+      {
+        "title": "Implementing tool calls from scratch",
+        "chosen": 5,
+        "probs": [
+          4.3334390869987217e-16,
+          1.094697696541931e-35,
+          7.309697491668218e-20,
+          1.1628233792526643e-10,
+          2.5923188203429674e-30,
+          1.0
+        ],
+        "word_count": 159,
+        "margin": 0.9999999998837177,
+        "confidence": 0.9999999998837177,
+        "weight": 158.9999999815111
+      },
+      {
+        "title": "Implementing a tool calling framework from scratch",
+        "chosen": 5,
+        "probs": [
+          6.772654783300765e-34,
+          6.489743268163787e-32,
+          1.094697696541931e-35,
+          1.2501528701136522e-09,
+          1.6802566104903954e-17,
+          1.0
+        ],
+        "word_count": 120,
+        "margin": 0.9999999987498471,
+        "confidence": 0.9999999987498471,
+        "weight": 119.99999984998166
+      },
+      {
+        "title": "Implementing production-level tool calls with Gemini",
+        "chosen": 5,
+        "probs": [
+          1.3176514046531196e-10,
+          2.0050087834260406e-37,
+          1.6904042099061981e-29,
+          5.905304023556823e-10,
+          1.8015763520238363e-21,
+          1.0
+        ],
+        "word_count": 73,
+        "margin": 0.9999999994094696,
+        "confidence": 0.9999999994094696,
+        "weight": 72.99999995689129
+      },
+      {
+        "title": "Using Pydantic models as tools for on-demand structured outputs",
+        "chosen": 5,
+        "probs": [
+          3.77509135063292e-11,
+          1.4056035401931484e-35,
+          1.0051395936112901e-31,
+          1.1478769010864198e-05,
+          1.2015288395304802e-13,
+          0.9999885559082031
+        ],
+        "word_count": 92,
+        "margin": 0.9999770771391923,
+        "confidence": 0.9999770771391923,
+        "weight": 91.99789109680569
+      },
+      {
+        "title": "The downsides of running tools in a loop",
+        "chosen": 3,
+        "probs": [
+          1.2267967674714497e-12,
+          4.4512408727188675e-27,
+          9.358439297972476e-34,
+          0.949694812297821,
+          0.047282520681619644,
+          0.0030226707458496094
+        ],
+        "word_count": 94,
+        "margin": 0.9024122916162014,
+        "confidence": 0.9024122916162014,
+        "weight": 84.82675541192293
+      },
+      {
+        "title": "Going through popular tools used within the industry",
+        "chosen": 5,
+        "probs": [
+          6.639636060671019e-36,
+          1.6903936774768148e-29,
+          6.144174221844878e-06,
+          8.074054221373984e-21,
+          2.882332773065238e-13,
+          0.9999938011169434
+        ],
+        "word_count": 128,
+        "margin": 0.9999876569427215,
+        "confidence": 0.9999876569427215,
+        "weight": 127.99842008866835
+      }
+    ]
+  },
+  {
+    "label": "08_react_practice__minimal",
+    "digest": "../../rl_training_data/bases/08_react_practice__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/08_react_practice__var_minimal/article_guideline.md",
+    "preset": 0,
+    "preset_name": "baseline (no exploration)",
+    "probs": [
+      0.8561256363715053,
+      0.0010366551145434854,
+      0.14283770842737448,
+      3.487015623599086e-22,
+      1.3021903457901344e-27,
+      8.65768257646337e-11
+    ],
+    "sections": [
+      {
+        "title": "Setup and Environment",
+        "chosen": 0,
+        "probs": [
+          1.0,
+          5.7893564074651405e-12,
+          2.541420255845724e-32,
+          4.8430893875347414e-30,
+          3.0144031915323302e-40,
+          7.025470581875306e-24
+        ],
+        "word_count": 137,
+        "margin": 0.9999999999942106,
+        "confidence": 0.9999999999942106,
+        "weight": 136.99999999920686
+      },
+      {
+        "title": "Tool Layer: Mock Search Implementation",
+        "chosen": 0,
+        "probs": [
+          0.9947799444198608,
+          0.005220125894993544,
+          5.793916713862367e-24,
+          1.710102212399619e-21,
+          9.930242712902315e-39,
+          1.1557320526437209e-29
+        ],
+        "word_count": 139,
+        "margin": 0.9895598185248673,
+        "confidence": 0.9895598185248673,
+        "weight": 137.54881477495655
+      },
+      {
+        "title": "Thought Phase: Prompt Construction and Generation",
+        "chosen": 0,
+        "probs": [
+          0.9914223551750183,
+          1.048102120648764e-07,
+          0.008577483706176281,
+          3.765356162921104e-23,
+          4.6748816159232725e-39,
+          4.1008036674560214e-27
+        ],
+        "word_count": 111,
+        "margin": 0.982844871468842,
+        "confidence": 0.982844871468842,
+        "weight": 109.09578073304147
+      },
+      {
+        "title": "Action Phase: Function Calling and Parsing",
+        "chosen": 0,
+        "probs": [
+          1.0,
+          5.331813210883961e-14,
+          3.820870344979068e-35,
+          2.0328872952342194e-23,
+          9.854154449263851e-34,
+          5.547519665860534e-10
+        ],
+        "word_count": 108,
+        "margin": 0.999999999445248,
+        "confidence": 0.999999999445248,
+        "weight": 107.99999994008678
+      },
+      {
+        "title": "Control Loop: Messages, Scratchpad, Orchestration",
+        "chosen": 2,
+        "probs": [
+          9.727604926320145e-29,
+          6.5602007333354084e-12,
+          1.0,
+          3.650256623683927e-27,
+          3.5083221349443985e-31,
+          2.2273639090442967e-39
+        ],
+        "word_count": 98,
+        "margin": 0.9999999999934398,
+        "confidence": 0.9999999999934398,
+        "weight": 97.9999999993571
+      },
+      {
+        "title": "Tests and Traces: Success and Graceful Fallback",
+        "chosen": 0,
+        "probs": [
+          1.0,
+          5.1090889331695255e-12,
+          9.470990683034056e-38,
+          1.4624862419498405e-31,
+          8.75651089272076e-27,
+          5.219263064272506e-13
+        ],
+        "word_count": 103,
+        "margin": 0.9999999999948909,
+        "confidence": 0.9999999999948909,
+        "weight": 102.99999999947376
+      }
+    ]
+  },
+  {
+    "label": "08_react_practice__standard",
+    "digest": "../../rl_training_data/bases/08_react_practice__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/08_react_practice__var_standard/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      0.22066616020858848,
+      1.292228708840418e-08,
+      0.1714528382764724,
+      0.5680832371394929,
+      2.0071892978643902e-08,
+      0.03979773138126625
+    ],
+    "sections": [
+      {
+        "title": "Setup and Environment",
+        "chosen": 3,
+        "probs": [
+          7.468920814851275e-43,
+          1.4350379676339627e-14,
+          3.3315444153414475e-11,
+          1.0,
+          1.5784551616312493e-17,
+          1.185064946717304e-27
+        ],
+        "word_count": 137,
+        "margin": 0.9999999999666845,
+        "confidence": 0.9999999999666845,
+        "weight": 136.9999999954358
+      },
+      {
+        "title": "Tool Layer: Mock Search Implementation",
+        "chosen": 0,
+        "probs": [
+          1.0,
+          1.7257828943684217e-08,
+          6.120334684686111e-19,
+          1.405619611404976e-35,
+          2.1132637421060342e-38,
+          6.924816216323862e-16
+        ],
+        "word_count": 139,
+        "margin": 0.9999999827421711,
+        "confidence": 0.9999999827421711,
+        "weight": 138.99999760116177
+      },
+      {
+        "title": "Thought Phase: Prompt Construction and Generation",
+        "chosen": 3,
+        "probs": [
+          2.6078164421084846e-42,
+          1.806446255483361e-16,
+          2.998960857425459e-09,
+          1.0,
+          5.709962586454673e-26,
+          7.004352014501e-18
+        ],
+        "word_count": 111,
+        "margin": 0.9999999970010391,
+        "confidence": 0.9999999970010391,
+        "weight": 110.99999966711535
+      },
+      {
+        "title": "Action Phase: Function Calling and Parsing",
+        "chosen": 2,
+        "probs": [
+          2.1132637421060342e-38,
+          5.315785500670245e-08,
+          1.0,
+          5.463212502524855e-21,
+          5.089234071153745e-25,
+          3.2632478433947105e-32
+        ],
+        "word_count": 108,
+        "margin": 0.999999946842145,
+        "confidence": 0.999999946842145,
+        "weight": 107.99999425895166
+      },
+      {
+        "title": "Control Loop: Messages, Scratchpad, Orchestration",
+        "chosen": 3,
+        "probs": [
+          2.394641671145529e-38,
+          1.6458114537543937e-38,
+          2.57675715040399e-18,
+          1.0,
+          5.749522023787777e-19,
+          5.279209923760627e-15
+        ],
+        "word_count": 98,
+        "margin": 0.9999999999999947,
+        "confidence": 0.9999999999999947,
+        "weight": 97.99999999999947
+      },
+      {
+        "title": "Tests and Traces: Success and Graceful Fallback",
+        "chosen": 5,
+        "probs": [
+          1.570634317049624e-10,
+          1.5537657057700057e-30,
+          2.21632774223422e-32,
+          0.32082119584083557,
+          3.425420800340362e-07,
+          0.6791784763336182
+        ],
+        "word_count": 103,
+        "margin": 0.3583572804927826,
+        "confidence": 0.3583572804927826,
+        "weight": 36.91079989075661
+      }
+    ]
+  },
+  {
+    "label": "08_react_practice__demanding",
+    "digest": "../../rl_training_data/bases/08_react_practice__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/08_react_practice__var_demanding/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      3.54841837645148e-09,
+      3.949702370205881e-20,
+      2.742128288182274e-19,
+      0.7521928770906294,
+      0.00472507025898393,
+      0.2430820491019683
+    ],
+    "sections": [
+      {
+        "title": "Setup and Environment",
+        "chosen": 3,
+        "probs": [
+          2.5744821300313715e-37,
+          1.6472656956609696e-19,
+          1.1434290281273372e-18,
+          1.0,
+          8.870427308098834e-32,
+          1.7466905657738535e-32
+        ],
+        "word_count": 137,
+        "margin": 1.0,
+        "confidence": 1.0,
+        "weight": 137.0
+      },
+      {
+        "title": "Tool Layer: Mock Search Implementation",
+        "chosen": 5,
+        "probs": [
+          2.1206491353919076e-29,
+          6.749561609031686e-32,
+          2.07901128231064e-31,
+          0.022977370768785477,
+          9.957103905545815e-18,
+          0.977022647857666
+        ],
+        "word_count": 139,
+        "margin": 0.9540452770888805,
+        "confidence": 0.9540452770888805,
+        "weight": 132.6122935153544
+      },
+      {
+        "title": "Thought Phase: Prompt Construction and Generation",
+        "chosen": 3,
+        "probs": [
+          1.1089455657127305e-40,
+          4.130061153331524e-24,
+          2.8063144839433804e-22,
+          1.0,
+          1.2906395473087794e-31,
+          8.533048291820244e-17
+        ],
+        "word_count": 111,
+        "margin": 0.9999999999999999,
+        "confidence": 0.9999999999999999,
+        "weight": 110.99999999999999
+      },
+      {
+        "title": "Action Phase: Function Calling and Parsing",
+        "chosen": 4,
+        "probs": [
+          9.851102502339121e-24,
+          2.0134595324177118e-36,
+          1.1179577281792784e-26,
+          6.170108827063814e-05,
+          0.49996912479400635,
+          0.49996912479400635
+        ],
+        "word_count": 108,
+        "margin": 0.0,
+        "confidence": 0.05,
+        "weight": 5.4
+      },
+      {
+        "title": "Control Loop: Messages, Scratchpad, Orchestration",
+        "chosen": 3,
+        "probs": [
+          7.046626334761322e-30,
+          5.744425191156425e-38,
+          1.1468723122430187e-24,
+          0.9999963045120239,
+          3.912584653773708e-20,
+          3.7266393064783188e-06
+        ],
+        "word_count": 98,
+        "margin": 0.9999925778727174,
+        "confidence": 0.9999925778727174,
+        "weight": 97.99927263152631
+      },
+      {
+        "title": "Tests and Traces: Success and Graceful Fallback",
+        "chosen": 3,
+        "probs": [
+          2.3205192434261335e-08,
+          1.0951680258136492e-27,
+          1.501430557136995e-33,
+          0.9241418242454529,
+          1.3527388844497557e-12,
+          0.07585817575454712
+        ],
+        "word_count": 103,
+        "margin": 0.8482836484909058,
+        "confidence": 0.8482836484909058,
+        "weight": 87.3732157945633
+      }
+    ]
+  },
+  {
+    "label": "09_RAG__minimal",
+    "digest": "../../rl_training_data/bases/09_RAG__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/09_RAG__var_minimal/article_guideline.md",
+    "preset": 0,
+    "preset_name": "baseline (no exploration)",
+    "probs": [
+      0.48375055430623204,
+      0.18562291805839848,
+      3.5286075824415297e-22,
+      0.3161998372860088,
+      0.014107834950119568,
+      0.0003188553992410479
+    ],
+    "sections": [
+      {
+        "title": "Introduction: Giving LLMs an Open-Book Exam",
+        "chosen": 3,
+        "probs": [
+          1.496800017264377e-09,
+          2.9245107021938087e-36,
+          1.7063401158099582e-21,
+          0.9324532747268677,
+          0.06754669547080994,
+          6.596310104901247e-17
+        ],
+        "word_count": 164,
+        "margin": 0.8649065792560577,
+        "confidence": 0.8649065792560577,
+        "weight": 141.84467899799347
+      },
+      {
+        "title": "The RAG System: Core Components",
+        "chosen": 0,
+        "probs": [
+          0.9999985694885254,
+          1.370957193103095e-06,
+          3.3285986407375735e-30,
+          3.639278847948646e-21,
+          2.574478542707303e-37,
+          2.8539098032498086e-14
+        ],
+        "word_count": 122,
+        "margin": 0.9999971985313323,
+        "confidence": 0.9999971985313323,
+        "weight": 121.99965822082254
+      },
+      {
+        "title": "The RAG Pipeline: Ingestion and Retrieval",
+        "chosen": 0,
+        "probs": [
+          0.9999810457229614,
+          1.675174061965823e-11,
+          1.1389637479806534e-31,
+          3.384997348029058e-22,
+          7.281152333631378e-33,
+          1.8925147742265835e-05
+        ],
+        "word_count": 97,
+        "margin": 0.9999621205752192,
+        "confidence": 0.9999621205752192,
+        "weight": 96.99632569579626
+      },
+      {
+        "title": "Advanced RAG Techniques",
+        "chosen": 1,
+        "probs": [
+          7.336770635468781e-10,
+          0.9982993006706238,
+          1.81426500769415e-28,
+          1.1004073978567332e-28,
+          4.439360042003536e-26,
+          0.001700722612440586
+        ],
+        "word_count": 128,
+        "margin": 0.9965985780581832,
+        "confidence": 0.9965985780581832,
+        "weight": 127.56461799144745
+      },
+      {
+        "title": "Agentic RAG",
+        "chosen": 0,
+        "probs": [
+          0.9998205304145813,
+          0.00017952796770259738,
+          6.907055517649207e-32,
+          2.0938873594365146e-20,
+          2.1983645355147247e-34,
+          3.0557741269972834e-26
+        ],
+        "word_count": 113,
+        "margin": 0.9996410024468787,
+        "confidence": 0.9996410024468787,
+        "weight": 112.9594332764973
+      },
+      {
+        "title": "Conclusion",
+        "chosen": 3,
+        "probs": [
+          6.906313628624039e-13,
+          5.4438050800203305e-37,
+          1.010931363712742e-24,
+          0.9988304972648621,
+          0.0011695101857185364,
+          1.9276449490861715e-18
+        ],
+        "word_count": 85,
+        "margin": 0.9976609870791435,
+        "confidence": 0.9976609870791435,
+        "weight": 84.8011839017272
+      }
+    ]
+  },
+  {
+    "label": "09_RAG__standard",
+    "digest": "../../rl_training_data/bases/09_RAG__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/09_RAG__var_standard/article_guideline.md",
+    "preset": 5,
+    "preset_name": "depth_breadth_depth (3 rounds)",
+    "probs": [
+      3.593636392469618e-07,
+      1.7578022922044948e-10,
+      0.3398464517244952,
+      0.30893359297466016,
+      7.366451067703156e-07,
+      0.35121885911631845
+    ],
+    "sections": [
+      {
+        "title": "Introduction: Giving LLMs an Open-Book Exam",
+        "chosen": 5,
+        "probs": [
+          1.5534978956566192e-06,
+          2.0050056445174805e-37,
+          1.1583025320507412e-23,
+          1.363574946662552e-16,
+          7.804580574662107e-26,
+          0.9999984502792358
+        ],
+        "word_count": 164,
+        "margin": 0.9999968967813402,
+        "confidence": 0.9999968967813402,
+        "weight": 163.9994910721398
+      },
+      {
+        "title": "The RAG System: Core Components",
+        "chosen": 3,
+        "probs": [
+          7.468920814851275e-43,
+          4.115187954047269e-22,
+          4.658885768355414e-15,
+          1.0,
+          6.675622627975269e-26,
+          7.052879807956103e-11
+        ],
+        "word_count": 122,
+        "margin": 0.9999999999294712,
+        "confidence": 0.9999999999294712,
+        "weight": 121.99999999139548
+      },
+      {
+        "title": "The RAG Pipeline: Ingestion and Retrieval",
+        "chosen": 3,
+        "probs": [
+          1.5521286974863252e-25,
+          1.066761441209852e-25,
+          1.573710259328287e-11,
+          1.0,
+          6.639676956165401e-36,
+          6.908295664189324e-32
+        ],
+        "word_count": 97,
+        "margin": 0.9999999999842629,
+        "confidence": 0.9999999999842629,
+        "weight": 96.9999999984735
+      },
+      {
+        "title": "Advanced RAG Techniques",
+        "chosen": 2,
+        "probs": [
+          1.2490392357554953e-28,
+          9.736124129133827e-10,
+          0.9999921321868896,
+          7.478514977465544e-24,
+          3.975418450978104e-31,
+          7.889262633398175e-06
+        ],
+        "word_count": 128,
+        "margin": 0.9999842429242563,
+        "confidence": 0.9999842429242563,
+        "weight": 127.9979830943048
+      },
+      {
+        "title": "Agentic RAG",
+        "chosen": 2,
+        "probs": [
+          8.634941267015955e-41,
+          2.0527748573080756e-22,
+          0.9998205304145813,
+          0.00017952796770259738,
+          4.507946099741034e-12,
+          7.192841877667888e-09
+        ],
+        "word_count": 113,
+        "margin": 0.9996410024468787,
+        "confidence": 0.9996410024468787,
+        "weight": 112.9594332764973
+      },
+      {
+        "title": "Conclusion",
+        "chosen": 5,
+        "probs": [
+          1.1399848079407526e-12,
+          4.969887172528326e-40,
+          9.559354650630174e-15,
+          5.315752460433032e-08,
+          6.144174221844878e-06,
+          0.9999938011169434
+        ],
+        "word_count": 85,
+        "margin": 0.9999876569427215,
+        "confidence": 0.9999876569427215,
+        "weight": 84.99895084013133
+      }
+    ]
+  },
+  {
+    "label": "09_RAG__demanding",
+    "digest": "../../rl_training_data/bases/09_RAG__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/09_RAG__var_demanding/article_guideline.md",
+    "preset": 5,
+    "preset_name": "depth_breadth_depth (3 rounds)",
+    "probs": [
+      4.521661613297802e-09,
+      1.065342568269127e-21,
+      2.2382961621661918e-06,
+      0.29625161335184574,
+      1.728454808890246e-07,
+      0.7037459709848496
+    ],
+    "sections": [
+      {
+        "title": "Introduction: Giving LLMs an Open-Book Exam",
+        "chosen": 5,
+        "probs": [
+          1.955258355224032e-08,
+          1.3334036497560302e-34,
+          2.8992987593255545e-25,
+          0.00015843621804378927,
+          2.9868328696553427e-22,
+          0.999841570854187
+        ],
+        "word_count": 164,
+        "margin": 0.9996831346361432,
+        "confidence": 0.9996831346361432,
+        "weight": 163.9480340803275
+      },
+      {
+        "title": "The RAG System: Core Components",
+        "chosen": 5,
+        "probs": [
+          2.0860972945005113e-33,
+          6.190549426306535e-21,
+          1.300712665397441e-05,
+          1.275173815429298e-07,
+          8.144717290284788e-28,
+          0.9999868869781494
+        ],
+        "word_count": 122,
+        "margin": 0.9999738798514954,
+        "confidence": 0.9999738798514954,
+        "weight": 121.99681334188244
+      },
+      {
+        "title": "The RAG Pipeline: Ingestion and Retrieval",
+        "chosen": 3,
+        "probs": [
+          2.85999131115145e-39,
+          4.285564767627537e-25,
+          4.030726386134531e-17,
+          1.0,
+          1.1548223864099742e-17,
+          3.1363615599988335e-36
+        ],
+        "word_count": 97,
+        "margin": 1.0,
+        "confidence": 1.0,
+        "weight": 97.0
+      },
+      {
+        "title": "Advanced RAG Techniques",
+        "chosen": 5,
+        "probs": [
+          2.6522098178090074e-34,
+          5.859494238273697e-36,
+          3.553963389762514e-36,
+          5.279209923760627e-15,
+          6.181318885539313e-18,
+          1.0
+        ],
+        "word_count": 128,
+        "margin": 0.9999999999999947,
+        "confidence": 0.9999999999999947,
+        "weight": 127.99999999999932
+      },
+      {
+        "title": "Agentic RAG",
+        "chosen": 3,
+        "probs": [
+          1.16882304909333e-41,
+          6.5544083878968715e-31,
+          2.677804119990829e-22,
+          1.0,
+          5.315785500670245e-08,
+          7.521400217286526e-25
+        ],
+        "word_count": 113,
+        "margin": 0.999999946842145,
+        "confidence": 0.999999946842145,
+        "weight": 112.99999399316238
+      },
+      {
+        "title": "Conclusion",
+        "chosen": 5,
+        "probs": [
+          1.0973140191702356e-19,
+          1.561500173648656e-37,
+          9.165778299348848e-35,
+          1.0060378094825517e-12,
+          1.370957193103095e-06,
+          0.9999985694885254
+        ],
+        "word_count": 85,
+        "margin": 0.9999971985313323,
+        "confidence": 0.9999971985313323,
+        "weight": 84.99976187516324
+      }
+    ]
+  },
+  {
+    "label": "11_multimodal__minimal",
+    "digest": "../../rl_training_data/bases/11_multimodal__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/11_multimodal__var_minimal/article_guideline.md",
+    "preset": 0,
+    "preset_name": "baseline (no exploration)",
+    "probs": [
+      0.7508686013264936,
+      0.04176889152833282,
+      0.12430357763506242,
+      0.08305892950803495,
+      8.305268430756546e-13,
+      1.2456962365969638e-12
+    ],
+    "sections": [
+      {
+        "title": "Introduction: The need for multimodal AI",
+        "chosen": 0,
+        "probs": [
+          0.9999990463256836,
+          9.237441034315452e-09,
+          1.003014176603756e-06,
+          4.1900889925667964e-32,
+          1.8048497501622504e-35,
+          4.837183171374493e-12
+        ],
+        "word_count": 170,
+        "margin": 0.999998043311507,
+        "confidence": 0.999998043311507,
+        "weight": 169.9996673629562
+      },
+      {
+        "title": "Limitations of traditional document processing",
+        "chosen": 0,
+        "probs": [
+          0.6371538639068604,
+          0.3410439193248749,
+          3.855314134564291e-17,
+          0.021802205592393875,
+          2.356032160156778e-32,
+          1.9473478261127774e-26
+        ],
+        "word_count": 135,
+        "margin": 0.2961099445819855,
+        "confidence": 0.2961099445819855,
+        "weight": 39.97484251856804
+      },
+      {
+        "title": "Foundations of multimodal LLMs",
+        "chosen": 0,
+        "probs": [
+          0.6513544917106628,
+          0.3486449420452118,
+          1.666834003486118e-25,
+          5.416199542196409e-07,
+          6.547096813034757e-32,
+          6.724488907641643e-23
+        ],
+        "word_count": 132,
+        "margin": 0.30270954966545105,
+        "confidence": 0.30270954966545105,
+        "weight": 39.95766055583954
+      },
+      {
+        "title": "Applying multimodal LLMs to images and PDFs",
+        "chosen": 0,
+        "probs": [
+          0.9988304972648621,
+          6.341375424767648e-09,
+          0.0011695101857185364,
+          9.374860519657689e-20,
+          1.8261861716927449e-40,
+          8.298230007626786e-26
+        ],
+        "word_count": 102,
+        "margin": 0.9976609870791435,
+        "confidence": 0.9976609870791435,
+        "weight": 101.76142068207264
+      },
+      {
+        "title": "Foundations of multimodal RAG",
+        "chosen": 0,
+        "probs": [
+          0.9999251365661621,
+          7.48462334740907e-05,
+          9.348661756367527e-33,
+          1.205075102717552e-19,
+          5.97639970563771e-34,
+          1.668570779376575e-24
+        ],
+        "word_count": 97,
+        "margin": 0.999850290332688,
+        "confidence": 0.999850290332688,
+        "weight": 96.98547816227074
+      },
+      {
+        "title": "Implementing multimodal RAG for images, PDFs and text",
+        "chosen": 2,
+        "probs": [
+          9.048082073307534e-30,
+          3.9008374438584403e-14,
+          1.0,
+          3.650256623683927e-27,
+          2.3174752027302318e-35,
+          7.68120477976069e-15
+        ],
+        "word_count": 82,
+        "margin": 0.999999999999961,
+        "confidence": 0.999999999999961,
+        "weight": 81.9999999999968
+      },
+      {
+        "title": "Building multimodal AI agents",
+        "chosen": 0,
+        "probs": [
+          0.9997040629386902,
+          0.0002959571429528296,
+          8.902400027679718e-19,
+          1.5827459077751952e-23,
+          4.0783390505709476e-41,
+          6.552468822218015e-31
+        ],
+        "word_count": 76,
+        "margin": 0.9994081057957374,
+        "confidence": 0.9994081057957374,
+        "weight": 75.95501604047604
+      },
+      {
+        "title": "Conclusion",
+        "chosen": 3,
+        "probs": [
+          1.1861120086109622e-08,
+          5.744446490893083e-38,
+          7.92503253099026e-15,
+          1.0,
+          1.0160636221279162e-11,
+          3.17518784049432e-19
+        ],
+        "word_count": 54,
+        "margin": 0.9999999881388799,
+        "confidence": 0.9999999881388799,
+        "weight": 53.99999935949951
+      }
+    ]
+  },
+  {
+    "label": "11_multimodal__standard",
+    "digest": "../../rl_training_data/bases/11_multimodal__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/11_multimodal__var_standard/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      1.0776440752571775e-07,
+      2.065678674213661e-18,
+      6.106412150727911e-15,
+      0.7780312684226866,
+      1.0893073586355142e-08,
+      0.22196861291982622
+    ],
+    "sections": [
+      {
+        "title": "Introduction: The need for multimodal AI",
+        "chosen": 3,
+        "probs": [
+          1.0521313207751451e-39,
+          9.573814052287731e-18,
+          6.096549811768538e-32,
+          1.0,
+          6.367942451964521e-15,
+          1.4558968217801668e-22
+        ],
+        "word_count": 170,
+        "margin": 0.9999999999999937,
+        "confidence": 0.9999999999999937,
+        "weight": 169.99999999999892
+      },
+      {
+        "title": "Limitations of traditional document processing",
+        "chosen": 3,
+        "probs": [
+          2.5744821300313715e-37,
+          1.153444065925382e-25,
+          5.4796843815337404e-27,
+          1.0,
+          5.564245721995e-16,
+          6.29955056431282e-35
+        ],
+        "word_count": 135,
+        "margin": 0.9999999999999994,
+        "confidence": 0.9999999999999994,
+        "weight": 134.99999999999991
+      },
+      {
+        "title": "Foundations of multimodal LLMs",
+        "chosen": 3,
+        "probs": [
+          3.0588995514335693e-07,
+          6.120087564478111e-19,
+          8.525170181870276e-36,
+          0.9999595880508423,
+          1.3929254985527506e-17,
+          4.006367453257553e-05
+        ],
+        "word_count": 132,
+        "margin": 0.9999195243763097,
+        "confidence": 0.9999195243763097,
+        "weight": 131.98937721767288
+      },
+      {
+        "title": "Applying multimodal LLMs to images and PDFs",
+        "chosen": 5,
+        "probs": [
+          1.2751904421293148e-07,
+          1.5414489582466943e-32,
+          6.299549990340969e-35,
+          1.3697486168013356e-25,
+          9.414134771522545e-26,
+          0.9999998807907104
+        ],
+        "word_count": 102,
+        "margin": 0.9999997532716662,
+        "confidence": 0.9999997532716662,
+        "weight": 101.99997483370996
+      },
+      {
+        "title": "Foundations of multimodal RAG",
+        "chosen": 3,
+        "probs": [
+          4.749566083310508e-13,
+          1.6513190816326837e-25,
+          9.224192357429084e-28,
+          0.9994471669197083,
+          3.1563448959127097e-29,
+          0.000552778597921133
+        ],
+        "word_count": 97,
+        "margin": 0.9988943883217871,
+        "confidence": 0.9988943883217871,
+        "weight": 96.89275566721335
+      },
+      {
+        "title": "Implementing multimodal RAG for images, PDFs and text",
+        "chosen": 3,
+        "probs": [
+          5.703995498151926e-07,
+          5.871019663194307e-23,
+          3.193011146761667e-34,
+          0.8807963728904724,
+          1.44219583830818e-07,
+          0.11920282989740372
+        ],
+        "word_count": 82,
+        "margin": 0.7615935429930687,
+        "confidence": 0.7615935429930687,
+        "weight": 62.45067052543163
+      },
+      {
+        "title": "Building multimodal AI agents",
+        "chosen": 5,
+        "probs": [
+          1.5914590756338498e-09,
+          1.3935629021960965e-35,
+          1.738464555393443e-19,
+          0.008577484637498856,
+          3.040112420770011e-17,
+          0.9914224743843079
+        ],
+        "word_count": 76,
+        "margin": 0.982844989746809,
+        "confidence": 0.982844989746809,
+        "weight": 74.69621922075748
+      },
+      {
+        "title": "Conclusion",
+        "chosen": 3,
+        "probs": [
+          7.392149728255478e-22,
+          4.7143688053494815e-39,
+          9.35571878215441e-14,
+          0.9997965693473816,
+          3.7743665831646567e-11,
+          0.00020342697098385543
+        ],
+        "word_count": 54,
+        "margin": 0.9995931423763977,
+        "confidence": 0.9995931423763977,
+        "weight": 53.97802968832548
+      }
+    ]
+  },
+  {
+    "label": "11_multimodal__demanding",
+    "digest": "../../rl_training_data/bases/11_multimodal__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/11_multimodal__var_demanding/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      0.000279208749961591,
+      4.022879763778116e-19,
+      1.2256310075676158e-30,
+      0.7752273213207139,
+      0.006352793442033152,
+      0.21814067648729135
+    ],
+    "sections": [
+      {
+        "title": "Introduction: The need for multimodal AI",
+        "chosen": 3,
+        "probs": [
+          2.333531109663677e-28,
+          5.572627898829664e-19,
+          9.470990683034056e-38,
+          1.0,
+          1.3887944613766301e-11,
+          1.2501528701136522e-09
+        ],
+        "word_count": 170,
+        "margin": 0.9999999987498471,
+        "confidence": 0.9999999987498471,
+        "weight": 169.99999978747402
+      },
+      {
+        "title": "Limitations of traditional document processing",
+        "chosen": 3,
+        "probs": [
+          5.380186509709349e-32,
+          3.418791189953865e-21,
+          6.619718383830818e-30,
+          1.0,
+          1.0395379134185484e-15,
+          1.240455049987419e-35
+        ],
+        "word_count": 135,
+        "margin": 0.999999999999999,
+        "confidence": 0.999999999999999,
+        "weight": 134.99999999999986
+      },
+      {
+        "title": "Foundations of multimodal LLMs",
+        "chosen": 3,
+        "probs": [
+          6.785256800867501e-08,
+          1.5536438171191753e-18,
+          1.3973107948900818e-35,
+          0.994088888168335,
+          3.6483240976737164e-17,
+          0.005911068059504032
+        ],
+        "word_count": 132,
+        "margin": 0.9881778201088309,
+        "confidence": 0.9881778201088309,
+        "weight": 130.43947225436568
+      },
+      {
+        "title": "Applying multimodal LLMs to images and PDFs",
+        "chosen": 5,
+        "probs": [
+          1.4166087192180044e-09,
+          1.5723209311175096e-30,
+          2.0050087834260406e-37,
+          1.4028028053785792e-19,
+          2.100577893976137e-26,
+          1.0
+        ],
+        "word_count": 102,
+        "margin": 0.9999999985833913,
+        "confidence": 0.9999999985833913,
+        "weight": 101.9999998555059
+      },
+      {
+        "title": "Foundations of multimodal RAG",
+        "chosen": 3,
+        "probs": [
+          5.208148357027653e-10,
+          1.2426426734593842e-19,
+          1.1382720871046296e-31,
+          0.999373733997345,
+          3.4610979475220346e-26,
+          0.000626334163825959
+        ],
+        "word_count": 97,
+        "margin": 0.998747399833519,
+        "confidence": 0.998747399833519,
+        "weight": 96.87849778385134
+      },
+      {
+        "title": "Implementing multimodal RAG for images, PDFs and text",
+        "chosen": 3,
+        "probs": [
+          7.920921234472189e-07,
+          8.140599124508028e-20,
+          3.4532127906234304e-34,
+          0.9525734186172485,
+          3.1517047515906105e-18,
+          0.04742583632469177
+        ],
+        "word_count": 82,
+        "margin": 0.9051475822925568,
+        "confidence": 0.9051475822925568,
+        "weight": 74.22210174798965
+      },
+      {
+        "title": "Building multimodal AI agents",
+        "chosen": 5,
+        "probs": [
+          1.2815357663953364e-09,
+          4.867188432319819e-32,
+          8.627297225430689e-31,
+          0.09534946084022522,
+          7.087974955230503e-13,
+          0.9046505093574524
+        ],
+        "word_count": 76,
+        "margin": 0.8093010485172272,
+        "confidence": 0.8093010485172272,
+        "weight": 61.506879687309265
+      },
+      {
+        "title": "Conclusion",
+        "chosen": 5,
+        "probs": [
+          0.014332537539303303,
+          5.0631527272534243e-26,
+          3.110908653829698e-31,
+          0.050025470554828644,
+          0.3262070417404175,
+          0.609434962272644
+        ],
+        "word_count": 54,
+        "margin": 0.28322792053222656,
+        "confidence": 0.28322792053222656,
+        "weight": 15.294307708740234
+      }
+    ]
+  }
+]

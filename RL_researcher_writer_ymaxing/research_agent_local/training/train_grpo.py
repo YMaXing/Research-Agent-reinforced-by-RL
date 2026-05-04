@@ -130,6 +130,11 @@ class Group:
     # Empty for article-level groups; populated by load_section_groups().
     # Included in the model input to distinguish variant oracle signals.
     section_guideline: str = ""
+    # Compact article context (word target + theory/practice + scope note).
+    # Extracted from the preamble of article_guideline.md; empty string when
+    # no guideline is available.  Stored here so tokenize_groups can assemble
+    # the correct input format without re-reading the guideline file.
+    guideline_preamble: str = ""
     input_ids: torch.Tensor | None = None
     rewards: list[float] = field(default_factory=list)
     advantages: torch.Tensor | None = None
@@ -159,7 +164,7 @@ def compute_reward(
     scores: dict,
     preset_id: int,
     variant_level: str = "standard",
-) -> float:
+    ) -> float:
     """Compute reward from scores.json using the variant-aware formula.
 
     ``variant_level`` must be one of ``"minimal"``, ``"standard"``,
@@ -193,11 +198,13 @@ def compute_reward(
         user_intent = 0.80 * ga + 0.10 * ra
         cost        = -0.02 * nr
     elif variant_level == "demanding":
-        # Extended article: boost depth/breadth, halve exploration cost.
+        # Extended article: boost depth/breadth, quarter exploration cost.
+        # At -0.01/round cost(-0.07) overwhelms explore gains at P5;
+        # -0.005/round makes deep presets competitive.
         gt_base     = 0.12 * cc + 0.08 * fl
         explore     = cp * (0.55 * de + 0.35 * be) * 0.50
         user_intent = (0.60 * ga + 0.40 * ra) * 0.25
-        cost        = -0.01 * nr
+        cost        = -0.005 * nr
     else:  # "standard"
         gt_base     = 0.20 * cc + 0.20 * fl
         explore     = cp * (0.60 * de + 0.40 * be) * 0.30
@@ -369,6 +376,41 @@ def _extract_guideline_preamble(guideline: str) -> str:
     return ""
 
 
+def _extract_compact_preamble(preamble: str) -> str:
+    """Distil the key variant-signal fields from the full guideline preamble.
+
+    Returns a compact 2–3 line string containing only:
+    - Expected length (total word target)
+    - Theory / practice ratio
+    - Scope constraint sentence (minimal variant only; absent for standard/demanding)
+
+    This replaces the full preamble blob (~2000-4400 tokens) in the model input
+    so the section guideline is not buried in preamble noise.  Mirrors the
+    identical function in ``infer.py``.
+    """
+    lines: list[str] = []
+
+    # Expected Length of the Lesson → word count line
+    m = re.search(r'### Expected Length[^\n]*\n+(.*?)(?=\n###|\n##|\Z)', preamble, re.DOTALL)
+    if m:
+        first_line = next((l for l in m.group(1).split('\n') if l.strip()), '')
+        lines.append(f"Expected length: {first_line}")
+
+    # Theory / Practice Ratio → ratio line
+    m = re.search(r'### Theory[^\n]*\n+(.*?)(?=\n###|\n##|\Z)', preamble, re.DOTALL)
+    if m:
+        first_line = next((l for l in m.group(1).split('\n') if l.strip()), '')
+        lines.append(f"Theory / practice: {first_line}")
+
+    # Scope constraint (minimal only): search full preamble for the distinctive
+    # phrase — appears in different subsections depending on the article.
+    m = re.search(r'surface-level treatment[^.!?]*[.!?]', preamble, re.IGNORECASE)
+    if m:
+        lines.append(f"Scope: {m.group(0).strip()}")
+
+    return '\n'.join(lines)
+
+
 def _article_variant_level(article: str) -> str:
     """Infer the guideline variant level from the article directory name.
 
@@ -492,12 +534,16 @@ def load_section_groups(
             guideline_section_blocks = _extract_guideline_sections(
                 guideline_text, digest_sections
             )
+            compact_preamble = _extract_compact_preamble(
+                _extract_guideline_preamble(guideline_text)
+            )
         else:
             log.warning(
                 f"  {article}: guideline not found at {guideline_path}; "
                 "section_guideline will be empty for all sections"
             )
             guideline_section_blocks = [""] * len(digest_sections)
+            compact_preamble = ""
 
         article_groups: list[Group] = []
         variant_level = _article_variant_level(article)
@@ -506,6 +552,7 @@ def load_section_groups(
                 name=f"{article}__S{sec_idx + 1}",
                 digest=sec_excerpt,
                 section_guideline=guideline_section_blocks[sec_idx],
+                guideline_preamble=compact_preamble,
                 word_weight=len(sec_excerpt.split()),  # raw word count; normalised below
             )
 
@@ -607,16 +654,29 @@ def tokenize_groups(
 
     For section-level groups (``group.section_guideline`` is non-empty) the
     user message is a composite of the guideline section and the digest
-    excerpt.  This ensures the model sees *what the section must cover* as
-    well as *what research coverage already exists*, making variant-level
-    training gradients non-degenerate (all three guideline variants of the
-    same article would otherwise produce identical ``input_ids``).
+    excerpt, with a compact article context sandwiched in between.
+
+    Input ordering (lost-in-the-middle mitigation):
+      1. Section guideline  — task definition; front-loaded for strong attention
+      2. Article context    — compact variant signal (~3 lines) in the middle
+      3. Research coverage  — evidence; last, immediately before generation
+
+    This ensures the model sees *what the section must cover* as well as
+    *what research coverage already exists*, making variant-level training
+    gradients non-degenerate (all three guideline variants of the same
+    article would otherwise produce identical ``input_ids``).
     """
     for group in groups:
         if group.section_guideline:
+            article_ctx = (
+                f"## Article context\n{group.guideline_preamble}\n\n"
+                if group.guideline_preamble
+                else ""
+            )
             user_content = (
                 "## Section guideline\n"
                 f"{group.section_guideline}\n\n"
+                f"{article_ctx}"
                 "## Current research coverage for this section\n"
                 f"{group.digest}"
             )

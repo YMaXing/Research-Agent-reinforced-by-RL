@@ -1,0 +1,317 @@
+[
+  {
+    "label": "02_workflows_vs_agents__minimal",
+    "digest": "../../rl_training_data/bases/02_workflows_vs_agents__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/02_workflows_vs_agents__var_minimal/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      2.1381781149593423e-30,
+      1.9647905116418186e-13,
+      0.20789533177381578,
+      0.7908349162961239,
+      0.001269737989879263,
+      1.3939984653343995e-08
+    ]
+  },
+  {
+    "label": "02_workflows_vs_agents__standard",
+    "digest": "../../rl_training_data/bases/02_workflows_vs_agents__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/02_workflows_vs_agents__var_standard/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      2.7457918797009577e-20,
+      0.2078953288120549,
+      0.006277895077488637,
+      0.7718617467121435,
+      7.288795163754316e-11,
+      0.013965029325424951
+    ]
+  },
+  {
+    "label": "02_workflows_vs_agents__demanding",
+    "digest": "../../rl_training_data/bases/02_workflows_vs_agents__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/02_workflows_vs_agents__var_demanding/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      2.991248781978901e-12,
+      2.4564898435138974e-24,
+      1.728546193344028e-14,
+      0.5365763432202871,
+      1.4230227635636626e-18,
+      0.46342365677670433
+    ]
+  },
+  {
+    "label": "03_context_engineering__minimal",
+    "digest": "../../rl_training_data/bases/03_context_engineering__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/03_context_engineering__var_minimal/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      1.4372851204934245e-26,
+      4.699615708103929e-05,
+      0.10910949869038394,
+      0.8907898033300512,
+      5.325152773648455e-05,
+      4.5029474723268054e-07
+    ]
+  },
+  {
+    "label": "03_context_engineering__standard",
+    "digest": "../../rl_training_data/bases/03_context_engineering__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/03_context_engineering__var_standard/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      1.4231261880874583e-25,
+      1.0888513032699432e-11,
+      0.31624623466783813,
+      0.49198683151338,
+      1.4592671164363122e-05,
+      0.191752341136729
+    ]
+  },
+  {
+    "label": "03_context_engineering__demanding",
+    "digest": "../../rl_training_data/bases/03_context_engineering__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/03_context_engineering__var_demanding/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      2.4929303526656026e-14,
+      1.4184950214601735e-25,
+      0.10915006994548393,
+      0.49553485178479,
+      1.3409983733475342e-13,
+      0.3953150782695671
+    ]
+  },
+  {
+    "label": "05_workflow_patterns__minimal",
+    "digest": "../../rl_training_data/bases/05_workflow_patterns__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/05_workflow_patterns__var_minimal/article_guideline.md",
+    "preset": 0,
+    "preset_name": "baseline (no exploration)",
+    "probs": [
+      0.6946362741883649,
+      0.09940705805284808,
+      1.332237850823134e-06,
+      0.11414387778980399,
+      4.493544814955305e-08,
+      0.09181141279568396
+    ]
+  },
+  {
+    "label": "05_workflow_patterns__standard",
+    "digest": "../../rl_training_data/bases/05_workflow_patterns__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/05_workflow_patterns__var_standard/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      2.7976180105384974e-21,
+      1.0136065216411894e-13,
+      0.22704714542564125,
+      0.43301687045874354,
+      2.0341987989730058e-10,
+      0.33993598391209395
+    ]
+  },
+  {
+    "label": "05_workflow_patterns__demanding",
+    "digest": "../../rl_training_data/bases/05_workflow_patterns__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/05_workflow_patterns__var_demanding/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      2.7976184198745328e-21,
+      4.2704085776509353e-16,
+      0.22686457655332795,
+      0.5497859457887727,
+      3.909669356804953e-07,
+      0.22334908669096323
+    ]
+  },
+  {
+    "label": "06_tools__minimal",
+    "digest": "../../rl_training_data/bases/06_tools__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/06_tools__var_minimal/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      4.6684329968992334e-07,
+      1.6621711101914074e-31,
+      6.813606301845783e-13,
+      0.7329640867615257,
+      0.09841088595966237,
+      0.16862456043483096
+    ]
+  },
+  {
+    "label": "06_tools__standard",
+    "digest": "../../rl_training_data/bases/06_tools__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/06_tools__var_standard/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      5.7736371009764574e-11,
+      1.2745662957888637e-33,
+      4.641615037760762e-18,
+      0.529156402551497,
+      2.5970482686441747e-05,
+      0.4708176269080802
+    ]
+  },
+  {
+    "label": "06_tools__demanding",
+    "digest": "../../rl_training_data/bases/06_tools__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/06_tools__var_demanding/article_guideline.md",
+    "preset": 5,
+    "preset_name": "depth_breadth_depth (3 rounds)",
+    "probs": [
+      1.4274264623391982e-11,
+      4.4843334258943255e-28,
+      8.33991841985506e-07,
+      0.38834208329720654,
+      0.00471321186931442,
+      0.6069438708273629
+    ]
+  },
+  {
+    "label": "08_react_practice__minimal",
+    "digest": "../../rl_training_data/bases/08_react_practice__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/08_react_practice__var_minimal/article_guideline.md",
+    "preset": 0,
+    "preset_name": "baseline (no exploration)",
+    "probs": [
+      0.8567849003259077,
+      0.0010425418557007187,
+      0.1421725577322321,
+      3.5068912110572055e-22,
+      1.2959125075970475e-27,
+      8.615944036197805e-11
+    ]
+  },
+  {
+    "label": "08_react_practice__standard",
+    "digest": "../../rl_training_data/bases/08_react_practice__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/08_react_practice__var_standard/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      0.1997126408292961,
+      1.169524200127606e-08,
+      0.15517241204637755,
+      0.544604278334035,
+      5.0692289853921374e-08,
+      0.1005106064027595
+    ]
+  },
+  {
+    "label": "08_react_practice__demanding",
+    "digest": "../../rl_training_data/bases/08_react_practice__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/08_react_practice__var_demanding/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      3.4341017405731587e-09,
+      3.2425285190283714e-20,
+      2.251164366898527e-19,
+      0.6384867273945508,
+      0.07758141561496727,
+      0.2839318535563801
+    ]
+  },
+  {
+    "label": "09_RAG__minimal",
+    "digest": "../../rl_training_data/bases/09_RAG__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/09_RAG__var_minimal/article_guideline.md",
+    "preset": 0,
+    "preset_name": "baseline (no exploration)",
+    "probs": [
+      0.4682337225132064,
+      0.18025777884708533,
+      3.948176777914215e-22,
+      0.3354343170771057,
+      0.015764550765567927,
+      0.0003096307970347041
+    ]
+  },
+  {
+    "label": "09_RAG__standard",
+    "digest": "../../rl_training_data/bases/09_RAG__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/09_RAG__var_standard/article_guideline.md",
+    "preset": 5,
+    "preset_name": "depth_breadth_depth (3 rounds)",
+    "probs": [
+      3.593423806956706e-07,
+      1.7577205494842207e-10,
+      0.33988534442151047,
+      0.30891436932173966,
+      7.366083361286424e-07,
+      0.35119919013026096
+    ]
+  },
+  {
+    "label": "09_RAG__demanding",
+    "digest": "../../rl_training_data/bases/09_RAG__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/09_RAG__var_demanding/article_guideline.md",
+    "preset": 5,
+    "preset_name": "depth_breadth_depth (3 rounds)",
+    "probs": [
+      4.522741419780856e-09,
+      1.0652871531644074e-21,
+      2.2381797376545567e-06,
+      0.29622848623722225,
+      1.7283243675254543e-07,
+      0.7037690982278618
+    ]
+  },
+  {
+    "label": "11_multimodal__minimal",
+    "digest": "../../rl_training_data/bases/11_multimodal__var_minimal/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/11_multimodal__var_minimal/article_guideline.md",
+    "preset": 0,
+    "preset_name": "baseline (no exploration)",
+    "probs": [
+      0.7274119759808932,
+      0.10859883930646717,
+      0.09683898568781936,
+      0.06715019902320271,
+      6.470216407449362e-13,
+      9.704610945579264e-13
+    ]
+  },
+  {
+    "label": "11_multimodal__standard",
+    "digest": "../../rl_training_data/bases/11_multimodal__var_standard/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/11_multimodal__var_standard/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      1.1825256957364685e-07,
+      2.0145500363747367e-18,
+      5.957666832330932e-15,
+      0.7792538473456391,
+      1.3948166831118118e-08,
+      0.2207460204536186
+    ]
+  },
+  {
+    "label": "11_multimodal__demanding",
+    "digest": "../../rl_training_data/bases/11_multimodal__var_demanding/research_digest.md",
+    "guideline": "../../writing_workflow/inputs/evals/dataset/data/11_multimodal__var_demanding/article_guideline.md",
+    "preset": 3,
+    "preset_name": "depth_then_breadth (2 rounds)",
+    "probs": [
+      0.000912772660585179,
+      3.761864601188857e-19,
+      1.1640327469955608e-30,
+      0.732568314867502,
+      0.0207726179196254,
+      0.2457462945522875
+    ]
+  }
+]

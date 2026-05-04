@@ -34,13 +34,13 @@ _BASES_DIR = _REPO_ROOT / "rl_training_data" / "bases"
 _EPISODES_DIR = _REPO_ROOT / "rl_training_data" / "episodes"
 _DEFAULT_CHECKPOINT = (
     _REPO_ROOT / "rl_training_data" / "checkpoints" / "tasks"
-    / "task_20260420_223150" / "best"
+    / "task_20260502_123123" / "best"
 )
 
 # ---------------------------------------------------------------------------
 # Article sets
 # ---------------------------------------------------------------------------
-ALL_ARTICLES = [
+_BASE_ARTICLES = [
     "02_workflows_vs_agents",
     "03_context_engineering",
     "05_workflow_patterns",
@@ -49,11 +49,18 @@ ALL_ARTICLES = [
     "09_RAG",
     "11_multimodal",
 ]
-_DEFAULT_TRAIN_ARTICLES = [
+_VARIANTS = ["minimal", "standard", "demanding"]
+ALL_ARTICLES = [
+    f"{base}__var_{v}" for base in _BASE_ARTICLES for v in _VARIANTS
+]
+_DEFAULT_TRAIN_BASES = [
     "03_context_engineering",
     "05_workflow_patterns",
     "08_react_practice",
     "11_multimodal",
+]
+_DEFAULT_TRAIN_ARTICLES = [
+    f"{base}__var_{v}" for base in _DEFAULT_TRAIN_BASES for v in _VARIANTS
 ]
 
 # ---------------------------------------------------------------------------
@@ -80,7 +87,7 @@ _PRESET_NAMES = {
 }
 
 
-def _compute_reward(scores: dict, preset_id: int) -> float:
+def _compute_reward(scores: dict, preset_id: int, variant_level: str = "standard") -> float:
     cc = scores["ground_truth_core_content"]
     fl = scores["ground_truth_flow"]
     de = scores["ground_truth_depth_enhancement"]
@@ -89,10 +96,21 @@ def _compute_reward(scores: dict, preset_id: int) -> float:
     ga = scores["user_intent_guideline_adherence"]
     ra = scores["user_intent_research_anchoring"]
     nr = _PRESET_ROUNDS[preset_id]
-    gt_base = 0.20 * cc + 0.20 * fl
-    explore = cp * (0.60 * de + 0.40 * be) * 0.30
-    user_intent = (0.50 * ga + 0.50 * ra) * 0.30
-    cost = -0.02 * nr
+    if variant_level == "minimal":
+        gt_base     = 0.05 * cc + 0.05 * fl
+        explore     = 0.0
+        user_intent = 0.80 * ga + 0.10 * ra
+        cost        = -0.02 * nr
+    elif variant_level == "demanding":
+        gt_base     = 0.12 * cc + 0.08 * fl
+        explore     = cp * (0.55 * de + 0.35 * be) * 0.50
+        user_intent = (0.60 * ga + 0.40 * ra) * 0.25
+        cost        = -0.005 * nr
+    else:  # "standard"
+        gt_base     = 0.20 * cc + 0.20 * fl
+        explore     = cp * (0.60 * de + 0.40 * be) * 0.30
+        user_intent = (0.50 * ga + 0.50 * ra) * 0.30
+        cost        = -0.02 * nr
     return gt_base + explore + user_intent + cost
 
 
@@ -148,7 +166,9 @@ def _match_reasoning_to_digest(
 # Oracle computation
 # ---------------------------------------------------------------------------
 
-def compute_oracle_section_presets(article: str) -> list[tuple[str, int, list[float]]]:
+def compute_oracle_section_presets(
+    article: str, variant_level: str = "standard"
+) -> list[tuple[str, int, list[float]]]:
     """Return [(section_title, oracle_preset, rewards[0..5])] for each section."""
     digest = (_BASES_DIR / article / "research_digest.md").read_text(encoding="utf-8")
     digest_sections = _extract_digest_sections(digest)
@@ -171,21 +191,18 @@ def compute_oracle_section_presets(article: str) -> list[tuple[str, int, list[fl
                         matched = rscore
                         break
                 section_scores[dim] = float(matched if matched is not None else 0)
-            rewards.append(_compute_reward(section_scores, p))
+            rewards.append(_compute_reward(section_scores, p, variant_level))
         oracle = int(rewards.index(max(rewards)))
         results.append((sec_title, oracle, rewards))
     return results
 
 
 def compute_oracle_article_preset(article: str) -> tuple[int, list[float]]:
-    """Return (oracle_preset, rewards[0..5]) from article-level scores.json."""
-    rewards = []
-    for p in range(_NUM_PRESETS):
-        ep_dir = _EPISODES_DIR / f"{article}__preset{p}"
-        scores = json.loads((ep_dir / "scores.json").read_text(encoding="utf-8"))
-        rewards.append(_compute_reward(scores, p))
-    oracle = int(rewards.index(max(rewards)))
-    return oracle, rewards
+    """Return (oracle_preset, rewards[0..5]) from article_oracle.json."""
+    data = json.loads(
+        (_BASES_DIR / article / "article_oracle.json").read_text(encoding="utf-8")
+    )
+    return data["oracle_preset"], data["article_rewards"]
 
 
 # ---------------------------------------------------------------------------
@@ -224,9 +241,14 @@ def evaluate(
         for article in articles:
             print(f"\n--- {article} ---")
             digest = (_BASES_DIR / article / "research_digest.md").read_text(encoding="utf-8")
+            variant_level = (
+                "minimal" if "__var_minimal" in article
+                else "demanding" if "__var_demanding" in article
+                else "standard"
+            )
 
             # Oracle per section
-            oracle_sections = compute_oracle_section_presets(article)
+            oracle_sections = compute_oracle_section_presets(article, variant_level)
             oracle_article, article_rewards = compute_oracle_article_preset(article)
 
             # Model predictions per section (raw section call, no aggregation)
@@ -276,8 +298,8 @@ def evaluate(
     print(f"\n{'='*70}")
     print("  SUMMARY")
     print(f"{'='*70}")
-    print(f"\n  {'Article':<35} {'Split':>5}  {'Sec Acc':>8}  {'Article':>9}")
-    print(f"  {'-'*35} {'-'*5}  {'-'*8}  {'-'*9}")
+    print(f"\n  {'Article':<40} {'Split':>5}  {'Sec Acc':>8}  {'Article':>9}")
+    print(f"  {'-'*40} {'-'*5}  {'-'*8}  {'-'*9}")
 
     train_sec_c = train_sec_t = train_art_c = train_art_t = 0
     test_sec_c = test_sec_t = test_art_c = test_art_t = 0
@@ -285,7 +307,7 @@ def evaluate(
     for article, r in all_results.items():
         art_str = f"P{r['oracle_article']}→P{r['pred_article']} {'✓' if r['article_match'] else '✗'}"
         print(
-            f"  {article:<35} {r['split']:>5}  "
+            f"  {article:<40} {r['split']:>5}  "
             f"{r['sec_correct']}/{r['sec_total']} ({r['sec_acc']:.0%}){'':<2}  {art_str}"
         )
         if r["split"] == "TRAIN":
@@ -299,17 +321,17 @@ def evaluate(
             test_art_c += int(r["article_match"])
             test_art_t += 1
 
-    print(f"\n  {'TRAIN totals':<35} {'':>5}  "
+    print(f"\n  {'TRAIN totals':<40} {'':>5}  "
           f"{train_sec_c}/{train_sec_t} ({train_sec_c/train_sec_t:.0%})    "
           f"{train_art_c}/{train_art_t} ({train_art_c/train_art_t:.0%})")
-    print(f"  {'TEST totals':<35} {'':>5}  "
+    print(f"  {'TEST totals':<40} {'':>5}  "
           f"{test_sec_c}/{test_sec_t} ({test_sec_c/test_sec_t:.0%})    "
           f"{test_art_c}/{test_art_t} ({test_art_c/test_art_t:.0%})")
     all_sec_c = train_sec_c + test_sec_c
     all_sec_t = train_sec_t + test_sec_t
     all_art_c = train_art_c + test_art_c
     all_art_t = train_art_t + test_art_t
-    print(f"  {'ALL totals':<35} {'':>5}  "
+    print(f"  {'ALL totals':<40} {'':>5}  "
           f"{all_sec_c}/{all_sec_t} ({all_sec_c/all_sec_t:.0%})    "
           f"{all_art_c}/{all_art_t} ({all_art_c/all_art_t:.0%})")
 
@@ -359,11 +381,17 @@ def main() -> None:
     if not args.checkpoint.exists():
         sys.exit(f"ERROR: checkpoint not found: {args.checkpoint}")
 
-    train_articles = (
-        [a.strip() for a in args.train_articles.split(",")]
-        if args.train_articles
-        else _DEFAULT_TRAIN_ARTICLES
-    )
+    if args.train_articles:
+        raw = [a.strip() for a in args.train_articles.split(",")]
+        train_articles: list[str] = []
+        for a in raw:
+            if "__var_" in a:
+                train_articles.append(a)
+            else:
+                # Base name supplied: expand to all 3 variants
+                train_articles.extend(f"{a}__var_{v}" for v in _VARIANTS)
+    else:
+        train_articles = _DEFAULT_TRAIN_ARTICLES
     # Validate
     for a in train_articles:
         if a not in ALL_ARTICLES:
