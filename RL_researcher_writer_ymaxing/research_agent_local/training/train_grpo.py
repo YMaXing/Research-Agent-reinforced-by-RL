@@ -8,6 +8,7 @@ Usage (from research_agent_local/training/):
   uv run python train_grpo.py --dry-run       # verify setup
   uv run python train_grpo.py                  # full training
   uv run python train_grpo.py --epochs 200 --lr 5e-5 --beta 0.1
+    uv run python train_grpo.py --init-adapter ../../rl_training_data/checkpoints/tasks/task_*/best
 """
 
 import argparse
@@ -23,7 +24,7 @@ from typing import Any
 
 import torch
 import torch.nn.functional as F
-from peft import LoraConfig, TaskType, get_peft_model, prepare_model_for_kbit_training
+from peft import LoraConfig, PeftModel, TaskType, get_peft_model, prepare_model_for_kbit_training
 from torch.utils.tensorboard import SummaryWriter
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
@@ -1123,6 +1124,16 @@ def main() -> None:
         "--resume", action="store_true",
         help="Resume training from the saved state of --task-id",
     )
+    parser.add_argument(
+        "--init-adapter",
+        type=Path,
+        default=None,
+        help=(
+            "Initialize LoRA weights from an existing PEFT adapter directory "
+            "(for example a previous task's best/ checkpoint), then start a "
+            "fresh optimizer and LR schedule. Do not combine with --resume."
+        ),
+    )
     args = parser.parse_args()
 
     log.info("=" * 65)
@@ -1150,6 +1161,10 @@ def main() -> None:
         sys.exit(
             f"ERROR: No saved state found for task '{task_id}' at {state_path}."
         )
+    if args.resume and args.init_adapter is not None:
+        sys.exit("ERROR: --resume and --init-adapter are mutually exclusive.")
+    if args.init_adapter is not None and not args.init_adapter.exists():
+        sys.exit(f"ERROR: init adapter not found: {args.init_adapter}")
     if not args.resume and task_dir.exists():
         log.warning(
             f"Task directory already exists: {task_dir}. "
@@ -1214,18 +1229,26 @@ def main() -> None:
     # ------------------------------------------------------------------
     log.info("\n--- Step 6: Apply LoRA adapters ---")
     model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
-    lora_config = LoraConfig(
-        task_type=TaskType.CAUSAL_LM,
-        r=args.lora_r,
-        lora_alpha=args.lora_alpha,
-        lora_dropout=args.lora_dropout,
-        target_modules=[
-            "q_proj", "k_proj", "v_proj", "o_proj",
-            "gate_proj", "up_proj", "down_proj",
-        ],
-        bias="none",
-    )
-    model = get_peft_model(model, lora_config)
+    if args.init_adapter is not None:
+        log.info(f"Loading initial LoRA adapter from: {args.init_adapter}")
+        model = PeftModel.from_pretrained(
+            model,
+            str(args.init_adapter),
+            is_trainable=True,
+        )
+    else:
+        lora_config = LoraConfig(
+            task_type=TaskType.CAUSAL_LM,
+            r=args.lora_r,
+            lora_alpha=args.lora_alpha,
+            lora_dropout=args.lora_dropout,
+            target_modules=[
+                "q_proj", "k_proj", "v_proj", "o_proj",
+                "gate_proj", "up_proj", "down_proj",
+            ],
+            bias="none",
+        )
+        model = get_peft_model(model, lora_config)
     # use_reentrant=False avoids peft/autograd compatibility issues
     model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
     model.print_trainable_parameters()
