@@ -5,10 +5,10 @@ Trains Qwen3-4B to select optimal exploration presets (0-5) given
 exploitation digests as context. Uses offline GRPO with precomputed rewards.
 
 Usage (from research_agent_local/training/):
-  uv run python train_grpo.py --dry-run       # verify setup
-  uv run python train_grpo.py                  # full training
-  uv run python train_grpo.py --epochs 200 --lr 5e-5 --beta 0.1
-    uv run python train_grpo.py --init-adapter ../../rl_training_data/checkpoints/tasks/task_*/best
+    uv run python train_grpo.py --dry-run       # verify setup
+    uv run python train_grpo.py                 # full training
+    uv run python train_grpo.py --epochs 200 --lr 5e-5 --beta 0.1
+    uv run python train_grpo.py --init-adapter ../../rl_training_data/checkpoints/tasks/task_id/best
 """
 
 import argparse
@@ -24,7 +24,13 @@ from typing import Any
 
 import torch
 import torch.nn.functional as F
-from peft import LoraConfig, PeftModel, TaskType, get_peft_model, prepare_model_for_kbit_training
+from peft import (
+    LoraConfig,
+    PeftModel,
+    TaskType,
+    get_peft_model,
+    prepare_model_for_kbit_training,
+)
 from torch.utils.tensorboard import SummaryWriter
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
