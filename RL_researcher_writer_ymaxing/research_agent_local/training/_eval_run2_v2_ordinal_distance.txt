@@ -97,3 +97,131 @@ Outside 0.10 reward          : 6/147  (4.1%)
   - One catastrophic miss: 06_tools__var_demanding section
     "Implementing a tool calling framework from scratch"  (P5→P1, loss=0.56)
     accounts for a disproportionate share of total E[R] gap.
+
+
+========================================================================
+ G. P4-as-oracle drill-down  (oracle = P4, pred ≠ P4)
+========================================================================
+  P4 oracles: 11 total, 4 missed → recall = 63.6% (worst class)
+  Variant breakdown of misses: standard 2/5, demanding 2/6, minimal 0/0
+
+  Decisiveness gap (mean oracle-vs-runnerup margin):
+    misses : 0.0387
+    hits   : 0.1043     ← ~3× higher
+
+  Conclusion: P4 misses are not size- or content-driven (weight_frac and
+  digest_words match P4 hits).  They are reward-table near-ties between
+  P4 and a neighbour:
+    - "Building a Basic Routing Workflow"  P4=0.82 / P5=0.82  (literal tie)
+    - "Conclusion"                          P4=0.71 / P5=0.71  (literal tie)
+    - "Understanding context engineering"   P4=0.74 / P3=0.66  (margin 0.08)
+    - "Going through popular tools…"        P4=0.735/ P2=0.66  (margin 0.075)
+  P4's reward weights (bal_depth_breadth) sit between P3 and P5 in weight
+  space, so any tied configuration lands on a neighbour.  P4 is also the
+  smallest oracle class (only 11/147 sections).
+
+
+========================================================================
+ H. Medium-margin misses  (0.05 ≤ reward_loss ≤ 0.10)  —  15 / 147 (10.2%)
+========================================================================
+  Per-class share:
+    P0: 4/48 ( 8%)   P1: 4/26 (15%)   P2: 2/30 ( 7%)
+    P3: 1/19 ( 5%)   P4: 3/11 (27%)   P5: 1/13 ( 8%)
+    → P4 over-represented; baseline P0/P1 contribute most by raw count.
+
+  Direction: 11 of 15 are over-predictions (Δ > 0); 4 are under.
+  Variant : demanding 6, standard 6, minimal 3.
+
+  Reward-vector top-2 gap (clarity of oracle pick):
+    medium-miss group : mean 0.060, median 0.070
+    all 147 sections  : mean 0.077, median 0.030
+    → these sections actually have CLEARER reward winners than median;
+      this is a model-precision issue, not data ambiguity.
+
+  Where prediction ranks within the 6-preset reward vector:
+    rank 2: 8     rank 3: 4     rank 4: 1     rank 6: 2
+    → the model has the right neighbourhood, wrong cell.
+
+  Notable cluster: 5 of 15 are "Introduction" / "Conclusion" sections —
+  the model reaches for richer presets on intro/conclusion content that
+  should default cheap.  Section-position prior would address these.
+
+
+========================================================================
+ I. The single P5→P1 disaster  (06_tools__var_demanding, loss = 0.56)
+========================================================================
+  Section : "Implementing a tool calling framework from scratch"  (idx 4)
+  Oracle  : P5  (margin 0.17 over runner-up P3 — a decisive, not tied, oracle)
+  Pred    : P1  (the second-WORST preset for this section)
+
+  Reward vector (demanding variant):
+    P0:  0.120
+    P1: -0.005   ← PRED
+    P2: -0.010
+    P3:  0.385
+    P4:  0.380
+    P5:  0.555   ← ORACLE
+
+  Same section across the 3 variants:
+    minimal   oracle=P0 pred=P0 loss=0.000  rewards [0.95 0.93 0.01 -0.04 -0.01 0.89]
+    standard  oracle=P5 pred=P5 loss=0.000  rewards [0.50 0.33 0.66  0.46  0.56 0.79]
+    demanding oracle=P5 pred=P1 loss=0.560  rewards [0.12 -0.01 -0.01 0.39 0.38 0.56]
+
+  Key finding: this is a model failure on the variant signal, not a
+  reward-table bug.  The reward landscapes for the same content differ
+  radically across variants (by design), and the model fails to attend to
+  variant=demanding for this specific section.  All other sections of
+  06_tools__var_demanding also misbehave (over-shoot to P5 on cheap
+  sections, under-shoot to P1 on the genuinely-rich one), suggesting the
+  variant token is being mis-applied for the whole article.
+
+  Impact: single section accounts for ~20% of total E[R] gap to oracle.
+
+
+========================================================================
+ J. Reward-table sanity & training-quality flags  (for retraining)
+========================================================================
+  Near-tie prevalence (key result):
+    ≥2 presets within 0.01 of oracle (true ties): 22/147 (15.0%)
+    ≥2 presets within 0.03 of oracle             : 73/147 (49.7%)
+    ≥2 presets within 0.05 of oracle             : 91/147 (61.9%)
+    → half the dataset is reward-table ambiguous; section-accuracy
+      undersells true model quality.
+
+  Oracle class imbalance (severe):
+    P0: 48 (32.7%)   P1: 26 (17.7%)   P2: 30 (20.4%)
+    P3: 19 (12.9%)   P4: 11 ( 7.5%)   P5: 13 ( 8.8%)
+    → 4× more training signal on P0 than on P4.  Direct cause of the
+      regression-to-middle bias.
+
+  Per-variant decisiveness:
+    minimal   : mean margin 0.072, median 0.020, low-margin (<0.03) = 31/49
+    standard  : mean margin 0.073, median 0.040, low-margin (<0.03) = 20/49
+    demanding : mean margin 0.085, median 0.085, low-margin (<0.03) = 20/49
+    → minimal-variant is the noisiest training signal.
+
+  Rank distribution of model picks within section reward vector:
+    rank 1: 75 (51.0%)   rank 2: 44 (29.9%)   rank 3: 16 (10.9%)
+    rank 4:  7 ( 4.8%)   rank 5:  4 ( 2.7%)   rank 6:  1 ( 0.7%)
+    → 81% in top-2, 96% in top-3.  The base model is much stronger
+      than 51% section accuracy suggests; gains live in tie-breaking,
+      not in raw discrimination capacity.
+
+
+========================================================================
+ K. Headline conclusions for retraining strategy
+========================================================================
+  1. The model picks top-2 by reward in 81% of sections — it has the
+     right neighbourhood, wrong cell.  Improvement should target
+     near-ties, not raw classification.
+  2. Class imbalance (P0=33% vs P4=7.5%) drives regression-to-middle.
+     Variant-stratified oversampling or per-class loss weighting needed.
+  3. Half the sections are within 0.03 reward — the reward function
+     itself is the bottleneck.  Tightening it (extra signal, sharper
+     margins) is more leveraged than scaling the model.
+  4. Variant signal is unreliably attended-to (see 06_tools disaster).
+     A variant-aware curriculum (or stronger conditioning prompt) would
+     help the model differentiate same-content / different-variant cases.
+  5. The single P5→P1 catastrophe accounts for ~20% of the E[R] gap.
+     Worth investigating whether the variant token is reaching the
+     prompt correctly for this specific article.
