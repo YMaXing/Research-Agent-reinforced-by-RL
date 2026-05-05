@@ -1,0 +1,99 @@
+Ordinal-Distance Analysis  —  eval_run2_v2  (2026-05-04)
+Baseline eval: _eval_run2_v2.log  |  reward tables: rl_training_data/bases/*/article_oracle.json
+delta = pred_preset − oracle_preset   (positive = model picks higher complexity than oracle)
+
+Joined sections : 147
+Within 0.10 reward of oracle : 141/147 (95.9%)
+Outside 0.10 reward          : 6/147  (4.1%)
+
+========================================================================
+ A. Ordinal-distance distribution  (delta = pred − oracle)
+   Negative = model under-estimates complexity (picks simpler preset)
+   Positive = model over-estimates complexity  (picks richer preset)
+========================================================================
+    delta   count   % total   mean_loss   % within 0.10  histogram
+       -4       1      0.7%      0.5600            0.0%  █
+       -3       1      0.7%      0.0900          100.0%  █
+       -2       6      4.1%      0.0625           83.3%  ██████
+       -1       3      2.0%      0.0933           66.7%  ███
+       +0      75     51.0%      0.0000          100.0%  ███████████████████████████████████████████████████████████████████████████
+       +1      28     19.0%      0.0361           96.4%  ████████████████████████████
+       +2      15     10.2%      0.0437           93.3%  ███████████████
+       +3       8      5.4%      0.0231          100.0%  ████████
+       +4       5      3.4%      0.0580           80.0%  █████
+       +5       5      3.4%      0.0240          100.0%  █████
+
+========================================================================
+ B. Ordinal distance — within-0.10 group only  (96% of sections)
+========================================================================
+    delta   count    % of group   mean_loss
+       -3       1          0.7%      0.0900
+       -2       5          3.5%      0.0390
+       -1       2          1.4%      0.0500
+       +0      75         53.2%      0.0000
+       +1      27         19.1%      0.0307
+       +2      14          9.9%      0.0318
+       +3       8          5.7%      0.0231
+       +4       4          2.8%      0.0438
+       +5       5          3.5%      0.0240
+
+========================================================================
+ C. |delta| (unsigned step distance) × reward-loss tolerance
+========================================================================
+  abs_delta   n_total   n≤0.01   n≤0.03   n≤0.05   n≤0.10   n>0.10
+          0        75       75       75       75       75        0
+          1        31        5       21       23       29        2
+          2        21        3        9       15       19        2
+          3         9        2        6        7        9        0
+          4         6        0        1        2        4        2
+          5         5        0        4        4        5        0
+
+========================================================================
+ D. Complexity bias per oracle class  (mean signed delta)
+   Shows systematic over/under-shooting for each oracle preset
+========================================================================
+  oracle                                 n   mean Δ   median Δ  bias
+  P0 P0 baseline                     48    +1.58      +1.00  over-complex →
+  P1 P1 single_balanced              26    +0.85      +0.00  over-complex →
+  P2 P2 balanced_depth               30    +0.67      +0.00  over-complex →
+  P3 P3 depth_breadth                19    +0.21      +0.00  over-complex →
+  P4 P4 bal_depth_breadth            11    -0.73      +0.00  ← under-complex
+  P5 P5 depth_breadth_depth          13    -0.69      +0.00  ← under-complex
+
+========================================================================
+ E. The 6 genuinely-bad sections  (reward_loss > 0.10)
+========================================================================
+    loss     Δ   oracle   pred  article | section
+   0.560    -4  P5      P1   06_tools__var_demanding | Implementing a tool calling framework from scratch
+   0.210    +2  P2      P4   02_workflows_vs_agents__var_demanding | Exploring Common Patterns
+   0.180    +1  P3      P4   11_multimodal__var_demanding | Foundations of multimodal LLMs
+   0.180    -1  P5      P4   03_context_engineering__var_standard | Introduction: When prompt engineering breaks
+   0.180    -2  P4      P2   05_workflow_patterns__var_standard | Building a Basic Routing Workflow
+   0.115    +4  P0      P4   06_tools__var_demanding | Understanding why agents need tools
+
+========================================================================
+ F. Reward-loss heatmap  (oracle × signed delta)
+   Cell = mean reward_loss; "." = no sections at that combination
+========================================================================
+  oracle\Δ        -4    -3    -2    -1    +0    +1    +2    +3    +4    +5
+  P0 P0 baseline            .     .     .     .  0.000  0.021  0.040  0.020  0.062  0.024   n=48
+  P1 P1 single_balanced     .     .     .     .  0.000  0.060  0.027  0.010  0.040     .   n=26
+  P2 P2 balanced_depth      .     .  0.010  0.020  0.000  0.017  0.064  0.029     .     .   n=30
+  P3 P3 depth_breadth       .     .     .     .  0.000  0.080     .     .     .     .   n=19
+  P4 P4 bal_depth_bread     .  0.090  0.127  0.080  0.000     .     .     .     .     .   n=11
+  P5 P5 depth_breadth_d  0.560     .  0.050  0.180  0.000     .     .     .     .     .   n=13
+
+========================================================================
+ Notes
+========================================================================
+  - The model is strongly biased toward over-complexity (61% of sections
+    are exact or over-predict; only 8% under-predict).
+  - Regression-to-middle pattern: low-oracle sections get inflated toward
+    P2-P3; high-oracle sections (P4, P5) get deflated toward P3-P4.
+  - Over-shoots are cheap: higher presets cluster tightly in reward space,
+    so a +1/+2 overshoot typically costs < 0.05 reward.
+  - Under-shoots on P4/P5 are expensive (loss 0.08-0.56); the reward
+    function penalises complexity under-estimation more severely.
+  - One catastrophic miss: 06_tools__var_demanding section
+    "Implementing a tool calling framework from scratch"  (P5→P1, loss=0.56)
+    accounts for a disproportionate share of total E[R] gap.

@@ -88,6 +88,44 @@ _PRESET_NAMES = {
     5: "depth_breadth_depth (3 rounds)",
 }
 
+# Regex for guideline target word counts (mirrors compute_article_oracle).
+# Handles all formatting variants:
+#   "**Section length:** ~150 words"  (colon before closing **)
+#   "**Section length**: 650 words"   (colon after closing **)
+#   "**Section length**: 1,200 words" (comma thousands-separator)
+_SECTION_LEN_RE = re.compile(
+    r'\*\*Section length[^:]*:\*\*?\s*~?([\d,]+)\s*words',
+    re.IGNORECASE,
+)
+
+
+def _extract_section_target_lengths(
+    guideline: str,
+    n_sections: int,
+) -> list[int | None]:
+    """Return per-section guideline target word counts.
+
+    Splits the guideline by ``## Section N`` headers and searches each block
+    for the ``**Section length:** N words`` annotation.  Multiple hits in one
+    block (sub-section budgets) are summed.  Returns ``None`` for sections
+    with no annotation (caller falls back to digest word count).
+    """
+    header_re = re.compile(r'^## Section \d+ ?[-:] ?', re.MULTILINE)
+    splits = list(header_re.finditer(guideline))
+    if not splits:
+        return [None] * n_sections
+    result: list[int | None] = [None] * n_sections
+    for i, m in enumerate(splits):
+        if i >= n_sections:
+            break
+        start = m.start()
+        end = splits[i + 1].start() if i + 1 < len(splits) else len(guideline)
+        block = guideline[start:end]
+        hits = _SECTION_LEN_RE.findall(block)
+        if hits:
+            result[i] = sum(int(h.replace(',', '')) for h in hits)
+    return result
+
 
 # ---------------------------------------------------------------------------
 # Digest section parser (mirrors train_grpo._extract_digest_sections)
@@ -114,6 +152,18 @@ def _extract_digest_sections(digest: str) -> list[tuple[str, str]]:
             excerpt = excerpt[:gap_idx].strip()
         sections.append((title, excerpt))
     return sections
+
+
+def _extract_overall_gap_profile(digest: str) -> str:
+    """Extract the '## 3. Overall Gap Profile' block from the digest.
+
+    Returns the full block text (heading + bullets) stripped of trailing
+    whitespace, or empty string when no such block is present.
+    """
+    m = re.search(
+        r'(## 3\.\s*Overall Gap Profile.+?)(?=\n## |\Z)', digest, re.DOTALL
+    )
+    return m.group(1).strip() if m else ""
 
 
 def _extract_guideline_preamble(guideline: str) -> str:
@@ -242,6 +292,7 @@ class ExplorationStrategySelector:
         model_dir: str | Path = _DEFAULT_MODEL_DIR,
         adapter_dir: str | Path = _DEFAULT_ADAPTER_DIR,
         device: str | None = None,
+        temperature: float = 1.0,
     ) -> None:
         from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
         from peft import PeftModel
@@ -298,6 +349,7 @@ class ExplorationStrategySelector:
         # --- LoRA adapter ---
         self._model = PeftModel.from_pretrained(base_model, str(adapter_dir))
         self._model.eval()
+        self._temperature: float = temperature
 
     # ------------------------------------------------------------------
     # Public API
@@ -390,14 +442,16 @@ class ExplorationStrategySelector:
                 (chosen_preset, aggregated_probs, section_details)
 
             Each element of ``section_details`` is a dict with keys:
-                ``title``       — section heading string
-                ``excerpt``     — section text fed to the model
-                ``probs``       — probability vector (list[float] length 6)
-                ``chosen``      — argmax preset for this section alone
-                ``word_count``  — raw word count of the section excerpt
-                ``margin``      — top_prob − second_prob (raw confidence signal)
-                ``confidence``  — max(margin, _MIN_CONFIDENCE)
-                ``weight``      — effective_weight = word_count × confidence
+                ``title``         — section heading string
+                ``excerpt``       — section text fed to the model
+                ``probs``         — probability vector (list[float] length 6)
+                ``chosen``        — argmax preset for this section alone
+                ``target_words``  — guideline target word count (None if absent)
+                ``word_count``    — actual digest word count (fallback base weight)
+                ``margin``        — top_prob − second_prob (raw confidence signal)
+                ``confidence``    — max(margin, _MIN_CONFIDENCE)
+                ``weight``        — effective_weight = base_weight × confidence
+                                    where base_weight = target_words ?? word_count
 
             The ``chosen_preset`` is the argmax of the section-weighted
             aggregate probability vector.  Callers can inspect
@@ -417,8 +471,13 @@ class ExplorationStrategySelector:
         Core aggregation logic shared by predict_article and
         predict_article_verbose.
 
-        Section probabilities are weighted by word count, normalised, and
-        the argmax of the aggregate is returned directly.
+        Section base weights come from the guideline ``**Section length: N
+        words**`` targets (matching the oracle definition in
+        ``compute_article_oracle.py``), falling back to actual digest word
+        count when no target annotation is present.  The base weight is then
+        multiplied by the per-section model confidence (confidence-gated soft
+        vote), so decisive sections dominate while near-uniform ones are
+        down-weighted.
 
         When ``guideline`` is provided, each section call receives its
         matching guideline block (positional or fuzzy-matched), reproducing
@@ -448,25 +507,42 @@ class ExplorationStrategySelector:
             else ""
         )
 
+        # Overall Gap Profile extracted once and injected into every section query
+        # (I1 zero-shot experiment: gives the model the article-global exploration
+        # signal — "Key insight for exploration strategy" — that was previously
+        # invisible to all per-section calls).
+        overall_gap_profile = _extract_overall_gap_profile(digest)
+
+        # Guideline target word counts — base weights matching the oracle
+        # definition in compute_article_oracle.py.  None entries fall back to
+        # actual digest word count so every section has a non-zero base weight.
+        target_lengths: list[int | None] = (
+            _extract_section_target_lengths(guideline, len(sections))
+            if guideline
+            else [None] * len(sections)
+        )
+
         # --- Section-level confidence-gated soft vote ---
         # Each section's contribution is scaled by:
-        #   effective_weight = word_count × confidence
-        # where confidence = max(top_prob − second_prob, _MIN_CONFIDENCE).
-        # This preserves the full soft probability distribution (no hard-vote
-        # information loss) while down-weighting sections where the model is
-        # nearly uniform over its top two choices.  Decisive sections (large
-        # margin) dominate; near-tied sections contribute proportionally less.
+        #   effective_weight = base_weight × confidence
+        # where base_weight = guideline target word count (fallback: digest
+        # word count) and confidence = max(top_prob − second_prob, _MIN_CONFIDENCE).
+        # Using guideline target lengths as the base weight aligns the
+        # article-level aggregation with the oracle definition, while the
+        # confidence factor still down-weights near-uniform sections.
         agg = [0.0] * _NUM_PRESETS
         details: list[dict] = []
-        for (title, excerpt), g_block in zip(sections, guideline_blocks):
+        for (title, excerpt), g_block, tgt_len in zip(sections, guideline_blocks, target_lengths):
             sec_chosen, sec_probs = self._predict_section(
-                excerpt, guideline_block=g_block, guideline_preamble=guideline_preamble
+                excerpt, guideline_block=g_block, guideline_preamble=guideline_preamble,
+                overall_gap_profile=overall_gap_profile,
             )
-            word_count = max(len(excerpt.split()), 1)
+            digest_word_count = max(len(excerpt.split()), 1)
+            base_weight = tgt_len if tgt_len is not None else digest_word_count
             sorted_probs = sorted(sec_probs, reverse=True)
             margin = sorted_probs[0] - sorted_probs[1]
             confidence = max(margin, _MIN_CONFIDENCE)
-            effective_weight = word_count * confidence
+            effective_weight = base_weight * confidence
             for i, p in enumerate(sec_probs):
                 agg[i] += p * effective_weight
             if verbose:
@@ -475,7 +551,8 @@ class ExplorationStrategySelector:
                     "excerpt": excerpt,
                     "probs": sec_probs,
                     "chosen": sec_chosen,
-                    "word_count": word_count,
+                    "target_words": tgt_len,
+                    "word_count": digest_word_count,
                     "margin": margin,
                     "confidence": confidence,
                     "weight": effective_weight,
@@ -497,6 +574,7 @@ class ExplorationStrategySelector:
         excerpt: str,
         guideline_block: str = "",
         guideline_preamble: str = "",
+        overall_gap_profile: str = "",
     ) -> tuple[int, list[float]]:
         """Run inference for one section with the section-level system prompt.
 
@@ -507,7 +585,8 @@ class ExplorationStrategySelector:
         Input ordering (lost-in-the-middle mitigation):
           1. Section guideline  — task definition; front-loaded for strong attention
           2. Article context    — compact variant signal (~3 lines) in the middle
-          3. Research coverage  — evidence; last, immediately before generation
+          3. Overall gap profile — article-global exploration signal (I1 experiment)
+          4. Research coverage  — evidence; last, immediately before generation
 
         ``guideline_preamble`` must already be the *compact* form produced by
         ``_extract_compact_preamble`` (done once in ``_aggregate``).
@@ -518,10 +597,16 @@ class ExplorationStrategySelector:
                 if guideline_preamble
                 else ""
             )
+            gap_ctx = (
+                f"{overall_gap_profile}\n\n"
+                if overall_gap_profile
+                else ""
+            )
             user_content = (
                 "## Section guideline\n"
                 f"{guideline_block}\n\n"
                 f"{article_ctx}"
+                f"{gap_ctx}"
                 "## Current research coverage for this section\n"
                 f"{excerpt}"
             )
@@ -530,7 +615,8 @@ class ExplorationStrategySelector:
         input_ids = self._build_input_ids(user_content, system_prompt=_SECTION_SYSTEM_PROMPT)
         with torch.no_grad():
             logits = self._model(input_ids.to(self.device)).logits[0, -1, :]
-            probs = F.softmax(logits.float()[self._action_ids_t.to(self.device)], dim=-1)
+            action_logits = logits.float()[self._action_ids_t.to(self.device)]
+            probs = F.softmax(action_logits / self._temperature, dim=-1)
         probs_list = probs.cpu().tolist()
         chosen = int(probs.argmax().item())
         return chosen, probs_list
@@ -572,9 +658,10 @@ def _print_result(
                     f"P{i}={d['probs'][i]:.3f}{'*' if i == d['chosen'] else ' '}"
                     for i in range(_NUM_PRESETS)
                 )
-                word_c = d.get('word_count', int(d.get('weight', 0)))
+                word_c = d.get('target_words') or d.get('word_count', int(d.get('weight', 0)))
+                tgt_s = f"(tgt)" if d.get('target_words') is not None else "(dig)"
                 conf_s = f"  m={d['margin']:.2f}" if 'margin' in d else ''
-                print(f"  [{word_c:4d}w{conf_s}]  {d['title']}")
+                print(f"  [{word_c:4d}w{tgt_s}{conf_s}]  {d['title']}")
                 print(f"              {bar}")
         print("\nAggregated preset probabilities:")
         for i, name in _PRESET_NAMES.items():

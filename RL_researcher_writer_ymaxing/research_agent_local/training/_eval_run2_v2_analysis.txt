@@ -1,0 +1,140 @@
+==============================================================================
+ 1. Per-variant accuracy
+==============================================================================
+  Variant       Section acc         Article acc   
+  minimal       27/49 = 55.1%      3/7 = 42.9%
+  standard      26/49 = 53.1%      5/7 = 71.4%
+  demanding     22/49 = 44.9%      3/7 = 42.9%
+
+==============================================================================
+ 2. Section-level confusion matrix  (rows=oracle, cols=predicted)
+==============================================================================
+  oracle\pred   P0    P1    P2    P3    P4    P5    total   recall
+  P0            15   16    5    3    4    5     48   31.2%
+  P1             0   14    5    5    1    1     26   53.8%
+  P2             2    1   15    3    5    4     30   50.0%
+  P3             0    0    0   15    4    0     19   78.9%
+  P4             0    1    2    1    7    0     11   63.6%
+  P5             0    1    0    2    1    9     13   69.2%
+  pred total     17   33   27   29   22   19
+
+==============================================================================
+ 3. Reward-gap analysis on section misses  (n=55)
+==============================================================================
+  Mean reward gap on misses : 0.0425
+  Median reward gap on misses: 0.0200
+  Max  reward gap on misses : 0.2100
+
+  Near-miss bucket  (gap):    count   pct
+    <=0.01 (tie)                9   16.4%
+    <=0.05 (close)             32   58.2%
+    <=0.10 (moderate)           9   16.4%
+    >0.10 (real)                5    9.1%
+
+  minimal    mean miss-gap = 0.0337  (n=16)
+  standard   mean miss-gap = 0.0478  (n=18)
+  demanding  mean miss-gap = 0.0445  (n=21)
+
+==============================================================================
+ 4. E[R] check (section-level)
+==============================================================================
+  Sections             : 147
+  E[R] uniform         : 0.4324
+  E[R] model           : 0.5478
+  E[R] oracle ceiling  : 0.5637
+  Gap closed           : 87.9%
+
+==============================================================================
+ 5. Article-level diagnostics
+==============================================================================
+  article                                   oracle pred  rank  ΔR(oracle-pred)  ΔR(uniform-pred)
+  ----------------------------------------  ------ ----  ----  ---------------  ----------------
+  02_workflows_vs_agents__var_demanding      P3    P3   ✓        +0.0000        -0.1255
+  02_workflows_vs_agents__var_minimal        P2    P1   #3       +0.1760        -0.1180
+  02_workflows_vs_agents__var_standard       P3    P3   ✓        +0.0000        -0.0960
+  03_context_engineering__var_demanding      P5    P4   #2       +0.0210        -0.0712
+  03_context_engineering__var_minimal        P2    P1   #3       +0.0220        -0.0772
+  03_context_engineering__var_standard       P4    P2   #2       +0.0130        -0.0265
+  05_workflow_patterns__var_demanding        P3    P4   #2       +0.0420        -0.0502
+  05_workflow_patterns__var_minimal          P0    P0   ✓        +0.0000        -0.0753
+  05_workflow_patterns__var_standard         P5    P5   ✓        +0.0000        -0.1652
+  06_tools__var_demanding                    P4    P5   #2       +0.0270        -0.0608
+  06_tools__var_minimal                      P1    P2   #4       +0.1380        -0.0895
+  06_tools__var_standard                     P5    P5   ✓        +0.0000        -0.1215
+  08_react_practice__var_demanding           P3    P3   ✓        +0.0000        -0.1097
+  08_react_practice__var_minimal             P0    P0   ✓        +0.0000        -0.2302
+  08_react_practice__var_standard            P1    P1   ✓        +0.0000        -0.1407
+  09_RAG__var_demanding                      P5    P1   #4       +0.0690        -0.0515
+  09_RAG__var_minimal                        P0    P1   #3       +0.0920        -0.0640
+  09_RAG__var_standard                       P2    P1   #3       +0.0480        -0.0180
+  11_multimodal__var_demanding               P3    P3   ✓        +0.0000        -0.1602
+  11_multimodal__var_minimal                 P0    P0   ✓        +0.0000        -0.3102
+  11_multimodal__var_standard                P5    P5   ✓        +0.0000        -0.1527
+
+  Predicted preset rank distribution (rank in true ranking, lower=better):
+    rank #1:   11  (52.4%)
+    rank #2:    4  (19.0%)
+    rank #3:    4  (19.0%)
+    rank #4:    2  ( 9.5%)
+    rank #5:    0  ( 0.0%)
+    rank #6:    0  ( 0.0%)
+
+  E[R] article uniform : 0.5843
+  E[R] article model   : 0.6945
+  E[R] article oracle  : 0.7254
+  Article gap closed   : 78.1%
+
+==============================================================================
+ 6. Article-level miss diagnostics  (oracle margin vs miss)
+==============================================================================
+  article                                   hit?   oracle_margin   miss_gap
+  ----------------------------------------  ----   -------------   --------
+  02_workflows_vs_agents__var_demanding     ✓      0.0044          0.0000
+  02_workflows_vs_agents__var_minimal       ✗      0.1450          0.1760
+  02_workflows_vs_agents__var_standard      ✓      0.0253          0.0000
+  03_context_engineering__var_demanding     ✗      0.0205          0.0210
+  03_context_engineering__var_minimal       ✗      0.0186          0.0220
+  03_context_engineering__var_standard      ✗      0.0131          0.0130
+  05_workflow_patterns__var_demanding       ✗      0.0425          0.0420
+  05_workflow_patterns__var_minimal         ✓      0.0233          0.0000
+  05_workflow_patterns__var_standard        ✓      0.1062          0.0000
+  06_tools__var_demanding                   ✗      0.0273          0.0270
+  06_tools__var_minimal                     ✗      0.0107          0.1380
+  06_tools__var_standard                    ✓      0.0217          0.0000
+  08_react_practice__var_demanding          ✓      0.0664          0.0000
+  08_react_practice__var_minimal            ✓      0.0350          0.0000
+  08_react_practice__var_standard           ✓      0.0521          0.0000
+  09_RAG__var_demanding                     ✗      0.0571          0.0690
+  09_RAG__var_minimal                       ✗      0.0600          0.0920
+  09_RAG__var_standard                      ✗      0.0270          0.0480
+  11_multimodal__var_demanding              ✓      0.1005          0.0000
+  11_multimodal__var_minimal                ✓      0.2470          0.0000
+  11_multimodal__var_standard               ✓      0.0528          0.0000
+
+  Mean oracle margin on HITS : 0.0668  (n=11)
+  Mean oracle margin on MISS : 0.0422  (n=10)
+
+==============================================================================
+ 7. Per-article section accuracy ranking (worst → best)
+==============================================================================
+  02_workflows_vs_agents__var_standard      1/6 = 16.7%
+  03_context_engineering__var_minimal       2/8 = 25.0%
+  06_tools__var_demanding                   2/8 = 25.0%
+  05_workflow_patterns__var_demanding       2/7 = 28.6%
+  02_workflows_vs_agents__var_minimal       2/6 = 33.3%
+  08_react_practice__var_demanding          2/6 = 33.3%
+  09_RAG__var_minimal                       2/6 = 33.3%
+  06_tools__var_minimal                     3/8 = 37.5%
+  03_context_engineering__var_demanding     4/8 = 50.0%
+  06_tools__var_standard                    4/8 = 50.0%
+  08_react_practice__var_standard           3/6 = 50.0%
+  09_RAG__var_demanding                     3/6 = 50.0%
+  05_workflow_patterns__var_standard        4/7 = 57.1%
+  03_context_engineering__var_standard      5/8 = 62.5%
+  11_multimodal__var_standard               5/8 = 62.5%
+  11_multimodal__var_demanding              5/8 = 62.5%
+  02_workflows_vs_agents__var_demanding     4/6 = 66.7%
+  08_react_practice__var_minimal            4/6 = 66.7%
+  09_RAG__var_standard                      4/6 = 66.7%
+  05_workflow_patterns__var_minimal         6/7 = 85.7%
+  11_multimodal__var_minimal                8/8 = 100.0%
