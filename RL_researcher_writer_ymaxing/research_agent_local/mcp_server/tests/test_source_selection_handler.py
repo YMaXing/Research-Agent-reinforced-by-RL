@@ -174,11 +174,14 @@ class TestSelectSources:
         assert sorted(result) == [1, 2]
 
     async def test_none_selection(self):
+        # When LLM returns "none" for exploitation sources, the handler falls back to
+        # accepting all exploitation sources (source 1) to enforce the 70-90% acceptance
+        # rate policy.  Exploration "none" is honoured → source 2 is dropped.
         selection = SourceSelection(selection_type="none", source_ids=[])
         model = _FakeSourceSelectionModel(selection)
         with patch(_PATCH_TARGET, return_value=model):
             result = await select_sources("guidelines", _SAMPLE_RESULTS_MD)
-        assert result == []
+        assert result == [1]
 
     async def test_empty_results_returns_empty(self):
         # No mocking needed — function short-circuits on empty input
