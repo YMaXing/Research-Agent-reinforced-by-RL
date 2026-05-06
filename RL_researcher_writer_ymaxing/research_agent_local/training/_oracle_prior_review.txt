@@ -1,0 +1,216 @@
+==============================================================================
+ Human-review prep: contested oracles after R_prior augmentation
+ Config: lambda=0.05  a_w=0.4  a_p=1.0  a_d=1.0
+ Source: research_agent_local/training/recompute_oracle_with_prior.py
+==============================================================================
+
+ Total sections: 147
+ Sections with oracle changed by prior: 12/147 (8.2%)
+ Article-level oracle changes: 0/21
+
+------------------------------------------------------------------------------
+ A. What the prior nudges (change matrix, lambda=0.05)
+------------------------------------------------------------------------------
+   shift       count   typical reason
+   P0 -> P1      4    P0 baseline pushed up by demanding variant + body position
+   P2 -> P0      3    minimal variant + intro/outro position pulls back to baseline
+   P0 -> P3      2    baseline -> depth+breadth in heavy demanding-variant body sections
+   P0 -> P5      1    extreme push: heavy demanding section originally tied at P0
+   P0 -> P2      1    P0 pushed by heavy weight + demanding
+   P1 -> P4      1    high-weight demanding section moves to richer preset
+
+------------------------------------------------------------------------------
+ B. Per-variant change rate (where prior disagrees most with metric)
+------------------------------------------------------------------------------
+   minimal     3/49  (6.1%)
+   standard    1/49  (2.0%)
+   demanding   8/49  (16.3%)
+
+   Demanding variant gets most adjustments — consistent with the diagnostic
+   finding that demanding-variant oracles were over-shooting to baseline.
+
+------------------------------------------------------------------------------
+ C. New near-tie prevalence (sharper margins after prior)
+------------------------------------------------------------------------------
+     tol   old   new   delta
+    0.01    22    26     +4
+    0.03    73    68     -5
+    0.05    91    83     -8
+    0.10   111   110     -1
+
+------------------------------------------------------------------------------
+ D. Class distribution under modified reward (still imbalanced!)
+------------------------------------------------------------------------------
+   preset                     old   new   diff
+   P0                        48    43    -5
+   P1                        26    29    +3
+   P2                        30    28    -2
+   P3                        19    21    +2
+   P4                        11    12    +1
+   P5                        13    14    +1
+
+   IMPORTANT: the prior alone does NOT fix the P0/P4/P5 imbalance.  It only
+   resolves ties.  Class-rebalancing (oversampling or per-class loss
+   weighting) is still needed for retraining.
+
+==============================================================================
+ E. ALL 12 contested sections — full detail for human review
+==============================================================================
+
+ Review criteria for each section:
+   (1) Read title + section position in article
+   (2) Look at digest_words vs target_words: is digest sparse or rich?
+   (3) Look at the FULL reward vector: is the prior moving the oracle to a
+       genuinely-tied alternative, or overriding a clear metric signal?
+   (4) Read research_digest.md section content if uncertain
+   (5) DECIDE: keep old oracle | accept new oracle | manually pick a third
+
+ [ 1] 03_context_engineering__var_demanding  (variant: demanding)
+      section 5/8: "Production implementation challenges"
+      target_words=510  digest_words=99  weight_frac=0.121
+      mu(s)=2.381  ->  expected preset has nr~=2.4
+      OLD oracle: P0 (margin 0.0050)
+      NEW oracle: P1 (margin 0.0015)
+      reward (metric-only)   : P0=+0.725  P1=+0.720  P2=+0.635  P3=+0.615  P4=+0.710  P5=+0.710
+      reward (metric + prior): P0=+0.694  P1=+0.709  P2=+0.634  P3=+0.614  P4=+0.708  P5=+0.708
+
+ [ 2] 03_context_engineering__var_demanding  (variant: demanding)
+      section 7/8: "Here is an example"
+      target_words=635  digest_words=83  weight_frac=0.150
+      mu(s)=2.207  ->  expected preset has nr~=2.2
+      OLD oracle: P0 (margin 0.0150)
+      NEW oracle: P5 (margin 0.0086)
+      reward (metric-only)   : P0=+0.250  P1=+0.095  P2=+0.090  P3=+0.090  P4=+0.085  P5=+0.235
+      reward (metric + prior): P0=+0.223  P1=+0.087  P2=+0.090  P3=+0.090  P4=+0.082  P5=+0.232
+
+ [ 3] 05_workflow_patterns__var_demanding  (variant: demanding)
+      section 1/7: "The Challenge with Complex Single LLM Calls"
+      target_words=650  digest_words=183  weight_frac=0.148
+      mu(s)=1.820  ->  expected preset has nr~=1.8
+      OLD oracle: P0 (margin 0.0050)
+      NEW oracle: P1 (margin 0.0014)
+      reward (metric-only)   : P0=+0.725  P1=+0.720  P2=+0.715  P3=+0.715  P4=+0.630  P5=+0.710
+      reward (metric + prior): P0=+0.707  P1=+0.716  P2=+0.715  P3=+0.715  P4=+0.622  P5=+0.702
+
+ [ 4] 08_react_practice__var_demanding  (variant: demanding)
+      section 2/6: "Tool Layer: Mock Search Implementation"
+      target_words=650  digest_words=139  weight_frac=0.181
+      mu(s)=2.147  ->  expected preset has nr~=2.1
+      OLD oracle: P0 (margin 0.0050)
+      NEW oracle: P3 (margin 0.0022)
+      reward (metric-only)   : P0=+0.645  P1=+0.640  P2=+0.485  P3=+0.635  P4=+0.630  P5=+0.630
+      reward (metric + prior): P0=+0.619  P1=+0.633  P2=+0.485  P3=+0.635  P4=+0.626  P5=+0.626
+
+ [ 5] 08_react_practice__var_demanding  (variant: demanding)
+      section 6/6: "Tests and Traces: Success and Graceful Fallback"
+      target_words=700  digest_words=103  weight_frac=0.195
+      mu(s)=1.889  ->  expected preset has nr~=1.9
+      OLD oracle: P0 (margin 0.0100)
+      NEW oracle: P3 (margin 0.0098)
+      reward (metric-only)   : P0=+0.725  P1=+0.570  P2=+0.465  P3=+0.715  P4=+0.710  P5=+0.560
+      reward (metric + prior): P0=+0.705  P1=+0.566  P2=+0.465  P3=+0.715  P4=+0.703  P5=+0.553
+
+ [ 6] 09_RAG__var_demanding  (variant: demanding)
+      section 3/6: "The RAG Pipeline: Ingestion and Retrieval"
+      target_words=800  digest_words=97  weight_frac=0.190
+      mu(s)=2.477  ->  expected preset has nr~=2.5
+      OLD oracle: P0 (margin 0.0050)
+      NEW oracle: P2 (margin 0.0000)
+      reward (metric-only)   : P0=+0.370  P1=+0.365  P2=+0.360  P3=+0.360  P4=+0.355  P5=+0.355
+      reward (metric + prior): P0=+0.336  P1=+0.353  P2=+0.359  P3=+0.359  P4=+0.353  P5=+0.353
+
+ [ 7] 09_RAG__var_demanding  (variant: demanding)
+      section 4/6: "Advanced RAG Techniques"
+      target_words=1100  digest_words=128  weight_frac=0.262
+      mu(s)=2.661  ->  expected preset has nr~=2.7
+      OLD oracle: P1 (margin 0.0100)
+      NEW oracle: P4 (margin 0.0047)
+      reward (metric-only)   : P0=+0.370  P1=+0.815  P2=+0.560  P3=-0.010  P4=+0.805  P5=+0.630
+      reward (metric + prior): P0=+0.331  P1=+0.800  P2=+0.558  P3=-0.012  P4=+0.804  P5=+0.629
+
+ [ 8] 11_multimodal__var_demanding  (variant: demanding)
+      section 2/8: "Limitations of traditional document processing"
+      target_words=None  digest_words=135  weight_frac=0.131
+      mu(s)=1.728  ->  expected preset has nr~=1.7
+      OLD oracle: P0 (margin 0.0050)
+      NEW oracle: P1 (margin 0.0025)
+      reward (metric-only)   : P0=+0.725  P1=+0.720  P2=+0.290  P3=+0.715  P4=+0.435  P5=+0.710
+      reward (metric + prior): P0=+0.708  P1=+0.717  P2=+0.290  P3=+0.715  P4=+0.426  P5=+0.701
+
+ [ 9] 05_workflow_patterns__var_minimal  (variant: minimal)
+      section 6/7: "Building a Basic Routing Workflow"
+      target_words=200  digest_words=74  weight_frac=0.149
+      mu(s)=0.424  ->  expected preset has nr~=0.4
+      OLD oracle: P2 (margin 0.0100)
+      NEW oracle: P0 (margin 0.0028)
+      reward (metric-only)   : P0=+0.950  P1=+0.130  P2=+0.960  P3=+0.910  P4=+0.890  P5=+0.090
+      reward (metric + prior): P0=+0.949  P1=+0.128  P2=+0.946  P3=+0.896  P4=+0.853  P5=+0.053
+
+ [10] 08_react_practice__var_minimal  (variant: minimal)
+      section 1/6: "Setup and Environment"
+      target_words=None  digest_words=137  weight_frac=0.100
+      mu(s)=0.000  ->  expected preset has nr~=0.0
+      OLD oracle: P2 (margin 0.0000)
+      NEW oracle: P0 (margin 0.0122)
+      reward (metric-only)   : P0=+0.950  P1=+0.930  P2=+0.960  P3=+0.960  P4=+0.940  P5=+0.940
+      reward (metric + prior): P0=+0.950  P1=+0.924  P2=+0.938  P3=+0.938  P4=+0.890  P5=+0.890
+
+ [11] 09_RAG__var_minimal  (variant: minimal)
+      section 5/6: "Agentic RAG"
+      target_words=175  digest_words=113  weight_frac=0.125
+      mu(s)=0.234  ->  expected preset has nr~=0.2
+      OLD oracle: P2 (margin 0.0000)
+      NEW oracle: P0 (margin 0.0070)
+      reward (metric-only)   : P0=+0.150  P1=+0.080  P2=+0.160  P3=+0.160  P4=+0.090  P5=+0.140
+      reward (metric + prior): P0=+0.150  P1=+0.077  P2=+0.143  P3=+0.143  P4=+0.047  P5=+0.097
+
+ [12] 08_react_practice__var_standard  (variant: standard)
+      section 4/6: "Action Phase: Function Calling and Parsing"
+      target_words=700  digest_words=108  weight_frac=0.274
+      mu(s)=2.388  ->  expected preset has nr~=2.4
+      OLD oracle: P0 (margin 0.0200)
+      NEW oracle: P1 (margin 0.0010)
+      reward (metric-only)   : P0=+0.680  P1=+0.660  P2=+0.510  P3=+0.230  P4=+0.470  P5=+0.620
+      reward (metric + prior): P0=+0.648  P1=+0.649  P2=+0.509  P3=+0.229  P4=+0.468  P5=+0.618
+
+==============================================================================
+ F. Suggested review priority (sort sections within each tier in the order shown)
+==============================================================================
+
+ Tier 1 — VERIFY (large preset jumps where prior interpretation is non-obvious):
+   - 03_context_engineering__var_demandi idx7  P0->P5 (Δ=+5) "Here is an example"
+   - 08_react_practice__var_demanding    idx2  P0->P3 (Δ=+3) "Tool Layer: Mock Search Implementation"
+   - 08_react_practice__var_demanding    idx6  P0->P3 (Δ=+3) "Tests and Traces: Success and Graceful Fallback"
+   - 09_RAG__var_demanding               idx4  P1->P4 (Δ=+3) "Advanced RAG Techniques"
+
+ Tier 2 — CONFIRM (sensible-looking shifts: intro/conclusion pulls, single-step nudges):
+   - 03_context_engineering__var_demandi idx5  P0->P1 (Δ=+1) "Production implementation challenges"
+   - 05_workflow_patterns__var_demanding idx1  P0->P1 (Δ=+1) "The Challenge with Complex Single LLM Calls"
+   - 08_react_practice__var_standard     idx4  P0->P1 (Δ=+1) "Action Phase: Function Calling and Parsing"
+   - 11_multimodal__var_demanding        idx2  P0->P1 (Δ=+1) "Limitations of traditional document processing"
+
+==============================================================================
+ G. Sections NOT touched by prior but that the diagnostic flagged — re-check
+==============================================================================
+ These are sections where the original eval miss had reward_loss > 0.10.
+ If the prior leaves them alone, the metric reward is already confidently
+ (mis)classifying them — these need either reward redesign or are fine.
+
+   06_tools__var_demanding              idx4  loss=0.560 (pred=P1 vs oracle=P5)
+     "Implementing a tool calling framework from scratch"
+     mu(s)=2.51  weight_frac=0.151  ORACLE UNCHANGED
+   02_workflows_vs_agents__var_demanding idx4  loss=0.210 (pred=P4 vs oracle=P2)
+     "Exploring Common Patterns"
+     mu(s)=2.46  weight_frac=0.184  ORACLE UNCHANGED
+   11_multimodal__var_demanding         idx3  loss=0.180 (pred=P4 vs oracle=P3)
+     "Foundations of multimodal LLMs"
+     mu(s)=2.02  weight_frac=0.128  ORACLE UNCHANGED
+   03_context_engineering__var_standard idx1  loss=0.180 (pred=P4 vs oracle=P5)
+     "Introduction: When prompt engineering breaks"
+     mu(s)=0.73  weight_frac=0.066  ORACLE UNCHANGED
+   05_workflow_patterns__var_standard   idx6  loss=0.180 (pred=P2 vs oracle=P4)
+     "Building a Basic Routing Workflow"
+     mu(s)=1.92  weight_frac=0.175  ORACLE UNCHANGED
+   06_tools__var_demanding              idx2  loss=0.115 (pred=P4 vs oracle=P0)
+     "Understanding why agents need tools"
+     mu(s)=1.50  weight_frac=0.088  ORACLE UNCHANGED

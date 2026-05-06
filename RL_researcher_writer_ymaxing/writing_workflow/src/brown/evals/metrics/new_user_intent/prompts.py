@@ -213,8 +213,9 @@ based on the given criterion.
 
 - Do not provide scores using the generated output as the reference point to divide into sections. You must always 
 use the article guideline as the reference point to divide into sections.
-- Do not let other sections influence the score of a section. The score of each section must be determined in complete 
-isolation from any other section.
+- Do not let other sections influence the score of a section. The score and reasoning for each section must be
+based SOLELY on the content of that specific section. Never cite the absence or presence of a different section
+as evidence when scoring a given section. Each section must stand entirely on its own.
 - Do not use the URLs or file paths from the article guideline to determine golden-source content. Always use the 
 `<golden_source>` XML tags in the research material.
 - Do not penalize complementary exploration-phase content in guideline adherence if it is closely related to the 

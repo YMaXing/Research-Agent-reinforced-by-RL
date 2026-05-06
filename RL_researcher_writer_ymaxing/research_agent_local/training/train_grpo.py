@@ -72,6 +72,8 @@ ARTICLES = [
     "08_react_practice__var_standard", "08_react_practice__var_demanding",
     "09_RAG__var_minimal",
     "09_RAG__var_standard", "09_RAG__var_demanding",
+    "10_memory_knowledge_access__var_minimal",
+    "10_memory_knowledge_access__var_standard", "10_memory_knowledge_access__var_demanding",
     "11_multimodal__var_minimal",
     "11_multimodal__var_standard", "11_multimodal__var_demanding",
 ]

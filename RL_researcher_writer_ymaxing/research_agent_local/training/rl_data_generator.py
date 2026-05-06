@@ -95,12 +95,15 @@ _EVAL_DATASET_DIR = (
     / "data"
 )
 
-# Train articles (L2, L3, L5, L8, L11)
+# Train articles (L2, L3, L5, L6, L8, L9, L10, L11)
 TRAIN_ARTICLES: list[str] = [
     "02_workflows_vs_agents",
     "03_context_engineering",
     "05_workflow_patterns",
+    "06_tools",
     "08_react_practice",
+    "09_RAG",
+    "10_memory_knowledge_access",
     "11_multimodal",
 ]
 

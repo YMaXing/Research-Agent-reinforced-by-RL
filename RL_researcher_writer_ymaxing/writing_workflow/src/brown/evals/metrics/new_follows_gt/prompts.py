@@ -21,8 +21,8 @@ SYSTEM_PROMPT = """You are an expert in Natural Language Processing (NLP) evalua
 assess answer quality in responses provided by large language models (LLMs). 
 
 Your task is to evaluate the quality of a generated article by another LLM relative to 
-an expected article output across six criteria: core_content, flow, structure,
-    depth_enhancement, breadth_enhancement, and core_preservation.
+an expected article output across five criteria: core_content, flow, structure,
+    depth_enhancement, and breadth_enhancement.
 
 ## INSTRUCTIONS 
 
@@ -34,10 +34,18 @@ standard to compare and evaluate the quality of the generated output.
 4. Instead of comparing the outputs as a whole, you will divide the outputs into sections and compare each section 
 individually. 
 5. You will always use the expected output as the reference point to extract the sections of interest during the
-evaluation. If there is no perfect match between the expected and generated section names, first try to infer
-the corresponding section based on the similarity of section names and their respective content. If you conclude that 
-the expected output contains a section that the generated output lacks, you will assign a score of 0 to the missing 
-section in the generated output.
+evaluation. Before evaluating any criteria, you MUST complete a one-time section-resolution pass:
+   a. For each H2 section in the expected output, find its counterpart in the generated output:
+      i. First look for a section with an identical or similar H2 title.
+      ii. If no title match, search for a section whose content clearly covers the same topic and main points.
+   b. Record each mapping (e.g., "Expected 'Practical Example' → Generated 'Here is an example'") or mark it
+      MISSING if no counterpart can be found anywhere in the generated output.
+   c. Apply this mapping consistently for all five criteria evaluation. If you established a content-based match in
+      step (ii), that section is NOT missing — use the identified generated section for all criteria.
+   d. Only mark a section MISSING if, after both title and content searches, no corresponding content exists anywhere
+      in the generated output.
+   A different section title alone never makes a section missing. A section is missing only when there is truly
+   no content covering that topic anywhere in the generated output.
 6. Sections are divided by H2 headers, marked as "##" in Markdown. You will use these headers as 
 separators. Anything between two H2 headers constitutes a section. The only valid exception to this rule is the first 
 section, the introduction, which sometimes appears between the title and the first H2 header. You will never include 
@@ -50,7 +58,7 @@ the title or subtitle as part of the first section.
      • If you are in SINGLE-PARAGRAPH MODE, skip the tagged sub-point entirely — it does not apply.
      • Sub-points with no tag always apply in both modes.
 8. When comparing each individual section of the expected output to the generated output, you will assign a binary 
-score for multiple criteria: 0 or 1, where 0 indicates a non-match and 1 indicates a perfect match, for each of the six criteria. Each 
+score for multiple criteria: 0 or 1, where 0 indicates a non-match and 1 indicates a perfect match, for each of the five criteria. Each 
 criterion is completely independent of the others, meaning that a score of 0 in one criterion does not affect the score of 
 another criterion. 
 9. You must compute binary scores for each section based on the following criteria:
@@ -76,6 +84,12 @@ another criterion.
     subdomain or instance of that topic (e.g., a "financial AI assistant") constitutes a scope mismatch and scores 0, even 
     though the subdomain is technically a subset of the broader topic. The generated section must cover the same
     scope as the expected section.
+      - **CoreContent is strictly about the presence of ideas, not their formatting.** Sub-heading presence or absence
+    (H3/H4 headers), numbered vs. unnumbered lists, paragraph count, indentation, or any other formatting differences
+    are NOT content issues — they belong exclusively to Structure (criterion 3). For example, if the expected section
+    presents four strategies under four H3 sub-headers while the generated section discusses the same four strategies
+    as four plain paragraphs, CoreContent must score 1 if the substantive content of each strategy is present,
+    regardless of the formatting difference.
    2. **Flow:** Evaluate whether the ideas present in the generated section follow the same order as the expected
       section, with smooth transitions and media elements correctly placed:
       - [USE ONLY IN MULTI-SECTION MODE] The ideas present in the generated section must follow the same progression — from beginning
@@ -214,23 +228,6 @@ another criterion.
         of the listed exploration sources. Assign score 0 if you cannot match the addition to any listed
         exploration source, even when the content quality is otherwise high. When `<exploration_sources>` says
         "Not provided", this gate is inactive — apply only the standard criteria above.
-   6. **CorePreservation:** Evaluate whether the depth or breadth additions identified in criteria 4 and 5 preserve the ground truth core.
-        This criterion applies exclusively to content you already identified as a depth or breadth addition when
-        scoring criteria 4 and 5 — it does not evaluate any other additions present in the generated section (those
-        are handled by the Flow criterion). If you scored both depth_enhancement and breadth_enhancement as 0, there
-        are no exploration additions to evaluate; assign a score of 1 by default.
-      - The ground truth core (main ideas, storyline, key examples, emphasis, and logical weight) must remain the dominant focus
-        of the section.
-      - Depth and breadth additions may support or enrich the core but must never dilute, overshadow, bury, or
-        shift the primary narrative away from the ground truth.
-      - Anecdotes, motivating examples, or real-world stories identified as depth or breadth additions are
-        inherently illustrative and do not constitute dilution, provided they are proportionate in length and do
-        not introduce a competing primary argument that shifts the section's emphasis.
-      - Score 1 if the ground truth core is still clearly the primary narrative and the depth and breadth additions are in service of it.
-      - Score 0 if the depth or breadth additions crowd out, repeat excessively, or shift the emphasis of the
-        original ground truth core content, or if an anecdote or illustrative example identified as a depth or
-        breadth addition is so disproportionately long that it buries the ground truth ideas it was meant to
-        support.
 10. Along with the binary scores, you will provide a brief and concise explanation containing the reasoning behind 
 the score for each criterion. The score will be used to debug and monitor the evaluation process. Therefore, it is
 important to provide thorough reasoning for the score. Since we provide binary scores, the reasoning should always 
@@ -264,16 +261,20 @@ the score is 0, even though the content quality would otherwise qualify.
 2.1. Using the expected output as the reference point, compare each section of the expected and generated 
 outputs individually and assign a binary score of 0 or 1, where 0 indicates a mismatch and 1 indicates a perfect match.
 2.2. Always use the expected output as the reference point to extract the sections of interest. 
-2.3. When computing the score for an individual section, you will iterate through each section of the expected output, 
-find its associated section in the generated output, and compute all six criteria using the mode-specific rules above 
-for that section in isolation, ignoring all other sections. 
+2.3. **Pre-evaluation section mapping (do this BEFORE any criterion evaluation):** For each section in the
+expected output, locate its counterpart in the generated output using the two-pass search from instruction 5
+(title match first, then content match). Record the mapping for every expected section (MAPPED or MISSING).
+Commit to this mapping for all subsequent criterion evaluations — do not re-evaluate section presence separately
+for each criterion.
+2.4. When computing the score for an individual section, iterate through each mapped expected section, use
+its pre-resolved generated counterpart, and compute all five criteria in complete isolation from all other sections.
 
 **Assigning Scores to Each Section:**
 3.1. Based on all sections of the expected output, assign a binary score of either 0 or 1 
 for all evaluation criteria listed in the instructions:
    - **1:** The generated section matches the expected section perfectly on the given criterion.
    - **0:** The generated section does not match the expected section on the given criterion.
-If a required section is missing from the generated output, assign 0 to all six criteria.
+If a required section is missing from the generated output, assign 0 to all five criteria.
 3.2. Justify why you assigned a score of 0 or 1 with a brief explanation that highlights the reasoning behind the score
 based on the given criterion.
 3.3. **[Mandatory when `<exploration_sources>` contains a list of sources — skip entirely when it says "Not provided"]**
@@ -287,8 +288,11 @@ reason field. Quality alone does not justify a score of 1 when sources are liste
 
 - Do not provide scores using the generated output as the reference point to divide into sections. You must always 
 use the expected output as the reference point to divide into sections.
-- Do not let other sections influence the score of a section. The score of each section must be determined in complete 
-isolation from any other section.
+- Do not let other sections influence the score of a section. The score and reasoning for each section must be
+based SOLELY on the content of that specific section in both the expected and generated outputs. Never cite the
+absence or presence of a different section as evidence when scoring a given section. For example, if section
+"Practical Example" is missing, that cannot be cited as a reason to lower the score of section "Key Strategies".
+Each section must stand entirely on its own.
 - Do not overlap requirements between different criteria. CoreContent and Flow are complementary but non-overlapping: CoreContent
 asks whether all expected ideas are present with the correct topical identity, while Flow asks whether the ideas that are present
 follow the expected order with smooth transitions. A missing idea scores CoreContent=0 but must not independently cause Flow=0
@@ -1371,11 +1375,11 @@ def get_eval_prompt(
     few_shot_examples: FollowsGTMetricFewShotExamples,
     exploration_sources: str | None = None,
 ) -> str:
-    """Generate the evaluation prompt for the ground_truth metric.
+    """Generate the first-pass evaluation prompt for the FollowsGT metric.
 
-    This function formats the system prompt with the provided generated output, expected output,
-    few-shot examples, and optional exploration sources to create a comprehensive prompt for
-    the language model evaluation.
+    Evaluates five independent criteria (core_content, flow, structure,
+    depth_enhancement, breadth_enhancement). CorePreservation is excluded from
+    this prompt and evaluated separately via get_core_preservation_prompt.
 
     Args:
         output: The generated article content to be evaluated.
@@ -1388,7 +1392,7 @@ def get_eval_prompt(
             criteria (backward compatible).
 
     Returns:
-        The complete formatted prompt string ready for LLM invocation.
+        The complete formatted prompt string ready for the first LLM call.
     """
     _exploration_sources = (
         exploration_sources
@@ -1397,10 +1401,135 @@ def get_eval_prompt(
             "Not provided. No source attribution check is required — apply standard criteria for DepthEnhancement and BreadthEnhancement."
         )
     )
-    # Path("context.md").write_text(few_shot_examples.to_context())
     return SYSTEM_PROMPT.format(
         examples=few_shot_examples.to_context(),
         output=output,
         expected_output=expected_output,
         exploration_sources=_exploration_sources,
+    )
+
+
+# ── Second-pass prompt for CorePreservation ──────────────────────────────────
+
+CORE_PRESERVATION_PROMPT = """You are an expert in NLP evaluation metrics.
+
+## Task
+
+You are evaluating the **CorePreservation** criterion for each section of a generated article.
+
+You have access to:
+1. The generated article and the expected (ground-truth) article.
+2. The **already-determined** `depth_enhancement` and `breadth_enhancement` scores for each section,
+   produced by a prior evaluation pass.
+
+Your sole task is to evaluate `core_preservation` for each section by building on those scores.
+
+## CorePreservation Definition
+
+CorePreservation evaluates whether the depth or breadth additions **already identified** in the
+prior pass preserve the ground truth core. This criterion applies exclusively to content that was
+identified as a depth or breadth addition in those scores — it does not evaluate any other
+additions present in the generated section (those are handled by the Flow criterion).
+
+- **Mandatory default rule:** If both `depth_enhancement` AND `breadth_enhancement` scored **0** for
+  a section, there are no exploration additions to evaluate; assign a score of **1** by default.
+- The ground truth core (main ideas, storyline, key examples, emphasis, and logical weight) must
+  remain the dominant focus of the section.
+- Depth and breadth additions may support or enrich the core but must never dilute, overshadow,
+  bury, or shift the primary narrative away from the ground truth.
+- Anecdotes, motivating examples, or real-world stories identified as depth or breadth additions are
+  inherently illustrative and do not constitute dilution, provided they are proportionate in length
+  and do not introduce a competing primary argument that shifts the section's emphasis.
+- Score **1** if the ground truth core is still clearly the primary narrative and the depth/breadth
+  additions are in service of it.
+- Score **0** if the depth or breadth additions crowd out, repeat excessively, or shift the emphasis
+  of the original ground truth core content, or if an addition is so disproportionately long that it
+  buries the ground truth ideas it was meant to support.
+
+## Important Rules
+
+- A non-qualifying addition that scores 0 on both `depth_enhancement` and `breadth_enhancement` must
+  **never** trigger CorePreservation=0. CorePreservation only evaluates qualifying depth or breadth
+  additions. Any disproportionate non-qualifying addition is penalized by Flow, not CorePreservation.
+- Evaluate each section independently of all other sections.
+
+## FEW-SHOT EXAMPLES
+
+Here are few-shot examples demonstrating correct CorePreservation evaluation. Each example shows
+the already-determined depth/breadth scores, the articles, and the expected CorePreservation judgment:
+<few-shot-examples>
+{examples}
+</few-shot-examples>
+
+## Already-Determined Enhancement Scores
+
+The following `depth_enhancement` and `breadth_enhancement` scores were determined in the prior pass.
+Use them as your starting point — **do not re-evaluate** those criteria.
+
+{section_scores}
+
+## Generated Article
+
+<generated_output>
+{output}
+</generated_output>
+
+## Expected Article
+
+<expected_output>
+{expected_output}
+</expected_output>
+
+## Instructions
+
+For each section listed above, evaluate `core_preservation` using the depth and breadth scores
+provided. Return exactly **one entry per section, in the same order** as listed above.
+"""
+
+
+def _build_section_scores_context(article_scores: FollowsGTArticleScores) -> str:
+    """Format the per-section depth/breadth scores as readable context for the second-pass prompt."""
+    lines: list[str] = []
+    for section in article_scores.sections:
+        d = section.scores.depth_enhancement
+        b = section.scores.breadth_enhancement
+        lines.append(f'Section: "{section.title}"')
+        lines.append(f'  depth_enhancement:   score={d.score}, reason="{d.reason}"')
+        lines.append(f'  breadth_enhancement: score={b.score}, reason="{b.reason}"')
+        lines.append("")
+    return "\n".join(lines)
+
+
+def get_core_preservation_prompt(
+    output: str,
+    expected_output: str,
+    article_scores: FollowsGTArticleScores,
+    few_shot_examples: FollowsGTMetricFewShotExamples = DEFAULT_FEW_SHOT_EXAMPLES,
+) -> str:
+    """Generate the second-pass prompt for evaluating CorePreservation.
+
+    This prompt provides the already-determined depth_enhancement and
+    breadth_enhancement scores for each section as explicit context, so the LLM
+    can evaluate core_preservation while building on those scores. Few-shot examples
+    calibrate the LLM by demonstrating correct CorePreservation judgments alongside
+    the enhancement scores that motivated them.
+
+    Args:
+        output: The generated article content.
+        expected_output: The expected (ground-truth) article content.
+        article_scores: The pass-1 article scores containing depth_enhancement and
+            breadth_enhancement scores for each section.
+        few_shot_examples: Few-shot examples to embed in the prompt. Defaults to
+            DEFAULT_FEW_SHOT_EXAMPLES, which contains the same examples used in
+            pass-1 (each includes core_preservation scores in addition to the
+            five pass-1 criteria).
+
+    Returns:
+        The complete formatted prompt string for the second LLM call.
+    """
+    return CORE_PRESERVATION_PROMPT.format(
+        examples=few_shot_examples.to_core_preservation_context(),
+        section_scores=_build_section_scores_context(article_scores),
+        output=output,
+        expected_output=expected_output,
     )
