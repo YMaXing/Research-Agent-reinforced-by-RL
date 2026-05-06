@@ -57,13 +57,13 @@ run-batch-dry-run:
 ARTICLES ?=
 PRESETS  ?=
 
-_ARTICLES_FLAG = $(foreach a,$(ARTICLES),--articles $(a))
-_PRESETS_FLAG  = $(foreach p,$(PRESETS),--presets $(p))
-_RL_FLAGS      = $(if $(ARTICLES),$(_ARTICLES_FLAG),) $(if $(PRESETS),$(_PRESETS_FLAG),)
+_ARTICLES_FLAG = $(if $(ARTICLES),--articles $(ARTICLES),)
+_PRESETS_FLAG  = $(if $(PRESETS),--presets $(PRESETS),)
+_RL_FLAGS      = $(_ARTICLES_FLAG) $(_PRESETS_FLAG)
 
 run-rl-gen-dry:
-	uv run --project mcp_server python rl_data_generator.py --dry-run $(_RL_FLAGS)
+	uv run --project mcp_server python training/rl_data_generator.py --dry-run $(_RL_FLAGS)
 
 run-rl-gen:
-	uv run --project mcp_server python rl_data_generator.py $(_RL_FLAGS)
+	uv run --project mcp_server python training/rl_data_generator.py $(_RL_FLAGS)
 
