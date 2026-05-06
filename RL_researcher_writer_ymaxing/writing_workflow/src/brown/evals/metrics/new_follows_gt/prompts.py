@@ -90,6 +90,16 @@ another criterion.
     presents four strategies under four H3 sub-headers while the generated section discusses the same four strategies
     as four plain paragraphs, CoreContent must score 1 if the substantive content of each strategy is present,
     regardless of the formatting difference.
+      - **Sub-section content is matched by substance, not by label.** When evaluating CoreContent for a mapped
+    section, do NOT look for H3/H4 sub-heading titles to verify sub-section presence. Instead, look for the IDEAS
+    and concepts that each expected sub-section covers and check whether those ideas appear anywhere within the
+    generated section — as inline text, a diagram caption, a mermaid block, or any other form. An expected sub-section
+    titled "Core Components of a ReAct AI Agent" is PRESENT if the generated section discusses those components
+    (LLM reasoning, tools, memory) anywhere, even without using that heading title.
+      - **Media absence never scores CoreContent=0.** The absence of an image, diagram, or mermaid block from the
+    generated section is strictly a Flow failure. A section that covers all expected textual ideas but omits an
+    expected figure scores CoreContent=1 and Flow=0, never CoreContent=0. Never cite "missing diagram" or
+    "missing image" as a reason for CoreContent=0.
    2. **Flow:** Evaluate whether the ideas present in the generated section follow the same order as the expected
       section, with smooth transitions and media elements correctly placed:
       - [USE ONLY IN MULTI-SECTION MODE] The ideas present in the generated section must follow the same progression — from beginning
@@ -134,6 +144,11 @@ another criterion.
          - Mismatching media numbering is accepted. For example, if in the expected section we have a figure with the number 3 and
          in the generated section we have a figure with the number 4, it's valid. It will be invalid, only if the figure would be
          missing altogether.
+         - Media format substitution is accepted. A Mermaid diagram block (` ```mermaid ... ``` `) in the generated section is
+         considered equivalent to and satisfies the placement requirement of a static image reference (e.g., `![Figure N](url)`)
+         in the expected section, and vice versa. Both are valid forms of visual media and are interchangeable for the purposes
+         of this criterion. A media placement failure only occurs when no visual element of any kind (neither a static image nor
+         a Mermaid diagram nor any other media form) is present at a position where the expected section places one.
          - Mismatching or missing emojis. For example, if the expected section has a 💡 emoji, while the generated section has 
          a 🔑 emoji, it's valid. Also, if the emoji is missing altogether from the generated section, it's valid.
          - Mismatching source reference numbers. For example, if the expected section refers a source with the number 3, 
@@ -247,6 +262,11 @@ the score is 0, even though the content quality would otherwise qualify.
       Since media can take many forms such as Mermaid diagrams, tables, images, or URLs, you will completely ignore the 
       content of the media and only check whether the media is present in the correct place in the section, has 
       the appropriate citation, and proper numbering.
+      - **Mermaid diagrams are equivalent to static images.** A Mermaid diagram block (` ```mermaid ... ``` `) in
+      the generated section is a valid substitute for a static image reference (`![Figure N](url)`) in the expected
+      section at the same position. Never treat a Mermaid diagram as a "missing figure" — it is a present visual
+      element. A media element is missing only when no visual of any kind (no static image, no Mermaid diagram, no table,
+      no other media form) appears where the expected section places one.
 
 ## CHAIN OF THOUGHT
 
@@ -270,14 +290,19 @@ for each criterion.
 its pre-resolved generated counterpart, and compute all five criteria in complete isolation from all other sections.
 
 **Assigning Scores to Each Section:**
-3.1. Based on all sections of the expected output, assign a binary score of either 0 or 1 
-for all evaluation criteria listed in the instructions:
-   - **1:** The generated section matches the expected section perfectly on the given criterion.
-   - **0:** The generated section does not match the expected section on the given criterion.
-If a required section is missing from the generated output, assign 0 to all five criteria.
-3.2. Justify why you assigned a score of 0 or 1 with a brief explanation that highlights the reasoning behind the score
-based on the given criterion.
-3.3. **[Mandatory when `<exploration_sources>` contains a list of sources — skip entirely when it says "Not provided"]**
+3.1. For each section and criterion, write your reasoning first: explain what matches, what differs,
+and what conclusion you reach. Do NOT write the score yet.
+If a required section is missing from the generated output, state that explicitly and conclude 0 for all five criteria.
+3.2. Based solely on the conclusion you stated in 3.1, derive the binary score:
+   - Score **1** if your reasoning concluded the section satisfies the criterion.
+   - Score **0** if your reasoning concluded the section violates or fails the criterion.
+   The score must be the mechanical output of your stated conclusion — not a separate judgment.
+3.3. **[Mandatory self-check]** After assigning all scores, for each section-criterion pair, read
+your 3.1 reasoning and your 3.2 score together. Verify: does the score match the conclusion you
+wrote? If you wrote that the section preserves flow / contains all ideas / has no structural issues
+but scored 0, correct to 1. If you wrote that something is missing or violated but scored 1,
+correct to 0. Never leave a score that contradicts your own written conclusion.
+3.4. **[Mandatory when `<exploration_sources>` contains a list of sources — skip entirely when it says "Not provided"]**
 For every depth_enhancement or breadth_enhancement score of 1 you have assigned, you must run the traceability
 check as a separate step: name the specific exploration source URL(s) the addition traces to and confirm that the
 addition's content (facts, metrics, or concepts) is consistent with what those sources cover. If you cannot match
@@ -302,6 +327,21 @@ Similarly, a strong depth or breadth addition must not affect the core_preservat
 dilutes the core. A non-qualifying addition that scores 0 on both depth_enhancement and breadth_enhancement
 must not trigger CorePreservation=0 — CorePreservation only evaluates qualifying depth or breadth additions.
 If such an addition is disproportionately long and crowds out expected section ideas, the penalty belongs exclusively to Flow.
+- **Media absence is a Flow failure, never a CoreContent failure.** Never assign CoreContent=0 because an image,
+diagram, or mermaid block is absent. The presence or absence of visual media belongs exclusively to the Flow
+criterion (media placement). A generated section that covers all expected ideas textually but omits an expected
+figure is: CoreContent=1, Flow=0. Cite "missing image" or "missing diagram" only in Flow reasoning, never in
+CoreContent reasoning.
+- **Do not cascade CoreContent failures into other criteria.** A section scoring CoreContent=0 does not
+automatically lower Flow, Structure, or CorePreservation. Each criterion is evaluated independently. In
+particular, CorePreservation is never affected by CoreContent — if depth_enhancement=0 and breadth_enhancement=0
+for a section, CorePreservation=1 by default regardless of the CoreContent score.
+- **Your score must be consistent with your reasoning.** Before finalizing a score for a section and criterion,
+re-read your reasoning for that entry. If your reasoning concludes that requirements are satisfied or no failure
+exists, you MUST assign score **1**. If your reasoning concludes that a requirement is violated or a key element
+is missing, you MUST assign score **0**. A score that contradicts the explicit conclusion of your own reasoning
+is always a fatal error. Never write that an idea is present and then score 0; never write that flow is
+preserved and then score 0; never conclude compliance and assign 0. The score reflects your conclusion.
 
 ## FEW-SHOT EXAMPLES
 
@@ -1451,6 +1491,10 @@ additions present in the generated section (those are handled by the Flow criter
 - A non-qualifying addition that scores 0 on both `depth_enhancement` and `breadth_enhancement` must
   **never** trigger CorePreservation=0. CorePreservation only evaluates qualifying depth or breadth
   additions. Any disproportionate non-qualifying addition is penalized by Flow, not CorePreservation.
+- **CoreContent scores do not affect CorePreservation.** Even if you believe some core content is
+  absent in the generated section, this has no bearing on CorePreservation. If `depth_enhancement=0`
+  AND `breadth_enhancement=0` for that section, the mandatory default rule applies: CorePreservation=1.
+  Never invent a reason to score CorePreservation=0 from a perceived content absence.
 - Evaluate each section independently of all other sections.
 
 ## FEW-SHOT EXAMPLES

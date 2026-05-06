@@ -173,6 +173,12 @@ from the research material, and explain whether the generated section drew from 
     Since media can take many forms such as Mermaid diagrams, images, or URLs, you will completely ignore the 
     content of the media. Based on the section guideline, you will check whether the media is present in the 
     correct place. Based on the caption of the media, you will check whether it is properly anchored in the research.
+   - **Mermaid diagrams satisfy image/figure requirements.** The article guideline explicitly requires Mermaid
+    diagrams as the visual format for all figures. Therefore, a Mermaid diagram block (` ```mermaid ... ``` `)
+    in the generated section at the correct position fully satisfies any "Image N: [caption]" or figure
+    requirement from the guideline. Do not penalize a generated section for using a Mermaid diagram where the
+    guideline specifies an image, provided the diagram appears at the correct narrative position. A figure
+    requirement is only unmet when no visual element of any kind is present where the guideline requires one.
 
 ## CHAIN OF THOUGHT
 
@@ -202,12 +208,17 @@ section guideline.
 material to determine whether golden sources were preferentially used when both types of sources cover the same topic.
 
 **Assigning Scores:**
-3.1. Based on each section expected from the article guideline, assign a binary score of either 0 or 1 
-for all evaluation criteria listed in the instructions:
-    - Score 1 if the section clearly follows the requirements detailed in the instructions.
-    - Score 0 if it fails to follow the requirements detailed in the instructions.
-3.2. Justify why you assigned a score of 0 or 1 with a brief explanation that highlights the reasoning behind the score
-based on the given criterion.
+3.1. For each section and criterion, write your reasoning first: explain what is present, what is
+missing or violated, and what conclusion you reach. Do NOT write the score yet.
+3.2. Based solely on the conclusion you stated in 3.1, derive the binary score:
+    - Score **1** if your reasoning concluded the section satisfies the criterion.
+    - Score **0** if your reasoning concluded the section violates or fails the criterion.
+    The score must be the mechanical output of your stated conclusion — not a separate judgment.
+3.3. **[Mandatory self-check]** After assigning all scores, for each section-criterion pair, read
+your 3.1 reasoning and your 3.2 score together. Verify: does the score match the conclusion you
+wrote? If you wrote "no conflict exists" or "requirements are met" but scored 0, correct the score
+to 1. If you wrote "requirement is violated" or "element is missing" but scored 1, correct the
+score to 0. Never leave a score that contradicts your own written conclusion.
 
 ## WHAT TO AVOID
 
@@ -220,6 +231,14 @@ as evidence when scoring a given section. Each section must stand entirely on it
 `<golden_source>` XML tags in the research material.
 - Do not penalize complementary exploration-phase content in guideline adherence if it is closely related to the 
 section's expected main idea or topic.
+- **Your score must be consistent with your reasoning.** Before finalizing a score for a section, re-read
+your reasoning for that section. If your reasoning concludes that requirements are satisfied, or that no
+conflict/violation/gap exists, you MUST assign score **1**. If your reasoning concludes that a requirement
+is violated, a conflict exists, or a missing element is identified, you MUST assign score **0**. A score
+that contradicts the explicit conclusion of your own reasoning is always a fatal error — it means your
+score is wrong. In particular: never write "no priority conflict exists" in your reasoning and then score 0;
+never write "all requirements are met" and then score 0; never conclude a section is compliant and score 0.
+The score reflects your conclusion, not a separate judgment.
 
 ## FEW-SHOT EXAMPLES
 

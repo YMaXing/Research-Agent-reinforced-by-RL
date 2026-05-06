@@ -93,8 +93,8 @@ class CriteriaScores(pydantic.BaseModel, Generic[CriteriaScoresT]):
         for field_name in scores_fields.keys():
             field_score = getattr(self, field_name)
             scores_xml += f"""    <{field_name}>
-        <score>{field_score.score}</score>
         <reason>{field_score.reason}</reason>
+        <score>{field_score.score}</score>
     </{field_name}>
 """
         return scores_xml

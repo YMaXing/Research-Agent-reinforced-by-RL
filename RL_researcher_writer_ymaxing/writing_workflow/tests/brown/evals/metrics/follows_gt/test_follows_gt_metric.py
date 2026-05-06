@@ -694,3 +694,62 @@ def test_get_core_preservation_prompt_uses_default_examples_when_not_specified(
     )
     assert "{examples}" not in rendered
     assert "core_preservation" in rendered
+
+
+# ---------------------------------------------------------------------------
+# CoT structure regression tests
+# Verify the reasoning-before-score chain-of-thought ordering and mandatory
+# self-check step introduced to prevent score/reasoning contradictions.
+# ---------------------------------------------------------------------------
+
+
+def test_system_prompt_reasoning_before_score_step() -> None:
+    """
+    Step 3.1 must instruct the evaluator to write reasoning first and explicitly
+    prohibit writing the score before the reasoning is complete.
+    """
+    assert "write your reasoning first" in follows_gt_prompts.SYSTEM_PROMPT
+    assert "Do NOT write the score yet" in follows_gt_prompts.SYSTEM_PROMPT
+
+
+def test_system_prompt_score_derived_from_conclusion() -> None:
+    """
+    Step 3.2 must state that the score is derived mechanically from the
+    conclusion stated in 3.1, not as a separate judgment.
+    """
+    assert "mechanical output of your stated conclusion" in follows_gt_prompts.SYSTEM_PROMPT
+
+
+def test_system_prompt_mandatory_self_check_step() -> None:
+    """
+    The SYSTEM_PROMPT must contain the mandatory self-check step (3.3) that
+    requires the evaluator to verify score/reasoning consistency after all
+    scores are assigned and correct any contradictions before proceeding.
+    """
+    assert "Mandatory self-check" in follows_gt_prompts.SYSTEM_PROMPT
+    assert "Never leave a score that contradicts your own written conclusion" in follows_gt_prompts.SYSTEM_PROMPT
+
+
+def test_system_prompt_traceability_check_is_step_3_4() -> None:
+    """
+    The traceability check for depth/breadth additions must be labeled step 3.4
+    (renumbered from 3.3 after the mandatory self-check was inserted as 3.3).
+    """
+    assert "3.4." in follows_gt_prompts.SYSTEM_PROMPT
+    # The old number must no longer label the traceability check
+    assert "3.3." in follows_gt_prompts.SYSTEM_PROMPT  # 3.3 is the self-check
+
+
+def test_criteria_scores_to_context_reason_before_score(
+    sample_criteria_scores: FollowsGTCriteriaScores,
+) -> None:
+    """
+    FollowsGTCriteriaScores.to_context() must output <reason> before <score>
+    for each criterion so that the few-shot examples demonstrate the same
+    reasoning-first ordering mandated by step 3.1.
+    """
+    context = sample_criteria_scores.to_context()
+    for field in ("core_content", "flow", "structure", "depth_enhancement", "breadth_enhancement"):
+        reason_pos = context.find("<reason>")
+        score_pos = context.find("<score>")
+        assert reason_pos < score_pos, f"<reason> must appear before <score> in to_context() output for field '{field}'"

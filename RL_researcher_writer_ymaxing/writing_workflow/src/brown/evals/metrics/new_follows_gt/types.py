@@ -52,8 +52,8 @@ class FollowsGTCriteriaScores(CriteriaScores):
         for field_name in _PASS1_FIELDS:
             field_score = getattr(self, field_name)
             scores_xml += f"""    <{field_name}>
-        <score>{field_score.score}</score>
         <reason>{field_score.reason}</reason>
+        <score>{field_score.score}</score>
     </{field_name}>
 """
         return scores_xml
