@@ -201,10 +201,10 @@ def     compute_reward(
     nr = PRESET_ROUNDS[preset_id]
 
     if variant_level == "minimal":
-        # Conceptual overview: ga dominant, de/be irrelevant, cost standard.
+        # Conceptual overview: ga dominant, small exploration signal, cost standard.
         gt_base     = 0.05 * cc + 0.05 * fl
-        explore     = 0.0                           # de=be=0 for brief articles
-        user_intent = 0.80 * ga + 0.10 * ra
+        explore     = cp * (0.60 * de + 0.40 * be) * 0.10
+        user_intent = 0.70 * ga + 0.10 * ra
         cost        = -0.02 * nr
     elif variant_level == "demanding":
         # Extended article: boost depth/breadth, quarter exploration cost.

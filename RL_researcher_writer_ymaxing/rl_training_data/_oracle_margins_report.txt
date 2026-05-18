@@ -9,30 +9,30 @@ PART 1: Oracle Preset Distribution
         Broken down by: All sections / Live-only (oracle-driven)
 --------------------------------------------------------------------------------
 
-  [MINIMAL]  total=115  live=83  dead=32
+  [MINIMAL]  total=115  live=89  dead=26
 
   Preset    rounds    All   All%   Live   Live%   Dead   Dead%  bar (All)
   --------------------------------------------------------------------------------
-  P0             0     68  59.1%     40   48.2%     28   87.5%  #################
-  P1             1     20  17.4%     18   21.7%      2    6.2%  #####
-  P2             2     10   8.7%      9   10.8%      1    3.1%  ##
-  P3             2      7   6.1%      6    7.2%      1    3.1%  #
-  P4             3      8   7.0%      8    9.6%      0    0.0%  ##
-  P5             3      2   1.7%      2    2.4%      0    0.0%  
+  P0             0     58  50.4%     38   42.7%     20   76.9%  ###############
+  P1             1     25  21.7%     23   25.8%      2    7.7%  ######
+  P2             2     12  10.4%     10   11.2%      2    7.7%  ###
+  P3             2      8   7.0%      7    7.9%      1    3.8%  ##
+  P4             3      8   7.0%      7    7.9%      1    3.8%  ##
+  P5             3      4   3.5%      4    4.5%      0    0.0%  #
 
   Runner-up distribution (all sections):
   Preset    Count     Pct  bar
   --------------------------------------------------
-  P0           13   11.3%  ###
-  P1           58   50.4%  ###############
-  P2           18   15.7%  ####
+  P0           17   14.8%  ####
+  P1           42   36.5%  ##########
+  P2           21   18.3%  #####
   P3           12   10.4%  ###
-  P4            9    7.8%  ##
-  P5            5    4.3%  #
+  P4           14   12.2%  ###
+  P5            9    7.8%  ##
 
-  P0 oracle rate (all): 68/115 = 59.1%
+  P0 oracle rate (all): 58/115 = 50.4%
   P0 is oracle by default when oracles are identical (cost alone favours P0).
-  Among dead sections: P0 oracle = 28/32 = 87.5%
+  Among dead sections: P0 oracle = 20/26 = 76.9%
 
   [STANDARD]  total=110  live=92  dead=18
 
@@ -96,57 +96,57 @@ PART 2: Oracle Gap Distribution  (oracle_R − runner_up_R)
   Stat         Oracle gap
   ------------------------
   Min              0.0000
-  P10              0.0100
+  P10              0.0000
   P25              0.0200
   Median           0.0200
-  P75              0.0400
-  P90              0.7100
-  Max              0.9200
-  Mean             0.1215
+  P75              0.0600
+  P90              0.6100
+  Max              0.8400
+  Mean             0.1113
 
   Gap bucket distribution:
-    [0.000,0.005)    6 (5.2%)  #
-    [0.005,0.010)    1 (0.9%)  
-    [0.010,0.060)   83 (72.2%)  #####################
-    [0.060,0.100)    7 (6.1%)  #
-    [0.100,0.200)    4 (3.5%)  #
+    [0.000,0.005)   12 (10.4%)  ###
+    [0.005,0.010)    2 (1.7%)  
+    [0.010,0.060)   71 (61.7%)  ##################
+    [0.060,0.100)   13 (11.3%)  ###
+    [0.100,0.200)    3 (2.6%)  
     [0.200,0.500)    0 (0.0%)  
     [0.500,1.100)   14 (12.2%)  ###
 
   Decisive oracle rates (gap > threshold):
-    gap > 0.01:  108/115 = 93.9%
-    gap > 0.05:  25/115 = 21.7%
-    gap > 0.10:  18/115 = 15.7%
+    gap > 0.01:  101/115 = 87.8%
+    gap > 0.05:  33/115 = 28.7%
+    gap > 0.10:  17/115 = 14.8%
     gap > 0.20:  14/115 = 12.2%
     gap > 0.30:  14/115 = 12.2%
 
-  Live sections only (oracle-driven) (n=83):
+  Live sections only (oracle-driven) (n=89):
   Stat         Oracle gap
   ------------------------
   Min              0.0000
   P10              0.0100
   P25              0.0200
-  Median           0.0200
+  Median           0.0300
   P75              0.0700
-  P90              0.7800
-  Max              0.9200
-  Mean             0.1612
+  P90              0.6600
+  Max              0.8400
+  Mean             0.1391
 
   Gap bucket distribution:
-    [0.000,0.005)    5 (6.0%)  #
-    [0.005,0.010)    0 (0.0%)  
-    [0.010,0.060)   53 (63.9%)  ###################
-    [0.060,0.100)    7 (8.4%)  ##
-    [0.100,0.200)    4 (4.8%)  #
+    [0.000,0.005)    8 (9.0%)  ##
+    [0.005,0.010)    1 (1.1%)  
+    [0.010,0.060)   50 (56.2%)  ################
+    [0.060,0.100)   13 (14.6%)  ####
+    [0.100,0.200)    3 (3.4%)  #
     [0.200,0.500)    0 (0.0%)  
-    [0.500,1.100)   14 (16.9%)  #####
+    [0.500,1.100)   14 (15.7%)  ####
 
   Decisive oracle rates (gap > threshold):
-    gap > 0.01:  78/83 = 94.0%
-    gap > 0.05:  25/83 = 30.1%
-    gap > 0.10:  18/83 = 21.7%
-    gap > 0.20:  14/83 = 16.9%
-    gap > 0.30:  14/83 = 16.9%
+    gap > 0.01:  80/89 = 89.9%
+    gap > 0.05:  33/89 = 37.1%
+    gap > 0.10:  17/89 = 19.1%
+    gap > 0.20:  14/89 = 15.7%
+    gap > 0.30:  14/89 = 15.7%
 
   [STANDARD]  cost-only baseline = 0.0600
 
@@ -273,13 +273,13 @@ PART 3: Oracle gap vs full margin — how much of the reward spread sits
   ratio ≈ 1.0 → runner-up is almost as bad as the worst preset
   ratio ≈ 0.0 → oracle is barely better than runner-up despite large full spread
 
-  [MINIMAL]  live sections n=83
-    P10      0.021
-    P25      0.023
+  [MINIMAL]  live sections n=89
+    P10      0.014
+    P25      0.026
     Median   0.143
     P75      0.444
-    P90      0.926
-    Mean     0.278
+    P90      0.871
+    Mean     0.280
 
   [STANDARD]  live sections n=92
     P10      0.045
@@ -304,53 +304,53 @@ PART 4: Cross-variant oracle agreement
 --------------------------------------------------------------------------------
 
   Sections present in all 3 variants: 103
-  All 3 variants agree on same oracle: 21 (20.4%)
-  Exactly 2 of 3 variants agree:      36 (35.0%)
+  All 3 variants agree on same oracle: 22 (21.4%)
+  Exactly 2 of 3 variants agree:      35 (34.0%)
   All 3 variants disagree:             46 (44.7%)
 
   Disagreement cases (oracle differs across variants):
   Article                             Section                                             min    std    dem
   ---------------------------------------------------------------------------------------------------------
   02_workflows_vs_agents              Choosing Your Path                                   P4     P2     P3
-  02_workflows_vs_agents              Exploring Common Patterns                            P0     P1     P2
+  02_workflows_vs_agents              Exploring Common Patterns                            P2     P1     P2
   02_workflows_vs_agents              Introduction: The Critical Decision Every AI En…     P0     P3     P0
   02_workflows_vs_agents              Understanding the Spectrum: From Workflows to A…     P0     P2     P3
   02_workflows_vs_agents              Zooming In on Our Favorite Examples                  P2     P1     P5
   03_context_engineering              Connecting Context Engineering to AI Engineering     P0     P3     P3
   03_context_engineering              Connecting context engineering to AI engineering     P0     P1     P0
-  03_context_engineering              From Prompt to Context Engineering                   P0     P4     P0
+  03_context_engineering              From Prompt to Context Engineering                   P2     P4     P0
   03_context_engineering              Introduction                                         P0     P5     P0
   03_context_engineering              Introduction: When prompt engineering breaks         P0     P1     P1
   03_context_engineering              Key Strategies for Context Optimization              P0     P0     P1
   03_context_engineering              Practical Example                                    P3     P5     P3
-  03_context_engineering              Production Implementation Challenges                 P0     P2     P0
+  03_context_engineering              Production Implementation Challenges                 P1     P2     P0
   03_context_engineering              Understanding Context Engineering                    P0     P4     P2
   03_context_engineering              What Makes Up the Context                            P0     P1     P5
   03_context_engineering              What makes up the context                            P1     P0     P0
   05_workflow_patterns                Building a Basic Routing Workflow                    P0     P1     P1
   05_workflow_patterns                Building a Sequential Workflow: FAQ Generation …     P0     P2     P1
   05_workflow_patterns                Conclusion                                           P1     P0     P0
-  05_workflow_patterns                Introducing Dynamic Behavior: Routing and Condi…     P0     P4     P3
+  05_workflow_patterns                Introducing Dynamic Behavior: Routing and Condi…     P1     P4     P3
   05_workflow_patterns                Introduction                                         P1     P0     P1
-  05_workflow_patterns                Optimizing Sequential Workflows With Parallel P…     P0     P1     P1
-  05_workflow_patterns                Orchestrator-Worker Pattern: Dynamic Task Decom…     P0     P1     P3
+  05_workflow_patterns                Orchestrator-Worker Pattern: Dynamic Task Decom…     P1     P1     P3
   05_workflow_patterns                The Challenge with Complex Single LLM Calls          P0     P1     P0
-  05_workflow_patterns                The Power of Modularity: Why Chain LLM Calls?        P0     P4     P2
+  05_workflow_patterns                The Power of Modularity: Why Chain LLM Calls?        P1     P4     P2
   06_tools                            Conclusion                                           P0     P3     P2
   06_tools                            Going Through Popular Tools Used Within the Ind…     P0     P1     P5
   06_tools                            Going through popular tools used within the ind…     P1     P5     P5
   06_tools                            Implementing Production-Level Tool Calls With G…     P0     P5     P3
-  06_tools                            Implementing Tool Calls From Scratch                 P0     P2     P5
+  06_tools                            Implementing Tool Calls From Scratch                 P1     P2     P5
   06_tools                            Implementing a Tool Calling Framework From Scra…     P0     P5     P5
   06_tools                            Implementing production-level tool calls with G…     P2     P3     P1
   06_tools                            Implementing tool calls from scratch                 P0     P0     P2
   06_tools                            Introduction                                         P1     P4     P0
   06_tools                            Popular Tools Used Within the Industry               P1     P4     P3
   06_tools                            Popular tools used within the industry               P0     P3     P2
-  06_tools                            The Downsides of Running Tools in a Loop             P0     P5     P3
+  06_tools                            The Downsides of Running Tools in a Loop             P2     P5     P3
   06_tools                            The downsides of running tools in a loop             P0     P3     P1
   06_tools                            Understanding Why Agents Need Tools                  P0     P5     P4
   06_tools                            Understanding why agents need tools                  P3     P3     P0
+  06_tools                            Using Pydantic Models As Tools for On-Demand St…     P4     P5     P4
 
 --------------------------------------------------------------------------------
 PART 5: Per-section oracle and runner-up breakdown (all articles)
@@ -364,15 +364,15 @@ PART 5: Per-section oracle and runner-up breakdown (all articles)
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
     ----------------------------------------------------------------------------------------------------------------------------------------------------------------
       Introduction                                   P1→0.080  P2→0.060  0.0200  0.0400  0.0250   0.050   0.080   0.060   0.060   0.040   0.040
-  *   Understanding the Spectrum: From Workflows t…  P0→1.000  P1→0.980  0.0200  0.9100  0.3200   1.000   0.980   0.960   0.110   0.090   0.940
-  *   Choosing Your Path                             P4→0.890  P1→0.880  0.0100  0.8300  0.5267   0.150   0.880   0.110   0.060   0.890   0.090
-      Exploring Common Patterns                      P0→1.000  P1→0.980  0.0200  0.0600  0.0367   1.000   0.980   0.960   0.960   0.940   0.940
-  *   Zooming In on Our Favorite Examples            P2→0.960  P3→0.960  0.0000  0.8600  0.5467   0.100   0.180   0.960   0.960   0.140   0.140
-  *   The Challenges of Every AI Engineer            P1→0.980  P4→0.940  0.0400  0.9200  0.4333   0.200   0.980   0.060   0.160   0.940   0.940
+  *   Understanding the Spectrum: From Workflows t…  P0→0.900  P5→0.900  0.0000  0.7900  0.2700   0.900   0.880   0.860   0.110   0.130   0.900
+  *   Choosing Your Path                             P4→0.890  P1→0.780  0.1100  0.8300  0.5200   0.210   0.780   0.150   0.060   0.890   0.130
+  *   Exploring Common Patterns                      P2→0.960  P1→0.920  0.0400  0.1200  0.0733   0.900   0.920   0.960   0.860   0.840   0.840
+  *   Zooming In on Our Favorite Examples            P2→0.860  P3→0.860  0.0000  0.7600  0.4633   0.100   0.220   0.860   0.860   0.140   0.200
+  *   The Challenges of Every AI Engineer            P1→0.940  P4→0.900  0.0400  0.7800  0.4067   0.200   0.940   0.160   0.160   0.900   0.840
       References                                     P0→0.100  P1→0.080  0.0200  0.0600  0.0367   0.100   0.080   0.060   0.060   0.040   0.040
-  *   Introduction: The Critical Decision Every AI…  P0→0.900  P1→0.880  0.0200  0.8600  0.1700   0.900   0.880   0.860   0.860   0.040   0.840
-  *   Conclusion: The Challenges of Every AI Engin…  P2→0.860  P0→0.000  0.8600  0.9200  0.7467   0.000  -0.020   0.860  -0.040  -0.060  -0.060
-    → Live:6/9  mean gap=0.1122  mean full-margin=0.6067
+  *   Introduction: The Critical Decision Every AI…  P0→0.800  P1→0.780  0.0200  0.7600  0.1533   0.800   0.780   0.760   0.760   0.040   0.740
+  *   Conclusion: The Challenges of Every AI Engin…  P2→0.760  P0→0.000  0.7600  0.8200  0.6633   0.000  -0.020   0.760  -0.040  -0.060  -0.060
+    → Live:7/9  mean gap=0.1122  mean full-margin=0.5511
 
     [STANDARD]  cost-only baseline = 0.0600
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
@@ -406,24 +406,24 @@ PART 5: Per-section oracle and runner-up breakdown (all articles)
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
     ----------------------------------------------------------------------------------------------------------------------------------------------------------------
       Introduction                                   P0→0.100  P1→0.080  0.0200  0.0600  0.0367   0.100   0.080   0.060   0.060   0.040   0.040
-      From Prompt to Context Engineering             P0→0.100  P1→0.080  0.0200  0.0600  0.0367   0.100   0.080   0.060   0.060   0.040   0.040
+  *   From Prompt to Context Engineering             P2→0.120  P0→0.100  0.0200  0.0800  0.0467   0.100   0.080   0.120   0.060   0.040   0.040
       Understanding Context Engineering              P0→0.050  P4→0.040  0.0100  0.0600  0.0283   0.050   0.030   0.010   0.010   0.040  -0.010
-      What Makes Up the Context                      P0→0.050  P1→0.030  0.0200  0.0600  0.0367   0.050   0.030   0.010   0.010  -0.010  -0.010
-  *   Production Implementation Challenges           P0→0.100  P1→0.080  0.0200  0.1100  0.0450   0.100   0.080   0.060   0.060  -0.010   0.040
-  *   Key Strategies for Context Optimization        P0→0.100  P1→0.080  0.0200  0.0900  0.0533   0.100   0.080   0.010   0.010   0.040   0.040
+      What Makes Up the Context                      P0→0.050  P4→0.030  0.0200  0.0600  0.0300   0.050   0.030   0.010   0.010   0.030  -0.010
+  *   Production Implementation Challenges           P1→0.140  P2→0.120  0.0200  0.0900  0.0450   0.100   0.140   0.120   0.060   0.050   0.100
+  *   Key Strategies for Context Optimization        P0→0.100  P1→0.080  0.0200  0.0900  0.0467   0.100   0.080   0.010   0.050   0.040   0.040
       Practical Example                              P3→0.060  P0→0.050  0.0100  0.0500  0.0217   0.050   0.030   0.010   0.060   0.040   0.040
       Connecting Context Engineering to AI Enginee…  P0→0.100  P1→0.080  0.0200  0.0600  0.0367   0.100   0.080   0.060   0.060   0.040   0.040
       References                                     P0→0.100  P1→0.080  0.0200  0.0600  0.0367   0.100   0.080   0.060   0.060   0.040   0.040
-  *   Introduction: When prompt engineering breaks   P0→0.900  P2→0.860  0.0400  0.9400  0.3200   0.900   0.080   0.860  -0.040   0.840   0.840
-      From prompt to context engineering             P0→0.900  P1→0.880  0.0200  0.0600  0.0367   0.900   0.880   0.860   0.860   0.840   0.840
-      Understanding context engineering              P0→0.900  P1→0.880  0.0200  0.0600  0.0367   0.900   0.880   0.860   0.860   0.840   0.840
-  *   What makes up the context                      P1→0.880  P2→0.860  0.0200  0.7800  0.1500   0.100   0.880   0.860   0.860   0.840   0.840
-  *   Production implementation challenges           P0→0.900  P1→0.880  0.0200  0.8600  0.1700   0.900   0.880   0.860   0.860   0.040   0.840
-  *   Key strategies for context optimization        P0→0.900  P1→0.880  0.0200  0.8600  0.3033   0.900   0.880   0.860   0.060   0.040   0.840
-      Here is an example                             P0→0.900  P1→0.880  0.0200  0.0600  0.0367   0.900   0.880   0.860   0.860   0.840   0.840
-      Connecting context engineering to AI enginee…  P0→0.900  P1→0.880  0.0200  0.0600  0.0367   0.900   0.880   0.860   0.860   0.840   0.840
-  *   When prompt engineering breaks                 P3→0.860  P0→0.000  0.8600  0.9200  0.7467   0.000  -0.020  -0.040   0.860  -0.060  -0.060
-    → Live:7/18  mean gap=0.0667  mean full-margin=0.2894
+  *   Introduction: When prompt engineering breaks   P0→0.800  P2→0.760  0.0400  0.8400  0.2867   0.800   0.080   0.760  -0.040   0.740   0.740
+      From prompt to context engineering             P0→0.800  P1→0.780  0.0200  0.0600  0.0367   0.800   0.780   0.760   0.760   0.740   0.740
+      Understanding context engineering              P0→0.800  P1→0.780  0.0200  0.0600  0.0367   0.800   0.780   0.760   0.760   0.740   0.740
+  *   What makes up the context                      P1→0.780  P2→0.760  0.0200  0.6800  0.1333   0.100   0.780   0.760   0.760   0.740   0.740
+  *   Production implementation challenges           P0→0.800  P1→0.780  0.0200  0.7600  0.1533   0.800   0.780   0.760   0.760   0.040   0.740
+  *   Key strategies for context optimization        P0→0.800  P1→0.780  0.0200  0.7600  0.2700   0.800   0.780   0.760   0.060   0.040   0.740
+      Here is an example                             P0→0.800  P1→0.780  0.0200  0.0600  0.0367   0.800   0.780   0.760   0.760   0.740   0.740
+      Connecting context engineering to AI enginee…  P0→0.800  P1→0.780  0.0200  0.0600  0.0367   0.800   0.780   0.760   0.760   0.740   0.740
+  *   When prompt engineering breaks                 P3→0.760  P0→0.000  0.7600  0.8200  0.6633   0.000  -0.020  -0.040   0.760  -0.060  -0.060
+    → Live:8/18  mean gap=0.0611  mean full-margin=0.2617
 
     [STANDARD]  cost-only baseline = 0.0600
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
@@ -477,17 +477,17 @@ PART 5: Per-section oracle and runner-up breakdown (all articles)
     [MINIMAL]  cost-only baseline = 0.0600
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
     ----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  *   Introduction                                   P1→0.980  P2→0.960  0.0200  0.9400  0.4750   0.050   0.980   0.960   0.960   0.040   0.040
-      The Challenge with Complex Single LLM Calls    P0→0.950  P1→0.930  0.0200  0.0600  0.0367   0.950   0.930   0.910   0.910   0.890   0.890
-      The Power of Modularity: Why Chain LLM Calls?  P0→1.000  P1→0.980  0.0200  0.0600  0.0367   1.000   0.980   0.960   0.960   0.940   0.940
-  *   Building a Sequential Workflow: FAQ Generati…  P0→1.000  P2→0.960  0.0400  0.0700  0.0450   1.000   0.930   0.960   0.960   0.940   0.940
-      Optimizing Sequential Workflows With Paralle…  P0→0.950  P4→0.940  0.0100  0.0400  0.0200   0.950   0.930   0.910   0.910   0.940   0.940
-      Introducing Dynamic Behavior: Routing and Co…  P0→0.950  P1→0.930  0.0200  0.0600  0.0367   0.950   0.930   0.910   0.910   0.890   0.890
-  *   Building a Basic Routing Workflow              P0→1.000  P3→0.960  0.0400  0.1200  0.0617   1.000   0.880   0.910   0.960   0.940   0.940
-      Orchestrator-Worker Pattern: Dynamic Task De…  P0→0.950  P1→0.930  0.0200  0.0600  0.0367   0.950   0.930   0.910   0.910   0.890   0.890
-  *   Conclusion                                     P1→0.980  P2→0.860  0.1200  0.9400  0.3750   0.100   0.980   0.860   0.860   0.790   0.040
+  *   Introduction                                   P1→0.880  P2→0.860  0.0200  0.8400  0.4250   0.050   0.880   0.860   0.860   0.040   0.040
+      The Challenge with Complex Single LLM Calls    P0→0.850  P4→0.850  0.0000  0.0600  0.0267   0.850   0.830   0.810   0.810   0.850   0.790
+  *   The Power of Modularity: Why Chain LLM Calls?  P1→0.980  P2→0.920  0.0600  0.1400  0.0733   0.900   0.980   0.920   0.900   0.900   0.840
+  *   Building a Sequential Workflow: FAQ Generati…  P0→0.900  P2→0.860  0.0400  0.0700  0.0450   0.900   0.830   0.860   0.860   0.840   0.840
+  *   Optimizing Sequential Workflows With Paralle…  P1→0.930  P4→0.880  0.0500  0.0900  0.0567   0.850   0.930   0.870   0.870   0.880   0.840
+  *   Introducing Dynamic Behavior: Routing and Co…  P1→0.870  P0→0.850  0.0200  0.0800  0.0300   0.850   0.870   0.850   0.850   0.830   0.790
+  *   Building a Basic Routing Workflow              P0→0.900  P3→0.860  0.0400  0.1200  0.0617   0.900   0.780   0.810   0.860   0.840   0.840
+      Orchestrator-Worker Pattern: Dynamic Task De…  P1→0.890  P5→0.890  0.0000  0.0400  0.0233   0.850   0.890   0.870   0.850   0.850   0.890
+  *   Conclusion                                     P1→0.880  P2→0.760  0.1200  0.8400  0.3417   0.100   0.880   0.760   0.760   0.690   0.040
       References                                     P0→0.100  P1→0.080  0.0200  0.0600  0.0367   0.100   0.080   0.060   0.060   0.040   0.040
-    → Live:4/10  mean gap=0.0330  mean full-margin=0.2410
+    → Live:7/10  mean gap=0.0370  mean full-margin=0.2340
 
     [STANDARD]  cost-only baseline = 0.0600
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
@@ -524,28 +524,28 @@ PART 5: Per-section oracle and runner-up breakdown (all articles)
     [MINIMAL]  cost-only baseline = 0.0600
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
     ----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  *   Introduction                                   P1→0.980  P2→0.910  0.0700  0.8800  0.2167   0.100   0.980   0.910   0.910   0.840   0.840
+  *   Introduction                                   P1→0.880  P2→0.810  0.0700  0.7800  0.2000   0.100   0.880   0.810   0.810   0.740   0.740
       Understanding Why Agents Need Tools            P0→0.050  P1→0.030  0.0200  0.0600  0.0367   0.050   0.030   0.010   0.010  -0.010  -0.010
-      Implementing Tool Calls From Scratch           P0→0.050  P1→0.030  0.0200  0.0600  0.0367   0.050   0.030   0.010   0.010  -0.010  -0.010
-  *   Implementing a Tool Calling Framework From S…  P0→0.050  P1→0.030  0.0200  0.0900  0.0450   0.050   0.030   0.010  -0.040  -0.010  -0.010
+  *   Implementing Tool Calls From Scratch           P1→0.090  P3→0.070  0.0200  0.1000  0.0467   0.050   0.090   0.010   0.070  -0.010   0.050
+  *   Implementing a Tool Calling Framework From S…  P0→0.050  P4→0.030  0.0200  0.0900  0.0383   0.050   0.030   0.010  -0.040   0.030  -0.010
   *   Implementing Production-Level Tool Calls Wit…  P0→0.100  P2→0.060  0.0400  0.1600  0.0950   0.100  -0.020   0.060  -0.040  -0.010  -0.060
-      Using Pydantic Models As Tools for On-Demand…  P1→0.080  P2→0.060  0.0200  0.0400  0.0250   0.050   0.080   0.060   0.060   0.040   0.040
-      The Downsides of Running Tools in a Loop       P0→0.050  P1→0.030  0.0200  0.0600  0.0367   0.050   0.030   0.010   0.010  -0.010  -0.010
-  *   Going Through Popular Tools Used Within the …  P0→0.050  P2→0.010  0.0400  0.0900  0.0533   0.050  -0.020   0.010  -0.040  -0.010  -0.010
-  *   Conclusion                                     P0→1.000  P1→0.980  0.0200  0.9600  0.3533   1.000   0.980   0.960   0.860   0.040   0.040
+      Using Pydantic Models As Tools for On-Demand…  P4→0.100  P1→0.080  0.0200  0.0600  0.0350   0.050   0.080   0.060   0.060   0.100   0.040
+      The Downsides of Running Tools in a Loop       P2→0.050  P0→0.050  0.0000  0.0400  0.0100   0.050   0.030   0.050   0.010   0.050   0.050
+  *   Going Through Popular Tools Used Within the …  P0→0.050  P4→0.030  0.0200  0.0900  0.0467   0.050  -0.020   0.010  -0.040   0.030  -0.010
+  *   Conclusion                                     P0→0.900  P1→0.880  0.0200  0.8600  0.3200   0.900   0.880   0.860   0.760   0.040   0.040
       References                                     P0→0.100  P1→0.080  0.0200  0.0600  0.0367   0.100   0.080   0.060   0.060   0.040   0.040
-  *   Understanding why agents need tools            P3→0.860  P0→0.100  0.7600  0.8200  0.6633   0.100   0.080   0.060   0.860   0.040   0.040
-  *   Implementing tool calls from scratch           P0→0.900  P1→0.880  0.0200  0.8600  0.3033   0.900   0.880   0.860   0.860   0.040   0.040
-  *   Implementing a tool calling framework from s…  P0→0.900  P1→0.880  0.0200  0.9600  0.4867   0.900   0.880  -0.040  -0.040  -0.060   0.840
-  *   Implementing production-level tool calls wit…  P2→0.860  P0→0.100  0.7600  0.8200  0.6633   0.100   0.080   0.860   0.060   0.040   0.040
-  *   Using Pydantic models as tools for on-demand…  P0→0.900  P1→0.880  0.0200  0.9600  0.3200   0.900   0.880   0.860   0.860  -0.060   0.040
-  *   The downsides of running tools in a loop       P0→0.900  P1→0.880  0.0200  0.8600  0.1700   0.900   0.880   0.860   0.860   0.040   0.840
-  *   Popular tools used within the industry         P0→0.900 P1→-0.020  0.9200  0.9600  0.7867   0.900  -0.020  -0.040  -0.040  -0.060  -0.060
+  *   Understanding why agents need tools            P3→0.760  P0→0.100  0.6600  0.7200  0.5800   0.100   0.080   0.060   0.760   0.040   0.040
+  *   Implementing tool calls from scratch           P0→0.800  P1→0.780  0.0200  0.7600  0.2700   0.800   0.780   0.760   0.760   0.040   0.040
+  *   Implementing a tool calling framework from s…  P0→0.800  P1→0.780  0.0200  0.8600  0.4367   0.800   0.780  -0.040  -0.040  -0.060   0.740
+  *   Implementing production-level tool calls wit…  P2→0.760  P0→0.100  0.6600  0.7200  0.5800   0.100   0.080   0.760   0.060   0.040   0.040
+  *   Using Pydantic models as tools for on-demand…  P0→0.800  P1→0.780  0.0200  0.8600  0.2867   0.800   0.780   0.760   0.760  -0.060   0.040
+  *   The downsides of running tools in a loop       P0→0.800  P1→0.780  0.0200  0.7600  0.1533   0.800   0.780   0.760   0.760   0.040   0.740
+  *   Popular tools used within the industry         P0→0.800 P1→-0.020  0.8200  0.8600  0.7033   0.800  -0.020  -0.040  -0.040  -0.060  -0.060
   *   Popular Tools Used Within the Industry         P1→0.030  P3→0.010  0.0200  0.0900  0.0500   0.000   0.030  -0.040   0.010  -0.060  -0.060
-  *   Going through popular tools used within the …  P1→0.880  P2→0.860  0.0200  0.8800  0.3000   0.000   0.880   0.860   0.860   0.040   0.840
-  *   Implementing a small tool calling framework …  P2→0.860  P3→0.860  0.0000  0.9200  0.5800   0.000  -0.020   0.860   0.860   0.040  -0.060
-  *   Implementing a Tool Calling Framework Fromsc…  P3→0.010  P0→0.000  0.0100  0.0700  0.0383   0.000  -0.020  -0.040   0.010  -0.060  -0.060
-    → Live:16/21  mean gap=0.1362  mean full-margin=0.5076
+  *   Going through popular tools used within the …  P1→0.780  P2→0.760  0.0200  0.7800  0.2667   0.000   0.780   0.760   0.760   0.040   0.740
+  *   Implementing a small tool calling framework …  P2→0.760  P3→0.760  0.0000  0.8200  0.5133   0.000  -0.020   0.760   0.760   0.040  -0.060
+  *   Implementing a Tool Calling Framework Fromsc…  P3→0.070  P0→0.000  0.0700  0.1300  0.0883   0.000  -0.020  -0.040   0.070  -0.060  -0.060
+    → Live:17/21  mean gap=0.1229  mean full-margin=0.4600
 
     [STANDARD]  cost-only baseline = 0.0600
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
@@ -600,28 +600,28 @@ PART 5: Per-section oracle and runner-up breakdown (all articles)
     [MINIMAL]  cost-only baseline = 0.0600
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
     ----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  *   Introduction                                   P4→0.890  P5→0.890  0.0000  0.8800  0.5600   0.050   0.030   0.010   0.110   0.890   0.890
-  *   Setup and Environment                          P0→0.950  P4→0.940  0.0100  0.8200  0.4033   0.950   0.130   0.160   0.160   0.940   0.940
-  *   Tool Layer: Mock Search Implementation         P0→0.950  P4→0.840  0.1100  0.8900  0.4700   0.950   0.080   0.060   0.110   0.840   0.840
-  *   Thought Phase: Prompt Construction and Gener…  P0→1.000  P1→0.080  0.9200  1.0600  0.8033   1.000   0.080   0.060   0.060  -0.060   0.040
-  *   Action Phase: Function Calling and Parsing     P0→1.000  P5→0.840  0.1600  1.0600  0.6700   1.000   0.080   0.060   0.060  -0.060   0.840
+  *   Introduction                                   P4→0.790  P5→0.790  0.0000  0.7800  0.4767   0.110   0.030   0.010   0.150   0.790   0.790
+  *   Setup and Environment                          P0→0.850  P4→0.840  0.0100  0.7200  0.3533   0.850   0.130   0.160   0.160   0.840   0.840
+  *   Tool Layer: Mock Search Implementation         P0→0.850  P5→0.800  0.0500  0.7900  0.4100   0.850   0.080   0.060   0.110   0.740   0.800
+  *   Thought Phase: Prompt Construction and Gener…  P0→0.900  P5→0.100  0.8000  0.9600  0.7100   0.900   0.080   0.060   0.060  -0.060   0.100
+  *   Action Phase: Function Calling and Parsing     P0→0.900  P5→0.800  0.1000  0.9600  0.5933   0.900   0.080   0.060   0.060  -0.060   0.800
       The Observation Phase                          P0→0.000 P1→-0.020  0.0200  0.0600  0.0367   0.000  -0.020  -0.040  -0.040  -0.060  -0.060
   *   ReAct Control Loop                             P0→0.050 P1→-0.020  0.0700  0.1100  0.0783   0.050  -0.020  -0.040  -0.040  -0.060  -0.060
-  *   Tests and Traces: Success and Graceful Fallb…  P0→1.000  P5→0.940  0.0600  0.9600  0.6283   1.000   0.130   0.060   0.060   0.040   0.940
+  *   Tests and Traces: Success and Graceful Fallb…  P0→0.900  P5→0.900  0.0000  0.8600  0.5417   0.900   0.130   0.120   0.060   0.040   0.900
       Alternative: ReAct with Model-Native Reasoni…  P0→0.000 P1→-0.020  0.0200  0.0600  0.0367   0.000  -0.020  -0.040  -0.040  -0.060  -0.060
-  *   Conclusion                                     P4→0.940  P5→0.940  0.0000  0.9100  0.5683   0.100   0.030   0.060   0.160   0.940   0.940
+  *   Conclusion                                     P5→0.900  P4→0.840  0.0600  0.8700  0.5383   0.100   0.030   0.100   0.200   0.840   0.900
   *   References                                     P1→0.080  P2→0.060  0.0200  0.0800  0.0333   0.000   0.080   0.060   0.060   0.040   0.040
   *   Control Loop: Messages, Scratchpad, Orchestr…  P0→0.100  P1→0.080  0.0200  0.1600  0.1033   0.100   0.080  -0.040  -0.040  -0.060  -0.060
-  *   The Tool Layer                                 P1→0.030  P2→0.010  0.0200  0.0900  0.0417   0.000   0.030   0.010  -0.040  -0.010  -0.060
-  *   The Thought Phase                              P2→0.060  P1→0.030  0.0300  0.1200  0.0633   0.000   0.030   0.060  -0.040  -0.010  -0.060
-  *   The Action Phase                               P2→0.060  P1→0.030  0.0300  0.1200  0.0717   0.000   0.030   0.060  -0.040  -0.060  -0.060
-  *   The Control Loop: Messages, Scratchpad, Orch…  P1→0.030  P2→0.010  0.0200  0.0900  0.0500   0.000   0.030   0.010  -0.040  -0.060  -0.060
+  *   The Tool Layer                                 P1→0.090  P2→0.070  0.0200  0.1500  0.0817   0.000   0.090   0.070  -0.040  -0.010  -0.060
+  *   The Thought Phase                              P1→0.090  P2→0.060  0.0300  0.1500  0.0833   0.000   0.090   0.060  -0.040  -0.010  -0.060
+  *   The Action Phase                               P2→0.120  P1→0.090  0.0300  0.1800  0.1117   0.000   0.090   0.120  -0.040  -0.060  -0.060
+  *   The Control Loop: Messages, Scratchpad, Orch…  P1→0.130  P2→0.070  0.0600  0.1900  0.1167   0.000   0.130   0.070  -0.040  -0.020  -0.060
   *   Control Loop: Messages, scratchpad, orchestr…  P2→0.060  P3→0.060  0.0000  0.1200  0.0633   0.000  -0.020   0.060   0.060  -0.060  -0.060
-  *   Tests and Traces: Success and graceful fallb…  P4→0.840  P2→0.060  0.7800  0.9000  0.6933   0.000  -0.020   0.060   0.060   0.840  -0.060
-  *   Control Loop: Messages, Scratchpad, and Orch…  P5→0.890  P3→0.010  0.8800  0.9500  0.7600   0.000  -0.020  -0.040   0.010  -0.060   0.890
+  *   Tests and Traces: Success and graceful fallb…  P4→0.740  P2→0.060  0.6800  0.8000  0.6100   0.000  -0.020   0.060   0.060   0.740  -0.060
+  *   Control Loop: Messages, Scratchpad, and Orch…  P5→0.850  P3→0.010  0.8400  0.9100  0.7267   0.000  -0.020  -0.040   0.010  -0.060   0.850
   *   Thought Phase: Prompt construction and gener…  P3→0.060  P4→0.040  0.0200  0.1200  0.0633   0.000  -0.020  -0.040   0.060   0.040  -0.060
   *   Action Phase: Function calling and parsing     P3→0.060  P0→0.000  0.0600  0.1200  0.0800   0.000  -0.020  -0.040   0.060  -0.060  -0.060
-    → Live:19/21  mean gap=0.1548  mean full-margin=0.4610
+    → Live:19/21  mean gap=0.1386  mean full-margin=0.4357
 
     [STANDARD]  cost-only baseline = 0.0600
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
@@ -673,14 +673,14 @@ PART 5: Per-section oracle and runner-up breakdown (all articles)
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
     ----------------------------------------------------------------------------------------------------------------------------------------------------------------
   *   Introduction                                   P0→0.050  P3→0.010  0.0400  0.0900  0.0533   0.050  -0.020  -0.040   0.010  -0.010  -0.010
-  *   The RAG System: Core Components                P0→0.950  P1→0.930  0.0200  0.8600  0.3033   0.950   0.930   0.110   0.910   0.090   0.890
-  *   The RAG Pipeline: Ingestion and Retrieval      P0→0.950  P1→0.930  0.0200  0.8600  0.4367   0.950   0.930   0.110   0.910   0.090   0.090
-  *   Advanced RAG Techniques                        P0→0.900  P1→0.880  0.0200  0.8600  0.4367   0.900   0.880   0.060   0.060   0.040   0.840
-  *   Agentic RAG                                    P4→0.890  P1→0.180  0.7100  0.7500  0.6100   0.150   0.180   0.160   0.160   0.890   0.140
-  *   Conclusion                                     P0→1.000  P1→0.980  0.0200  0.8600  0.4367   1.000   0.980   0.160   0.160   0.140   0.940
+  *   The RAG System: Core Components                P0→0.890  P1→0.830  0.0600  0.8000  0.3033   0.890   0.830   0.110   0.810   0.090   0.790
+  *   The RAG Pipeline: Ingestion and Retrieval      P0→0.850  P1→0.830  0.0200  0.7600  0.3767   0.850   0.830   0.110   0.810   0.090   0.150
+  *   Advanced RAG Techniques                        P5→0.800  P0→0.800  0.0000  0.7600  0.3567   0.800   0.780   0.120   0.120   0.040   0.800
+  *   Agentic RAG                                    P4→0.850  P1→0.240  0.6100  0.7000  0.5433   0.150   0.240   0.200   0.200   0.850   0.200
+  *   Conclusion                                     P0→0.900  P1→0.880  0.0200  0.7600  0.3800   0.900   0.880   0.160   0.200   0.140   0.840
       References                                     P0→0.100  P1→0.080  0.0200  0.0600  0.0367   0.100   0.080   0.060   0.060   0.040   0.040
-  *   Introduction: Giving LLMs an Open-Book Exam    P0→0.900  P3→0.860  0.0400  0.8600  0.4367   0.900   0.080   0.060   0.860   0.840   0.040
-    → Live:7/8  mean gap=0.1113  mean full-margin=0.6500
+  *   Introduction: Giving LLMs an Open-Book Exam    P0→0.800  P3→0.760  0.0400  0.7600  0.3867   0.800   0.080   0.060   0.760   0.740   0.040
+    → Live:7/8  mean gap=0.1013  mean full-margin=0.5862
 
     [STANDARD]  cost-only baseline = 0.0600
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
@@ -713,17 +713,17 @@ PART 5: Per-section oracle and runner-up breakdown (all articles)
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
     ----------------------------------------------------------------------------------------------------------------------------------------------------------------
   *   Introduction                                   P0→0.100  P4→0.040  0.0600  0.1200  0.0783   0.100  -0.020   0.010   0.010   0.040  -0.010
-  *   The Layers of Memory: Internal, Short-Term, …  P1→0.980  P0→0.950  0.0300  0.8200  0.1667   0.950   0.980   0.160   0.910   0.940   0.940
-  *   Long-Term Memory: Semantic, Episodic, and Pr…  P0→1.000  P1→0.980  0.0200  0.8400  0.1700   1.000   0.980   0.160   0.960   0.940   0.940
-  *   Storing Memories: Pros and Cons of Different…  P0→0.900  P1→0.080  0.8200  0.8600  0.7033   0.900   0.080   0.060   0.060   0.040   0.040
+  *   The Layers of Memory: Internal, Short-Term, …  P1→0.920  P0→0.850  0.0700  0.7200  0.1767   0.850   0.920   0.200   0.810   0.840   0.840
+  *   Long-Term Memory: Semantic, Episodic, and Pr…  P0→0.900  P1→0.880  0.0200  0.7400  0.1533   0.900   0.880   0.160   0.860   0.840   0.840
+  *   Storing Memories: Pros and Cons of Different…  P0→0.800  P1→0.140  0.6600  0.7600  0.6000   0.800   0.140   0.120   0.060   0.040   0.040
   *   Memory Implementations With Code Examples      P1→0.080  P2→0.060  0.0200  0.0900  0.0500   0.000   0.080   0.060   0.010   0.040  -0.010
-  *   Real-World Challenges                          P1→0.080  P3→0.060  0.0200  0.1200  0.0417   0.050   0.080  -0.040   0.060   0.040   0.040
-  *   Conclusion                                     P0→1.000  P1→0.980  0.0200  0.9400  0.1867   1.000   0.980   0.060   0.960   0.940   0.940
+  *   Real-World Challenges                          P1→0.120  P4→0.100  0.0200  0.1600  0.0550   0.050   0.120  -0.040   0.060   0.100   0.100
+  *   Conclusion                                     P0→0.900  P1→0.880  0.0200  0.8400  0.1700   0.900   0.880   0.060   0.860   0.840   0.840
       References                                     P0→0.100  P1→0.080  0.0200  0.0600  0.0367   0.100   0.080   0.060   0.060   0.040   0.040
-  *   Introduction: Why Agents Need a Memory in th…  P0→0.900  P3→0.860  0.0400  0.8400  0.3033   0.900   0.080   0.060   0.860   0.840   0.840
-  *   Memory implementations with code examples      P1→0.880  P2→0.860  0.0200  0.8400  0.2833   0.100   0.880   0.860   0.860   0.040   0.840
-  *   Real-World Lessons: Challenges and Best Prac…  P0→0.900  P1→0.880  0.0200  0.8600  0.2867   0.900   0.880   0.160   0.860   0.040   0.840
-    → Live:10/11  mean gap=0.0991  mean full-margin=0.5809
+  *   Introduction: Why Agents Need a Memory in th…  P0→0.800  P3→0.760  0.0400  0.7400  0.2700   0.800   0.080   0.060   0.760   0.740   0.740
+  *   Memory implementations with code examples      P1→0.780  P2→0.760  0.0200  0.7400  0.2500   0.100   0.780   0.760   0.760   0.040   0.740
+  *   Real-World Lessons: Challenges and Best Prac…  P0→0.800  P1→0.780  0.0200  0.7600  0.2533   0.800   0.780   0.160   0.760   0.040   0.740
+    → Live:10/11  mean gap=0.0882  mean full-margin=0.5209
 
     [STANDARD]  cost-only baseline = 0.0600
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
@@ -761,24 +761,24 @@ PART 5: Per-section oracle and runner-up breakdown (all articles)
     [MINIMAL]  cost-only baseline = 0.0600
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
     ----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  *   Limitations of traditional document processi…  P0→1.000  P1→0.880  0.1200  0.1600  0.1200   1.000   0.880   0.860   0.860   0.840   0.840
-  *   Foundations of Multimodal LLMs                 P2→0.060  P1→0.030  0.0300  0.1200  0.0633   0.000   0.030   0.060   0.010  -0.060  -0.060
+  *   Limitations of traditional document processi…  P0→0.900  P1→0.780  0.1200  0.1600  0.1200   0.900   0.780   0.760   0.760   0.740   0.740
+  *   Foundations of Multimodal LLMs                 P2→0.120  P3→0.050  0.0700  0.1800  0.0967   0.000   0.030   0.120   0.050  -0.060   0.000
       Applying Multimodal LLMs to Images and Docum…  P0→0.000 P1→-0.020  0.0200  0.0600  0.0367   0.000  -0.020  -0.040  -0.040  -0.060  -0.060
-  *   Foundations of multimodal RAG                  P5→0.940  P0→0.150  0.7900  0.9000  0.7183   0.150   0.080   0.060   0.060   0.040   0.940
-  *   Implementing multimodal RAG for images, PDFs…  P4→0.840  P0→0.200  0.6400  0.8000  0.6267   0.200   0.080   0.060   0.060   0.840   0.040
-  *   Building multimodal AI agents                  P4→0.840  P0→0.200  0.6400  0.8000  0.6267   0.200   0.080   0.060   0.060   0.840   0.040
-  *   Conclusion                                     P0→1.000  P5→0.940  0.0600  0.8700  0.3283   1.000   0.130   0.910   0.910   0.140   0.940
+  *   Foundations of multimodal RAG                  P5→0.900  P0→0.150  0.7500  0.8600  0.6850   0.150   0.080   0.060   0.060   0.040   0.900
+  *   Implementing multimodal RAG for images, PDFs…  P4→0.740  P0→0.200  0.5400  0.7000  0.5433   0.200   0.080   0.060   0.060   0.740   0.040
+  *   Building multimodal AI agents                  P4→0.740  P0→0.200  0.5400  0.7000  0.5433   0.200   0.080   0.060   0.060   0.740   0.040
+  *   Conclusion                                     P0→0.900  P5→0.840  0.0600  0.7700  0.2950   0.900   0.130   0.810   0.810   0.140   0.840
       References                                     P0→0.100  P1→0.080  0.0200  0.0600  0.0367   0.100   0.080   0.060   0.060   0.040   0.040
-  *   Introduction: The need for multimodal AI       P0→0.900  P2→0.860  0.0400  0.8600  0.5700   0.900   0.080   0.860   0.060   0.040   0.040
-  *   Foundations of multimodal LLMs                 P1→0.880  P0→0.100  0.7800  0.8400  0.6833   0.100   0.880   0.060   0.060   0.040   0.040
-  *   Applying multimodal LLMs to images and PDFs    P3→0.860  P4→0.840  0.0200  0.8200  0.5300   0.100   0.080   0.060   0.860   0.840   0.040
+  *   Introduction: The need for multimodal AI       P0→0.800  P2→0.760  0.0400  0.7600  0.5033   0.800   0.080   0.760   0.060   0.040   0.040
+  *   Foundations of multimodal LLMs                 P1→0.780  P0→0.100  0.6800  0.7400  0.6000   0.100   0.780   0.060   0.060   0.040   0.040
+  *   Applying multimodal LLMs to images and PDFs    P3→0.760  P4→0.740  0.0200  0.7200  0.4633   0.100   0.080   0.060   0.760   0.740   0.040
       Introduction                                   P2→0.060  P3→0.060  0.0000  0.0600  0.0217   0.000   0.030   0.060   0.060   0.040   0.040
-  *   Limitations of Traditional Document Processi…  P1→0.080  P3→0.060  0.0200  0.0800  0.0417   0.000   0.080   0.010   0.060   0.040   0.040
+  *   Limitations of Traditional Document Processi…  P3→0.100  P5→0.100  0.0000  0.1000  0.0450   0.000   0.080   0.010   0.100   0.040   0.100
   *   Applying Multimodal LLMs to Images and PDFs    P1→0.080  P0→0.000  0.0800  0.1400  0.1000   0.000   0.080  -0.040  -0.040  -0.060  -0.060
-  *   Foundations of Multimodal RAG                  P2→0.060  P1→0.030  0.0300  0.1200  0.0633   0.000   0.030   0.060  -0.040  -0.010  -0.060
-  *   Implementing Multimodal RAG for Images, PDFs…  P4→0.040  P1→0.030  0.0100  0.1000  0.0433   0.000   0.030   0.010  -0.040   0.040  -0.060
-  *   Building Multimodal AI Agents                  P1→0.080  P4→0.040  0.0400  0.1400  0.0750   0.000   0.080   0.010  -0.040   0.040  -0.060
-    → Live:14/17  mean gap=0.1965  mean full-margin=0.4076
+  *   Foundations of Multimodal RAG                  P2→0.120  P4→0.050  0.0700  0.1800  0.0933   0.000   0.030   0.120   0.020   0.050  -0.060
+  *   Implementing Multimodal RAG for Images, PDFs…  P4→0.080  P2→0.050  0.0300  0.1400  0.0700   0.000   0.030   0.050  -0.040   0.080  -0.060
+  *   Building Multimodal AI Agents                  P1→0.080  P2→0.070  0.0100  0.1400  0.0583   0.000   0.080   0.070   0.000   0.040  -0.060
+    → Live:14/17  mean gap=0.1794  mean full-margin=0.3806
 
     [STANDARD]  cost-only baseline = 0.0600
     Section                                         Oracle    RunUp     Gap  FullMg  Regret      P0     P1     P2     P3     P4     P5
@@ -831,25 +831,25 @@ PART 6: GRPO signal quality — oracle gap perspective
 --------------------------------------------------------------------------------
 
   [MINIMAL]  n=115
-    Oracle gap  — mean=0.1215  median=0.0200  max=0.9200
-    Full margin — mean=0.4517  median=0.1400  max=1.0600
-    Regret      — mean=0.2390  median=0.0800  max=0.8033
+    Oracle gap  — mean=0.1113  median=0.0200  max=0.8400
+    Full margin — mean=0.4149  median=0.1600  max=0.9600
+    Regret      — mean=0.2191  median=0.1000  max=0.7267
 
     Sections below various sigma_floor thresholds (gap < floor → flat group):
     sigma_floor      n_flat   pct_flat   n_usable   pct_usable
     --------------------------------------------------------
-    0.005                 6       5.2%        109        94.8%
-    0.010                 7       6.1%        108        93.9%
-    0.020                21      18.3%         94        81.7%
-    0.040                80      69.6%         35        30.4%
+    0.005                12      10.4%        103        89.6%
+    0.010                14      12.2%        101        87.8%
+    0.020                28      24.3%         87        75.7%
+    0.040                72      62.6%         43        37.4%
 
-    Oracle distribution for 'decisive' sections (gap > 0.10, n=18):
-      P0: 6 (33.3%)  ########
-      P1: 2 (11.1%)  ##
-      P2: 2 (11.1%)  ##
-      P3: 2 (11.1%)  ##
-      P4: 4 (22.2%)  #####
-      P5: 2 (11.1%)  ##
+    Oracle distribution for 'decisive' sections (gap > 0.10, n=17):
+      P0: 4 (23.5%)  #####
+      P1: 2 (11.8%)  ##
+      P2: 2 (11.8%)  ##
+      P3: 2 (11.8%)  ##
+      P4: 5 (29.4%)  #######
+      P5: 2 (11.8%)  ##
 
   [STANDARD]  n=110
     Oracle gap  — mean=0.0825  median=0.0400  max=0.6000
@@ -899,22 +899,22 @@ PART 7: Top-20 most decisive sections (largest oracle gap)
 
   #    Article+Variant                             Section                                            Gap    Oracle     RunUp
   -----------------------------------------------------------------------------------------------------------------------------
-  1    06_tools__minimal                           Popular tools used within the industry          0.9200  P0→0.900 P1→-0.020
-  2    08_react_practice__minimal                  Thought Phase: Prompt Construction and Genera…  0.9200  P0→1.000  P1→0.080
-  3    08_react_practice__minimal                  Control Loop: Messages, Scratchpad, and Orche…  0.8800  P5→0.890  P3→0.010
-  4    02_workflows_vs_agents__minimal             Conclusion: The Challenges of Every AI Engine…  0.8600  P2→0.860  P0→0.000
-  5    03_context_engineering__minimal             When prompt engineering breaks                  0.8600  P3→0.860  P0→0.000
-  6    10_memory_knowledge_access__minimal         Storing Memories: Pros and Cons of Different …  0.8200  P0→0.900  P1→0.080
-  7    11_multimodal__minimal                      Foundations of multimodal RAG                   0.7900  P5→0.940  P0→0.150
-  8    08_react_practice__minimal                  Tests and Traces: Success and graceful fallba…  0.7800  P4→0.840  P2→0.060
-  9    11_multimodal__minimal                      Foundations of multimodal LLMs                  0.7800  P1→0.880  P0→0.100
-  10   06_tools__minimal                           Understanding why agents need tools             0.7600  P3→0.860  P0→0.100
-  11   06_tools__minimal                           Implementing production-level tool calls with…  0.7600  P2→0.860  P0→0.100
-  12   09_RAG__minimal                             Agentic RAG                                     0.7100  P4→0.890  P1→0.180
-  13   11_multimodal__minimal                      Implementing multimodal RAG for images, PDFs …  0.6400  P4→0.840  P0→0.200
-  14   11_multimodal__minimal                      Building multimodal AI agents                   0.6400  P4→0.840  P0→0.200
-  15   06_tools__standard                          Understanding why agents need tools             0.6000  P3→0.840  P4→0.240
-  16   02_workflows_vs_agents__standard            Introduction: The Critical Decision Every AI …  0.5400  P3→0.840  P0→0.300
+  1    08_react_practice__minimal                  Control Loop: Messages, Scratchpad, and Orche…  0.8400  P5→0.850  P3→0.010
+  2    06_tools__minimal                           Popular tools used within the industry          0.8200  P0→0.800 P1→-0.020
+  3    08_react_practice__minimal                  Thought Phase: Prompt Construction and Genera…  0.8000  P0→0.900  P5→0.100
+  4    02_workflows_vs_agents__minimal             Conclusion: The Challenges of Every AI Engine…  0.7600  P2→0.760  P0→0.000
+  5    03_context_engineering__minimal             When prompt engineering breaks                  0.7600  P3→0.760  P0→0.000
+  6    11_multimodal__minimal                      Foundations of multimodal RAG                   0.7500  P5→0.900  P0→0.150
+  7    08_react_practice__minimal                  Tests and Traces: Success and graceful fallba…  0.6800  P4→0.740  P2→0.060
+  8    11_multimodal__minimal                      Foundations of multimodal LLMs                  0.6800  P1→0.780  P0→0.100
+  9    06_tools__minimal                           Understanding why agents need tools             0.6600  P3→0.760  P0→0.100
+  10   06_tools__minimal                           Implementing production-level tool calls with…  0.6600  P2→0.760  P0→0.100
+  11   10_memory_knowledge_access__minimal         Storing Memories: Pros and Cons of Different …  0.6600  P0→0.800  P1→0.140
+  12   09_RAG__minimal                             Agentic RAG                                     0.6100  P4→0.850  P1→0.240
+  13   06_tools__standard                          Understanding why agents need tools             0.6000  P3→0.840  P4→0.240
+  14   02_workflows_vs_agents__standard            Introduction: The Critical Decision Every AI …  0.5400  P3→0.840  P0→0.300
+  15   11_multimodal__minimal                      Implementing multimodal RAG for images, PDFs …  0.5400  P4→0.740  P0→0.200
+  16   11_multimodal__minimal                      Building multimodal AI agents                   0.5400  P4→0.740  P0→0.200
   17   09_RAG__demanding                           Introduction                                    0.4350  P5→0.555  P0→0.120
   18   11_multimodal__demanding                    Foundations of multimodal RAG                   0.4350  P5→0.885  P0→0.450
   19   06_tools__demanding                         Popular Tools Used Within the Industry          0.3850  P3→0.385  P0→0.000
@@ -928,44 +928,44 @@ PART 8: Top-20 most ambiguous sections (smallest oracle gap, live only)
 
   #    Article+Variant                             Section                                            Gap  FullMg    Oracle     RunUp
   ----------------------------------------------------------------------------------------------------------------------------------
-  1    02_workflows_vs_agents__minimal             Zooming In on Our Favorite Examples             0.0000  0.8600  P2→0.960  P3→0.960
-  2    02_workflows_vs_agents__standard            Choosing Your Path                              0.0000  0.4700  P2→0.760  P3→0.760
-  3    03_context_engineering__demanding           Understanding Context Engineering               0.0000  0.2800  P2→0.385  P3→0.385
-  4    05_workflow_patterns__standard              The Power of Modularity: Why Chain LLM Calls?   0.0000  0.2400  P4→0.940  P5→0.940
-  5    06_tools__minimal                           Implementing a small tool calling framework f…  0.0000  0.9200  P2→0.860  P3→0.860
-  6    06_tools__standard                          Introduction                                    0.0000  0.5100  P4→0.640  P5→0.640
-  7    06_tools__demanding                         Conclusion                                      0.0000  0.1450  P2→0.440  P3→0.440
-  8    08_react_practice__minimal                  Introduction                                    0.0000  0.8800  P4→0.890  P5→0.890
-  9    08_react_practice__minimal                  Conclusion                                      0.0000  0.9100  P4→0.940  P5→0.940
-  10   08_react_practice__minimal                  Control Loop: Messages, scratchpad, orchestra…  0.0000  0.1200  P2→0.060  P3→0.060
-  11   09_RAG__standard                            Advanced RAG Techniques                         0.0000  0.2600  P2→0.560  P3→0.560
-  12   09_RAG__demanding                           Conclusion                                      0.0000  0.2700  P4→0.710  P5→0.710
-  13   10_memory_knowledge_access__demanding       Introduction                                    0.0000  0.5200  P2→0.640  P3→0.640
-  14   10_memory_knowledge_access__demanding       The Layers of Memory: Internal, Short-Term, a…  0.0000  0.2700  P2→0.715  P3→0.715
-  15   10_memory_knowledge_access__demanding       Long-Term Memory: Semantic, Episodic, and Pro…  0.0000  0.4450  P2→0.890  P3→0.890
-  16   10_memory_knowledge_access__demanding       Memory Implementations With Code Examples       0.0000  0.4800  P2→0.465  P3→0.465
-  17   10_memory_knowledge_access__demanding       Real-World Challenges                           0.0000  0.4800  P2→0.465  P3→0.465
-  18   10_memory_knowledge_access__demanding       Conclusion                                      0.0000  0.3500  P2→0.715  P3→0.715
-  19   02_workflows_vs_agents__demanding           Introduction: The Critical Decision Every AI …  0.0050  0.1650  P0→0.250  P1→0.245
-  20   03_context_engineering__demanding           Production Implementation Challenges            0.0050  0.1100  P0→0.475  P1→0.470
+  1    02_workflows_vs_agents__minimal             Understanding the Spectrum: From Workflows to…  0.0000  0.7900  P0→0.900  P5→0.900
+  2    02_workflows_vs_agents__minimal             Zooming In on Our Favorite Examples             0.0000  0.7600  P2→0.860  P3→0.860
+  3    02_workflows_vs_agents__standard            Choosing Your Path                              0.0000  0.4700  P2→0.760  P3→0.760
+  4    03_context_engineering__demanding           Understanding Context Engineering               0.0000  0.2800  P2→0.385  P3→0.385
+  5    05_workflow_patterns__standard              The Power of Modularity: Why Chain LLM Calls?   0.0000  0.2400  P4→0.940  P5→0.940
+  6    06_tools__minimal                           Implementing a small tool calling framework f…  0.0000  0.8200  P2→0.760  P3→0.760
+  7    06_tools__standard                          Introduction                                    0.0000  0.5100  P4→0.640  P5→0.640
+  8    06_tools__demanding                         Conclusion                                      0.0000  0.1450  P2→0.440  P3→0.440
+  9    08_react_practice__minimal                  Introduction                                    0.0000  0.7800  P4→0.790  P5→0.790
+  10   08_react_practice__minimal                  Tests and Traces: Success and Graceful Fallba…  0.0000  0.8600  P0→0.900  P5→0.900
+  11   08_react_practice__minimal                  Control Loop: Messages, scratchpad, orchestra…  0.0000  0.1200  P2→0.060  P3→0.060
+  12   09_RAG__standard                            Advanced RAG Techniques                         0.0000  0.2600  P2→0.560  P3→0.560
+  13   09_RAG__demanding                           Conclusion                                      0.0000  0.2700  P4→0.710  P5→0.710
+  14   10_memory_knowledge_access__demanding       Introduction                                    0.0000  0.5200  P2→0.640  P3→0.640
+  15   10_memory_knowledge_access__demanding       The Layers of Memory: Internal, Short-Term, a…  0.0000  0.2700  P2→0.715  P3→0.715
+  16   10_memory_knowledge_access__demanding       Long-Term Memory: Semantic, Episodic, and Pro…  0.0000  0.4450  P2→0.890  P3→0.890
+  17   10_memory_knowledge_access__demanding       Memory Implementations With Code Examples       0.0000  0.4800  P2→0.465  P3→0.465
+  18   10_memory_knowledge_access__demanding       Real-World Challenges                           0.0000  0.4800  P2→0.465  P3→0.465
+  19   10_memory_knowledge_access__demanding       Conclusion                                      0.0000  0.3500  P2→0.715  P3→0.715
+  20   11_multimodal__minimal                      Limitations of Traditional Document Processing  0.0000  0.1000  P3→0.100  P5→0.100
 
 --------------------------------------------------------------------------------
 PART 9: Global oracle-gap summary
 --------------------------------------------------------------------------------
 
   Total section groups: 336
-  Oracle gap — mean=0.0934  median=0.0200  max=0.9200  min=0.0000
+  Oracle gap — mean=0.0899  median=0.0200  max=0.8400  min=0.0000
 
   Global decisive rates:
-    gap > 0.01:  267/336 = 79.5%
-    gap > 0.05:  116/336 = 34.5%
-    gap > 0.10:  88/336 = 26.2%
+    gap > 0.01:  260/336 = 77.4%
+    gap > 0.05:  124/336 = 36.9%
+    gap > 0.10:  87/336 = 25.9%
     gap > 0.20:  37/336 = 11.0%
 
   Oracle preset distribution across all variants:
-    P0: 139 (41.4%)  ############
-    P1:  62 (18.5%)  #####
-    P2:  46 (13.7%)  ####
-    P3:  38 (11.3%)  ###
+    P0: 129 (38.4%)  ###########
+    P1:  67 (19.9%)  #####
+    P2:  48 (14.3%)  ####
+    P3:  39 (11.6%)  ###
     P4:  26 (7.7%)  ##
-    P5:  25 (7.4%)  ##
+    P5:  27 (8.0%)  ##

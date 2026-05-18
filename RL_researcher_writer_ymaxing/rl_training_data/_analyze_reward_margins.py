@@ -72,8 +72,8 @@ def compute_reward(scores: dict[str, float], preset_id: int, variant: str) -> fl
 
     if variant == "minimal":
         gt_base     = 0.05 * cc + 0.05 * fl
-        explore     = 0.0
-        user_intent = 0.80 * ga + 0.10 * ra
+        explore     = cp * (0.60 * de + 0.40 * be) * 0.10
+        user_intent = 0.70 * ga + 0.10 * ra
         cost        = -0.02 * nr
     elif variant == "demanding":
         gt_base     = 0.12 * cc + 0.08 * fl

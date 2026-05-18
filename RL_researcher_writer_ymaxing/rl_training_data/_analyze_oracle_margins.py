@@ -68,7 +68,9 @@ def compute_reward(scores: dict[str, float], preset_id: int, variant: str) -> fl
     ra = scores.get("ra", 0.0)
     nr = PRESET_ROUNDS[preset_id]
     if variant == "minimal":
-        return 0.05*cc + 0.05*fl + 0.80*ga + 0.10*ra - 0.02*nr
+        return (0.05*cc + 0.05*fl
+                + cp*(0.60*de + 0.40*be)*0.10
+                + 0.70*ga + 0.10*ra - 0.02*nr)
     if variant == "demanding":
         return (0.12*cc + 0.08*fl
                 + cp*(0.55*de + 0.35*be)*0.50

@@ -56,7 +56,9 @@ def compute_reward(scores, nr, variant, cost_rate=None):
     if cost_rate is None:
         cost_rate = DEFAULT_RATE[variant]
     if variant == "minimal":
-        return 0.05*cc + 0.05*fl + 0.80*ga + 0.10*ra - cost_rate*nr
+        return (0.05*cc + 0.05*fl
+                + cp*(0.60*de + 0.40*be)*0.10
+                + 0.70*ga + 0.10*ra - cost_rate*nr)
     if variant == "demanding":
         return (0.12*cc + 0.08*fl + cp*(0.55*de + 0.35*be)*0.50
                 + (0.60*ga + 0.40*ra)*0.25 - cost_rate*nr)
