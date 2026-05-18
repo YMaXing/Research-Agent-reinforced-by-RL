@@ -212,16 +212,19 @@ another criterion.
         • future implications or open research directions for the core topic
       - The addition must be relevant to the main topic/theme of the ground truth section and must not contradict any ground
         truth facts.
-      - Score 1 if at least one high-quality depth element is present and meaningfully integrated.
-      - Score 0 if no depth enhancements exist, the additions are shallow/superficial/off-topic, or they are irrelevant
-        to the ground truth section.
-      - **Source attribution gate — mandatory when sources are listed:** When `<exploration_sources>` contains
-        a list of sources (i.e., it does NOT say "Not provided"), passing the quality check above is necessary
-        but not sufficient for a score of 1. You must separately verify traceability: the specific facts,
-        metrics, or concepts introduced by the addition must be consistent with content covered by at least one
-        of the listed exploration sources. Assign score 0 if you cannot match the addition to any listed
-        exploration source, even when the content quality is otherwise high. When `<exploration_sources>` says
-        "Not provided", this gate is inactive — apply only the standard criteria above.
+      - Score 1 if at least one depth element passes both the quality check and the source attribution gate below.
+      - Score 0 if no depth element passes both checks — whether because no enhancements are present,
+        all are shallow/superficial/off-topic/irrelevant, or none can be traced to an exploration source.
+      - **Source attribution gate — always active, evaluated per instance:** Assess each candidate depth
+        enhancement instance independently. An instance qualifies only when it both (a) satisfies the
+        quality criteria above and (b) its content is traceable to at least one exploration-phase source
+        listed in `<exploration_sources>`. The section scores 1 if at least one instance qualifies;
+        unqualified instances do not lower the score — only a total absence of qualifying instances
+        yields 0. When `<exploration_sources>` says "Not provided" (no exploration sources were gathered),
+        condition (b) can never be met, so the section scores 0 regardless of content quality. When
+        `<exploration_sources>` contains a list of sources, verify traceability for each instance
+        individually — an instance without a matching exploration source does not qualify, but other
+        instances in the same section may still do so.
    5. **BreadthEnhancement:** Evaluate whether the section contains valuable additions that expand outward to areas adjacent
       to the core topic.
       - **Breadth additions** (outward — connect to adjacent areas outside the core topic) include one or more of the following:
@@ -233,16 +236,19 @@ another criterion.
         • emerging trends in adjacent fields or the broader ecosystem surrounding the topic
       - The addition must be relevant to the main topic/theme of the ground truth section and must not contradict any ground
         truth facts.
-      - Score 1 if at least one high-quality breadth element is present and meaningfully integrated.
-      - Score 0 if no breadth enhancements exist, the additions are shallow/superficial/off-topic, or they are irrelevant
-        to the ground truth section.
-      - **Source attribution gate — mandatory when sources are listed:** When `<exploration_sources>` contains
-        a list of sources (i.e., it does NOT say "Not provided"), passing the quality check above is necessary
-        but not sufficient for a score of 1. You must separately verify traceability: the specific facts,
-        metrics, or concepts introduced by the addition must be consistent with content covered by at least one
-        of the listed exploration sources. Assign score 0 if you cannot match the addition to any listed
-        exploration source, even when the content quality is otherwise high. When `<exploration_sources>` says
-        "Not provided", this gate is inactive — apply only the standard criteria above.
+      - Score 1 if at least one breadth element passes both the quality check and the source attribution gate below.
+      - Score 0 if no breadth element passes both checks — whether because no enhancements are present,
+        all are shallow/superficial/off-topic/irrelevant, or none can be traced to an exploration source.
+      - **Source attribution gate — always active, evaluated per instance:** Assess each candidate breadth
+        enhancement instance independently. An instance qualifies only when it both (a) satisfies the
+        quality criteria above and (b) its content is traceable to at least one exploration-phase source
+        listed in `<exploration_sources>`. The section scores 1 if at least one instance qualifies;
+        unqualified instances do not lower the score — only a total absence of qualifying instances
+        yields 0. When `<exploration_sources>` says "Not provided" (no exploration sources were gathered),
+        condition (b) can never be met, so the section scores 0 regardless of content quality. When
+        `<exploration_sources>` contains a list of sources, verify traceability for each instance
+        individually — an instance without a matching exploration source does not qualify, but other
+        instances in the same section may still do so.
 10. Along with the binary scores, you will provide a brief and concise explanation containing the reasoning behind 
 the score for each criterion. The score will be used to debug and monitor the evaluation process. Therefore, it is
 important to provide thorough reasoning for the score. Since we provide binary scores, the reasoning should always 
@@ -251,11 +257,13 @@ score is 0, the reasoning should also contain what is good about the generated s
 follow the same flow of ideas," and what is problematic, such as "the generated section contains an additional 
 paragraph on AI Evals that is not present in the expected section." When scoring depth_enhancement and breadth_enhancement,
 for each criterion name the specific bullet(s) from the respective list that were present or absent, and briefly explain
-why the addition qualifies or does not qualify. Additionally, when `<exploration_sources>` contains a list of sources,
-the reason field for depth_enhancement and breadth_enhancement must explicitly cite the full URL(s) of the exploration
-source(s) the addition traces to (e.g. "Traces to https://arxiv.org/abs/2310.09298 — empirical JSON error-rate study").
-If the traceability check fails, the reason must state that no matching exploration source was found and therefore
-the score is 0, even though the content quality would otherwise qualify.
+why the addition qualifies or does not qualify. The reason field for depth_enhancement and breadth_enhancement must always 
+address the source attribution gate on a per-instance basis: when `<exploration_sources>` says "Not provided", explicitly state that no
+exploration sources were gathered and therefore the score is 0. When `<exploration_sources>` contains a
+list of sources, evaluate each candidate instance and state whether it qualifies (citing the matching URL,
+e.g. "Instance traces to https://arxiv.org/abs/2310.09298 — empirical JSON error-rate study") or does not
+(stating no matching source was found). If at least one instance qualifies, the score is 1; if none
+qualify, the score is 0.
 11. Important rules when comparing the content of sections:
       - Focus on substance, not superficial formatting differences
       - When comparing **media**, you only care about the placement of the media, not the content of the media. 
@@ -302,12 +310,13 @@ your 3.1 reasoning and your 3.2 score together. Verify: does the score match the
 wrote? If you wrote that the section preserves flow / contains all ideas / has no structural issues
 but scored 0, correct to 1. If you wrote that something is missing or violated but scored 1,
 correct to 0. Never leave a score that contradicts your own written conclusion.
-3.4. **[Mandatory when `<exploration_sources>` contains a list of sources — skip entirely when it says "Not provided"]**
-For every depth_enhancement or breadth_enhancement score of 1 you have assigned, you must run the traceability
-check as a separate step: name the specific exploration source URL(s) the addition traces to and confirm that the
-addition's content (facts, metrics, or concepts) is consistent with what those sources cover. If you cannot match
-the addition to any listed exploration source, revise the score to 0 and record the traceability failure in the
-reason field. Quality alone does not justify a score of 1 when sources are listed.
+3.4. **[Always mandatory]** For every section where you scored depth_enhancement or breadth_enhancement
+as 1, run the per-instance traceability check. First: if `<exploration_sources>` says "Not provided",
+revise the score to 0 immediately — no instance can be traced when no exploration sources exist. Second:
+if sources are listed, evaluate each candidate enhancement instance independently — an instance qualifies
+only when its content (facts, metrics, or concepts) is consistent with at least one listed source. Keep
+the score at 1 as long as at least one instance qualifies; revise to 0 only when no instance qualifies.
+Record in the reason field which instances qualify (with URL) and which do not.
 
 ## WHAT TO AVOID
 

@@ -1,0 +1,758 @@
+================================================================================
+SECTION-LEVEL REWARD MARGIN ANALYSIS
+8 articles × 3 variants × 6 presets
+================================================================================
+
+PART 0: Reward Formula Reference
+--------------------------------------------------------------------------------
+MINIMAL  : R = 0.05·cc + 0.05·fl + 0.80·ga + 0.10·ra - 0.02·nr
+           (explore = 0: de/be not used for brief conceptual articles)
+STANDARD : R = 0.20·cc + 0.20·fl + cp·(0.60·de + 0.40·be)·0.30
+               + (0.50·ga + 0.50·ra)·0.30 - 0.02·nr
+DEMANDING: R = 0.12·cc + 0.08·fl + cp·(0.55·de + 0.35·be)·0.50
+               + (0.60·ga + 0.40·ra)·0.25 - 0.005·nr
+
+Preset rounds: P0=0, P1=1, P2=2, P3=2, P4=3, P5=3
+Cost-only margin (fixed oracles, cost variation only):
+  minimal/standard : 0.02 × (3-0) = 0.060
+  demanding        : 0.005 × (3-0) = 0.015
+
+NOTE: ground_truth_structure (st) and user_intent_golden_source_priority (gsp)
+      are NOT used in any reward formula — pure oracle data, no gradient signal.
+
+Theoretical max/min per variant (all binary dims = 1 or 0, preset = P0/P5):
+  MINIMAL   : max=1.0000 (all=1, P0), min=-0.0600 (all=0, P5), theoretical range=1.0600
+  STANDARD  : max=1.0000 (all=1, P0), min=-0.0600 (all=0, P5), theoretical range=1.0600
+  DEMANDING : max=0.9000 (all=1, P0), min=-0.0150 (all=0, P5), theoretical range=0.9150
+
+--------------------------------------------------------------------------------
+PART 1: Oracle Variation Rates — % of sections where each dim varies
+        across the 6 presets (at least one preset differs from others)
+--------------------------------------------------------------------------------
+
+Dim    Weight(min)  Weight(std)  Weight(dem)  | Vary%(min)  Vary%(std)  Vary%(dem)  | Mean(min)  Mean(std)  Mean(dem) 
+--------------------------------------------------------------------------------------------------------------
+  cc           0.05         0.20         0.12 |      23.5%        6.4%        2.7%  |     0.815      0.880      0.954
+  fl           0.05         0.20         0.08 |      29.6%       23.6%       21.6%  |     0.524      0.639      0.677
+  de           0.00      0.18×cp     0.275×cp |      30.4%       45.5%       45.9%  |     0.172      0.329      0.400
+  be           0.00      0.12×cp     0.175×cp |      22.6%       32.7%       38.7%  |     0.088      0.164      0.168
+  cp           0.00         gate         gate |       0.9%        0.9%        0.9%  |     0.974      0.976      0.977
+  ga           0.80         0.15         0.15 |      40.0%       27.3%       27.9%  |     0.642      0.812      0.764
+  ra           0.10         0.15         0.10 |       3.5%        2.7%        0.0%  |     0.983      0.993      1.000
+
+--------------------------------------------------------------------------------
+PART 2: Reward Margin Distribution by Variant
+        margin = max(R_P0..P5) - min(R_P0..P5) per section group
+--------------------------------------------------------------------------------
+
+  [MINIMAL]  cost-only baseline margin = 0.0600
+  Total sections : 115
+  Dead (margin ≤ cost-only baseline)  :  32  (27.8%)
+  Live (oracle-driven margin)          :  83  (72.2%)
+
+  Margin distribution (max-min reward across 6 presets):
+  Stat           Margin     Regret
+  --------------------------------
+  Min            0.0400     0.0200
+  P10            0.0600     0.0367
+  P25            0.0600     0.0367
+  Median         0.1400     0.0800
+  P75            0.8600     0.4367
+  P90            0.9400     0.6633
+  Max            1.0600     0.8033
+  Mean               0.4517     0.2390
+
+  Margin bucket distribution:
+    [0.00, 0.01)    0 (0.0%)  
+    [0.01, 0.06)   11 (9.6%)  ###
+    [0.06, 0.10)   33 (28.7%)  ###########
+    [0.10, 0.20)   18 (15.7%)  ######
+    [0.20, 1.01)   51 (44.3%)  #################
+
+  [STANDARD]  cost-only baseline margin = 0.0600
+  Total sections : 110
+  Dead (margin ≤ cost-only baseline)  :  18  (16.4%)
+  Live (oracle-driven margin)          :  92  (83.6%)
+
+  Margin distribution (max-min reward across 6 presets):
+  Stat           Margin     Regret
+  --------------------------------
+  Min            0.0600     0.0367
+  P10            0.0600     0.0367
+  P25            0.1900     0.0867
+  Median         0.3400     0.1517
+  P75            0.4800     0.2350
+  P90            0.5800     0.3050
+  Max            0.8900     0.5550
+  Mean               0.3363     0.1715
+
+  Margin bucket distribution:
+    [0.00, 0.01)    0 (0.0%)  
+    [0.01, 0.06)    0 (0.0%)  
+    [0.06, 0.10)   18 (16.4%)  ######
+    [0.10, 0.20)   11 (10.0%)  ####
+    [0.20, 1.01)   81 (73.6%)  #############################
+
+  [DEMANDING]  cost-only baseline margin = 0.0150
+  Total sections : 111
+  Dead (margin ≤ cost-only baseline)  :  16  (14.4%)
+  Live (oracle-driven margin)          :  95  (85.6%)
+
+  Margin distribution (max-min reward across 6 presets):
+  Stat           Margin     Regret
+  --------------------------------
+  Min            0.0150     0.0092
+  P10            0.0150     0.0092
+  P25            0.1650     0.0633
+  Median         0.2900     0.1717
+  P75            0.4750     0.2425
+  P90            0.5600     0.3283
+  Max            0.6550     0.5025
+  Mean               0.3099     0.1685
+
+  Margin bucket distribution:
+    [0.00, 0.01)    0 (0.0%)  
+    [0.01, 0.06)   17 (15.3%)  ######
+    [0.06, 0.10)    1 (0.9%)  
+    [0.10, 0.20)   15 (13.5%)  #####
+    [0.20, 1.01)   78 (70.3%)  ############################
+
+--------------------------------------------------------------------------------
+PART 3: Oracle-driven vs Cost-only breakdown per Article × Variant
+--------------------------------------------------------------------------------
+
+  Article                             Variant       Total   Live   Dead  LivePct  MeanMargin  MeanRegret
+  ---------------------------------------------------------------------------------------------------------
+  02_workflows_vs_agents              minimal           9      6      3    66.7%      0.6067      0.3157
+                                      standard          9      8      1    88.9%      0.3978      0.1878
+                                      demanding         8      7      1    87.5%      0.3200      0.1864
+
+  03_context_engineering              minimal          18      7     11    38.9%      0.2894      0.1205
+                                      standard         18     11      7    61.1%      0.2106      0.1006
+                                      demanding        20     15      5    75.0%      0.1775      0.0875
+
+  05_workflow_patterns                minimal          10      4      6    40.0%      0.2410      0.1160
+                                      standard         10      9      1    90.0%      0.3040      0.1253
+                                      demanding        11     10      1    90.9%      0.2773      0.1326
+
+  06_tools                            minimal          21     16      5    76.2%      0.5076      0.2522
+                                      standard         19     18      1    94.7%      0.4647      0.2612
+                                      demanding        20     19      1    95.0%      0.3693      0.2254
+
+  08_react_practice                   minimal          21     19      2    90.5%      0.4610      0.2990
+                                      standard         19     16      3    84.2%      0.2963      0.1622
+                                      demanding        16     13      3    81.2%      0.2859      0.1543
+
+  09_RAG                              minimal           8      7      1    87.5%      0.6500      0.3438
+                                      standard          8      6      2    75.0%      0.2013      0.0933
+                                      demanding         8      6      2    75.0%      0.2844      0.1457
+
+  10_memory_knowledge_access          minimal          11     10      1    90.9%      0.5809      0.2097
+                                      standard         11      9      2    81.8%      0.2409      0.1164
+                                      demanding        11      9      2    81.8%      0.3841      0.1766
+
+  11_multimodal                       minimal          17     14      3    82.4%      0.4076      0.2756
+                                      standard         16     15      1    93.8%      0.4913      0.2521
+                                      demanding        17     16      1    94.1%      0.3985      0.2304
+
+--------------------------------------------------------------------------------
+PART 4: Per-Section Reward Margins (all articles, all variants)
+        Columns: section title | oracle means per dim (cc fl de be cp ga ra)
+        | live dims | rewards P0-P5 | margin | regret | best preset
+        Live dim: dim has >0 oracle variation across 6 presets
+        Oracle mean shown as fraction of 6 presets where score=1
+--------------------------------------------------------------------------------
+
+  === 02_workflows_vs_agents ===
+    [MINIMAL]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     Introduction                                  1.00 0.83 0.00 0.00 1.00   -    -   fl                  0.0500 0.0800 0.0600 0.0600 0.0400 0.0400   0.0400  0.0250 P1
+   * Understanding the Spectrum: From Workflows t… 1.00 0.67 0.17 0.17 1.00 0.67 1.00  fl de be ga         1.0000 0.9800 0.9600 0.1100 0.0900 0.9400   0.9100  0.3200 P0
+   * Choosing Your Path                            0.67 0.00 0.33 0.50 1.00 0.33 1.00  cc de be ga         0.1500 0.8800 0.1100 0.0600 0.8900 0.0900   0.8300  0.5267 P4
+     Exploring Common Patterns                     1.00 1.00 0.17 0.33 1.00 1.00 1.00  de be               1.0000 0.9800 0.9600 0.9600 0.9400 0.9400   0.0600  0.0367 P0
+   * Zooming In on Our Favorite Examples           1.00 1.00 0.17 0.17 1.00 0.33 0.83  de be ga ra         0.1000 0.1800 0.9600 0.9600 0.1400 0.1400   0.8600  0.5467 P2
+   * The Challenges of Every AI Engineer           1.00 1.00 0.50 0.17 1.00 0.60 1.00  de be ga            0.2000 0.9800 0.0600 0.1600 0.9400 0.9400   0.9200  0.4333 P1
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.1000 0.0800 0.0600 0.0600 0.0400 0.0400   0.0600  0.0367 P0
+   * Introduction: The Critical Decision Every AI…   -    -    -    -    -  0.83 1.00  ga                  0.9000 0.8800 0.8600 0.8600 0.0400 0.8400   0.8600  0.1700 P0
+   * Conclusion: The Challenges of Every AI Engin…   -    -    -    -    -  1.00 1.00                      0.0000 -0.0200 0.8600 -0.0400 -0.0600 -0.0600   0.9200  0.7467 P2
+    → Live: 6/9  mean margin=0.6067  mean regret=0.3157
+
+    [STANDARD]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 1.00 0.40 0.00 1.00   -    -   de                  0.4000 0.5600 0.3600 -0.0400 0.5200 0.3400   0.6000  0.2033 P1
+   * Understanding the Spectrum: From Workflows t… 1.00 0.33 0.00 0.33 1.00 0.17 1.00  fl be ga            0.3500 0.3300 0.6600 0.3100 0.4100 0.6100   0.3500  0.2150 P2
+   * Choosing Your Path                            1.00 0.17 0.67 0.50 1.00 0.33 1.00  fl de be ga         0.5500 0.6300 0.7600 0.7600 0.4700 0.2900   0.4700  0.1833 P2
+   * Exploring Common Patterns                     1.00 1.00 0.67 0.83 1.00 0.83 1.00  de be ga            0.7000 0.9800 0.9600 0.9600 0.9400 0.6100   0.3700  0.1217 P1
+   * Zooming In on Our Favorite Examples           1.00 1.00 0.83 0.50 1.00 0.83 1.00  de be ga            0.7000 0.9800 0.9600 0.8400 0.9400 0.6700   0.3100  0.1317 P1
+   * The Challenges of Every AI Engineer           1.00 1.00 0.67 0.83 1.00 1.00 1.00  de be               0.7000 0.9800 0.4800 0.9600 0.9400 0.9400   0.5000  0.1467 P1
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.4000 0.3800 0.3600 0.3600 0.3400 0.3400   0.0600  0.0367 P0
+   * Introduction: The Critical Decision Every AI… 1.00 1.00 1.00 0.00 1.00 0.67 1.00  ga                  0.3000 0.2800 0.1100 0.8400 0.2400 0.0900   0.7500  0.5300 P3
+   * Conclusion: The Challenges of Every AI Engin…   -    -    -    -    -  0.00 1.00                      0.0000 -0.0200 0.1100 -0.0400 -0.0600 -0.0600   0.1700  0.1217 P2
+    → Live: 8/9  mean margin=0.3978  mean regret=0.1878
+
+    [DEMANDING]  cost-only baseline = 0.0150
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Understanding the Spectrum: From Workflows t… 1.00 0.50 0.17 0.33 1.00 0.33 1.00  fl de be ga         0.2200 0.4900 0.2900 0.6150 0.4350 0.3800   0.3950  0.2100 P3
+   * Choosing Your Path                            1.00 0.33 0.50 0.17 1.00 0.67 1.00  fl de be ga         0.3700 0.6400 0.3600 0.7150 0.3800 0.5600   0.3550  0.2108 P3
+   * Exploring Common Patterns                     1.00 1.00 0.50 0.50 1.00 0.67 1.00  de be ga            0.4500 0.6200 0.8900 0.7150 0.4600 0.5600   0.4400  0.2742 P2
+   * Zooming In on Our Favorite Examples           1.00 1.00 0.50 0.17 1.00 0.50 1.00  de be ga            0.7250 0.4450 0.5650 0.4400 0.2850 0.7350   0.4500  0.2025 P5
+   * The Challenges of Every AI Engineer           1.00 1.00 0.83 0.33 0.83 0.83 1.00  de be cp ga         0.4500 0.8950 0.7150 0.4400 0.5600 0.7100   0.4550  0.2667 P1
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.2000 0.1950 0.1900 0.1900 0.1850 0.1850   0.0150  0.0092 P0
+   * Introduction                                  1.00 1.00 0.17 0.00 1.00   -    -   de                  0.2000 0.4700 0.1900 0.1900 0.1850 0.1850   0.2850  0.2333 P1
+   * Introduction: The Critical Decision Every AI…   -    -    -    -    -  0.50 1.00  ga                  0.2500 0.2450 0.0900 0.2400 0.0850 0.0850   0.1650  0.0842 P0
+    → Live: 7/8  mean margin=0.3200  mean regret=0.1864
+
+  === 03_context_engineering ===
+    [MINIMAL]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     Introduction                                  1.00 1.00 0.00 0.00 1.00   -    -                       0.1000 0.0800 0.0600 0.0600 0.0400 0.0400   0.0600  0.0367 P0
+     From Prompt to Context Engineering            1.00 1.00 0.17 0.00 1.00   -    -   de                  0.1000 0.0800 0.0600 0.0600 0.0400 0.0400   0.0600  0.0367 P0
+     Understanding Context Engineering             1.00 0.17 0.00 0.00 1.00   -    -   fl                  0.0500 0.0300 0.0100 0.0100 0.0400 -0.0100   0.0600  0.0283 P0
+     What Makes Up the Context                     1.00 0.00 0.00 0.17 1.00   -    -   be                  0.0500 0.0300 0.0100 0.0100 -0.0100 -0.0100   0.0600  0.0367 P0
+   * Production Implementation Challenges          0.83 1.00 0.67 0.00 1.00   -    -   cc de               0.1000 0.0800 0.0600 0.0600 -0.0100 0.0400   0.1100  0.0450 P0
+   * Key Strategies for Context Optimization       0.67 1.00 0.00 0.17 1.00   -    -   cc be               0.1000 0.0800 0.0100 0.0100 0.0400 0.0400   0.0900  0.0533 P0
+     Practical Example                             0.50 1.00 0.00 0.00 1.00   -    -   cc                  0.0500 0.0300 0.0100 0.0600 0.0400 0.0400   0.0500  0.0217 P3
+     Connecting Context Engineering to AI Enginee… 1.00 1.00 0.00 0.00 1.00   -    -                       0.1000 0.0800 0.0600 0.0600 0.0400 0.0400   0.0600  0.0367 P0
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.1000 0.0800 0.0600 0.0600 0.0400 0.0400   0.0600  0.0367 P0
+   * Introduction: When prompt engineering breaks    -    -    -    -    -  0.80 1.00  ga                  0.9000 0.0800 0.8600 -0.0400 0.8400 0.8400   0.9400  0.3200 P0
+     From prompt to context engineering              -    -    -    -    -  1.00 1.00                      0.9000 0.8800 0.8600 0.8600 0.8400 0.8400   0.0600  0.0367 P0
+     Understanding context engineering               -    -    -    -    -  1.00 1.00                      0.9000 0.8800 0.8600 0.8600 0.8400 0.8400   0.0600  0.0367 P0
+   * What makes up the context                       -    -    -    -    -  0.83 1.00  ga                  0.1000 0.8800 0.8600 0.8600 0.8400 0.8400   0.7800  0.1500 P1
+   * Production implementation challenges            -    -    -    -    -  0.83 1.00  ga                  0.9000 0.8800 0.8600 0.8600 0.0400 0.8400   0.8600  0.1700 P0
+   * Key strategies for context optimization         -    -    -    -    -  0.67 1.00  ga                  0.9000 0.8800 0.8600 0.0600 0.0400 0.8400   0.8600  0.3033 P0
+     Here is an example                              -    -    -    -    -  1.00 1.00                      0.9000 0.8800 0.8600 0.8600 0.8400 0.8400   0.0600  0.0367 P0
+     Connecting context engineering to AI enginee…   -    -    -    -    -  1.00 1.00                      0.9000 0.8800 0.8600 0.8600 0.8400 0.8400   0.0600  0.0367 P0
+   * When prompt engineering breaks                  -    -    -    -    -  1.00 1.00                      0.0000 -0.0200 -0.0400 0.8600 -0.0600 -0.0600   0.9200  0.7467 P3
+    → Live: 7/18  mean margin=0.2894  mean regret=0.1205
+
+    [STANDARD]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 1.00 0.20 0.00 1.00   -    -   de                  0.4000 -0.0200 0.3600 0.3600 0.3400 0.5200   0.5400  0.1933 P5
+   * From Prompt to Context Engineering            1.00 1.00 0.67 0.17 1.00   -    -   de be               0.5800 0.5600 0.3600 0.5400 0.6400 0.3400   0.3000  0.1367 P4
+   * Understanding Context Engineering             1.00 0.00 0.33 0.17 1.00   -    -   de be               0.2000 0.1800 0.1600 0.1600 0.4400 0.3200   0.2800  0.1967 P4
+   * What Makes Up the Context                     1.00 0.00 0.33 0.33 1.00   -    -   de be               0.2000 0.3600 0.3400 0.2800 0.1400 0.2600   0.2200  0.0967 P1
+   * Production Implementation Challenges          1.00 1.00 1.00 0.33 1.00   -    -   be                  0.5800 0.5600 0.6600 0.5400 0.6400 0.5200   0.1400  0.0767 P2
+   * Key Strategies for Context Optimization       1.00 0.67 0.83 0.00 1.00   -    -   fl de               0.5800 0.5600 0.5400 0.5400 0.1400 0.3200   0.4400  0.1333 P0
+   * Practical Example                             0.33 0.60 0.17 0.50 1.00   -    -   cc fl de be         0.2000 0.3800 -0.0400 0.2800 0.0600 0.4400   0.4800  0.2200 P5
+   * Connecting Context Engineering to AI Enginee… 1.00 1.00 0.17 0.33 1.00   -    -   de be               0.4000 0.5000 0.3600 0.5400 0.3400 0.4600   0.2000  0.1067 P3
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.4000 0.3800 0.3600 0.3600 0.3400 0.3400   0.0600  0.0367 P0
+   * Introduction: When prompt engineering breaks    -    -    -    -    -  0.83 1.00  ga                  0.1500 0.2800 0.2600 0.2600 0.2400 0.2400   0.1300  0.0417 P1
+     From prompt to context engineering              -    -    -    -    -  1.00 1.00                      0.3000 0.2800 0.2600 0.2600 0.2400 0.2400   0.0600  0.0367 P0
+     Understanding context engineering               -    -    -    -    -  1.00 1.00                      0.3000 0.2800 0.2600 0.2600 0.2400 0.2400   0.0600  0.0367 P0
+     What makes up the context                       -    -    -    -    -  1.00 1.00                      0.3000 0.2800 0.2600 0.2600 0.2400 0.2400   0.0600  0.0367 P0
+     Production implementation challenges            -    -    -    -    -  1.00 1.00                      0.3000 0.2800 0.2600 0.2600 0.2400 0.2400   0.0600  0.0367 P0
+     Key strategies for context optimization         -    -    -    -    -  1.00 1.00                      0.3000 0.2800 0.2600 0.2600 0.2400 0.2400   0.0600  0.0367 P0
+     Here is an example                              -    -    -    -    -  1.00 1.00                      0.3000 0.2800 0.2600 0.2600 0.2400 0.2400   0.0600  0.0367 P0
+   * Conclusion - Wrap-up: Connecting context eng…   -    -    -    -    -  1.00 1.00                      0.3000 -0.0200 -0.0400 -0.0400 -0.0600 -0.0600   0.3600  0.2867 P0
+   * Connecting context engineering to AI enginee…   -    -    -    -    -  1.00 1.00                      0.0000 0.2800 0.2600 0.2600 0.2400 0.2400   0.2800  0.0667 P1
+    → Live: 11/18  mean margin=0.2106  mean regret=0.1006
+
+    [DEMANDING]  cost-only baseline = 0.0150
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     Introduction                                  1.00 1.00 0.00 0.00 1.00   -    -                       0.2000 0.1950 0.1900 0.1900 0.1850 0.1850   0.0150  0.0092 P0
+   * From Prompt to Context Engineering            1.00 1.00 0.50 0.00 1.00   -    -   de                  0.4750 0.1950 0.4650 0.1900 0.4600 0.1850   0.2900  0.1467 P0
+   * Understanding Context Engineering             1.00 0.00 0.33 0.33 1.00   -    -   de be               0.1200 0.2900 0.3850 0.3850 0.1050 0.2800   0.2800  0.1242 P2
+   * What Makes Up the Context                     1.00 0.00 0.17 0.33 1.00   -    -   de be               0.1200 0.2900 0.2850 0.1100 0.1050 0.3800   0.2750  0.1650 P5
+   * Production Implementation Challenges          1.00 1.00 0.83 0.17 1.00   -    -   de be               0.4750 0.4700 0.4650 0.3650 0.4600 0.4600   0.1100  0.0258 P0
+   * Key Strategies for Context Optimization       1.00 0.83 0.83 0.00 1.00   -    -   fl de               0.2000 0.4700 0.4650 0.4650 0.4600 0.3800   0.2700  0.0633 P1
+   * Practical Example                             0.67 0.17 0.00 0.17 1.00   -    -   cc fl be            0.1200 0.1950 0.1100 0.2850 -0.0150 -0.0150   0.3000  0.1717 P3
+   * Connecting Context Engineering to AI Enginee… 1.00 1.00 0.33 0.33 1.00   -    -   de be               0.2000 0.1950 0.4650 0.6400 0.1850 0.3600   0.4550  0.2992 P3
+   * Conclusion                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.2000 -0.0050 -0.0100 -0.0100 -0.0150 -0.0150   0.2150  0.1758 P0
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.2000 0.1950 0.1900 0.1900 0.1850 0.1850   0.0150  0.0092 P0
+     Understanding context engineering               -    -    -    -    -  1.00 1.00                      0.2500 0.2450 0.2400 0.2400 0.2350 0.2350   0.0150  0.0092 P0
+   * What makes up the context                       -    -    -    -    -  0.83 1.00  ga                  0.2500 0.2450 0.2400 0.2400 0.2350 0.0850   0.1650  0.0342 P0
+     Production implementation challenges            -    -    -    -    -  1.00 1.00                      0.2500 0.2450 0.2400 0.2400 0.2350 0.2350   0.0150  0.0092 P0
+   * Key strategies for context optimization         -    -    -    -    -  0.83 1.00  ga                  0.2500 0.2450 0.2400 0.2400 0.0850 0.2350   0.1650  0.0342 P0
+   * Here is an example                              -    -    -    -    -  0.83 1.00  ga                  0.2500 0.2450 0.0900 0.2400 0.2350 0.2350   0.1600  0.0342 P0
+     Connecting context engineering to AI enginee…   -    -    -    -    -  1.00 1.00                      0.2500 0.2450 0.2400 0.2400 0.2350 0.2350   0.0150  0.0092 P0
+   * Conclusion - Wrap-up: Connecting context eng…   -    -    -    -    -  0.00 1.00                      0.1000 -0.0050 -0.0100 -0.0100 -0.0150 -0.0150   0.1150  0.0925 P0
+   * When prompt engineering breaks                  -    -    -    -    -  0.67 1.00  ga                  0.1000 -0.0050 -0.0100 0.2400 -0.0150 0.2350   0.2550  0.1492 P3
+   * From prompt to context engineering              -    -    -    -    -  0.83 1.00  ga                  0.2500 0.2450 0.2400 0.0900 0.2350 0.2350   0.1600  0.0342 P0
+   * Introduction: When prompt engineering breaks    -    -    -    -    -  0.67 1.00  ga                  0.0000 0.2450 0.2400 -0.0100 0.0850 -0.0150   0.2600  0.1542 P1
+    → Live: 15/20  mean margin=0.1775  mean regret=0.0875
+
+  === 05_workflow_patterns ===
+    [MINIMAL]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 0.83 0.00 0.00 1.00 1.00 1.00  fl                  0.0500 0.9800 0.9600 0.9600 0.0400 0.0400   0.9400  0.4750 P1
+     The Challenge with Complex Single LLM Calls   1.00 0.00 0.17 0.00 1.00 1.00 1.00  de                  0.9500 0.9300 0.9100 0.9100 0.8900 0.8900   0.0600  0.0367 P0
+     The Power of Modularity: Why Chain LLM Calls? 1.00 1.00 0.50 0.33 1.00 1.00 1.00  de be               1.0000 0.9800 0.9600 0.9600 0.9400 0.9400   0.0600  0.0367 P0
+   * Building a Sequential Workflow: FAQ Generati… 1.00 0.83 0.00 0.00 1.00 1.00 1.00  fl                  1.0000 0.9300 0.9600 0.9600 0.9400 0.9400   0.0700  0.0450 P0
+     Optimizing Sequential Workflows With Paralle… 1.00 0.33 0.50 0.33 1.00 1.00 1.00  fl de be            0.9500 0.9300 0.9100 0.9100 0.9400 0.9400   0.0400  0.0200 P0
+     Introducing Dynamic Behavior: Routing and Co… 1.00 0.00 0.00 0.67 1.00 1.00 1.00  be                  0.9500 0.9300 0.9100 0.9100 0.8900 0.8900   0.0600  0.0367 P0
+   * Building a Basic Routing Workflow             0.67 0.83 0.00 0.00 1.00 1.00 1.00  cc fl               1.0000 0.8800 0.9100 0.9600 0.9400 0.9400   0.1200  0.0617 P0
+     Orchestrator-Worker Pattern: Dynamic Task De… 1.00 0.00 0.67 0.33 1.00 1.00 1.00  de be               0.9500 0.9300 0.9100 0.9100 0.8900 0.8900   0.0600  0.0367 P0
+   * Conclusion                                    0.83 1.00 0.00 0.00 1.00 1.00 1.00  cc                  0.1000 0.9800 0.8600 0.8600 0.7900 0.0400   0.9400  0.3750 P1
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.1000 0.0800 0.0600 0.0600 0.0400 0.0400   0.0600  0.0367 P0
+    → Live: 4/10  mean margin=0.2410  mean regret=0.1160
+
+    [STANDARD]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 0.83 0.17 0.00 1.00 1.00 1.00  fl de               0.7000 0.1800 0.6600 0.6600 0.6400 0.5200   0.5200  0.1400 P0
+   * The Challenge with Complex Single LLM Calls   1.00 0.83 0.67 0.00 1.00 1.00 1.00  fl de               0.6800 0.8600 0.8400 0.6600 0.6400 0.8200   0.2200  0.1100 P1
+   * The Power of Modularity: Why Chain LLM Calls? 1.00 1.00 0.50 0.67 1.00 1.00 1.00  de be               0.7000 0.8000 0.8400 0.7800 0.9400 0.9400   0.2400  0.1067 P4
+   * Building a Sequential Workflow: FAQ Generati… 1.00 1.00 0.17 0.33 1.00 1.00 1.00  de be               0.7000 0.6800 0.8400 0.7800 0.6400 0.7600   0.2000  0.1067 P2
+   * Optimizing Sequential Workflows With Paralle… 1.00 0.83 0.50 0.17 1.00 1.00 1.00  fl de be            0.5000 0.8600 0.8400 0.8400 0.7600 0.6400   0.3600  0.1200 P1
+   * Introducing Dynamic Behavior: Routing and Co… 1.00 0.83 0.33 0.50 1.00 1.00 1.00  fl de be            0.5000 0.8600 0.7800 0.6600 0.9400 0.7600   0.4400  0.1900 P4
+   * Building a Basic Routing Workflow             1.00 1.00 0.83 0.00 1.00 1.00 1.00  de                  0.7000 0.8600 0.8400 0.8400 0.8200 0.8200   0.1600  0.0467 P1
+   * Orchestrator-Worker Pattern: Dynamic Task De… 1.00 0.83 0.67 0.67 1.00 1.00 1.00  fl de be            0.5000 0.9800 0.8400 0.7800 0.9400 0.9400   0.4800  0.1500 P1
+   * Conclusion                                    1.00 1.00 0.00 0.33 1.00 1.00 1.00  be                  0.7000 0.3800 0.3600 0.4800 0.4600 0.3400   0.3600  0.2467 P0
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.4000 0.3800 0.3600 0.3600 0.3400 0.3400   0.0600  0.0367 P0
+    → Live: 9/10  mean margin=0.3040  mean regret=0.1253
+
+    [DEMANDING]  cost-only baseline = 0.0150
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 0.67 0.00 0.00 1.00 0.75 1.00  fl ga               0.2200 0.4450 0.4400 0.4400 0.1850 0.1050   0.3400  0.1392 P1
+   * The Challenge with Complex Single LLM Calls   1.00 1.00 0.33 0.00 1.00 1.00 1.00  de                  0.7250 0.7200 0.4400 0.4400 0.4350 0.4350   0.2900  0.1925 P0
+   * The Power of Modularity: Why Chain LLM Calls? 1.00 1.00 1.00 0.33 1.00 1.00 1.00  be                  0.7250 0.7200 0.8900 0.7150 0.8850 0.7100   0.1800  0.1158 P2
+   * Building a Sequential Workflow: FAQ Generati… 1.00 0.83 0.00 0.00 1.00 1.00 1.00  fl                  0.3700 0.4450 0.4400 0.4400 0.4350 0.4350   0.0750  0.0175 P1
+   * Optimizing Sequential Workflows With Paralle… 1.00 0.83 0.50 0.33 1.00 1.00 1.00  fl de be            0.6450 0.7200 0.7150 0.6150 0.6100 0.4350   0.2850  0.0967 P1
+   * Introducing Dynamic Behavior: Routing and Co… 1.00 0.83 0.67 0.67 1.00 1.00 1.00  fl de be            0.3700 0.6200 0.7150 0.8900 0.8850 0.8850   0.5200  0.1625 P3
+   * Building a Basic Routing Workflow             1.00 0.83 0.67 0.33 1.00 1.00 1.00  fl de be            0.6450 0.8950 0.8900 0.4400 0.7100 0.4350   0.4600  0.2258 P1
+   * Orchestrator-Worker Pattern: Dynamic Task De… 1.00 0.83 0.83 0.17 1.00 1.00 1.00  fl de be            0.3700 0.7200 0.7150 0.8900 0.7100 0.7100   0.5200  0.2042 P3
+   * Conclusion                                    1.00 1.00 0.00 0.00 1.00 0.00 1.00                      0.3000 0.1950 0.1900 0.1900 0.1850 0.1850   0.1150  0.0925 P0
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.2000 0.1950 0.1900 0.1900 0.1850 0.1850   0.0150  0.0092 P0
+   * A Practical Guide to LLM Workflows: Chaining…   -    -    -    -    -  1.00 1.00                      0.0000 -0.0050 -0.0100 -0.0100 0.2350 -0.0150   0.2500  0.2025 P4
+    → Live: 10/11  mean margin=0.2773  mean regret=0.1326
+
+  === 06_tools ===
+    [MINIMAL]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  0.50 0.17 0.00 0.00 1.00 0.83 1.00  cc fl ga            0.1000 0.9800 0.9100 0.9100 0.8400 0.8400   0.8800  0.2167 P1
+     Understanding Why Agents Need Tools           1.00 0.00 0.00 0.00 1.00   -    -                       0.0500 0.0300 0.0100 0.0100 -0.0100 -0.0100   0.0600  0.0367 P0
+     Implementing Tool Calls From Scratch          1.00 0.00 0.50 0.00 1.00   -    -   de                  0.0500 0.0300 0.0100 0.0100 -0.0100 -0.0100   0.0600  0.0367 P0
+   * Implementing a Tool Calling Framework From S… 1.00 0.00 0.00 0.20 1.00   -    -   be                  0.0500 0.0300 0.0100 -0.0400 -0.0100 -0.0100   0.0900  0.0450 P0
+   * Implementing Production-Level Tool Calls Wit… 0.50 0.33 0.00 0.00 1.00   -    -   cc fl               0.1000 -0.0200 0.0600 -0.0400 -0.0100 -0.0600   0.1600  0.0950 P0
+     Using Pydantic Models As Tools for On-Demand… 1.00 0.83 0.17 0.00 1.00   -    -   fl de               0.0500 0.0800 0.0600 0.0600 0.0400 0.0400   0.0400  0.0250 P1
+     The Downsides of Running Tools in a Loop      1.00 0.00 0.33 0.17 1.00   -    -   de be               0.0500 0.0300 0.0100 0.0100 -0.0100 -0.0100   0.0600  0.0367 P0
+   * Going Through Popular Tools Used Within the … 1.00 0.00 0.00 0.25 1.00   -    -   be                  0.0500 -0.0200 0.0100 -0.0400 -0.0100 -0.0100   0.0900  0.0533 P0
+   * Conclusion                                    0.50 0.50 0.00 0.00 1.00 0.67 1.00  cc fl ga            1.0000 0.9800 0.9600 0.8600 0.0400 0.0400   0.9600  0.3533 P0
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.1000 0.0800 0.0600 0.0600 0.0400 0.0400   0.0600  0.0367 P0
+   * Understanding why agents need tools             -    -    -    -    -  0.17 1.00  ga                  0.1000 0.0800 0.0600 0.8600 0.0400 0.0400   0.8200  0.6633 P3
+   * Implementing tool calls from scratch            -    -    -    -    -  0.67 1.00  ga                  0.9000 0.8800 0.8600 0.8600 0.0400 0.0400   0.8600  0.3033 P0
+   * Implementing a tool calling framework from s…   -    -    -    -    -  1.00 1.00                      0.9000 0.8800 -0.0400 -0.0400 -0.0600 0.8400   0.9600  0.4867 P0
+   * Implementing production-level tool calls wit…   -    -    -    -    -  0.17 1.00  ga                  0.1000 0.0800 0.8600 0.0600 0.0400 0.0400   0.8200  0.6633 P2
+   * Using Pydantic models as tools for on-demand…   -    -    -    -    -  0.67 0.83  ga ra               0.9000 0.8800 0.8600 0.8600 -0.0600 0.0400   0.9600  0.3200 P0
+   * The downsides of running tools in a loop        -    -    -    -    -  0.83 1.00  ga                  0.9000 0.8800 0.8600 0.8600 0.0400 0.8400   0.8600  0.1700 P0
+   * Popular tools used within the industry          -    -    -    -    -  1.00 1.00                      0.9000 -0.0200 -0.0400 -0.0400 -0.0600 -0.0600   0.9600  0.7867 P0
+   * Popular Tools Used Within the Industry        1.00 0.00 0.00 0.00 1.00   -    -                       0.0000 0.0300 -0.0400 0.0100 -0.0600 -0.0600   0.0900  0.0500 P1
+   * Going through popular tools used within the …   -    -    -    -    -  0.80 1.00  ga                  0.0000 0.8800 0.8600 0.8600 0.0400 0.8400   0.8800  0.3000 P1
+   * Implementing a small tool calling framework …   -    -    -    -    -  0.67 1.00  ga                  0.0000 -0.0200 0.8600 0.8600 0.0400 -0.0600   0.9200  0.5800 P2
+   * Implementing a Tool Calling Framework Fromsc… 1.00 0.00 1.00 0.00 1.00   -    -                       0.0000 -0.0200 -0.0400 0.0100 -0.0600 -0.0600   0.0700  0.0383 P3
+    → Live: 16/21  mean margin=0.5076  mean regret=0.2522
+
+    [STANDARD]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 1.00 0.00 0.00 1.00 0.67 1.00  ga                  0.5500 0.1300 0.4600 0.2600 0.6400 0.6400   0.5100  0.1933 P4
+   * Understanding Why Agents Need Tools           1.00 0.20 0.00 0.20 1.00   -    -   fl be               0.2000 0.1800 0.1600 -0.0400 0.2600 0.3400   0.3800  0.1567 P5
+   * Implementing tool calls from scratch          1.00 0.00 1.00 0.00 1.00 0.67 1.00  ga                  0.6800 0.2800 0.2600 0.6400 0.0900 0.0900   0.5900  0.3400 P0
+   * Implementing a tool calling framework from s… 1.00 0.00 0.00 0.00 1.00 0.83 1.00  ga                  0.5000 0.2800 0.2600 0.4600 0.2400 0.0900   0.4100  0.1950 P0
+   * Implementing production-level tool calls wit… 1.00 1.00 0.00 0.00 1.00 0.33 1.00  ga                  0.5500 0.1300 0.2600 0.6600 0.0900 0.0900   0.5700  0.3633 P3
+   * Using Pydantic models as tools for on-demand… 1.00 1.00 0.00 0.00 1.00 1.00 1.00                      0.7000 0.2800 0.2600 0.6600 0.2400 0.2400   0.4600  0.3033 P0
+   * The downsides of running tools in a loop      1.00 0.00 0.50 0.00 1.00 0.83 1.00  de ga               0.5000 0.2800 0.2600 0.6400 0.2400 0.0900   0.5500  0.3050 P3
+   * Popular tools used within the industry        1.00 0.00 0.50 0.50 1.00 1.00 1.00  de be               0.5000 0.2800 0.2600 0.7600 0.2400 -0.0600   0.8200  0.4300 P3
+   * Conclusion                                    1.00 1.00 0.00 0.00 1.00 0.17 1.00  ga                  0.5500 0.5300 0.5100 0.6600 0.4900 0.4900   0.1700  0.1217 P3
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.4000 0.3800 0.3600 0.3600 0.3400 0.3400   0.0600  0.0367 P0
+   * Understanding why agents need tools           1.00 1.00 1.00 0.00 1.00 0.50 1.00  ga                  0.1500 0.1300 0.1100 0.8400 0.2400 0.2400   0.7300  0.5550 P3
+   * Implementing Tool Calls From Scratch          1.00 0.25 0.75 0.25 1.00   -    -   fl de be            0.0000 0.1800 0.5400 -0.0400 0.3200 0.4400   0.5800  0.3000 P2
+   * Implementing a Tool Calling Framework From S… 1.00 0.25 0.25 0.50 1.00   -    -   fl de be            0.0000 0.1800 0.3600 -0.0400 0.2600 0.4400   0.4800  0.2400 P5
+   * Implementing Production-Level Tool Calls Wit… 1.00 0.75 0.25 0.00 1.00   -    -   fl de               0.0000 0.1800 0.3600 -0.0400 0.3400 0.5200   0.5600  0.2933 P5
+   * Using Pydantic Models As Tools for On-Demand… 1.00 1.00 0.25 0.00 1.00   -    -   de                  0.0000 0.3800 0.3600 -0.0400 0.3400 0.5200   0.5600  0.2600 P5
+   * The Downsides of Running Tools in a Loop      1.00 0.00 0.75 0.25 1.00   -    -   de be               0.0000 0.3600 0.1600 -0.0400 0.3200 0.4400   0.4800  0.2333 P5
+   * Going Through Popular Tools Used Within the … 1.00 0.00 0.00 0.00 1.00   -    -                       0.0000 0.1800 0.1600 -0.0400 -0.0600 0.1400   0.2400  0.1167 P1
+   * Popular Tools Used Within the Industry        1.00 0.00 1.00 0.00 1.00   -    -                       0.0000 -0.0200 -0.0400 -0.0400 0.3200 -0.0600   0.3800  0.2933 P4
+   * Going through popular tools used within the …   -    -    -    -    -  1.00 1.00                      0.0000 -0.0200 -0.0400 -0.0400 -0.0600 0.2400   0.3000  0.2267 P5
+    → Live: 18/19  mean margin=0.4647  mean regret=0.2612
+
+    [DEMANDING]  cost-only baseline = 0.0150
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 1.00 0.00 0.00 1.00 0.83 1.00  ga                  0.4500 0.2950 0.2400 0.4400 0.4350 0.4350   0.2100  0.0675 P0
+   * Understanding Why Agents Need Tools           1.00 0.50 0.00 0.75 1.00   -    -   fl be               0.2000 -0.0050 -0.0100 0.2850 0.3600 0.2800   0.3700  0.1750 P4
+   * Implementing Tool Calls From Scratch          1.00 1.00 0.50 0.25 1.00   -    -   de be               0.2000 -0.0050 -0.0100 0.1900 0.4600 0.6350   0.6450  0.3900 P5
+   * Implementing a Tool Calling Framework From S… 1.00 0.00 0.50 0.50 1.00   -    -   de be               0.1200 -0.0050 -0.0100 0.2850 0.3800 0.5550   0.5650  0.3342 P5
+   * Implementing Production-Level Tool Calls Wit… 1.00 0.75 0.25 0.00 1.00   -    -   fl de               0.2000 -0.0050 -0.0100 0.4650 0.1050 0.1850   0.4750  0.3083 P3
+   * Using Pydantic Models As Tools for On-Demand… 1.00 1.00 0.25 0.00 1.00   -    -   de                  0.2000 -0.0050 -0.0100 0.1900 0.4600 0.1850   0.4700  0.2900 P4
+   * The Downsides of Running Tools in a Loop      1.00 0.00 0.75 0.75 1.00   -    -   de be               0.1200 -0.0050 -0.0100 0.5600 0.5550 0.5550   0.5700  0.2642 P3
+   * Going Through Popular Tools Used Within the … 1.00 0.33 0.33 0.33 1.00   -    -   fl de be            0.1200 -0.0050 -0.0100 -0.0100 0.3600 0.3800   0.3900  0.2408 P5
+   * Conclusion                                    1.00 1.00 0.00 0.00 1.00 0.67 1.00  ga                  0.3000 0.2950 0.4400 0.4400 0.4350 0.4350   0.1450  0.0492 P2
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.2000 0.1950 0.1900 0.1900 0.1850 0.1850   0.0150  0.0092 P0
+   * Understanding why agents need tools             -    -    -    -    -  0.33 1.00  ga                  0.2500 0.0950 0.0900 0.0900 0.2350 0.0850   0.1650  0.1092 P0
+   * Implementing tool calls from scratch          1.00 0.00 1.00 0.50 1.00 1.00 1.00  be                  0.2500 0.6400 0.8100 0.2400 0.2350 0.2350   0.5750  0.4083 P2
+   * Implementing a small tool calling framework … 1.00 0.00 0.00 0.00 1.00 0.83 1.00  ga                  0.2500 0.3650 0.3600 0.2400 0.0850 0.2350   0.2800  0.1092 P1
+   * Implementing production-level tool calls wit… 1.00 1.00 0.00 0.50 1.00 0.00 1.00  be                  0.1000 0.4700 0.2900 0.0900 0.0850 0.0850   0.3850  0.2833 P1
+   * Using Pydantic models as tools for on-demand… 1.00 0.50 0.00 0.00 1.00 1.00 1.00  fl                  0.2500 0.3650 0.4400 0.2400 0.2350 0.2350   0.2050  0.1458 P2
+   * The downsides of running tools in a loop      1.00 0.00 1.00 0.00 1.00 1.00 1.00                      0.2500 0.6400 0.6350 0.2400 0.2350 0.2350   0.4050  0.2675 P1
+   * Popular tools used within the industry        1.00 0.00 1.00 0.50 1.00 0.50 1.00  be ga               0.2500 0.4900 0.5600 -0.0100 -0.0150 -0.0150   0.5750  0.3500 P2
+   * Why Agents Need Tools                         1.00 0.00 0.00 0.50 1.00   -    -   be                  0.0000 0.1150 0.2850 -0.0100 -0.0150 -0.0150   0.3000  0.2250 P2
+   * Going through popular tools used within the …   -    -    -    -    -  0.25 1.00  ga                  0.0000 -0.0050 0.0900 0.0900 0.0850 0.2350   0.2400  0.1525 P5
+   * Popular Tools Used Within the Industry        1.00 0.00 1.00 0.00 1.00   -    -                       0.0000 -0.0050 -0.0100 0.3850 -0.0150 -0.0150   0.4000  0.3283 P3
+    → Live: 19/20  mean margin=0.3693  mean regret=0.2254
+
+  === 08_react_practice ===
+    [MINIMAL]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 0.00 0.17 0.17 1.00 0.67 1.00  de be ga            0.0500 0.0300 0.0100 0.1100 0.8900 0.8900   0.8800  0.5600 P4
+   * Setup and Environment                         1.00 0.67 0.00 0.00 1.00 0.50 1.00  fl ga               0.9500 0.1300 0.1600 0.1600 0.9400 0.9400   0.8200  0.4033 P0
+   * Tool Layer: Mock Search Implementation        0.67 0.00 0.33 0.00 1.00 0.50 1.00  cc de ga            0.9500 0.0800 0.0600 0.1100 0.8400 0.8400   0.8900  0.4700 P0
+   * Thought Phase: Prompt Construction and Gener… 0.67 0.67 0.33 0.00 1.00 0.25 1.00  cc fl de ga         1.0000 0.0800 0.0600 0.0600 -0.0600 0.0400   1.0600  0.8033 P0
+   * Action Phase: Function Calling and Parsing    0.67 0.67 0.33 0.00 1.00 0.50 1.00  cc fl de ga         1.0000 0.0800 0.0600 0.0600 -0.0600 0.8400   1.0600  0.6700 P0
+     The Observation Phase                         0.00 0.00 0.00 0.00 0.00   -    -                       0.0000 -0.0200 -0.0400 -0.0400 -0.0600 -0.0600   0.0600  0.0367 P0
+   * ReAct Control Loop                            1.00 0.00 0.00 0.00 1.00   -    -                       0.0500 -0.0200 -0.0400 -0.0400 -0.0600 -0.0600   0.1100  0.0783 P0
+   * Tests and Traces: Success and Graceful Fallb… 1.00 0.83 0.33 0.00 1.00 0.67 1.00  fl de ga            1.0000 0.1300 0.0600 0.0600 0.0400 0.9400   0.9600  0.6283 P0
+     Alternative: ReAct with Model-Native Reasoni… 0.00 0.00 0.00 0.00 0.00   -    -                       0.0000 -0.0200 -0.0400 -0.0400 -0.0600 -0.0600   0.0600  0.0367 P0
+   * Conclusion                                    1.00 0.83 0.17 0.33 1.00 0.67 1.00  fl de be ga         0.1000 0.0300 0.0600 0.1600 0.9400 0.9400   0.9100  0.5683 P4
+   * References                                    0.83 0.83 0.00 0.00 0.83   -    -   cc fl cp            0.0000 0.0800 0.0600 0.0600 0.0400 0.0400   0.0800  0.0333 P1
+   * Control Loop: Messages, Scratchpad, Orchestr…   -    -    -    -    -  0.00 1.00                      0.1000 0.0800 -0.0400 -0.0400 -0.0600 -0.0600   0.1600  0.1033 P0
+   * The Tool Layer                                1.00 0.00 0.67 0.00 1.00   -    -   de                  0.0000 0.0300 0.0100 -0.0400 -0.0100 -0.0600   0.0900  0.0417 P1
+   * The Thought Phase                             1.00 0.33 0.33 0.00 1.00   -    -   fl de               0.0000 0.0300 0.0600 -0.0400 -0.0100 -0.0600   0.1200  0.0633 P2
+   * The Action Phase                              0.67 0.33 0.67 0.00 1.00   -    -   cc fl de            0.0000 0.0300 0.0600 -0.0400 -0.0600 -0.0600   0.1200  0.0717 P2
+   * The Control Loop: Messages, Scratchpad, Orch… 0.67 0.00 0.67 0.67 1.00   -    -   cc de be            0.0000 0.0300 0.0100 -0.0400 -0.0600 -0.0600   0.0900  0.0500 P1
+   * Control Loop: Messages, scratchpad, orchestr…   -    -    -    -    -  0.00 0.67  ra                  0.0000 -0.0200 0.0600 0.0600 -0.0600 -0.0600   0.1200  0.0633 P2
+   * Tests and Traces: Success and graceful fallb…   -    -    -    -    -  0.33 1.00  ga                  0.0000 -0.0200 0.0600 0.0600 0.8400 -0.0600   0.9000  0.6933 P4
+   * Control Loop: Messages, Scratchpad, and Orch… 1.00 0.00 0.50 0.00 1.00 1.00 1.00  de                  0.0000 -0.0200 -0.0400 0.0100 -0.0600 0.8900   0.9500  0.7600 P5
+   * Thought Phase: Prompt construction and gener…   -    -    -    -    -  0.00 1.00                      0.0000 -0.0200 -0.0400 0.0600 0.0400 -0.0600   0.1200  0.0633 P3
+   * Action Phase: Function calling and parsing      -    -    -    -    -  0.00 0.50  ra                  0.0000 -0.0200 -0.0400 0.0600 -0.0600 -0.0600   0.1200  0.0800 P3
+    → Live: 19/21  mean margin=0.4610  mean regret=0.2990
+
+    [STANDARD]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 0.00 0.17 0.00 1.00 1.00 1.00  de                  0.5000 0.4800 0.4600 0.4600 0.6200 0.4400   0.1800  0.1267 P4
+   * Setup and Environment                         1.00 0.17 0.00 0.00 1.00 1.00 1.00  fl                  0.5000 0.4800 0.6600 0.4600 0.4400 0.4400   0.2200  0.1633 P2
+   * The Tool Layer                                1.00 0.00 0.80 0.00 1.00   -    -   de                  0.3800 0.3600 0.3400 -0.0400 0.3200 0.1400   0.4200  0.1300 P0
+   * The Thought Phase                             1.00 0.40 0.60 0.00 1.00   -    -   fl de               0.2000 0.3600 0.3600 -0.0400 0.5200 0.3200   0.5600  0.2333 P4
+   * The Action Phase                              1.00 0.40 0.60 0.00 1.00   -    -   fl de               0.3800 0.3600 0.3600 -0.0400 0.5200 0.1400   0.5600  0.2333 P4
+     The Observation Phase                         0.00 0.00 0.00 0.00 0.00   -    -                       0.0000 -0.0200 -0.0400 -0.0400 -0.0600 -0.0600   0.0600  0.0367 P0
+   * The Control Loop: Messages, Scratchpad, Orch… 0.20 0.20 0.80 0.20 1.00   -    -   cc fl de be         0.0000 0.2800 0.3400 -0.0400 0.3200 0.1200   0.3800  0.1700 P2
+   * Tests and Traces: Success and Graceful Fallb… 1.00 0.83 0.33 0.00 1.00 1.00 1.00  fl de               0.7000 0.3800 0.8400 0.6600 0.6400 0.6200   0.4600  0.2000 P2
+     Alternative: ReAct with Model-Native Reasoni… 0.00 0.00 0.00 0.00 0.00   -    -                       0.0000 -0.0200 -0.0400 -0.0400 -0.0600 -0.0600   0.0600  0.0367 P0
+   * Conclusion                                    0.83 0.83 0.33 0.17 1.00 1.00 1.00  cc fl de be         0.5000 0.8600 0.8400 0.6600 0.7600 0.4400   0.4200  0.1833 P1
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.4000 0.3800 0.3600 0.3600 0.3400 0.3400   0.0600  0.0367 P0
+   * Tool Layer: Mock Search Implementation        1.00 0.00 0.00 0.00 1.00 1.00 1.00                      0.3000 0.2800 0.2600 0.4600 0.2400 0.2400   0.2200  0.1633 P3
+   * Thought Phase: Prompt Construction and Gener… 1.00 0.00 0.00 0.00 1.00 1.00 1.00                      0.3000 0.2800 0.2600 0.4600 0.2400 0.2400   0.2200  0.1633 P3
+   * Action Phase: Function Calling and Parsing    0.00 0.00 0.00 0.00 1.00 0.80 1.00  ga                  0.3000 0.2800 0.2600 -0.0400 0.0900 0.2400   0.3400  0.1117 P0
+   * Control Loop: Messages, Scratchpad, and Orch…   -    -    -    -    -  1.00 1.00                      0.3000 -0.0200 -0.0400 -0.0400 -0.0600 -0.0600   0.3600  0.2867 P0
+   * Control Loop: Messages, scratchpad, orchestr…   -    -    -    -    -  1.00 1.00                      0.0000 0.2800 -0.0400 -0.0400 -0.0600 -0.0600   0.3400  0.2667 P1
+   * Tests and Traces: Two runs demonstrating suc…   -    -    -    -    -  1.00 1.00                      0.0000 0.2800 -0.0400 -0.0400 -0.0600 -0.0600   0.3400  0.2667 P1
+   * Control Loop: Messages, Scratchpad, Orchestr… 0.00 0.00 0.00 0.00 1.00 0.25 1.00  ga                  0.0000 -0.0200 0.1100 0.1100 0.2400 0.0900   0.2600  0.1517 P4
+   * Action Phase: Function calling and parsing      -    -    -    -    -  0.00 1.00                      0.0000 -0.0200 -0.0400 0.1100 -0.0600 -0.0600   0.1700  0.1217 P3
+    → Live: 16/19  mean margin=0.2963  mean regret=0.1622
+
+    [DEMANDING]  cost-only baseline = 0.0150
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 0.00 0.17 0.33 1.00 0.00 1.00  de be               0.1200 0.1150 0.2100 0.5600 0.1050 0.3800   0.4550  0.3117 P3
+   * Setup and Environment                         1.00 0.83 0.33 0.00 1.00 0.67 1.00  fl de ga            0.3700 0.4450 0.5650 0.4400 0.5600 0.4350   0.1950  0.0958 P2
+   * The Tool Layer                                1.00 0.20 0.80 0.00 1.00   -    -   fl de               0.3950 0.4700 -0.0100 0.3850 0.1050 0.3800   0.4800  0.1825 P1
+   * The Thought Phase                             1.00 0.80 0.60 0.00 1.00   -    -   fl de               0.1200 0.1950 -0.0100 0.4650 0.4600 0.4600   0.4750  0.1833 P3
+   * The Action Phase                              1.00 1.00 0.60 0.00 1.00   -    -   de                  0.4750 0.1950 -0.0100 0.4650 0.1850 0.4600   0.4850  0.1800 P0
+     The Observation Phase                         0.00 0.00 0.00 0.00 0.00   -    -                       0.0000 -0.0050 -0.0100 -0.0100 -0.0150 -0.0150   0.0150  0.0092 P0
+   * The Control Loop: Messages, Scratchpad, Orch… 1.00 0.00 0.67 0.00 1.00   -    -   de                  0.1200 -0.0050 -0.0100 0.3850 -0.0150 0.3800   0.4000  0.2425 P3
+   * Tests and Traces: Success and Graceful Fallb… 1.00 1.00 0.83 0.17 1.00 1.00 1.00  de be               0.7250 0.7200 0.6150 0.7150 0.7100 0.7100   0.1100  0.0258 P0
+     Alternative: ReAct with Model-Native Reasoni… 0.00 0.00 0.00 0.00 0.00   -    -                       0.0000 -0.0050 -0.0100 -0.0100 -0.0150 -0.0150   0.0150  0.0092 P0
+   * Conclusion                                    1.00 1.00 0.50 0.50 1.00 0.00 1.00  de be               0.2000 0.4700 0.5650 0.6400 0.3600 0.4600   0.4400  0.1908 P3
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.2000 0.1950 0.1900 0.1900 0.1850 0.1850   0.0150  0.0092 P0
+   * Tool Layer: Mock Search Implementation        1.00 0.00 0.00 0.00 1.00 0.83 1.00  ga                  0.2500 0.2450 0.2100 0.2400 0.2350 0.2350   0.0400  0.0142 P0
+   * Thought Phase: Prompt Construction and Gener… 1.00 1.00 0.00 0.00 1.00 1.00 1.00                      0.2500 0.2450 0.4400 0.2400 0.2350 0.2350   0.2050  0.1658 P2
+   * Action Phase: Function Calling and Parsing    1.00 1.00 1.00 0.00 1.00 0.33 1.00  ga                  0.1000 0.0950 0.5650 0.2400 0.2350 0.0850   0.4800  0.3450 P2
+   * Control Loop: Messages, Scratchpad, Orchestr… 0.00 0.00 1.00 0.00 1.00 0.33 1.00  ga                  0.1000 0.0950 0.3650 0.2400 0.2350 0.0850   0.2800  0.1783 P2
+   * The Control Loop: Messages, Scratchpad, and … 0.50 0.50 1.00 0.50 1.00   -    -   cc fl be            0.0000 0.4700 -0.0100 -0.0100 0.4350 -0.0150   0.4850  0.3250 P1
+    → Live: 13/16  mean margin=0.2859  mean regret=0.1543
+
+  === 09_RAG ===
+    [MINIMAL]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  0.67 0.00 0.00 0.00 1.00   -    -   cc                  0.0500 -0.0200 -0.0400 0.0100 -0.0100 -0.0100   0.0900  0.0533 P0
+   * The RAG System: Core Components               1.00 0.00 0.00 0.17 1.00 0.67 1.00  be ga               0.9500 0.9300 0.1100 0.9100 0.0900 0.8900   0.8600  0.3033 P0
+   * The RAG Pipeline: Ingestion and Retrieval     1.00 0.00 0.17 0.00 1.00 0.50 1.00  de ga               0.9500 0.9300 0.1100 0.9100 0.0900 0.0900   0.8600  0.4367 P0
+   * Advanced RAG Techniques                       0.00 0.00 0.50 0.00 1.00 0.50 1.00  de ga               0.9000 0.8800 0.0600 0.0600 0.0400 0.8400   0.8600  0.4367 P0
+   * Agentic RAG                                   1.00 0.67 0.50 0.33 1.00 0.17 1.00  fl de be ga         0.1500 0.1800 0.1600 0.1600 0.8900 0.1400   0.7500  0.6100 P4
+   * Conclusion                                    1.00 1.00 0.00 0.17 1.00 0.50 1.00  be ga               1.0000 0.9800 0.1600 0.1600 0.1400 0.9400   0.8600  0.4367 P0
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.1000 0.0800 0.0600 0.0600 0.0400 0.0400   0.0600  0.0367 P0
+   * Introduction: Giving LLMs an Open-Book Exam     -    -    -    -    -  0.50 1.00  ga                  0.9000 0.0800 0.0600 0.8600 0.8400 0.0400   0.8600  0.4367 P0
+    → Live: 7/8  mean margin=0.6500  mean regret=0.3438
+
+    [STANDARD]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  0.00 0.00 0.00 0.33 1.00   -    -   be                  0.0000 -0.0200 -0.0400 0.0800 -0.0600 0.0600   0.1400  0.0767 P3
+   * The RAG System: Core Components               1.00 0.00 0.00 0.17 1.00 0.67 1.00  be ga               0.5000 0.4800 0.4600 0.3100 0.2900 0.5600   0.2700  0.1267 P5
+     The RAG Pipeline: Ingestion and Retrieval     0.00 0.00 0.00 0.00 1.00 1.00 1.00                      0.3000 0.2800 0.2600 0.2600 0.2400 0.2400   0.0600  0.0367 P0
+   * Advanced RAG Techniques                       0.00 0.00 0.50 0.83 1.00 1.00 1.00  de be               0.3000 0.4000 0.5600 0.5600 0.3600 0.5400   0.2600  0.1067 P2
+   * Agentic RAG                                   1.00 0.83 0.83 0.50 1.00 0.67 1.00  fl de be ga         0.7000 0.9800 0.8400 0.8400 0.5900 0.7900   0.3900  0.1900 P1
+   * Conclusion                                    1.00 1.00 0.50 0.17 1.00 1.00 1.00  de be               0.7000 0.8600 0.8400 0.8400 0.6400 0.7600   0.2200  0.0867 P1
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.4000 0.3800 0.3600 0.3600 0.3400 0.3400   0.0600  0.0367 P0
+   * Introduction: Giving LLMs an Open-Book Exam     -    -    -    -    -  0.67 1.00  ga                  0.3000 0.2800 0.2600 0.2600 0.0900 0.0900   0.2100  0.0867 P0
+    → Live: 6/8  mean margin=0.2013  mean regret=0.0933
+
+    [DEMANDING]  cost-only baseline = 0.0150
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 0.00 0.20 0.20 1.00   -    -   de be               0.1200 -0.0050 0.1100 0.1100 0.1050 0.5550   0.5600  0.3892 P5
+   * The RAG System: Core Components               1.00 0.00 0.33 0.17 1.00 1.00 1.00  de be               0.3700 0.5400 0.6350 0.3600 0.3550 0.6300   0.2800  0.1533 P2
+     The RAG Pipeline: Ingestion and Retrieval     1.00 0.00 0.00 0.00 1.00 1.00 1.00                      0.3700 0.3650 0.3600 0.3600 0.3550 0.3550   0.0150  0.0092 P0
+   * Advanced RAG Techniques                       1.00 0.00 0.67 0.50 1.00 1.00 1.00  de be               0.3700 0.8150 0.8100 0.3600 0.8050 0.6300   0.4550  0.1833 P1
+   * Agentic RAG                                   1.00 0.33 0.83 0.17 1.00 1.00 1.00  fl de be            0.3700 0.6400 0.6350 0.6350 0.8850 0.7100   0.5150  0.2392 P4
+   * Conclusion                                    1.00 1.00 0.33 0.17 1.00 1.00 1.00  de be               0.4500 0.6200 0.4400 0.4400 0.7100 0.7100   0.2700  0.1483 P4
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.2000 0.1950 0.1900 0.1900 0.1850 0.1850   0.0150  0.0092 P0
+   * Introduction: Giving LLMs an Open-Book Exam     -    -    -    -    -  0.83 1.00  ga                  0.2500 0.2450 0.2400 0.2400 0.0850 0.2350   0.1650  0.0342 P0
+    → Live: 6/8  mean margin=0.2844  mean regret=0.1457
+
+  === 10_memory_knowledge_access ===
+    [MINIMAL]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 0.40 0.00 0.00 1.00   -    -   fl                  0.1000 -0.0200 0.0100 0.0100 0.0400 -0.0100   0.1200  0.0783 P0
+   * The Layers of Memory: Internal, Short-Term, … 1.00 0.67 0.00 0.33 1.00 0.83 1.00  fl be ga            0.9500 0.9800 0.1600 0.9100 0.9400 0.9400   0.8200  0.1667 P1
+   * Long-Term Memory: Semantic, Episodic, and Pr… 1.00 1.00 0.00 0.00 1.00 0.83 1.00  ga                  1.0000 0.9800 0.1600 0.9600 0.9400 0.9400   0.8400  0.1700 P0
+   * Storing Memories: Pros and Cons of Different… 0.00 0.00 0.33 0.00 1.00 0.17 1.00  de ga               0.9000 0.0800 0.0600 0.0600 0.0400 0.0400   0.8600  0.7033 P0
+   * Memory Implementations With Code Examples     0.83 0.50 0.00 0.00 1.00   -    -   cc fl               0.0000 0.0800 0.0600 0.0100 0.0400 -0.0100   0.0900  0.0500 P1
+   * Real-World Challenges                         1.00 0.80 0.40 0.20 1.00   -    -   fl de be            0.0500 0.0800 -0.0400 0.0600 0.0400 0.0400   0.1200  0.0417 P1
+   * Conclusion                                    0.83 0.83 0.00 0.00 1.00 0.83 1.00  cc fl ga            1.0000 0.9800 0.0600 0.9600 0.9400 0.9400   0.9400  0.1867 P0
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.1000 0.0800 0.0600 0.0600 0.0400 0.0400   0.0600  0.0367 P0
+   * Introduction: Why Agents Need a Memory in th…   -    -    -    -    -  0.67 1.00  ga                  0.9000 0.0800 0.0600 0.8600 0.8400 0.8400   0.8400  0.3033 P0
+   * Memory implementations with code examples       -    -    -    -    -  0.67 1.00  ga                  0.1000 0.8800 0.8600 0.8600 0.0400 0.8400   0.8400  0.2833 P1
+   * Real-World Lessons: Challenges and Best Prac… 1.00 1.00 0.00 0.00 1.00 0.67 1.00  ga                  0.9000 0.8800 0.1600 0.8600 0.0400 0.8400   0.8600  0.2867 P0
+    → Live: 10/11  mean margin=0.5809  mean regret=0.2097
+
+    [STANDARD]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 1.00 0.33 0.00 1.00   -    -   de                  0.4000 0.3800 0.3600 0.5400 0.3400 0.5200   0.2000  0.1167 P3
+   * The Layers of Memory: Internal, Short-Term, … 1.00 1.00 0.50 0.00 1.00 0.67 1.00  de ga               0.7000 0.8600 0.6600 0.8400 0.4900 0.6700   0.3700  0.1567 P1
+   * Long-Term Memory: Semantic, Episodic, and Pr… 1.00 1.00 0.33 0.33 1.00 0.83 1.00  de be ga            0.7000 0.6800 0.7800 0.6600 0.7900 0.8200   0.1600  0.0817 P5
+   * Storing Memories: Pros and Cons of Different… 0.00 0.33 0.83 0.17 1.00 0.50 1.00  fl de be ga         0.1500 0.6600 0.4100 0.2900 0.6200 0.4200   0.5100  0.2350 P1
+   * Memory Implementations With Code Examples     0.83 0.50 0.00 0.00 1.00   -    -   cc fl               0.2000 0.1800 0.3600 0.1600 0.3400 0.1400   0.2200  0.1300 P2
+   * Real-World Challenges                         1.00 1.00 0.67 0.17 0.83   -    -   de be cp            0.4000 0.6800 0.5400 0.5400 0.3400 0.3400   0.3400  0.2067 P1
+   * Conclusion                                    1.00 1.00 0.17 0.00 1.00 0.83 1.00  de ga               0.7000 0.6800 0.6600 0.6600 0.4900 0.8200   0.3300  0.1517 P5
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.4000 0.3800 0.3600 0.3600 0.3400 0.3400   0.0600  0.0367 P0
+     Introduction: Why Agents Need a Memory in th…   -    -    -    -    -  1.00 1.00                      0.3000 0.2800 0.2600 0.2600 0.2400 0.2400   0.0600  0.0367 P0
+   * Memory implementations with code examples       -    -    -    -    -  0.67 1.00  ga                  0.1500 0.2800 0.2600 0.2600 0.2400 0.0900   0.1900  0.0667 P1
+   * Real-World Lessons: Challenges and Best Prac…   -    -    -    -    -  0.83 1.00  ga                  0.3000 0.2800 0.2600 0.2600 0.0900 0.2400   0.2100  0.0617 P0
+    → Live: 9/11  mean margin=0.2409  mean regret=0.1164
+
+    [DEMANDING]  cost-only baseline = 0.0150
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 0.67 0.83 0.67 1.00   -    -   fl de be            0.1200 0.5650 0.6400 0.6400 0.6350 0.4600   0.5200  0.1300 P2
+   * The Layers of Memory: Internal, Short-Term, … 1.00 1.00 0.50 0.17 1.00 1.00 1.00  de be               0.4500 0.4450 0.7150 0.7150 0.7100 0.6100   0.2700  0.1075 P2
+   * Long-Term Memory: Semantic, Episodic, and Pr… 1.00 1.00 0.50 0.50 1.00 0.83 1.00  de be ga            0.4500 0.4450 0.8900 0.8900 0.6100 0.5600   0.4450  0.2492 P2
+   * Storing Memories: Pros and Cons of Different… 0.50 0.00 0.50 0.00 1.00 0.67 1.00  cc de ga            0.1000 0.2450 0.3650 0.6350 0.6300 0.3550   0.5350  0.2467 P3
+   * Memory Implementations With Code Examples     1.00 0.75 0.75 0.00 1.00   -    -   fl de               0.2000 -0.0050 0.4650 0.4650 0.3800 -0.0150   0.4800  0.2167 P2
+   * Real-World Challenges                         1.00 1.00 0.75 0.00 1.00   -    -   de                  0.2000 -0.0050 0.4650 0.4650 0.4600 -0.0150   0.4800  0.2033 P2
+   * Conclusion                                    1.00 0.83 0.67 0.00 1.00 1.00 1.00  fl de               0.4500 0.3650 0.7150 0.7150 0.7100 0.7100   0.3500  0.1042 P2
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.2000 0.1950 0.1900 0.1900 0.1850 0.1850   0.0150  0.0092 P0
+     Introduction: Why Agents Need a Memory in th…   -    -    -    -    -  1.00 1.00                      0.2500 0.2450 0.2400 0.2400 0.2350 0.2350   0.0150  0.0092 P0
+   * Memory implementations with code examples     1.00 1.00 1.00 0.00 1.00 1.00 1.00                      0.2500 0.7200 0.2400 0.2400 0.2350 0.7100   0.4850  0.3208 P1
+   * Real-World Lessons: Challenges and Best Prac… 1.00 1.00 1.00 0.00 1.00 0.83 1.00  ga                  0.2500 0.7200 0.2400 0.0900 0.2350 0.7100   0.6300  0.3458 P1
+    → Live: 9/11  mean margin=0.3841  mean regret=0.1766
+
+  === 11_multimodal ===
+    [MINIMAL]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Limitations of traditional document processi… 1.00 1.00 0.00 0.00 1.00 1.00 1.00                      1.0000 0.8800 0.8600 0.8600 0.8400 0.8400   0.1600  0.1200 P0
+   * Foundations of Multimodal LLMs                0.33 0.33 0.33 0.17 1.00   -    -   cc fl de be         0.0000 0.0300 0.0600 0.0100 -0.0600 -0.0600   0.1200  0.0633 P2
+     Applying Multimodal LLMs to Images and Docum… 0.00 0.00 0.00 0.00 1.00   -    -                       0.0000 -0.0200 -0.0400 -0.0400 -0.0600 -0.0600   0.0600  0.0367 P0
+   * Foundations of multimodal RAG                 0.50 1.00 0.50 0.00 1.00 0.17 1.00  cc de ga            0.1500 0.0800 0.0600 0.0600 0.0400 0.9400   0.9000  0.7183 P5
+   * Implementing multimodal RAG for images, PDFs… 0.50 0.50 0.00 0.00 1.00 0.17 1.00  cc fl ga            0.2000 0.0800 0.0600 0.0600 0.8400 0.0400   0.8000  0.6267 P4
+   * Building multimodal AI agents                 0.50 0.50 0.00 0.00 1.00 0.17 1.00  cc fl ga            0.2000 0.0800 0.0600 0.0600 0.8400 0.0400   0.8000  0.6267 P4
+   * Conclusion                                    0.50 1.00 0.00 0.00 1.00 0.67 1.00  cc ga               1.0000 0.1300 0.9100 0.9100 0.1400 0.9400   0.8700  0.3283 P0
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.1000 0.0800 0.0600 0.0600 0.0400 0.0400   0.0600  0.0367 P0
+   * Introduction: The need for multimodal AI        -    -    -    -    -  0.33 1.00  ga                  0.9000 0.0800 0.8600 0.0600 0.0400 0.0400   0.8600  0.5700 P0
+   * Foundations of multimodal LLMs                  -    -    -    -    -  0.17 1.00  ga                  0.1000 0.8800 0.0600 0.0600 0.0400 0.0400   0.8400  0.6833 P1
+   * Applying multimodal LLMs to images and PDFs     -    -    -    -    -  0.33 1.00  ga                  0.1000 0.0800 0.0600 0.8600 0.8400 0.0400   0.8200  0.5300 P3
+     Introduction                                  1.00 0.80 0.00 0.00 1.00   -    -   fl                  0.0000 0.0300 0.0600 0.0600 0.0400 0.0400   0.0600  0.0217 P2
+   * Limitations of Traditional Document Processi… 1.00 0.80 0.20 0.20 1.00   -    -   fl de be            0.0000 0.0800 0.0100 0.0600 0.0400 0.0400   0.0800  0.0417 P1
+   * Applying Multimodal LLMs to Images and PDFs   0.20 0.20 0.00 0.00 1.00   -    -   cc fl               0.0000 0.0800 -0.0400 -0.0400 -0.0600 -0.0600   0.1400  0.1000 P1
+   * Foundations of Multimodal RAG                 0.25 0.75 0.75 0.00 1.00   -    -   cc fl de            0.0000 0.0300 0.0600 -0.0400 -0.0100 -0.0600   0.1200  0.0633 P2
+   * Implementing Multimodal RAG for Images, PDFs… 0.75 0.25 0.00 0.50 1.00   -    -   cc fl be            0.0000 0.0300 0.0100 -0.0400 0.0400 -0.0600   0.1000  0.0433 P4
+   * Building Multimodal AI Agents                 0.75 0.50 0.25 0.25 1.00   -    -   cc fl de be         0.0000 0.0800 0.0100 -0.0400 0.0400 -0.0600   0.1400  0.0750 P1
+    → Live: 14/17  mean margin=0.4076  mean regret=0.2756
+
+    [STANDARD]  cost-only baseline = 0.0600
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Introduction                                  1.00 0.67 0.17 0.00 1.00   -    -   fl de               0.4000 0.1800 0.3600 0.1600 0.3400 0.5200   0.3600  0.1933 P5
+   * Limitations of Traditional Document Processi… 1.00 1.00 0.00 0.33 1.00   -    -   be                  0.4000 -0.0200 -0.0400 0.3600 0.4600 -0.0600   0.5200  0.2767 P4
+   * Foundations of Multimodal LLMs                1.00 1.00 0.33 0.00 1.00   -    -   de                  0.4000 -0.0200 -0.0400 0.3600 0.5200 -0.0600   0.5800  0.3267 P4
+   * Applying Multimodal LLMs to Images and PDFs   0.67 0.67 0.33 0.00 1.00   -    -   cc fl de            0.4000 -0.0200 -0.0400 0.1400 0.3400 -0.0600   0.4600  0.2733 P0
+   * Foundations of Multimodal RAG                 0.67 1.00 0.67 0.00 1.00   -    -   cc de               0.4000 -0.0200 -0.0400 0.5400 0.3200 -0.0600   0.6000  0.3500 P3
+   * Implementing Multimodal RAG for Images, PDFs… 0.67 0.67 0.00 0.00 1.00   -    -   cc fl               0.4000 -0.0200 -0.0400 -0.0400 0.3400 -0.0600   0.4600  0.3033 P0
+   * Building Multimodal AI Agents                 1.00 0.67 0.00 0.00 1.00   -    -   fl                  0.4000 -0.0200 -0.0400 0.1600 0.3400 -0.0600   0.4600  0.2700 P0
+   * Conclusion                                    1.00 1.00 0.17 0.17 1.00 0.67 0.83  de be ga ra         0.7000 0.6800 0.6600 0.4800 0.6700 0.6400   0.2200  0.0617 P0
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.4000 0.3800 0.3600 0.3600 0.3400 0.3400   0.0600  0.0367 P0
+   * Introduction: The need for multimodal AI        -    -    -    -    -  0.67 1.00  ga                  0.3000 0.1300 0.2600 0.1100 0.2400 0.2400   0.1900  0.0867 P0
+   * Limitations of traditional document processi… 1.00 1.00 0.00 0.00 1.00 1.00 1.00                      0.3000 0.6800 0.6600 0.2600 0.2400 0.6400   0.4400  0.2167 P1
+   * Foundations of multimodal LLMs                1.00 1.00 0.33 0.00 1.00 1.00 1.00  de                  0.3000 0.6800 0.8400 0.2600 0.2400 0.6400   0.6000  0.3467 P2
+   * Applying multimodal LLMs to images and PDFs   1.00 1.00 0.00 0.00 1.00 0.83 0.83  ga ra               0.3000 0.6800 0.6600 -0.0400 0.2400 0.6400   0.7200  0.2667 P1
+   * Foundations of multimodal RAG                 1.00 1.00 1.00 1.00 1.00 0.83 1.00  ga                  0.3000 0.9800 0.9600 0.2600 0.0900 0.9400   0.8900  0.3917 P1
+   * Implementing multimodal RAG for images, PDFs… 1.00 1.00 0.00 0.33 1.00 0.83 1.00  be ga               0.3000 0.6500 0.6600 0.2600 0.2400 0.6400   0.4200  0.2017 P2
+   * Building multimodal AI agents                 1.00 1.00 0.33 0.67 1.00 0.33 0.83  de be ga ra         0.1500 0.6500 0.8400 -0.0400 0.2400 0.6100   0.8800  0.4317 P2
+    → Live: 15/16  mean margin=0.4913  mean regret=0.2521
+
+    [DEMANDING]  cost-only baseline = 0.0150
+    Section                                         cc   fl   de   be   cp   ga   ra  Live dims               P0     P1     P2     P3     P4     P5   margin  regret  best
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   * Limitations of traditional document processi… 1.00 1.00 0.50 0.00 1.00 1.00 1.00  de                  0.4500 0.2450 0.2400 0.2400 0.2350 0.7100   0.4750  0.3567 P5
+   * Foundations of multimodal LLMs                1.00 1.00 0.00 0.00 1.00 0.83 1.00  ga                  0.4500 0.2450 0.0900 0.2400 0.2350 0.2350   0.3600  0.2008 P0
+   * Applying multimodal LLMs to images and PDFs   1.00 1.00 0.50 0.00 1.00 0.67 1.00  de ga               0.4500 0.2450 0.2400 0.0900 0.0850 0.7100   0.6250  0.4067 P5
+   * Foundations of multimodal RAG                 1.00 1.00 0.50 0.50 1.00 1.00 1.00  de be               0.4500 0.2450 0.2400 0.2400 0.2350 0.8850   0.6500  0.5025 P5
+   * Implementing multimodal RAG for images, PDFs… 1.00 1.00 0.00 0.00 1.00 1.00 1.00                      0.4500 0.2450 0.2400 0.2400 0.2350 0.4350   0.2150  0.1425 P0
+   * Building multimodal AI agents                 1.00 1.00 0.00 0.50 1.00 0.67 1.00  be ga               0.4500 0.2450 0.2400 0.2400 0.0850 0.4600   0.3750  0.1733 P5
+   * Conclusion                                    1.00 1.00 0.17 0.00 1.00 1.00 1.00  de                  0.4500 0.4450 0.7150 0.4400 0.4350 0.4350   0.2800  0.2283 P2
+     References                                    1.00 1.00 0.00 0.00 1.00   -    -                       0.2000 0.1950 0.1900 0.1900 0.1850 0.1850   0.0150  0.0092 P0
+   * Introduction: The need for multimodal AI        -    -    -    -    -  0.83 1.00  ga                  0.2500 0.0950 0.2400 0.2400 0.2350 0.2350   0.1550  0.0342 P0
+   * Introduction                                  1.00 0.75 0.25 0.25 1.00   -    -   fl de be            0.0000 0.3900 0.1900 0.3650 0.1850 -0.0150   0.4050  0.2042 P1
+   * Limitations of Traditional Document Processi… 1.00 1.00 0.75 0.00 1.00   -    -   de                  0.0000 0.4700 0.1900 0.4650 0.4600 -0.0150   0.4850  0.2083 P1
+   * Foundations of Multimodal LLMs                1.00 1.00 0.80 0.40 1.00   -    -   de be               0.0000 0.4700 0.1900 0.6400 0.4600 0.6350   0.6400  0.2408 P3
+   * Applying Multimodal LLMs to Images and PDFs   1.00 0.25 0.00 0.00 1.00   -    -   fl                  0.0000 0.1150 0.1900 0.1100 0.1050 -0.0150   0.2050  0.1058 P2
+   * Foundations of Multimodal RAG                 1.00 1.00 1.00 0.25 1.00   -    -   be                  0.0000 0.4700 0.6400 0.4650 0.4600 -0.0150   0.6550  0.3033 P2
+   * Implementing Multimodal RAG for Images, PDFs… 1.00 1.00 0.00 0.33 1.00   -    -   be                  0.0000 0.1950 0.1900 0.3650 -0.0150 -0.0150   0.3800  0.2450 P3
+   * Building Multimodal AI Agents                 1.00 1.00 0.50 0.25 1.00   -    -   de be               0.0000 0.4700 0.1900 0.6400 0.1850 -0.0150   0.6550  0.3950 P3
+   * Implementing Multimodal RAG                   1.00 1.00 0.00 0.00 1.00   -    -                       0.0000 -0.0050 -0.0100 -0.0100 0.1850 -0.0150   0.2000  0.1608 P4
+    → Live: 16/17  mean margin=0.3985  mean regret=0.2304
+
+--------------------------------------------------------------------------------
+PART 5: Top-20 sections by reward margin (most GRPO-informative)
+--------------------------------------------------------------------------------
+
+  #    Article+Variant                              Section                                            Margin   Regret Live dims
+  --------------------------------------------------------------------------------------------------------------------------------------------
+  1    08_react_practice__minimal                   Thought Phase: Prompt Construction and Generati…   1.0600   0.8033 cc fl de ga
+  2    08_react_practice__minimal                   Action Phase: Function Calling and Parsing         1.0600   0.6700 cc fl de ga
+  3    06_tools__minimal                            Conclusion                                         0.9600   0.3533 cc fl ga
+  4    06_tools__minimal                            Implementing a tool calling framework from scra…   0.9600   0.4867 
+  5    06_tools__minimal                            Using Pydantic models as tools for on-demand st…   0.9600   0.3200 ga ra
+  6    06_tools__minimal                            Popular tools used within the industry             0.9600   0.7867 
+  7    08_react_practice__minimal                   Tests and Traces: Success and Graceful Fallback    0.9600   0.6283 fl de ga
+  8    08_react_practice__minimal                   Control Loop: Messages, Scratchpad, and Orchest…   0.9500   0.7600 de
+  9    03_context_engineering__minimal              Introduction: When prompt engineering breaks       0.9400   0.3200 ga
+  10   05_workflow_patterns__minimal                Introduction                                       0.9400   0.4750 fl
+  11   05_workflow_patterns__minimal                Conclusion                                         0.9400   0.3750 cc
+  12   10_memory_knowledge_access__minimal          Conclusion                                         0.9400   0.1867 cc fl ga
+  13   02_workflows_vs_agents__minimal              The Challenges of Every AI Engineer                0.9200   0.4333 de be ga
+  14   02_workflows_vs_agents__minimal              Conclusion: The Challenges of Every AI Engineer    0.9200   0.7467 
+  15   03_context_engineering__minimal              When prompt engineering breaks                     0.9200   0.7467 
+  16   06_tools__minimal                            Implementing a small tool calling framework fro…   0.9200   0.5800 ga
+  17   02_workflows_vs_agents__minimal              Understanding the Spectrum: From Workflows to A…   0.9100   0.3200 fl de be ga
+  18   08_react_practice__minimal                   Conclusion                                         0.9100   0.5683 fl de be ga
+  19   08_react_practice__minimal                   Tests and Traces: Success and graceful fallback    0.9000   0.6933 ga
+  20   11_multimodal__minimal                       Foundations of multimodal RAG                      0.9000   0.7183 cc de ga
+
+--------------------------------------------------------------------------------
+PART 6: Bottom-20 sections by reward margin (flattest / least informative)
+--------------------------------------------------------------------------------
+
+  #    Article+Variant                              Section                                            Margin   Regret Live dims
+  --------------------------------------------------------------------------------------------------------------------------------------------
+  1    08_react_practice__demanding                 The Observation Phase                              0.0150   0.0092 (none)
+  2    08_react_practice__demanding                 Alternative: ReAct with Model-Native Reasoning     0.0150   0.0092 (none)
+  3    02_workflows_vs_agents__demanding            References                                         0.0150   0.0092 (none)
+  4    03_context_engineering__demanding            Introduction                                       0.0150   0.0092 (none)
+  5    03_context_engineering__demanding            References                                         0.0150   0.0092 (none)
+  6    03_context_engineering__demanding            Understanding context engineering                  0.0150   0.0092 (none)
+  7    03_context_engineering__demanding            Production implementation challenges               0.0150   0.0092 (none)
+  8    03_context_engineering__demanding            Connecting context engineering to AI engineering   0.0150   0.0092 (none)
+  9    05_workflow_patterns__demanding              References                                         0.0150   0.0092 (none)
+  10   06_tools__demanding                          References                                         0.0150   0.0092 (none)
+  11   08_react_practice__demanding                 References                                         0.0150   0.0092 (none)
+  12   09_RAG__demanding                            The RAG Pipeline: Ingestion and Retrieval          0.0150   0.0092 (none)
+  13   09_RAG__demanding                            References                                         0.0150   0.0092 (none)
+  14   10_memory_knowledge_access__demanding        References                                         0.0150   0.0092 (none)
+  15   10_memory_knowledge_access__demanding        Introduction: Why Agents Need a Memory in the f…   0.0150   0.0092 (none)
+  16   11_multimodal__demanding                     References                                         0.0150   0.0092 (none)
+  17   02_workflows_vs_agents__minimal              Introduction                                       0.0400   0.0250 fl
+  18   06_tools__minimal                            Using Pydantic Models As Tools for On-Demand St…   0.0400   0.0250 fl de
+  19   08_react_practice__demanding                 Tool Layer: Mock Search Implementation             0.0400   0.0142 ga
+  20   05_workflow_patterns__minimal                Optimizing Sequential Workflows With Parallel P…   0.0400   0.0200 fl de be
+
+--------------------------------------------------------------------------------
+PART 7: Formula Sensitivity — marginal reward impact of each oracle dim
+        Max possible reward delta when dim flips from 0→1 (other dims fixed)
+--------------------------------------------------------------------------------
+
+  Dim         minimal     standard      demanding  Notes
+  ----------------------------------------------------------------------
+  cc           0.0500       0.2000         0.1200  direct
+  fl           0.0500       0.2000         0.0800  direct
+  de           0.0000       0.1800         0.2750  gated by cp (max assumes cp=1)
+  be           0.0000       0.1200         0.1750  gated by cp (max assumes cp=1)
+  cp           0.0000       0.0000         0.0000  gate: controls de/be impact
+  ga           0.8000       0.1500         0.1500  direct
+  ra           0.1000       0.1500         0.1000  direct
+
+  cp gate effect (setting cp=0 vs cp=1, de=be=1, P0):
+    MINIMAL     : cp=1 → R=0.0000,  cp=0 → R=0.0000,  gate effect = 0.0000
+    STANDARD    : cp=1 → R=0.3000,  cp=0 → R=0.0000,  gate effect = 0.3000
+    DEMANDING   : cp=1 → R=0.4500,  cp=0 → R=0.0000,  gate effect = 0.4500
+
+--------------------------------------------------------------------------------
+PART 8: GRPO signal quality summary (per variant)
+        Sections where margin > cost-only baseline carry actual RL signal.
+        Flat sections only teach the policy to minimise exploration cost.
+--------------------------------------------------------------------------------
+
+  [MINIMAL]
+    Total section groups  : 115
+    Oracle-driven (live)  : 83  (72.2%)
+    Cost-only (dead)      : 32  (27.8%)
+    Live  margin mean/max : 0.6035 / 1.0600
+    Dead  margin mean/max : 0.0578 / 0.0600
+    Overall regret mean   : 0.2390
+
+    Dims driving live sections (times a dim varies in a live section):
+      ga: 46
+      fl: 29
+      cc: 26
+      de: 26
+      be: 19
+      ra: 4
+      cp: 1
+
+  [STANDARD]
+    Total section groups  : 110
+    Oracle-driven (live)  : 92  (83.6%)
+    Cost-only (dead)      : 18  (16.4%)
+    Live  margin mean/max : 0.3903 / 0.8900
+    Dead  margin mean/max : 0.0600 / 0.0600
+    Overall regret mean   : 0.1715
+
+    Dims driving live sections (times a dim varies in a live section):
+      de: 50
+      be: 36
+      ga: 30
+      fl: 26
+      cc: 7
+      ra: 3
+      cp: 1
+
+  [DEMANDING]
+    Total section groups  : 111
+    Oracle-driven (live)  : 95  (85.6%)
+    Cost-only (dead)      : 16  (14.4%)
+    Live  margin mean/max : 0.3595 / 0.6550
+    Dead  margin mean/max : 0.0150 / 0.0150
+    Overall regret mean   : 0.1685
+
+    Dims driving live sections (times a dim varies in a live section):
+      de: 51
+      be: 43
+      ga: 31
+      fl: 24
+      cc: 3
+      cp: 1

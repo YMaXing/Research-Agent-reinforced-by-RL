@@ -18,7 +18,7 @@ Hands-on construction of the ReAct loop gives you a concrete mental model for ho
 
 ## Achoring the Lesson in the Course
 
-### Details About the Course
+### Details About the Course, the
 
 This piece is part of a broader course on AI agents and LLM workflows. The course consists of 3 parts, each with multiple lessons. 
 

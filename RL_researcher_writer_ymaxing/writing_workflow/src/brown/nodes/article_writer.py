@@ -105,18 +105,35 @@ class ArticleWriter(Node):
   - Scan the `## References` section: if its entries use a numbered list format (e.g., `1.`, `2.`),
     reformat every entry as a bulleted list item following `- [N] [Title or short description](url)`,
     preserving each citation identifier `N` to match the inline citations already present in the article.
-  - **Image rendering syntax:** Scan every image in the article. Images sourced from a URL MUST be
-    rendered using standard Markdown image syntax: `![alt text](url)`. A raw URL on its own line
-    (not wrapped in `![]()`) will NOT display as an image — it renders as a plain hyperlink. If a
-    bare URL followed by a caption line is found, rewrite it as:
+  - **Image rendering syntax:** Scan every `Image N:` caption line in the article. Each one MUST
+    be immediately preceded (with at most one blank line between) by either (a) a closing Mermaid
+    fence (` ``` `), or (b) a standard Markdown image embed (`![alt text](url)`). If an `Image N:`
+    caption is preceded by anything else — including a bare URL, a blank line with no embed above
+    it, or nothing at all — that caption is **orphaned** and must be fixed before returning.
+
+    Two cases to fix:
+
+    **Case 1 — bare URL + caption:** A raw URL on its own line is not wrapped in `![]()` and will
+    NOT display as an image. Rewrite as:
     ```
     ![<concise alt text>](<url>)
 
-    *<caption text>*
+    Image N: <caption text>
     ```
-    The alt text should be a short description of what the image shows (used when the image cannot
-    load). The caption line below must follow the `Image N:` format required by the structure
-    profile and be italicised. Never leave an image URL as a raw standalone line.
+
+    **Case 2 — orphaned caption (no URL at all):** An `Image N:` caption with no preceding embed
+    and no preceding URL means the image body was never written. Go back to the `<research>` and
+    find the most appropriate image URL for the required illustration. Then insert:
+    ```
+    ![<concise alt text>](<url from research>)
+
+    Image N: <caption text>
+    ```
+    If no suitable URL exists in the research, remove the caption entirely and incorporate the
+    image description into the surrounding prose — do not leave a caption with no visible image.
+
+    In all cases the alt text should be a short description of what the image shows. Never leave
+    an `Image N:` caption without a preceding Mermaid block or `![…](…)` embed.
   - Scan every diagram and image caption (lines beginning with `Image N:` or `Table N:`). A caption
     must be a single concise sentence of no more than 30 words that identifies what the diagram or
     table shows — not a multi-sentence walkthrough of its content. If a caption exceeds one sentence

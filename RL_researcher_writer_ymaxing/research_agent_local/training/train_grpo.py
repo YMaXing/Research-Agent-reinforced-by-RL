@@ -169,7 +169,7 @@ class Group:
 # ---------------------------------------------------------------------------
 # Reward computation
 # ---------------------------------------------------------------------------
-def compute_reward(
+def     compute_reward(
     scores: dict,
     preset_id: int,
     variant_level: str = "standard",
