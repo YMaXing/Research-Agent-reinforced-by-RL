@@ -1,8 +1,9 @@
 """
 Offline GRPO + QLoRA Training for Exploration Strategy Selection
 
-Trains Qwen3-4B to select optimal exploration presets (0-5) given
-exploitation digests as context. Uses offline GRPO with precomputed rewards.
+Trains Qwen3-4B to select the optimal exploration preset
+(skip / light / standard / deep) given exploitation digests as context.
+Uses offline GRPO with oracle-based rewards derived from section_oracle.json.
 
 Usage (from research_agent_local/training/):
     uv run python train_grpo.py --dry-run       # verify setup
@@ -33,6 +34,17 @@ from peft import (
 )
 from torch.utils.tensorboard import SummaryWriter
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+
+# Shared preset vocabulary, system prompt, and per-section input builder.
+# Imported here rather than duplicated; _rl_preset.py has no heavy dependencies.
+from _rl_preset import (
+    _RL_INPUT_SYSTEM,
+    NUM_PRESETS,
+    PRESET_NAMES,
+    PRESET_ORDER,
+    PRESET_ROUNDS,
+    build_rl_input,
+)
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -78,41 +90,19 @@ ARTICLES = [
     "11_multimodal__var_standard", "11_multimodal__var_demanding",
 ]
 
-PRESET_ROUNDS = {0: 0, 1: 1, 2: 2, 3: 2, 4: 3, 5: 3}
-NUM_PRESETS = 6
+# Preset vocabulary and system prompt are imported from _rl_preset (see above):
+#   NUM_PRESETS = 4
+#   PRESET_NAMES  = {0: "skip", 1: "light", 2: "standard", 3: "deep"}
+#   PRESET_ORDER  = {"skip": 0, "light": 1, "standard": 2, "deep": 3}
+#   PRESET_ROUNDS = {"skip": 0, "light": 1, "standard": 2, "deep": 3}
+#   _RL_INPUT_SYSTEM   — single KV-cache-friendly system prompt for all groups
+#   build_rl_input(digest, sec_id)  — per-section user-message builder
 
-SYSTEM_PROMPT = """\
-You are a research exploration strategy selector for an AI course article.
-
-Given a digest describing current research coverage, source \
-inventory, and gap analysis, select the optimal exploration preset (0-5).
-
-Presets:
-0: No exploration (baseline)
-1: 1 round, balanced
-2: 2 rounds, balanced then depth
-3: 2 rounds, depth then breadth
-4: 3 rounds, balanced then depth then breadth
-5: 3 rounds, depth then breadth then depth
-
-Respond with ONLY the preset number (0-5)."""
-
-SECTION_SYSTEM_PROMPT = """\
-You are a research exploration strategy selector for a section of an AI course article.
-
-Given the section guideline (what the section must cover and how it should be written) \
-and a digest excerpt describing current research coverage, source inventory, and gap \
-analysis for that section, select the optimal exploration preset (0-5).
-
-Presets:
-0: No exploration (baseline)
-1: 1 round, balanced
-2: 2 rounds, balanced then depth
-3: 2 rounds, depth then breadth
-4: 3 rounds, balanced then depth then breadth
-5: 3 rounds, depth then breadth then depth
-
-Respond with ONLY the preset number (0-5)."""
+# Active episode presets: 0=baseline(skip), 1=single_balanced(light),
+# 3=depth_then_breadth(standard), 5=depth_breadth_depth(deep).
+# Presets 2 (balanced_then_depth) and 4 (balanced_depth_breadth) are archived.
+_EPISODE_PRESET_ROUNDS: dict[int, int] = {0: 0, 1: 1, 3: 2, 5: 3}
+_EPISODE_NUM_PRESETS = 4
 
 # Dimensions used in the reward formula (shared by both granularities)
 _REWARD_DIMS = [
@@ -169,12 +159,15 @@ class Group:
 # ---------------------------------------------------------------------------
 # Reward computation
 # ---------------------------------------------------------------------------
-def     compute_reward(
+def _compute_episode_reward(
     scores: dict,
     preset_id: int,
     variant_level: str = "standard",
     ) -> float:
     """Compute reward from scores.json using the variant-aware formula.
+
+    Legacy function used by load_groups() for the old 6-preset episode-based
+    training.  New section-level training uses compute_oracle_reward() instead.
 
     ``variant_level`` must be one of ``"minimal"``, ``"standard"``,
     ``"demanding"``.  Each variant emphasises different output properties:
@@ -198,7 +191,7 @@ def     compute_reward(
     cp = scores["ground_truth_core_preservation"]
     ga = scores["user_intent_guideline_adherence"]
     ra = scores["user_intent_research_anchoring"]
-    nr = PRESET_ROUNDS[preset_id]
+    nr = _EPISODE_PRESET_ROUNDS[preset_id]
 
     if variant_level == "minimal":
         # Conceptual overview: ga dominant, small exploration signal, cost standard.
@@ -221,6 +214,25 @@ def     compute_reward(
         cost        = -0.02 * nr
 
     return gt_base + explore + user_intent + cost
+
+
+def compute_oracle_reward(oracle_preset: str, action_preset: str) -> float:
+    """Compute ordinal-distance reward for oracle-based GRPO training.
+
+    Returns 1.0 for exact match, decreasing linearly to 0.0 at maximum
+    ordinal distance (3 steps for skip↔deep).
+
+    Args:
+        oracle_preset: Ground-truth preset name from section_oracle.json.
+        action_preset: One of "skip", "light", "standard", "deep".
+
+    Returns:
+        float in [0.0, 1.0].
+    """
+    oracle_idx = PRESET_ORDER[oracle_preset]
+    action_idx = PRESET_ORDER[action_preset]
+    distance = abs(action_idx - oracle_idx)
+    return 1.0 - distance / (NUM_PRESETS - 1)
 
 
 # ---------------------------------------------------------------------------
@@ -448,10 +460,10 @@ def load_groups(sigma_floor: float) -> list[Group]:
         group = Group(name=article, digest=digest)
 
         variant_level = _article_variant_level(article)
-        for p in range(NUM_PRESETS):
+        for p in _EPISODE_PRESET_ROUNDS:
             ep_dir = _EPISODES_DIR / f"{article}__preset{p}"
             scores = json.loads((ep_dir / "scores.json").read_text(encoding="utf-8"))
-            reward = compute_reward(scores, p, variant_level)
+            reward = _compute_episode_reward(scores, p, variant_level)
             group.rewards.append(reward)
 
         # Within-group advantage normalization
@@ -483,140 +495,163 @@ def load_section_groups(
     sigma_floor: float,
     section_weight: str = "hybrid",
 ) -> list[Group]:
-    """Load section-level GRPO groups from digest section excerpts.
+    """Load section-level GRPO groups from section_oracle.json.
 
-    Each article section becomes its own GRPO group with 6 preset arms.
-    Rewards are computed from per-section binary scores in reasoning.json.
+    Each section entry in the oracle becomes its own GRPO group with
+    NUM_PRESETS=4 arms.  Rewards come directly from the per-arm reward
+    vectors stored in section_oracle.json (version 2), which are derived
+    from actual episode runs via generate_episode_oracles.py.
 
-    ``section_weight`` controls how each section's loss contribution is weighted
-    within an article.  Each article always contributes equally overall (its
-    sections' weights sum to ``1 / num_articles``), so the choice only affects
-    the *distribution* of gradient signal within an article.
+    For legacy version-1 oracle files (``presets`` key only, no per-arm
+    rewards), falls back to the ordinal-distance proxy from
+    ``compute_oracle_reward``.
 
-    **Design principle.**  Two independent questions determine how much a section
-    should drive parameter updates:
+    ``section_weight`` controls how each section's loss contribution is
+    weighted within an article.  Each article always contributes equally
+    overall (its sections' weights sum to ``1 / num_articles``).
 
-    1. *How much does this section represent the article?*  Word count is the
-       natural proxy — a long technical section contributes more to final quality
-       than a short conclusion.
-    2. *How much does the preset choice actually matter for this section?*  A
-       section where all presets yield similar rewards carries no learning signal
-       regardless of its length; a short but structurally incomplete section
-       where one preset is clearly superior is where the policy needs to improve.
-
-    The modes differ in how they answer question 2:
-
-    * ``wordcount``     — ignores question 2 entirely.  Matches the word-count-
-      weighted vote used at inference; longest sections always dominate.
-    * ``variance``      — answers question 2 with ``std(R)``.  Symmetric: treats
-      "one preset uniquely great" the same as "one preset uniquely terrible".
-    * ``hybrid``        — ``wordcount × std(R)``.  Combines both signals but
-      inherits the symmetry limitation of ``variance``.
-    * ``regret-hybrid`` — ``wordcount × (max(R) − mean(R))``.  Preferred mode.
-      Regret is *upside-aware*: it measures the expected gain from learning the
-      right preset rather than picking uniformly at random, which is exactly what
-      GRPO optimises.  A section where all presets are bad (high std, zero
-      upside) gets weight ≈ 0; a section with one clear winner gets a high weight
-      even if it is short.  Training/inference decoupling is intentional: regret
-      requires a reward oracle unavailable at inference time, but that is fine —
-      the regret weight is a training-time gradient-focusing device.  The
-      model's learned per-section distributions encode the signal; inference
-      aggregates those distributions by word count as usual.
-    * ``uniform``       — equal weight per section.  Original behaviour; no
-      length or exploration signal.
+    Modes:
+    * ``wordcount``     — weight by guideline target_words.
+    * ``variance``      — weight by std(R) across the 4 arms.
+    * ``hybrid``        — wordcount × std(R).
+    * ``regret-hybrid`` — wordcount × (max(R) − mean(R)).  Preferred: upside-aware.
+    * ``uniform``       — equal weight per section.
     """
     groups: list[Group] = []
 
     for article in ARTICLES:
-        digest_path = _BASES_DIR / article / "research_digest.md"
-        digest = digest_path.read_text(encoding="utf-8")
-        digest_sections = _extract_digest_sections(digest)
-
-        if not digest_sections:
-            log.warning(f"  {article}: no digest sections found, skipping")
+        oracle_path = _BASES_DIR / article / "section_oracle.json"
+        if not oracle_path.exists():
+            log.warning(f"  {article}: section_oracle.json not found, skipping")
             continue
 
-        # Load guideline and extract per-section text blocks.
-        guideline_path = _EVAL_DIR / article / "article_guideline.md"
-        if guideline_path.exists():
-            guideline_text = guideline_path.read_text(encoding="utf-8")
-            guideline_section_blocks = _extract_guideline_sections(
-                guideline_text, digest_sections
-            )
-            compact_preamble = _extract_compact_preamble(
-                _extract_guideline_preamble(guideline_text)
-            )
+        oracle_data = json.loads(oracle_path.read_text(encoding="utf-8"))
+        oracle_version = oracle_data.get("version", 1)
+
+        # Version 2+: use pre-computed per-arm rewards from episode runs.
+        # Version 1 (legacy): fall back to ordinal-distance proxy.
+        if oracle_version >= 2:
+            sections_v2: dict[str, dict] = oracle_data.get("sections", {})
+            if not sections_v2:
+                log.warning(f"  {article}: oracle sections empty, skipping")
+                continue
+            # Build (sec_id -> oracle_preset, sec_id -> [r_skip, r_light, r_std, r_deep])
+            oracle_presets: dict[str, str] = {
+                sid: info["oracle"] for sid, info in sections_v2.items()
+            }
+            oracle_rewards: dict[str, list[float]] = {
+                sid: [info["rewards"].get(PRESET_NAMES[i], 0.0) for i in range(NUM_PRESETS)]
+                for sid, info in sections_v2.items()
+            }
         else:
-            log.warning(
-                f"  {article}: guideline not found at {guideline_path}; "
-                "section_guideline will be empty for all sections"
-            )
-            guideline_section_blocks = [""] * len(digest_sections)
-            compact_preamble = ""
+            # Legacy format
+            oracle_presets = oracle_data.get("presets", {})
+            if not oracle_presets:
+                log.warning(f"  {article}: oracle is empty, skipping")
+                continue
+            oracle_rewards = {}  # will compute from compute_oracle_reward below
 
-        article_groups: list[Group] = []
-        variant_level = _article_variant_level(article)
-        for sec_idx, (sec_title, sec_excerpt) in enumerate(digest_sections):
-            group = Group(
-                name=f"{article}__S{sec_idx + 1}",
-                digest=sec_excerpt,
-                section_guideline=guideline_section_blocks[sec_idx],
-                guideline_preamble=compact_preamble,
-                word_weight=len(sec_excerpt.split()),  # raw word count; normalised below
-            )
+        digest_path = _BASES_DIR / article / "research_digest.md"
+        if not digest_path.exists():
+            log.warning(f"  {article}: research_digest.md not found, skipping")
+            continue
+        digest = digest_path.read_text(encoding="utf-8")
 
-            for p in range(NUM_PRESETS):
-                ep_dir = _EPISODES_DIR / f"{article}__preset{p}"
-                reasons = json.loads(
-                    (ep_dir / "reasoning.json").read_text(encoding="utf-8")
+        # Some variant digests were truncated during generation: section_coverage
+        # has fewer entries than the article actually has.  When build_rl_input
+        # can't find a sec_id in the digest, it returns "(not found)" — giving
+        # the model a meaningless input.  Fall back to the base dir digest and
+        # patch in the variant's external_evidence_policy so the policy signal
+        # (forbidden / allowed / required) stays correct.
+        missing_ids = [sid for sid in oracle_presets if f'id="{sid}"' not in digest]
+        if missing_ids:
+            policy_m = re.search(
+                r"<external_evidence_policy>([^<]+)</external_evidence_policy>", digest
+            )
+            variant_policy = policy_m.group(1).strip() if policy_m else None
+            base_article = re.sub(r"__var_\w+$", "", article)
+            base_digest_path = _BASES_DIR / base_article / "research_digest.md"
+            if base_digest_path.exists():
+                base_digest = base_digest_path.read_text(encoding="utf-8")
+                base_missing = [sid for sid in oracle_presets if f'id="{sid}"' not in base_digest]
+                if len(base_missing) < len(missing_ids):
+                    log.info(
+                        f"  {article}: variant digest missing {len(missing_ids)} sec_ids; "
+                        "using base dir digest"
+                    )
+                    digest = base_digest
+                    if variant_policy:
+                        digest = re.sub(
+                            r"<external_evidence_policy>[^<]+</external_evidence_policy>",
+                            f"<external_evidence_policy>{variant_policy}</external_evidence_policy>",
+                            digest,
+                        )
+                else:
+                    log.warning(
+                        f"  {article}: digest missing sec_ids {missing_ids}; "
+                        f"base dir also incomplete (missing {base_missing})"
+                    )
+            else:
+                log.warning(
+                    f"  {article}: digest missing sec_ids {missing_ids}; no base dir fallback"
                 )
 
-                # Build per-section scores dict for the reward formula
-                section_scores: dict[str, float] = {}
-                for dim in _REWARD_DIMS:
-                    if dim not in reasons:
-                        section_scores[dim] = 0.0
-                        continue
-                    dim_sections = _parse_reasoning_sections(reasons[dim])
-                    matched_score: int | None = None
-                    for rname, rscore in dim_sections.items():
-                        match_idx = _match_reasoning_to_digest(
-                            rname, digest_sections
-                        )
-                        if match_idx == sec_idx:
-                            matched_score = rscore
-                            break
-                    section_scores[dim] = float(
-                        matched_score if matched_score is not None else 0
-                    )
+        feat_path = _BASES_DIR / article / "guideline_features.json"
+        feat_sections: dict[str, dict] = {}
+        if feat_path.exists():
+            feat_data = json.loads(feat_path.read_text(encoding="utf-8"))
+            feat_sections = feat_data.get("sections", {})
 
-                reward = compute_reward(section_scores, p, variant_level)
-                group.rewards.append(reward)
+        article_groups: list[Group] = []
+        for sec_id, oracle_preset in sorted(oracle_presets.items()):
+            rl_input = build_rl_input(digest, sec_id)
+            user_message = rl_input["user"]
 
-            # Within-group advantage normalization
-            mean_r = sum(group.rewards) / len(group.rewards)
+            raw_word_weight = max(
+                feat_sections.get(sec_id, {}).get("target_words", 1), 1
+            )
+
+            if oracle_version >= 2:
+                rewards = oracle_rewards[sec_id]
+            else:
+                rewards = [
+                    compute_oracle_reward(oracle_preset, PRESET_NAMES[i])
+                    for i in range(NUM_PRESETS)
+                ]
+
+            group = Group(
+                name=f"{article}__{sec_id}",
+                digest=user_message,
+                section_guideline="",
+                guideline_preamble="",
+                word_weight=float(raw_word_weight),
+                rewards=rewards,
+            )
+
+            mean_r = sum(rewards) / len(rewards)
             raw_std = (
-                sum((r - mean_r) ** 2 for r in group.rewards) / len(group.rewards)
+                sum((r - mean_r) ** 2 for r in rewards) / len(rewards)
             ) ** 0.5
             group.raw_reward_std = raw_std
-            group.raw_reward_regret = max(group.rewards) - mean_r
+            group.raw_reward_regret = max(rewards) - mean_r
             group.hit_sigma_floor = raw_std < sigma_floor
             std_r = max(raw_std, sigma_floor)
-            advantages = [(r - mean_r) / std_r for r in group.rewards]
+            advantages = [(r - mean_r) / std_r for r in rewards]
             group.advantages = torch.tensor(advantages, dtype=torch.float32)
-            group.best_preset_idx = group.rewards.index(max(group.rewards))
+            group.best_preset_idx = rewards.index(max(rewards))
 
             article_groups.append(group)
             log.info(
-                f"  {group.name} ({sec_title[:40]}): "
-                f"R={[f'{r:.3f}' for r in group.rewards]} "
-                f"best=P{group.best_preset_idx} ({max(group.rewards):.4f})"
+                f"  {group.name} (oracle={oracle_preset}"
+                + ("" if oracle_version >= 2 else " [proxy]")
+                + f"): R={[f'{r:.3f}' for r in rewards]} "
+                f"best={PRESET_NAMES[group.best_preset_idx]}"
                 + (" [flat]" if group.hit_sigma_floor else "")
             )
 
-        # Compute raw unnormalized weights according to the chosen mode.
-        # 'wordcount' raw weight is already stored in g.word_weight (set at init).
-        # See docstring for the motivation behind each mode.
+        if not article_groups:
+            continue
+
         if section_weight == "variance":
             raw_weights = [g.raw_reward_std for g in article_groups]
         elif section_weight == "hybrid":
@@ -628,13 +663,8 @@ def load_section_groups(
         else:  # "wordcount" — matches inference aggregation
             raw_weights = [g.word_weight for g in article_groups]
 
-        # Normalize: within-article weights sum to 1 / num_articles so each
-        # article contributes equally to the total gradient regardless of how
-        # many sections it has.
         total_w = sum(raw_weights)
         if total_w == 0.0:
-            # Edge case: all sections flat (all presets same reward) under
-            # variance/hybrid — fall back to equal weight within article.
             log.warning(
                 f"  {article}: all raw_weights=0 under mode '{section_weight}'; "
                 "falling back to uniform within this article."
@@ -646,10 +676,17 @@ def load_section_groups(
         groups.extend(article_groups)
 
     n_flat = sum(1 for g in groups if g.hit_sigma_floor)
-    log.info(
-        f"  Total section-level groups: {len(groups)} "
-        f"({n_flat} flat / hit sigma_floor = {n_flat/len(groups):.0%})"
-    )
+    if groups:
+        log.info(
+            f"  Total section-level groups: {len(groups)} "
+            f"({n_flat} flat / hit sigma_floor = {n_flat/len(groups):.0%})"
+        )
+    else:
+        log.warning(
+            "  No section-level groups loaded. "
+            "Check that section_oracle.json exists under "
+            "rl_training_data/bases/<article>/."
+        )
     return groups
 
 
@@ -657,23 +694,16 @@ def load_section_groups(
 # Tokenization
 # ---------------------------------------------------------------------------
 def tokenize_groups(
-    groups: list[Group], tokenizer, *, system_prompt: str = SYSTEM_PROMPT
+    groups: list[Group], tokenizer, *, system_prompt: str = _RL_INPUT_SYSTEM
 ) -> None:
     """Tokenize prompts for all groups using the chat template.
 
-    For section-level groups (``group.section_guideline`` is non-empty) the
-    user message is a composite of the guideline section and the digest
-    excerpt, with a compact article context sandwiched in between.
-
-    Input ordering (lost-in-the-middle mitigation):
-      1. Section guideline  — task definition; front-loaded for strong attention
-      2. Article context    — compact variant signal (~3 lines) in the middle
-      3. Research coverage  — evidence; last, immediately before generation
-
-    This ensures the model sees *what the section must cover* as well as
-    *what research coverage already exists*, making variant-level training
-    gradients non-degenerate (all three guideline variants of the same
-    article would otherwise produce identical ``input_ids``).
+    For new-format section-level groups the user message is already the
+    full pre-composed RL input produced by ``build_rl_input``; the
+    ``section_guideline`` and ``guideline_preamble`` fields are empty and
+    unused.  The function still supports the legacy composite layout (non-
+    empty ``section_guideline``) so that article-level groups loaded from
+    the old episode format continue to work.
     """
     for group in groups:
         if group.section_guideline:
@@ -708,16 +738,24 @@ def tokenize_groups(
 
 
 def find_action_token_ids(tokenizer) -> torch.Tensor:
-    """Find token IDs for single-digit strings '0' through '5'."""
+    """Find token IDs for the four preset words: skip, light, standard, deep.
+
+    Verifies that each preset name tokenizes to exactly one token with the
+    provided tokenizer.  Exits with an error message if any name is split
+    (indicates model / tokenizer mismatch — should never happen with Qwen3).
+    """
     action_ids = []
-    for digit in range(NUM_PRESETS):
-        toks = tokenizer.encode(str(digit), add_special_tokens=False)
+    for i in range(NUM_PRESETS):
+        name = PRESET_NAMES[i]
+        toks = tokenizer.encode(name, add_special_tokens=False)
         if len(toks) != 1:
-            sys.exit(f"ERROR: Digit '{digit}' tokenized to {len(toks)} tokens: {toks}")
+            sys.exit(
+                f"ERROR: Preset '{name}' tokenized to {len(toks)} tokens: {toks}. "
+                "Verify that the tokenizer matches Qwen3."
+            )
         action_ids.append(toks[0])
         decoded = tokenizer.decode([toks[0]])
-        log.info(f"  '{digit}' -> token_id={toks[0]} -> decoded='{decoded}'")
-
+        log.info(f"  '{name}' -> token_id={toks[0]} -> decoded='{decoded}'")
     return torch.tensor(action_ids, dtype=torch.long)
 
 
@@ -725,23 +763,60 @@ def find_action_token_ids(tokenizer) -> torch.Tensor:
 # Reference log-probs
 # ---------------------------------------------------------------------------
 def compute_ref_log_probs(
-    model, groups: list[Group], action_token_ids: torch.Tensor, device: torch.device
+    model,
+    groups: list[Group],
+    action_token_ids: torch.Tensor,
+    device: torch.device,
+    *,
+    batch_size: int = 1,
+    pad_token_id: int = 0,
 ) -> None:
-    """Forward pass through the base model to cache reference log-probs."""
+    """Forward pass through the base model to cache reference log-probs.
+
+    Supports batched inference (``batch_size > 1``) using the same left-padding
+    scheme as the training loop.  Groups are sorted by sequence length to
+    minimise padding waste; the original list order is not changed.
+    """
     log.info("Computing reference log-probs (base model, no LoRA)...")
     model.eval()
     action_ids = action_token_ids.to(device)
 
-    with torch.no_grad():
-        for group in groups:
-            logits = model(group.input_ids.to(device)).logits[0, -1, :]
-            log_probs = F.log_softmax(logits.float(), dim=-1)
-            group.ref_log_probs = log_probs[action_ids].cpu()
+    # Sort a local copy by length so batches are length-homogeneous.
+    sorted_groups = sorted(groups, key=lambda g: g.input_ids.shape[1])
 
-            probs = group.ref_log_probs.exp()
-            log.info(
-                f"  {group.name}: ref_probs={[f'{p:.4f}' for p in probs.tolist()]}"
-            )
+    with torch.no_grad():
+        for batch_start in range(0, len(sorted_groups), batch_size):
+            batch = sorted_groups[batch_start : batch_start + batch_size]
+
+            if len(batch) == 1:
+                raw_logits = model(batch[0].input_ids.to(device)).logits  # (1, T, V)
+            else:
+                seq_lens = [g.input_ids.shape[1] for g in batch]
+                max_len = max(seq_lens)
+                B = len(batch)
+                padded = torch.full(
+                    (B, max_len), pad_token_id, dtype=torch.long, device=device
+                )
+                attn_mask = torch.zeros(B, max_len, dtype=torch.long, device=device)
+                for i, (g, slen) in enumerate(zip(batch, seq_lens)):
+                    padded[i, max_len - slen :] = g.input_ids[0]  # left-pad
+                    attn_mask[i, max_len - slen :] = 1
+                raw_logits = model(padded, attention_mask=attn_mask).logits  # (B, T, V)
+
+            # last-position logits for every example: (B, vocab)
+            # Clone immediately so raw_logits (1, T, V) can be freed before the loop.
+            last_logits = raw_logits[:, -1, :].float().clone()
+            del raw_logits
+            torch.cuda.empty_cache()
+
+            for i, group in enumerate(batch):
+                log_probs = F.log_softmax(last_logits[i], dim=-1)
+                group.ref_log_probs = log_probs[action_ids].cpu()
+                probs = group.ref_log_probs.exp()
+                log.info(
+                    f"  {group.name}: ref_probs={[f'{p:.4f}' for p in probs.tolist()]}"
+                )
+            del last_logits
 
 
 def _collect_trainable_state_dict(model) -> dict[str, torch.Tensor]:
@@ -807,6 +882,7 @@ def train(
     *,
     task_id: str,
     task_dir: Path,
+    pad_token_id: int,
     resume_state: dict[str, Any] | None = None,
 ) -> None:
     """Main offline GRPO training loop."""
@@ -824,6 +900,18 @@ def train(
 
     action_ids = action_token_ids.to(device)
     num_groups = len(groups)
+
+    # Sort groups by sequence length once.  This minimises left-pad waste when
+    # batch_size > 1 (shorter sequences are batched together).  The ordering
+    # has no effect on gradient accumulation correctness because the optimizer
+    # step happens after all groups in each epoch have been processed.
+    if args.batch_size > 1:
+        groups = sorted(groups, key=lambda g: g.input_ids.shape[1])
+        log.info(
+            f"Groups sorted by sequence length for batching "
+            f"(batch_size={args.batch_size}). "
+            f"Length range: {groups[0].input_ids.shape[1]}–{groups[-1].input_ids.shape[1]} tokens."
+        )
 
     # Move pre-computed tensors to device
     for g in groups:
@@ -894,58 +982,89 @@ def train(
             epoch_loss_total = 0.0
             epoch_metrics: dict[str, dict] = {}
 
-            for group in groups:
-                input_ids = group.input_ids.to(device)
-                logits = model(input_ids).logits[0, -1, :]
+            for batch_start in range(0, num_groups, args.batch_size):
+                batch = groups[batch_start : batch_start + args.batch_size]
 
-                # Re-normalize over the 6 action logits only (consistent
-                # across policy gradient, KL, and eval metrics).
-                action_logits = logits.float()[action_ids]
-                pi_lp_6 = F.log_softmax(action_logits, dim=-1)
-                ref_lp_6 = F.log_softmax(group.ref_log_probs, dim=-1)
-
-                # GRPO policy gradient loss
-                loss_grpo = -(group.advantages * pi_lp_6).mean()
-
-                # KL(π || π_ref) over the 6-action simplex (always ≥ 0).
-                loss_kl = (pi_lp_6.exp() * (pi_lp_6 - ref_lp_6)).sum()
-
-                # Entropy bonus H(π) — directly prevents collapse (always ≥ 0).
-                loss_entropy = -(pi_lp_6.exp() * pi_lp_6).sum()
-
-                # Weighted sum across groups: word-count weight mirrors the
-                # word-count-weighted vote used at inference (section granularity)
-                # or equal weight per article (article granularity).
-                loss = (loss_grpo + args.beta * loss_kl - args.entropy_coef * loss_entropy) * group.word_weight
-                loss.backward()
-
-                epoch_loss_grpo += loss_grpo.item() * group.word_weight
-                epoch_loss_kl += loss_kl.item() * group.word_weight
-                epoch_loss_entropy += loss_entropy.item() * group.word_weight
-                epoch_loss_total += loss.item()
-
-                # --- per-group evaluation metrics (no grad) ---
-                with torch.no_grad():
-                    # Re-normalize over the 6 action logits for eval
-                    probs_6 = F.softmax(logits.float()[action_ids], dim=-1)
-                    rewards_t = torch.tensor(
-                        group.rewards, device=device, dtype=torch.float32
+                # --- Batched forward pass ---
+                # All sequences are left-padded to the longest in the batch so
+                # that position [-1] is always the last *real* token for every
+                # example, regardless of individual sequence length.
+                if len(batch) == 1:
+                    # Fast path: no padding needed.
+                    raw_logits = model(batch[0].input_ids.to(device)).logits  # (1, T, V)
+                else:
+                    seq_lens = [g.input_ids.shape[1] for g in batch]
+                    max_len = max(seq_lens)
+                    B = len(batch)
+                    padded = torch.full(
+                        (B, max_len), pad_token_id, dtype=torch.long, device=device
                     )
-                    # Use log_softmax for entropy to avoid 0*log(0)=NaN when
-                    # any action probability is numerically zero.
-                    lp6_eval = F.log_softmax(logits.float()[action_ids], dim=-1)
-                    entropy = -(probs_6 * lp6_eval).sum().item()
-                    expected_reward = (probs_6 * rewards_t).sum().item()
-                    top1 = probs_6.argmax().item()
+                    attn_mask = torch.zeros(B, max_len, dtype=torch.long, device=device)
+                    for i, (g, slen) in enumerate(zip(batch, seq_lens)):
+                        padded[i, max_len - slen:] = g.input_ids[0]  # left-pad
+                        attn_mask[i, max_len - slen:] = 1
+                    raw_logits = model(padded, attention_mask=attn_mask).logits  # (B, T, V)
 
-                    epoch_metrics[group.name] = {
-                        "entropy": round(entropy, 4),
-                        "expected_reward": round(expected_reward, 4),
-                        "top1_preset": top1,
-                        "top1_correct": top1 == group.best_preset_idx,
-                        "action_probs": [round(p, 4) for p in probs_6.cpu().tolist()],
-                        "kl": round(loss_kl.item(), 6),
-                    }
+                # last-position logits for all examples in batch: (B, vocab)
+                last_logits = raw_logits[:, -1, :].float()
+
+                # --- Per-group loss accumulation ---
+                batch_loss = torch.zeros(1, device=device)
+                for i, group in enumerate(batch):
+                    logits = last_logits[i]  # (vocab,)
+
+                    # Re-normalize over the action logits only (consistent
+                    # across policy gradient, KL, and eval metrics).
+                    action_logits = logits[action_ids]
+                    pi_lp = F.log_softmax(action_logits, dim=-1)
+                    ref_lp = F.log_softmax(group.ref_log_probs, dim=-1)
+
+                    # GRPO policy gradient loss
+                    loss_grpo = -(group.advantages * pi_lp).mean()
+
+                    # KL(π || π_ref) over the action simplex (always ≥ 0).
+                    loss_kl = (pi_lp.exp() * (pi_lp - ref_lp)).sum()
+
+                    # Entropy bonus H(π) — directly prevents collapse (always ≥ 0).
+                    loss_entropy = -(pi_lp.exp() * pi_lp).sum()
+
+                    # Weighted sum across groups: word-count weight mirrors the
+                    # word-count-weighted vote used at inference (section granularity)
+                    # or equal weight per article (article granularity).
+                    loss = (loss_grpo + args.beta * loss_kl - args.entropy_coef * loss_entropy) * group.word_weight
+                    batch_loss = batch_loss + loss
+
+                    epoch_loss_grpo += loss_grpo.item() * group.word_weight
+                    epoch_loss_kl += loss_kl.item() * group.word_weight
+                    epoch_loss_entropy += loss_entropy.item() * group.word_weight
+                    epoch_loss_total += loss.item()
+
+                    # --- per-group evaluation metrics (no grad) ---
+                    with torch.no_grad():
+                        # Re-normalize over the action logits for eval
+                        probs = F.softmax(action_logits.detach(), dim=-1)
+                        rewards_t = torch.tensor(
+                            group.rewards, device=device, dtype=torch.float32
+                        )
+                        # Use log_softmax for entropy to avoid 0*log(0)=NaN when
+                        # any action probability is numerically zero.
+                        lp_eval = F.log_softmax(action_logits.detach(), dim=-1)
+                        entropy = -(probs * lp_eval).sum().item()
+                        expected_reward = (probs * rewards_t).sum().item()
+                        top1 = probs.argmax().item()
+
+                        epoch_metrics[group.name] = {
+                            "entropy": round(entropy, 4),
+                            "expected_reward": round(expected_reward, 4),
+                            "top1_preset": top1,
+                            "top1_correct": top1 == group.best_preset_idx,
+                            "action_probs": [round(p, 4) for p in probs.cpu().tolist()],
+                            "kl": round(loss_kl.item(), 6),
+                        }
+
+                # Single backward per batch — mathematically equivalent to
+                # accumulating individual group.backward() calls.
+                batch_loss.backward()
 
             # Gradient clipping
             grad_norm = torch.nn.utils.clip_grad_norm_(
@@ -1120,6 +1239,15 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        "--batch-size", type=int, default=1,
+        help=(
+            "Number of groups per mini-batch. Groups are sorted by sequence length "
+            "to minimise padding overhead. batch_size=1 (default) reproduces the "
+            "original sequential behaviour exactly. Try 4–8 for a 3–5× speedup; "
+            "monitor VRAM with nvidia-smi to find the practical ceiling."
+        ),
+    )
+    parser.add_argument(
         "--dry-run", action="store_true",
         help="Load model and data, run one forward pass, then exit",
     )
@@ -1185,10 +1313,8 @@ def main() -> None:
     log.info(f"\n--- Step 1: Load training data (granularity={args.granularity}) ---")
     if args.granularity == "section":
         groups = load_section_groups(args.sigma_floor, section_weight=args.section_weight)
-        active_system_prompt = SECTION_SYSTEM_PROMPT
     else:
         groups = load_groups(args.sigma_floor)
-        active_system_prompt = SYSTEM_PROMPT
 
     # ------------------------------------------------------------------
     # Step 2: Load tokenizer & find action token IDs
@@ -1201,7 +1327,7 @@ def main() -> None:
     # Step 3: Tokenize prompts
     # ------------------------------------------------------------------
     log.info("\n--- Step 3: Tokenize prompts ---")
-    tokenize_groups(groups, tokenizer, system_prompt=active_system_prompt)
+    tokenize_groups(groups, tokenizer)
 
     # ------------------------------------------------------------------
     # Step 4: Load model (NF4 quantized)
@@ -1308,6 +1434,7 @@ def main() -> None:
     # Step 7: Train
     # ------------------------------------------------------------------
     log.info("\n--- Step 7: GRPO Training ---")
+    pad_id = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else tokenizer.eos_token_id
     train(
         model,
         groups,
@@ -1316,6 +1443,7 @@ def main() -> None:
         args,
         task_id=task_id,
         task_dir=task_dir,
+        pad_token_id=pad_id,
         resume_state=resume_state,
     )
 
