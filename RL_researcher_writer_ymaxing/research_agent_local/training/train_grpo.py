@@ -10,6 +10,7 @@ Usage (from research_agent_local/training/):
     uv run python train_grpo.py                 # full training
     uv run python train_grpo.py --epochs 200 --lr 5e-5 --beta 0.1
     uv run python train_grpo.py --init-adapter ../../rl_training_data/checkpoints/tasks/task_id/best
+    uv run python train_grpo.py --init-adapter ../../rl_training_data/checkpoints/tasks/task_id/latest
 """
 
 import argparse
@@ -762,61 +763,50 @@ def find_action_token_ids(tokenizer) -> torch.Tensor:
 # ---------------------------------------------------------------------------
 # Reference log-probs
 # ---------------------------------------------------------------------------
-def compute_ref_log_probs(
-    model,
-    groups: list[Group],
-    action_token_ids: torch.Tensor,
-    device: torch.device,
-    *,
-    batch_size: int = 1,
-    pad_token_id: int = 0,
-) -> None:
-    """Forward pass through the base model to cache reference log-probs.
+def _get_last_logits(model, input_ids: torch.Tensor) -> torch.Tensor:
+    """Return logits for the last input token only.
 
-    Supports batched inference (``batch_size > 1``) using the same left-padding
-    scheme as the training loop.  Groups are sorted by sequence length to
-    minimise padding waste; the original list order is not changed.
+    Avoids materialising the full ``[1, T, vocab_size]`` tensor that
+    ``model(input_ids).logits`` produces.  At T≈2 500 tokens and
+    vocab_size=151 936 in bfloat16 that tensor is ~760 MB; with only a few
+    hundred MB of VRAM headroom the CUDA allocator thrashes on every forward
+    pass, making each group take minutes instead of seconds.
+
+    Strategy: call the transformer body (``base_lm.model``) to get hidden
+    states, slice the last position, then apply the LM head to that single
+    row.  Result: ``[1, 1, vocab_size]`` → ``[vocab_size]`` (≈ 304 KB).
+
+    Works for both a plain ``Qwen3ForCausalLM`` (pre-LoRA, used during
+    reference log-prob computation) and a PEFT-wrapped model (training).
+    LoRA adapters inside the transformer body are applied correctly because
+    they are injected into the sub-modules, not the top-level forward.
     """
+    # Unwrap PEFT if present: PeftModel.base_model.model is the raw causal LM.
+    base_lm = model.base_model.model if isinstance(model, PeftModel) else model
+    # base_lm.model  → Qwen3Model (transformer body, has LoRA injected)
+    # base_lm.lm_head → nn.Linear(hidden_size, vocab_size)
+    last_hidden = base_lm.model(input_ids).last_hidden_state[:, -1:, :]  # [1,1,H]
+    return base_lm.lm_head(last_hidden)[0, 0, :]  # [vocab_size]
+
+
+def compute_ref_log_probs(
+    model, groups: list[Group], action_token_ids: torch.Tensor, device: torch.device
+) -> None:
+    """Forward pass through the base model to cache reference log-probs."""
     log.info("Computing reference log-probs (base model, no LoRA)...")
     model.eval()
     action_ids = action_token_ids.to(device)
 
-    # Sort a local copy by length so batches are length-homogeneous.
-    sorted_groups = sorted(groups, key=lambda g: g.input_ids.shape[1])
-
     with torch.no_grad():
-        for batch_start in range(0, len(sorted_groups), batch_size):
-            batch = sorted_groups[batch_start : batch_start + batch_size]
+        for group in groups:
+            logits = _get_last_logits(model, group.input_ids.to(device))
+            log_probs = F.log_softmax(logits.float(), dim=-1)
+            group.ref_log_probs = log_probs[action_ids].cpu()
 
-            if len(batch) == 1:
-                raw_logits = model(batch[0].input_ids.to(device)).logits  # (1, T, V)
-            else:
-                seq_lens = [g.input_ids.shape[1] for g in batch]
-                max_len = max(seq_lens)
-                B = len(batch)
-                padded = torch.full(
-                    (B, max_len), pad_token_id, dtype=torch.long, device=device
-                )
-                attn_mask = torch.zeros(B, max_len, dtype=torch.long, device=device)
-                for i, (g, slen) in enumerate(zip(batch, seq_lens)):
-                    padded[i, max_len - slen :] = g.input_ids[0]  # left-pad
-                    attn_mask[i, max_len - slen :] = 1
-                raw_logits = model(padded, attention_mask=attn_mask).logits  # (B, T, V)
-
-            # last-position logits for every example: (B, vocab)
-            # Clone immediately so raw_logits (1, T, V) can be freed before the loop.
-            last_logits = raw_logits[:, -1, :].float().clone()
-            del raw_logits
-            torch.cuda.empty_cache()
-
-            for i, group in enumerate(batch):
-                log_probs = F.log_softmax(last_logits[i], dim=-1)
-                group.ref_log_probs = log_probs[action_ids].cpu()
-                probs = group.ref_log_probs.exp()
-                log.info(
-                    f"  {group.name}: ref_probs={[f'{p:.4f}' for p in probs.tolist()]}"
-                )
-            del last_logits
+            probs = group.ref_log_probs.exp()
+            log.info(
+                f"  {group.name}: ref_probs={[f'{p:.4f}' for p in probs.tolist()]}"
+            )
 
 
 def _collect_trainable_state_dict(model) -> dict[str, torch.Tensor]:
@@ -882,7 +872,6 @@ def train(
     *,
     task_id: str,
     task_dir: Path,
-    pad_token_id: int,
     resume_state: dict[str, Any] | None = None,
 ) -> None:
     """Main offline GRPO training loop."""
@@ -900,18 +889,6 @@ def train(
 
     action_ids = action_token_ids.to(device)
     num_groups = len(groups)
-
-    # Sort groups by sequence length once.  This minimises left-pad waste when
-    # batch_size > 1 (shorter sequences are batched together).  The ordering
-    # has no effect on gradient accumulation correctness because the optimizer
-    # step happens after all groups in each epoch have been processed.
-    if args.batch_size > 1:
-        groups = sorted(groups, key=lambda g: g.input_ids.shape[1])
-        log.info(
-            f"Groups sorted by sequence length for batching "
-            f"(batch_size={args.batch_size}). "
-            f"Length range: {groups[0].input_ids.shape[1]}–{groups[-1].input_ids.shape[1]} tokens."
-        )
 
     # Move pre-computed tensors to device
     for g in groups:
@@ -982,89 +959,61 @@ def train(
             epoch_loss_total = 0.0
             epoch_metrics: dict[str, dict] = {}
 
-            for batch_start in range(0, num_groups, args.batch_size):
-                batch = groups[batch_start : batch_start + args.batch_size]
+            t_epoch_start = time.time()
+            for group in groups:
+                t_group_start = time.time()
+                input_ids = group.input_ids.to(device)
+                logits = _get_last_logits(model, input_ids)
 
-                # --- Batched forward pass ---
-                # All sequences are left-padded to the longest in the batch so
-                # that position [-1] is always the last *real* token for every
-                # example, regardless of individual sequence length.
-                if len(batch) == 1:
-                    # Fast path: no padding needed.
-                    raw_logits = model(batch[0].input_ids.to(device)).logits  # (1, T, V)
-                else:
-                    seq_lens = [g.input_ids.shape[1] for g in batch]
-                    max_len = max(seq_lens)
-                    B = len(batch)
-                    padded = torch.full(
-                        (B, max_len), pad_token_id, dtype=torch.long, device=device
+                # Re-normalize over the action logits only (consistent
+                # across policy gradient, KL, and eval metrics).
+                action_logits = logits.float()[action_ids]
+                pi_lp = F.log_softmax(action_logits, dim=-1)
+                ref_lp = F.log_softmax(group.ref_log_probs, dim=-1)
+
+                # GRPO policy gradient loss
+                loss_grpo = -(group.advantages * pi_lp).mean()
+
+                # KL(π || π_ref) over the action simplex (always ≥ 0).
+                loss_kl = (pi_lp.exp() * (pi_lp - ref_lp)).sum()
+
+                # Entropy bonus H(π) — directly prevents collapse (always ≥ 0).
+                loss_entropy = -(pi_lp.exp() * pi_lp).sum()
+
+                # Weighted sum across groups: word-count weight mirrors the
+                # word-count-weighted vote used at inference (section granularity)
+                # or equal weight per article (article granularity).
+                loss = (loss_grpo + args.beta * loss_kl - args.entropy_coef * loss_entropy) * group.word_weight
+                loss.backward()
+
+                epoch_loss_grpo += loss_grpo.item() * group.word_weight
+                epoch_loss_kl += loss_kl.item() * group.word_weight
+                epoch_loss_entropy += loss_entropy.item() * group.word_weight
+                epoch_loss_total += loss.item()
+
+                # --- per-group evaluation metrics (no grad) ---
+                with torch.no_grad():
+                    # Re-normalize over the action logits for eval
+                    probs = F.softmax(logits.float()[action_ids], dim=-1)
+                    rewards_t = torch.tensor(
+                        group.rewards, device=device, dtype=torch.float32
                     )
-                    attn_mask = torch.zeros(B, max_len, dtype=torch.long, device=device)
-                    for i, (g, slen) in enumerate(zip(batch, seq_lens)):
-                        padded[i, max_len - slen:] = g.input_ids[0]  # left-pad
-                        attn_mask[i, max_len - slen:] = 1
-                    raw_logits = model(padded, attention_mask=attn_mask).logits  # (B, T, V)
+                    # Use log_softmax for entropy to avoid 0*log(0)=NaN when
+                    # any action probability is numerically zero.
+                    lp_eval = F.log_softmax(logits.float()[action_ids], dim=-1)
+                    entropy = -(probs * lp_eval).sum().item()
+                    expected_reward = (probs * rewards_t).sum().item()
+                    top1 = probs.argmax().item()
 
-                # last-position logits for all examples in batch: (B, vocab)
-                last_logits = raw_logits[:, -1, :].float()
-
-                # --- Per-group loss accumulation ---
-                batch_loss = torch.zeros(1, device=device)
-                for i, group in enumerate(batch):
-                    logits = last_logits[i]  # (vocab,)
-
-                    # Re-normalize over the action logits only (consistent
-                    # across policy gradient, KL, and eval metrics).
-                    action_logits = logits[action_ids]
-                    pi_lp = F.log_softmax(action_logits, dim=-1)
-                    ref_lp = F.log_softmax(group.ref_log_probs, dim=-1)
-
-                    # GRPO policy gradient loss
-                    loss_grpo = -(group.advantages * pi_lp).mean()
-
-                    # KL(π || π_ref) over the action simplex (always ≥ 0).
-                    loss_kl = (pi_lp.exp() * (pi_lp - ref_lp)).sum()
-
-                    # Entropy bonus H(π) — directly prevents collapse (always ≥ 0).
-                    loss_entropy = -(pi_lp.exp() * pi_lp).sum()
-
-                    # Weighted sum across groups: word-count weight mirrors the
-                    # word-count-weighted vote used at inference (section granularity)
-                    # or equal weight per article (article granularity).
-                    loss = (loss_grpo + args.beta * loss_kl - args.entropy_coef * loss_entropy) * group.word_weight
-                    batch_loss = batch_loss + loss
-
-                    epoch_loss_grpo += loss_grpo.item() * group.word_weight
-                    epoch_loss_kl += loss_kl.item() * group.word_weight
-                    epoch_loss_entropy += loss_entropy.item() * group.word_weight
-                    epoch_loss_total += loss.item()
-
-                    # --- per-group evaluation metrics (no grad) ---
-                    with torch.no_grad():
-                        # Re-normalize over the action logits for eval
-                        probs = F.softmax(action_logits.detach(), dim=-1)
-                        rewards_t = torch.tensor(
-                            group.rewards, device=device, dtype=torch.float32
-                        )
-                        # Use log_softmax for entropy to avoid 0*log(0)=NaN when
-                        # any action probability is numerically zero.
-                        lp_eval = F.log_softmax(action_logits.detach(), dim=-1)
-                        entropy = -(probs * lp_eval).sum().item()
-                        expected_reward = (probs * rewards_t).sum().item()
-                        top1 = probs.argmax().item()
-
-                        epoch_metrics[group.name] = {
-                            "entropy": round(entropy, 4),
-                            "expected_reward": round(expected_reward, 4),
-                            "top1_preset": top1,
-                            "top1_correct": top1 == group.best_preset_idx,
-                            "action_probs": [round(p, 4) for p in probs.cpu().tolist()],
-                            "kl": round(loss_kl.item(), 6),
-                        }
-
-                # Single backward per batch — mathematically equivalent to
-                # accumulating individual group.backward() calls.
-                batch_loss.backward()
+                    epoch_metrics[group.name] = {
+                        "entropy": round(entropy, 4),
+                        "expected_reward": round(expected_reward, 4),
+                        "top1_preset": top1,
+                        "top1_correct": top1 == group.best_preset_idx,
+                        "action_probs": [round(p, 4) for p in probs.cpu().tolist()],
+                        "kl": round(loss_kl.item(), 6),
+                        "group_time_s": round(time.time() - t_group_start, 2),
+                    }
 
             # Gradient clipping
             grad_norm = torch.nn.utils.clip_grad_norm_(
@@ -1086,6 +1035,8 @@ def train(
                 sum(m["entropy"] for m in epoch_metrics.values()) / num_groups
             )
             mean_kl = sum(m["kl"] for m in epoch_metrics.values()) / num_groups
+
+            epoch_wall_s = time.time() - t_epoch_start
 
             # ---------- TensorBoard ----------
             writer.add_scalar("train/loss_total", epoch_loss_total, epoch)
@@ -1111,6 +1062,7 @@ def train(
             log_entry = {
                 "task_id": task_id,
                 "epoch": epoch,
+                "epoch_wall_s": round(epoch_wall_s, 1),
                 "loss_total": round(epoch_loss_total, 6),
                 "loss_grpo": round(epoch_loss_grpo, 6),
                 "loss_kl": round(epoch_loss_kl, 6),
@@ -1130,6 +1082,7 @@ def train(
             # ---------- console (every 10 epochs + last) ----------
             if epoch % 10 == 0 or epoch == args.epochs - 1:
                 elapsed = time.time() - t_start
+                vram_mb = torch.cuda.memory_allocated() / 1024**2
                 log.info(
                     f"Epoch {epoch:>4d}/{args.epochs} | "
                     f"loss={epoch_loss_total:.4f} "
@@ -1137,7 +1090,8 @@ def train(
                     f"E[R]={mean_er:.4f} | top1={top1_acc:.0%} | "
                     f"H={mean_entropy:.3f} | "
                     f"‖g‖={grad_norm:.4f} | lr={current_lr:.2e} | "
-                    f"{elapsed:.0f}s"
+                    f"epoch={epoch_wall_s:.0f}s | total={elapsed:.0f}s | "
+                    f"VRAM={vram_mb:.0f}MB"
                 )
 
             # ---------- checkpointing ----------
@@ -1153,11 +1107,11 @@ def train(
             else:
                 patience_counter += 1
 
-            if (epoch + 1) % 50 == 0:
-                ckpt_dir = task_dir / f"epoch_{epoch + 1:04d}"
-                ckpt_dir.mkdir(parents=True, exist_ok=True)
-                model.save_pretrained(str(ckpt_dir))
-                log.info(f"  Checkpoint → {ckpt_dir}")
+            # Overwrite latest/ every epoch so there is always a recoverable
+            # PEFT adapter for the most recently completed epoch.
+            latest_dir = task_dir / "latest"
+            latest_dir.mkdir(parents=True, exist_ok=True)
+            model.save_pretrained(str(latest_dir))
 
             _save_resume_state(
                 state_path=state_path,
@@ -1179,18 +1133,13 @@ def train(
                 )
                 break
 
-    # Final save
-    final_dir = task_dir / "final"
-    final_dir.mkdir(parents=True, exist_ok=True)
-    model.save_pretrained(str(final_dir))
-    log.info(f"Final model saved to {final_dir}")
-
     writer.close()
     elapsed_total = time.time() - t_start
     log.info(
         f"Training complete in {elapsed_total:.0f}s. "
         f"Best E[R]={best_expected_reward:.4f} "
-        f"(uniform={uniform_er:.4f}, oracle={oracle_er:.4f})"
+        f"(uniform={uniform_er:.4f}, oracle={oracle_er:.4f}). "
+        f"Checkpoints: best={task_dir / 'best'}, latest={task_dir / 'latest'}"
     )
 
 
@@ -1236,15 +1185,6 @@ def main() -> None:
             "upside-aware — focuses gradient on sections where one clear winner exists, "
             "not just sections with high symmetric spread (recommended). "
             "'uniform': equal weight per section (original behaviour)."
-        ),
-    )
-    parser.add_argument(
-        "--batch-size", type=int, default=1,
-        help=(
-            "Number of groups per mini-batch. Groups are sorted by sequence length "
-            "to minimise padding overhead. batch_size=1 (default) reproduces the "
-            "original sequential behaviour exactly. Try 4–8 for a 3–5× speedup; "
-            "monitor VRAM with nvidia-smi to find the practical ceiling."
         ),
     )
     parser.add_argument(
@@ -1421,7 +1361,7 @@ def main() -> None:
         model.eval()
         with torch.no_grad():
             g = groups[0]
-            logits = model(g.input_ids.to(device)).logits[0, -1, :]
+            logits = _get_last_logits(model, g.input_ids.to(device))
             probs = F.softmax(logits.float()[action_token_ids.to(device)], dim=-1)
             log.info(
                 f"  {g.name}: action_probs="
@@ -1434,7 +1374,6 @@ def main() -> None:
     # Step 7: Train
     # ------------------------------------------------------------------
     log.info("\n--- Step 7: GRPO Training ---")
-    pad_id = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else tokenizer.eos_token_id
     train(
         model,
         groups,
@@ -1443,7 +1382,6 @@ def main() -> None:
         args,
         task_id=task_id,
         task_dir=task_dir,
-        pad_token_id=pad_id,
         resume_state=resume_state,
     )
 

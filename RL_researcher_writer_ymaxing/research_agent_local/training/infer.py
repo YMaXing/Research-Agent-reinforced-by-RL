@@ -375,7 +375,7 @@ class ExplorationStrategySelector:
         input_ids = self._build_input_ids(digest)
 
         with torch.no_grad():
-            logits = self._model(input_ids.to(self.device)).logits[0, -1, :]
+            logits = self._get_last_logits(input_ids.to(self.device))
             probs = F.softmax(logits.float()[self._action_ids_t.to(self.device)], dim=-1)
 
         probs_list = probs.cpu().tolist()
@@ -550,7 +550,7 @@ class ExplorationStrategySelector:
                 rl_input["user"], system_prompt=_RL_INPUT_SYSTEM
             )
             with torch.no_grad():
-                logits = self._model(input_ids.to(self.device)).logits[0, -1, :]
+                logits = self._get_last_logits(input_ids.to(self.device))
                 action_logits = logits.float()[self._action_ids_t.to(self.device)]
                 probs = F.softmax(action_logits / self._temperature, dim=-1)
             probs_list = probs.cpu().tolist()
@@ -621,12 +621,23 @@ class ExplorationStrategySelector:
             user_content = excerpt
         input_ids = self._build_input_ids(user_content, system_prompt=_RL_INPUT_SYSTEM)
         with torch.no_grad():
-            logits = self._model(input_ids.to(self.device)).logits[0, -1, :]
+            logits = self._get_last_logits(input_ids.to(self.device))
             action_logits = logits.float()[self._action_ids_t.to(self.device)]
             probs = F.softmax(action_logits / self._temperature, dim=-1)
         probs_list = probs.cpu().tolist()
         chosen = int(probs.argmax().item())
         return chosen, probs_list
+
+    def _get_last_logits(self, input_ids: torch.Tensor) -> torch.Tensor:
+        """Return logits for the last input token only.
+
+        Avoids materialising the full ``[1, T, vocab_size]`` tensor.  At
+        T≈2 500 tokens and vocab_size=151 936 in bfloat16 that tensor is
+        ~760 MB; computing only the last position's row reduces it to ~304 KB.
+        """
+        base_lm = self._model.base_model.model  # Qwen3ForCausalLM (LoRA applied)
+        last_hidden = base_lm.model(input_ids).last_hidden_state[:, -1:, :]  # [1,1,H]
+        return base_lm.lm_head(last_hidden)[0, 0, :]  # [vocab_size]
 
     def _build_input_ids(
         self, digest: str, *, system_prompt: str = _RL_INPUT_SYSTEM

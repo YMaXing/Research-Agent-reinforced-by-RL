@@ -162,13 +162,49 @@ def build_rl_input(digest: str, target_section_id: str) -> dict[str, str]:
 
     digest_meta = _extract_tag(digest, "digest_meta")
     artefact_registry = _extract_tag(digest, "artefact_registry")
+
     tavily_yield = _extract_tag(digest, "tavily_yield_per_section")
+    # Filter tavily_yield to the target section's row only — other rows carry no
+    # signal for the current selection decision, and saturation is already in
+    # digest_meta.  Keep the table header so the model sees column names.
+    _ty_inner = re.search(
+        r"<tavily_yield_per_section>(.*?)</tavily_yield_per_section>",
+        tavily_yield,
+        re.DOTALL,
+    )
+    if _ty_inner:
+        _inner = _ty_inner.group(1)
+        _hdr = re.search(r"(\| section_id \|[^\n]+\n\|[-|]+\|\n)", _inner)
+        _row = re.search(
+            rf"(\|\s*{re.escape(target_section_id)}\s*\|[^\n]+)", _inner
+        )
+        _parts: list[str] = []
+        if _hdr:
+            _parts.append(_hdr.group(1).rstrip())
+        if _row:
+            _parts.append(_row.group(1).rstrip())
+        if _parts:
+            tavily_yield = (
+                "<tavily_yield_per_section>\n"
+                + "\n".join(_parts)
+                + "\n</tavily_yield_per_section>"
+            )
+
     gap_profile_raw = _extract_tag(digest, "gap_profile")
     # Strip the stub placeholder that generate_digests.py leaves unfilled —
     # it is literal noise and provides no signal to the model.
     gap_profile = re.sub(
         r"\s*<exploration_insight>[^<]*</exploration_insight>", "", gap_profile_raw
     )
+    # Filter gap_profile to the target section's <section/> row only — other
+    # sections' rows add ~400 tokens of irrelevant noise per training group.
+    _gp_inner = re.search(r"<gap_profile>(.*?)</gap_profile>", gap_profile, re.DOTALL)
+    if _gp_inner:
+        _sec_row = re.search(
+            rf'<section\s+id="{re.escape(target_section_id)}"[^/]*/>', _gp_inner.group(1)
+        )
+        if _sec_row:
+            gap_profile = f"<gap_profile>\n  {_sec_row.group(0)}\n</gap_profile>"
 
     sec_m = re.search(
         r'(<section\s+id="' + re.escape(target_section_id) + r'"[^>]*>.*?</section>)',
@@ -183,6 +219,19 @@ def build_rl_input(digest: str, target_section_id: str) -> dict[str, str]:
         attr_m = re.search(r'sources="([^"]*)"', target_section_block)
         source_slugs = [s.strip() for s in (attr_m.group(1).split(",") if attr_m else [])]
         source_slugs = [s for s in source_slugs if s]
+
+    # Filter artefact_registry to rows whose Source column is in source_slugs.
+    # Sections that cite none of their sources' artefacts get an explicit "(none)".
+    _ar_inner = re.search(r"<artefact_registry>(.*?)</artefact_registry>", artefact_registry, re.DOTALL)
+    if _ar_inner:
+        _ar_lines = _ar_inner.group(1).splitlines()
+        _hdr_lines = [l for l in _ar_lines if l.startswith("| ID |") or l.startswith("|---")]
+        _data_lines = [
+            l for l in _ar_lines
+            if l.startswith("| A") and any(f"| {slug} |" in l for slug in source_slugs)
+        ]
+        _body = "\n".join(_hdr_lines + (_data_lines if _data_lines else ["(none)"]))
+        artefact_registry = f"<artefact_registry>\n{_body}\n</artefact_registry>"
 
     all_sources_m = re.search(r"<sources>(.*?)</sources>", digest, re.DOTALL)
     if all_sources_m and source_slugs:
