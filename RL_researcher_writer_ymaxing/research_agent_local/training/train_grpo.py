@@ -24,6 +24,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+import bitsandbytes as bnb
 import torch
 import torch.nn.functional as F
 from peft import (
@@ -895,9 +896,10 @@ def train(
         g.advantages = g.advantages.to(device)
         g.ref_log_probs = g.ref_log_probs.to(device)
 
-    # Optimizer
+    # Optimizer — 8-bit paged AdamW halves FP32 moment memory and pages to
+    # CPU under pressure; critical on 16 GB VRAM with gradient checkpointing.
     trainable_params = [p for p in model.parameters() if p.requires_grad]
-    optimizer = torch.optim.AdamW(
+    optimizer = bnb.optim.PagedAdamW8bit(
         trainable_params, lr=args.lr, weight_decay=args.weight_decay
     )
 
@@ -1164,7 +1166,7 @@ def main() -> None:
     parser.add_argument("--patience", type=int, default=30, help="Early stopping patience")
     parser.add_argument("--lora-r", type=int, default=8)
     parser.add_argument("--lora-alpha", type=int, default=8)
-    parser.add_argument("--lora-dropout", type=float, default=0.05)
+    parser.add_argument("--lora-dropout", type=float, default=0.0)
     parser.add_argument(
         "--granularity",
         choices=["article", "section"],
