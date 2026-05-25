@@ -68,6 +68,20 @@ PRESET MEANINGS
             Use when the section has both significant technical gaps and a
             large enough writing budget to absorb the extra material.
 
+<preset_semantics>
+IMPORTANT — "skip" means the research pipeline is bypassed; the writer uses
+only sources already present in the digest. It does NOT mean the section is
+unimportant or should be written briefly.
+  - If <research_already_gathered> shows high depth_score and breadth_score,
+    "skip" produces the richest possible output: the writer already has
+    everything needed, and extra rounds add nothing.
+  - Section importance, target_words, and must_cover_depth govern how much
+    the WRITER produces; the preset only controls whether more research runs
+    first.
+  - Choose "skip" when existing coverage is sufficient for the writing budget.
+    Choose higher presets only to close genuine, explorable gaps.
+</preset_semantics>
+
 INPUT SCHEMA (what each tag means)
 
 <digest_meta>
@@ -76,12 +90,6 @@ INPUT SCHEMA (what each tag means)
                                   rounds keep finding the same URLs (low
                                   marginal value); lower means new rounds keep
                                   surfacing fresh URLs (high marginal value).
-    <external_evidence_policy>
-        forbidden  the writer is told NOT to bring in outside research.
-                   Extra exploration is wasted no matter the gaps.
-        allowed    no restriction (default).
-        required   the writer is expected to add external evidence, so
-                   exploration carries more weight than its gaps alone imply.
 
 <artefact_registry>
   Code, mermaid, tables, and quotes that have already been extracted from
@@ -98,42 +106,48 @@ INPUT SCHEMA (what each tag means)
     unique_facts     distinct URLs / facts pulled in across rounds.
     duplicate_facts  repeats. High duplicates + many helping_rounds = saturated.
 
-<gap_profile>
-  Deterministic per-section signals. For each <section/> row:
-    need_depth         unmet depth checklist items + 3 * depth-routed orphans
-                       (higher = more gaps in technical specifics).
-    need_breadth       unmet breadth checklist items + 3 * breadth-routed
-                       orphans (higher = more gaps in surrounding concepts).
-    target_words       approximate prose budget for the section. Larger budget
-                       = more room to absorb new research.
-    mandatory_bullets  number of checklist items the writer must address.
-                       More bullets = denser section = more research can fit.
-    must_cover_depth   bullets that demand concrete examples, numbers, or
-                       named tools. Higher = more specific facts needed.
-    must_stay_brief    bullets explicitly capped (briefly / one sentence /
-                       high-level). Higher = less room for new material.
-
 <target_section>
-  The section's full coverage block: depth_checklist (8 items), breadth_checklist
-  (6 items), and orphan_anchors with route="depth" | "breadth" | "unreachable".
+  Two sub-blocks describing what has been gathered and what is still needed.
+
+  <research_already_gathered>
+    depth_checklist (8 items): motivation, theoretical_foundations,
+      technical_nuances, latest_advancements, limitations_failure_modes,
+      implementation_tradeoffs, case_studies_metrics, artefact_available.
+      depth_score = count of items with present="yes".
+    breadth_checklist (6 items): adjacent_concepts, cross_domain_analogies,
+      historical_context, enabling_technologies, industry_applications,
+      adjacent_trends. breadth_score = count of items with present="yes".
+    orphan_anchors — writing-guideline bullets not yet backed by any source.
+      route="depth" | "breadth": exploration can plausibly close these gaps.
+      route="unreachable": no web search can supply what is missing.
+    HIGH scores + few depth/breadth orphans  →  research is already sufficient.
+    LOW scores + orphans routed depth/breadth →  extra rounds can close gaps.
+
+  <research_needed_for_writing .../>  (self-closing; derived from writing
+                                       guideline + coverage gap counts)
+    need_depth        (8 − depth_score) + 3 × depth-routed orphan count.
+                      Higher = more technical gaps to fill before writing.
+    need_breadth      (6 − breadth_score) + 3 × breadth-routed orphan count.
+    target_words      prose-word budget for this section.
+    mandatory_bullets number of bullets the writer must address.
+    must_cover_depth  bullets demanding named tools, numbers, benchmarks,
+                      or code. Higher = writer needs more specific evidence.
+    must_stay_brief   bullets explicitly capped to brief treatment. Higher =
+                      less room for new material even when gaps exist.
 
 DECISION DIRECTIONS (qualitative; do NOT apply fixed thresholds)
-  - Higher need_depth and / or need_breadth strengthen the case for more
-    exploration.
-  - Orphans routed "depth" or "breadth" point at gaps that exploration can
-    plausibly close. Orphans routed "unreachable" cannot be helped by more
-    rounds.
+  - Higher need_depth and / or need_breadth (from <research_needed_for_writing>)
+    strengthen the case for more exploration. Cross-check with the scores in
+    <research_already_gathered>: low scores confirm the gaps are real.
+  - Orphans in <research_already_gathered> routed "depth" or "breadth" point
+    at gaps exploration can close. Route "unreachable" cannot be helped.
   - Saturation near 1 or high helping_rounds with diminishing new facts
     weaken the case for additional rounds.
   - Larger target_words, larger mandatory_bullets, and higher must_cover_depth
-    raise the writing budget, so a higher preset is justified for the same
-    nominal need.
+    (all from <research_needed_for_writing>) raise the writing budget, so a
+    higher preset is justified for the same nominal need.
   - Smaller target_words or must_stay_brief > 0 cap how much new material the
     section can absorb, so a lower preset is appropriate even with gaps.
-  - external_evidence_policy = "forbidden" overrides everything else: choose
-    "skip" because no external evidence can be used regardless of gaps.
-  - external_evidence_policy = "required" biases toward a higher preset
-    because outside evidence is mandatory.
   - "standard" and "deep" differ in their third round: "deep" adds one more
     depth pass, so prefer "deep" only when must_cover_depth is high and the
     word budget is large enough to use the extra technical material.
@@ -161,6 +175,13 @@ def build_rl_input(digest: str, target_section_id: str) -> dict[str, str]:
         return m.group(0) if m else f"<{tag}>(not found)</{tag}>"
 
     digest_meta = _extract_tag(digest, "digest_meta")
+    # external_evidence_policy is article-level: "forbidden" short-circuits the
+    # entire exploration phase upstream (before the section-level model is called);
+    # "allowed"/"required" are passed to the downstream article-level aggregator.
+    # Strip it here so the section-level model sees only per-section signals.
+    digest_meta = re.sub(
+        r"\s*<external_evidence_policy>[^<]*</external_evidence_policy>", "", digest_meta
+    )
     artefact_registry = _extract_tag(digest, "artefact_registry")
 
     tavily_yield = _extract_tag(digest, "tavily_yield_per_section")
@@ -198,13 +219,16 @@ def build_rl_input(digest: str, target_section_id: str) -> dict[str, str]:
     )
     # Filter gap_profile to the target section's <section/> row only — other
     # sections' rows add ~400 tokens of irrelevant noise per training group.
+    # Extract the target section's gap attributes for <research_needed_for_writing>.
+    _rnw_attrs = ""
     _gp_inner = re.search(r"<gap_profile>(.*?)</gap_profile>", gap_profile, re.DOTALL)
     if _gp_inner:
-        _sec_row = re.search(
-            rf'<section\s+id="{re.escape(target_section_id)}"[^/]*/>', _gp_inner.group(1)
+        _rnw_sec = re.search(
+            rf'<section\s+id="{re.escape(target_section_id)}"([^/]*)/>',
+            _gp_inner.group(1),
         )
-        if _sec_row:
-            gap_profile = f"<gap_profile>\n  {_sec_row.group(0)}\n</gap_profile>"
+        if _rnw_sec:
+            _rnw_attrs = _rnw_sec.group(1).strip()
 
     sec_m = re.search(
         r'(<section\s+id="' + re.escape(target_section_id) + r'"[^>]*>.*?</section>)',
@@ -219,6 +243,40 @@ def build_rl_input(digest: str, target_section_id: str) -> dict[str, str]:
         attr_m = re.search(r'sources="([^"]*)"', target_section_block)
         source_slugs = [s.strip() for s in (attr_m.group(1).split(",") if attr_m else [])]
         source_slugs = [s for s in source_slugs if s]
+
+        # Wrap depth_checklist + breadth_checklist + orphan_anchors in
+        # <research_already_gathered>, and inject <research_needed_for_writing>
+        # before </section> so the model sees gathered vs. needed side-by-side.
+        _chk_m = re.search(r'(\n[ \t]*)<depth_checklist', target_section_block)
+        _end_m = (
+            re.search(r'</orphan_anchors>', target_section_block)
+            or re.search(r'<orphan_anchors[^>]*/>', target_section_block)
+            or re.search(r'</breadth_checklist>', target_section_block)
+        )
+        if _chk_m and _end_m and _end_m.start() > _chk_m.start():
+            _indent = _chk_m.group(1)  # e.g. "\n  "
+            _gathered = target_section_block[_chk_m.start() : _end_m.end()]
+            target_section_block = (
+                target_section_block[: _chk_m.start()]
+                + f"{_indent}<research_already_gathered>"
+                + _gathered
+                + f"{_indent}</research_already_gathered>"
+                + target_section_block[_end_m.end() :]
+            )
+        if _rnw_attrs:
+            # Determine child indentation from the first child element.
+            _ci_m = re.search(
+                r'\n([ \t]+)<(?:depth_checklist|research_already_gathered)',
+                target_section_block,
+            )
+            _child_indent = _ci_m.group(1) if _ci_m else "  "
+            target_section_block = re.sub(
+                r'(\n?[ \t]*</section>)\s*$',
+                f'\n{_child_indent}<research_needed_for_writing {_rnw_attrs}/>'
+                + r'\1',
+                target_section_block,
+                count=1,
+            )
 
     # Filter artefact_registry to rows whose Source column is in source_slugs.
     # Sections that cite none of their sources' artefacts get an explicit "(none)".
@@ -253,7 +311,6 @@ def build_rl_input(digest: str, target_section_id: str) -> dict[str, str]:
         artefact_registry,
         filtered_sources,
         tavily_yield,
-        gap_profile,
         f"<target_section>\n{target_section_block}\n</target_section>",
         f"<task>\nSelect the exploration preset for section "
         f'"{target_section_id}". Output exactly one token: skip, light, standard, or deep.\n</task>',
