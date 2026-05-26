@@ -1474,7 +1474,6 @@ def _rewrite_orphan_counts(text: str, section_id: str, nd: int, nb: int, nu: int
 def _preset_2d(
     need: int,
     target_words: int,
-    mandatory_bullets: int,
     must_cover_depth: int,
     must_stay_brief: int,
     policy: str,
@@ -1506,10 +1505,6 @@ def _preset_2d(
     if target_words >= 400:
         headroom += 1
     elif 0 < target_words < 200:
-        headroom -= 1
-    if mandatory_bullets >= 5:
-        headroom += 1
-    elif 0 < mandatory_bullets <= 2:
         headroom -= 1
     if must_cover_depth >= 3:
         headroom += 1
@@ -1578,7 +1573,7 @@ def _compute_gap_profile_deterministic(
     oracle: dict[str, str] = {
         sec_id: _preset_2d(
             nd + nb,
-            sf["target_words"], sf["mandatory_bullets"],
+            sf["target_words"],
             sf["must_cover_depth"], sf["must_stay_brief"],
             policy,
         )

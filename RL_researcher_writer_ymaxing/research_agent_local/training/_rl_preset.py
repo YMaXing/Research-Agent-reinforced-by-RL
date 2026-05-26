@@ -158,6 +158,9 @@ DECISION DIRECTIONS (signals indicate direction — do not apply fixed threshold
       extra rounds yield material the section cannot use.
     · High must_cover_depth → named tools, benchmarks, or numbers are required;
       depth exploration has direct payoff; push toward higher, depth-heavy presets.
+      Even when need_depth is low, high must_cover_depth is a signal that current
+      sources may be too general to supply the specific named evidence some bullets
+      demand — treat it as independent pressure toward deeper exploration.
 
   Combining signals:
     Signals compound — large gaps, high must_cover_depth, and a large budget
