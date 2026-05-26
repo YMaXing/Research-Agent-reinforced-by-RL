@@ -69,91 +69,104 @@ PRESET MEANINGS
             large enough writing budget to absorb the extra material.
 
 <preset_semantics>
-IMPORTANT — "skip" means the research pipeline is bypassed; the writer uses
-only sources already present in the digest. It does NOT mean the section is
-unimportant or should be written briefly.
-  - If <research_already_gathered> shows high depth_score and breadth_score,
-    "skip" produces the richest possible output: the writer already has
-    everything needed, and extra rounds add nothing.
-  - Section importance, target_words, and must_cover_depth govern how much
-    the WRITER produces; the preset only controls whether more research runs
-    first.
-  - Choose "skip" when existing coverage is sufficient for the writing budget.
-    Choose higher presets only to close genuine, explorable gaps.
+IMPORTANT — 
+1. "skip" does NOT mean the section is unimportant or should be
+written briefly, it means the exploration phase is skipped because the existing
+coverage is sufficient for the writing budget. 
+2. "target_words", "must_cover_depth" and "must_stay_brief" govern how much the WRITER produces; 
+the preset only controls whether more research runs before writing begins.
 </preset_semantics>
 
 INPUT SCHEMA (what each tag means)
 
 <digest_meta>
-  Article-level summary. Notable fields:
-    <tavily_saturation>           value in [0, 1]. Higher means new web-search
-                                  rounds keep finding the same URLs (low
-                                  marginal value); lower means new rounds keep
-                                  surfacing fresh URLs (high marginal value).
+  Article-level summary.
 
 <artefact_registry>
-  Code, mermaid, tables, and quotes that have already been extracted from
-  sources. Anything listed here can be dropped into the article without
-  further research.
+  Code, mermaid, tables, and quotes already extracted from sources. Anything
+  listed here is immediately usable by the writer without further research.
+  A populated registry reduces the need for depth exploration on
+  evidence-heavy sections (must_cover_depth > 0).
 
 <sources>
   Compressed summaries of the source files relevant to this section.
 
-<tavily_yield_per_section>
-  Per-section table.
-    helping_rounds   how many exploration rounds already contributed to this
-                     section. Higher means more research has been done.
-    unique_facts     distinct URLs / facts pulled in across rounds.
-    duplicate_facts  repeats. High duplicates + many helping_rounds = saturated.
-
 <target_section>
-  Two sub-blocks describing what has been gathered and what is still needed.
+  Two sub-blocks describing the section's coverage state and writing requirements.
 
-  <research_already_gathered>
-    depth_checklist (8 items): motivation, theoretical_foundations,
-      technical_nuances, latest_advancements, limitations_failure_modes,
-      implementation_tradeoffs, case_studies_metrics, artefact_available.
-      depth_score = count of items with present="yes".
-    breadth_checklist (6 items): adjacent_concepts, cross_domain_analogies,
+  <coverage_status>
+    depth_checklist — single-line: depth="N/8" gaps="comma-list of uncovered
+      items". Items: motivation, theoretical_foundations, technical_nuances,
+      latest_advancements, limitations_failure_modes, implementation_tradeoffs,
+      case_studies_metrics, artefact_available.
+    breadth_checklist — single-line: breadth="N/6" gaps="comma-list of uncovered
+      items". Items: adjacent_concepts, cross_domain_analogies,
       historical_context, enabling_technologies, industry_applications,
-      adjacent_trends. breadth_score = count of items with present="yes".
-    orphan_anchors — writing-guideline bullets not yet backed by any source.
-      route="depth" | "breadth": exploration can plausibly close these gaps.
-      route="unreachable": no web search can supply what is missing.
-    HIGH scores + few depth/breadth orphans  →  research is already sufficient.
-    LOW scores + orphans routed depth/breadth →  extra rounds can close gaps.
+      adjacent_trends.
+    writing_gaps — guideline bullets not yet backed by any source.
+      Each <gap route="depth"|"breadth" item="..."/> is a writing bullet
+      that exploration can provide evidence for.
+    HIGH scores + empty checklist gaps + no writing_gaps  →  research is already sufficient.
+    LOW scores / non-empty checklist gaps / writing_gaps present  →  extra rounds can help.
 
-  <research_needed_for_writing .../>  (self-closing; derived from writing
-                                       guideline + coverage gap counts)
-    need_depth        (8 − depth_score) + 3 × depth-routed orphan count.
+  <section_profile .../>  (self-closing; derived from coverage gaps and writing
+                           guideline constraints)
+    need_depth        (8 − depth_score) + 3 × depth-routed writing_gaps count.
                       Higher = more technical gaps to fill before writing.
-    need_breadth      (6 − breadth_score) + 3 × breadth-routed orphan count.
+    need_breadth      (6 − breadth_score) + 3 × breadth-routed writing_gaps count.
     target_words      prose-word budget for this section.
-    mandatory_bullets number of bullets the writer must address.
     must_cover_depth  bullets demanding named tools, numbers, benchmarks,
                       or code. Higher = writer needs more specific evidence.
     must_stay_brief   bullets explicitly capped to brief treatment. Higher =
                       less room for new material even when gaps exist.
+    <evidence_required count="N"> (only present when must_cover_depth > 0)
+      N bullets require specific named evidence. Signals that depth research
+      has direct, concrete payoff.
 
-DECISION DIRECTIONS (qualitative; do NOT apply fixed thresholds)
-  - Higher need_depth and / or need_breadth (from <research_needed_for_writing>)
-    strengthen the case for more exploration. Cross-check with the scores in
-    <research_already_gathered>: low scores confirm the gaps are real.
-  - Orphans in <research_already_gathered> routed "depth" or "breadth" point
-    at gaps exploration can close. Route "unreachable" cannot be helped.
-  - Saturation near 1 or high helping_rounds with diminishing new facts
-    weaken the case for additional rounds.
-  - Larger target_words, larger mandatory_bullets, and higher must_cover_depth
-    (all from <research_needed_for_writing>) raise the writing budget, so a
-    higher preset is justified for the same nominal need.
-  - Smaller target_words or must_stay_brief > 0 cap how much new material the
-    section can absorb, so a lower preset is appropriate even with gaps.
-  - "standard" and "deep" differ in their third round: "deep" adds one more
-    depth pass, so prefer "deep" only when must_cover_depth is high and the
-    word budget is large enough to use the extra technical material.
+<preset_signals>
+  Compact one-liner derived from <target_section> (present when available).
+    gathered="depth:N/8 breadth:N/6"   — current checklist scores.
+    needed="depth:N breadth:N"         — gaps to fill (= need_depth / need_breadth).
+    budget="words:N must_cover_depth:N must_stay_brief:N" — writing constraints.
+  Use as a quick cross-check against the detail in <target_section>.
 
-Use these signals to pick the smallest preset that meaningfully closes the
-section's coverage gaps within its writing budget."""
+DECISION DIRECTIONS (signals indicate direction — do not apply fixed thresholds)
+  Primary signals: need_depth and need_breadth (from <preset_signals> or
+  <section_profile>). Secondary confirmation: non-empty checklist gaps= lists
+  and <gap> count in <writing_gaps>.
+
+  Coverage level — how much research is already in place:
+    · High gathered scores (depth N/8 and breadth N/6 near their ceilings),
+      empty checklist gaps= lists, and no <writing_gaps> entries → push toward lower
+      presets. Well-covered sections gain little from further exploration.
+    · Low gathered scores, non-empty checklist gaps=, or <writing_gaps> entries present →
+      push toward higher presets. Each <gap> in <writing_gaps> is a writing
+      bullet with no source backing that exploration can provide.
+
+  Gap shape — what kind of exploration fits best:
+    · need_depth >> need_breadth → favour presets that front-load depth queries;
+      the depth-first round structures fit better than a balanced single round.
+    · need_depth and need_breadth both significant and roughly equal → a balanced
+      or depth-first structure both work; total gap size governs the level.
+    · need_breadth >> need_depth → a balanced or breadth-oriented approach
+      suffices; extra depth passes add less value.
+
+  Writing budget — how much new material the section can absorb:
+    · Large target_words → push toward higher presets; the section has room
+      to incorporate extra findings.
+    · Small target_words or must_stay_brief > 0 → push toward lower presets;
+      extra rounds yield material the section cannot use.
+    · High must_cover_depth → named tools, benchmarks, or numbers are required;
+      depth exploration has direct payoff; push toward higher, depth-heavy presets.
+
+  Combining signals:
+    Signals compound — large gaps, high must_cover_depth, and a large budget
+    together create strong upward pressure; near-complete coverage and a small
+    budget create strong downward pressure. When signals conflict, the budget acts
+    as a ceiling: exploration rounds that produce material the section cannot
+    absorb offer no benefit regardless of gap size.
+
+  Choose the lowest preset the combined signal pressure genuinely justifies."""
 
 
 # ---------------------------------------------------------------------------
@@ -182,34 +195,9 @@ def build_rl_input(digest: str, target_section_id: str) -> dict[str, str]:
     digest_meta = re.sub(
         r"\s*<external_evidence_policy>[^<]*</external_evidence_policy>", "", digest_meta
     )
+    digest_meta = re.sub(r"\s*<tavily_saturation>[^<]*</tavily_saturation>", "", digest_meta)
+    digest_meta = re.sub(r"\s*<n_orphan_anchors>[^<]*</n_orphan_anchors>", "", digest_meta)
     artefact_registry = _extract_tag(digest, "artefact_registry")
-
-    tavily_yield = _extract_tag(digest, "tavily_yield_per_section")
-    # Filter tavily_yield to the target section's row only — other rows carry no
-    # signal for the current selection decision, and saturation is already in
-    # digest_meta.  Keep the table header so the model sees column names.
-    _ty_inner = re.search(
-        r"<tavily_yield_per_section>(.*?)</tavily_yield_per_section>",
-        tavily_yield,
-        re.DOTALL,
-    )
-    if _ty_inner:
-        _inner = _ty_inner.group(1)
-        _hdr = re.search(r"(\| section_id \|[^\n]+\n\|[-|]+\|\n)", _inner)
-        _row = re.search(
-            rf"(\|\s*{re.escape(target_section_id)}\s*\|[^\n]+)", _inner
-        )
-        _parts: list[str] = []
-        if _hdr:
-            _parts.append(_hdr.group(1).rstrip())
-        if _row:
-            _parts.append(_row.group(1).rstrip())
-        if _parts:
-            tavily_yield = (
-                "<tavily_yield_per_section>\n"
-                + "\n".join(_parts)
-                + "\n</tavily_yield_per_section>"
-            )
 
     gap_profile_raw = _extract_tag(digest, "gap_profile")
     # Strip the stub placeholder that generate_digests.py leaves unfilled —
@@ -229,7 +217,11 @@ def build_rl_input(digest: str, target_section_id: str) -> dict[str, str]:
         )
         if _rnw_sec:
             _rnw_attrs = _rnw_sec.group(1).strip()
+            # Strip mandatory_bullets — not an exploration-relevant signal.
+            _rnw_attrs = re.sub(r'\s*mandatory_bullets="\d+"', '', _rnw_attrs)
 
+    depth_score = 0
+    breadth_score = 0
     sec_m = re.search(
         r'(<section\s+id="' + re.escape(target_section_id) + r'"[^>]*>.*?</section>)',
         digest,
@@ -244,9 +236,9 @@ def build_rl_input(digest: str, target_section_id: str) -> dict[str, str]:
         source_slugs = [s.strip() for s in (attr_m.group(1).split(",") if attr_m else [])]
         source_slugs = [s for s in source_slugs if s]
 
-        # Wrap depth_checklist + breadth_checklist + orphan_anchors in
-        # <research_already_gathered>, and inject <research_needed_for_writing>
-        # before </section> so the model sees gathered vs. needed side-by-side.
+        # Wrap depth_checklist + breadth_checklist + writing_gaps in
+        # <coverage_status>, and inject <section_profile>
+        # before </section> so the model sees coverage state and requirements together.
         _chk_m = re.search(r'(\n[ \t]*)<depth_checklist', target_section_block)
         _end_m = (
             re.search(r'</orphan_anchors>', target_section_block)
@@ -258,25 +250,95 @@ def build_rl_input(digest: str, target_section_id: str) -> dict[str, str]:
             _gathered = target_section_block[_chk_m.start() : _end_m.end()]
             target_section_block = (
                 target_section_block[: _chk_m.start()]
-                + f"{_indent}<research_already_gathered>"
+                + f"{_indent}<coverage_status>"
                 + _gathered
-                + f"{_indent}</research_already_gathered>"
+                + f"{_indent}</coverage_status>"
                 + target_section_block[_end_m.end() :]
             )
         if _rnw_attrs:
             # Determine child indentation from the first child element.
             _ci_m = re.search(
-                r'\n([ \t]+)<(?:depth_checklist|research_already_gathered)',
+                r'\n([ \t]+)<(?:depth_checklist|coverage_status)',
                 target_section_block,
             )
             _child_indent = _ci_m.group(1) if _ci_m else "  "
             target_section_block = re.sub(
                 r'(\n?[ \t]*</section>)\s*$',
-                f'\n{_child_indent}<research_needed_for_writing {_rnw_attrs}/>'
+                f'\n{_child_indent}<section_profile {_rnw_attrs}/>'
                 + r'\1',
                 target_section_block,
                 count=1,
             )
+            # P4: inject <evidence_required> after <section_profile> when mcd > 0
+            _mcd_m = re.search(r'must_cover_depth="(\d+)"', _rnw_attrs)
+            _mcd = int(_mcd_m.group(1)) if _mcd_m else 0
+            if _mcd > 0:
+                target_section_block = target_section_block.replace(
+                    f'<section_profile {_rnw_attrs}/>',
+                    f'<section_profile {_rnw_attrs}/>'
+                    f'\n{_child_indent}<evidence_required count="{_mcd}">'
+                    f'{_mcd} mandatory bullet{"s" if _mcd != 1 else ""} require'
+                    f' specific named evidence (tools, papers, benchmarks, or numbers).'
+                    f'</evidence_required>',
+                )
+        # P1: Compress depth_checklist to single-line tag
+        _dc_m = re.search(r'<depth_checklist[^>]*>(.*?)</depth_checklist>', target_section_block, re.DOTALL)
+        if _dc_m:
+            _dc_score_m = re.search(r'depth_score="(\d+)"', _dc_m.group(0))
+            depth_score = int(_dc_score_m.group(1)) if _dc_score_m else 0
+            _dc_gaps = re.findall(r'<item name="([^"]+)" present="no"', _dc_m.group(1))
+            target_section_block = target_section_block.replace(
+                _dc_m.group(0),
+                f'<depth_checklist depth="{depth_score}/8" gaps="{",".join(_dc_gaps)}"/>',
+                1,
+            )
+        # P1: Compress breadth_checklist to single-line tag
+        _bc_m = re.search(r'<breadth_checklist[^>]*>(.*?)</breadth_checklist>', target_section_block, re.DOTALL)
+        if _bc_m:
+            _bc_score_m = re.search(r'breadth_score="(\d+)"', _bc_m.group(0))
+            breadth_score = int(_bc_score_m.group(1)) if _bc_score_m else 0
+            _bc_gaps = re.findall(r'<item name="([^"]+)" present="no"', _bc_m.group(1))
+            target_section_block = target_section_block.replace(
+                _bc_m.group(0),
+                f'<breadth_checklist breadth="{breadth_score}/6" gaps="{",".join(_bc_gaps)}"/>',
+                1,
+            )
+        # P2: Strip n_unreachable from orphan_anchors and condense <orphan> children to <gap> tags
+        target_section_block = re.sub(
+            r'(<orphan_anchors[^>]*?)\s*n_unreachable="\d+"',
+            r'\1',
+            target_section_block,
+        )
+        _oa_m = re.search(r'<orphan_anchors([^>]*)>(.*?)</orphan_anchors>', target_section_block, re.DOTALL)
+        if _oa_m:
+            _oa_gaps = re.findall(r'<orphan route="([^"]+)"[^>]*bullet="([^"]+)"', _oa_m.group(2))
+            _oa_lines = ''.join(f'\n    <gap route="{r}" item="{b}"/>' for r, b in _oa_gaps)
+            target_section_block = target_section_block.replace(
+                _oa_m.group(0),
+                f'<writing_gaps{_oa_m.group(1)}>{_oa_lines}\n  </writing_gaps>',
+                1,
+            )
+        # Rename any remaining self-closing <orphan_anchors/> → <writing_gaps/>
+        target_section_block = target_section_block.replace(
+            '<orphan_anchors', '<writing_gaps'
+        ).replace('</orphan_anchors>', '</writing_gaps>')
+
+    # P3: Build <preset_signals> from gathered scores + writing budget
+    _ps = ""
+    if _rnw_attrs:
+        _rv: dict[str, str] = {}
+        for _n in ("need_depth", "need_breadth", "target_words",
+                   "must_cover_depth", "must_stay_brief"):
+            _m2 = re.search(rf'{_n}="(\d+)"', _rnw_attrs)
+            _rv[_n] = _m2.group(1) if _m2 else "0"
+        _ps = (
+            f'<preset_signals'
+            f' gathered="depth:{depth_score}/8 breadth:{breadth_score}/6"'
+            f' needed="depth:{_rv["need_depth"]} breadth:{_rv["need_breadth"]}"'
+            f' budget="words:{_rv["target_words"]}'
+            f' must_cover_depth:{_rv["must_cover_depth"]}'
+            f' must_stay_brief:{_rv["must_stay_brief"]}"/>'
+        )
 
     # Filter artefact_registry to rows whose Source column is in source_slugs.
     # Sections that cite none of their sources' artefacts get an explicit "(none)".
@@ -288,8 +350,11 @@ def build_rl_input(digest: str, target_section_id: str) -> dict[str, str]:
             l for l in _ar_lines
             if l.startswith("| A") and any(f"| {slug} |" in l for slug in source_slugs)
         ]
-        _body = "\n".join(_hdr_lines + (_data_lines if _data_lines else ["(none)"]))
-        artefact_registry = f"<artefact_registry>\n{_body}\n</artefact_registry>"
+        if _data_lines:
+            _body = "\n".join(_hdr_lines + _data_lines)
+            artefact_registry = f"<artefact_registry>\n{_body}\n</artefact_registry>"
+        else:
+            artefact_registry = '<artefact_registry n="0"/>'
 
     all_sources_m = re.search(r"<sources>(.*?)</sources>", digest, re.DOTALL)
     if all_sources_m and source_slugs:
@@ -306,14 +371,14 @@ def build_rl_input(digest: str, target_section_id: str) -> dict[str, str]:
     else:
         filtered_sources = "<sources>(no matching sources)</sources>"
 
-    user_message = "\n\n".join([
+    user_message = "\n\n".join(filter(None, [
         digest_meta,
         artefact_registry,
         filtered_sources,
-        tavily_yield,
         f"<target_section>\n{target_section_block}\n</target_section>",
+        _ps,
         f"<task>\nSelect the exploration preset for section "
         f'"{target_section_id}". Output exactly one token: skip, light, standard, or deep.\n</task>',
-    ])
+    ]))
 
     return {"system": _RL_INPUT_SYSTEM, "user": user_message}
