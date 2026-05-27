@@ -142,6 +142,11 @@ class Group:
     ref_log_probs: torch.Tensor | None = None
     best_preset_idx: int = 0
     hit_sigma_floor: bool = False
+    # Preset indices whose reward is within sigma_floor of max(R).  Any of
+    # these is an acceptable model prediction (near-tie acceptance).  Used in
+    # top1_correct instead of exact best_preset_idx match.  Populated by
+    # load_groups / load_section_groups.
+    acceptable_idxs: list[int] = field(default_factory=list)
     # Loss weight for this group.  Set by load_groups / load_section_groups so
     # the training loop mirrors the word-count-weighted inference aggregation:
     #   article-level  -> equal (1 / num_articles)
@@ -468,19 +473,36 @@ def load_groups(sigma_floor: float) -> list[Group]:
             reward = _compute_episode_reward(scores, p, variant_level)
             group.rewards.append(reward)
 
-        # Within-group advantage normalization
-        mean_r = sum(group.rewards) / len(group.rewards)
-        raw_std = (sum((r - mean_r) ** 2 for r in group.rewards) / len(group.rewards)) ** 0.5
+        # Drop flat groups: when the full reward margin is below sigma_floor
+        # the oracle assignment is unreliable and the group adds only noise.
+        _max_r = max(group.rewards)
+        if _max_r - min(group.rewards) < sigma_floor:
+            log.info(f"  {article}: dropped (flat, max-min < sigma_floor)")
+            continue
+
+        # Near-tie acceptance: arms within sigma_floor of max share the best
+        # advantage so the gradient never penalises an equivalent choice.
+        group.acceptable_idxs = [
+            i for i, r in enumerate(group.rewards) if r >= _max_r - sigma_floor
+        ]
+        adj_rewards = [
+            _max_r if r >= _max_r - sigma_floor else r for r in group.rewards
+        ]
+
+        # Within-group advantage normalization (on adjusted rewards)
+        mean_r = sum(adj_rewards) / len(adj_rewards)
+        raw_std = (sum((r - mean_r) ** 2 for r in adj_rewards) / len(adj_rewards)) ** 0.5
         group.hit_sigma_floor = raw_std < sigma_floor
         std_r = max(raw_std, sigma_floor)
-        advantages = [(r - mean_r) / std_r for r in group.rewards]
+        advantages = [(r - mean_r) / std_r for r in adj_rewards]
         group.advantages = torch.tensor(advantages, dtype=torch.float32)
-        group.best_preset_idx = group.rewards.index(max(group.rewards))
+        group.best_preset_idx = group.rewards.index(_max_r)
 
         groups.append(group)
         log.info(
             f"  {article}: R={[f'{r:.3f}' for r in group.rewards]} "
-            f"best=P{group.best_preset_idx} ({max(group.rewards):.4f})"
+            f"best=P{group.best_preset_idx} ({_max_r:.4f}) "
+            f"accept={group.acceptable_idxs}"
         )
 
     # Equal weight per article (article-level granularity has no word-count signal).
@@ -630,25 +652,48 @@ def load_section_groups(
                 rewards=rewards,
             )
 
-            mean_r = sum(rewards) / len(rewards)
-            raw_std = (
-                sum((r - mean_r) ** 2 for r in rewards) / len(rewards)
+            # Drop flat groups: choice doesn't matter, gradient is pure noise.
+            _max_r = max(rewards)
+            if _max_r - min(rewards) < sigma_floor:
+                log.info(
+                    f"  {article}__{sec_id}: dropped "
+                    f"(flat, max-min={_max_r - min(rewards):.4f} < sigma_floor)"
+                )
+                continue
+
+            # Original-reward stats for section weighting (pre-flattening).
+            _orig_mean = sum(rewards) / len(rewards)
+            group.raw_reward_std    = (
+                sum((r - _orig_mean) ** 2 for r in rewards) / len(rewards)
             ) ** 0.5
-            group.raw_reward_std = raw_std
-            group.raw_reward_regret = max(rewards) - mean_r
+            group.raw_reward_regret = _max_r - _orig_mean
+
+            # Near-tie acceptance: flatten near-tie arms to max before advantage
+            # normalization so no gradient penalises an equivalent choice.
+            group.acceptable_idxs = [
+                i for i, r in enumerate(rewards) if r >= _max_r - sigma_floor
+            ]
+            adj_rewards = [
+                _max_r if r >= _max_r - sigma_floor else r for r in rewards
+            ]
+
+            mean_r  = sum(adj_rewards) / len(adj_rewards)
+            raw_std = (
+                sum((r - mean_r) ** 2 for r in adj_rewards) / len(adj_rewards)
+            ) ** 0.5
             group.hit_sigma_floor = raw_std < sigma_floor
             std_r = max(raw_std, sigma_floor)
-            advantages = [(r - mean_r) / std_r for r in rewards]
+            advantages = [(r - mean_r) / std_r for r in adj_rewards]
             group.advantages = torch.tensor(advantages, dtype=torch.float32)
-            group.best_preset_idx = rewards.index(max(rewards))
+            group.best_preset_idx = rewards.index(_max_r)
 
             article_groups.append(group)
             log.info(
                 f"  {group.name} (oracle={oracle_preset}"
                 + ("" if oracle_version >= 2 else " [proxy]")
                 + f"): R={[f'{r:.3f}' for r in rewards]} "
-                f"best={PRESET_NAMES[group.best_preset_idx]}"
-                + (" [flat]" if group.hit_sigma_floor else "")
+                f"best={PRESET_NAMES[group.best_preset_idx]} "
+                f"accept={group.acceptable_idxs}"
             )
 
         if not article_groups:
@@ -665,6 +710,22 @@ def load_section_groups(
         else:  # "wordcount" — matches inference aggregation
             raw_weights = [g.word_weight for g in article_groups]
 
+        # Variant-stratified 3× reweighting: upweight anti-variant failure cells
+        # where the model tends to anchor on the variant label instead of the
+        # coverage signals.
+        #   minimal  + oracle ∈ {standard, deep}  → model anchors "brief" prior
+        #   demanding + oracle ∈ {skip, light}    → model anchors "thorough" prior
+        _variant = _article_variant_level(article)
+        _anti_oracles: set[str] = (
+            {"standard", "deep"}  if _variant == "minimal"
+            else {"skip", "light"} if _variant == "demanding"
+            else set()
+        )
+        raw_weights = [
+            rw * (3.0 if PRESET_NAMES[g.best_preset_idx] in _anti_oracles else 1.0)
+            for g, rw in zip(article_groups, raw_weights)
+        ]
+
         total_w = sum(raw_weights)
         if total_w == 0.0:
             log.warning(
@@ -677,11 +738,11 @@ def load_section_groups(
             g.word_weight = rw / total_w / len(ARTICLES)
         groups.extend(article_groups)
 
-    n_flat = sum(1 for g in groups if g.hit_sigma_floor)
+    n_clamped = sum(1 for g in groups if g.hit_sigma_floor)
     if groups:
         log.info(
             f"  Total section-level groups: {len(groups)} "
-            f"({n_flat} flat / hit sigma_floor = {n_flat/len(groups):.0%})"
+            f"({n_clamped} clamped to sigma_floor after near-tie flattening)"
         )
     else:
         log.warning(
@@ -1011,7 +1072,7 @@ def train(
                         "entropy": round(entropy, 4),
                         "expected_reward": round(expected_reward, 4),
                         "top1_preset": top1,
-                        "top1_correct": top1 == group.best_preset_idx,
+                        "top1_correct": top1 in group.acceptable_idxs,
                         "action_probs": [round(p, 4) for p in probs.cpu().tolist()],
                         "kl": round(loss_kl.item(), 6),
                         "group_time_s": round(time.time() - t_group_start, 2),
@@ -1155,13 +1216,13 @@ def main() -> None:
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--lr", type=float, default=5e-5)
     parser.add_argument("--beta", type=float, default=0.1, help="KL penalty coefficient")
-    parser.add_argument("--entropy-coef", type=float, default=0.05, help="Entropy bonus coefficient")
+    parser.add_argument("--entropy-coef", type=float, default=0.15, help="Entropy bonus coefficient")
     parser.add_argument(
         "--sigma-floor", type=float, default=0.04,
         help="Minimum std for advantage normalization",
     )
     parser.add_argument("--warmup-epochs", type=int, default=10)
-    parser.add_argument("--max-grad-norm", type=float, default=1.0)
+    parser.add_argument("--max-grad-norm", type=float, default=0.5)
     parser.add_argument("--weight-decay", type=float, default=0.01)
     parser.add_argument("--patience", type=int, default=30, help="Early stopping patience")
     parser.add_argument("--lora-r", type=int, default=8)
