@@ -359,25 +359,33 @@ def build_rl_input(digest: str, target_section_id: str) -> dict[str, str]:
         else:
             artefact_registry = '<artefact_registry n="0"/>'
 
+    # Build compact sources_summary (slug + type only) — full source text is
+    # not needed for preset selection and creates a length confounder across
+    # variants (standard digests have much longer per-source summaries than
+    # minimal/demanding variants of the same article).  The downstream writer
+    # LLM receives the full digest with all <sources> content.
     all_sources_m = re.search(r"<sources>(.*?)</sources>", digest, re.DOTALL)
     if all_sources_m and source_slugs:
-        filtered_parts: list[str] = []
+        _sm_parts: list[str] = []
         for slug in source_slugs:
             sm = re.search(
-                r'<s slug="' + re.escape(slug) + r'"[^>]*>.*?</s>',
+                r'<s slug="' + re.escape(slug) + r'"([^>]*)>',
                 all_sources_m.group(1),
-                re.DOTALL,
             )
             if sm:
-                filtered_parts.append(sm.group(0))
-        filtered_sources = "<sources>\n" + "\n\n".join(filtered_parts) + "\n</sources>"
+                _sm_parts.append(f'  <s slug="{slug}"{sm.group(1)}/>')
+        sources_summary = (
+            f'<sources_summary n="{len(_sm_parts)}">\n'
+            + "\n".join(_sm_parts)
+            + "\n</sources_summary>"
+        ) if _sm_parts else '<sources_summary n="0"/>'
     else:
-        filtered_sources = "<sources>(no matching sources)</sources>"
+        sources_summary = f'<sources_summary n="{len(source_slugs)}"/>'
 
     user_message = "\n\n".join(filter(None, [
         digest_meta,
         artefact_registry,
-        filtered_sources,
+        sources_summary,
         f"<target_section>\n{target_section_block}\n</target_section>",
         _ps,
         f"<task>\nSelect the exploration preset for section "

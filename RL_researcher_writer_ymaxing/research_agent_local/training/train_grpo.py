@@ -1023,7 +1023,7 @@ def train(
             epoch_metrics: dict[str, dict] = {}
 
             t_epoch_start = time.time()
-            for group in groups:
+            for g_idx, group in enumerate(groups, 1):
                 t_group_start = time.time()
                 input_ids = group.input_ids.to(device)
                 logits = _get_last_logits(model, input_ids)
@@ -1077,6 +1077,14 @@ def train(
                         "kl": round(loss_kl.item(), 6),
                         "group_time_s": round(time.time() - t_group_start, 2),
                     }
+                    log.info(
+                        f"  [ep {epoch + 1}] group {g_idx}/{num_groups} "
+                        f"({group.name}): "
+                        f"E[R]={expected_reward:.4f} "
+                        f"top1={'OK' if top1 in group.acceptable_idxs else '--'} "
+                        f"kl={loss_kl.item():.4f} "
+                        f"({epoch_metrics[group.name]['group_time_s']}s)"
+                    )
 
             # Gradient clipping
             grad_norm = torch.nn.utils.clip_grad_norm_(
