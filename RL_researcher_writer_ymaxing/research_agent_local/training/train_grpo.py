@@ -715,22 +715,6 @@ def load_section_groups(
         else:  # "wordcount" — matches inference aggregation
             raw_weights = [g.word_weight for g in article_groups]
 
-        # Variant-stratified 3× reweighting: upweight anti-variant failure cells
-        # where the model tends to anchor on the variant label instead of the
-        # coverage signals.
-        #   minimal  + oracle ∈ {standard, deep}  → model anchors "brief" prior
-        #   demanding + oracle ∈ {skip, light}    → model anchors "thorough" prior
-        _variant = _article_variant_level(article)
-        _anti_oracles: set[str] = (
-            {"standard", "deep"}  if _variant == "minimal"
-            else {"skip", "light"} if _variant == "demanding"
-            else set()
-        )
-        raw_weights = [
-            rw * (3.0 if PRESET_NAMES[g.best_preset_idx] in _anti_oracles else 1.0)
-            for g, rw in zip(article_groups, raw_weights)
-        ]
-
         total_w = sum(raw_weights)
         if total_w == 0.0:
             log.warning(
@@ -742,6 +726,34 @@ def load_section_groups(
         for g, rw in zip(article_groups, raw_weights):
             g.word_weight = rw / total_w / len(ARTICLES)
         groups.extend(article_groups)
+
+    # Global inverse-frequency class reweighting.
+    # Sections of rare oracle classes (e.g. 'deep' at 11%) receive up-weighted
+    # gradient contribution so their net logit pull matches majority classes.
+    # Multiplier = N / (NUM_PRESETS * n_c), giving equal aggregate weight per class.
+    # This replaces the old per-article variant-3× heuristic, which measured
+    # proved to suppress the deep logit net pull to -0.236 (vs -0.069 here).
+    _cls_counts: dict[str, int] = {n: 0 for n in PRESET_NAMES}
+    for g in groups:
+        _cls_counts[PRESET_NAMES[g.best_preset_idx]] += 1
+    _n_groups = len(groups)
+    _inv_freq: dict[str, float] = {
+        n: (_n_groups / (NUM_PRESETS * cnt)) if cnt else 1.0
+        for n, cnt in _cls_counts.items()
+    }
+    log.info(
+        "  Inverse-freq class multipliers: "
+        + "  ".join(f"{n}={_inv_freq[n]:.2f}" for n in PRESET_NAMES)
+        + "  (counts: "
+        + "  ".join(f"{n}:{_cls_counts[n]}" for n in PRESET_NAMES)
+        + ")"
+    )
+    for g in groups:
+        g.word_weight *= _inv_freq[PRESET_NAMES[g.best_preset_idx]]
+    _total_w = sum(g.word_weight for g in groups)
+    if _total_w > 0:
+        for g in groups:
+            g.word_weight /= _total_w
 
     n_clamped = sum(1 for g in groups if g.hit_sigma_floor)
     if groups:
@@ -1176,6 +1188,10 @@ def train(
             log_file.write(json.dumps(log_entry) + "\n")
             log_file.flush()
 
+            # Counts used both in console log and in checkpointing log messages.
+            n_strict = sum(1 for m in epoch_metrics.values() if m["strict_top1"])
+            n_neartie = sum(1 for m in epoch_metrics.values() if m["top1_correct"])
+
             # ---------- console (every 10 epochs + last) ----------
             if epoch % 10 == 0 or epoch == args.epochs - 1:
                 elapsed = time.time() - t_start
@@ -1184,7 +1200,9 @@ def train(
                     f"Epoch {epoch:>4d}/{args.epochs} | "
                     f"loss={epoch_loss_total:.4f} "
                     f"(grpo={epoch_loss_grpo:.4f} kl={epoch_loss_kl:.4f} ent={epoch_loss_entropy:.4f}) | "
-                    f"E[R]={mean_er:.4f} | top1={top1_acc:.0%} | strict={strict_top1_acc:.0%} | "
+                    f"E[R]={mean_er:.4f} | "
+                    f"strict={n_strict}/{num_groups}({strict_top1_acc:.0%}) | "
+                    f"near={n_neartie}/{num_groups}({top1_acc:.0%}) | "
                     f"H={mean_entropy:.3f} | "
                     f"‖g‖={grad_norm:.4f} | lr={current_lr:.2e} | "
                     f"epoch={epoch_wall_s:.0f}s | total={elapsed:.0f}s | "
@@ -1193,29 +1211,22 @@ def train(
 
             # ---------- checkpointing ----------
             # Track three independent best checkpoints:
-            #   best/        — best mean expected reward (primary, used for early stopping)
-            #   best_strict/ — best strict oracle-argmax top-1 accuracy
+            #   best/        — best strict top-1 accuracy (primary, used for early stopping)
+            #   best_strict/ — alias for best/ (same criterion, kept for compatibility)
             #   best_neartie/— best near-tie top-1 accuracy
-            if mean_er > best_expected_reward:
-                best_expected_reward = mean_er
+            if strict_top1_acc > best_strict_top1:
+                best_strict_top1 = strict_top1_acc
                 patience_counter = 0
-                best_dir = task_dir / "best"
-                best_dir.mkdir(parents=True, exist_ok=True)
-                model.save_pretrained(str(best_dir))
+                for _ckpt_dir in (task_dir / "best", task_dir / "best_strict"):
+                    _ckpt_dir.mkdir(parents=True, exist_ok=True)
+                    model.save_pretrained(str(_ckpt_dir))
                 log.info(
-                    f"  ★ New best E[R]={best_expected_reward:.4f} — saved to {best_dir}"
+                    f"  ★ New best strict={best_strict_top1:.4f} ({n_strict}/{num_groups}) — saved to best/ and best_strict/"
                 )
             else:
                 patience_counter += 1
-
-            if strict_top1_acc > best_strict_top1:
-                best_strict_top1 = strict_top1_acc
-                best_strict_dir = task_dir / "best_strict"
-                best_strict_dir.mkdir(parents=True, exist_ok=True)
-                model.save_pretrained(str(best_strict_dir))
-                log.info(
-                    f"  ★ New best strict top1={best_strict_top1:.4f} — saved to {best_strict_dir}"
-                )
+            if mean_er > best_expected_reward:
+                best_expected_reward = mean_er
 
             if top1_acc > best_neartie_top1:
                 best_neartie_top1 = top1_acc
@@ -1288,8 +1299,8 @@ def main() -> None:
     parser.add_argument("--max-grad-norm", type=float, default=0.5)
     parser.add_argument("--weight-decay", type=float, default=0.01)
     parser.add_argument("--patience", type=int, default=30, help="Early stopping patience")
-    parser.add_argument("--lora-r", type=int, default=8)
-    parser.add_argument("--lora-alpha", type=int, default=8)
+    parser.add_argument("--lora-r", type=int, default=16)
+    parser.add_argument("--lora-alpha", type=int, default=16)
     parser.add_argument("--lora-dropout", type=float, default=0.0)
     parser.add_argument(
         "--granularity",
