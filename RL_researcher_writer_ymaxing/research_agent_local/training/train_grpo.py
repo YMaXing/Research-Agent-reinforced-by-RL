@@ -201,24 +201,28 @@ def _compute_episode_reward(
     nr = _EPISODE_PRESET_ROUNDS[preset_id]
 
     if variant_level == "minimal":
-        # Conceptual overview: ga dominant, small exploration signal, cost standard.
+        # Conceptual overview: ga dominant, small exploration signal.
+        # Cost raised to -0.05/round: raw_std (0.056) just clears sigma_floor
+        # (0.05) in cost-only tie case, giving skip advantage ≈ +1.34 without
+        # over-shifting oracle labels beyond what the data supports.
         gt_base     = 0.05 * cc + 0.05 * fl
         explore     = cp * (0.60 * de + 0.40 * be) * 0.10
         user_intent = 0.70 * ga + 0.10 * ra
-        cost        = -0.02 * nr
+        cost        = -0.05 * nr
     elif variant_level == "demanding":
-        # Extended article: boost depth/breadth, quarter exploration cost.
-        # At -0.01/round cost(-0.07) overwhelms explore gains at P5;
-        # -0.005/round makes deep presets competitive.
+        # Extended article: boost depth/breadth.
+        # Cost raised to -0.03/round (from -0.005): over-exploration penalty
+        # sufficient to give skip a real gradient (+0.90 advantage in cost-only
+        # ties) while keeping deep competitive whenever explore gain > 0.09.
         gt_base     = 0.12 * cc + 0.08 * fl
         explore     = cp * (0.55 * de + 0.35 * be) * 0.50
         user_intent = (0.60 * ga + 0.40 * ra) * 0.25
-        cost        = -0.005 * nr
+        cost        = -0.03 * nr
     else:  # "standard"
         gt_base     = 0.20 * cc + 0.20 * fl
         explore     = cp * (0.60 * de + 0.40 * be) * 0.30
         user_intent = (0.50 * ga + 0.50 * ra) * 0.30
-        cost        = -0.02 * nr
+        cost        = -0.05 * nr
 
     return gt_base + explore + user_intent + cost
 
@@ -668,22 +672,23 @@ def load_section_groups(
             ) ** 0.5
             group.raw_reward_regret = _max_r - _orig_mean
 
-            # Near-tie acceptance: flatten near-tie arms to max before advantage
-            # normalization so no gradient penalises an equivalent choice.
+            # Near-tie acceptance: arms within sigma_floor of max are all
+            # considered correct for the top1_correct / near-tie metric.
+            # Advantages are computed from *raw* rewards without flattening so
+            # that every preset with a genuine reward difference (e.g. skip vs
+            # light separated only by the cost staircase) receives a non-zero
+            # gradient pointing toward the oracle.
             group.acceptable_idxs = [
                 i for i, r in enumerate(rewards) if r >= _max_r - sigma_floor
             ]
-            adj_rewards = [
-                _max_r if r >= _max_r - sigma_floor else r for r in rewards
-            ]
 
-            mean_r  = sum(adj_rewards) / len(adj_rewards)
+            mean_r  = sum(rewards) / len(rewards)
             raw_std = (
-                sum((r - mean_r) ** 2 for r in adj_rewards) / len(adj_rewards)
+                sum((r - mean_r) ** 2 for r in rewards) / len(rewards)
             ) ** 0.5
             group.hit_sigma_floor = raw_std < sigma_floor
             std_r = max(raw_std, sigma_floor)
-            advantages = [(r - mean_r) / std_r for r in adj_rewards]
+            advantages = [(r - mean_r) / std_r for r in rewards]
             group.advantages = torch.tensor(advantages, dtype=torch.float32)
             group.best_preset_idx = rewards.index(_max_r)
 
@@ -742,7 +747,7 @@ def load_section_groups(
     if groups:
         log.info(
             f"  Total section-level groups: {len(groups)} "
-            f"({n_clamped} clamped to sigma_floor after near-tie flattening)"
+            f"({n_clamped} with raw_std < sigma_floor; std clamped to sigma_floor)"
         )
     else:
         log.warning(
@@ -900,6 +905,8 @@ def _save_resume_state(
     scheduler,
     next_epoch: int,
     best_expected_reward: float,
+    best_strict_top1: float,
+    best_neartie_top1: float,
     patience_counter: int,
 ) -> None:
     """Persist full resumable training state for a specific task id."""
@@ -908,6 +915,8 @@ def _save_resume_state(
         "granularity": granularity,
         "next_epoch": next_epoch,
         "best_expected_reward": best_expected_reward,
+        "best_strict_top1": best_strict_top1,
+        "best_neartie_top1": best_neartie_top1,
         "patience_counter": patience_counter,
         "optimizer": optimizer.state_dict(),
         "scheduler": scheduler.state_dict(),
@@ -987,11 +996,19 @@ def train(
 
     start_epoch = 0
     best_expected_reward = -float("inf")
+    best_strict_top1 = -float("inf")
+    best_neartie_top1 = -float("inf")
     patience_counter = 0
     if resume_state is not None:
         start_epoch = int(resume_state.get("next_epoch", 0))
         best_expected_reward = float(
             resume_state.get("best_expected_reward", best_expected_reward)
+        )
+        best_strict_top1 = float(
+            resume_state.get("best_strict_top1", best_strict_top1)
+        )
+        best_neartie_top1 = float(
+            resume_state.get("best_neartie_top1", best_neartie_top1)
         )
         patience_counter = int(resume_state.get("patience_counter", 0))
         optimizer.load_state_dict(resume_state["optimizer"])
@@ -999,7 +1016,10 @@ def train(
         _move_optimizer_state_to_device(optimizer, device)
         log.info(
             f"Resumed task '{task_id}' from epoch {start_epoch} "
-            f"(best E[R]={best_expected_reward:.4f}, patience={patience_counter})"
+            f"(best E[R]={best_expected_reward:.4f}, "
+            f"best strict={best_strict_top1:.4f}, "
+            f"best near-tie={best_neartie_top1:.4f}, "
+            f"patience={patience_counter})"
         )
         if start_epoch >= args.epochs:
             log.info(
@@ -1073,6 +1093,7 @@ def train(
                         "expected_reward": round(expected_reward, 4),
                         "top1_preset": top1,
                         "top1_correct": top1 in group.acceptable_idxs,
+                        "strict_top1": top1 == group.best_preset_idx,
                         "action_probs": [round(p, 4) for p in probs.cpu().tolist()],
                         "kl": round(loss_kl.item(), 6),
                         "group_time_s": round(time.time() - t_group_start, 2),
@@ -1102,6 +1123,9 @@ def train(
             top1_acc = (
                 sum(m["top1_correct"] for m in epoch_metrics.values()) / num_groups
             )
+            strict_top1_acc = (
+                sum(m["strict_top1"] for m in epoch_metrics.values()) / num_groups
+            )
             mean_entropy = (
                 sum(m["entropy"] for m in epoch_metrics.values()) / num_groups
             )
@@ -1120,6 +1144,7 @@ def train(
             sigma_floor_frac = sum(1 for g in groups if g.hit_sigma_floor) / num_groups
             writer.add_scalar("eval/mean_expected_reward", mean_er, epoch)
             writer.add_scalar("eval/top1_accuracy", top1_acc, epoch)
+            writer.add_scalar("eval/strict_top1_accuracy", strict_top1_acc, epoch)
             writer.add_scalar("eval/mean_entropy", mean_entropy, epoch)
             writer.add_scalar("eval/sigma_floor_fraction", sigma_floor_frac, epoch)
 
@@ -1143,6 +1168,7 @@ def train(
                 "lr": current_lr,
                 "mean_expected_reward": round(mean_er, 4),
                 "top1_accuracy": round(top1_acc, 4),
+                "strict_top1_accuracy": round(strict_top1_acc, 4),
                 "mean_entropy": round(mean_entropy, 4),
                 "sigma_floor_fraction": round(sigma_floor_frac, 4),
                 "per_group": epoch_metrics,
@@ -1158,7 +1184,7 @@ def train(
                     f"Epoch {epoch:>4d}/{args.epochs} | "
                     f"loss={epoch_loss_total:.4f} "
                     f"(grpo={epoch_loss_grpo:.4f} kl={epoch_loss_kl:.4f} ent={epoch_loss_entropy:.4f}) | "
-                    f"E[R]={mean_er:.4f} | top1={top1_acc:.0%} | "
+                    f"E[R]={mean_er:.4f} | top1={top1_acc:.0%} | strict={strict_top1_acc:.0%} | "
                     f"H={mean_entropy:.3f} | "
                     f"‖g‖={grad_norm:.4f} | lr={current_lr:.2e} | "
                     f"epoch={epoch_wall_s:.0f}s | total={elapsed:.0f}s | "
@@ -1166,6 +1192,10 @@ def train(
                 )
 
             # ---------- checkpointing ----------
+            # Track three independent best checkpoints:
+            #   best/        — best mean expected reward (primary, used for early stopping)
+            #   best_strict/ — best strict oracle-argmax top-1 accuracy
+            #   best_neartie/— best near-tie top-1 accuracy
             if mean_er > best_expected_reward:
                 best_expected_reward = mean_er
                 patience_counter = 0
@@ -1177,6 +1207,24 @@ def train(
                 )
             else:
                 patience_counter += 1
+
+            if strict_top1_acc > best_strict_top1:
+                best_strict_top1 = strict_top1_acc
+                best_strict_dir = task_dir / "best_strict"
+                best_strict_dir.mkdir(parents=True, exist_ok=True)
+                model.save_pretrained(str(best_strict_dir))
+                log.info(
+                    f"  ★ New best strict top1={best_strict_top1:.4f} — saved to {best_strict_dir}"
+                )
+
+            if top1_acc > best_neartie_top1:
+                best_neartie_top1 = top1_acc
+                best_neartie_dir = task_dir / "best_neartie"
+                best_neartie_dir.mkdir(parents=True, exist_ok=True)
+                model.save_pretrained(str(best_neartie_dir))
+                log.info(
+                    f"  ★ New best near-tie top1={best_neartie_top1:.4f} — saved to {best_neartie_dir}"
+                )
 
             # Overwrite latest/ every epoch so there is always a recoverable
             # PEFT adapter for the most recently completed epoch.
@@ -1193,6 +1241,8 @@ def train(
                 scheduler=scheduler,
                 next_epoch=epoch + 1,
                 best_expected_reward=best_expected_reward,
+                best_strict_top1=best_strict_top1,
+                best_neartie_top1=best_neartie_top1,
                 patience_counter=patience_counter,
             )
 
@@ -1209,8 +1259,13 @@ def train(
     log.info(
         f"Training complete in {elapsed_total:.0f}s. "
         f"Best E[R]={best_expected_reward:.4f} "
+        f"Best strict={best_strict_top1:.4f} "
+        f"Best near-tie={best_neartie_top1:.4f} "
         f"(uniform={uniform_er:.4f}, oracle={oracle_er:.4f}). "
-        f"Checkpoints: best={task_dir / 'best'}, latest={task_dir / 'latest'}"
+        f"Checkpoints: best={task_dir / 'best'}, "
+        f"best_strict={task_dir / 'best_strict'}, "
+        f"best_neartie={task_dir / 'best_neartie'}, "
+        f"latest={task_dir / 'latest'}"
     )
 
 
@@ -1224,7 +1279,7 @@ def main() -> None:
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--lr", type=float, default=5e-5)
     parser.add_argument("--beta", type=float, default=0.1, help="KL penalty coefficient")
-    parser.add_argument("--entropy-coef", type=float, default=0.15, help="Entropy bonus coefficient")
+    parser.add_argument("--entropy-coef", type=float, default=0.05, help="Entropy bonus coefficient")
     parser.add_argument(
         "--sigma-floor", type=float, default=0.04,
         help="Minimum std for advantage normalization",

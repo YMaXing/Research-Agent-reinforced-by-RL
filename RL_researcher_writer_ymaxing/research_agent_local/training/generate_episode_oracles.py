@@ -210,17 +210,17 @@ def _section_reward(
         gt_base     = 0.05 * cc + 0.05 * fl
         explore     = cp * (0.60 * de + 0.40 * be) * 0.10
         user_intent = 0.70 * ga + 0.10 * ra
-        cost        = -0.02 * nr
+        cost        = -0.05 * nr
     elif variant == "demanding":
         gt_base     = 0.12 * cc + 0.08 * fl
         explore     = cp * (0.55 * de + 0.35 * be) * 0.50
         user_intent = (0.60 * ga + 0.40 * ra) * 0.25
-        cost        = -0.005 * nr
+        cost        = -0.03 * nr
     else:  # standard
         gt_base     = 0.20 * cc + 0.20 * fl
         explore     = cp * (0.60 * de + 0.40 * be) * 0.30
         user_intent = (0.50 * ga + 0.50 * ra) * 0.30
-        cost        = -0.02 * nr
+        cost        = -0.05 * nr
     return gt_base + explore + user_intent + cost
 
 
