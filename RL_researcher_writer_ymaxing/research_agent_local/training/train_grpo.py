@@ -522,6 +522,7 @@ def load_groups(sigma_floor: float) -> list[Group]:
 def load_section_groups(
     sigma_floor: float,
     section_weight: str = "hybrid",
+    inv_freq_temp: float = 0.5,
 ) -> list[Group]:
     """Load section-level GRPO groups from section_oracle.json.
 
@@ -730,22 +731,25 @@ def load_section_groups(
     # Global inverse-frequency class reweighting.
     # Sections of rare oracle classes (e.g. 'deep' at 11%) receive up-weighted
     # gradient contribution so their net logit pull matches majority classes.
-    # Multiplier = N / (NUM_PRESETS * n_c), giving equal aggregate weight per class.
-    # This replaces the old per-article variant-3× heuristic, which measured
-    # proved to suppress the deep logit net pull to -0.236 (vs -0.069 here).
-    _cls_counts: dict[str, int] = {n: 0 for n in PRESET_NAMES}
+    # Multiplier = (N / (NUM_PRESETS * n_c)) ** inv_freq_temp, giving
+    # tempered inverse-frequency class reweighting.  temp=1.0 is full
+    # inverse-frequency (equal aggregate gradient per class); temp=0.5
+    # (sqrt) is the run08 default, reducing the deep multiplier from 2.38
+    # to ~1.54 to prevent deep over-prediction without dropping deep recall.
+    # This replaces the old per-article variant-3× heuristic.
+    _cls_counts: dict[str, int] = {n: 0 for n in PRESET_NAMES.values()}
     for g in groups:
         _cls_counts[PRESET_NAMES[g.best_preset_idx]] += 1
     _n_groups = len(groups)
     _inv_freq: dict[str, float] = {
-        n: (_n_groups / (NUM_PRESETS * cnt)) if cnt else 1.0
+        n: ((_n_groups / (NUM_PRESETS * cnt)) ** inv_freq_temp) if cnt else 1.0
         for n, cnt in _cls_counts.items()
     }
     log.info(
-        "  Inverse-freq class multipliers: "
-        + "  ".join(f"{n}={_inv_freq[n]:.2f}" for n in PRESET_NAMES)
+        f"  Inverse-freq class multipliers (temp={inv_freq_temp}): "
+        + "  ".join(f"{n}={_inv_freq[n]:.3f}" for n in PRESET_NAMES.values())
         + "  (counts: "
-        + "  ".join(f"{n}:{_cls_counts[n]}" for n in PRESET_NAMES)
+        + "  ".join(f"{n}:{_cls_counts[n]}" for n in PRESET_NAMES.values())
         + ")"
     )
     for g in groups:
@@ -1146,25 +1150,28 @@ def train(
             epoch_wall_s = time.time() - t_epoch_start
 
             # ---------- TensorBoard ----------
-            writer.add_scalar("train/loss_total", epoch_loss_total, epoch)
-            writer.add_scalar("train/loss_grpo", epoch_loss_grpo, epoch)
-            writer.add_scalar("train/loss_kl", epoch_loss_kl, epoch)
-            writer.add_scalar("train/loss_entropy", epoch_loss_entropy, epoch)
-            writer.add_scalar("train/mean_kl", mean_kl, epoch)
-            writer.add_scalar("train/grad_norm", grad_norm, epoch)
-            writer.add_scalar("train/lr", current_lr, epoch)
+            # Use epoch+1 as the global step so TB step numbers match the
+            # 1-based epoch numbers printed in console/JSONL logs.
+            _tb_step = epoch + 1
+            writer.add_scalar("train/loss_total", epoch_loss_total, _tb_step)
+            writer.add_scalar("train/loss_grpo", epoch_loss_grpo, _tb_step)
+            writer.add_scalar("train/loss_kl", epoch_loss_kl, _tb_step)
+            writer.add_scalar("train/loss_entropy", epoch_loss_entropy, _tb_step)
+            writer.add_scalar("train/mean_kl", mean_kl, _tb_step)
+            writer.add_scalar("train/grad_norm", grad_norm, _tb_step)
+            writer.add_scalar("train/lr", current_lr, _tb_step)
             sigma_floor_frac = sum(1 for g in groups if g.hit_sigma_floor) / num_groups
-            writer.add_scalar("eval/mean_expected_reward", mean_er, epoch)
-            writer.add_scalar("eval/top1_accuracy", top1_acc, epoch)
-            writer.add_scalar("eval/strict_top1_accuracy", strict_top1_acc, epoch)
-            writer.add_scalar("eval/mean_entropy", mean_entropy, epoch)
-            writer.add_scalar("eval/sigma_floor_fraction", sigma_floor_frac, epoch)
+            writer.add_scalar("eval/mean_expected_reward", mean_er, _tb_step)
+            writer.add_scalar("eval/top1_accuracy", top1_acc, _tb_step)
+            writer.add_scalar("eval/strict_top1_accuracy", strict_top1_acc, _tb_step)
+            writer.add_scalar("eval/mean_entropy", mean_entropy, _tb_step)
+            writer.add_scalar("eval/sigma_floor_fraction", sigma_floor_frac, _tb_step)
 
             for gname, gm in epoch_metrics.items():
                 writer.add_scalar(
-                    f"eval/expected_reward/{gname}", gm["expected_reward"], epoch
+                    f"eval/expected_reward/{gname}", gm["expected_reward"], _tb_step
                 )
-                writer.add_scalar(f"eval/entropy/{gname}", gm["entropy"], epoch)
+                writer.add_scalar(f"eval/entropy/{gname}", gm["entropy"], _tb_step)
 
             # ---------- JSONL ----------
             log_entry = {
@@ -1289,16 +1296,25 @@ def main() -> None:
     )
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--lr", type=float, default=5e-5)
-    parser.add_argument("--beta", type=float, default=0.1, help="KL penalty coefficient")
-    parser.add_argument("--entropy-coef", type=float, default=0.05, help="Entropy bonus coefficient")
+    parser.add_argument("--beta", type=float, default=0.2, help="KL penalty coefficient")
+    parser.add_argument("--entropy-coef", type=float, default=0.15, help="Entropy bonus coefficient")
     parser.add_argument(
         "--sigma-floor", type=float, default=0.04,
         help="Minimum std for advantage normalization",
     )
     parser.add_argument("--warmup-epochs", type=int, default=10)
-    parser.add_argument("--max-grad-norm", type=float, default=0.5)
+    parser.add_argument("--max-grad-norm", type=float, default=0.2)
     parser.add_argument("--weight-decay", type=float, default=0.01)
-    parser.add_argument("--patience", type=int, default=30, help="Early stopping patience")
+    parser.add_argument("--patience", type=int, default=20, help="Early stopping patience")
+    parser.add_argument(
+        "--inv-freq-temp", type=float, default=0.5,
+        help=(
+            "Temperature for inverse-frequency class reweighting. "
+            "1.0=full inverse-frequency (equal aggregate gradient per class); "
+            "0.5=sqrt-tempered (default, reduces deep multiplier 2.38→1.54); "
+            "0.0=no reweighting."
+        ),
+    )
     parser.add_argument("--lora-r", type=int, default=16)
     parser.add_argument("--lora-alpha", type=int, default=16)
     parser.add_argument("--lora-dropout", type=float, default=0.0)
@@ -1389,7 +1405,7 @@ def main() -> None:
     # ------------------------------------------------------------------
     log.info(f"\n--- Step 1: Load training data (granularity={args.granularity}) ---")
     if args.granularity == "section":
-        groups = load_section_groups(args.sigma_floor, section_weight=args.section_weight)
+        groups = load_section_groups(args.sigma_floor, section_weight=args.section_weight, inv_freq_temp=args.inv_freq_temp)
     else:
         groups = load_groups(args.sigma_floor)
 
