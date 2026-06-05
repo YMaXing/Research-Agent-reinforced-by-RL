@@ -1,0 +1,137 @@
+# Auto-extracted brief for: 03_context_engineering
+# Source: article_ground_truth.md
+# REVIEW BEFORE USE — check all fields, especially those marked
+# '# TODO: review' which require course-context knowledge.
+# Then run:
+#   uv run python generate_article_guideline.py --article 03_context_engineering
+
+lesson_number: 3
+title: Context Engineering
+topic_summary:
+  "This lesson traces the evolution from prompt engineering to context engineering for stateful, memory-enabled
+  AI agents. It examines what constitutes context (short-term working memory vs. long-term procedural/episodic/semantic memory),
+  frames it as an optimization problem of selecting minimal relevant information, and contrasts it with fine-tuning. The lesson
+  surfaces production challenges and details four families of optimization strategies before walking through a realistic healthcare-agent
+  example and situating the skill within broader AI engineering practice.
+
+  "
+why_valuable:
+  "Context engineering has become a core competency for AI engineers because it delivers faster iteration, lower
+  cost, and better adaptability than fine-tuning while enabling coherent, long-running agentic systems. Mastering when and
+  how to dynamically assemble, compress, isolate, and format context directly determines production viability around latency,
+  accuracy, and token spend.
+
+  "
+target_length_words: 3411
+theory_practice_ratio: 70% theory - 30% practice
+lesson_scope:
+  "Lesson 3 of the Agentic AI Engineering course; it follows the prior lesson contrasting LLM workflows versus
+  agents and precedes dedicated lessons on structured outputs, the orchestrator-worker pattern, memory systems, RAG, evaluation,
+  and observability.
+
+  "
+audience:
+  "Intermediate AI engineers who already understand basic prompting and LLM APIs and are now tasked with building
+  reliable, stateful production agents that incorporate memory, tools, and multi-turn interactions.
+
+  "
+concepts_from_previous_lessons:
+  - Decision framework for choosing between LLM workflows and full AI agents
+concepts_for_future_lessons:
+  - Structured outputs and schemas as procedural memory
+  - Orchestrator-worker multi-agent pattern for context isolation
+  - Short-term vs. long-term (episodic, semantic, procedural) memory architectures
+  - Retrieval-Augmented Generation (RAG) as a context-selection technique
+  - Evaluation of context quality against business metrics
+  - Tracing and observability to inspect assembled context at every turn
+sections:
+  - title: Introduction
+    target_words: 175
+    key_points:
+      - "Timeline of AI application complexity: simple chatbots → RAG → tool agents → memory-enabled relational agents"
+      - "Why prompt engineering breaks at scale: stateless mindset cannot handle growing memory, actions, and history"
+      - Context engineering as the discipline of dynamically selecting and orchestrating the right information per LLM call
+      - High-level preview of context components, production pitfalls, and optimization strategies covered in the lesson
+  - title: From Prompt to Context Engineering
+    target_words: 261
+    key_points:
+      - "Core contrast: prompt engineering (single stateless interaction) versus context engineering (stateful, multi-turn information
+        flow)"
+      - "Context decay failure mode: noise from unbounded history erodes adherence to original instructions"
+      - "Practical limits beyond token count: cost, latency, and quality degradation even inside large context windows"
+      - War story illustrating failure of naively stuffing everything into a million-token window
+      - "Mindset shift required: move from crafting static prompts to building dynamic context-assembly systems"
+  - title: Understanding Context Engineering
+    target_words: 465
+    key_points:
+      - "Context engineering as optimization problem: retrieve minimal relevant slices from short- and long-term memory for the
+        current task"
+      - "Karpathy RAM analogy: context window is limited RAM; context engineering is the OS memory manager"
+      - Prompt engineering as proper subset of context engineering (how to phrase vs. what information to supply)
+      - "Comparison table: scope, statefulness, and focus dimensions that differentiate the two approaches"
+      - Context engineering versus fine-tuning trade-off analysis (cost, iteration speed, adaptability to changing data)
+      - Decision workflow diagram for choosing prompt engineering, context engineering, or fine-tuning on a new project
+  - title: What Makes Up the Context
+    target_words: 614
+    key_points:
+      - "Context as dynamic assembly: everything the LLM sees in one turn, recomputed on every interaction"
+      - High-level assembly workflow (user input → memory retrieval → prompt template → LLM → memory update)
+      - "Short-term working memory components: latest user input, conversation history, agent thoughts, action results"
+      - Long-term memory taxonomy (procedural, episodic, semantic) with concrete examples and storage implications
+      - "Procedural memory encoded in code: system prompt, action definitions, output schemas"
+      - How RAG, memory retrieval, structured outputs, and prompt templates all fall under the umbrella of context engineering
+  - title: Production Implementation Challenges
+    target_words: 345
+    key_points:
+      - "Central optimization question: keep context as small as possible while still supplying enough signal"
+      - Hard context-window limit versus soft performance cliffs (lost-in-the-middle / needle-in-haystack)
+      - Information overload failure mode and why more tokens can degrade rather than improve quality
+      - "Context drift: accumulating contradictory facts over time and its effect on reliability"
+      - "Tool confusion: too many actions, overlapping descriptions, or poor naming schemas"
+  - title: Key Strategies for Context Optimization
+    target_words: 851
+    key_points:
+      - "Context selection techniques: structured outputs, targeted RAG chunks, action subsetting via orchestrator-worker, time-based
+        ranking"
+      - Benefit of repeating core instructions at both start and end to exploit model edge bias
+      - "Context compression patterns: LLM summarization of history, extraction of preferences into long-term memory, deduplication"
+      - "Context isolation via multi-agent teams: each worker receives narrow, focused context instead of one monolithic window"
+      - "Format-level wins: XML-style tags for semantic separation, YAML versus JSON token efficiency"
+      - "Observability imperative: always inspect the exact context sent to the model on every turn"
+  - title: Practical Example
+    target_words: 483
+    key_points:
+      - Four real-world domains where context engineering delivers value (healthcare, finance, project management, content creation)
+      - End-to-end healthcare assistant walkthrough for a non-pharmacological headache query
+      - Retrieval steps from episodic memory (patient profile) and semantic memory (medical literature)
+      - XML-tagged prompt template combined with YAML-serialized data structures
+      - Recommended production stack (reasoning LLM, LangGraph orchestration, polyglot persistence, observability tools)
+  - title: Connecting Context Engineering to AI Engineering
+    target_words: 217
+    key_points:
+      - Context engineering as developed intuition rather than purely algorithmic science
+      - "Interdisciplinary skill set required: AI engineering, software engineering, data engineering, and operations"
+      - "Systems-thinking mindset shift: from isolated prompts or models to architecting entire information ecosystems"
+      - Forward-looking teaser for structured outputs in the immediate next lesson
+golden_sources:
+  - title: Context Engineering
+    url: https://blog.langchain.com/context-engineering-for-agents/
+  - title: Context Engineering - What it is, and techniques to consider
+    url: https://www.llamaindex.ai/blog/context-engineering-what-it-is-and-techniques-to-consider
+  - title: The rise of "context engineering"
+    url: https://blog.langchain.com/the-rise-of-context-engineering/
+  - title: "Context Engineering: A Guide With Examples"
+    url: https://www.datacamp.com/blog/context-engineering
+  - title: A Survey of Context Engineering for Large Language Models
+    url: https://arxiv.org/pdf/2507.13334
+other_sources:
+  - title: +1 for "context engineering" over "prompt engineering".
+    url: https://x.com/karpathy/status/1937902205765607626
+  - title: Context Engineering 101 cheat sheet
+    url: https://x.com/lenadroid/status/1943685060785524824
+  - title: Own your context window
+    url: https://github.com/humanlayer/12-factor-agents/blob/main/content/factor-03-own-your-context-window.md
+  - title: Context Engineering Guide
+    url: https://nlp.elvissaravia.com/p/context-engineering-guide
+  - title: What is Context Engineering?
+    url: https://www.pinecone.io/learn/context-engineering/

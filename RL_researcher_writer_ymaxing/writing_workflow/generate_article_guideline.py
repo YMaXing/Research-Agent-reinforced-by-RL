@@ -39,6 +39,10 @@ Usage
   # Evaluate synthesizer on test split (09_RAG, 11_multimodal)
   uv run python generate_article_guideline.py --eval-mode
 
+  # Extract a planning brief from a finished article (saves to inputs/briefs/)
+  uv run python generate_article_guideline.py --from-article 03_context_engineering
+  uv run python generate_article_guideline.py --from-article 03_context_engineering 06_tools
+
   # List all briefs available in inputs/briefs/
   uv run python generate_article_guideline.py --list-briefs
 
@@ -249,9 +253,24 @@ ABSOLUTE FORMATTING RULES (violating any of these is a hard failure):
   9. For the FINAL `## Section N` block, simply omit the `Transition to
      Section N+1:` line. NEVER write meta-commentary such as
      "Transition is not needed as this is the last section."
+ 10. The brief's key_points for each section define the CONTENT BUDGET for that
+     section. Every key_point listed must be covered. Do NOT invent additional
+     top-level concepts, sub-taxonomies, or technique categories beyond what the
+     key_points explicitly name. You may expand each key_point with:
+       - a concrete illustrative example
+       - a failure mode or edge case
+       - a contrast with an adjacent concept already named in the brief
+     but you may NOT introduce a new concept that has no anchor in the brief.
+     If a section's key_points list is empty, derive content ONLY from:
+       - the section title
+       - the lesson's topic_summary and why_valuable fields
+       - concepts named in the Concepts from Previous / Future Lessons fields
+     Do not fill empty key_points by freely inventing technique lists from your
+     general knowledge of the topic.
 
 PER-SECTION REQUIREMENTS — each ## Section N block must contain:
-  • Specific bullet points covering every key concept; sub-bullets for depth
+  • One bullet cluster per key_point in the brief; sub-bullets expand that
+    specific point with examples, failure modes, or named contrasts (rule 10)
   • Named frameworks/APIs/papers/failure modes/code patterns ONLY when present
     in the brief (see rule 8)
   • A `Transition to Section N+1:` line (omit for the final section)
@@ -267,6 +286,97 @@ STYLE:
   • Use "we" / "our" for the writing team, "you" / "your" for the reader
 
 Return ONLY the guideline text.  No preamble, no explanation, no code fences.\
+"""
+
+# ---------------------------------------------------------------------------
+# Brief-extraction system prompt (used by --from-article mode)
+# ---------------------------------------------------------------------------
+
+_BRIEF_EXTRACTION_SYSTEM_PROMPT = """\
+You are a senior curriculum designer for the "Agentic AI Engineering" course.
+
+Your task: read a FINISHED lesson article and reconstruct the planning brief
+that a course author would have written BEFORE drafting the article.
+
+The brief is a PLANNING DOCUMENT, not a summary.  Key points must be
+conceptual anchors — the ideas a course author would jot down when deciding
+what to cover — NOT verbatim sentences or condensed excerpts from the article.
+
+CALIBRATION — right level of detail for key_points:
+  ✓ GOOD: "Contrast RAG vs fine-tuning: when each is the right tool (cost, latency, specificity)"
+  ✓ GOOD: "Vector embeddings: how semantic similarity search works vs. keyword search"
+  ✗ TOO THIN: "RAG components"  (no angle, no contrast, no question to answer)
+  ✗ TOO DENSE: "RAG has three components: Retrieval uses FAISS to do ANN search over
+     embedded chunks, Augmentation injects top-k results into the context, Generation..."
+     (this is article text, not a planning note)
+
+Output ONLY a valid YAML document matching this schema exactly (no markdown
+fences, no preamble, no explanation — raw YAML only):
+
+  lesson_number: <int>
+  title: "<lesson title WITHOUT 'Lesson N:' prefix>"
+  topic_summary: |
+    <2-4 sentence description of what the lesson covers, at planning level>
+  why_valuable: |
+    <1-2 sentences on why this topic matters to AI Engineers>
+  target_length_words: <int, approximate word count of article body>
+  theory_practice_ratio: "<X% theory - Y% practice>"
+  lesson_scope: >
+    <one sentence: lesson position + what comes before/after>
+  audience: >
+    <one sentence: who the reader is and what they already know>
+  concepts_from_previous_lessons:
+    - <concept 1 — infer from article cross-references such as "as we saw in lesson N">
+  concepts_for_future_lessons:
+    - <concept 1 — infer from forward-references in the article>
+  sections:
+    - title: "<section title WITHOUT 'Section N -' prefix>"
+      target_words: <int, approximate word count of this section>
+      key_points:
+        - "<conceptual anchor — name concept + angle/contrast/question; 3–6 per section>"
+  golden_sources:
+    - title: "<source title>"
+      url: "<URL>"
+  other_sources:
+    - title: "<source title>"
+      url: "<URL>"
+
+RULES:
+  1. key_points are planning notes, not article excerpts.  Each names a
+     concept and an angle (contrast, failure mode, question, diagram idea).
+  2. target_words per section: use the EXACT prose word count from the
+     SECTION PROSE WORD COUNTS block in the user message — those numbers
+     were computed programmatically (all code fences, table rows, and HTML
+     comments already stripped).  Copy each number verbatim; do NOT
+     re-estimate.
+  3. For fields that require course context not present in the article
+     (lesson_scope, concepts_from/for_future_lessons), make a reasonable
+     inference.
+  4. theory_practice_ratio: estimate from proportion of explanatory text
+     vs. code / hands-on walkthroughs.
+  5. golden_sources: look FIRST for a dedicated "Golden Sources", "References",
+     "Sources", or "Further Reading" section at the END of the article.
+     Extract URLs from there.  Fall back to inline URLs in the article body
+     only if no dedicated section exists.  Never invent or guess URLs.
+  6. other_sources: same lookup logic as Rule 5 — extract from a dedicated
+     "Other Sources" or secondary further-reading section if present;
+     otherwise write: other_sources: []
+  7. Always include the Introduction as the FIRST section.  Course articles
+     always open with a short intro (100–250 words) that callbacks to
+     previous lessons and previews the current lesson.  Include it even if
+     the intro is brief; set target_words to the actual prose count.
+  8. Do NOT name specific Python class names, method names, or implementation
+     details from code (e.g. "inspect.signature()", "5-step loop", exact
+     parameter names).  Stay at the concept level: name the pattern or
+     mechanism, not the code detail.
+  9. target_length_words (top-level): sum of all section target_words values
+     ONLY — do NOT include words from code blocks, diagrams, or the source
+     list at the end of the article.
+ 10. Output raw YAML only.  No markdown code fences, no preamble.
+ 11. sections list: each numbered entry in the SECTION PROSE WORD COUNTS
+     block must become its own section entry.  Do NOT merge two entries into
+     one.  Sub-headings that are already combined in that block (because they
+     are subsections of a parent section) should NOT be split back out.\
 """
 
 # ---------------------------------------------------------------------------
@@ -474,6 +584,136 @@ def _derive_compact_brief_from_guideline(guideline: str, article: str = "") -> s
     """
     fake_brief = _extract_brief_dict_from_guideline(guideline, article)
     return _brief_to_text(fake_brief)
+
+
+# Heading patterns that indicate a sources/references appendix, not a content section.
+_NON_CONTENT_HEADING_RE = re.compile(
+    r"^(?:\*+)?(?:References?|Golden Sources?|Other Sources?|Further Reading|Sources?)(?:\*+)?$",
+    re.IGNORECASE,
+)
+
+
+def _count_section_prose_words(article_text: str) -> list[tuple[str, int]]:
+    """Parse an article by ## headings and count prose-only words in each section.
+
+    Strips fenced code blocks FIRST (to avoid false ## splits inside code),
+    then splits on ## headings, and excludes known non-content sections
+    (References, Golden Sources, etc.).
+
+    Also includes the pre-heading introduction prose (content before the first
+    ## heading, after stripping the H1 title line) as the first entry.
+
+    Returns an ordered list of (section_title, word_count) pairs covering
+    only real content sections of the article.
+    """
+
+    def _prose_wc(text: str) -> int:
+        text = re.sub(r"(?m)^\|.*\|$", "", text)  # table rows
+        text = re.sub(r"<!--[\s\S]*?-->", "", text)  # HTML comments
+        return len(text.split())
+
+    # Strip code fences before splitting so ## inside code doesn't create
+    # phantom sections.
+    stripped = re.sub(r"```[\s\S]*?```", "", article_text)
+
+    parts = re.split(r"(?m)^## ", stripped)
+    results: list[tuple[str, int]] = []
+
+    # parts[0] is the H1 title + intro prose (before the first ## heading).
+    # Strip the H1 line, then count remaining prose as the Introduction.
+    intro_body = re.sub(r"(?m)^#[^#][^\n]*\n", "", parts[0])
+    intro_wc = _prose_wc(intro_body)
+    if intro_wc > 50:  # only add if there is real intro content
+        results.append(("Introduction", intro_wc))
+
+    for part in parts[1:]:
+        first_nl = part.find("\n")
+        if first_nl == -1:
+            continue
+        title = part[:first_nl].strip()
+        # Remove bold markers so '## **Conclusion**' matches normally
+        plain_title = re.sub(r"\*+", "", title).strip()
+        # Skip sources/references appendix sections
+        if _NON_CONTENT_HEADING_RE.match(plain_title):
+            continue
+        results.append((plain_title, _prose_wc(part[first_nl:])))
+    return results
+
+
+async def _extract_brief_from_article(
+    llm,
+    article_text: str,
+    article_slug: str,
+) -> dict[str, Any]:
+    """Call the LLM to extract a planning-level brief from a finished article.
+
+    Returns a dict with the same schema as ``_load_brief`` output.
+    The caller is responsible for writing the result to a YAML file for
+    human review before it is used for guideline generation.
+    """
+    # Pre-compute lesson number from the slug so the LLM doesn't have to guess.
+    lesson_num = 0
+    num_m = re.match(r"(\d+)", article_slug)
+    if num_m:
+        lesson_num = int(num_m.group(1))
+
+    section_prose = _count_section_prose_words(article_text)
+    prose_lines = "\n".join(f"  {i}. {title}: {wc} words" for i, (title, wc) in enumerate(section_prose, 1))
+    word_count = len(article_text.split())
+    user_message = (
+        f"Article slug: {article_slug}\n"
+        f"Approximate total word count: {word_count:,}\n\n"
+        f"SECTION PROSE WORD COUNTS (code fences stripped; sub-headings\n"
+        f"inside code blocks are excluded; References/Sources appendix excluded):\n"
+        f"{prose_lines}\n\n"
+        f"This list is the AUTHORITATIVE section structure for the brief.\n"
+        f"Use each word count verbatim as target_words for that section.\n"
+        f"Do NOT create sections for any ## headings in the article text that\n"
+        f"do not appear in this list — they are sub-headings within their parent\n"
+        f"section or appendix material.  Do NOT merge any two listed entries.\n\n"
+        f"ARTICLE TEXT:\n{'=' * 60}\n"
+        f"{article_text.strip()}\n"
+        f"{'=' * 60}\n\n"
+        f"Generate the planning brief YAML for this article."
+    )
+
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            messages = [
+                SystemMessage(content=_BRIEF_EXTRACTION_SYSTEM_PROMPT),
+                HumanMessage(content=user_message),
+            ]
+            response = await llm.ainvoke(messages)
+            text = response.content.strip()
+
+            # Strip markdown code fences if the model wrapped the output
+            text = re.sub(r"^```(?:yaml)?\s*\n", "", text)
+            text = re.sub(r"\n```\s*$", "", text)
+            text = text.strip()
+
+            data = yaml.safe_load(text)
+            if not isinstance(data, dict):
+                raise ValueError(f"LLM output did not parse to a dict: {type(data)}")
+
+            # Patch lesson_number if the LLM omitted or zeroed it
+            if lesson_num and not data.get("lesson_number"):
+                data["lesson_number"] = lesson_num
+
+            # Ensure required list fields exist
+            for key in ("sections", "golden_sources", "concepts_from_previous_lessons", "concepts_for_future_lessons"):
+                if key not in data:
+                    data[key] = []
+
+            return data
+
+        except Exception as exc:
+            logger.warning("Brief extraction attempt %d/%d failed: %s", attempt, MAX_RETRIES, exc)
+            if attempt < MAX_RETRIES:
+                wait = attempt * RETRY_BACKOFF_BASE
+                logger.info("  retrying in %ds …", wait)
+                await asyncio.sleep(wait)
+
+    raise RuntimeError(f"Failed to extract brief from article '{article_slug}' after {MAX_RETRIES} attempts")
 
 
 def _validate_output(
@@ -692,7 +932,15 @@ async def _generate_guideline(
             logger.warning("Few-shot article %s not found at %s — skipping", article, guideline_path)
             continue
         full_guideline = _read_file(guideline_path)
-        compact_brief = _derive_compact_brief_from_guideline(full_guideline, article)
+        # Prefer the real hand-verified YAML brief when it exists; fall back
+        # to re-deriving from the guideline only when no YAML is available.
+        brief_yaml_path = _BRIEFS_DIR / f"{article}.yaml"
+        if brief_yaml_path.exists():
+            compact_brief = _brief_to_text(_load_brief(brief_yaml_path))
+            logger.debug("  Few-shot %s: using real brief YAML", article)
+        else:
+            compact_brief = _derive_compact_brief_from_guideline(full_guideline, article)
+            logger.debug("  Few-shot %s: no brief YAML — deriving from guideline", article)
         examples_block += (
             f"\n\n{sep}\n"
             f"EXAMPLE {i} — INPUT BRIEF:\n"
@@ -879,6 +1127,129 @@ async def eval_mode(few_shot_articles: list[str], llm) -> None:
     )
 
 
+async def from_article_mode(
+    articles: list[str],
+    force: bool,
+    dry_run: bool,
+    llm,
+) -> None:
+    """Extract planning briefs from finished articles; save as YAML for review.
+
+    For each article slug, looks for:
+      1. ``{_EVAL_DATA_DIR}/{article}/article_ground_truth.md``  (preferred)
+      2. ``{_EVAL_DATA_DIR}/{article}/article.md``               (fallback)
+      3. The value itself as a direct file path.
+
+    Output is written to ``inputs/briefs/{article}.yaml`` with a header comment
+    reminding the reviewer to check TODO fields before running guideline generation.
+    """
+    logger.info("=" * 70)
+    logger.info("FROM-ARTICLE MODE — extracting briefs for: %s", articles)
+    logger.info("Model: %s", _GENERATION_MODEL)
+    logger.info("=" * 70)
+
+    _BRIEFS_DIR.mkdir(parents=True, exist_ok=True)
+
+    for raw in articles:
+        # Resolve article file path
+        article_slug = raw
+        article_path = _EVAL_DATA_DIR / raw / "article_ground_truth.md"
+        if not article_path.exists():
+            article_path = _EVAL_DATA_DIR / raw / "article.md"
+        if not article_path.exists():
+            # Try as a direct file path
+            article_path = Path(raw)
+            article_slug = article_path.stem
+        if not article_path.exists():
+            logger.error(
+                "[MISSING] No article file found for %r — tried article_ground_truth.md, article.md, and as a direct path.",
+                raw,
+            )
+            continue
+
+        output_path = _BRIEFS_DIR / f"{article_slug}.yaml"
+        if output_path.exists() and not force:
+            logger.info(
+                "[SKIP] %s — brief already exists at %s (use --force to overwrite)",
+                article_slug,
+                output_path,
+            )
+            continue
+
+        word_count = len(_read_file(article_path).split())
+        logger.info(
+            "[FROM-ARTICLE] %s  (%s, ~%d words) …",
+            article_slug,
+            article_path.name,
+            word_count,
+        )
+
+        if dry_run:
+            logger.info(
+                "  [DRY-RUN] would extract brief from %s via %s → %s",
+                article_path.name,
+                _GENERATION_MODEL,
+                output_path,
+            )
+            continue
+
+        try:
+            article_text = _read_file(article_path)
+            brief = await _extract_brief_from_article(llm, article_text, article_slug)
+        except Exception:
+            logger.exception("FAILED to extract brief for %s", article_slug)
+            continue
+
+        # Post-inject sources from the planning guideline when available.
+        # The article body only contains inline citations; the curated source
+        # list lives in article_guideline.md, which the LLM cannot access.
+        guideline_path = _EVAL_DATA_DIR / article_slug / "article_guideline.md"
+        if guideline_path.exists():
+            try:
+                guideline_brief = _extract_brief_dict_from_guideline(_read_file(guideline_path), article_slug)
+                injected_golden = guideline_brief.get("golden_sources") or []
+                injected_other = guideline_brief.get("other_sources") or []
+                if injected_golden:
+                    brief["golden_sources"] = injected_golden
+                    brief["other_sources"] = injected_other
+                    logger.info(
+                        "  Sources injected from article_guideline.md: %d golden, %d other",
+                        len(injected_golden),
+                        len(injected_other),
+                    )
+            except Exception as exc:
+                logger.warning("  Could not inject sources from guideline: %s", exc)
+
+        # Serialise to YAML with a review header
+        header = (
+            f"# Auto-extracted brief for: {article_slug}\n"
+            f"# Source: {article_path.name}\n"
+            f"# REVIEW BEFORE USE — check all fields, especially those marked\n"
+            f"# '# TODO: review' which require course-context knowledge.\n"
+            f"# Then run:\n"
+            f"#   uv run python generate_article_guideline.py --article {article_slug}\n\n"
+        )
+        yaml_text = header + yaml.dump(
+            brief,
+            default_flow_style=False,
+            allow_unicode=True,
+            sort_keys=False,
+            width=120,
+        )
+
+        _write_file(output_path, yaml_text)
+        n_sections = len(brief.get("sections", []))
+        logger.info("  Saved: %s  (%d sections)", output_path, n_sections)
+        logger.info(
+            "  Next: review %s, then run:\n    uv run python generate_article_guideline.py --article %s",
+            output_path.name,
+            article_slug,
+        )
+
+    logger.info("=" * 70)
+    logger.info("Done.")
+
+
 # ---------------------------------------------------------------------------
 # Pipeline entry
 # ---------------------------------------------------------------------------
@@ -894,6 +1265,11 @@ async def run_pipeline(args: argparse.Namespace) -> None:
     if args.eval_mode:
         llm = get_model(_GENERATION_MODEL, _GENERATION_CONFIG)
         await eval_mode(few_shot, llm)
+        return
+
+    if args.from_article:
+        llm = get_model(_GENERATION_MODEL, _GENERATION_CONFIG)
+        await from_article_mode(list(args.from_article), args.force, args.dry_run, llm)
         return
 
     if args.list_briefs:
@@ -981,6 +1357,17 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help=(
             f"Evaluate synthesizer on test split ({TEST_ARTICLES}). Outputs saved as article_guideline_synthesized.md for manual review."
+        ),
+    )
+    parser.add_argument(
+        "--from-article",
+        nargs="+",
+        metavar="ARTICLE",
+        dest="from_article",
+        help=(
+            "Extract a planning brief from a finished article and save as a YAML file for review. "
+            "Accepts article slugs (looks for article_ground_truth.md in the eval dataset) "
+            "or direct file paths. Output: inputs/briefs/{article}.yaml"
         ),
     )
     parser.add_argument(

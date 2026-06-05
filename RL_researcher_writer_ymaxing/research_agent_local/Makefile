@@ -57,13 +57,61 @@ run-batch-dry-run:
 ARTICLES ?=
 PRESETS  ?=
 
-_ARTICLES_FLAG = $(foreach a,$(ARTICLES),--articles $(a))
-_PRESETS_FLAG  = $(foreach p,$(PRESETS),--presets $(p))
-_RL_FLAGS      = $(if $(ARTICLES),$(_ARTICLES_FLAG),) $(if $(PRESETS),$(_PRESETS_FLAG),)
+_ARTICLES_FLAG = $(if $(ARTICLES),--articles $(ARTICLES),)
+_PRESETS_FLAG  = $(if $(PRESETS),--presets $(PRESETS),)
+_RL_FLAGS      = $(_ARTICLES_FLAG) $(_PRESETS_FLAG)
 
 run-rl-gen-dry:
-	uv run --project mcp_server python rl_data_generator.py --dry-run $(_RL_FLAGS)
+	uv run --project mcp_server python training/rl_data_generator.py --dry-run $(_RL_FLAGS)
 
 run-rl-gen:
-	uv run --project mcp_server python rl_data_generator.py $(_RL_FLAGS)
+	uv run --project mcp_server python training/rl_data_generator.py $(_RL_FLAGS)
+
+# --------------------------------------------------------------------------- #
+# GRPO training  (Phase 2)
+# PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True prevents OOM on tight-VRAM
+# GPUs by letting the CUDA caching allocator grow segments incrementally
+# instead of failing on fragmented free blocks.
+#
+# Usage examples:
+#   make train-grpo                                        # default settings
+#   make train-grpo TASK_ID=run02 EPOCHS=300 LR=5e-5
+#   make train-grpo-section TASK_ID=run02_section
+#   make train-grpo TRAIN_FLAGS="--resume"
+#   make train-grpo-dry                                    # verify setup, no training
+# --------------------------------------------------------------------------- #
+
+TASK_ID     ?= run02_section_rh_r8
+EPOCHS      ?= 300
+LR          ?= 5e-5
+LORA_R      ?= 8
+LORA_ALPHA  ?= 8
+TRAIN_FLAGS ?=
+
+# NOTE: PYTORCH_CUDA_ALLOC_CONF must be placed immediately before the command
+# that spawns the Python process (uv run), NOT before `cd`.  In bash,
+# VAR=value cmd only sets VAR for that single command; subsequent commands
+# joined by && run in the original environment.
+_TRAIN_CMD = cd training && PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True uv run python train_grpo.py \
+	--task-id $(TASK_ID) \
+	--epochs $(EPOCHS) \
+	--lr $(LR) \
+	--lora-r $(LORA_R) \
+	--lora-alpha $(LORA_ALPHA) \
+	$(TRAIN_FLAGS)
+
+train-grpo:
+	$(_TRAIN_CMD)
+
+train-grpo-section:
+	$(_TRAIN_CMD) --granularity section
+
+train-grpo-resume:
+	$(_TRAIN_CMD) --resume
+
+train-grpo-section-resume:
+	$(_TRAIN_CMD) --granularity section --resume
+
+train-grpo-dry:
+	$(_TRAIN_CMD) --dry-run
 

@@ -134,6 +134,17 @@ The images will be passed as URLs directly from the <research> or <article_guide
 </image_format>
 To understand what image to use where you will interpret both the <image_url> and <image_caption>.
 
+**Critical rule — every research image requires both an embed line AND a caption:**
+A standalone `Image N:` caption with no preceding `![alt text](url)` line is NEVER acceptable for a
+research image. Every research image MUST be rendered as two consecutive elements:
+1. The embed: `![<concise alt text>](<full image URL from research>)` — this makes the image visible
+2. The caption: `Image N: <description> (Source ...)` — this provides attribution
+
+A caption without the embed is invisible (nothing displays). An embed without the caption violates
+the attribution rule. **Both are always required.** If you cannot find a suitable URL in the research
+for a required image, do not write a caption-only placeholder — either find the URL or omit the image
+entirely and note in the prose that the illustration comes from the referenced source.
+
 Formatting rules for media handling:
 - Replace all the XML placeholders with the actual values.
 - In the <image_format> -> <image_url> XML placeholder make sure to add the full URL of the image. For example,

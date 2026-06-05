@@ -327,6 +327,14 @@ No.1 focus.
     shows. Multi-sentence captions that narrate or walk through a diagram's content are never
     acceptable; that explanatory text belongs in the prose adjacent to the diagram, not in the
     caption itself.
+  - **Orphaned image captions**: Scan every `Image N:` caption line in the article. Each one MUST
+    be immediately preceded (with at most one blank line between) by either a closing Mermaid
+    fence (` ``` `) or a standard Markdown image embed (`![alt text](url)`). If an `Image N:`
+    caption has no such preceding element, flag a `structure_profile` review at the exact location.
+    An orphaned caption means the image body is missing — nothing renders for the reader. The
+    fix is to insert `![<concise alt text>](<url from research>)` immediately before the caption
+    using a URL from the `<research>` content; if no suitable URL exists, the caption must be
+    removed entirely rather than left as a broken placeholder.
 - **The fourth most important rule:** The adherence to the rest of the requirements.
 
 Other more generic rules:

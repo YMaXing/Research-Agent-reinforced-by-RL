@@ -6,6 +6,7 @@ import re
 from typing import List
 from urllib.parse import urlparse
 
+import httpx
 from firecrawl import AsyncFirecrawl
 from firecrawl.v2.utils.error_handler import PaymentRequiredError, WebsiteNotSupportedError
 from langchain.chat_models.base import BaseChatModel
@@ -24,6 +25,75 @@ MAX_AGE_ONE_WEEK = 604800000  # 1 week in milliseconds for 500% faster scraping
 
 # LLM cleaning uses settings.scraping_model (default: gemini-2.5-flash) which has a
 # 1M token context window and handles all article sizes in a single pass.
+
+# ---------------------------------------------------------------------------
+# Jina.ai Reader — used for PDF URLs (avoids Firecrawl 2-column PDF artifacts)
+# ---------------------------------------------------------------------------
+JINA_BASE_URL = "https://r.jina.ai/"
+JINA_TIMEOUT_SECONDS = 60
+JINA_HEADERS = {
+    "Accept": "text/plain",
+    "X-Return-Format": "markdown",
+}
+
+
+def is_pdf_url(url: str) -> bool:
+    """Return True if the URL points to a PDF document.
+
+    Detects:
+    - URLs whose path ends with ``.pdf`` (e.g. http://example.com/paper.pdf)
+    - arXiv PDF URLs (https://arxiv.org/pdf/<id>)
+    """
+    parsed = urlparse(url)
+    if parsed.path.lower().endswith(".pdf"):
+        return True
+    if "arxiv.org" in parsed.netloc and parsed.path.startswith("/pdf/"):
+        return True
+    return False
+
+
+async def scrape_with_jina(url: str) -> dict:
+    """Scrape a URL using the Jina.ai Reader API.
+
+    Handles PDFs natively and returns clean structured markdown without the
+    2-column layout artifacts that Firecrawl produces for PDF documents.
+    No LLM post-processing is required for the output.
+
+    Returns:
+        dict with keys: url, title, markdown, success
+    """
+    jina_url = JINA_BASE_URL + url
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                jina_url,
+                headers=JINA_HEADERS,
+                timeout=JINA_TIMEOUT_SECONDS,
+                follow_redirects=True,
+            )
+            response.raise_for_status()
+            raw = response.text.strip()
+
+        # Strip Jina metadata preamble (Title / URL Source / Published Time /
+        # Number of Pages / "Markdown Content:" header) so the body starts at
+        # the actual document content.
+        if "Markdown Content:" in raw:
+            raw = raw[raw.index("Markdown Content:") + len("Markdown Content:"):].strip()
+
+        # Extract title from response header, then fall back to first H1 in body.
+        title = response.headers.get("x-title", "").strip()
+        if not title:
+            for line in raw.splitlines():
+                if line.strip().startswith("# "):
+                    title = line.strip()[2:].strip()
+                    break
+        title = title or "N/A"
+
+        logger.info(f"✅ Jina.ai scraped: {url} ({len(raw.splitlines())} lines)")
+        return {"url": url, "title": title, "markdown": raw, "success": bool(raw)}
+    except Exception as exc:
+        logger.error(f"Jina.ai scraping failed for {url}: {exc}")
+        return {"url": url, "title": "Scraping Failed", "markdown": str(exc), "success": False}
 
 
 def slugify(text: str, max_length: int = 60) -> str:
@@ -144,16 +214,6 @@ def arxiv_html_url(arxiv_id: str) -> str:
 # arXiv special handler (added for high-quality paper scraping)
 # ─────────────────────────────────────────────────────────────
 
-# Tiny private helper for fallback (keeps the main function clean)
-async def _fallback_firecrawl_scrape(url: str) -> dict:
-    """Fallback using a fresh Firecrawl instance (uses first available key)."""
-    key = settings.firecrawl_api_key
-    if key is None:
-        raise ValueError("No Firecrawl API key configured")
-    firecrawl_app = AsyncFirecrawl(api_key=key.get_secret_value())
-    return await scrape_url(url, firecrawl_app)
-
-
 async def scrape_arxiv_url(
     url: str,
     article_guidelines: str,
@@ -163,8 +223,8 @@ async def scrape_arxiv_url(
     Dedicated handler for arXiv URLs.
     1. Uses arxiv2markdown (best quality).
     2. Runs a lightweight LLM cleanup to fix any remaining LaTeX quirks.
-    3. Falls back to Firecrawl if arxiv2markdown fails.
-    4. Then runs the normal clean_markdown step.
+    3. Falls back to Jina.ai (PDF URL) if arxiv2markdown fails — handles papers
+       whose HTML version is unavailable without Firecrawl 2-column artifacts.
     """
     logger.info(f"🔬 Detected arXiv URL, using arxiv2markdown: {url}")
 
@@ -223,18 +283,14 @@ async def scrape_arxiv_url(
             "success": True,
         }
     except Exception as e:
-        logger.warning(f"arxiv2markdown failed for {url}: {e}. Falling back to Firecrawl.")
-        scraped = await _fallback_firecrawl_scrape(url)
-        # Run the regular web-page cleaning step only for the Firecrawl fallback path,
-        # since arxiv2markdown output does not contain web-page boilerplate and the
-        # PROMPT_CLEAN_ARXIV_MARKDOWN step already handled all necessary cleanup.
-        # Skipping this for the primary path prevents a second full-paper LLM pass
-        # that would truncate long articles due to output-token limits.
-        if scraped.get("success", False):
-            final_cleaned = await clean_markdown(
-                scraped["markdown"], article_guidelines, url, chat_model
-            )
-            scraped["markdown"] = final_cleaned
+        logger.warning(f"arxiv2markdown failed for {url}: {e}. Falling back to Jina.ai.")
+        # Use the explicit PDF URL so Jina.ai fetches the full paper content rather
+        # than the abstract landing page (handles papers without an HTML version).
+        arxiv_id_fb = extract_arxiv_id(url)
+        pdf_url = f"https://arxiv.org/pdf/{arxiv_id_fb}" if arxiv_id_fb else url
+        scraped = await scrape_with_jina(pdf_url)
+        # Correct url field back to the originally requested arXiv URL.
+        scraped["url"] = url
 
     return scraped
 
@@ -310,10 +366,20 @@ async def clean_markdown(
 async def scrape_and_clean(url: str, article_guidelines: str, firecrawl_app: AsyncFirecrawl, chat_model) -> dict:
     """Scrape and clean a single URL, returning dict with url, title, markdown.
 
+    PDF URLs are routed directly to Jina.ai Reader, which handles PDF layout
+    natively and returns clean structured markdown without 2-column artifacts.
+    LLM cleaning is skipped for Jina.ai output.
+
+    For all other URLs, Firecrawl is used followed by an LLM cleaning step.
     If cleaning reveals the scraped content was pure boilerplate (LLM returns
     <!-- NO_CONTENT -->), a single no-cache retry is attempted so that a stale
     Firecrawl cache entry for JS-heavy SPAs doesn't permanently block the page.
     """
+    # Route PDF URLs to Jina.ai — avoids Firecrawl 2-column layout artifacts.
+    if is_pdf_url(url):
+        logger.info(f"📄 PDF URL detected, routing to Jina.ai: {url}")
+        return await scrape_with_jina(url)
+
     scraped = await scrape_url(url, firecrawl_app)
     status_marker = "✓" if scraped["success"] else "✗"
     number_of_tokens = chat_model.get_num_tokens(scraped["markdown"])

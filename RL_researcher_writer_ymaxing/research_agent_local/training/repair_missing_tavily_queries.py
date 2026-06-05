@@ -198,15 +198,9 @@ async def repair_query(mq: MissingQuery, dry_run: bool) -> bool:
         logger.info("  [DRY-RUN] Would run Tavily and patch files.")
         return False
 
-    # 1. Run Tavily search (with LLM structuring)
-    _, answer_by_source, citations = await run_tavily_search(mq.text)
-
-    if not citations:
-        # LLM structuring failed — fall back to raw Tavily results without LLM
-        logger.warning(
-            "  ⚠️  LLM structuring failed. Trying direct Tavily fallback (no LLM)…"
-        )
-        answer_by_source, citations = await _run_tavily_direct(mq.text)
+    # 1. Run Tavily search directly (no LLM structuring — these queries already
+    #    failed LLM structuring once, so bypass it entirely).
+    answer_by_source, citations = await _run_tavily_direct(mq.text)
 
     if not citations:
         logger.warning(

@@ -132,6 +132,7 @@ slugify = scraping_handler.slugify
 build_filename = scraping_handler.build_filename
 extract_arxiv_id = scraping_handler.extract_arxiv_id
 convert_markdown_images_to_urls = scraping_handler.convert_markdown_images_to_urls
+is_pdf_url = scraping_handler.is_pdf_url
 is_arxiv_url = sru_mod.is_arxiv_url
 categorize_urls = sru_mod.categorize_urls
 deduplicate_urls = sru_mod.deduplicate_urls
@@ -250,6 +251,30 @@ class TestConvertMarkdownImagesToUrls:
         assert result == "https://img.example.com/pic.webp"
 
 
+class TestIsPdfUrl:
+    def test_dotpdf_extension_is_pdf(self):
+        assert is_pdf_url("https://example.com/paper.pdf") is True
+
+    def test_dotPDF_uppercase_is_pdf(self):
+        assert is_pdf_url("https://example.com/PAPER.PDF") is True
+
+    def test_arxiv_pdf_path_is_pdf(self):
+        assert is_pdf_url("https://arxiv.org/pdf/2312.05678") is True
+
+    def test_arxiv_abs_path_is_not_pdf(self):
+        assert is_pdf_url("https://arxiv.org/abs/2312.05678") is False
+
+    def test_arxiv_html_path_is_not_pdf(self):
+        assert is_pdf_url("https://arxiv.org/html/2312.05678") is False
+
+    def test_regular_url_is_not_pdf(self):
+        assert is_pdf_url("https://blog.example.com/post") is False
+
+    def test_pdf_in_query_string_is_not_pdf(self):
+        # The path doesn't end in .pdf; pdf appears only in the query string.
+        assert is_pdf_url("https://example.com/download?file=paper.pdf") is False
+
+
 class TestCleanMarkdown:
     async def test_returns_llm_response(self):
         fake_llm = FakeLLM("cleaned markdown body")
@@ -349,6 +374,75 @@ class TestScrapeUrl:
         assert result["success"] is False
 
 
+class TestScrapeWithJina:
+    """Tests for scrape_with_jina() — patches httpx.AsyncClient to avoid network I/O."""
+
+    _HTTPX_PATCH = "src.app.scraping_handler.httpx.AsyncClient"
+
+    def _make_response(self, text: str, headers: dict | None = None) -> MagicMock:
+        resp = MagicMock()
+        resp.text = text.strip()
+        resp.headers = headers or {}
+        resp.raise_for_status = MagicMock()
+        return resp
+
+    def _make_client(self, response: MagicMock) -> AsyncMock:
+        client = AsyncMock()
+        client.__aenter__ = AsyncMock(return_value=client)
+        client.__aexit__ = AsyncMock(return_value=None)
+        client.get = AsyncMock(return_value=response)
+        return client
+
+    async def test_strips_jina_preamble(self):
+        raw = "Title: My Paper\nURL Source: https://example.com\nMarkdown Content:\n# Actual content\n\nBody here."
+        resp = self._make_response(raw, {"x-title": "My Paper"})
+        with patch(self._HTTPX_PATCH, return_value=self._make_client(resp)):
+            result = await scraping_handler.scrape_with_jina("https://example.com/paper.pdf")
+        assert result["success"] is True
+        assert "Markdown Content:" not in result["markdown"]
+        assert "# Actual content" in result["markdown"]
+
+    async def test_title_from_x_title_header(self):
+        raw = "Markdown Content:\n# Some Paper"
+        resp = self._make_response(raw, {"x-title": "Header Title"})
+        with patch(self._HTTPX_PATCH, return_value=self._make_client(resp)):
+            result = await scraping_handler.scrape_with_jina("https://example.com/paper.pdf")
+        assert result["title"] == "Header Title"
+
+    async def test_title_falls_back_to_first_h1(self):
+        raw = "Markdown Content:\n# Paper From H1\n\nBody text."
+        resp = self._make_response(raw, {"x-title": ""})
+        with patch(self._HTTPX_PATCH, return_value=self._make_client(resp)):
+            result = await scraping_handler.scrape_with_jina("https://example.com/paper.pdf")
+        assert result["title"] == "Paper From H1"
+
+    async def test_title_falls_back_to_na_when_no_header_or_h1(self):
+        raw = "Markdown Content:\nJust a paragraph without heading."
+        resp = self._make_response(raw, {"x-title": ""})
+        with patch(self._HTTPX_PATCH, return_value=self._make_client(resp)):
+            result = await scraping_handler.scrape_with_jina("https://example.com/paper.pdf")
+        assert result["title"] == "N/A"
+
+    async def test_network_exception_returns_failure(self):
+        client = AsyncMock()
+        client.__aenter__ = AsyncMock(return_value=client)
+        client.__aexit__ = AsyncMock(return_value=None)
+        client.get = AsyncMock(side_effect=OSError("connection refused"))
+        with patch(self._HTTPX_PATCH, return_value=client):
+            result = await scraping_handler.scrape_with_jina("https://example.com/paper.pdf")
+        assert result["success"] is False
+        assert result["url"] == "https://example.com/paper.pdf"
+
+    async def test_no_preamble_returns_full_body(self):
+        """When Jina returns content without a 'Markdown Content:' header, the full body is used."""
+        raw = "# Clean Paper\n\nDirect body without preamble."
+        resp = self._make_response(raw, {"x-title": "Clean Paper"})
+        with patch(self._HTTPX_PATCH, return_value=self._make_client(resp)):
+            result = await scraping_handler.scrape_with_jina("https://example.com/paper.pdf")
+        assert "# Clean Paper" in result["markdown"]
+        assert result["success"] is True
+
+
 class TestScrapeAndClean:
     async def test_happy_path_returns_cleaned_content(self):
         fake_fc = FakeFirecrawlApp(FakeFirecrawlResult("Title", "raw body"))
@@ -410,6 +504,45 @@ class TestScrapeAndClean:
         assert result["markdown"] == "llm cleaned output"
         assert len(fake_llm.prompts_received) >= 1
 
+    async def test_pdf_url_routes_to_jina_skips_firecrawl(self):
+        """PDF URLs short-circuit to Jina.ai; Firecrawl and LLM are never called."""
+        fake_fc = FakeFirecrawlApp(FakeFirecrawlResult("Unused", "should not appear"))
+        fake_llm = FakeLLM("should not be called")
+        jina_result = {"url": "https://example.com/paper.pdf", "title": "PDF Title", "markdown": "# PDF Content", "success": True}
+        with patch("src.app.scraping_handler.scrape_with_jina", AsyncMock(return_value=jina_result)):
+            result = await scraping_handler.scrape_and_clean(
+                "https://example.com/paper.pdf", "guidelines", fake_fc, fake_llm
+            )
+        assert result["success"] is True
+        assert result["title"] == "PDF Title"
+        assert result["markdown"] == "# PDF Content"
+        assert fake_fc.calls == []
+        assert fake_llm.prompts_received == []
+
+    async def test_arxiv_pdf_url_routes_to_jina(self):
+        """arXiv PDF URLs (arxiv.org/pdf/…) are also detected and routed to Jina.ai."""
+        fake_fc = FakeFirecrawlApp()
+        fake_llm = FakeLLM("should not be called")
+        jina_result = {"url": "https://arxiv.org/pdf/2312.05678", "title": "arXiv Paper", "markdown": "## Abstract", "success": True}
+        with patch("src.app.scraping_handler.scrape_with_jina", AsyncMock(return_value=jina_result)):
+            result = await scraping_handler.scrape_and_clean(
+                "https://arxiv.org/pdf/2312.05678", "guidelines", fake_fc, fake_llm
+            )
+        assert result["success"] is True
+        assert fake_fc.calls == []
+        assert fake_llm.prompts_received == []
+
+    async def test_pdf_jina_failure_returns_failure_dict(self):
+        """When Jina.ai fails for a PDF URL, success=False is propagated."""
+        fake_fc = FakeFirecrawlApp()
+        fake_llm = FakeLLM()
+        jina_result = {"url": "https://example.com/paper.pdf", "title": "Scraping Failed", "markdown": "network error", "success": False}
+        with patch("src.app.scraping_handler.scrape_with_jina", AsyncMock(return_value=jina_result)):
+            result = await scraping_handler.scrape_and_clean(
+                "https://example.com/paper.pdf", "", fake_fc, fake_llm
+            )
+        assert result["success"] is False
+
 
 class TestScrapeUrlsConcurrently:
     """
@@ -462,7 +595,7 @@ class TestScrapeArxivUrl:
     """Tests for the dedicated arXiv handler."""
 
     _INGEST_PATCH = "src.app.scraping_handler.ingest_paper"
-    _FC_INSTANCE_PATCH = "src.app.scraping_handler.AsyncFirecrawl"
+    _JINA_PATCH = "src.app.scraping_handler.scrape_with_jina"
 
     async def test_success_path_uses_ingest_paper(self):
         fake_llm = FakeLLM("arxiv cleaned")
@@ -478,30 +611,31 @@ class TestScrapeArxivUrl:
         # LLM cleaned the output; result should not be empty
         assert result["markdown"]
 
-    async def test_ingest_failure_falls_back_to_firecrawl(self):
-        fake_llm = FakeLLM("firecrawl cleaned")
-        # Make the firecrawl fallback succeed
-        fake_fc_instance = FakeFirecrawlApp(FakeFirecrawlResult("FallbackTitle", "fallback body"))
+    async def test_ingest_failure_falls_back_to_jina(self):
+        """When arxiv2markdown fails, the fallback calls Jina.ai on the explicit PDF URL."""
+        fake_llm = FakeLLM()
+        jina_result = {"url": "https://arxiv.org/abs/2312.05678", "title": "FallbackTitle", "markdown": "fallback body", "success": True}
         with patch(self._INGEST_PATCH, new=AsyncMock(side_effect=RuntimeError("ingest failed"))), \
-             patch(self._FC_INSTANCE_PATCH, return_value=fake_fc_instance):
+             patch(self._JINA_PATCH, new=AsyncMock(return_value=jina_result)):
             result = await scraping_handler.scrape_arxiv_url(
                 "https://arxiv.org/abs/2312.05678",
                 "",
                 fake_llm,
             )
         assert result["success"] is True
+        # Original arXiv URL is restored on the result
+        assert result["url"] == "https://arxiv.org/abs/2312.05678"
 
-    async def test_invalid_arxiv_url_falls_back_to_firecrawl(self):
-        """When extract_arxiv_id returns None, a ValueError is raised and fallback is triggered."""
-        fake_llm = FakeLLM("fallback cleaned")
-        fake_fc = FakeFirecrawlApp(FakeFirecrawlResult("FB", "fb content"))
-        with patch(self._FC_INSTANCE_PATCH, return_value=fake_fc):
+    async def test_invalid_arxiv_url_falls_back_to_jina(self):
+        """When extract_arxiv_id returns None, a ValueError is raised and Jina.ai fallback is triggered."""
+        fake_llm = FakeLLM()
+        jina_result = {"url": "https://arxiv.org/search/invalid", "title": "FB", "markdown": "fb content", "success": True}
+        with patch(self._JINA_PATCH, new=AsyncMock(return_value=jina_result)):
             result = await scraping_handler.scrape_arxiv_url(
-                "https://arxiv.org/search/invalid",  # no /abs/ or /pdf/
+                "https://arxiv.org/search/invalid",  # extract_arxiv_id → None → ValueError
                 "",
                 fake_llm,
             )
-        # Fallback succeeded
         assert result["success"] is True
 
     async def test_empty_raw_md_skips_llm_cleanup(self):

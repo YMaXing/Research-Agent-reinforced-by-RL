@@ -1,0 +1,140 @@
+================================================================================================
+DEAD SECTION AUDIT — 4B scenario {P0, P1, P3, P5}
+================================================================================================
+Total sections graded: 261
+  LIVE :  208 ( 79.7%)
+  TIGHT:    4 (  1.5%)
+  DEAD :   49 ( 18.8%)
+
+------------------------------------------------------------------------------------------------
+By variant:
+  variant            LIVE    TIGHT     DEAD    total
+  var_minimal      61 (73.5%)    3 ( 3.6%)   19 (22.9%)   83
+  var_standard     74 (83.1%)    0 ( 0.0%)   15 (16.9%)   89
+  var_demanding    73 (82.0%)    1 ( 1.1%)   15 (16.9%)   89
+
+------------------------------------------------------------------------------------------------
+Dead+Tight diagnosis (53 sections)
+------------------------------------------------------------------------------------------------
+  Score profile (all 4 presets):
+    PARTIAL_1100100            27 ( 50.9%)
+    MIXED                       6 ( 11.3%)
+    ALL_FAIL                    6 ( 11.3%)
+    PARTIAL_1000111             4 (  7.5%)
+    PARTIAL_1000100             3 (  5.7%)
+    PARTIAL_1100111             3 (  5.7%)
+    PARTIAL_1110111             2 (  3.8%)
+    PARTIAL_1110100             1 (  1.9%)
+    PARTIAL_0000111             1 (  1.9%)
+
+  Research-artifact divergence among same-score sections:
+    converged (J>=0.6)             16 ( 34.0%)
+    moderate (0.2<J<0.6)           31 ( 66.0%)
+    DIVERGED (J<=0.2)               0 (  0.0%)
+
+  Interpretation:
+    converged    -> presets agreed on what to research; tie is HONEST (intrinsic).
+    DIVERGED     -> presets explored differently but grader gave same scores;
+                    suggests GRADER BLINDNESS (worth a closer look).
+
+------------------------------------------------------------------------------------------------
+Section title-category vs class:
+  category           LIVE    TIGHT     DEAD    %dead
+  definitional     40         1         6       12.8%
+  synthesis         6         0         0        0.0%
+  procedural        8         1         2       18.2%
+  other           154         2        41       20.8%
+
+------------------------------------------------------------------------------------------------
+Section position vs class (position = index in article):
+  position       n    %LIVE   %TIGHT    %DEAD
+  0             24    83.3%     0.0%    16.7%
+  1             24    87.5%     0.0%    12.5%
+  2             24    87.5%     4.2%     8.3%
+  3             24    75.0%     4.2%    20.8%
+  4             24    75.0%     0.0%    25.0%
+  5             24    66.7%     4.2%    29.2%
+  6             24    83.3%     4.2%    12.5%
+  7             19    68.4%     0.0%    31.6%
+  8             16    81.2%     0.0%    18.8%
+  9             14    85.7%     0.0%    14.3%
+  10             9    66.7%     0.0%    33.3%
+  11             9    77.8%     0.0%    22.2%
+  12             7   100.0%     0.0%     0.0%
+  13             7    85.7%     0.0%    14.3%
+  14             6    66.7%     0.0%    33.3%
+  15             3   100.0%     0.0%     0.0%
+  16             2   100.0%     0.0%     0.0%
+  17             1   100.0%     0.0%     0.0%
+
+------------------------------------------------------------------------------------------------
+Per-article dead-section counts (pooled across variants):
+  article                              LIVE    TIGHT     DEAD    %dead
+  02_workflows_vs_agents             19        0        3      13.6%
+  03_context_engineering             16        2       10      35.7%
+  05_workflow_patterns               25        0        5      16.7%
+  06_tools                           43        0        4       8.5%
+  08_react_practice                  32        0       11      25.6%
+  09_RAG                             14        2        5      23.8%
+  10_memory_knowledge_access         20        0        6      23.1%
+  11_multimodal                      39        0        5      11.4%
+
+------------------------------------------------------------------------------------------------
+Per-section detail (first 50 DEAD + 25 TIGHT shown)
+------------------------------------------------------------------------------------------------
+  cls   var  art                      sec                                        regret profile                  J why                                                         
+  DEAD  min  02_workflows_vs_agents   References                                0.0300  PARTIAL_1100100       0.63 shared-partial-profile 1100100; research converged (intrin
+  DEAD  sta  02_workflows_vs_agents   References                                0.0300  PARTIAL_1100100       0.46 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  dem  02_workflows_vs_agents   References                                0.0300  PARTIAL_1100100       0.59 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  min  03_context_engineering   Connecting Context Engineering to AI E    0.0300  PARTIAL_1100100       0.36 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  min  03_context_engineering   From Prompt to Context Engineering        0.0300  PARTIAL_1100100       0.36 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  min  03_context_engineering   Introduction                              0.0300  PARTIAL_1100100       0.36 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  min  03_context_engineering   References                                0.0300  PARTIAL_1100100       0.36 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  min  03_context_engineering   Understanding Context Engineering         0.0300  PARTIAL_1000100       0.36 shared-partial-profile 1000100; research mod-different (UR
+  DEAD  min  03_context_engineering   What Makes Up the Context                 0.0300  PARTIAL_1000100       0.36 shared-partial-profile 1000100; research mod-different (UR
+  DEAD  sta  03_context_engineering   Production Implementation Challenges      0.0300  PARTIAL_1110100       0.46 shared-partial-profile 1110100; research mod-different (UR
+  DEAD  sta  03_context_engineering   References                                0.0300  PARTIAL_1100100       0.46 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  dem  03_context_engineering   Introduction                              0.0300  PARTIAL_1100100       0.52 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  dem  03_context_engineering   References                                0.0300  PARTIAL_1100100       0.52 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  min  05_workflow_patterns     References                                0.0300  PARTIAL_1100100       0.79 shared-partial-profile 1100100; research converged (intrin
+  DEAD  min  05_workflow_patterns     The Challenge with Complex Single LLM     0.0300  PARTIAL_1000111       0.79 shared-partial-profile 1000111; research converged (intrin
+  DEAD  sta  05_workflow_patterns     References                                0.0300  PARTIAL_1100100       0.51 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  dem  05_workflow_patterns     References                                0.0300  PARTIAL_1100100       0.62 shared-partial-profile 1100100; research converged (intrin
+  DEAD  dem  05_workflow_patterns     The Power of Modularity: Why Chain LLM    0.0300  PARTIAL_1110111       0.62 shared-partial-profile 1110111; research converged (intrin
+  DEAD  min  06_tools                 References                                0.0300  PARTIAL_1100100       0.47 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  min  06_tools                 Understanding Why Agents Need Tools       0.0300  PARTIAL_1000100       0.47 shared-partial-profile 1000100; research mod-different (UR
+  DEAD  sta  06_tools                 References                                0.0300  PARTIAL_1100100       0.45 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  dem  06_tools                 References                                0.0300  PARTIAL_1100100       0.48 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  min  08_react_practice        Alternative: ReAct with Model-Native R    0.0300  ALL_FAIL              0.66 hard-floor (all presets fully failed); research converged 
+  DEAD  min  08_react_practice        The Observation Phase                     0.0300  ALL_FAIL              0.66 hard-floor (all presets fully failed); research converged 
+  DEAD  sta  08_react_practice        Alternative: ReAct with Model-Native R    0.0300  ALL_FAIL              0.63 hard-floor (all presets fully failed); research converged 
+  DEAD  sta  08_react_practice        Introduction                              0.0300  PARTIAL_1000111       0.63 shared-partial-profile 1000111; research converged (intrin
+  DEAD  sta  08_react_practice        References                                0.0300  PARTIAL_1100100       0.63 shared-partial-profile 1100100; research converged (intrin
+  DEAD  sta  08_react_practice        Setup and Environment                     0.0300  PARTIAL_1000111       0.63 shared-partial-profile 1000111; research converged (intrin
+  DEAD  sta  08_react_practice        The Observation Phase                     0.0300  ALL_FAIL              0.63 hard-floor (all presets fully failed); research converged 
+  DEAD  dem  08_react_practice        Alternative: ReAct with Model-Native R    0.0300  ALL_FAIL              0.60 hard-floor (all presets fully failed); research converged 
+  DEAD  dem  08_react_practice        References                                0.0300  PARTIAL_1100100       0.60 shared-partial-profile 1100100; research converged (intrin
+  DEAD  dem  08_react_practice        Tests and Traces: Success and Graceful    0.0300  PARTIAL_1110111       0.60 shared-partial-profile 1110111; research converged (intrin
+  DEAD  dem  08_react_practice        The Observation Phase                     0.0300  ALL_FAIL              0.60 hard-floor (all presets fully failed); research converged 
+  DEAD  min  09_RAG                   References                                0.0300  PARTIAL_1100100       0.34 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  sta  09_RAG                   References                                0.0300  PARTIAL_1100100       0.41 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  sta  09_RAG                   The RAG Pipeline: Ingestion and Retrie    0.0300  PARTIAL_0000111       0.41 shared-partial-profile 0000111; research mod-different (UR
+  DEAD  dem  09_RAG                   References                                0.0300  PARTIAL_1100100       0.27 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  dem  09_RAG                   The RAG Pipeline: Ingestion and Retrie    0.0300  PARTIAL_1000111       0.27 shared-partial-profile 1000111; research mod-different (UR
+  DEAD  min  10_memory_knowledge_ac   Conclusion                                0.0300  PARTIAL_1100111       0.56 shared-partial-profile 1100111; research mod-different (UR
+  DEAD  min  10_memory_knowledge_ac   Long-Term Memory: Semantic, Episodic,     0.0300  PARTIAL_1100111       0.56 shared-partial-profile 1100111; research mod-different (UR
+  DEAD  min  10_memory_knowledge_ac   References                                0.0300  PARTIAL_1100100       0.56 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  sta  10_memory_knowledge_ac   Memory Implementations With Code Examp    0.0300  MIXED                 0.53 score-mixed (cost-only differentiates); URL-Jaccard=0.53
+  DEAD  sta  10_memory_knowledge_ac   References                                0.0300  PARTIAL_1100100       0.53 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  dem  10_memory_knowledge_ac   References                                0.0300  PARTIAL_1100100       0.38 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  min  11_multimodal            Applying Multimodal LLMs to Images and    0.0300  MIXED                 0.59 score-mixed (cost-only differentiates); URL-Jaccard=0.59
+  DEAD  min  11_multimodal            References                                0.0300  PARTIAL_1100100       0.59 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  sta  11_multimodal            References                                0.0300  PARTIAL_1100100       0.36 shared-partial-profile 1100100; research mod-different (UR
+  DEAD  dem  11_multimodal            Conclusion                                0.0300  PARTIAL_1100111       0.35 shared-partial-profile 1100111; research mod-different (UR
+  DEAD  dem  11_multimodal            References                                0.0300  PARTIAL_1100100       0.35 shared-partial-profile 1100100; research mod-different (UR
+  TIGHT min  03_context_engineering   Key Strategies for Context Optimizatio    0.0500  MIXED                 0.36 score-mixed (cost-only differentiates); URL-Jaccard=0.36
+  TIGHT dem  03_context_engineering   Production Implementation Challenges      0.0450  MIXED                 0.52 score-mixed (cost-only differentiates); URL-Jaccard=0.52
+  TIGHT min  09_RAG                   Conclusion                                0.0375  MIXED                 0.34 score-mixed (cost-only differentiates); URL-Jaccard=0.34
+  TIGHT min  09_RAG                   The RAG Pipeline: Ingestion and Retrie    0.0225  MIXED                 0.34 score-mixed (cost-only differentiates); URL-Jaccard=0.34
+
+================================================================================================

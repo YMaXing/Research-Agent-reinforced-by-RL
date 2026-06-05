@@ -10,10 +10,13 @@ from typing import Any, cast
 from opik.evaluation.metrics import score_result
 
 from brown.evals.metrics.base import BrownBaseMetric
-from brown.models import ModelConfig, SupportedModels
+from brown.models import ModelConfig, SupportedModels, get_model
 
 from . import prompts
-from .types import FollowsGTArticleScores
+from .types import (
+    CorePreservationArticleScores,
+    FollowsGTArticleScores,
+)
 
 
 class FollowsGTMetric(BrownBaseMetric):
@@ -121,30 +124,57 @@ class FollowsGTMetric(BrownBaseMetric):
             instance across threads.
 
         """
-        # Initialize the model client at the function level to avoid coroutine reuse issues when running in
-        # multiple threads due to sharing the same model instance across threads.
-        model_client = self.init_model()
-
-        llm_query = prompts.get_eval_prompt(
+        # Pass 1: evaluate the five independent criteria. The SYSTEM_PROMPT does not include the
+        # CorePreservation criterion definition, so the LLM's core_preservation output here is a
+        # placeholder that will be overwritten by pass 2.
+        pass1_client = get_model(self.model, self.model_config).with_structured_output(FollowsGTArticleScores)
+        pass1_query = prompts.get_eval_prompt(
             output=output,
             expected_output=expected_output,
             few_shot_examples=self.few_shot_examples,
             exploration_sources=exploration_sources,
         )
-
-        article_response = cast(
+        pass1_response = cast(
             FollowsGTArticleScores,
-            await model_client.ainvoke(
+            await pass1_client.ainvoke(
                 [
                     {
                         "role": "user",
-                        "content": llm_query,
+                        "content": pass1_query,
                     }
                 ]
             ),
         )
 
-        if not article_response:
-            raise ValueError("Model failed to return a structured response.")
+        if not pass1_response:
+            raise ValueError("Model failed to return a structured response for pass 1.")
 
-        return article_response.to_score_result(self.name)
+        # Pass 2: evaluate core_preservation with the finalised depth/breadth scores as context.
+        # Sequential execution guarantees the judge builds on the actual pass-1 enhancement scores
+        # regardless of whether they are 0 or 1.
+        core_pres_client = get_model(self.model, self.model_config).with_structured_output(CorePreservationArticleScores)
+        core_pres_query = prompts.get_core_preservation_prompt(
+            output=output,
+            expected_output=expected_output,
+            article_scores=pass1_response,
+            few_shot_examples=self.few_shot_examples,
+        )
+        core_pres_response = cast(
+            CorePreservationArticleScores,
+            await core_pres_client.ainvoke(
+                [
+                    {
+                        "role": "user",
+                        "content": core_pres_query,
+                    }
+                ]
+            ),
+        )
+
+        # Overwrite the pass-1 core_preservation placeholders with the pass-2 scores.
+        # Matching by index is robust against minor title paraphrasing by the LLM.
+        if core_pres_response and len(core_pres_response.sections) == len(pass1_response.sections):
+            for section, core_pres_section in zip(pass1_response.sections, core_pres_response.sections):
+                section.scores.core_preservation = core_pres_section.core_preservation
+
+        return pass1_response.to_score_result(self.name)

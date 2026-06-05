@@ -92,10 +92,14 @@ _google_key_rotator = _GoogleKeyRotator()
 def get_model(model: SupportedModels, config: ModelConfig | None = None) -> BaseChatModel:
     if model == SupportedModels.FAKE_MODEL:
         if config and config.mocked_response is not None:
-            if hasattr(config.mocked_response, "model_dump"):
-                mocked_response_json = config.mocked_response.model_dump(mode="json")
+            responses = config.mocked_response if isinstance(config.mocked_response, list) else [config.mocked_response]
+            idx = config._response_index % len(responses)
+            config._response_index += 1
+            chosen = responses[idx]
+            if hasattr(chosen, "model_dump"):
+                mocked_response_json = chosen.model_dump(mode="json")
             else:
-                mocked_response_json = json.dumps(config.mocked_response)
+                mocked_response_json = json.dumps(chosen)
             return FakeModel(responses=[mocked_response_json])
         else:
             return FakeModel(responses=[])

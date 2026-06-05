@@ -1,0 +1,162 @@
+# Auto-extracted brief for: 06_tools
+# Source: article_ground_truth.md
+# REVIEW BEFORE USE — check all fields, especially those marked
+# '# TODO: review' which require course-context knowledge.
+# Then run:
+#   uv run python generate_article_guideline.py --article 06_tools
+
+lesson_number: 6
+title: Tools
+topic_summary: 'Introduce tools/function calling as the mechanism allowing LLMs to overcome static knowledge cutoffs by interacting
+  with external environments. Cover the fundamental request-execute-respond loop, tool schema design, and why clear descriptions/names
+  are critical for reliable selection. Progress from implementing tool calling and a decorator-based registry from scratch,
+  to leveraging production SDKs like Gemini for native function calling, combining with Pydantic for validated structured
+  outputs, implementing multi-step loops, and analyzing limitations that motivate advanced patterns.
+
+  '
+why_valuable: 'Tool calling is a foundational skill for AI engineers building production agents that must query databases,
+  call APIs, execute code, or access memory. Deep understanding of schema design, parsing, loops, and SDK patterns enables
+  debugging unreliable agents, reducing custom prompt fragility, and scaling to complex multi-tool workflows.
+
+  '
+target_length_words: 3600
+theory_practice_ratio: 40% theory - 60% practice
+lesson_scope: 'Lesson 6 builds directly on prior coverage of context engineering, structured outputs (Lesson 4), and workflow
+  patterns like chaining/routing; it sets up ReAct-style reasoning loops (Lessons 7-8), memory systems (Lesson 9), and RAG/agentic
+  RAG (Lesson 10).
+
+  '
+audience: 'AI engineers who have completed earlier lessons on LLM fundamentals, prompting, structured outputs with Pydantic,
+  and basic orchestration patterns, and who now want to give models the ability to act on external systems.
+
+  '
+concepts_from_previous_lessons:
+- Structured outputs via Pydantic models and JSON schema generation (Lesson 4)
+- Chaining and routing as basic LLM workflow patterns
+- Context engineering and system prompt design for controlling model behavior
+concepts_for_future_lessons:
+- ReAct (Reason + Act) interleaving of explicit reasoning steps with tool calls (Lessons 7-8)
+- Memory architectures including vector and graph databases (Lesson 9)
+- RAG and agentic RAG patterns that rely on memory-access tools (Lesson 10)
+article_code:
+- title: Notebook 1
+  url: https://github.com/towardsai/course-ai-agents/blob/dev/lessons/06_tools/notebook.ipynb
+sections:
+- title: Introduction
+  target_words: 135
+  key_points:
+  - Callback to core concepts from previous lessons as the entry point
+  - 'Transition to this lesson: tools as the mechanism that lets LLMs act beyond text
+    generation'
+- title: Understanding Why Agents Need Tools
+  target_words: 310
+  key_points:
+  - 'Core LLM limitation: static training cutoff prevents real-time data access or
+    external actions'
+  - 'Brain-and-hands analogy: LLM is the reasoning brain; tools are the hands and
+    senses for perceiving and acting in the world'
+  - 'Common production tool categories: API calls, database queries, memory/RAG retrieval,
+    sandboxed code execution'
+  - 'Diagram: tool output becomes feedback that the LLM interprets to decide its next
+    action or produce a final answer'
+- title: Implementing Tool Calls from Scratch
+  target_words: 930
+  key_points:
+  - 'Request-execute-respond loop from scratch: expose tools via system prompt, parse
+    LLM''s structured function call, execute handler, inject result, generate final
+    response'
+  - 'Tool schema anatomy: name, description, JSON Schema for parameters (types, required
+    fields, per-param descriptions)'
+  - 'Tool registry pattern: map from name to handler + schema to avoid duplication
+    and enable dynamic dispatch'
+  - 'System prompt engineering: describe when to call tools, enforce output format,
+    and emphasise description clarity to prevent selection errors'
+  - 'Response parsing and execution: extract structured call, dispatch to handler,
+    return result -- handle malformed calls gracefully'
+  - 'Tradeoff: manual schemas give full control but violate DRY and become a maintenance
+    burden as tool count grows'
+- title: Building a Decorator-Based Tool Framework
+  target_words: 560
+  key_points:
+  - 'Motivation for the @tool decorator: automate schema generation from function
+    signature, type hints, and docstring to enforce DRY'
+  - 'Custom tool wrapper class: bundle handler function and auto-generated JSON Schema
+    into one modular unit'
+  - 'Decorator implementation: derive parameter schema from type hints and docstring
+    automatically, removing manual schema duplication'
+  - Registry as a list of tool objects; derived maps for by-name lookup and schema
+    list for prompting
+  - 'Comparison to production frameworks like LangGraph: same principle of centralising
+    schema logic for scalability'
+  - Python decorator mechanics as function composition
+- title: Production Tool Calling with the Gemini SDK
+  target_words: 390
+  key_points:
+  - 'Native SDK advantage over manual prompts: pass tool definitions directly as SDK
+    objects; no custom parsing needed'
+  - 'SDK execution pattern: configure tool mode, receive structured function call
+    response, dispatch to handler, feed typed result back'
+  - 'SDK auto-schema generation: pass Python functions directly; provider extracts
+    signature and docstring automatically'
+  - 'Portability insight: equivalent patterns exist across major providers; skills
+    transfer with minimal changes'
+- title: Using Pydantic Models as Tools for On-Demand Structured Outputs
+  target_words: 315
+  key_points:
+  - 'Hybrid pattern: agent reasons in natural language internally, then calls a Pydantic
+    model as a tool only for final validated output'
+  - 'Treat a Pydantic model as a tool: derive its JSON Schema for the tool definition,
+    invoke only at the output extraction step'
+  - 'Validation benefit: Pydantic raises errors on schema or type mismatch before
+    data reaches downstream systems'
+  - 'Contrast with always-structured mode: retaining free-form reasoning until final
+    extraction gives the agent more flexibility'
+- title: The Downsides of Running Tools in a Loop
+  target_words: 520
+  key_points:
+  - 'Iterative loop: allow the LLM to chain multiple tool calls, deciding what tool
+    to use at each step based on previous outputs'
+  - 'Loop message-structure diagram: user prompt -- tool call -- tool result -- tool
+    call -- ... -- final answer'
+  - 'Core limitations of sequential loops: no reasoning between calls, limited planning,
+    risk of inefficient usage or infinite loops'
+  - 'Parallel tool execution: independent tools can run simultaneously to reduce latency
+    when order does not matter'
+  - 'Bridge to ReAct: these loop limitations motivate explicit reasoning steps before
+    each tool decision -- preview of Lessons 7-8'
+- title: Popular Tools Used Within the Industry
+  target_words: 340
+  key_points:
+  - 'Knowledge and memory access tools: vector DB queries, text-to-SQL, graph DB
+    retrieval -- closely related to memory and RAG lessons'
+  - 'Web search and browsing tools: search engine API integrations and web scrapers
+    -- common in chatbots and research agents'
+  - 'Code execution tools: sandboxed interpreter for calculations, data manipulation,
+    and visualisation'
+  - 'Other enterprise categories: external API integrations (calendar, email, project
+    management), file system operations'
+- title: Conclusion
+  target_words: 90
+  key_points:
+  - Tool calling as the foundational primitive for any production agent that must
+    act beyond text generation
+  - Forward link to Lessons 7-8 on ReAct reasoning patterns that overcome the limitations
+    of naive tool loops
+golden_sources:
+- title: Function calling with the Gemini API
+  url: https://ai.google.dev/gemini-api/docs/function-calling
+- title: Function calling with OpenAI's API
+  url: https://platform.openai.com/docs/guides/function-calling
+- title: Tool Calling Agent From Scratch
+  url: https://www.youtube.com/watch?v=ApoDzZP8_ck
+- title: Efficient Tool Use with Chain-of-Abstraction Reasoning
+  url: https://arxiv.org/pdf/2401.17464v3
+- title: Building AI Agents from scratch - Part 1 - Tool use
+  url: https://www.newsletter.swirlai.com/p/building-ai-agents-from-scratch-part
+other_sources:
+- title: What is Tool Calling? Connecting LLMs to Your Data
+  url: https://www.youtube.com/watch?v=h8gMhXYAv1k
+- title: ReAct vs Plan-and-Execute - A Practical Comparison of LLM Agent Patterns
+  url: https://dev.to/jamesli/react-vs-plan-and-execute-a-practical-comparison-of-llm-agent-patterns-4gh9
+- title: Agentic Design Patterns Part 3, Tool Use
+  url: https://www.deeplearning.ai/the-batch/agentic-design-patterns-part-3-tool-use/

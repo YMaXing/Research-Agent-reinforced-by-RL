@@ -305,6 +305,15 @@ Mock references.
         assert "Do NOT use a numbered list" in ArticleWriter.system_prompt_template
         assert "bulleted list item following" in ArticleWriter._verification_checklist
 
+    def test_article_writer_verification_fixes_orphaned_captions(self) -> None:
+        """Verification checklist covers both bare-URL captions (Case 1) and captions whose
+        image body was never written at all (Case 2 — orphaned), instructing the writer to
+        fetch the URL from research and insert it, or remove the caption entirely.
+        """
+        assert "Case 2 — orphaned caption" in ArticleWriter._verification_checklist
+        assert "orphaned" in ArticleWriter._verification_checklist
+        assert "remove the caption entirely" in ArticleWriter._verification_checklist
+
     def test_article_writer_verification_enforces_introduction_transition(self) -> None:
         """Verification checklist must instruct the writer to check that the Introduction's
         closing sentence bridges forward to the first body section, and that the same

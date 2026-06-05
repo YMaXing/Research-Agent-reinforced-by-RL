@@ -1,7 +1,7 @@
 from enum import StrEnum
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr
 
 
 class SupportedModels(StrEnum):
@@ -27,7 +27,10 @@ class ModelConfig(BaseModel):
     max_output_tokens: int | None = None
     max_retries: int = 1
 
-    mocked_response: Any | None = None
+    mocked_response: Any | list[Any] | None = None
+
+    # Tracks which item in a list mocked_response to use on the next get_model call.
+    _response_index: int = PrivateAttr(default=0)
 
     def model_dump(self, *args, **kwargs) -> dict[str, Any]:
         return super().model_dump(

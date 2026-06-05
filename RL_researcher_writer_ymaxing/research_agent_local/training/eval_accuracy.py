@@ -32,9 +32,12 @@ _AGENT_DIR = _THIS_DIR.parent                # research_agent_local/
 _REPO_ROOT = _AGENT_DIR.parent               # RL_researcher_writer_ymaxing/
 _BASES_DIR = _REPO_ROOT / "rl_training_data" / "bases"
 _EPISODES_DIR = _REPO_ROOT / "rl_training_data" / "episodes"
+_GUIDELINE_DIR = (
+    _REPO_ROOT / "writing_workflow" / "inputs" / "evals" / "dataset" / "data"
+)
 _DEFAULT_CHECKPOINT = (
     _REPO_ROOT / "rl_training_data" / "checkpoints" / "tasks"
-    / "task_20260502_123123" / "best"
+    / "task_20260504_continue_from_best_v2" / "best"
 )
 
 # ---------------------------------------------------------------------------
@@ -53,15 +56,9 @@ _VARIANTS = ["minimal", "standard", "demanding"]
 ALL_ARTICLES = [
     f"{base}__var_{v}" for base in _BASE_ARTICLES for v in _VARIANTS
 ]
-_DEFAULT_TRAIN_BASES = [
-    "03_context_engineering",
-    "05_workflow_patterns",
-    "08_react_practice",
-    "11_multimodal",
-]
-_DEFAULT_TRAIN_ARTICLES = [
-    f"{base}__var_{v}" for base in _DEFAULT_TRAIN_BASES for v in _VARIANTS
-]
+# All 21 article-variants were used in training (train_grpo.py ARTICLES list).
+# There is no holdout set for run 2; the full corpus is the training set.
+_DEFAULT_TRAIN_ARTICLES = ALL_ARTICLES
 
 # ---------------------------------------------------------------------------
 # Reward constants (must mirror train_grpo.py exactly)
@@ -214,10 +211,16 @@ def evaluate(
     train_articles: list[str],
     label: str,
     er_trained: float,
+    temperature: float = 1.0,
 ) -> None:
     # Import here so model only loads when needed
     sys.path.insert(0, str(_THIS_DIR))
-    from infer import ExplorationStrategySelector
+    from infer import (
+        ExplorationStrategySelector,
+        _extract_guideline_sections,
+        _extract_guideline_preamble,
+        _extract_compact_preamble,
+    )
 
     test_articles = [a for a in ALL_ARTICLES if a not in train_articles]
 
@@ -229,7 +232,7 @@ def evaluate(
     print(f"{'#'*70}")
 
     print(f"\nLoading model...")
-    selector = ExplorationStrategySelector(adapter_dir=checkpoint)
+    selector = ExplorationStrategySelector(adapter_dir=checkpoint, temperature=temperature)
 
     all_results: dict[str, dict] = {}  # article -> stats dict
 
@@ -247,6 +250,17 @@ def evaluate(
                 else "standard"
             )
 
+            # Load guideline to match training-time input format exactly.
+            # train_grpo.py passes section_guideline + guideline_preamble to
+            # each section group; omitting them at eval time would test a
+            # different distribution than what the model was trained on.
+            guideline_path = _GUIDELINE_DIR / article / "article_guideline.md"
+            if guideline_path.exists():
+                guideline_text = guideline_path.read_text(encoding="utf-8")
+            else:
+                print(f"  WARNING: guideline not found: {guideline_path}")
+                guideline_text = ""
+
             # Oracle per section
             oracle_sections = compute_oracle_section_presets(article, variant_level)
             oracle_article, article_rewards = compute_oracle_article_preset(article)
@@ -256,25 +270,52 @@ def evaluate(
             sec_correct = 0
             sec_total = len(digest_sections)
 
+            # Pre-extract guideline blocks and compact preamble once per article
+            # (mirrors load_section_groups() in train_grpo.py).
+            if guideline_text:
+                guideline_blocks = _extract_guideline_sections(guideline_text, digest_sections)
+                compact_preamble = _extract_compact_preamble(
+                    _extract_guideline_preamble(guideline_text)
+                )
+            else:
+                guideline_blocks = [""] * len(digest_sections)
+                compact_preamble = ""
+
             print(f"\n  {'Section':<50} {'Oracle':>6}  {'Model':>6}  {'Match':>5}")
             print(f"  {'-'*50} {'-'*6}  {'-'*6}  {'-'*5}")
 
             section_preds = []
-            for (title, excerpt), (_, oracle_p, _) in zip(digest_sections, oracle_sections):
-                # Direct section-level call (bypasses aggregation heuristic)
-                pred_p, _ = selector._predict_section(excerpt)
+            section_reward_triples: list[tuple[float, float, float]] = []
+            for (title, excerpt), (_, oracle_p, sec_rewards), g_block in zip(
+                digest_sections, oracle_sections, guideline_blocks
+            ):
+                # Section call with guideline context — mirrors training-time
+                # tokenization in train_grpo.tokenize_groups().
+                pred_p, _ = selector._predict_section(
+                    excerpt,
+                    guideline_block=g_block,
+                    guideline_preamble=compact_preamble,
+                )
                 match = pred_p == oracle_p
                 if match:
                     sec_correct += 1
                 marker = "✓" if match else "✗"
                 section_preds.append(pred_p)
+                section_reward_triples.append((
+                    sec_rewards[pred_p],
+                    sec_rewards[oracle_p],
+                    sum(sec_rewards) / len(sec_rewards),
+                ))
                 short_title = title[:48] + ".." if len(title) > 48 else title
                 print(f"  {short_title:<50} P{oracle_p:>5}  P{pred_p:>5}  {marker:>5}")
 
             sec_acc = sec_correct / sec_total if sec_total else 0.0
 
-            # Article-level: run full aggregation pipeline
-            pred_article, agg_probs, _, meta = selector.predict_article_verbose(digest)
+            # Article-level: run full aggregation pipeline with guideline to
+            # match training-time distribution.
+            pred_article, agg_probs, _, meta = selector.predict_article_verbose(
+                digest, guideline=guideline_text
+            )
             article_match = pred_article == oracle_article
 
             print(f"\n  Section top-1 accuracy: {sec_correct}/{sec_total} = {sec_acc:.1%}")
@@ -290,6 +331,7 @@ def evaluate(
                 "oracle_article": oracle_article,
                 "pred_article": pred_article,
                 "article_match": article_match,
+                "section_reward_triples": section_reward_triples,
             }
 
     # ---------------------------------------------------------------------------
@@ -324,26 +366,46 @@ def evaluate(
     print(f"\n  {'TRAIN totals':<40} {'':>5}  "
           f"{train_sec_c}/{train_sec_t} ({train_sec_c/train_sec_t:.0%})    "
           f"{train_art_c}/{train_art_t} ({train_art_c/train_art_t:.0%})")
-    print(f"  {'TEST totals':<40} {'':>5}  "
-          f"{test_sec_c}/{test_sec_t} ({test_sec_c/test_sec_t:.0%})    "
-          f"{test_art_c}/{test_art_t} ({test_art_c/test_art_t:.0%})")
+    if test_sec_t > 0:
+        print(f"  {'TEST totals':<40} {'':>5}  "
+              f"{test_sec_c}/{test_sec_t} ({test_sec_c/test_sec_t:.0%})    "
+              f"{test_art_c}/{test_art_t} ({test_art_c/test_art_t:.0%})")
+    else:
+        print(f"  {'TEST totals':<40} {'':>5}  N/A (no test articles)")
     all_sec_c = train_sec_c + test_sec_c
     all_sec_t = train_sec_t + test_sec_t
     all_art_c = train_art_c + test_art_c
     all_art_t = train_art_t + test_art_t
-    print(f"  {'ALL totals':<40} {'':>5}  "
-          f"{all_sec_c}/{all_sec_t} ({all_sec_c/all_sec_t:.0%})    "
-          f"{all_art_c}/{all_art_t} ({all_art_c/all_art_t:.0%})")
+    if all_sec_t > 0:
+        print(f"  {'ALL totals':<40} {'':>5}  "
+              f"{all_sec_c}/{all_sec_t} ({all_sec_c/all_sec_t:.0%})    "
+              f"{all_art_c}/{all_art_t} ({all_art_c/all_art_t:.0%})")
 
-    # E[R] reference numbers
-    uniform_er = 0.6299
-    oracle_er  = 0.7907
-    gap_closed = (er_trained - uniform_er) / (oracle_er - uniform_er)
-    print(f"\n  E[R] reference:")
-    print(f"    Uniform random baseline : {uniform_er:.4f}")
-    print(f"    Trained model (train)   : {er_trained:.4f}  (from training log)")
-    print(f"    Oracle ceiling          : {oracle_er:.4f}")
-    print(f"    Gap closed              : {gap_closed:.1%} of uniform→oracle")
+    # E[R] computed live from this eval's own section predictions.
+    # uniform = mean(mean_p R(s,p)), oracle = mean(max_p R(s,p)) — both
+    # derived from the reward tables loaded during this run, not hardcoded.
+    all_triples = [t for r in all_results.values() for t in r["section_reward_triples"]]
+    n_secs = len(all_triples)
+    model_er_live   = sum(t[0] for t in all_triples) / n_secs
+    oracle_er_live  = sum(t[1] for t in all_triples) / n_secs
+    uniform_er_live = sum(t[2] for t in all_triples) / n_secs
+    gap_closed_live = (model_er_live - uniform_er_live) / (oracle_er_live - uniform_er_live)
+    # Training-log reference: E[R] of best checkpoint as measured during GRPO
+    # rollouts (stochastic sampling).  Kept for comparison only — computed
+    # from a different distribution (sampling vs argmax) and averaged over
+    # training steps rather than a single clean pass.
+    uniform_er_ref = 0.5945   # cross-checked against article_oracle.json
+    oracle_er_ref  = 0.7905
+    gap_closed_ref = (er_trained - uniform_er_ref) / (oracle_er_ref - uniform_er_ref)
+    print(f"\n  E[R] section-level ({n_secs} sections, live from this eval):")
+    print(f"    Uniform  (mean of 6 rewards)   : {uniform_er_live:.4f}")
+    print(f"    Oracle ceiling (max reward)    : {oracle_er_live:.4f}")
+    print(f"    This eval  (argmax inference)  : {model_er_live:.4f}")
+    print(f"    Gap closed (live)              : {gap_closed_live:.1%} of uniform→oracle")
+    print(f"    --- Training-log reference ---")
+    print(f"    Base model before training     : 0.5961  (run1 epoch0)")
+    print(f"    Trained model                  : {er_trained:.4f}  (GRPO rollouts, stochastic)")
+    print(f"    Gap closed (training log)      : {gap_closed_ref:.1%} of uniform→oracle")
 
 
 def main() -> None:
@@ -373,8 +435,14 @@ def main() -> None:
     parser.add_argument(
         "--er",
         type=float,
-        default=0.7765,
-        help="E[R] of trained model from training log (default: 0.7765 for 4-article best).",
+        default=0.7764,
+        help="E[R] of trained model from training log (default: 0.7764 for run2 best, epoch2).",
+    )
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=1.0,
+        help="Softmax temperature for section-level vote (default: 1.0 = no scaling; >1 softens distribution).",
     )
     args = parser.parse_args()
 
@@ -399,7 +467,7 @@ def main() -> None:
 
     label = args.label or f"{len(train_articles)}-article training set"
 
-    evaluate(args.checkpoint, train_articles=train_articles, label=label, er_trained=args.er)
+    evaluate(args.checkpoint, train_articles=train_articles, label=label, er_trained=args.er, temperature=args.temperature)
 
 
 if __name__ == "__main__":
