@@ -6,19 +6,17 @@ digest and produce structured section-level signals that help the client
 LLM (Grok) decide how many rounds of exploration to run and in what order.
 
 If research_digest.md does not yet exist in the research directory, the
-tool generates it on-the-fly via a 4-stage pipeline (COLLECT → COMPRESS →
-ASSEMBLE → GENERATE) before running RL inference.
+tool generates it on-the-fly via the v2 digest pipeline (generate_digests.py,
+run in the training venv) before running RL inference.
 
 Signal semantics
 ----------------
-preset (0–5)
+preset (0–3)
     The RL model's recommended exploration strategy:
-      0 – No exploration (baseline)
-      1 – 1 round, balanced
-      2 – 2 rounds, balanced then depth
-      3 – 2 rounds, depth then breadth
-      4 – 3 rounds, balanced then depth then breadth
-      5 – 3 rounds, depth then breadth then depth
+      0 – skip     No exploration (existing coverage is sufficient)
+      1 – light    1 round, balanced (50% depth / 50% breadth)
+      2 – standard 2 rounds: depth → breadth
+      3 – deep     3 rounds: depth → breadth → depth
 
 confidence
     Probability mass on the chosen preset (0.0–1.0).
@@ -27,7 +25,7 @@ confidence
     • <0.40 → uncertain; apply your own judgement.
 
 entropy (bits, base-2)
-    Spread of the probability distribution over presets 0–5.
+    Spread of the probability distribution over presets 0–3.
     Computed as H = −∑ p·log₂(p+ε) over the aggregated preset probs.
     • H < 0.5 → very confident (nearly all mass on one preset).
     • 0.5–1.5 → moderate confidence.
@@ -35,15 +33,15 @@ entropy (bits, base-2)
 
 floor_correction_applied
     True when the max-preset floor heuristic fired: the aggregate vote was
-    P0–P2, but at least one individual section predicted a higher preset.
-    The floor prevents intro-section dominance from masking deep technical
-    sections that need more exploration.
+    P0 or P1 (skip/light), but at least one individual section predicted
+    standard (P2) or deep (P3). The floor prevents intro-section dominance
+    from masking technical sections that need more exploration.
 
 top2 (per section)
     The two highest-probability presets for each section and their probabilities.
     A large gap between rank-1 and rank-2 (e.g. [P3, 0.81], [P2, 0.11]) means
     the model is highly confident for that section.
-    A small gap (e.g. [P3, 0.35], [P4, 0.32]) means the section is ambiguous.
+    A small gap (e.g. [P2, 0.45], [P3, 0.40]) means the section is ambiguous.
 
 guidance
     One-sentence synthesis for the client LLM to use as a reasoning seed.
@@ -54,9 +52,10 @@ Model architecture note
 The RL model was trained with GRPO (Group Relative Policy Optimisation) on
 section-level inference tasks across 4 AI-course articles. It predicts the
 per-section preset using a section-level system prompt, then aggregates by
-word-count-weighted probability vote. A max-preset floor is applied when the
-aggregate vote is ≤P2 to prevent under-exploration caused by short intro sections
-dominating the vote.
+word-count-weighted confidence-gated probability vote. A max-preset floor is
+applied when the aggregate vote is skip or light but at least one section
+predicts standard or deep, preventing short intro sections from masking
+technical depth requirements.
 """
 
 from __future__ import annotations
@@ -92,231 +91,54 @@ _infer_proc: subprocess.Popen | None = None
 _infer_lock = threading.Lock()
 
 # ---------------------------------------------------------------------------
-# Digest generation constants (mirrors generate_digests.py)
+# Digest generation (delegated to generate_digests.py v2 pipeline)
 # ---------------------------------------------------------------------------
-_DIGEST_MODEL = "grok-4-1-fast-reasoning"
+# The on-the-fly digest is produced by the SAME v2 pipeline used to build the
+# training digests (generate_digests.py), run in the training venv via a
+# subprocess. This guarantees the live digest is byte-for-byte the XML format
+# the RL model + infer.py were trained on (<digest_meta>, <section_coverage>,
+# <gap_profile> with target_words/need_depth/must_cover_depth, etc.). Emitting
+# a different format here would silently degrade RL inference.
 _PLANNER_MODEL = "grok-4.20-0309-reasoning"  # Grok 4.2 reasoning — final planning decision
-_COMPRESS_CONCURRENCY = 5
-_MAX_SOURCE_CHARS = 80_000
-_SKIP_SECTION_KEYWORDS = {
-    "global context", "anchoring", "achoring", "narrative flow",
-    "lesson outline", "outline", "golden sources", "other sources", "article code",
-}
-
-_COMPRESS_SYSTEM = "You are a precise research summarizer. Output only the summary, no preamble."
-_COMPRESS_USER_TEMPLATE = """\
-Summarize the following research source.
-Source filename: {filename}
-Source type: {source_type}
-
-Produce a factual 200-300 token summary covering:
-- Main topic and key concepts explained
-- Concrete examples, tools, frameworks, APIs, or techniques mentioned (use exact names)
-- Specific data points, benchmarks, or claims that could support article sections
-- Notable limitations or gaps in coverage
-
-Be specific. Do not editorialize.
-
-<source>
-{content}
-</source>"""
-
-_DIGEST_SYSTEM = """\
-You are generating a structured exploitation digest for an RL policy model.
-Your output will be used as compact context for a small RL policy model to select
-research exploration strategies. Be specific, factual, and follow the format exactly.
-Target 5,000-8,000 tokens total. Do NOT summarize briefly."""
-
-_DIGEST_USER_TEMPLATE = """\
-Generate a structured exploitation digest.
-
-{context}
-
----
-
-Generate the exploitation digest in EXACTLY this format:
-
-# Exploitation Digest
-
-## 1. Source Inventory
-
-### Golden Sources
-| Source | Type | Key Contributions |
-|--------|------|------------------|
-
-### Exploitation Sources
-| Source | Type | Key Contributions |
-|--------|------|------------------|
-
-### Tavily Exploitation Results
-- Total exploitation rounds: N
-- Total queries run: N
-- Per-query yield quality: [brief assessment]
-
-## 2. Per-Section Coverage Analysis
-
-For EACH content section in the article guideline (skip preamble sections like
-Global Context, Anchoring, Narrative Flow, Outline, Golden Sources, Other Sources):
-
-### S{{N}} — {{exact section title}}
-**Coverage: STRONG|PARTIAL|WEAK**
-**What we have:** [3-5 sentences. Name specific source files. Cite concrete facts, tools, benchmarks.]
-**Remaining depth gaps:** [2-4 specific sub-topics lacking coverage]
-**Remaining breadth gaps:** [1-3 adjacent topics not covered]
-
-## 3. Overall Gap Profile
-- **Gap counts:** depth_gaps=N, breadth_gaps=N
-- **Weakest sections:** [comma-separated]
-- **Strongest sections:** [comma-separated]
-- **Gap character:** [one sentence]
-- **Query saturation:** [assessment]
-- **Key insight for exploration strategy:** [one actionable sentence]
-"""
-
-_REQUIRED_DIGEST_HEADERS = [
-    "## 1. Source Inventory",
-    "### Golden Sources",
-    "### Exploitation Sources",
-    "## 2. Per-Section Coverage Analysis",
-    "## 3. Overall Gap Profile",
-]
+_GENERATE_DIGESTS_SCRIPT = _TRAINING_DIR / "generate_digests.py"
+_DIGEST_GEN_TIMEOUT = 1800  # seconds — COMPRESS+GENERATE over many sources
 
 
-def _read_md_dir(directory: Path) -> dict[str, str]:
-    if not directory.exists():
-        return {}
-    return {
-        f.name: f.read_text(encoding="utf-8", errors="replace")
-        for f in sorted(directory.glob("*.md"))
-    }
+def _generate_digest_via_subprocess(research_dir: Path) -> None:
+    """Generate research_digest.md for a live research dir via generate_digests.py.
 
+    Runs the full v2 pipeline (EXTRACT→COLLECT→COMPRESS→INDEX→FEATURES→ASSEMBLE
+    →GENERATE→VALIDATE→STORE) in the training venv, which has the pipeline deps
+    and reads XAI_API_KEY from mcp_client/.env. Writes research_digest.md,
+    section_oracle.json, and guideline_features.json into ``research_dir``.
 
-def _collect_sources(research_dir: Path) -> dict:
-    """Read all source files for a research directory."""
-    dot_research = research_dir / ".research"
-
-    def _optional(path: Path) -> str:
-        return path.read_text(encoding="utf-8", errors="replace") if path.exists() else ""
-
-    return {
-        "guideline": _optional(research_dir / "article_guideline.md"),
-        "golden_web": _read_md_dir(dot_research / "urls_from_guidelines"),
-        "golden_youtube": _read_md_dir(dot_research / "urls_from_guidelines_youtube_videos"),
-        "golden_code": _read_md_dir(dot_research / "urls_from_guidelines_code"),
-        "exploitation": _read_md_dir(dot_research / "urls_from_guidelines_exploitation"),
-        "tavily_results": _optional(dot_research / "tavily_results.md"),
-        "full_queries": _optional(dot_research / "full_queries.md"),
-    }
-
-
-async def _compress_one(
-    client,
-    semaphore: asyncio.Semaphore,
-    filename: str,
-    source_type: str,
-    content: str,
-) -> str:
-    if len(content) > _MAX_SOURCE_CHARS:
-        content = content[:_MAX_SOURCE_CHARS] + "\n\n[...content truncated...]"
-    async with semaphore:
-        response = await client.chat.completions.create(
-            model=_DIGEST_MODEL,
-            messages=[
-                {"role": "system", "content": _COMPRESS_SYSTEM},
-                {"role": "user", "content": _COMPRESS_USER_TEMPLATE.format(
-                    filename=filename, source_type=source_type, content=content,
-                )},
-            ],
-            max_tokens=512,
-        )
-        return response.choices[0].message.content.strip()
-
-
-async def _compress_all(client, sources: dict) -> dict[str, dict[str, str]]:
-    semaphore = asyncio.Semaphore(_COMPRESS_CONCURRENCY)
-    keys: list[tuple[str, str]] = []
-    tasks = []
-    for source_type in ("golden_web", "golden_youtube", "golden_code", "exploitation"):
-        for filename, content in sources[source_type].items():
-            keys.append((source_type, filename))
-            tasks.append(_compress_one(client, semaphore, filename, source_type, content))
-    results = await asyncio.gather(*tasks)
-    summaries: dict[str, dict[str, str]] = {
-        "golden_web": {}, "golden_youtube": {}, "golden_code": {}, "exploitation": {},
-    }
-    for (source_type, filename), summary in zip(keys, results):
-        summaries[source_type][filename] = summary
-    return summaries
-
-
-def _format_source_block(tag: str, summaries: dict[str, str]) -> str:
-    if not summaries:
-        return f"<{tag}>\n(none)\n</{tag}>"
-    parts = [f"### {fname}\n{summary}" for fname, summary in summaries.items()]
-    return f"<{tag}>\n" + "\n\n".join(parts) + f"\n</{tag}>"
-
-
-def _assemble_context(sources: dict, summaries: dict) -> str:
-    blocks = [
-        f"<article_guideline>\n{sources['guideline']}\n</article_guideline>",
-        _format_source_block("golden_web_summaries", summaries["golden_web"]),
-        _format_source_block("golden_youtube_summaries", summaries["golden_youtube"]),
-        _format_source_block("golden_code_summaries", summaries["golden_code"]),
-        _format_source_block("exploitation_source_summaries", summaries["exploitation"]),
-        f"<tavily_exploitation_results>\n{sources['tavily_results']}\n</tavily_exploitation_results>",
-        f"<exploitation_query_history>\n{sources['full_queries']}\n</exploitation_query_history>",
-    ]
-    return "\n\n".join(blocks)
-
-
-async def _generate_digest_text(client, context: str) -> str:
-    response = await client.chat.completions.create(
-        model=_DIGEST_MODEL,
-        messages=[
-            {"role": "system", "content": _DIGEST_SYSTEM},
-            {"role": "user", "content": _DIGEST_USER_TEMPLATE.format(context=context)},
+    Raises RuntimeError on non-zero exit so the caller can surface a clear error.
+    """
+    proc = subprocess.run(
+        [
+            str(_TRAINING_PYTHON),
+            str(_GENERATE_DIGESTS_SCRIPT),
+            "--research-dir", str(research_dir),
         ],
-        max_tokens=16384,
+        cwd=str(_TRAINING_DIR),
+        capture_output=True,
+        text=True,
+        timeout=_DIGEST_GEN_TIMEOUT,
     )
-    return response.choices[0].message.content.strip()
-
-
-async def _generate_digest(research_dir: Path, api_key: str, base_url: str) -> str:
-    """Run COLLECT→COMPRESS→ASSEMBLE→GENERATE and return the digest text."""
-    from openai import AsyncOpenAI  # noqa: PLC0415
-    client = AsyncOpenAI(api_key=api_key, base_url=base_url)
-
-    logger.info("Digest generation: COLLECT stage")
-    sources = _collect_sources(research_dir)
-
-    total = sum(len(v) for v in sources.values() if isinstance(v, dict))
-    logger.info(f"Digest generation: COMPRESS stage ({total} sources)")
-    summaries = await _compress_all(client, sources)
-
-    logger.info("Digest generation: ASSEMBLE stage")
-    context = _assemble_context(sources, summaries)
-
-    logger.info("Digest generation: GENERATE stage")
-    digest = ""
-    for attempt in range(1, 4):
-        digest = await _generate_digest_text(client, context)
-        if all(h in digest for h in _REQUIRED_DIGEST_HEADERS):
-            logger.info(f"Digest generation: validation passed (attempt {attempt})")
-            return digest
-        logger.warning(f"Digest generation: validation failed (attempt {attempt}), retrying")
-    logger.warning("Digest generation: all 3 attempts failed — using last candidate")
-    return digest
+    if proc.returncode != 0:
+        tail = (proc.stderr or proc.stdout or "").strip()[-2000:]
+        raise RuntimeError(
+            f"Digest generation failed (exit {proc.returncode}):\n{tail}"
+        )
 
 
 _PRESET_NAMES = {
-    0: "no_exploration",
-    1: "1_round_balanced",
-    2: "2_rounds_balanced_then_depth",
-    3: "2_rounds_depth_then_breadth",
-    4: "3_rounds_balanced_depth_breadth",
-    5: "3_rounds_depth_breadth_depth",
+    0: "skip",
+    1: "light",
+    2: "standard",
+    3: "deep",
 }
-_NUM_PRESETS = 6
+_NUM_PRESETS = 4
 _ENTROPY_THRESHOLD_HIGH = 1.5
 _ENTROPY_THRESHOLD_LOW = 0.5
 _CONFIDENCE_STRONG = 0.70
@@ -447,11 +269,20 @@ def _entropy(probs: list[float]) -> float:
 
 def _extract_gap_profile(digest: str) -> str:
     """
-    Extract the '## 3. Overall Gap Profile' section from the exploitation digest.
+    Extract the coverage gap profile from the exploitation digest.
 
-    Returns the section text, or an empty string if the section is absent
-    (e.g. the digest was malformed or not yet generated).
+    Prefers the v2 XML ``<gap_profile>`` block (per-section need_depth /
+    need_breadth / target_words / mandatory_bullets / must_cover_depth /
+    must_stay_brief, plus the <overall> weakest/strongest/dominant_gap_type
+    summary). Falls back to the legacy markdown ``## 3. Overall Gap Profile``
+    section when the digest predates the XML format.
+
+    Returns an empty string if neither is present.
     """
+    m = re.search(r"<gap_profile>.*?</gap_profile>", digest, re.DOTALL)
+    if m:
+        return m.group(0).strip()
+
     marker = "## 3. Overall Gap Profile"
     idx = digest.find(marker)
     if idx == -1:
@@ -508,13 +339,11 @@ output, the article guideline, and a coverage gap profile from the exploitation 
 
 Your job: make the final exploration-preset decision.
 
-Preset meanings (P0–P5):
-  P0 – No exploration   (coverage is already complete)
-  P1 – 1 round, balanced
-  P2 – 2 rounds: balanced → depth
-  P3 – 2 rounds: depth → breadth
-  P4 – 3 rounds: balanced → depth → breadth
-  P5 – 3 rounds: depth → breadth → depth
+Preset meanings (P0–P3):
+  P0 – skip     No exploration (existing coverage is sufficient)
+  P1 – light    1 round, balanced (50% depth / 50% breadth)
+  P2 – standard 2 rounds: depth → breadth
+  P3 – deep     3 rounds: depth → breadth → depth
 
 Rules:
   1. Begin by explicitly restating the RL model's recommendation and your \
@@ -532,13 +361,11 @@ guideline and a coverage gap profile from the exploitation digest.
 
 Your job: choose the best exploration preset entirely on your own judgment.
 
-Preset meanings (P0–P5):
-  P0 – No exploration   (coverage is already complete)
-  P1 – 1 round, balanced
-  P2 – 2 rounds: balanced → depth
-  P3 – 2 rounds: depth → breadth
-  P4 – 3 rounds: balanced → depth → breadth
-  P5 – 3 rounds: depth → breadth → depth
+Preset meanings (P0–P3):
+  P0 – skip     No exploration (existing coverage is sufficient)
+  P1 – light    1 round, balanced (50% depth / 50% breadth)
+  P2 – standard 2 rounds: depth → breadth
+  P3 – deep     3 rounds: depth → breadth → depth
 
 Rules:
   1. Use the article guideline to understand topic complexity and intended depth.
@@ -571,7 +398,7 @@ choose the best exploration preset. Output ONLY the following JSON block \
 
 ```json
 {{
-  "preset": <integer 0-5>,
+  "preset": <integer 0-3>,
   "name": "<preset_name>",
   "reasoning": "<2-4 sentences: which evidence drove your final decision>"
 }}
@@ -614,7 +441,7 @@ of P{preset} and why (1-2 sentences). Then output ONLY the following JSON block 
 
 ```json
 {{
-  "preset": <integer 0-5>,
+  "preset": <integer 0-3>,
   "name": "<preset_name>",
   "reasoning": "<2-4 sentences: which evidence drove your final decision>",
   "override": <true|false>,
@@ -775,10 +602,11 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
     of exploration to run and in what order.
 
     If research_digest.md does not yet exist in the research directory, the tool
-    generates it on-the-fly via a 4-stage pipeline (COLLECT→COMPRESS→ASSEMBLE→GENERATE)
-    using the XAI API and writes it to research_digest.md before running inference.
-    This requires the XAI_API_KEY environment variable to be set and the .research/
-    subfolder to contain the exploitation sources collected during step 3.
+    generates it on-the-fly via the v2 digest pipeline (generate_digests.py, run
+    in the training venv) and writes research_digest.md, section_oracle.json, and
+    guideline_features.json before running inference. This requires the training
+    venv and XAI_API_KEY (in mcp_client/.env) and the .research/ subfolder to
+    contain the exploitation sources collected during step 3.
 
     The tool performs two-stage inference:
       Stage 1 (RL model): per-section preset prediction via word-count-weighted
@@ -828,21 +656,12 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
 
     if not digest_path.exists():
         logger.info(f"research_digest.md not found — generating on-the-fly for {research_directory}")
-        if settings.xai_api_key is None:
-            return {
-                "status": "error",
-                "message": (
-                    "research_digest.md not found and XAI_API_KEY is not configured. "
-                    "Either run the exploitation phase first or provide an XAI API key."
-                ),
-            }
         try:
-            digest = await _generate_digest(
-                research_path,
-                api_key=settings.xai_api_key.get_secret_value(),
-                base_url="https://api.x.ai/v1",
+            loop = asyncio.get_running_loop()
+            await loop.run_in_executor(
+                None, _generate_digest_via_subprocess, research_path
             )
-            digest_path.write_text(digest, encoding="utf-8")
+            digest = digest_path.read_text(encoding="utf-8")
             digest_generated = True
             logger.info(f"Digest written to {digest_path}")
         except Exception as exc:
@@ -913,9 +732,8 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
 
     confidence = round(agg_probs[preset], 4)
     h = round(_entropy(agg_probs), 4)
-    section_vote = meta.get("section_vote", preset)
-    section_floor = meta.get("section_floor", 0)
-    floor_applied = section_vote <= 2 and section_floor > section_vote and h <= 1.5
+    section_floor = max((d["chosen"] for d in section_details), default=preset)
+    floor_applied = preset <= 1 and section_floor >= 2 and h <= 1.5
 
     section_signals = []
     for d in section_details:

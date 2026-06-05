@@ -1744,6 +1744,44 @@ from _rl_preset import _RL_INPUT_SYSTEM, build_rl_input  # noqa: E402, F401
 # Per-article orchestration
 # ---------------------------------------------------------------------------
 
+def _derive_article_title(research_dir: Path) -> str:
+    """Best-effort article title for live research dirs (not in ARTICLES).
+
+    Uses the first ``# `` heading in article_guideline.md, else the dir name.
+    """
+    guideline_path = research_dir / "article_guideline.md"
+    if guideline_path.exists():
+        for line in guideline_path.read_text(
+            encoding="utf-8", errors="replace"
+        ).splitlines():
+            if line.startswith("# "):
+                return line[2:].strip()
+    return research_dir.name
+
+
+async def process_research_dir(research_dir: Path, dry_run: bool, force: bool) -> bool:
+    """Run the v2 digest pipeline on an arbitrary live research directory.
+
+    The directory must contain ``article_guideline.md`` and a ``.research/``
+    subfolder (the live MCP layout, identical to a base dir under
+    rl_training_data/bases/). Writes research_digest.md, section_oracle.json,
+    and guideline_features.json into ``research_dir``.  This is the entrypoint
+    used by predict_exploration_preset_tool.py so that on-the-fly digest
+    generation always produces the exact same v2 XML format the RL model and
+    infer.py expect (single source of truth — no format drift).
+    """
+    from openai import AsyncOpenAI
+
+    client = AsyncOpenAI(api_key=_XAI_API_KEY, base_url=_XAI_BASE_URL)
+    try:
+        article_title = _derive_article_title(research_dir)
+        log.info("=" * 65)
+        log.info(f"Research dir: {research_dir}  ({article_title})")
+        return await _run_pipeline(client, research_dir, article_title, dry_run, force)
+    finally:
+        await client.close()
+
+
 async def process_article(
     client,
     article_dir: str,
@@ -1751,11 +1789,22 @@ async def process_article(
     force: bool,
 ) -> bool:
     base_dir = _BASES_DIR / article_dir
-    output_path = base_dir / "research_digest.md"
     article_title = ARTICLES[article_dir]
 
     log.info("=" * 65)
     log.info(f"Article: {article_dir}  ({article_title})")
+
+    return await _run_pipeline(client, base_dir, article_title, dry_run, force)
+
+
+async def _run_pipeline(
+    client,
+    base_dir: Path,
+    article_title: str,
+    dry_run: bool,
+    force: bool,
+) -> bool:
+    output_path = base_dir / "research_digest.md"
 
     if output_path.exists() and not force:
         log.info("  SKIP — research_digest.md already exists (use --force to overwrite)")
@@ -1977,6 +2026,21 @@ if __name__ == "__main__":
         action="store_true",
         help="Overwrite existing research_digest.md files.",
     )
+    parser.add_argument(
+        "--research-dir",
+        default=None,
+        metavar="PATH",
+        help=(
+            "Generate a digest for a single live research directory (must contain "
+            "article_guideline.md + .research/). Used by the MCP tool for on-the-fly "
+            "digest generation. Ignores --articles when set."
+        ),
+    )
     args = parser.parse_args()
 
-    asyncio.run(main(args.articles, args.dry_run, args.force))
+    if args.research_dir:
+        asyncio.run(
+            process_research_dir(Path(args.research_dir), args.dry_run, args.force)
+        )
+    else:
+        asyncio.run(main(args.articles, args.dry_run, args.force))

@@ -1,225 +1,303 @@
-# Article-Level Aggregator — Plan
+# Article-Level Aggregator — Plan (v2, post section-level training)
 
-Scope: design the second stage that turns per-section RL outputs into a single
-article-level preset, while the section-level RL policy is still training.
+Scope: design the second stage that turns the per-section RL outputs into a
+single article-level exploration preset. The section-level RL policy is now
+**trained** (run12 adapter), and the digest/inference pipeline is on the
+**4-preset** scheme (`skip / light / standard / deep`). This revision rewrites
+the plan against the *actual* current code and data.
 
-> Reference: prior assistant message argued for **Grok 4.2 as the article-level
-> decision layer** (not a local head), with a richer evidence packet from Stage 1.
-> This plan adopts that direction but is written against the *current* code
-> state (4 presets in the reward, planner code still on 6, `predict_exploration_preset_tool.py`
-> already has an RL + Grok pipeline).
+> Direction (unchanged): use **Grok 4.2 as the article-level decision layer**,
+> fed a structured evidence packet from Stage 1; defer a local article-level
+> head until enough Grok decisions accumulate.
+
+---
+
+## 0. What changed since v1 of this plan
+
+- **Presets: 6 → 4.** `_rl_preset.py` is the single source of truth:
+  `NUM_PRESETS = 4`, `PRESET_NAMES = {0:skip, 1:light, 2:standard, 3:deep}`.
+  `train_grpo.py`, `infer.py`, and `predict_exploration_preset_tool.py` all
+  consume this. The Grok planner prompt in the tool is already on P0–P3.
+- **Section-level training is done.** No retraining needed for Stage 1; the
+  default adapter is `rl_training_data/checkpoints/tasks/run12/best`.
+- **Digest format is XML v2** (`<digest_meta>`, `<artefact_registry>`,
+  `<sources>`, `<section_coverage>`, `<gap_profile>`), produced by
+  `generate_digests.py`. The legacy markdown digest is gone.
+- **Two digest-generation bugs fixed (this pass):**
+  1. The tool's on-the-fly digest generator emitted the *old markdown* format,
+     which the trained model cannot consume → `predict_exploration_preset_tool.py`
+     now delegates to `generate_digests.py --research-dir` (v2 XML, single
+     source of truth).
+  2. `_extract_gap_profile` only matched the markdown `## 3. Overall Gap
+     Profile` header → always empty for XML digests. It now extracts the XML
+     `<gap_profile>` block.
+- **Dataset is 8 articles × 3 variants = 24 article-variants** (the
+  `ARTICLES` list in `train_grpo.py`), not 21.
 
 ---
 
 ## 1. Decision: which aggregator do we build now?
 
-Three candidates were on the table:
-
-| Option | Pros | Cons | Verdict |
-|---|---|---|---|
-| **A. Hand-coded aggregation** (weighted vote + floor) | deterministic, fast, current fallback | brittle, ignores guideline scope, weak on conflicting sections | **Keep as fallback only** |
-| **B. Local article-level head** (small classifier on top of section signals) | offline, cheap, distillable | only 21 oracle articles → not enough data; would overfit | **Defer** until Grok decisions accumulate |
-| **C. Grok 4.2 reasoning planner** with a richer evidence packet | already wired in, handles guideline-scope reasoning, semantic tradeoffs | API cost, latency, non-determinism | **Adopt as primary** |
+| Option | Verdict |
+|---|---|
+| **A. Hand-coded aggregation** (word-weighted vote + floor) | Keep as deterministic fallback only (Grok unavailable / parse failure). |
+| **B. Local article-level head** | **Defer.** 24 article-variants is too few; only one stale 6-preset article oracle exists. Revisit after ≥~100 logged Grok decisions + workflow outcomes. |
+| **C. Grok 4.2 reasoning planner** with a rich evidence packet | **Adopt as primary.** Already wired (`_call_grok_planner`). Needs a much richer packet (Section 3). |
 
 **Near-term stack:**
 
 ```text
-Retrained Qwen section scorer (4-preset)
-  └── normalized section signals + compact digest features
-        └── Grok 4.2 article-level planner  ← authoritative decision
-              └── deterministic fallback if Grok unavailable
+Trained Qwen3-4B section scorer (4-preset, run12)
+  └── per-section probs + digest-derived numeric signals
+        └── article evidence packet (built in the tool)
+              └── Grok 4.2 article-level planner   ← authoritative decision
+                    └── deterministic fallback if Grok unavailable
 ```
-
-**Later** (after ~100 Grok decisions + workflow outcomes): distill Grok into a
-local article-level head. Not now.
 
 ---
 
-## 2. Current gaps in the Grok call
+## 2. Current gaps in the Grok call (the core of this plan)
 
-In `predict_exploration_preset_tool.py::_call_grok_planner` Grok currently sees:
+`_call_grok_planner` in `predict_exploration_preset_tool.py` currently feeds Grok:
 
-- `preset`, `name`, `confidence`, `entropy`, `floor_applied`, `guidance`
-- a `section_table` line: `title  P{preset}({name})  top2=[[P3,0.81],[P2,0.11]]`
-- raw `article_guideline` (full text)
-- raw `digest_gap_profile` extracted from `## 3. Overall Gap Profile`
+- RL aggregate: `preset`, `confidence`, `entropy`, `floor_applied`, `guidance`.
+- `section_table`: one line per section — `[sec_id] P{preset}(name) top2=[...]`.
+- raw `article_guideline` (full text).
+- `digest_gap_profile` (now the XML `<gap_profile>` block, after the fix).
 
-Missing inputs needed for good article-level reasoning:
+### 2.1 The decisive insight: the section model is deliberately blinded to article-level signals
 
-1. Full P0–P{N-1} aggregate distribution (not just argmax + entropy).
-2. Top-2 *margin* (rank1 - rank2) — disagreement is currently invisible.
-3. Per-section **target length / weight** (this exists in the oracle weighting code
-   but is not handed to Grok).
-4. **Coverage strength** per section (the model has it internally; the digest section
-   summary exposes it but it is not row-aligned to the section table).
-5. **Normalized gap pressure** (gap count / target length) — raw gap counts mislead
-   on long sections.
-6. Guideline **scope constraints** in compact form (expected article length,
-   theory/practice ratio, hard "no further research" flags).
-7. **Section disagreement summary**: how many sections vote each preset, and the
-   variance across rows.
+`build_rl_input` (in `_rl_preset.py`) **strips three article-level fields** from
+every per-section input, with an explicit comment that they belong to the
+*downstream article-level aggregator*:
 
-These should be derived once in the tool and inserted into the prompt; do not ask
-Grok to recompute them.
+- `external_evidence_policy` ∈ {`forbidden`, `allowed`, `required`} —
+  `forbidden` short-circuits exploration upstream; `allowed`/`required` are
+  *meant to be consumed here*. **Today Grok never sees it.** This is the single
+  most important missing signal: `required` should bias the article preset up;
+  `forbidden` forces `skip`.
+- `tavily_saturation` ∈ [0,1] — how exhausted exploitation search already is.
+  High saturation ⇒ extra rounds yield duplicates ⇒ bias down. **Not passed.**
+- `n_orphan_anchors` — article-wide count of guideline anchors with no source
+  backing. **Not passed.**
+
+Because the section model cannot see these, the **aggregator is the only place
+they can influence the decision.** They must be in the packet.
+
+### 2.2 Rich per-section signals already in the digest but not forwarded
+
+Every digest carries, per section, numeric signals the section model saw but
+that are collapsed to a single preset before reaching Grok. From `<gap_profile>`:
+
+- `need_depth`, `need_breadth` (raw gap pressure)
+- `target_words` (section weight / writing budget)
+- `mandatory_bullets`, `must_cover_depth`, `must_stay_brief`
+
+From `<section_coverage>` per `<section>`:
+
+- `depth_score` (N/8), `breadth_score` (N/6)
+- `orphan_anchors n_depth/n_breadth/n_unreachable`
+- `self_contained`, `sources`, `artefacts`, `<intent>`
+
+From `<overall>`: `weakest_sections`, `strongest_sections`, `dominant_gap_type`.
+From `<digest_meta>`: `total_sources`, `total_artefacts`, `n_content_sections`.
+
+### 2.3 RL signals collapsed too aggressively
+
+The infer server returns, per section: `chosen`, full 4-`probs`, `margin`,
+`confidence`, `weight`, `target_words`. Grok only gets `chosen` + `top2`.
+Missing: the **full article aggregate distribution** `[skip,light,standard,deep]`,
+the **top-2 margin** (rank1−rank2) at article and section level, and the
+per-section **target-word weight** that drove the aggregate.
+
+### 2.4 Smaller issues
+
+- `section_signals[i].title` is the `sec_id` (e.g. `S6::...`), not a readable
+  title — fine for Grok but worth mapping to the section heading.
+- `_call_infer_server` reads a `corrections` key the server never returns →
+  dead (`meta` always `{}`). Remove or wire up.
+- The full raw guideline is sent; once `guideline_context` (Section 3) is built,
+  the raw guideline is redundant token cost.
 
 ---
 
 ## 3. Evidence packet schema (Stage 1 → Stage 2 contract)
 
-Define a single dict `article_evidence` that Stage 1 emits and Stage 2 prompts on.
-Mirror the README's "structured evidence bundle" framing.
+A single `article_evidence` dict built **in the tool** from (a) the infer-server
+output and (b) the digest XML it already holds. All fields below are derivable
+from data that exists today — no new model outputs required.
 
 ```jsonc
 {
   "guideline_context": {
-    "expected_total_words": 4200,
-    "theory_practice_ratio": "60/40",
-    "scope_constraints": ["no_more_external_research", "must_cover_eval_pipeline"],
+    "external_evidence_policy": "forbidden|allowed|required",  // digest_meta
+    "n_content_sections": 8,
+    "expected_total_words": 3320,                 // Σ target_words
     "sections": [
-      {"title": "...", "target_words": 600, "kind": "intro|theory|practice|polish"}
+      { "sec_id": "S6::...", "title": "Key strategies...",
+        "target_words": 650, "mandatory_bullets": 5,
+        "must_cover_depth": 6, "must_stay_brief": 0 }
     ]
   },
   "rl_aggregate": {
     "preset": 2,
-    "distribution": [0.05, 0.10, 0.55, 0.30],   // length = num_presets
-    "confidence": 0.55,
-    "entropy_bits": 1.21,
-    "top2_margin": 0.25,
+    "distribution": [0.08, 0.20, 0.50, 0.22],     // skip,light,standard,deep
+    "confidence": 0.50,
+    "entropy_bits": 1.61,
+    "top2_margin": 0.28,
     "floor_correction_applied": false
   },
   "section_signals": [
     {
-      "title": "...",
-      "target_words": 600,
-      "weight": 0.14,                           // normalized over article
+      "sec_id": "S6::...", "title": "Key strategies...",
+      "target_words": 650, "weight": 0.196,        // target_words / Σ
       "chosen_preset": 3,
-      "top2": [["P3", 0.42], ["P2", 0.31]],
-      "top2_margin": 0.11,
-      "coverage_strength": "weak|moderate|strong",
-      "gap_pressure_norm": 0.018,               // gaps per 100 target words
-      "depth_breadth_gap": "depth_heavy|breadth_heavy|balanced|none",
-      "over_exploration_risk": "low|medium|high"
+      "distribution": [0.05, 0.10, 0.30, 0.55],
+      "top2": [["deep", 0.55], ["standard", 0.30]],
+      "top2_margin": 0.25,
+      "model_confidence": 0.55,                    // infer 'confidence'
+      // digest-derived numeric coverage signals:
+      "need_depth": 55, "need_breadth": 1,
+      "depth_score": "2/8", "breadth_score": "5/6",
+      "must_cover_depth": 6, "must_stay_brief": 0,
+      "orphans": {"depth": 9, "breadth": 0, "unreachable": 1},
+      "self_contained": true
     }
   ],
   "digest_global": {
-    "key_insight": "one-line summary",
-    "gap_pressure_norm": 0.012,
-    "dominant_gap_type": "coverage|depth|breadth|polish"
+    "tavily_saturation": 1.0,
+    "n_orphan_anchors": 68,
+    "total_artefacts": 20,
+    "dominant_gap_type": "depth",
+    "weakest_sections": ["S6::...", "S7::..."],
+    "strongest_sections": ["S5::...", "S3::..."]
   },
   "decision_instructions": [
-    "Pick a single article-level preset from {P0..P_{N-1}}.",
-    "Override RL when local section votes conflict with global guideline scope.",
-    "Penalize exploration when marginal value is low relative to target length.",
-    "Do not treat raw gap count as exploration demand; use gap_pressure_norm."
+    "Pick ONE article-level preset from {skip, light, standard, deep}.",
+    "If external_evidence_policy == 'forbidden' → skip (exploration is unusable).",
+    "If external_evidence_policy == 'required' → bias upward at least one level.",
+    "High tavily_saturation (→1.0) means more rounds mostly return duplicates → bias down.",
+    "Weight sections by target_words; a brief section (must_stay_brief>0 or small target_words) cannot absorb extra research regardless of gap size.",
+    "Treat must_cover_depth as depth pressure even when need_depth looks modest.",
+    "Use need_depth/need_breadth as direction (depth-first vs breadth), not as a raw round count.",
+    "Override the RL aggregate only when guideline scope or saturation gives a concrete reason."
   ]
 }
 ```
 
-Stage 2 prompt renders this as compact JSON inside `<evidence>` tags, plus a
-short rules block — no need to send the full guideline text once the compact
-`guideline_context` is built.
+Render this as compact JSON inside `<evidence>` tags plus the rules block;
+drop the full raw guideline once `guideline_context` is built.
 
 ---
 
 ## 4. Concrete code changes
 
-All changes scoped to
-`Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local/`.
+All in `research_agent_local/`. The digest-generation fixes (Section 0) are
+**already done**; the items below are the remaining aggregator work.
 
-### 4.1 Section-signal builder (Stage 1)
+### 4.1 Build the evidence packet (Stage 1 side) — `predict_exploration_preset_tool.py`
 
-File: `mcp_server/src/tools/predict_exploration_preset_tool.py`
+- Add `_parse_gap_profile_rows(digest) -> dict[sec_id, {...}]` and
+  `_parse_section_coverage(digest) -> dict[sec_id, {depth_score, breadth_score,
+  orphans, self_contained, ...}]`. Reuse the regexes already proven in
+  `generate_digests.py` / `_rl_preset.py` (`_SECTION_BLOCK_RE`, the gap-profile
+  `<section .../>` attribute parse) — factor them into a small shared
+  `_digest_parse.py` so the tool and training do not drift.
+- Add `_parse_digest_meta(digest)` for `external_evidence_policy`,
+  `tavily_saturation`, `n_orphan_anchors`, `total_artefacts`,
+  `n_content_sections`.
+- Add `_build_article_evidence(digest, agg_probs, preset, section_details)`
+  that joins the infer output (`section_details`: chosen/probs/margin/
+  confidence/target_words/weight) with the parsed digest signals by `sec_id`,
+  and computes `rl_aggregate` (full distribution, top2_margin) and per-section
+  `weight = target_words / Σ target_words`.
+- Map `sec_id` → readable title from the guideline section headers (optional).
 
-- New helper `_build_section_signal(section, target_words, total_words, digest_section)`
-  returning the dict above. Pull `coverage_strength` and per-section gap counts
-  from the existing digest section summaries; compute `gap_pressure_norm` and
-  `over_exploration_risk` here.
-- New helper `_build_guideline_context(article_guideline)` that parses target
-  lengths and scope flags. Reuse whatever the oracle script already does for
-  section weighting (`training/compute_article_oracle.py`) to avoid drift —
-  factor that logic into a shared module `training/_guideline_features.py`
-  and import from both places.
-- New helper `_build_article_evidence(...)` assembling the full packet.
-
-### 4.2 Article-level Grok planner (Stage 2)
-
-Same file:
+### 4.2 Article-level planner (Stage 2) — same file
 
 - Replace `_PLANNER_USER_TEMPLATE` with a version that embeds the `<evidence>`
-  JSON and an explicit rules block (mirroring `decision_instructions`).
-- Rename `_call_grok_planner` → `_call_article_level_planner` to make the role
-  explicit. Keep signature similar but accept the `article_evidence` dict.
-- Keep the standalone Grok-only baseline (`_call_grok_planner_standalone`) but
-  also feed it `guideline_context` + `digest_global` (not the raw guideline)
-  so that the comparison isolates RL-signal value cleanly.
-- Output JSON additions: `decision_drivers: list[str]`, `risk_flags: list[str]`,
-  plus the existing `preset / name / reasoning / override / override_reason`.
+  JSON and the `decision_instructions` rules block; stop sending the full raw
+  guideline.
+- `_call_grok_planner` takes the `article_evidence` dict instead of the loose
+  positional args. Keep return keys `preset/name/reasoning/override/
+  override_reason`; add `decision_drivers: list[str]` and `risk_flags: list[str]`.
+- `_call_grok_planner_standalone` (Grok-alone baseline) should receive the same
+  `guideline_context` + `digest_global` (compact) instead of the raw guideline,
+  so the full-vs-standalone comparison isolates the RL section signals cleanly.
+- Remove the dead `corrections`/`meta` path in `_call_infer_server` (or have the
+  infer server emit the floor/correction metadata it currently drops).
 
-### 4.3 Preset-count migration (blocking)
+### 4.3 Deterministic fallback
 
-`_NUM_PRESETS` and `_PRESET_NAMES` are currently 6 in `eval_accuracy.py`,
-`compute_article_oracle.py`, `recompute_oracle_with_prior.py`,
-`analyze_eval_results.py`, and indirectly in `infer.py`. Reward is already on
-4 presets. Before wiring the new aggregator:
+Move the current word-weighted-vote + entropy-gated floor into
+`_fallback_aggregator(article_evidence) -> dict` consuming the same packet, used
+when `XAI_API_KEY` is unset or Grok returns unparseable JSON, and as an eval
+baseline. Honor `external_evidence_policy == "forbidden" → skip` here too.
 
-- Centralize `NUM_PRESETS` and `PRESET_NAMES` in one module (e.g.
-  `training/_presets.py`) and have every consumer import from it.
-- Verify the trained policy head output dimension matches.
+### 4.4 Preset-count migration (remaining surface)
 
-This is a prerequisite — the planner cannot emit a sane preset if the schema
-is inconsistent across files.
+Section-level + tool + planner prompt are **already on 4 presets**. Still stale:
 
-### 4.4 Deterministic fallback
+- `compute_article_oracle.py`, `eval_accuracy.py`, `analyze_eval_results.py`,
+  `recompute_oracle_with_prior.py` hardcode `NUM_PRESETS = 6` / 6-name maps.
+- `article_oracle.json` / `article_oracle_prior.json` in every base dir are
+  **stale 6-preset** (`oracle_preset: 4`, `"P4_bal_depth_breadth"`, 6-element
+  `article_rewards`).
 
-Keep the current weighted-vote + floor logic as the fallback when
-`XAI_API_KEY` is missing or Grok fails to return parseable JSON. Move it into
-a `_fallback_aggregator(article_evidence) -> dict` so it consumes the same
-packet shape — useful both as a guardrail and as a baseline in eval.
+Action: import `NUM_PRESETS`/`PRESET_NAMES` from `_rl_preset.py` everywhere,
+then **recompute the article-level oracle under the 4-preset reward** before any
+article-level evaluation. This is the prerequisite for Section 5.
 
 ### 4.5 Eval & diagnostics
 
-`training/eval_accuracy.py` and `training/analyze_eval_results.py`:
-
-- Add three columns per article: `pred_fallback`, `pred_grok_full`, `pred_grok_standalone`.
-- Report article-level accuracy and oracle-margin diagnostics for each.
-- Persist the evidence packet alongside predictions
-  (`grok_planner_test_results/{article}.json`) so we can replay decisions
-  offline once the policy changes.
-
----
-
-## 5. Validation checklist (before declaring done)
-
-1. Schema round-trip: build evidence packet for all 21 oracle articles, assert
-   no missing fields, all numerics finite.
-2. Fallback parity: with Grok disabled, the new pipeline must reproduce the
-   current top-1 article preset on ≥19/21 oracle articles (regression guard).
-3. Grok-full vs Grok-standalone: Grok-full should not be *worse* than
-   Grok-standalone on oracle accuracy; if it is, the section signals are
-   misleading and Stage 1 must be re-examined.
-4. Override audit: log every case where Grok overrides RL, including
-   `override_reason`. Review weekly until ≥80% of overrides are judged correct.
+- `eval_accuracy.py` / `analyze_eval_results.py`: per article-variant emit
+  `pred_fallback`, `pred_grok_full`, `pred_grok_standalone` vs the recomputed
+  4-preset article oracle; report top-1 accuracy and oracle-margin diagnostics.
+- Persist each `article_evidence` packet + Grok decision under
+  `grok_planner_test_results/{article}.json` to replay decisions offline and to
+  seed future distillation data.
 
 ---
 
-## 6. What we are deferring
+## 5. Validation checklist
 
-- **Local article-level head** — revisit only after we have ≥100 logged Grok
-  decisions plus matched workflow outcomes; until then, no usable training
-  signal at the article level.
-- **Confidence calibration on Grok output** — wait until override audit
-  reveals systematic overconfidence.
-- **Multi-call ensembling at the article level** — defer; not justified by
-  current eval budget.
+1. **Digest-gen parity (done-criterion for Section 0):** for ≥3 base dirs,
+   `generate_digests.py --research-dir <dir> --force` reproduces a digest whose
+   `<gap_profile>`/`<section_coverage>` parse identically to the committed one.
+2. **Packet round-trip:** build `article_evidence` for all 24 article-variants;
+   assert every field present, all numerics finite, `Σ weight ≈ 1`.
+3. **Recompute 4-preset article oracle** (4.4) for all 24; sanity-check it is no
+   longer a permutation of 0–5.
+4. **Fallback parity:** with Grok disabled, `_fallback_aggregator` reproduces the
+   current top-1 article preset on ≥22/24 (regression guard).
+5. **Grok-full ≥ Grok-standalone** on article-oracle top-1; if not, the section
+   signals are misleading and Stage 1 / packet must be re-examined.
+6. **Policy honored:** every `forbidden` article ⇒ final preset `skip`; spot-check
+   `required` articles bias upward.
+7. **Override audit:** log every Grok override + `override_reason`; review until
+   ≥80% judged correct.
 
 ---
 
-## 7. Open questions for the user
+## 6. Deferred
 
-1. Is the 6→4 preset migration finalized, or are we still keeping P0/P5 as
-   reserved slots? This decides whether step 4.3 is a rename or a real prune.
-2. Should the standalone Grok baseline keep using the raw guideline text, or
-   move to the compact `guideline_context`? (Recommendation: compact, for
-   apples-to-apples comparison with the full pipeline.)
-3. Where should `_guideline_features.py` live — `training/` or a new
-   `shared/` package importable by both `training/` and `mcp_server/`?
+- **Local article-level head** — until ≥~100 logged Grok decisions + matched
+  workflow outcomes exist.
+- **Grok output calibration / multi-call ensembling** — until the override audit
+  shows systematic error.
+
+---
+
+## 7. Open questions
+
+1. Should the infer server emit the per-section numeric coverage signals
+   directly (need_depth, scores, orphans), or should the tool keep parsing them
+   from the digest XML it already has? (Recommendation: parse in the tool via a
+   shared `_digest_parse.py`; the digest is already in hand and the server stays
+   thin.)
+2. Confirm the 4-preset article-oracle reward is just the section reward
+   re-aggregated by `target_words` (as `compute_article_oracle.py` did for 6
+   presets), with no new term — so only `NUM_PRESETS`/names change.
+3. Where should the shared digest-parsing helpers live — `training/_digest_parse.py`
+   imported by both `mcp_server` and `training`, or duplicated? (Recommendation:
+   shared module to prevent drift, mirroring `_rl_preset.py`.)
