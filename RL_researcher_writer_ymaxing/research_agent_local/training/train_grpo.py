@@ -461,8 +461,18 @@ def _article_variant_level(article: str) -> str:
 # ---------------------------------------------------------------------------
 # Data loading — article level
 # ---------------------------------------------------------------------------
-def load_groups(sigma_floor: float) -> list[Group]:
-    """Load all training data and compute advantages."""
+def load_groups(sigma_floor: float, near_tie_margin: float | None = None) -> list[Group]:
+    """Load all training data and compute advantages.
+
+    ``near_tie_margin`` controls the near-tie acceptance window used to
+    populate ``group.acceptable_idxs``.  Arms whose reward is within
+    ``near_tie_margin`` of the best arm are all considered correct.
+    Defaults to ``sigma_floor`` when not specified (backward-compatible).
+    Keep ``sigma_floor`` for the flat-group filter and advantage
+    normalization floor; ``near_tie_margin`` only affects acceptability.
+    """
+    if near_tie_margin is None:
+        near_tie_margin = sigma_floor
     groups: list[Group] = []
 
     for article in ARTICLES:
@@ -484,10 +494,12 @@ def load_groups(sigma_floor: float) -> list[Group]:
             log.info(f"  {article}: dropped (flat, max-min < sigma_floor)")
             continue
 
-        # Near-tie acceptance: arms within sigma_floor of max share the best
+        # Near-tie acceptance: arms within near_tie_margin of max share the best
         # advantage so the gradient never penalises an equivalent choice.
+        # near_tie_margin is typically >= sigma_floor to relax oracle for
+        # low-margin sections where the reward signal is too weak to be reliable.
         group.acceptable_idxs = [
-            i for i, r in enumerate(group.rewards) if r >= _max_r - sigma_floor
+            i for i, r in enumerate(group.rewards) if r >= _max_r - near_tie_margin
         ]
         adj_rewards = [
             _max_r if r >= _max_r - sigma_floor else r for r in group.rewards
@@ -523,6 +535,7 @@ def load_section_groups(
     sigma_floor: float,
     section_weight: str = "hybrid",
     inv_freq_temp: float = 0.5,
+    near_tie_margin: float | None = None,
 ) -> list[Group]:
     """Load section-level GRPO groups from section_oracle.json.
 
@@ -545,7 +558,17 @@ def load_section_groups(
     * ``hybrid``        — wordcount × std(R).
     * ``regret-hybrid`` — wordcount × (max(R) − mean(R)).  Preferred: upside-aware.
     * ``uniform``       — equal weight per section.
+
+    ``near_tie_margin`` controls the near-tie acceptance window used to
+    populate ``group.acceptable_idxs``.  Arms whose reward is within
+    ``near_tie_margin`` of the best arm are considered acceptable predictions.
+    Defaults to ``sigma_floor`` when not specified.  Set to a larger value
+    (e.g. 0.06) to relax the oracle for low-margin sections where the reward
+    signal is too weak to be a reliable training target.  ``sigma_floor`` is
+    kept exclusively for the flat-group filter and advantage normalization.
     """
+    if near_tie_margin is None:
+        near_tie_margin = sigma_floor
     groups: list[Group] = []
 
     for article in ARTICLES:
@@ -673,14 +696,15 @@ def load_section_groups(
             ) ** 0.5
             group.raw_reward_regret = _max_r - _orig_mean
 
-            # Near-tie acceptance: arms within sigma_floor of max are all
+            # Near-tie acceptance: arms within near_tie_margin of max are all
             # considered correct for the top1_correct / near-tie metric.
-            # Advantages are computed from *raw* rewards without flattening so
-            # that every preset with a genuine reward difference (e.g. skip vs
-            # light separated only by the cost staircase) receives a non-zero
-            # gradient pointing toward the oracle.
+            # near_tie_margin >= sigma_floor relaxes the oracle for low-margin
+            # sections so the model gets credit for the runner-up when the two
+            # presets are essentially equivalent.  Advantages are computed from
+            # *raw* rewards without flattening so every preset retains a
+            # non-zero gradient pointing toward the oracle.
             group.acceptable_idxs = [
-                i for i, r in enumerate(rewards) if r >= _max_r - sigma_floor
+                i for i, r in enumerate(rewards) if r >= _max_r - near_tie_margin
             ]
 
             mean_r  = sum(rewards) / len(rewards)
@@ -1296,16 +1320,29 @@ def main() -> None:
     )
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--lr", type=float, default=5e-5)
-    parser.add_argument("--beta", type=float, default=0.2, help="KL penalty coefficient")
+    parser.add_argument("--beta", type=float, default=0.1, help="KL penalty coefficient")
     parser.add_argument("--entropy-coef", type=float, default=0.15, help="Entropy bonus coefficient")
     parser.add_argument(
         "--sigma-floor", type=float, default=0.04,
-        help="Minimum std for advantage normalization",
+        help=(
+            "Minimum std for advantage normalization, and flat-group filter threshold. "
+            "Groups with max-min reward < sigma_floor are dropped as noise."
+        ),
+    )
+    parser.add_argument(
+        "--near-tie-margin", type=float, default=0.06,
+        help=(
+            "Near-tie acceptance window for acceptable_idxs. Arms whose reward is within "
+            "this value of the best arm are all considered correct predictions (near-tie). "
+            "Setting > sigma_floor relaxes the oracle for low-margin sections so the model "
+            "is not penalised for choosing the runner-up when rewards are nearly equal. "
+            "Default 0.06 covers the 0.04-0.06 gap that sigma_floor=0.04 misses."
+        ),
     )
     parser.add_argument("--warmup-epochs", type=int, default=10)
     parser.add_argument("--max-grad-norm", type=float, default=0.2)
     parser.add_argument("--weight-decay", type=float, default=0.01)
-    parser.add_argument("--patience", type=int, default=20, help="Early stopping patience")
+    parser.add_argument("--patience", type=int, default=40, help="Early stopping patience")
     parser.add_argument(
         "--inv-freq-temp", type=float, default=0.5,
         help=(
@@ -1405,9 +1442,9 @@ def main() -> None:
     # ------------------------------------------------------------------
     log.info(f"\n--- Step 1: Load training data (granularity={args.granularity}) ---")
     if args.granularity == "section":
-        groups = load_section_groups(args.sigma_floor, section_weight=args.section_weight, inv_freq_temp=args.inv_freq_temp)
+        groups = load_section_groups(args.sigma_floor, section_weight=args.section_weight, inv_freq_temp=args.inv_freq_temp, near_tie_margin=args.near_tie_margin)
     else:
-        groups = load_groups(args.sigma_floor)
+        groups = load_groups(args.sigma_floor, near_tie_margin=args.near_tie_margin)
 
     # ------------------------------------------------------------------
     # Step 2: Load tokenizer & find action token IDs
