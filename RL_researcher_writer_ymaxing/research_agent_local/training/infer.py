@@ -46,7 +46,6 @@ from _rl_preset import (  # noqa: E402
     _RL_INPUT_SYSTEM,
     NUM_PRESETS as _NUM_PRESETS,
     PRESET_NAMES,
-    PRESET_ORDER,
     build_rl_input,
 )
 
@@ -353,14 +352,14 @@ class ExplorationStrategySelector:
                 matching the training-time input distribution exactly.
 
         Returns:
-            int: Chosen preset ID (0-5).
+            int: Chosen preset ID (0-3).
         """
         preset, _ = self.predict_article(digest, guideline=guideline)
         return preset
 
     def predict_with_probs(self, digest: str) -> tuple[int, list[float]]:
         """
-        Predict preset and return action probabilities for all 6 presets.
+        Predict preset and return action probabilities for all 4 presets.
 
         This is the low-level single-context call used internally by
         ``predict_article``.  Pass a section excerpt to get section-level
@@ -370,7 +369,7 @@ class ExplorationStrategySelector:
             digest: Exploitation digest text (or a section excerpt).
 
         Returns:
-            tuple[int, list[float]]: (chosen_preset, probabilities over 0-5)
+            tuple[int, list[float]]: (chosen_preset, probabilities over 0-3)
         """
         input_ids = self._build_input_ids(digest)
 
@@ -407,7 +406,7 @@ class ExplorationStrategySelector:
 
         Returns:
             tuple[int, list[float]]:
-                (chosen_preset, aggregated_probabilities_over_0_to_5)
+                (chosen_preset, aggregated_probabilities_over_0_to_3)
         """
         preset, agg_normalised, _, _meta = self._aggregate(digest, guideline=guideline, verbose=False)
         return preset, agg_normalised
@@ -416,18 +415,18 @@ class ExplorationStrategySelector:
         self,
         digest: str,
         guideline: str = "",
-    ) -> tuple[int, list[float], list[dict]]:
+    ) -> tuple[int, list[float], list[dict], dict]:
         """
         Like ``predict_article`` but also returns per-section detail.
 
         Returns:
-            tuple[int, list[float], list[dict]]:
-                (chosen_preset, aggregated_probs, section_details)
+            tuple[int, list[float], list[dict], dict]:
+                (chosen_preset, aggregated_probs, section_details, meta)
 
             Each element of ``section_details`` is a dict with keys:
                 ``title``         — section heading string
                 ``excerpt``       — section text fed to the model
-                ``probs``         — probability vector (list[float] length 6)
+                ``probs``         — probability vector (list[float] length 4)
                 ``chosen``        — argmax preset for this section alone
                 ``target_words``  — guideline target word count (None if absent)
                 ``word_count``    — actual digest word count (fallback base weight)

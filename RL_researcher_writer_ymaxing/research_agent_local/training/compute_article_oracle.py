@@ -157,7 +157,8 @@ _MANUAL_OVERRIDES: dict[str, str] = {
     "11_multimodal__var_demanding":        "standard",
 
     # --- near-tie where S1 knee was decisive (no S4/S3/S5 actionable) ---
-    "03_context_engineering__var_minimal": "light",
+    # NOTE: 03_context_engineering__var_minimal removed — now covered by the
+    #       external_evidence_policy=forbidden → skip hard constraint.
     "09_RAG__var_demanding":               "deep",
 }
 
@@ -357,11 +358,18 @@ def _decide(
     r_w: dict[str, float],
     features_sections: dict[str, dict],
     total_target_words: int,
+    external_evidence_policy: str = "allowed",
 ) -> tuple[str, bool, bool, list[str]]:
     """Return (oracle_arm, manual_override, needs_review, decision_path).
 
     decision_path is a human-readable list of strings tracing the decision.
     """
+    # -1. Hard constraint: forbidden policy → skip, regardless of R_w.
+    #     External evidence cannot be used in the final article, so the only
+    #     valid production choice is the no-exploration arm.
+    if external_evidence_policy == "forbidden":
+        return "skip", False, False, ["policy=forbidden → skip (hard constraint)"]
+
     # 0.  Manual override: absolute precedence over all signals.
     if article in _MANUAL_OVERRIDES:
         arm = _MANUAL_OVERRIDES[article]
@@ -509,7 +517,8 @@ def compute_article_oracle(article: str) -> dict:
 
     # --- decision ---
     oracle_arm, manual_override, needs_review, decision_path = _decide(
-        article, r_w, features_sections, total_tw
+        article, r_w, features_sections, total_tw,
+        external_evidence_policy=feat_data.get("external_evidence_policy", "allowed"),
     )
     oracle_arm_idx = ARM_IDX[oracle_arm]
 

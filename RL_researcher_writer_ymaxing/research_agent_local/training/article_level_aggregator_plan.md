@@ -33,6 +33,55 @@ the plan against the *actual* current code and data.
      `<gap_profile>` block.
 - **Dataset is 8 articles × 3 variants = 24 article-variants** (the
   `ARTICLES` list in `train_grpo.py`), not 21.
+- **The 24 article-level oracles are finalized.** `compute_article_oracle.py`
+  was rewritten to the 4-arm scheme and all 24 `article_oracle.json` files were
+  regenerated. Outcome skew: **skip=8, light=11, standard=3, deep=2** — the
+  reward strongly favours *cheap* exploration.
+
+---
+
+## 0.5 The train/inference asymmetry — the aggregator *predicts* the oracle, it does not *replicate* it
+
+This is the governing constraint for the whole stage, and it is easy to get
+wrong. The article-level **oracle** we just finalized is a **training-time
+labeling process**. It decides using three things that **do not exist at
+inference on a new article**:
+
+1. **R_w** — the target-words-weighted vote of per-section *rewards*. Computing
+   it requires running *all four arms* (skip/light/standard/deep) end-to-end and
+   scoring every section against the reference article (`section_oracle.json`).
+2. **S3 / S4 / S5 tiebreakers** — bloat, structural compliance, and 3-run
+   stability, each measured on the *generated `article.md` of every arm*.
+3. **S1 knee / manual overrides** — per-article embedding analysis of marginal
+   novelty plus human review (the four hard-coded cases).
+
+At inference you have run **one** exploitation pass → **one** digest. There are
+no scored arms, no per-arm articles, no reference text, no rewards. So R_w,
+S3–S5, and the S1 knee are all **structurally uncomputable**. The aggregator is
+therefore **not** a port of the oracle's decision tree — it is a *predictor* that
+approximates the oracle's **output** from an inference-safe evidence packet
+(digest signals + the trained section policy's distributions). The oracle is
+used **only offline**, as the label that scores the aggregator's accuracy.
+
+**Proxy mapping — every oracle signal → its inference-time stand-in:**
+
+| Oracle signal (training label) | Needs | At inference | Inference proxy in the packet |
+|---|---|---|---|
+| **R_w** (reward-weighted arm vote) | 4 arms × scored section rewards | ❌ | `rl_aggregate.distribution` — the section policy's target-words-weighted vote. The policy was *trained* to predict each section's reward winner, so its weighted vote is the learned proxy for R_w. |
+| **S4** structure (bullets/depth in output) | per-arm `article.md` | ❌ | Guideline *demand* only: `mandatory_bullets`, `must_cover_depth` per section (what's required, not what was produced). |
+| **S3** bloat (words vs target) | per-arm `article.md` | ❌ | The *budget* only: `expected_total_words` / per-section `target_words`. |
+| **S5** stability (variance over 3 runs) | 3× per-arm `article.md` | ❌ | Section policy `margin` / `confidence` (low confidence ≈ unstable section). |
+| **S1 knee / overrides** (marginal novelty) | embeddings over research rounds | ❌ | `tavily_saturation` + `n_orphan_anchors` + gap profile (high saturation ⇒ little new to find). |
+
+Two direct consequences for the build:
+
+- **Do not bake the four manual overrides into the aggregator.** They are
+  training-set-specific labels decided by S1/human review; hard-coding them would
+  fit the training set and not generalize. The aggregator must *re-derive* those
+  calls from the packet (saturation + gaps + RL margins) or accept the miss — and
+  those four near-ties are exactly the stress set in §5.
+- **Keep the packet leakage-free** (see the invariant at the end of §3): if any
+  packet field needs a reward or a per-arm article, it cannot run in production.
 
 ---
 
@@ -41,7 +90,7 @@ the plan against the *actual* current code and data.
 | Option | Verdict |
 |---|---|
 | **A. Hand-coded aggregation** (word-weighted vote + floor) | Keep as deterministic fallback only (Grok unavailable / parse failure). |
-| **B. Local article-level head** | **Defer.** 24 article-variants is too few; only one stale 6-preset article oracle exists. Revisit after ≥~100 logged Grok decisions + workflow outcomes. |
+| **B. Local article-level head** | **Defer.** 24 article-variants is too few to train a reliable head, even though all 24 now have fresh 4-preset oracles. Revisit after ≥~100 logged Grok decisions + workflow outcomes. Its **input must be the inference-safe evidence packet (§3)**, never the oracle's R_w / S-signals (those don't exist at inference). |
 | **C. Grok 4.2 reasoning planner** with a rich evidence packet | **Adopt as primary.** Already wired (`_call_grok_planner`). Needs a much richer packet (Section 3). |
 
 **Near-term stack:**
@@ -113,11 +162,22 @@ per-section **target-word weight** that drove the aggregate.
 ### 2.4 Smaller issues
 
 - `section_signals[i].title` is the `sec_id` (e.g. `S6::...`), not a readable
-  title — fine for Grok but worth mapping to the section heading.
+  title — fine for Grok but worth mapping to the section heading. **(Done:**
+  `_digest_parse.readable_title` + `short_label` give both.**)**
 - `_call_infer_server` reads a `corrections` key the server never returns →
-  dead (`meta` always `{}`). Remove or wire up.
-- The full raw guideline is sent; once `guideline_context` (Section 3) is built,
-  the raw guideline is redundant token cost.
+  dead (`meta` always `{}`). **(Done: removed; `_call_infer_server` now returns a
+  3-tuple. `infer.py`'s vestigial `_meta` is left in place — harmless, internal.)**
+- ~~The full raw guideline is redundant token cost.~~ **Reversed (2026-06-06):**
+  the raw guideline is now sent as a clearly-delimited **primary-source appendix**
+  *after* the structured brief. Rationale: it carries qualitative scope cues
+  (intended depth, audience, tone, explicit "keep brief"/"go deep") that the
+  numeric distillation provably loses, it exists at inference (so it is
+  leakage-safe), and at ~8k tokens it is negligible for Grok. The structured
+  brief remains the primary decision basis; the system prompt instructs Grok not
+  to let guideline length alone inflate the preset. Gated by
+  `_INCLUDE_GUIDELINE_IN_PLANNER` for ablation. **Raw source/research text is
+  deliberately NOT injected** — the digest already distils the sources into the
+  coverage signals, and the corpus is too large/noisy to re-reason over here.
 
 ---
 
@@ -174,9 +234,10 @@ from data that exists today — no new model outputs required.
   },
   "decision_instructions": [
     "Pick ONE article-level preset from {skip, light, standard, deep}.",
+    "DEFAULT TOWARD THE CHEAPER ARM: the oracle reward favours light/skip in 19/24 training articles; escalate to standard/deep only on positive evidence (high need_depth AND a depth mandate AND low saturation).",
     "If external_evidence_policy == 'forbidden' → skip (exploration is unusable).",
     "If external_evidence_policy == 'required' → bias upward at least one level.",
-    "High tavily_saturation (→1.0) means more rounds mostly return duplicates → bias down.",
+    "High tavily_saturation (→1.0) means more rounds mostly return duplicates → bias down (this is the inference-time proxy for the oracle's S1 marginal-novelty knee).",
     "Weight sections by target_words; a brief section (must_stay_brief>0 or small target_words) cannot absorb extra research regardless of gap size.",
     "Treat must_cover_depth as depth pressure even when need_depth looks modest.",
     "Use need_depth/need_breadth as direction (depth-first vs breadth), not as a raw round count.",
@@ -185,8 +246,22 @@ from data that exists today — no new model outputs required.
 }
 ```
 
-Render this as compact JSON inside `<evidence>` tags plus the rules block;
-drop the full raw guideline once `guideline_context` is built.
+Render this as a **guided, annotated markdown brief** (not raw JSON) so the
+planner reasons over a readable decision brief instead of a numeric blob; the
+structured `article_evidence` dict is still returned in the tool result for
+eval/replay. Append the **raw article guideline verbatim as a primary-source
+appendix** after the brief (see §2.4) so Grok can weigh qualitative scope cues
+the distillation loses.
+
+**Leakage invariant (critical).** Every field above is computed from a *single*
+exploitation pass — the digest (`<digest_meta>` / `<gap_profile>` /
+`<section_coverage>`) plus the trained section policy's outputs. **No field may
+derive from per-arm rewards or per-arm generated articles**, because at inference
+on a new article none of that exists: one digest, no scored arms, no reference
+text. `tavily_saturation` and `n_orphan_anchors` are legitimate precisely
+because they summarise that one pass, not a comparison across arms. A CI
+assertion should reject any packet field traceable to `section_oracle.json`,
+per-arm `article.md`, or reward scoring (see §5.3).
 
 ---
 
@@ -215,17 +290,20 @@ All in `research_agent_local/`. The digest-generation fixes (Section 0) are
 
 ### 4.2 Article-level planner (Stage 2) — same file
 
-- Replace `_PLANNER_USER_TEMPLATE` with a version that embeds the `<evidence>`
-  JSON and the `decision_instructions` rules block; stop sending the full raw
-  guideline.
-- `_call_grok_planner` takes the `article_evidence` dict instead of the loose
-  positional args. Keep return keys `preset/name/reasoning/override/
-  override_reason`; add `decision_drivers: list[str]` and `risk_flags: list[str]`.
-- `_call_grok_planner_standalone` (Grok-alone baseline) should receive the same
-  `guideline_context` + `digest_global` (compact) instead of the raw guideline,
-  so the full-vs-standalone comparison isolates the RL section signals cleanly.
-- Remove the dead `corrections`/`meta` path in `_call_infer_server` (or have the
-  infer server emit the floor/correction metadata it currently drops).
+- Replace `_PLANNER_USER_TEMPLATE` with a version that embeds the guided evidence
+  brief (`_render_evidence_brief`); the decision rules live in the **system
+  prompt** (constant, KV-cache friendly), not the user message. The raw guideline
+  is appended verbatim as a primary-source appendix (§2.4), gated by
+  `_INCLUDE_GUIDELINE_IN_PLANNER`.
+- `_call_grok_planner` takes the `article_evidence` dict (+ optional
+  `article_guideline`) instead of the loose positional args. Keep return keys
+  `preset/name/reasoning/override/override_reason`; add
+  `decision_drivers: list[str]` and `risk_flags: list[str]`.
+- `_call_grok_planner_standalone` (Grok-alone baseline) receives the same brief
+  with the RL sections omitted (`include_rl=False`) **and the same guideline
+  appendix**, so the only difference between full and standalone is the RL signal
+  — isolating its marginal value cleanly.
+- Remove the dead `corrections`/`meta` path in `_call_infer_server`. **(Done.)**
 
 ### 4.3 Deterministic fallback
 
@@ -236,23 +314,43 @@ baseline. Honor `external_evidence_policy == "forbidden" → skip` here too.
 
 ### 4.4 Preset-count migration (remaining surface)
 
-Section-level + tool + planner prompt are **already on 4 presets**. Still stale:
+Section-level + tool + planner prompt are **already on 4 presets**.
+`compute_article_oracle.py` is now **done**: rewritten to the 4-arm scheme
+(`ARMS = skip/light/standard/deep`, reads `section_oracle.json` v2), and all 24
+`article_oracle.json` files were **regenerated** with the new schema
+(`oracle_arm`, `oracle_arm_idx`, `r_w_rewards_list`, `margin`, `reward_spread`,
+`manual_override`, `needs_review`, per-section `rewards_by_preset`).
 
-- `compute_article_oracle.py`, `eval_accuracy.py`, `analyze_eval_results.py`,
-  `recompute_oracle_with_prior.py` hardcode `NUM_PRESETS = 6` / 6-name maps.
-- `article_oracle.json` / `article_oracle_prior.json` in every base dir are
-  **stale 6-preset** (`oracle_preset: 4`, `"P4_bal_depth_breadth"`, 6-element
-  `article_rewards`).
+Still stale — must import `NUM_PRESETS` / `PRESET_NAMES` from `_rl_preset.py` and
+read the new field names (not `oracle_preset`):
 
-Action: import `NUM_PRESETS`/`PRESET_NAMES` from `_rl_preset.py` everywhere,
-then **recompute the article-level oracle under the 4-preset reward** before any
-article-level evaluation. This is the prerequisite for Section 5.
+- `eval_accuracy.py` (`_NUM_PRESETS = 6`)
+- `analyze_eval_results.py` (6-preset reward-gap tables)
+- `recompute_oracle_with_prior.py` (`NUM_PRESETS = 6`; writes
+  `article_oracle_prior.json`)
+
+**Open:** is the `article_oracle_prior.json` / prior-smoothing path still needed?
+The new oracle already encodes near-tie handling (EPS_BAND + S3/S4/S5) and the
+manual overrides, so the old prior recompute is likely **obsolete** — decide to
+**retire** `recompute_oracle_with_prior.py` rather than port it.
 
 ### 4.5 Eval & diagnostics
 
 - `eval_accuracy.py` / `analyze_eval_results.py`: per article-variant emit
-  `pred_fallback`, `pred_grok_full`, `pred_grok_standalone` vs the recomputed
-  4-preset article oracle; report top-1 accuracy and oracle-margin diagnostics.
+  `pred_fallback`, `pred_grok_full`, `pred_grok_standalone` vs the 4-preset
+  oracle's `oracle_arm_idx`; report top-1 accuracy.
+- **Margin-weighted accuracy.** The oracle now saves `margin` and
+  `reward_spread` per article; near-tie labels (small `margin`, or
+  `manual_override` / `needs_review = true`) are noisy coin-flips. Report both
+  raw top-1 and a margin-weighted score so the aggregator is not over-penalised
+  for missing a genuine tie.
+- **Near-tie stress set.** Track accuracy separately on the 7 hard articles
+  (4 manual overrides — `03_ctx__minimal→light`, `06_tools__minimal→skip`,
+  `09_RAG__demanding→deep`, `11_mm__demanding→standard`; 3 signal-flip / fallback
+  near-ties — `06_tools__standard`, `09_RAG__standard`, `11_mm__standard`) vs the
+  17 clean unique-margin articles. Expect high top-1 on the 17; the 7 are where
+  the S1-proxy (saturation / gaps) must carry the call, and some may be
+  unrecoverable from inference signals alone.
 - Persist each `article_evidence` packet + Grok decision under
   `grok_planner_test_results/{article}.json` to replay decisions offline and to
   seed future distillation data.
@@ -266,15 +364,23 @@ article-level evaluation. This is the prerequisite for Section 5.
    `<gap_profile>`/`<section_coverage>` parse identically to the committed one.
 2. **Packet round-trip:** build `article_evidence` for all 24 article-variants;
    assert every field present, all numerics finite, `Σ weight ≈ 1`.
-3. **Recompute 4-preset article oracle** (4.4) for all 24; sanity-check it is no
-   longer a permutation of 0–5.
-4. **Fallback parity:** with Grok disabled, `_fallback_aggregator` reproduces the
-   current top-1 article preset on ≥22/24 (regression guard).
-5. **Grok-full ≥ Grok-standalone** on article-oracle top-1; if not, the section
-   signals are misleading and Stage 1 / packet must be re-examined.
-6. **Policy honored:** every `forbidden` article ⇒ final preset `skip`; spot-check
-   `required` articles bias upward.
-7. **Override audit:** log every Grok override + `override_reason`; review until
+3. **Leakage guard (blocking):** assert no `article_evidence` field is traceable
+   to `section_oracle.json`, per-arm `article.md`, or reward scoring — the packet
+   must be reproducible from one digest + the section policy alone (§0.5, §3).
+4. **4-preset oracle wired:** ✅ `article_oracle.json` regenerated (4-preset);
+   confirm eval reads `oracle_arm_idx` (not the stale `oracle_preset`) and that
+   no oracle value exceeds 3.
+5. **Fallback = R_w-proxy floor:** with Grok disabled, `_fallback_aggregator`
+   (RL target-words-weighted vote) reproduces the oracle top-1 on the 17 clean
+   articles; record its score on all 24 as the floor Grok must beat.
+6. **Grok-full ≥ Grok-standalone ≥ fallback** on oracle top-1; if Grok-full does
+   not beat the RL-vote fallback, the section signals / packet add no value and
+   Stage 1 must be re-examined.
+7. **Near-tie stress set:** report top-1 on the 7 hard articles separately
+   (§4.5); audit each decision against its packet `tavily_saturation` + gaps.
+8. **Policy honored:** every `forbidden` article ⇒ final preset `skip`;
+   spot-check `required` articles bias upward.
+9. **Override audit:** log every Grok override + `override_reason`; review until
    ≥80% judged correct.
 
 ---
@@ -295,9 +401,11 @@ article-level evaluation. This is the prerequisite for Section 5.
    from the digest XML it already has? (Recommendation: parse in the tool via a
    shared `_digest_parse.py`; the digest is already in hand and the server stays
    thin.)
-2. Confirm the 4-preset article-oracle reward is just the section reward
-   re-aggregated by `target_words` (as `compute_article_oracle.py` did for 6
-   presets), with no new term — so only `NUM_PRESETS`/names change.
+2. **Resolved.** The 4-preset oracle base *is* R_w — the section reward
+   re-aggregated by `target_words` — but near-ties additionally use the S3/S4/S5
+   *text-signal* tiebreakers and four manual overrides. Those tiebreakers are
+   **training-only** (they read per-arm articles), which is exactly why §0.5 maps
+   them to inference proxies rather than reusing them in the aggregator.
 3. Where should the shared digest-parsing helpers live — `training/_digest_parse.py`
    imported by both `mcp_server` and `training`, or duplicated? (Recommendation:
    shared module to prevent drift, mirroring `_rl_preset.py`.)

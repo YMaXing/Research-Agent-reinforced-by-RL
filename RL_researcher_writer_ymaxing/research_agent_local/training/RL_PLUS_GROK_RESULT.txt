@@ -1,0 +1,492 @@
+yxing@YMX-Raider:/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local$ uv run python -m mcp_client.src.test_grok_planner --all
+
+Preset Planner Test  (24 variants)
+  Mode     : RL + Grok 4.2
+  Variants : ['02_workflows_vs_agents__var_minimal', '02_workflows_vs_agents__var_standard', '02_workflows_vs_agents__var_demanding', '03_context_engineering__var_minimal', '03_context_engineering__var_standard', '03_context_engineering__var_demanding', '05_workflow_patterns__var_minimal', '05_workflow_patterns__var_standard', '05_workflow_patterns__var_demanding', '06_tools__var_minimal', '06_tools__var_standard', '06_tools__var_demanding', '08_react_practice__var_minimal', '08_react_practice__var_standard', '08_react_practice__var_demanding', '09_RAG__var_minimal', '09_RAG__var_standard', '09_RAG__var_demanding', '10_memory_knowledge_access__var_minimal', '10_memory_knowledge_access__var_standard', '10_memory_knowledge_access__var_demanding', '11_multimodal__var_minimal', '11_multimodal__var_standard', '11_multimodal__var_demanding']
+/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local/mcp_server/.venv/lib/python3.12/site-packages/opik/error_tracking/shutdown_hooks.py:12: SentryHubDeprecationWarning: `sentry_sdk.Hub` is deprecated and will be removed in a future major release. Please consult our 1.x to 2.x migration guide for details on how to migrate `Hub` usage to the new API: https://docs.sentry.io/platforms/python/migration/1.x-to-2.x
+  client = sentry_sdk.Hub.current.client
+
+
+╭────────────────────────────────────────────────────────────────────────────╮
+│                                                                            │
+│        _ __ ___  _____           __  __  _____________    ____    ____     │
+│       _ __ ___ .'____/___ ______/ /_/  |/  / ____/ __ \  |___ \  / __ \    │
+│      _ __ ___ / /_  / __ `/ ___/ __/ /|_/ / /   / /_/ /  ___/ / / / / /    │
+│     _ __ ___ / __/ / /_/ (__  ) /_/ /  / / /___/ ____/  /  __/_/ /_/ /     │
+│    _ __ ___ /_/    \____/____/\__/_/  /_/\____/_/      /_____(*)____/      │
+│                                                                            │
+│                                                                            │
+│                                FastMCP  2.0                                │
+│                                                                            │
+│                                                                            │
+│                 🖥️  Server name:     Research MCP Server                    │
+│                 📦 Transport:       STDIO                                  │
+│                                                                            │
+│                 🏎️  FastMCP version: 2.12.2                                 │
+│                 🤝 MCP SDK version: 1.26.0                                 │
+│                                                                            │
+│                 📚 Docs:            https://gofastmcp.com                  │
+│                 🚀 Deploy:          https://fastmcp.cloud                  │
+│                                                                            │
+╰────────────────────────────────────────────────────────────────────────────╯
+
+
+2026-06-07 13:42:41.378 | INFO     | logging:callHandlers:1762 | Starting MCP server 'Research MCP Server' with transport 'stdio'
+2026-06-07 13:42:41.382 | INFO     | logging:callHandlers:1762 | Processing request of type ListToolsRequest
+2026-06-07 13:42:41.384 | INFO     | logging:callHandlers:1762 | Processing request of type ListPromptsRequest
+2026-06-07 13:42:41.385 | INFO     | logging:callHandlers:1762 | Processing request of type ListResourcesRequest
+  Tool     : predict_exploration_preset (direct call, no agent loop)
+
+
+================================================================================
+  Variant : 02_workflows_vs_agents__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:42:41.390 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:42:41.462 | INFO     | logging:callHandlers:1762 | Starting infer.py HTTP server (this will load the model — ~5-10 min on first call over /mnt/f/)…
+2026-06-07 13:42:41.474 | INFO     | logging:callHandlers:1762 | Infer server is ready.
+2026-06-07 13:42:51.669 | INFO     | logging:callHandlers:1762 | Grok planner chose P0 (override=True)
+
+  Policy     : forbidden
+  RL model   : P1 light     conf=42%  H=1.54bits
+  Grok 4.2   : P0 skip      [OVERRIDE]
+               reason: Hard constraint from external-evidence policy = forbidden overrides scorer's P1 vote
+               reasoning: External-evidence policy is explicitly FORBIDDEN and states exploration output cannot be used, triggering the hard constraint that mandates P0. Section-scorer aggregate is P1 light (42%) but uncertain (entropy 1.54); every section is brief-flagged, guideline demands only surface-level conceptual overview with no external libraries/case studies, and most sections already show cov d·b >=6.
+               drivers: external-evidence forbidden, all sections brief-flagged, surface-level guideline
+  -> Chosen  : P0 skip  (by Grok4.2)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.496  P1/light:0.693  P2/standard:0.450  P3/deep:0.475
+  Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 02_workflows_vs_agents__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:42:51.683 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:43:00.706 | INFO     | logging:callHandlers:1762 | Grok planner chose P1 (override=False)
+
+  Policy     : allowed
+  RL model   : P1 light     conf=58%  H=1.35bits  [floor applied]
+  Grok 4.2   : P1 light     [agrees with RL]
+               reasoning: Section-scorer aggregate is P1 light (58% top-pick, moderate lean) after budget-weighting all per-section gaps; S5 (30% budget, cov 8·6, must-ev 4) and S3 (must-ev 3) already reflected in its vote; dominant gap is depth but no sanctioned upward override from P1 and downward to P0 unwarranted (mixed RL picks, non-brief high-budget sections).
+               drivers: section-scorer aggregate, RL-pick distribution, must-ev in largest sections
+  -> Chosen  : P1 light  (by Grok4.2)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.629  P1/light:0.794  P2/standard:0.734  P3/deep:0.510
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 02_workflows_vs_agents__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:43:00.719 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:43:08.885 | INFO     | logging:callHandlers:1762 | Grok planner chose P2 (override=False)
+
+  Policy     : allowed
+  RL model   : P2 standard  conf=49%  H=1.50bits
+  Grok 4.2   : P2 standard  [agrees with RL]
+               reasoning: Section-scorer aggregate is P2 standard (49% top-pick, moderate confidence, 0% deep). High-budget sections S3/S4 show must-ev 3/2 plus need_depth 6-7; S6 has must-ev 6; S5 is the outlier (skip, high cov) but scorer already budget-weighted this. Dominant gap=depth matches the sanctioned depth->breadth composition of P2. No sanctioned override condition met.
+               drivers: scorer_aggregate_P2, must_ev_in_S3_S4_S6, dominant_depth_gap
+  -> Chosen  : P2 standard  (by Grok4.2)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.483  P1/light:0.572  P2/standard:0.512  P3/deep:0.448
+  Regret     : 0.0601  (regret +0.0601)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 03_context_engineering__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:43:08.894 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:43:16.404 | INFO     | logging:callHandlers:1762 | Grok planner chose P0 (override=False)
+
+  Policy     : forbidden
+  RL model   : P0 skip      conf=69%  H=0.90bits
+  Grok 4.2   : P0 skip      [agrees with RL]
+               reasoning: Hard constraint: external-evidence policy = FORBIDDEN, so MUST choose P0 skip. Section-scorer aggregate is also P0 (69% skip, 31% light, 0% higher); all 8 sections are brief-flagged with must-ev=0, cov already meets guideline, and the guideline itself demands only surface-level conceptual overview with strict brevity and no external examples.
+               drivers: external-evidence-forbidden, scorer-P0-vote, all-sections-brief
+  -> Chosen  : P0 skip  (by Grok4.2)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.762  P1/light:0.778  P2/standard:0.631  P3/deep:0.727
+  Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 03_context_engineering__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:43:16.414 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:43:24.733 | INFO     | logging:callHandlers:1762 | Grok planner chose P1 (override=False)
+
+  Policy     : allowed
+  RL model   : P1 light     conf=53%  H=1.00bits
+  Grok 4.2   : P1 light     [agrees with RL]
+               reasoning: Section-scorer aggregate is P1 light (53% light / 47% skip, 0% standard or deep) with moderate confidence; all per-section RL picks are skip or light (no section votes standard/deep). High-budget sections (S6 20%, S3/S4/S7 15% each) already show cov d·b of 7·5, 8·6, 5·4, 7·4; scorer has priced in the 68 unbacked anchors and dominant depth gaps. No sanctioned override condition is met.
+               drivers: scorer_aggregate_P1, zero_votes_above_light, decent_cov_in_budgeted_sections
+  -> Chosen  : P1 light  (by Grok4.2)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.641  P1/light:0.612  P2/standard:0.584  P3/deep:0.514
+  Regret     : 0.0295  (regret +0.0295)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 03_context_engineering__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:43:24.744 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:43:31.817 | INFO     | logging:callHandlers:1762 | Grok planner chose P1 (override=False)
+
+  Policy     : required
+  RL model   : P1 light     conf=68%  H=1.18bits  [floor applied]
+  Grok 4.2   : P1 light     [agrees with RL]
+               reasoning: Section-scorer's aggregate is P1 light (68% mass, 24% standard, 0% deep) after budget-weighting all 8 sections; this is the reward-trained peak. External-evidence policy is REQUIRED, ruling out P0, while the asymmetric override rules forbid any upward move from a P1+ vote regardless of the 52 unbacked anchors, dominant depth gaps, or per-section must-ev counts (e.g. S6=11). Gap table informs round composition (depth-first) but not level.
+               drivers: scorer_aggregate_P1, REQUIRED_external_evidence, no_sanctioned_upward_override
+  -> Chosen  : P1 light  (by Grok4.2)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.429  P1/light:0.505  P2/standard:0.477  P3/deep:0.437
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 05_workflow_patterns__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:43:31.828 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:43:40.296 | INFO     | logging:callHandlers:1762 | Grok planner chose P0 (override=True)
+
+  Policy     : forbidden
+  RL model   : P1 light     conf=56%  H=0.99bits
+  Grok 4.2   : P0 skip      [OVERRIDE]
+               reason: Hard policy constraint requires P0 despite moderate P1 scorer lean
+               reasoning: FORBIDDEN external-evidence policy is a hard constraint mandating P0; scorer's P1-light vote (56%) and per-section brief flags/coverage (depth 4-6) confirm no usable gaps remain for a surface-level guideline.
+               drivers: external-evidence-forbidden, all-sections-brief, high-cov-depth
+  -> Chosen  : P0 skip  (by Grok4.2)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.872  P1/light:0.841  P2/standard:0.796  P3/deep:0.746
+  Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 05_workflow_patterns__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:43:40.309 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:43:49.768 | INFO     | logging:callHandlers:1762 | Grok planner chose P2 (override=False)
+
+  Policy     : allowed
+  RL model   : P2 standard  conf=49%  H=1.37bits
+  Grok 4.2   : P2 standard  [agrees with RL]
+               reasoning: Section-scorer aggregate is P2 standard (49% vs 41% light, moderate confidence); high-budget sections (S3 21%, S4 15%, S6 13%) mostly vote standard with dominant depth gaps already priced in. No sanctioned override applies: vote not highly uncertain (entropy <1.5), no brief-flags, and downward to P1 would ignore the learned reward peak on depth-first needs. Dominant gap type = depth further aligns with depth->breadth rounds.
+               drivers: scorer_aggregate_P2, budget-weighted_section_votes, dominant_depth_gaps
+  -> Chosen  : P2 standard  (by Grok4.2)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.615  P1/light:0.808  P2/standard:0.709  P3/deep:0.719
+  Regret     : 0.0992  (regret +0.0992)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 05_workflow_patterns__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:43:49.780 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:43:58.969 | INFO     | logging:callHandlers:1762 | Grok planner chose P1 (override=False)
+
+  Policy     : required
+  RL model   : P1 light     conf=48%  H=1.45bits  [floor applied]
+  Grok 4.2   : P1 light     [agrees with RL]
+               reasoning: Section-scorer aggregate is P1 light (48% top vote, 37% deep runner-up, moderate confidence). External-evidence policy requires at least P1, satisfying the hard constraint. No sanctioned upward override applies (explicitly forbidden for any P1+ vote); dominant depth gaps, 42 unbacked anchors, and high must-ev in S1/S2/S7 were already priced into the scorer's reward-weighted pick. Per-section RL votes and guideline production-example mandates do not justify escalation.
+               drivers: scorer_aggregate_P1, required_evidence_policy, asymmetric_override_rules
+  -> Chosen  : P1 light  (by Grok4.2)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.542  P1/light:0.655  P2/standard:-0.060  P3/deep:0.477
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 06_tools__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:43:58.980 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:44:06.102 | INFO     | logging:callHandlers:1762 | Grok planner chose P0 (override=False)
+
+  Policy     : forbidden
+  RL model   : P0 skip      conf=61%  H=0.96bits
+  Grok 4.2   : P0 skip      [agrees with RL]
+               reasoning: External-evidence policy is explicitly FORBIDDEN, mandating P0 skip per hard constraints; section-scorer's aggregate vote is also P0 (61% skip, 0% standard/deep) on a moderate-confidence distribution. All sections carry 'brief: yes' flags and the guideline demands only surface-level conceptual treatment with no depth or external examples allowed.
+               drivers: external-evidence-forbidden, scorer-P0-vote, brevity-flags
+  -> Chosen  : P0 skip  (by Grok4.2)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.690  P1/light:0.682  P2/standard:0.557  P3/deep:0.321
+  Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 06_tools__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:44:06.153 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:44:17.525 | INFO     | logging:callHandlers:1762 | Grok planner chose P0 (override=False)
+
+  Policy     : allowed
+  RL model   : P0 skip      conf=59%  H=1.61bits
+  Grok 4.2   : P0 skip      [agrees with RL]
+               reasoning: Section-scorer aggregate is P0 (59% skip, entropy 1.61 bits = uncertain). Multiple sections individually vote standard/deep (S2, S6, S8) creating a depth-or-nothing pattern; light holds only 14% (<25%) so sanctioned P0→P1 nudge is blocked. Scorer already priced must-ev (esp. S3/S4/S5), 52 unbacked anchors, and dominant depth gaps against reward; no hard external-evidence mandate.
+               drivers: scorer_primary_P0, depth-or-nothing_pattern, no_sanctioned_upward
+  -> Chosen  : P0 skip  (by Grok4.2)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.560  P1/light:0.453  P2/standard:0.571  P3/deep:0.518
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 06_tools__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:44:17.544 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:44:17.558 | INFO     | logging:callHandlers:1762 | Starting infer.py HTTP server (this will load the model — ~5-10 min on first call over /mnt/f/)…
+2026-06-07 13:44:17.561 | INFO     | logging:callHandlers:1762 | Infer server is ready.
+2026-06-07 13:44:30.469 | INFO     | logging:callHandlers:1762 | Grok planner chose P3 (override=False)
+
+  Policy     : required
+  RL model   : P3 deep      conf=38%  H=1.92bits
+  Grok 4.2   : P3 deep      [agrees with RL]
+               reasoning: Section-scorer aggregate is P3 deep (38% mass, highest arm) despite high entropy (1.92 bits). No sanctioned override applies: vote is not P0, high-budget sections (S3/S4/S7) mix deep/standard/light picks rather than uniform brief/well-covered flags, and dominant depth gaps plus must-ev in S8/S9 were already priced into the GRPO vote. External-evidence REQUIRED constraint is satisfied only by >=P1; P3 matches the trained reward peak for this demanding variant.
+               drivers: scorer_aggregate_P3, high_entropy_but_no_downward_sanction, external_required, must-ev_in_S8_S9
+  -> Chosen  : P3 deep  (by Grok4.2)
+  Oracle     : P3 deep
+  R_w        : P0/skip:0.379  P1/light:0.455  P2/standard:0.429  P3/deep:0.495
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 08_react_practice__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:44:30.482 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:44:36.334 | INFO     | logging:callHandlers:1762 | Grok planner chose P0 (override=False)
+
+  Policy     : forbidden
+  RL model   : P0 skip      conf=71%  H=0.87bits
+  Grok 4.2   : P0 skip      [agrees with RL]
+               reasoning: External-evidence policy is explicitly FORBIDDEN (exploration output cannot be used). Section-scorer aggregate is decisively P0 skip (71%, no section votes above light). Guideline repeatedly flags 'must stay brief', surface-level treatment, and bans external examples, aligning with no exploration.
+               drivers: external-evidence-forbidden, scorer-P0-71%, brevity-flags-across-sections
+  -> Chosen  : P0 skip  (by Grok4.2)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.654  P1/light:0.122  P2/standard:0.065  P3/deep:0.383
+  Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 08_react_practice__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:44:36.347 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:44:46.278 | INFO     | logging:callHandlers:1762 | Grok planner chose P1 (override=True)
+
+  Policy     : allowed
+  RL model   : P0 skip      conf=51%  H=1.00bits
+  Grok 4.2   : P1 light     [OVERRIDE]
+               reason: sanctioned upward nudge from P0 (P1 runner-up 49%, no std/deep section votes)
+               reasoning: Scorer aggregate is P0 skip (51% / 49% light split, moderate confidence). This exactly matches the sanctioned P0->P1 nudge: runner-up P1 has substantial mass (>=25%), no section votes standard/deep, external-evidence is ALLOWED. Per-section RL picks are only skip or light; S5 (largest budget) is brief-flagged so extra depth is limited. P1 is cheap insurance without violating single-peak reward asymmetry.
+               drivers: scorer_aggregate, sanctioned_nudge_condition, no_high_rl_picks
+  -> Chosen  : P1 light  (by Grok4.2)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.389  P1/light:0.543  P2/standard:0.259  P3/deep:0.328
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 08_react_practice__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:44:46.289 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:45:02.074 | INFO     | logging:callHandlers:1762 | Grok planner chose P2 (override=False)
+
+  Policy     : required
+  RL model   : P2 standard  conf=46%  H=1.35bits
+  Grok 4.2   : P2 standard  [agrees with RL]
+               reasoning: Scorer aggregate is P2 standard (46% vs 45% skip) at moderate confidence; this is the primary reward-trained signal and already incorporates all per-section must-ev, orphans, cov scores, and the brief flag on highest-budget S5. External-evidence policy requires at least P1, high-budget sections S4/S5 individually vote standard·1.00, and light holds only 9% mass so the middle arm sits in a reward valley. Dominant gap type is depth, which will set round ordering (depth→breadth) but does not justify deviating from the scorer's pick.
+               drivers: scorer_aggregate_P2, external_required, high-budget_standard_votes, low_light_mass
+  -> Chosen  : P2 standard  (by Grok4.2)
+  Oracle     : P2 standard
+  R_w        : P0/skip:0.409  P1/light:0.404  P2/standard:0.584  P3/deep:0.435
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 09_RAG__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:45:02.087 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:45:08.600 | INFO     | logging:callHandlers:1762 | Grok planner chose P0 (override=False)
+
+  Policy     : forbidden
+  RL model   : P0 skip      conf=63%  H=0.96bits
+  Grok 4.2   : P0 skip      [agrees with RL]
+               reasoning: Hard constraint: external-evidence policy=FORBIDDEN mandates P0 skip (exploration output cannot be used). Scorer aggregate also picks P0 (63% skip, 37% light, 0% on P2/P3); per-section must-ev and orphans exist but are already priced into the scorer and cannot override the policy.
+               drivers: external-evidence-forbidden, scorer-P0-aggregate
+  -> Chosen  : P0 skip  (by Grok4.2)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.732  P1/light:0.568  P2/standard:0.447  P3/deep:0.363
+  Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 09_RAG__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:45:08.614 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:45:18.397 | INFO     | logging:callHandlers:1762 | Grok planner chose P0 (override=False)
+
+  Policy     : allowed
+  RL model   : P0 skip      conf=52%  H=1.46bits  [floor applied]
+  Grok 4.2   : P0 skip      [agrees with RL]
+               reasoning: Section-scorer aggregate is P0 skip (52% mass, moderate confidence) with standard a distant second (29%). Sanctioned upward nudge to P1 is disallowed: light mass is only 19% (<25% threshold), S4 (29% budget) votes standard·1.00, and several sections are already brief-flagged. Scorer has already priced in the 48 unbacked anchors, 24 must-ev, and dominant depth gaps; high cov scores in S4/S5 (7·5, 7·4) confirm existing exploitation suffices.
+               drivers: scorer_aggregate_P0, no_sanctioned_nudge_condition, high_cov_in_high_budget_sections, brief_flags
+  -> Chosen  : P0 skip  (by Grok4.2)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.406  P1/light:0.439  P2/standard:0.425  P3/deep:0.381
+  Regret     : 0.0338  (regret +0.0338)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 09_RAG__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:45:18.411 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:45:29.510 | INFO     | logging:callHandlers:1762 | Grok planner chose P3 (override=False)
+
+  Policy     : allowed
+  RL model   : P3 deep      conf=59%  H=1.38bits
+  Grok 4.2   : P3 deep      [agrees with RL]
+               reasoning: Section-scorer aggregate is P3 deep (59% deep, 23% light, 18% standard) with moderate confidence; this is the primary signal. High-budget sections S1/S2/S6 show low depth cov (4–4.5/8), high need_depth (7–10), and multiple must-ev (S2:4, S6:5); S3 carries 8 must-ev despite light vote. Article-wide 32 unbacked anchors + dominant depth gap + repeated guideline 'must cover in depth' items (embeddings, chunking, metadata filtering, agentic distinction, conclusion takeaways) align exactly with scorer peak. No sanctioned override applies; downward shift would leave evidence gaps in 26%+ budget sections.
+               drivers: scorer_P3_59pct, depth_gaps_S1_S2_S6, must_ev_total_23, dominant_depth_economics
+  -> Chosen  : P3 deep  (by Grok4.2)
+  Oracle     : P3 deep
+  R_w        : P0/skip:0.377  P1/light:0.531  P2/standard:0.362  P3/deep:0.550
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 10_memory_knowledge_access__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:45:29.525 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:45:35.317 | INFO     | logging:callHandlers:1762 | Grok planner chose P0 (override=False)
+
+  Policy     : forbidden
+  RL model   : P0 skip      conf=71%  H=0.86bits
+  Grok 4.2   : P0 skip      [agrees with RL]
+               reasoning: External-evidence policy is explicitly FORBIDDEN, which hard-constrains the choice to P0. Section-scorer aggregate is decisively P0 skip (71% vote, 0% on P2/P3); every section is brief-flagged with already-high coverage (depth≥6, breadth=6) and the guideline repeatedly demands surface-level conceptual overview only.
+               drivers: forbidden-evidence-policy, scorer-P0-71%, all-sections-brief-flagged
+  -> Chosen  : P0 skip  (by Grok4.2)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.689  P1/light:0.640  P2/standard:0.645  P3/deep:0.598
+  Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 10_memory_knowledge_access__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:45:35.339 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:45:48.278 | INFO     | logging:callHandlers:1762 | Grok planner chose P1 (override=False)
+
+  Policy     : allowed
+  RL model   : P1 light     conf=63%  H=1.52bits
+  Grok 4.2   : P1 light     [agrees with RL]
+               reasoning: Scorer aggregate is P1 light (63% vote, entropy 1.52 bits). No sanctioned override condition is met for moving down to P0 (high-budget sections S3/S5/S1 show must-ev totals of 10 and need_depth >15) or up (explicitly forbidden for P1+). Dominant gap type is depth but scorer already priced all per-section signals (coverage, orphans, must-ev) against reward; P1 is the reward peak.
+               drivers: scorer_aggregate_P1, entropy_uncertainty, no_sanctioned_override, dominant_depth_for_direction_only
+  -> Chosen  : P1 light  (by Grok4.2)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.478  P1/light:0.553  P2/standard:0.478  P3/deep:0.447
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 10_memory_knowledge_access__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:45:48.299 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:45:48.308 | INFO     | logging:callHandlers:1762 | Starting infer.py HTTP server (this will load the model — ~5-10 min on first call over /mnt/f/)…
+2026-06-07 13:45:48.311 | INFO     | logging:callHandlers:1762 | Infer server is ready.
+2026-06-07 13:45:58.016 | INFO     | logging:callHandlers:1762 | Grok planner chose P2 (override=False)
+
+  Policy     : required
+  RL model   : P2 standard  conf=81%  H=0.69bits
+  Grok 4.2   : P2 standard  [agrees with RL]
+               reasoning: Section-scorer aggregate is decisively P2 standard (81% standard, 19% deep, 0% on lighter arms) after budget-weighting all sections; this is the primary reward-trained signal and no sanctioned override applies (no brief flags, vote not uncertain, cannot escalate above P1+ per asymmetric policy). External-evidence REQUIRED constraint is satisfied; dominant article-wide gap is depth and S6 (19% budget) flags depth pressure, both already priced into the scorer's P2 pick. Per-section cov d·b (mostly 7-8·6) and must-ev counts (3-5) were weighed by the model; re-deriving escalation from them is disallowed.
+               drivers: scorer_aggregate_P2, decisive_81pct, external_required_met, depth_gap_alignment
+  -> Chosen  : P2 standard  (by Grok4.2)
+  Oracle     : P2 standard
+  R_w        : P0/skip:0.348  P1/light:0.542  P2/standard:0.590  P3/deep:0.548
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 11_multimodal__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:45:58.030 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:46:05.104 | INFO     | logging:callHandlers:1762 | Grok planner chose P0 (override=False)
+
+  Policy     : forbidden
+  RL model   : P0 skip      conf=55%  H=1.70bits
+  Grok 4.2   : P0 skip      [agrees with RL]
+               reasoning: Hard constraint: external-evidence policy explicitly FORBIDDEN, so exploration output cannot be used and P0 is the only valid choice. Section-scorer aggregate also votes P0 skip (55%, though uncertain at 1.70 bits entropy). Multiple sections flagged 'brief' and guideline demands only surface-level conceptual overview with strict 1500-word ceiling; no depth or external sources required.
+               drivers: external-evidence-forbidden, scorer-P0-primary, brevity-flags
+  -> Chosen  : P0 skip  (by Grok4.2)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.369  P1/light:0.336  P2/standard:0.302  P3/deep:0.263
+  Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 11_multimodal__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:46:05.117 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:46:20.691 | INFO     | logging:callHandlers:1762 | Grok planner chose P1 (override=False)
+
+  Policy     : allowed
+  RL model   : P1 light     conf=48%  H=1.28bits  [floor applied]
+  Grok 4.2   : P1 light     [agrees with RL]
+               reasoning: Section-scorer aggregate is P1 light (48% light vs 45% skip, 6% deep; moderate confidence). High-budget sections (S3 23% skip·1.00 cov 5·5; S4 18% light cov 6·4; S5 15% light·1.00 cov 8·5 but brief) are already well-covered on depth, dominant gap is depth but must-ev and 42 unbacked anchors are universal signals the scorer already priced. No sanctioned downward override applies (not most high-budget brief/well-covered; S1/S7 weaknesses are low-budget).
+               drivers: scorer_aggregate_P1, high-budget_cov>=5, no_sanctioned_override
+  -> Chosen  : P1 light  (by Grok4.2)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.685  P1/light:0.667  P2/standard:0.406  P3/deep:0.601
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 11_multimodal__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:46:20.705 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:46:33.755 | INFO     | logging:callHandlers:1762 | Grok planner chose P2 (override=False)
+
+  Policy     : required
+  RL model   : P2 standard  conf=63%  H=1.10bits
+  Grok 4.2   : P2 standard  [agrees with RL]
+               reasoning: Section-scorer aggregate is P2 standard (63% standard / 34% deep, moderate confidence); this is the reward-trained peak after weighing all per-section must-ev (e.g. S5=6, S2=5), unbacked anchors (38 article-wide), and dominant depth gaps. High-budget sections (S3 23%, S4 18%, S5 15%) show strong existing coverage (depth 7-8) yet RL-picks of standard or deep, so no sanctioned downward override applies. External-evidence=REQUIRED eliminates P0; upward to P3 would cross the single-peaked reward curve.
+               drivers: scorer_aggregate_P2, must_ev_and_depth_gaps_priced_in, no_sanctioned_override
+  -> Chosen  : P2 standard  (by Grok4.2)
+  Oracle     : P2 standard
+  R_w        : P0/skip:0.438  P1/light:0.578  P2/standard:0.606  P3/deep:0.610
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+################################################################################
+  SUMMARY  [RL + Grok 4.2]
+################################################################################
+  Variant                                         Spl    RL  Grok  Chsn  → Orcl  Verdict
+  ----------------------------------------------------------------------------
+  02_workflows_vs_agents__var_minimal            TRAIN    P1    P0    P0  → P0    ✓ EXACT
+  02_workflows_vs_agents__var_standard           TRAIN    P1    P1    P1  → P1    ✓ EXACT
+  02_workflows_vs_agents__var_demanding          TRAIN    P2    P2    P2  → P1    ~ NEAR
+  03_context_engineering__var_minimal            TRAIN    P0    P0    P0  → P0    ✓ EXACT
+  03_context_engineering__var_standard           TRAIN    P1    P1    P1  → P0    ~ NEAR
+  03_context_engineering__var_demanding          TRAIN    P1    P1    P1  → P1    ✓ EXACT
+  05_workflow_patterns__var_minimal              TRAIN    P1    P0    P0  → P0    ✓ EXACT
+  05_workflow_patterns__var_standard             TRAIN    P2    P2    P2  → P1    ~ NEAR
+  05_workflow_patterns__var_demanding            TRAIN    P1    P1    P1  → P1    ✓ EXACT
+  06_tools__var_minimal                          TRAIN    P0    P0    P0  → P0    ✓ EXACT
+  06_tools__var_standard                         TRAIN    P0    P0    P0  → P0    ✓ EXACT
+  06_tools__var_demanding                        TRAIN    P3    P3    P3  → P3    ✓ EXACT
+  08_react_practice__var_minimal                 TRAIN    P0    P0    P0  → P0    ✓ EXACT
+  08_react_practice__var_standard                TRAIN    P0    P1    P1  → P1    ✓ EXACT
+  08_react_practice__var_demanding               TRAIN    P2    P2    P2  → P2    ✓ EXACT
+  09_RAG__var_minimal                            TRAIN    P0    P0    P0  → P0    ✓ EXACT
+  09_RAG__var_standard                           TRAIN    P0    P0    P0  → P1    ~ NEAR
+  09_RAG__var_demanding                          TRAIN    P3    P3    P3  → P3    ✓ EXACT
+  10_memory_knowledge_access__var_minimal        TRAIN    P0    P0    P0  → P0    ✓ EXACT
+  10_memory_knowledge_access__var_standard       TRAIN    P1    P1    P1  → P1    ✓ EXACT
+  10_memory_knowledge_access__var_demanding      TRAIN    P2    P2    P2  → P2    ✓ EXACT
+  11_multimodal__var_minimal                     TRAIN    P0    P0    P0  → P0    ✓ EXACT
+  11_multimodal__var_standard                    TRAIN    P1    P1    P1  → P1    ✓ EXACT
+  11_multimodal__var_demanding                   TRAIN    P2    P2    P2  → P2    ✓ EXACT
+
+  Total 24 variants:  exact=20  near=4  miss=0  no-oracle/error=0
+  Reward-regret (allowed/required only, n=16; 8 forbidden excluded):  mean=0.0139  max=0.0992
+  var_minimal      ( 8 variants):  exact 8/8   exact+near 8/8   regret n/a (all policy-forced)
+  var_standard     ( 8 variants):  exact 5/8   exact+near 8/8   regret mean=0.0203 max=0.0992
+  var_demanding    ( 8 variants):  exact 7/8   exact+near 8/8   regret mean=0.0075 max=0.0601

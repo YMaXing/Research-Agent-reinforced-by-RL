@@ -523,7 +523,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     @opik.track(type="tool", project_name=settings.opik_project_name)
-    async def predict_exploration_preset(research_directory: str, grok_only: bool = False) -> Dict[str, Any]:
+    async def predict_exploration_preset(research_directory: str, grok_only: bool = False, rl_only: bool = False) -> Dict[str, Any]:
         """
         Predict the optimal exploration preset using the GRPO-trained RL model.
 
@@ -580,6 +580,9 @@ def register_mcp_tools(mcp: FastMCP) -> None:
             grok_only: When True, skip the RL inference stage. Grok 4.2 decides
                        solely from the article guideline and coverage gap profile.
                        rl_recommendation will be None in the returned dict.
+            rl_only: When True, run RL inference but skip the Grok 4.2 planner.
+                     grok_recommendation will be None in the returned dict (the
+                     caller applies its own policy guards / aggregation).
 
         Returns:
             Dict[str, Any]:
@@ -595,7 +598,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
                 - message: human-readable summary
         """
         opik_context.update_thread_id()
-        result = await predict_exploration_preset_tool(research_directory, grok_only=grok_only)
+        result = await predict_exploration_preset_tool(research_directory, grok_only=grok_only, rl_only=rl_only)
         return result
 
     # ============================================================================

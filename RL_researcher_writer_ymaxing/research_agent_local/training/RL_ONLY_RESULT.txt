@@ -1,0 +1,437 @@
+yxing@YMX-Raider:/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local$ uv run python -m mcp_client.src.test_grok_planner --rl-only
+
+Preset Planner Test  (24 variants)
+  Mode     : RL-only (--rl-only)
+  Variants : ['02_workflows_vs_agents__var_minimal', '02_workflows_vs_agents__var_standard', '02_workflows_vs_agents__var_demanding', '03_context_engineering__var_minimal', '03_context_engineering__var_standard', '03_context_engineering__var_demanding', '05_workflow_patterns__var_minimal', '05_workflow_patterns__var_standard', '05_workflow_patterns__var_demanding', '06_tools__var_minimal', '06_tools__var_standard', '06_tools__var_demanding', '08_react_practice__var_minimal', '08_react_practice__var_standard', '08_react_practice__var_demanding', '09_RAG__var_minimal', '09_RAG__var_standard', '09_RAG__var_demanding', '10_memory_knowledge_access__var_minimal', '10_memory_knowledge_access__var_standard', '10_memory_knowledge_access__var_demanding', '11_multimodal__var_minimal', '11_multimodal__var_standard', '11_multimodal__var_demanding']
+/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local/mcp_server/.venv/lib/python3.12/site-packages/opik/error_tracking/shutdown_hooks.py:12: SentryHubDeprecationWarning: `sentry_sdk.Hub` is deprecated and will be removed in a future major release. Please consult our 1.x to 2.x migration guide for details on how to migrate `Hub` usage to the new API: https://docs.sentry.io/platforms/python/migration/1.x-to-2.x
+  client = sentry_sdk.Hub.current.client
+
+
+╭────────────────────────────────────────────────────────────────────────────╮
+│                                                                            │
+│        _ __ ___  _____           __  __  _____________    ____    ____     │
+│       _ __ ___ .'____/___ ______/ /_/  |/  / ____/ __ \  |___ \  / __ \    │
+│      _ __ ___ / /_  / __ `/ ___/ __/ /|_/ / /   / /_/ /  ___/ / / / / /    │
+│     _ __ ___ / __/ / /_/ (__  ) /_/ /  / / /___/ ____/  /  __/_/ /_/ /     │
+│    _ __ ___ /_/    \____/____/\__/_/  /_/\____/_/      /_____(*)____/      │
+│                                                                            │
+│                                                                            │
+│                                FastMCP  2.0                                │
+│                                                                            │
+│                                                                            │
+│                 🖥️  Server name:     Research MCP Server                    │
+│                 📦 Transport:       STDIO                                  │
+│                                                                            │
+│                 🏎️  FastMCP version: 2.12.2                                 │
+│                 🤝 MCP SDK version: 1.26.0                                 │
+│                                                                            │
+│                 📚 Docs:            https://gofastmcp.com                  │
+│                 🚀 Deploy:          https://fastmcp.cloud                  │
+│                                                                            │
+╰────────────────────────────────────────────────────────────────────────────╯
+
+
+2026-06-07 13:53:59.196 | INFO     | logging:callHandlers:1762 | Starting MCP server 'Research MCP Server' with transport 'stdio'
+2026-06-07 13:53:59.200 | INFO     | logging:callHandlers:1762 | Processing request of type ListToolsRequest
+2026-06-07 13:53:59.202 | INFO     | logging:callHandlers:1762 | Processing request of type ListPromptsRequest
+2026-06-07 13:53:59.203 | INFO     | logging:callHandlers:1762 | Processing request of type ListResourcesRequest
+  Tool     : predict_exploration_preset (direct call, no agent loop)
+
+
+================================================================================
+  Variant : 02_workflows_vs_agents__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:53:59.207 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:53:59.276 | INFO     | logging:callHandlers:1762 | Starting infer.py HTTP server (this will load the model — ~5-10 min on first call over /mnt/f/)…
+2026-06-07 13:53:59.279 | INFO     | logging:callHandlers:1762 | Infer server is ready.
+2026-06-07 13:54:02.089 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : forbidden
+  RL model   : P1 light     conf=42%  H=1.54bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P1 light  (by RL)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.496  P1/light:0.693  P2/standard:0.450  P3/deep:0.475
+  Regret     : -0.1969  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 02_workflows_vs_agents__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:54:02.099 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:04.739 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : allowed
+  RL model   : P1 light     conf=58%  H=1.35bits  [floor applied]
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P1 light  (by RL)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.629  P1/light:0.794  P2/standard:0.734  P3/deep:0.510
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 02_workflows_vs_agents__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:54:04.749 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:07.359 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : allowed
+  RL model   : P2 standard  conf=49%  H=1.50bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P2 standard  (by RL)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.483  P1/light:0.572  P2/standard:0.512  P3/deep:0.448
+  Regret     : 0.0601  (regret +0.0601)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 03_context_engineering__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:54:07.370 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:10.636 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : forbidden
+  RL model   : P0 skip      conf=69%  H=0.90bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P0 skip  (by RL)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.762  P1/light:0.778  P2/standard:0.631  P3/deep:0.727
+  Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 03_context_engineering__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:54:10.646 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:14.197 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : allowed
+  RL model   : P1 light     conf=53%  H=1.00bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P1 light  (by RL)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.641  P1/light:0.612  P2/standard:0.584  P3/deep:0.514
+  Regret     : 0.0295  (regret +0.0295)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 03_context_engineering__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:54:14.207 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:17.491 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : required
+  RL model   : P1 light     conf=68%  H=1.18bits  [floor applied]
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P1 light  (by RL)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.429  P1/light:0.505  P2/standard:0.477  P3/deep:0.437
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 05_workflow_patterns__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:54:17.501 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:20.535 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : forbidden
+  RL model   : P1 light     conf=56%  H=0.99bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P1 light  (by RL)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.872  P1/light:0.841  P2/standard:0.796  P3/deep:0.746
+  Regret     : +0.0312  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 05_workflow_patterns__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:54:20.544 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:23.531 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : allowed
+  RL model   : P2 standard  conf=49%  H=1.37bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P2 standard  (by RL)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.615  P1/light:0.808  P2/standard:0.709  P3/deep:0.719
+  Regret     : 0.0992  (regret +0.0992)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 05_workflow_patterns__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:54:23.542 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:26.413 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : required
+  RL model   : P1 light     conf=48%  H=1.45bits  [floor applied]
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P1 light  (by RL)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.542  P1/light:0.655  P2/standard:-0.060  P3/deep:0.477
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 06_tools__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:54:26.425 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:30.354 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : forbidden
+  RL model   : P0 skip      conf=61%  H=0.96bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P0 skip  (by RL)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.690  P1/light:0.682  P2/standard:0.557  P3/deep:0.321
+  Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 06_tools__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:54:30.364 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:34.263 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : allowed
+  RL model   : P0 skip      conf=59%  H=1.61bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P0 skip  (by RL)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.560  P1/light:0.453  P2/standard:0.571  P3/deep:0.518
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 06_tools__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:54:34.273 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:38.115 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : required
+  RL model   : P3 deep      conf=38%  H=1.92bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P3 deep  (by RL)
+  Oracle     : P3 deep
+  R_w        : P0/skip:0.379  P1/light:0.455  P2/standard:0.429  P3/deep:0.495
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 08_react_practice__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:54:38.124 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:40.708 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : forbidden
+  RL model   : P0 skip      conf=71%  H=0.87bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P0 skip  (by RL)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.654  P1/light:0.122  P2/standard:0.065  P3/deep:0.383
+  Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 08_react_practice__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:54:40.718 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:43.226 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : allowed
+  RL model   : P0 skip      conf=51%  H=1.00bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P0 skip  (by RL)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.389  P1/light:0.543  P2/standard:0.259  P3/deep:0.328
+  Regret     : 0.1539  (regret +0.1539)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 08_react_practice__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:54:43.235 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:45.983 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : required
+  RL model   : P2 standard  conf=46%  H=1.35bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P2 standard  (by RL)
+  Oracle     : P2 standard
+  R_w        : P0/skip:0.409  P1/light:0.404  P2/standard:0.584  P3/deep:0.435
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 09_RAG__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:54:45.992 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:48.552 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : forbidden
+  RL model   : P0 skip      conf=63%  H=0.96bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P0 skip  (by RL)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.732  P1/light:0.568  P2/standard:0.447  P3/deep:0.363
+  Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 09_RAG__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:54:48.565 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:51.173 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : allowed
+  RL model   : P0 skip      conf=52%  H=1.46bits  [floor applied]
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P0 skip  (by RL)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.406  P1/light:0.439  P2/standard:0.425  P3/deep:0.381
+  Regret     : 0.0338  (regret +0.0338)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 09_RAG__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:54:51.185 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:53.785 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : allowed
+  RL model   : P3 deep      conf=59%  H=1.38bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P3 deep  (by RL)
+  Oracle     : P3 deep
+  R_w        : P0/skip:0.377  P1/light:0.531  P2/standard:0.362  P3/deep:0.550
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 10_memory_knowledge_access__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:54:53.799 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:56.824 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : forbidden
+  RL model   : P0 skip      conf=71%  H=0.86bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P0 skip  (by RL)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.689  P1/light:0.640  P2/standard:0.645  P3/deep:0.598
+  Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 10_memory_knowledge_access__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:54:56.834 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:54:59.921 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : allowed
+  RL model   : P1 light     conf=63%  H=1.52bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P1 light  (by RL)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.478  P1/light:0.553  P2/standard:0.478  P3/deep:0.447
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 10_memory_knowledge_access__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:54:59.932 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:55:02.959 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : required
+  RL model   : P2 standard  conf=81%  H=0.69bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P2 standard  (by RL)
+  Oracle     : P2 standard
+  R_w        : P0/skip:0.348  P1/light:0.542  P2/standard:0.590  P3/deep:0.548
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 11_multimodal__var_minimal  [TRAIN]
+================================================================================
+2026-06-07 13:55:02.970 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:55:06.414 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : forbidden
+  RL model   : P0 skip      conf=55%  H=1.70bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P0 skip  (by RL)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.369  P1/light:0.336  P2/standard:0.302  P3/deep:0.263
+  Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 11_multimodal__var_standard  [TRAIN]
+================================================================================
+2026-06-07 13:55:06.428 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:55:09.908 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : allowed
+  RL model   : P1 light     conf=48%  H=1.28bits  [floor applied]
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P1 light  (by RL)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.685  P1/light:0.667  P2/standard:0.406  P3/deep:0.601
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 11_multimodal__var_demanding  [TRAIN]
+================================================================================
+2026-06-07 13:55:09.920 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-07 13:55:13.274 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+
+  Policy     : required
+  RL model   : P2 standard  conf=63%  H=1.10bits
+  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)
+  -> Chosen  : P2 standard  (by RL)
+  Oracle     : P2 standard
+  R_w        : P0/skip:0.438  P1/light:0.578  P2/standard:0.606  P3/deep:0.610
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+################################################################################
+  SUMMARY  [RL-only]
+################################################################################
+  Variant                                         Spl    RL  Grok  Chsn  → Orcl  Verdict
+  ----------------------------------------------------------------------------
+  02_workflows_vs_agents__var_minimal            TRAIN    P1     —    P1  → P0    ~ NEAR
+  02_workflows_vs_agents__var_standard           TRAIN    P1     —    P1  → P1    ✓ EXACT
+  02_workflows_vs_agents__var_demanding          TRAIN    P2     —    P2  → P1    ~ NEAR
+  03_context_engineering__var_minimal            TRAIN    P0     —    P0  → P0    ✓ EXACT
+  03_context_engineering__var_standard           TRAIN    P1     —    P1  → P0    ~ NEAR
+  03_context_engineering__var_demanding          TRAIN    P1     —    P1  → P1    ✓ EXACT
+  05_workflow_patterns__var_minimal              TRAIN    P1     —    P1  → P0    ~ NEAR
+  05_workflow_patterns__var_standard             TRAIN    P2     —    P2  → P1    ~ NEAR
+  05_workflow_patterns__var_demanding            TRAIN    P1     —    P1  → P1    ✓ EXACT
+  06_tools__var_minimal                          TRAIN    P0     —    P0  → P0    ✓ EXACT
+  06_tools__var_standard                         TRAIN    P0     —    P0  → P0    ✓ EXACT
+  06_tools__var_demanding                        TRAIN    P3     —    P3  → P3    ✓ EXACT
+  08_react_practice__var_minimal                 TRAIN    P0     —    P0  → P0    ✓ EXACT
+  08_react_practice__var_standard                TRAIN    P0     —    P0  → P1    ~ NEAR
+  08_react_practice__var_demanding               TRAIN    P2     —    P2  → P2    ✓ EXACT
+  09_RAG__var_minimal                            TRAIN    P0     —    P0  → P0    ✓ EXACT
+  09_RAG__var_standard                           TRAIN    P0     —    P0  → P1    ~ NEAR
+  09_RAG__var_demanding                          TRAIN    P3     —    P3  → P3    ✓ EXACT
+  10_memory_knowledge_access__var_minimal        TRAIN    P0     —    P0  → P0    ✓ EXACT
+  10_memory_knowledge_access__var_standard       TRAIN    P1     —    P1  → P1    ✓ EXACT
+  10_memory_knowledge_access__var_demanding      TRAIN    P2     —    P2  → P2    ✓ EXACT
+  11_multimodal__var_minimal                     TRAIN    P0     —    P0  → P0    ✓ EXACT
+  11_multimodal__var_standard                    TRAIN    P1     —    P1  → P1    ✓ EXACT
+  11_multimodal__var_demanding                   TRAIN    P2     —    P2  → P2    ✓ EXACT
+
+  Total 24 variants:  exact=17  near=7  miss=0  no-oracle/error=0
+  Reward-regret (allowed/required only, n=16; 8 forbidden excluded):  mean=0.0235  max=0.1539
+  var_minimal      ( 8 variants):  exact 6/8   exact+near 8/8   regret n/a (all policy-forced)
+  var_standard     ( 8 variants):  exact 4/8   exact+near 8/8   regret mean=0.0396 max=0.1539
+  var_demanding    ( 8 variants):  exact 7/8   exact+near 8/8   regret mean=0.0075 max=0.0601
