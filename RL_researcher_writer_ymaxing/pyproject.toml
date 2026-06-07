@@ -38,6 +38,8 @@ dependencies = [
     "scikit-learn>=1.7.0",
     "requests>=2.32.4",
     "fastmcp==2.12.0",
+    "mcp>=1.27.2",
+    "mcp-agent>=0.2.6",
     "opik>=1.7.42",
     "gitingest>=0.1.5",
     "firecrawl-py>=2.7.1",

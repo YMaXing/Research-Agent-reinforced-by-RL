@@ -1,0 +1,459 @@
+yxing@YMX-Raider:/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local$ uv run python -m mcp_client.src.test_grok_planner --grok-only
+
+Preset Planner Test  (24 variants)
+  Mode     : Grok-only standalone (--grok-only)
+  Variants : ['02_workflows_vs_agents__var_minimal', '02_workflows_vs_agents__var_standard', '02_workflows_vs_agents__var_demanding', '03_context_engineering__var_minimal', '03_context_engineering__var_standard', '03_context_engineering__var_demanding', '05_workflow_patterns__var_minimal', '05_workflow_patterns__var_standard', '05_workflow_patterns__var_demanding', '06_tools__var_minimal', '06_tools__var_standard', '06_tools__var_demanding', '08_react_practice__var_minimal', '08_react_practice__var_standard', '08_react_practice__var_demanding', '09_RAG__var_minimal', '09_RAG__var_standard', '09_RAG__var_demanding', '10_memory_knowledge_access__var_minimal', '10_memory_knowledge_access__var_standard', '10_memory_knowledge_access__var_demanding', '11_multimodal__var_minimal', '11_multimodal__var_standard', '11_multimodal__var_demanding']
+/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local/mcp_server/.venv/lib/python3.12/site-packages/opik/error_tracking/shutdown_hooks.py:12: SentryHubDeprecationWarning: `sentry_sdk.Hub` is deprecated and will be removed in a future major release. Please consult our 1.x to 2.x migration guide for details on how to migrate `Hub` usage to the new API: https://docs.sentry.io/platforms/python/migration/1.x-to-2.x
+  client = sentry_sdk.Hub.current.client
+
+
+╭────────────────────────────────────────────────────────────────────────────╮
+│                                                                            │
+│        _ __ ___  _____           __  __  _____________    ____    ____     │
+│       _ __ ___ .'____/___ ______/ /_/  |/  / ____/ __ \  |___ \  / __ \    │
+│      _ __ ___ / /_  / __ `/ ___/ __/ /|_/ / /   / /_/ /  ___/ / / / / /    │
+│     _ __ ___ / __/ / /_/ (__  ) /_/ /  / / /___/ ____/  /  __/_/ /_/ /     │
+│    _ __ ___ /_/    \____/____/\__/_/  /_/\____/_/      /_____(*)____/      │
+│                                                                            │
+│                                                                            │
+│                                FastMCP  2.0                                │
+│                                                                            │
+│                                                                            │
+│                 🖥️  Server name:     Research MCP Server                    │
+│                 📦 Transport:       STDIO                                  │
+│                                                                            │
+│                 🏎️  FastMCP version: 2.12.2                                 │
+│                 🤝 MCP SDK version: 1.26.0                                 │
+│                                                                            │
+│                 📚 Docs:            https://gofastmcp.com                  │
+│                 🚀 Deploy:          https://fastmcp.cloud                  │
+│                                                                            │
+╰────────────────────────────────────────────────────────────────────────────╯
+
+
+2026-06-06 20:54:46.764 | INFO     | logging:callHandlers:1762 | Starting MCP server 'Research MCP Server' with transport 'stdio'
+2026-06-06 20:54:46.768 | INFO     | logging:callHandlers:1762 | Processing request of type ListToolsRequest
+2026-06-06 20:54:46.770 | INFO     | logging:callHandlers:1762 | Processing request of type ListPromptsRequest
+2026-06-06 20:54:46.771 | INFO     | logging:callHandlers:1762 | Processing request of type ListResourcesRequest
+  Tool     : predict_exploration_preset (direct call, no agent loop)
+
+
+================================================================================
+  Variant : 02_workflows_vs_agents__var_minimal  [TRAIN]
+================================================================================
+2026-06-06 20:54:46.776 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:54:52.984 | INFO     | logging:callHandlers:1762 | Grok standalone chose P0
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P0 skip      [standalone, no RL input]
+               reasoning: Hard constraint overrides all signals: external-evidence policy is explicitly FORBIDDEN and exploration output cannot be used. All sections are marked 'brief: yes' with surface-level treatment required; dominant depth gaps and 48 unbacked anchors cannot be addressed without external sources. Guideline reinforces conceptual overview only, no named production systems or benchmarks.
+               drivers: external-evidence policy = forbidden, all sections must stay brief, surface-level mandate
+  -> Chosen  : P0 skip  (by Grok-only)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.496  P1/light:0.693  P2/standard:0.450  P3/deep:0.475
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 02_workflows_vs_agents__var_standard  [TRAIN]
+================================================================================
+2026-06-06 20:54:52.999 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:55:01.960 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: Dominant depth gaps + 47 unbacked anchors drive the choice; must-ev totals 9 (concentrated in 17-30% budget S3/S5) and high need_d scores (19/16/13 in S1-S4) show concrete evidence shortfalls in high-weight sections despite solid cov 7-8·6 and brief flags on S1/S4. S5's 4 must-ev and 30% budget outweigh its lower need_d. Default to cheaper but these signals justify depth-first pass then breadth (not P3, as S5/S6 are already strongest and several sections are intentionally brief).
+               drivers: dominant_depth, unbacked_anchors_47, must_ev_in_S3_S5, high_budget_gaps_S3_S5
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.629  P1/light:0.794  P2/standard:0.734  P3/deep:0.510
+  Regret     : 0.0605  (regret +0.0605)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 02_workflows_vs_agents__var_demanding  [TRAIN]
+================================================================================
+2026-06-06 20:55:01.975 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:55:14.590 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: 48 unbacked anchors and dominant depth gaps (need_d 6-7 across all sections) plus 16 must-ev items (esp. 6 in S6) show sizeable evidence shortfalls despite cov 7-8·6. Weakest sections S4 (18% budget, patterns needing industry anchors) and S6 (high must-ev on challenges/failures) plus S5 (29% budget, concrete Gemini/Perplexity examples) align with additional requirements for production code, named failure modes, and industry benchmarks. Guideline's repeated 'must cover in depth' on examples, ReAct components, and hybrids plus 'latest research from August 2025' references confirm depth-first then breadth exploration is justified; external-evidence ALLOWED but gaps make P0/P1 insufficient.
+               drivers: 48 unbacked anchors, dominant depth gaps + must-ev totals, weak S4/S6 + large S5 budget, production-example/failure-mode mandates
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.483  P1/light:0.572  P2/standard:0.512  P3/deep:0.448
+  Regret     : 0.0601  (regret +0.0601)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 03_context_engineering__var_minimal  [TRAIN]
+================================================================================
+2026-06-06 20:55:14.611 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:55:16.846 | INFO     | logging:callHandlers:1762 | Grok standalone chose P0
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P0 skip      [standalone, no RL input]
+               reasoning: The brief explicitly states 'External-evidence policy: FORBIDDEN — external evidence is NOT allowed for this article — exploration output cannot be used, so the only valid choice is skip'. This matches the hard constraint that overrides all other signals (including 48 unbacked anchors, dominant depth gaps in S1/S4, and moderate need d/b scores across sections). All sections are flagged 'must stay brief' with surface-level treatment required per the guideline.
+               drivers: external-evidence-forbidden, hard-constraint-override, brevity-mandates
+  -> Chosen  : P0 skip  (by Grok-only)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.762  P1/light:0.778  P2/standard:0.631  P3/deep:0.727
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 03_context_engineering__var_standard  [TRAIN]
+================================================================================
+2026-06-06 20:55:16.861 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:55:30.129 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: Dominant article-wide depth gap (68 unbacked anchors) plus large need_depth in high-budget sections S6 (20%, 55/1, must-ev=6, 18 orphans) and S7 (15%, 55/2, 18 orphans) that require industry strategies, diagrams, monitoring, concrete healthcare/enterprise cases, and tech-stack evidence; must-ev totals across S3/S4/S5/S6 indicate sourced facts are non-negotiable. Weaker sections dominate writing budget while S3/S5 already show stronger cov; external policy is allowed and gaps are sizeable but breadth pressure is near-zero, so default to cheaper P2 over P3.
+               drivers: dominant depth gap + 68 unbacked, S6/S7 high need_d/must-ev/orphans, budget-weighted weakest sections, must-ev pressure
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.641  P1/light:0.612  P2/standard:0.584  P3/deep:0.514
+  Regret     : 0.0571  (regret +0.0571)
+  Verdict    : ✗  MISS
+
+================================================================================
+  Variant : 03_context_engineering__var_demanding  [TRAIN]
+================================================================================
+2026-06-06 20:55:30.144 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:55:40.752 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: External-evidence policy is REQUIRED so P0 is forbidden. 52 unbacked anchors + 38 must-ev items (incl. 11 in 20% S6, 6 in 15% S4) create sizeable depth-driven evidence gaps despite already-high cov (7-8/8). Dominant gap type is depth; S6/S7/S4 budgets dominate article and demand named benchmarks, token limits, empirical lost-in-the-middle data, failure modes, and production examples. P1 too cheap for the mandatory sourced facts; P3 unnecessary given modest per-section need d/b (3-4) and strong existing coverage in S3/S5.
+               drivers: required_external_ev, high_must-ev_in_large_sections, 52_unbacked_anchors, dominant_depth_gaps
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.429  P1/light:0.505  P2/standard:0.477  P3/deep:0.437
+  Regret     : 0.0285  (regret +0.0285)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 05_workflow_patterns__var_minimal  [TRAIN]
+================================================================================
+2026-06-06 20:55:40.767 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:55:42.847 | INFO     | logging:callHandlers:1762 | Grok standalone chose P0
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P0 skip      [standalone, no RL input]
+               reasoning: Hard constraint: external-evidence policy = FORBIDDEN means exploration output cannot be used, so only P0 is valid. All sections flagged 'brief' with explicit guideline instructions for surface-level treatment, no external libraries/case studies/benchmarks, and total length cap of 1500 words reinforce that added depth would be waste.
+               drivers: external-evidence-forbidden, all-sections-brief, surface-level-guideline
+  -> Chosen  : P0 skip  (by Grok-only)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.872  P1/light:0.841  P2/standard:0.796  P3/deep:0.746
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 05_workflow_patterns__var_standard  [TRAIN]
+================================================================================
+2026-06-06 20:55:42.858 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:55:50.018 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: Dominant gap type is depth with 52 article-wide unbacked anchors; S1 (need_d 40, 13 orphans, must-ev 2, 15% budget) and S2 (need_d 44, 14 orphans, 10% budget) are weakest foundational sections. must-ev appears in S1/S4/S7. Practice sections S3/S6 already strong (low need_d, high cov). Guideline anchors theory claims to golden sources (Anthropic, PromptingGuide) that can close depth gaps without requiring P3.
+               drivers: high depth needs in S1/S2, 52 unbacked anchors, must-ev in key sections, depth-dominant economics
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.615  P1/light:0.808  P2/standard:0.709  P3/deep:0.719
+  Regret     : 0.0992  (regret +0.0992)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 05_workflow_patterns__var_demanding  [TRAIN]
+================================================================================
+2026-06-06 20:55:50.032 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:56:01.215 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: External-evidence REQUIRED precludes P0. Dominant depth gap + 42 unbacked anchors + very high need_depth=9/must-ev=7 in weakest sections S1 & S2 (27% budget) demand meaningful gap-filling, but S3-S7 show modest needs (mostly 2-3) and already solid cov (5-6 depth). P2's depth-then-breadth sequence targets the concrete must-ev and orphans in theory sections without P3's extra round.
+               drivers: must-ev totals ~27, S1/S2 depth=9 gaps, 42 unbacked anchors, required external policy, dominant depth type
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.542  P1/light:0.655  P2/standard:-0.060  P3/deep:0.477
+  Regret     : 0.7149  (regret +0.7149)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 06_tools__var_minimal  [TRAIN]
+================================================================================
+2026-06-06 20:56:01.226 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:56:03.712 | INFO     | logging:callHandlers:1762 | Grok standalone chose P0
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P0 skip      [standalone, no RL input]
+               reasoning: The brief states external-evidence policy = FORBIDDEN and 'exploration output cannot be used, so the only valid choice is skip'. This matches the hard constraint that overrides all gaps (need d/b totals, must-ev counts of 4-5 in S3-S7, 47 unbacked anchors). Multiple 'must stay brief' flags and the guideline's explicit 'surface-level...depth...NOT required' further confirm no exploration is justified.
+               drivers: external-evidence policy=forbidden, must choose P0, brevity mandates across sections
+  -> Chosen  : P0 skip  (by Grok-only)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.690  P1/light:0.682  P2/standard:0.557  P3/deep:0.321
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 06_tools__var_standard  [TRAIN]
+================================================================================
+2026-06-06 20:56:03.725 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:56:14.478 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: 52 unbacked anchors and dominant depth gaps drive the choice; S3 (26% budget, need_depth 57, must-ev 18, 18 orphans) and S2 (need_depth 40, 12 orphans) plus S4 (need_depth 25, must-ev 9) show concrete sizeable shortfalls on mandatory evidence (tools, schemas, industry examples) that the notebook/golden sources have not fully covered. S5–S7 already strong (high cov, low need) and S3 brief flag prevent escalation to deep; P1 would be too cheap for the must-ev volume.
+               drivers: unbacked_anchors_52, must-ev_S3+S4+S5=39, need_depth_S2+S3+S4, dominant_depth_gaps, S3_26pct_budget
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.560  P1/light:0.453  P2/standard:0.571  P3/deep:0.518
+  Regret     : -0.0109  (regret -0.0109)
+  Verdict    : ✗  MISS
+
+================================================================================
+  Variant : 06_tools__var_demanding  [TRAIN]
+================================================================================
+2026-06-06 20:56:14.490 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:56:26.634 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: External-evidence REQUIRED forces at least P1; 42 unbacked anchors + must-ev=4 in S8 (11% budget, demands concrete mechanisms, text-to-SQL, vector DB examples, failure modes) and must-ev=3 in S9 create sizeable depth-driven sourcing needs. Dominant gap type is depth; large-budget sections S3 (24%, need_d=8), S4 (15%, need_d=9, weakest), S7 (15%, need_d=7) show concrete unmet depth despite decent cov scores in S5/S8. Additional requirements (production code comparisons, named failure case, industry anchors per concept) align with depth-first round then breadth. P3 not justified as gaps are not uniformly evidence-heavy across tiny/brief sections.
+               drivers: required_external_ev, 42_unbacked_anchors, must-ev_in_S8_S9, dominant_depth_gaps_in_S3_S4, additional_prod_examples_failure_modes
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P3 deep
+  R_w        : P0/skip:0.379  P1/light:0.455  P2/standard:0.429  P3/deep:0.495
+  Regret     : 0.0660  (regret +0.0660)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 08_react_practice__var_minimal  [TRAIN]
+================================================================================
+2026-06-06 20:56:26.651 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:56:29.396 | INFO     | logging:callHandlers:1762 | Grok standalone chose P0
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P0 skip      [standalone, no RL input]
+               reasoning: Hard constraint: external-evidence policy is explicitly FORBIDDEN and exploration output cannot be used. All sections carry 'must stay brief' flags; the guideline demands only surface-level notebook-mirroring treatment with no external libraries, benchmarks or production examples. Per-section gaps exist but cannot be addressed with disallowed evidence; dominant gap type is therefore irrelevant.
+               drivers: external-evidence policy = forbidden, must stay brief on every section, 100% practical notebook mirroring
+  -> Chosen  : P0 skip  (by Grok-only)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.654  P1/light:0.122  P2/standard:0.065  P3/deep:0.383
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 08_react_practice__var_standard  [TRAIN]
+================================================================================
+2026-06-06 20:56:29.409 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:56:45.745 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: 42 unbacked anchors and high must-ev totals (esp. 12/18/9 in the 20-29% budget S4/S5/S6) show concrete sourcing gaps even after exploitation; S1/S2/S3 display the largest relative depth shortfalls (need 6/5/5 with cov only 2-3). Dominant gap type is balanced and S5's 'brief' flag limits absorption, so 2-round depth-then-breadth fills the practical notebook-derived evidence needs without overkill.
+               drivers: unbacked anchors=42, must-ev in large sections, balanced gaps, weakest S1/S3 needs
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.389  P1/light:0.543  P2/standard:0.259  P3/deep:0.328
+  Regret     : 0.2841  (regret +0.2841)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 08_react_practice__var_demanding  [TRAIN]
+================================================================================
+2026-06-06 20:56:45.754 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:56:53.493 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: External-evidence REQUIRED forces ≥P1. 42 unbacked anchors, dominant depth gaps, high need_depth (21-23) in large-budget sections (S5 28%, S1 9%, S3 14%), must-ev=1 in 4 sections, and guideline mandates for production replacements, error strategies, real-world failure modes, named benchmarks, and industry anchors all indicate sizeable evidence-driven gaps. P2 (depth→breadth) fills these meaningfully; P3 unwarranted as coverage already reaches 5-7.5/8 depth and S5 is brief.
+               drivers: external_required, 42_unbacked_anchors, dominant_depth_gaps, multiple_must-ev, high_need_in_key_budgets
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P2 standard
+  R_w        : P0/skip:0.409  P1/light:0.404  P2/standard:0.584  P3/deep:0.435
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 09_RAG__var_minimal  [TRAIN]
+================================================================================
+2026-06-06 20:56:53.504 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:56:56.733 | INFO     | logging:callHandlers:1762 | Grok standalone chose P0
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P0 skip      [standalone, no RL input]
+               reasoning: The brief states external-evidence policy FORBIDDEN and notes exploration output cannot be used, so only valid choice is P0. This overrides all per-section gaps (need d/b totals, 42 unbacked anchors, must-ev counts up to 6). Most sections also carry explicit 'brief: yes' flags and the guideline demands a surface-level conceptual overview with 0% real-world examples and strict 1500-word ceiling.
+               drivers: external-evidence policy = forbidden, must choose P0, brevity flags across sections
+  -> Chosen  : P0 skip  (by Grok-only)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.732  P1/light:0.568  P2/standard:0.447  P3/deep:0.363
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 09_RAG__var_standard  [TRAIN]
+================================================================================
+2026-06-06 20:56:56.748 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:57:05.262 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: 48 article-wide unbacked anchors + dominant depth gap drive escalation; S3 (20% budget, must-ev=8, need_depth=6, cov_depth=5) and S4 (29% budget, must-ev=6) show sizeable evidence needs on core pipeline/advanced techniques that outweigh brief=yes limits on S1/S2/S5. Existing cov is already strong on S4/S5 so full P3 is waste; P1 too shallow for the must-ev pressure and 48 orphans.
+               drivers: unbacked_anchors=48, must-ev in S3/S4, dominant_depth_gaps, budget-weighted sections
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.406  P1/light:0.439  P2/standard:0.425  P3/deep:0.381
+  Regret     : 0.0139  (regret +0.0139)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 09_RAG__var_demanding  [TRAIN]
+================================================================================
+2026-06-06 20:57:05.272 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:57:18.730 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: 32 unbacked anchors and high must-ev totals (23 article-wide, peaking at 8 in S3, 5 in S6, 4 in S2) combine with large depth needs in S1 (10), S2 (7), S6 (7) and dominant depth-gap economics; S4/S5 already strong (cov 7·5 / 7·4) and S1 is brief, so 2-round depth-then-breadth fills evidence mandates without P3 overkill.
+               drivers: unbacked_anchors_32, must-ev_totals, dominant_depth_gaps, section_imbalance_S1-S2-S6_weak
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P3 deep
+  R_w        : P0/skip:0.377  P1/light:0.531  P2/standard:0.362  P3/deep:0.550
+  Regret     : 0.1872  (regret +0.1872)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 10_memory_knowledge_access__var_minimal  [TRAIN]
+================================================================================
+2026-06-06 20:57:18.744 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:57:21.656 | INFO     | logging:callHandlers:1762 | Grok standalone chose P0
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P0 skip      [standalone, no RL input]
+               reasoning: Hard constraint: external-evidence policy = FORBIDDEN, which mandates P0 (exploration output cannot be used). All 7 sections explicitly marked 'brief: yes' and cannot absorb research; guideline stresses conceptual overview with surface-level treatment, no depth/exhaustive coverage/production code required. Per-section coverage already high (mostly 6·6 or 7·6) relative to modest need_depth in largest-budget sections (S5/S6 at 21%).
+               drivers: external-evidence-forbidden, all-sections-brief, surface-level-guideline, high-existing-cov
+  -> Chosen  : P0 skip  (by Grok-only)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.689  P1/light:0.640  P2/standard:0.645  P3/deep:0.598
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 10_memory_knowledge_access__var_standard  [TRAIN]
+================================================================================
+2026-06-06 20:57:21.672 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:57:31.566 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: Dominant gap type is depth with 32 unbacked anchors article-wide; large need_depth in high-budget sections S1 (25, 15%, must-ev 2), S3 (21, 15%, must-ev 3, orphans 6/2), S4 (20, 15%, must-ev 3), and S5 (15, 19%, must-ev 4) outweigh strong coverage in S6/S7. must-ev totals 15 mandatory sourced facts across key theory/implementation sections. External policy=ALLOWED and gaps are sizeable/evidence-driven but not uniformly article-wide or in 'brief' S5, so standard (depth→breadth) fills without P3 overkill.
+               drivers: need_depth in large-budget sections, high must-ev totals, 32 unbacked anchors, dominant depth gap
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.478  P1/light:0.553  P2/standard:0.478  P3/deep:0.447
+  Regret     : 0.0754  (regret +0.0754)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 10_memory_knowledge_access__var_demanding  [TRAIN]
+================================================================================
+2026-06-06 20:57:31.583 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:57:38.372 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: External-evidence REQUIRED forces at least P1; 28 unbacked anchors, dominant depth gaps, and high must-ev totals (esp. S1:4, S4:5, S5:5) plus demands for named production examples/failures/comparisons in high-budget sections (S5/S6 19% each) make P2 the minimal sufficient choice. Coverage already 7-8·6 in most sections plus strong S2/S4 keep it from P3; S7/S1 weaknesses are real but small-budget.
+               drivers: external-required, 28 unbacked anchors, high must-ev (26 total), dominant depth gaps in large sections, additional reqs for named production evidence
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P2 standard
+  R_w        : P0/skip:0.348  P1/light:0.542  P2/standard:0.590  P3/deep:0.548
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 11_multimodal__var_minimal  [TRAIN]
+================================================================================
+2026-06-06 20:57:38.387 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:57:42.734 | INFO     | logging:callHandlers:1762 | Grok standalone chose P0
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P0 skip      [standalone, no RL input]
+               reasoning: Hard constraint: external-evidence policy explicitly marked FORBIDDEN means exploration output cannot be used, so only P0 is valid. Multiple 'must stay brief' flags, surface-level conceptual intent, and 30/70 theory/practice ratio further confirm no research is needed or allowed.
+               drivers: external-evidence-forbidden, must-stay-brief sections, surface-level guideline
+  -> Chosen  : P0 skip  (by Grok-only)
+  Oracle     : P0 skip
+  R_w        : P0/skip:0.369  P1/light:0.336  P2/standard:0.302  P3/deep:0.263
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+================================================================================
+  Variant : 11_multimodal__var_standard  [TRAIN]
+================================================================================
+2026-06-06 20:57:42.747 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:57:52.927 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: 42 unbacked anchors and dominant depth gap drive escalation; S3 (23% budget, need_depth 6/must-ev 3/cov 5·5), S7 (need 7/cov 4·4), S1 (need 10/cov 4·4) plus OCR benchmarks and ColPali numbers in guideline show concrete sizeable depth shortfalls in high-budget theory & integration sections. P2 does targeted depth first then breadth; cheaper P1 insufficient for must-ev volume, P3 unwarranted as gaps are not article-wide evidence-heavy and S5 is explicitly brief.
+               drivers: unbacked_anchors_42, dominant_depth_gaps, must-ev_in_S3_S5, weakest_S1_S7_needs
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.685  P1/light:0.667  P2/standard:0.406  P3/deep:0.601
+  Regret     : 0.2610  (regret +0.2610)
+  Verdict    : ~  NEAR MISS  (±1 preset)
+
+================================================================================
+  Variant : 11_multimodal__var_demanding  [TRAIN]
+================================================================================
+2026-06-06 20:57:52.943 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-06-06 20:58:01.686 | INFO     | logging:callHandlers:1762 | Grok standalone chose P2
+
+  RL model   : (skipped — --grok-only baseline)
+  Grok 4.2   : P2 standard  [standalone, no RL input]
+               reasoning: External-evidence REQUIRED forces at least P1; escalated because S2 (13%, need_depth 7, must-ev 5), S3 (23%, must-ev 4), S4 (18%, must-ev 4) and S5 (15%, must-ev 6) show concrete sizeable depth gaps on benchmarks, model performance numbers, OCR failure metrics and ColPali quantitative gains. Article-wide 38 unbacked anchors plus dominant depth gap confirm meaningful gap-filling is justified over cheap touch-up; cov scores already high so breadth round after depth is efficient.
+               drivers: must-ev counts in large-budget sections, 38 unbacked anchors, REQUIRED external policy, dominant depth gap in S2/S1
+  -> Chosen  : P2 standard  (by Grok-only)
+  Oracle     : P2 standard
+  R_w        : P0/skip:0.438  P1/light:0.578  P2/standard:0.606  P3/deep:0.610
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
+
+################################################################################
+  SUMMARY  [Grok-only (standalone baseline)]
+################################################################################
+  Variant                                         Spl    RL  Grok  Chsn  → Orcl  Verdict
+  ----------------------------------------------------------------------------
+  02_workflows_vs_agents__var_minimal            TRAIN     —    P0    P0  → P0    ✓ EXACT
+  02_workflows_vs_agents__var_standard           TRAIN     —    P2    P2  → P1    ~ NEAR
+  02_workflows_vs_agents__var_demanding          TRAIN     —    P2    P2  → P1    ~ NEAR
+  03_context_engineering__var_minimal            TRAIN     —    P0    P0  → P0    ✓ EXACT
+  03_context_engineering__var_standard           TRAIN     —    P2    P2  → P0    ✗ MISS
+  03_context_engineering__var_demanding          TRAIN     —    P2    P2  → P1    ~ NEAR
+  05_workflow_patterns__var_minimal              TRAIN     —    P0    P0  → P0    ✓ EXACT
+  05_workflow_patterns__var_standard             TRAIN     —    P2    P2  → P1    ~ NEAR
+  05_workflow_patterns__var_demanding            TRAIN     —    P2    P2  → P1    ~ NEAR
+  06_tools__var_minimal                          TRAIN     —    P0    P0  → P0    ✓ EXACT
+  06_tools__var_standard                         TRAIN     —    P2    P2  → P0    ✗ MISS
+  06_tools__var_demanding                        TRAIN     —    P2    P2  → P3    ~ NEAR
+  08_react_practice__var_minimal                 TRAIN     —    P0    P0  → P0    ✓ EXACT
+  08_react_practice__var_standard                TRAIN     —    P2    P2  → P1    ~ NEAR
+  08_react_practice__var_demanding               TRAIN     —    P2    P2  → P2    ✓ EXACT
+  09_RAG__var_minimal                            TRAIN     —    P0    P0  → P0    ✓ EXACT
+  09_RAG__var_standard                           TRAIN     —    P2    P2  → P1    ~ NEAR
+  09_RAG__var_demanding                          TRAIN     —    P2    P2  → P3    ~ NEAR
+  10_memory_knowledge_access__var_minimal        TRAIN     —    P0    P0  → P0    ✓ EXACT
+  10_memory_knowledge_access__var_standard       TRAIN     —    P2    P2  → P1    ~ NEAR
+  10_memory_knowledge_access__var_demanding      TRAIN     —    P2    P2  → P2    ✓ EXACT
+  11_multimodal__var_minimal                     TRAIN     —    P0    P0  → P0    ✓ EXACT
+  11_multimodal__var_standard                    TRAIN     —    P2    P2  → P1    ~ NEAR
+  11_multimodal__var_demanding                   TRAIN     —    P2    P2  → P2    ✓ EXACT
+
+  Total 24 variants:  exact=11  near=11  miss=2  no-oracle/error=0
+  Reward-regret:  mean=0.0790  max=0.7149
+  var_minimal      ( 8 variants):  exact 8/8   exact+near 8/8   regret mean=0.0000 max=0.0000
+  var_standard     ( 8 variants):  exact 0/8   exact+near 6/8   regret mean=0.1050 max=0.2841
+  var_demanding    ( 8 variants):  exact 3/8   exact+near 8/8   regret mean=0.1321 max=0.7149
