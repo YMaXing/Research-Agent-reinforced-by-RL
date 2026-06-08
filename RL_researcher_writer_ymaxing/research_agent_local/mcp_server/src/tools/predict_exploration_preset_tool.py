@@ -157,8 +157,7 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
 
     Reads (or auto-generates) research_digest.md from the research directory,
     runs per-section inference through the GRPO-trained Qwen3-4B + LoRA model,
-    and returns structured signals to help the client LLM decide how many rounds
-    of exploration to run and in what order.
+    and returns a structured two-stage planning decision.
 
     If research_digest.md does not yet exist in the research directory, the tool
     generates it on-the-fly via the v2 digest pipeline (generate_digests.py, run
@@ -169,10 +168,14 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
 
     The tool performs two-stage inference:
       Stage 1 (RL model): per-section preset prediction via word-count-weighted
-                          probability vote → aggregate recommendation.
-      Stage 2 (client):   the client uses the returned signals to make the final
-                          decision, overriding the RL model when entropy is high
-                          or section signals are contradictory.
+                          probability vote → aggregate recommendation (P0–P3).
+      Stage 2 (Grok 4.2 planner): reviews the RL aggregate vote against the
+                          article guideline and gap profile, applying an
+                          asymmetric downside-averse override policy (never
+                          escalates above a P1+ RL vote; one sanctioned P0→P1
+                          nudge under specific conditions). Deterministic hard
+                          policy guards (forbidden → P0, required → ≥ P1) are
+                          applied to the Grok output after it returns.
 
     Args:
         research_directory: Path to the research directory. Must contain either:
@@ -182,28 +185,30 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
           with only the article guideline + coverage gap profile (no section-level
           RL signals). Use this for the Grok-alone baseline to measure the RL
           model's marginal contribution. rl_recommendation will be None in the result.
-        rl_only: When True, run the RL inference stage but SKIP the Grok 4.2 planner
-          entirely. grok_recommendation will be None in the result. Use this for the
-          RL-only baseline and the RL + deterministic-policy-guard ablation (the
-          caller applies the forbidden->skip / required->>=light guards itself).
+        rl_only: When True, run the RL inference stage but skip the Grok 4.2 planner
+          entirely. grok_recommendation will be None in the result. Use for
+          evaluation/ablation; the caller is responsible for applying policy guards.
 
     Returns:
         Dict with keys:
           status               – "success" or "error"
           digest_generated     – True if the digest was generated on-the-fly
-          rl_recommendation    – aggregate preset, name, confidence, entropy,
+          rl_recommendation    – aggregate preset (0–3), name, confidence, entropy_bits,
                                  floor_correction_applied. None when grok_only=True.
           section_signals      – per-section list of preset, name, top2 probs.
                                  Empty list when grok_only=True.
-          guidance             – one-sentence synthesis for the client LLM.
+          guidance             – one-sentence synthesis from the RL stage.
                                  Empty string when grok_only=True.
           article_guideline    – full text of article_guideline.md
-          digest_gap_profile   – "## 3. Overall Gap Profile" section from the digest
-          grok_recommendation  – Grok 4.2's planning decision. When grok_only=False:
-                                 preset, name, reasoning, override, override_reason.
-                                 When grok_only=True: preset, name, reasoning (no
-                                 override fields — RL had no input to override).
-                                 None if XAI_API_KEY is unset or the call fails.
+          digest_gap_profile   – gap profile section from the digest
+          grok_recommendation  – Grok 4.2's planning decision:
+                                   preset (0–3), name, reasoning, override,
+                                   override_reason, decision_drivers, risk_flags.
+                                 When grok_only=True: preset, name, reasoning,
+                                   decision_drivers, risk_flags (no override fields).
+                                 None when rl_only=True, XAI_API_KEY unset, or
+                                   the Grok call fails (deterministic fallback is
+                                   used in place of None for the standard pipeline).
           message              – human-readable summary
     """
     research_path = Path(research_directory)

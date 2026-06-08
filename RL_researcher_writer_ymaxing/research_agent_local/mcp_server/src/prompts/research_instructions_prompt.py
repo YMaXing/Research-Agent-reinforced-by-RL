@@ -150,38 +150,44 @@ If the user doesn't provide a research directory, you should ask for it before e
     directory. The tool runs a two-stage pipeline internally:
       Stage 1 — Qwen3-4B RL model: infers a per-section preset vote from the exploitation digest,
                  aggregates via weighted vote, and applies an entropy-gated floor correction.
-      Stage 2 — Grok 4.2 reasoning model: reviews the RL output together with the article guideline
-                 and the digest gap profile, then either confirms or overrides the RL preset and
-                 returns a structured JSON decision.
+      Stage 2 — Grok 4.2 reasoning model: reviews the RL aggregate vote together with the article
+                 guideline and the digest gap profile, then either confirms or overrides the RL preset
+                 following an asymmetric, downside-averse override policy, and returns a structured
+                 JSON decision. Hard policy guards (forbidden → P0 skip, required → ≥ P1 light) are
+                 applied deterministically to Grok's output after it returns, so they cannot be
+                 violated regardless of the LLM's reply.
 
     The tool returns:
-    - grok_recommendation.preset (P0–P5) — the authoritative preset chosen by Grok 4.2 (null if
+    - grok_recommendation.preset (0–3) — the authoritative preset chosen by Grok 4.2 (null if
       XAI_API_KEY is not set or the Grok call fails, in which case fall back to rl_recommendation)
-    - grok_recommendation.name — human-readable name for the preset
-    - grok_recommendation.reasoning — Grok 4.2's one-sentence justification
-    - grok_recommendation.override — True if Grok 4.2 disagreed with the RL model
-    - grok_recommendation.override_reason — reason for the override (null when override is False)
-    - rl_recommendation.preset (P0–P5) — the Qwen3-4B RL model's aggregate recommendation
+    - grok_recommendation.name — human-readable name: skip | light | standard | deep
+    - grok_recommendation.reasoning — Grok 4.2's 2-4 sentence justification
+    - grok_recommendation.override — True if Grok 4.2's final preset differs from the RL vote
+    - grok_recommendation.override_reason — why Grok departed from the RL vote (null when override
+      is False; populated by the policy guard note when a hard constraint fired)
+    - grok_recommendation.decision_drivers — short list of signals that drove the choice
+    - grok_recommendation.risk_flags — short list of reasons this decision could be wrong
+    - rl_recommendation.preset (0–3) — the Qwen3-4B RL model's aggregate recommendation
+    - rl_recommendation.name — human-readable name for the RL preset
     - rl_recommendation.confidence — probability mass on the chosen preset (0.0–1.0)
-    - rl_recommendation.entropy_bits — spread of the distribution (lower = more confident)
-    - rl_recommendation.floor_correction_applied — True if a deep-section override fired
-    - section_signals — per-section preset, top-2 probs, and preset name
+    - rl_recommendation.entropy_bits — spread of the 4-preset distribution (lower = more confident)
+    - rl_recommendation.floor_correction_applied — True if the max-preset floor heuristic fired
+    - section_signals — per-section list of preset, name, and top-2 probabilities
     - guidance — one-sentence synthesis from the RL stage
 
     Preset mapping (use this to configure step 4):
-      P0 → Skip the exploration phase entirely (step 4 is not run)
-      P1 → 1 round, balanced focus
-      P2 → 2 rounds: round 1 balanced, round 2 depth-focused
-      P3 → 2 rounds: round 1 depth-focused, round 2 breadth-focused
-      P4 → 3 rounds: round 1 balanced, round 2 depth-focused, round 3 breadth-focused
-      P5 → 3 rounds: round 1 depth-focused, round 2 breadth-focused, round 3 depth-focused
+      P0 skip     → Skip the exploration phase entirely (step 4 is not run)
+      P1 light    → 1 round, balanced focus (~50% depth / 50% breadth)
+      P2 standard → 2 rounds: round 1 depth-focused, round 2 breadth-focused
+      P3 deep     → 3 rounds: round 1 depth-focused, round 2 breadth-focused, round 3 depth-focused
 
     **Default behaviour**: Use grok_recommendation.preset as the authoritative preset. If
     grok_recommendation is null (Grok call unavailable), fall back to rl_recommendation.preset.
     Use the section_signals breakdown to guide the "focus" parameter of each exploration round
-    in step 4 (target the weakest sections flagged in section_signals for depth/breadth rounds).
-    If grok_recommendation.override is True, note the override_reason — it may highlight specific
-    article sections that need extra attention.
+    in step 4: target sections with the weakest coverage (low depth_score, high need_depth) for
+    depth rounds, and sections with the lowest breadth_score for breadth rounds.
+    If grok_recommendation.override is True, note the override_reason and decision_drivers —
+    they identify whether the override was driven by a policy guard or by a specific signal.
 
     **User override**: The user may specify their own round count and focus at any time. If the
     user says "run 2 rounds, focus on breadth" or any equivalent, skip the tool's preset and
@@ -189,12 +195,12 @@ If the user doesn't provide a research directory, you should ask for it before e
 
     **When to apply your own judgement on top**:
     - grok_recommendation is null AND rl_recommendation.entropy_bits > 1.5 → RL model is
-      uncertain; rely on section_signals individually rather than the aggregate preset
-    - rl_recommendation.floor_correction_applied is True → if grok_recommendation did not
-      already address it, focus additional rounds on the sections that triggered the floor
-      (the highest-preset sections in section_signals)
-    - The article guideline clearly calls for a specific depth of research that contradicts
-      both the RL and Grok recommendations
+      uncertain; rely on section_signals individually rather than the aggregate preset.
+    - rl_recommendation.floor_correction_applied is True and grok_recommendation did not
+      escalate → focus additional rounds on the sections that triggered the floor (the
+      highest-preset sections in section_signals).
+    - The article guideline contains an explicit "keep this brief" or "go deep here"
+      instruction that clearly contradicts the chosen preset — follow the guideline.
 
 4. Exploration Phase, repeat the following research loop for an indefinite number of rounds with a configurable maximum number of {settings.maximum_exploration_rounds} rounds:
 

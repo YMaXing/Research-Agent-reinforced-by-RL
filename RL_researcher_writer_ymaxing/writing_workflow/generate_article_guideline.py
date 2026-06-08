@@ -261,16 +261,32 @@ ABSOLUTE FORMATTING RULES (violating any of these is a hard failure):
        - a failure mode or edge case
        - a contrast with an adjacent concept already named in the brief
      but you may NOT introduce a new concept that has no anchor in the brief.
+     PRESERVE THE BRIEF'S FRAMING: do NOT re-organize a section under a new
+     organizing scheme of your own (e.g. regrouping named techniques into
+     "pre-retrieval / indexing / post-retrieval" buckets, lifecycle phases, or
+     any taxonomy not present in the brief). Cover the key_points in the order
+     and under the framing the brief gives them.
      If a section's key_points list is empty, derive content ONLY from:
        - the section title
        - the lesson's topic_summary and why_valuable fields
        - concepts named in the Concepts from Previous / Future Lessons fields
-     Do not fill empty key_points by freely inventing technique lists from your
-     general knowledge of the topic.
+     and keep the expansion MINIMAL and CONSERVATIVE — mirror the section
+     title's framing, do NOT impose a new structure, and do NOT fill empty
+     key_points by freely inventing technique lists from your general
+     knowledge of the topic.
+ 11. DIAGRAM REQUIREMENTS ARE MANDATORY DELIVERABLES. For every entry in a
+     section's `diagrams` list (rendered as `- [diagram] …` in the brief),
+     emit an explicit instruction bullet in that section telling the writer to
+     produce that diagram. Name it as a Mermaid diagram and describe exactly
+     what it must show (nodes, flow, comparison). NEVER drop, merge, or
+     silently omit a diagram entry. Do NOT invent diagrams that are not listed
+     in the brief.
 
 PER-SECTION REQUIREMENTS — each ## Section N block must contain:
   • One bullet cluster per key_point in the brief; sub-bullets expand that
     specific point with examples, failure modes, or named contrasts (rule 10)
+  • For every `- [diagram]` entry in the section's brief, an explicit
+    "Include a Mermaid diagram that shows …" bullet (rule 11)
   • Named frameworks/APIs/papers/failure modes/code patterns ONLY when present
     in the brief (see rule 8)
   • A `Transition to Section N+1:` line (omit for the final section)
@@ -334,6 +350,10 @@ fences, no preamble, no explanation — raw YAML only):
       target_words: <int, approximate word count of this section>
       key_points:
         - "<conceptual anchor — name concept + angle/contrast/question; 3–6 per section>"
+      diagrams:
+        - ("<planning-level description of a Mermaid/conceptual diagram "
+           "this section must contain; OMIT this key entirely if the "
+           "section has no author-created diagram>")
   golden_sources:
     - title: "<source title>"
       url: "<URL>"
@@ -353,7 +373,13 @@ RULES:
      (lesson_scope, concepts_from/for_future_lessons), make a reasonable
      inference.
   4. theory_practice_ratio: estimate from proportion of explanatory text
-     vs. code / hands-on walkthroughs.
+     vs. code / hands-on walkthroughs.  IMPORTANT — inline illustrative
+     examples (short customer scenarios, toy queries, single-step
+     demonstrations) embedded within an explanatory paragraph count as
+     THEORY.  Only dedicated hands-on walkthroughs where the reader is
+     expected to run code, execute commands, or follow step-by-step tasks
+     count as PRACTICE.  If the article has no such hands-on section, use
+     "100% theory - 0% practice".
   5. golden_sources: look FIRST for a dedicated "Golden Sources", "References",
      "Sources", or "Further Reading" section at the END of the article.
      Extract URLs from there.  Fall back to inline URLs in the article body
@@ -376,12 +402,72 @@ RULES:
  11. sections list: each numbered entry in the SECTION PROSE WORD COUNTS
      block must become its own section entry.  Do NOT merge two entries into
      one.  Sub-headings that are already combined in that block (because they
-     are subsections of a parent section) should NOT be split back out.\
+     are subsections of a parent section) should NOT be split back out.
+ 12. diagrams: scan each section for Mermaid code blocks and author-created
+     conceptual diagrams (flowcharts, block/architecture diagrams, sequence
+     diagrams).  For each, add ONE planning-level entry to that section's
+     `diagrams` list describing what the diagram must convey (e.g.
+     "Mermaid flowchart: user query → retriever → augmentation → generator").
+     These are required visual deliverables, so capture every one you find.
+     Do NOT include external screenshots, photos, or decorative images, and
+     do NOT invent diagrams that are not in the article.  If a section has no
+     such diagram, OMIT the `diagrams` key for that section.
+ 13. YAML quoting — always double-quote any string value that contains a
+     colon character (`:`), e.g. ``title: "The RAG System: Core Components"``.
+     Failure to quote will cause a parse error.
+ 14. YAML quoting — every item in a sequence (key_points, diagrams, etc.)
+     must be a fully-quoted string if it contains any double-quote, colon,
+     or other YAML special character.  Wrap the entire value in double-quotes
+     and escape internal double-quotes as ``\"``.  Never start a list item
+     with a partial quoted segment such as ``- "foo" bar baz``.\
 """
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+
+def _repair_yaml(text: str) -> str:
+    """Fix common LLM YAML-generation errors before parsing.
+
+    Handles two patterns:
+    1. Sequence items with a partially-quoted leading segment followed by
+       plain text, e.g. ``- "Lost in the middle" degradation …``
+       → ``- "Lost in the middle degradation …"``
+    2. Mapping values that contain an unquoted colon, e.g.
+       ``- title: The RAG System: Core Components``
+       → ``- title: "The RAG System: Core Components"``
+    """
+    lines = text.splitlines()
+    result = []
+    for line in lines:
+        # Fix 1: sequence items of the form:  - "quoted part" trailing text
+        m1 = re.match(r'^(\s*-\s+)"(.*?"?.*?)"(\s+\S.*)$', line)
+        if m1:
+            prefix, first, rest = m1.group(1), m1.group(2), m1.group(3).strip()
+            combined = (first + " " + rest).replace("\\", "\\\\").replace('"', '\\"')
+            line = f'{prefix}"{combined}"'
+        else:
+            # Fix 2: mapping values with an unquoted colon
+            m2 = re.match(r"^(\s*(?:-\s+)?)(\w[\w_]*):\s+(.+)$", line)
+            if m2:
+                prefix, key, value = m2.group(1), m2.group(2), m2.group(3)
+                # Skip already-quoted or block-scalar values, numbers, booleans
+                if not (
+                    value.startswith('"')
+                    or value.startswith("'")
+                    or value.startswith("|")
+                    or value.startswith(">")
+                    or value.startswith("[")
+                    or value.startswith("{")
+                    or re.match(r"^[\d.]+$", value)
+                    or value in ("true", "false", "null", "~")
+                ):
+                    if ": " in value or value.endswith(":"):
+                        escaped = value.replace("\\", "\\\\").replace('"', '\\"')
+                        line = f'{prefix}{key}: "{escaped}"'
+        result.append(line)
+    return "\n".join(result)
 
 
 def _read_file(path: Path) -> str:
@@ -452,6 +538,8 @@ def _brief_to_text(brief: dict[str, Any]) -> str:
             lines.append(f"    - {kp}")
         for ce in s.get("code_examples", []):
             lines.append(f"    - [code example] {ce}")
+        for dg in s.get("diagrams", []):
+            lines.append(f"    - [diagram] {dg}")
 
     lines += ["", "## Golden Sources"]
     for src in brief["golden_sources"]:
@@ -537,7 +625,26 @@ def _extract_brief_dict_from_guideline(guideline: str, article: str = "") -> dic
     while len(section_lens) < len(section_titles):
         section_lens.append(400)
 
-    sections_payload = [{"title": t.strip(), "target_words": w, "key_points": []} for t, w in zip(section_titles, section_lens)]
+    # Section bodies (text after each `## Section N` heading) so we can detect
+    # diagram requirements that the section author must reproduce.
+    section_bodies = re.split(r"(?m)^## Section \d+\s*[-:].*$", guideline)[1:]
+
+    def _diagrams_from_body(body: str) -> list[str]:
+        out: list[str] = []
+        for line in body.splitlines():
+            stripped = line.strip().lstrip("-*•").strip()
+            if re.search(r"\b(mermaid|diagram)\b", stripped, re.IGNORECASE):
+                out.append(stripped)
+        return out
+
+    sections_payload = []
+    for i, (t, w) in enumerate(zip(section_titles, section_lens)):
+        body = section_bodies[i] if i < len(section_bodies) else ""
+        sec: dict[str, Any] = {"title": t.strip(), "target_words": w, "key_points": []}
+        diagrams = _diagrams_from_body(body)
+        if diagrams:
+            sec["diagrams"] = diagrams
+        sections_payload.append(sec)
 
     # Article Code: parse links AND preserve raw block for verbatim post-injection
     article_code = _parse_sources("Article Code")
@@ -690,6 +797,9 @@ async def _extract_brief_from_article(
             text = re.sub(r"^```(?:yaml)?\s*\n", "", text)
             text = re.sub(r"\n```\s*$", "", text)
             text = text.strip()
+
+            # Repair common LLM YAML issues before parsing
+            text = _repair_yaml(text)
 
             data = yaml.safe_load(text)
             if not isinstance(data, dict):
@@ -981,6 +1091,14 @@ async def _generate_guideline(
             # Post-process: normalize section-length line format to -  **Section length:** N words
             text = re.sub(r"\n- \*\*Section length:", "\n-  **Section length:", text)
             text = re.sub(r"\n-  \*\*Section length\*\*:", "\n-  **Section length:**", text)
+            # Post-process: strip Rule 9 meta-commentary the LLM sometimes emits
+            # on the last section (e.g. "- Transition is not needed as this is
+            # the last section."). Rule 9 forbids it but the LLM still produces it.
+            text = re.sub(
+                r"\n- Transition is not needed[^\n]*\n",
+                "\n",
+                text,
+            )
             return text
         except Exception as exc:
             logger.warning("Attempt %d/%d failed: %s", attempt, MAX_RETRIES, exc)
@@ -1071,6 +1189,53 @@ async def generate_for_brief(
         )
 
 
+async def _build_eval_brief(llm, article: str) -> dict[str, Any]:
+    """Build the task brief for an eval-split article.
+
+    Mirrors the real authoring flow:
+      1. If a curated ``inputs/briefs/{article}.yaml`` exists, use it.
+      2. Otherwise extract a planning brief from the held-out ground-truth
+         article via the LLM (rich key_points + diagram requirements) and
+         save the result next to the synthesized guideline for inspection.
+
+    The pipeline never reads the original article_guideline.md for this
+    article — all information must come from article_ground_truth.md or be
+    left for human-in-the-loop editing of the saved brief YAML.
+    """
+    curated = _BRIEFS_DIR / f"{article}.yaml"
+    if curated.exists():
+        logger.info("[EVAL] %s: using curated brief %s", article, curated.name)
+        return _load_brief(curated)
+
+    # Locate the held-out ground-truth article to extract the brief from.
+    gt_path = _EVAL_DATA_DIR / article / "article_ground_truth.md"
+    if not gt_path.exists():
+        gt_path = _EVAL_DATA_DIR / article / "article.md"
+    if not gt_path.exists():
+        raise FileNotFoundError(
+            f"No ground-truth article for {article!r}: tried article_ground_truth.md and article.md in {_EVAL_DATA_DIR / article}"
+        )
+
+    logger.info("[EVAL] %s: extracting brief from %s …", article, gt_path.name)
+    brief = await _extract_brief_from_article(llm, _read_file(gt_path), article)
+
+    # Persist the extracted brief for inspection (NOT in inputs/briefs/, to keep
+    # the few-shot brief pool clean of held-out test articles).
+    inspect_path = _EVAL_DATA_DIR / article / "article_brief_extracted.yaml"
+    header = (
+        f"# Auto-extracted EVAL brief for: {article}\n"
+        f"# Source: {gt_path.name}\n"
+        f"# Generated by --eval-mode for inspection only. Edit and copy to\n"
+        f"# inputs/briefs/{article}.yaml to pin a curated brief for this article.\n\n"
+    )
+    _write_file(
+        inspect_path,
+        header + yaml.dump(brief, default_flow_style=False, allow_unicode=True, sort_keys=False, width=120),
+    )
+    logger.info("[EVAL] %s: saved extracted brief → %s", article, inspect_path.name)
+    return brief
+
+
 async def eval_mode(few_shot_articles: list[str], llm) -> None:
     """Run synthesizer on test split; save as article_guideline_synthesized.md."""
     logger.info("=" * 70)
@@ -1078,42 +1243,48 @@ async def eval_mode(few_shot_articles: list[str], llm) -> None:
     logger.info("Few-shot pool: %s", few_shot_articles)
     logger.info("=" * 70)
 
+    # Source the course-wide boilerplate from the FIRST training article so we
+    # never touch any held-out test content.
+    boilerplate_source_article = TRAINING_ARTICLES[0]
+    boilerplate_path = _EVAL_DATA_DIR / boilerplate_source_article / "article_guideline.md"
+    boilerplate_text = _read_file(boilerplate_path) if boilerplate_path.exists() else ""
+    if not boilerplate_text:
+        logger.warning(
+            "[EVAL] Could not load boilerplate source from %s — boilerplate blocks will be LLM-generated",
+            boilerplate_path,
+        )
+
     for article in TEST_ARTICLES:
-        orig_path = _EVAL_DATA_DIR / article / "article_guideline.md"
-        if not orig_path.exists():
-            logger.warning("[SKIP] %s — original guideline not found", article)
+        gt_path_check = (
+            _EVAL_DATA_DIR / article / "article_ground_truth.md"
+            if (_EVAL_DATA_DIR / article / "article_ground_truth.md").exists()
+            else _EVAL_DATA_DIR / article / "article.md"
+        )
+        if not gt_path_check.exists():
+            logger.warning("[SKIP] %s — ground-truth article not found", article)
             continue
 
-        orig_text = _read_file(orig_path)
-
-        # Build a mock brief by extracting all fields from the original guideline.
-        # This ensures the model receives the correct ratio, sources, and article
-        # code — never hardcoded fallbacks.
-        brief: dict[str, Any] = _extract_brief_dict_from_guideline(orig_text, article)
+        brief = await _build_eval_brief(llm, article)
 
         logger.info("[EVAL] Generating %s …", article)
         guideline_text = await _generate_guideline(llm, brief, few_shot_articles)
 
-        # Inject verbatim boilerplate from the real guideline so the diff
-        # reflects only variable section content, not wording drift in the
-        # fixed blocks (Details About the Course, Point of View, Anchoring,
-        # Narrative Flow).
-        guideline_text = _inject_boilerplate_from_source(guideline_text, orig_text)
-        # Inject verbatim section headings and length lines (fixes colon-vs-dash
-        # separator in titles and stripped parenthetical notes in length lines).
-        guideline_text = _inject_section_structure_from_source(guideline_text, orig_text)
+        # Inject verbatim boilerplate from a TRAINING article (never from the
+        # held-out original) so the diff reflects only variable section content.
+        if boilerplate_text:
+            guideline_text = _inject_boilerplate_from_source(guideline_text, boilerplate_text)
 
         output_path = _EVAL_DATA_DIR / article / "article_guideline_synthesized.md"
         _write_file(output_path, guideline_text)
         word_count = len(guideline_text.split())
 
-        orig_sec = len(re.findall(r"^## Section \d+", orig_text, re.MULTILINE))
+        orig_path = _EVAL_DATA_DIR / article / "article_guideline.md"
+        orig_sec = len(re.findall(r"^## Section \d+", _read_file(orig_path), re.MULTILINE)) if orig_path.exists() else "?"
         synth_sec = len(re.findall(r"^## Section \d+", guideline_text, re.MULTILINE))
         logger.info(
-            "  %-40s orig=%d secs/%d words  →  synth=%d secs/%d words",
+            "  %-40s orig=%s secs  →  synth=%d secs/%d words",
             article,
             orig_sec,
-            len(orig_text.split()),
             synth_sec,
             word_count,
         )
