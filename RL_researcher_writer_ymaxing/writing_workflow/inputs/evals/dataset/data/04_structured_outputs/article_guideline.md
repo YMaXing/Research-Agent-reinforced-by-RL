@@ -10,7 +10,7 @@ For an AI Engineer, it's critical to understand how to implement the bridge betw
 
 ### Expected Length of the Lesson
 
-**1800 words** (without the titles and references), where we assume that 200-250 words ≈ 1 minute of reading time.
+**2250 words** (without the titles and references), where we assume that 200-250 words ≈ 1 minute of reading time.
 
 ### Theory / Practice Ratio
 
@@ -155,7 +155,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
     6. Explain the `extract_json_from_response` Python function
     7. Extract the output from the model response 
     8. Print and show the extracted output
-- **Section length:** 300 words (without counting the code)
+- **Section length:** 450 words (without counting the code)
 
 
 ## Section 4: Implementing structured outputs from scratch using Pydantic
@@ -181,7 +181,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
     14. Final note: The core idea is to use Pydantic objects directly in downstream components throughout the code. Not obscure Python dicts where we don't know what's inside, having to pollute the code with if-else statements in case a key is missing or it doesn't has the right type.
  - Conclude the section with some other popular options which are Python's TypedDicts and DataClass classes. Still, these are used just to enforce structure and not the type, as if there is a type mismatch, they will not handle it. That's why due to Pydantic's out-of-the-box validation mechanisms, it became the most popular and powerful way to move data around in LLM workflows and AI agents.
 
-- **Section length:** 600 words (without counting the code)
+- **Section length:** 900 words (without counting the code)
 
 ## Section 5: Implementing structured outputs using Gemini and Pydantic
 

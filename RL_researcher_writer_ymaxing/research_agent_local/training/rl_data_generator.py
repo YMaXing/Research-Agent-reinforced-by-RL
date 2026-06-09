@@ -1,13 +1,13 @@
 """
 Phase 1 — RL Training Data Generator (Research Generation)
 
-Generates research.md files for all 6 exploration presets across 5 train articles.
+Generates research.md files for all 4 exploration presets across the train articles.
 Calls MCP server tool functions directly (no LLM orchestrator) for deterministic control.
 
 Architecture:
   1. Build a shared "exploitation base" per article (steps 1-3: extract URLs, scrape
      golden/exploitation sources, run 3 exploitation rounds).
-  2. Copy each base to 6 episode directories (one per preset).
+  2. Copy each base to 4 episode directories (one per preset).
   3. Run the preset-specific exploration phase (step 4) on each episode.
   4. Run post-exploration steps 5-7 (filter, scrape top sources, create research.md).
 
@@ -107,10 +107,17 @@ TRAIN_ARTICLES: list[str] = [
     "11_multimodal",
 ]
 
+# Test (held-out) articles — never used for training
+TEST_ARTICLES: list[str] = [
+    "04_structured_outputs",
+    "07_reasoning_planning",
+]
+
 # Output root — sibling to research_agent_local/
 _OUTPUT_ROOT = _THIS_DIR.parent / "rl_training_data"
 BASES_DIR = _OUTPUT_ROOT / "bases"
 EPISODES_DIR = _OUTPUT_ROOT / "episodes"
+TEST_EPISODES_DIR = _OUTPUT_ROOT / "test_episodes"
 
 # Exploitation rounds (matches current prompt: 3 fixed rounds)
 N_EXPLOITATION_ROUNDS = 3
@@ -139,17 +146,13 @@ class ExplorationPreset:
 
 PRESETS: tuple[ExplorationPreset, ...] = (
     ExplorationPreset(id=0, n_rounds=0, focus_sequence=(),
-                      label="baseline_no_exploration"),
+                      label="skip"),
     ExplorationPreset(id=1, n_rounds=1, focus_sequence=("balanced",),
-                      label="single_balanced"),
-    ExplorationPreset(id=2, n_rounds=2, focus_sequence=("balanced", "depth"),
-                      label="balanced_then_depth"),
-    ExplorationPreset(id=3, n_rounds=2, focus_sequence=("depth", "breadth"),
-                      label="depth_then_breadth"),
-    ExplorationPreset(id=4, n_rounds=3, focus_sequence=("balanced", "depth", "breadth"),
-                      label="full_progressive"),
-    ExplorationPreset(id=5, n_rounds=3, focus_sequence=("depth", "breadth", "depth"),
-                      label="depth_sandwich"),
+                      label="light"),
+    ExplorationPreset(id=2, n_rounds=2, focus_sequence=("depth", "breadth"),
+                      label="standard"),
+    ExplorationPreset(id=3, n_rounds=3, focus_sequence=("depth", "breadth", "depth"),
+                      label="deep"),
 )
 
 
@@ -529,14 +532,18 @@ async def build_exploitation_base(article: str) -> Path:
     return base_dir
 
 
-async def run_episode(article: str, preset: ExplorationPreset) -> Path:
+async def run_episode(
+    article: str,
+    preset: ExplorationPreset,
+    episodes_dir: Path = EPISODES_DIR,
+) -> Path:
     """
     Run one episode: copy exploitation base → exploration → post-processing.
 
     Returns path to the episode directory containing the final research.md.
     """
     ep_name = _episode_dir_name(article, preset)
-    episode_dir = EPISODES_DIR / ep_name
+    episode_dir = episodes_dir / ep_name
     base_dir = BASES_DIR / article
 
     if not base_dir.exists():
@@ -565,41 +572,50 @@ async def run_pipeline(
     articles: Sequence[str] | None = None,
     preset_ids: Sequence[int] | None = None,
     dry_run: bool = False,
+    test_mode: bool = False,
+    base_only: bool = False,
 ) -> None:
     """
     Run the full Phase 1 data generation pipeline.
 
     Args:
-        articles: Which articles to process (default: all 5 train articles)
-        preset_ids: Which presets to run (default: all 6)
+        articles: Which articles to process (default: TRAIN_ARTICLES or TEST_ARTICLES)
+        preset_ids: Which presets to run (default: all 4)
         dry_run: If True, only print the plan without executing
+        test_mode: If True, default to TEST_ARTICLES and output to test_episodes/
+        base_only: If True, build exploitation bases only; skip episode generation
     """
-    arts = list(articles or TRAIN_ARTICLES)
+    default_articles = TEST_ARTICLES if test_mode else TRAIN_ARTICLES
+    arts = list(articles or default_articles)
     pids = set(preset_ids or [p.id for p in PRESETS])
     selected_presets = [p for p in PRESETS if p.id in pids]
+    episodes_dir = TEST_EPISODES_DIR if test_mode else EPISODES_DIR
 
     total_episodes = len(arts) * len(selected_presets)
 
     logger.info("=" * 70)
     logger.info("Phase 1: RL Research Data Generation")
+    logger.info(f"  Mode:      {'test (held-out)' if test_mode else 'train'}")
     logger.info(f"  Articles:  {arts}")
     logger.info(f"  Presets:   {[p.id for p in selected_presets]}")
-    logger.info(f"  Episodes:  {total_episodes}")
-    logger.info(f"  Output:    {_OUTPUT_ROOT}")
+    logger.info(f"  Episodes:  {'(bases only — episode generation skipped)' if base_only else total_episodes}")
+    logger.info(f"  Output:    {episodes_dir}")
     logger.info("=" * 70)
 
     if dry_run:
         logger.info("DRY RUN — plan only, no execution.")
         for art in arts:
             logger.info(f"\n  Base: {art}")
-            for preset in selected_presets:
-                logger.info(f"    Episode: {_episode_dir_name(art, preset)}  "
-                            f"(rounds={preset.n_rounds}, focus={preset.focus_sequence})")
+            if not base_only:
+                for preset in selected_presets:
+                    logger.info(f"    Episode: {_episode_dir_name(art, preset)}  "
+                                f"(rounds={preset.n_rounds}, focus={preset.focus_sequence})")
         return
 
     _OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
     BASES_DIR.mkdir(parents=True, exist_ok=True)
-    EPISODES_DIR.mkdir(parents=True, exist_ok=True)
+    if not base_only:
+        episodes_dir.mkdir(parents=True, exist_ok=True)
 
     pipeline_t0 = time.monotonic()
 
@@ -617,18 +633,26 @@ async def run_pipeline(
         else:
             await build_exploitation_base(art)
 
+    if base_only:
+        pipeline_elapsed = time.monotonic() - pipeline_t0
+        logger.info("=" * 70)
+        logger.info(f"Bases complete — {len(arts)} article(s) in {pipeline_elapsed:.0f}s")
+        logger.info(f"Output: {BASES_DIR}")
+        logger.info("=" * 70)
+        return
+
     # Stage 2 — run episodes (sequential to stay within API limits)
     completed = 0
     for art in arts:
         for preset in selected_presets:
             ep_name = _episode_dir_name(art, preset)
-            ep_dir = EPISODES_DIR / ep_name
+            ep_dir = episodes_dir / ep_name
             research_md = ep_dir / "research.md"
             if research_md.exists():
                 logger.info(f"Episode {ep_name} already complete, skipping …")
                 completed += 1
                 continue
-            await run_episode(art, preset)
+            await run_episode(art, preset, episodes_dir=episodes_dir)
             completed += 1
             logger.info(f"Progress: {completed}/{total_episodes} episodes done")
 
@@ -653,11 +677,22 @@ def main() -> None:
     )
     parser.add_argument(
         "--presets", nargs="+", type=int, default=None,
-        help="Preset IDs to run (0-5, default: all 6)",
+        help="Preset IDs to run (0, 1, 3, 5 — default: all 4)",
     )
     parser.add_argument(
         "--dry-run", action="store_true",
         help="Show execution plan without running",
+    )
+    parser.add_argument(
+        "--test", action="store_true",
+        help=(
+            f"Run held-out test articles (default: {TEST_ARTICLES}) and write "
+            "episodes to test_episodes/ instead of episodes/"
+        ),
+    )
+    parser.add_argument(
+        "--base-only", action="store_true",
+        help="Build exploitation bases only; skip episode (exploration) generation",
     )
     args = parser.parse_args()
 
@@ -665,6 +700,8 @@ def main() -> None:
         articles=args.articles,
         preset_ids=args.presets,
         dry_run=args.dry_run,
+        test_mode=args.test,
+        base_only=args.base_only,
     ))
 
 

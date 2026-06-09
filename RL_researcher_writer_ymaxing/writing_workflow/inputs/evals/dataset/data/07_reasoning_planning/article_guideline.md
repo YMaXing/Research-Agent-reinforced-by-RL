@@ -10,7 +10,7 @@ Understanding how to imbue LLMs with planning and reasoning capabilities is very
 
 ### Expected Length of the Lesson
 
-**1800-2000 words** (without the titles and references), where we assume that 200-250 words ≈ 1 minute of reading time.
+**3500-4000 words** (without the titles and references), where we assume that 200-250 words ≈ 1 minute of reading time.
 
 ### Theory / Practice Ratio
 
@@ -188,7 +188,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
     - Can be less predictable; needs guardrails and good system prompts.
 - Transition to Section 5: For tasks with known structure, Plan-and-Execute can be more efficient and predictable.
 
-- **Section length:** 500-600 words
+- **Section length:** 400-500 words
 
 ## Section 5 - Plan-and-Execute in Depth Plan, Execution, Pros and Cons
 
@@ -212,7 +212,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
     - Risk of rigid adherence to an imperfect initial plan.
 - Transition to Section 6: These ideas power real systems like Deep Research, which operationalize iterative planning and verification at scale.
 
-- **Section length:** 450-550 words
+- **Section length:** 650-750 words
 
 ## Section 6 - Where This Shows Up in Practice Deep Research–Style Systems
 
@@ -239,7 +239,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
     - Separation of reasoning and answering remains useful for debugging and control, even with strong implicit planning.
 - Transition to Section 8: With planning and reasoning in place, agents unlock advanced capabilities like goal decomposition and self-correction.
 
-- **Section length:** 250-350 words
+- **Section length:** 700-800 words
 
 ## Section 8 - Advanced Agent Capabilities Enabled by Planning Goal Decomposition and Self-Correction
 
@@ -256,7 +256,7 @@ Follow the next narrative flow when writing the end-to-end lesson:
     - Next (Lesson 8), we implement ReAct from scratch.
     - Soon after: memory systems (Lesson 9), knowledge-augmented retrieval (Lesson 10), multimodal processing (Lesson 11).
 
-- **Section length:** 450-550 words
+- **Section length:** 200-250 words
 
 ## Article Code
 
