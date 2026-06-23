@@ -1,0 +1,38 @@
+{
+  "variant": "29_evaluation_metrics",
+  "lesson": "29_evaluation_metrics",
+  "split": "TEST",
+  "policy": "allowed",
+  "rl_preset": 0,
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 1,
+  "oracle_name": "light",
+  "r_w_rewards": [
+    0.5118,
+    0.7876,
+    0.7138,
+    0.685
+  ],
+  "verdict": "NEAR",
+  "regret": 0.2759,
+  "regret_counted": 0.2759,
+  "entropy_bits": 1.3424,
+  "confidence": 0.4559,
+  "floor_applied": true,
+  "grok_override": false,
+  "grok_reasoning": "Section-scorer aggregate is P0 (46% skip / 46% light / 9% deep); moderate confidence but primary signal. High-budget sections (S2 35%, S5 18%, S6 15%) already show depth≥6, S2 is brief-flagged + votes skip·1.00, dominant gaps are depth but scorer priced them in. One small section (S1 9%) votes deep, triggering 'keep P0' per sanctioned-nudge rule that forbids P1 when any section votes deep.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "scorer_aggregate_P0",
+    "high_budget_sections_well_covered",
+    "brief_flag_on_largest_section",
+    "deep_vote_in_S1_blocks_upward_nudge"
+  ],
+  "grok_risk_flags": [
+    "tied vote entropy",
+    "47 unbacked anchors",
+    "S1 low coverage"
+  ]
+}

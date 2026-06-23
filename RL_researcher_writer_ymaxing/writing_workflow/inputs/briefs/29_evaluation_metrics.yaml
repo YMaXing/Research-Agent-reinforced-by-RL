@@ -1,0 +1,133 @@
+# Auto-extracted brief for: 29_evaluation_metrics
+# Source: article_ground_truth.md
+# REVIEW BEFORE USE — check all fields, especially those marked
+# '# TODO: review' which require course-context knowledge.
+# Then run:
+#   uv run python generate_article_guideline.py --article 29_evaluation_metrics
+
+lesson_number: 29
+title: Defining the Evaluation Processes and Metrics Theory
+topic_summary:
+  "Establish the theoretical foundation for evaluation-driven development (EDD) as the north star for AI engineering.
+  Detail the optimization flywheel with its three core use cases (baseline quantification, guided experimentation, regression
+  testing) and the disciplined process of single-variable iteration anchored to business impact. Compare metric families suitable
+  for unstructured outputs (n-gram overlap, embedding similarity, LLM judges) and make the case for custom business metrics
+  over public benchmarks or generic prefab scores. Argue for binary pass/fail judgments over Likert scales, showing how granular
+  binary criteria capture nuance without subjectivity or noise.
+
+  "
+why_valuable:
+  "AI engineers routinely ship prompt or architecture changes based on intuition, leading to silent regressions
+  and slow progress. Rigorous, business-aligned evals replace vibe checks with an evidence-based flywheel that quantifies
+  impact, prevents breakage, and focuses effort on changes that actually move product metrics.
+
+  "
+target_length_words: 3264
+theory_practice_ratio: 100% theory - 0% practice
+lesson_scope:
+  "Lesson 29 sits after observability/tracing (Lesson 27) and offline dataset construction (Lesson 28); it supplies
+  the conceptual framework for designing metrics before Lesson 30 implements LLM judges hands-on for the capstone writing
+  agent.
+
+  "
+audience:
+  "AI engineers who have built agents, instrumented them with tracing tools such as Opik, and assembled evaluation
+  datasets and who are now ready to replace subjective assessment with systematic, business-grounded metrics.
+
+  "
+concepts_from_previous_lessons:
+  - Observability and tracing with Opik to capture real production traces
+  - Building offline evaluation datasets from traces and golden examples
+concepts_for_future_lessons:
+  - Implementing custom LLM judges from scratch for binary business metrics
+  - Applying the full EDD flywheel to the Brown writing-agent capstone
+sections:
+  - title: Introduction
+    target_words: 281
+    key_points:
+      - Contrast rigorous ML evaluation standards (accuracy, precision, recall) with AI engineering's common reliance on vibe
+        checks
+      - Why eval-layer investment is hard to prioritize yet dramatically accelerates long-term iteration
+      - "Evals as north star: know exactly which changes improve the system and instantly catch regressions"
+      - "Lesson roadmap: optimization flywheel mechanics, metric-type trade-offs, business metrics over benchmarks or generics,
+        binary over Likert"
+  - title: Using Evals Through the Optimization Flywheel
+    target_words: 1173
+    key_points:
+      - "Three core eval use cases: snapshot baseline of system quality, evidence-based optimization experiments, regression tests
+        protecting shared components"
+      - Eight-step flywheel (dataset, metrics, baseline, single isolated change, re-evaluate, compare, decide, repeat) and why
+        only one variable may change per cycle
+      - Anchoring statistical significance to business impact rather than arbitrary thresholds (high-volume support bot vs. low-volume
+        creative tool)
+      - "Regression-test variant: run full eval suite on new features affecting shared prompts or orchestration to guard against
+        breakage"
+      - Continuously expanding the dataset with new feature edge cases, production trace failures, and debugging examples
+      - Treating evals like unit/integration tests but comparing scores to baseline instead of strict pass/fail
+    diagrams:
+      - Conceptual diagram of the iterative optimization flywheel showing dataset/metrics/baseline then single-change/evaluate/decide
+        loop
+      - Diagram of AI evaluations integrated into CI pipelines for regression testing and dataset expansion
+  - title: Exploring Possible Metric Types
+    target_words: 441
+    key_points:
+      - Evaluating unstructured text and image outputs versus classical structured-data ML metrics
+      - "N-gram metrics (BLEU/ROUGE): lexical overlap pros (fast, objective) versus cons (ignores semantics, paraphrasing, reasoning)"
+      - "Embedding similarity (BERTScore): vector-space semantic capture versus still being limited to reference comparison without
+        business rules"
+      - "LLM-as-judge approach: prompting an evaluator model for complex, domain-specific criteria and its flexibility for real
+        product needs"
+      - Trade-off summary and rationale for choosing LLM judges in capstone projects needing guideline, structure, and research
+        fidelity checks
+  - title: Why Business Metrics Over Benchmarks
+    target_words: 229
+    key_points:
+      - "Benchmarks as marketing artifacts: overfitting, hill-climbing on public test sets, and loss of validity once sets are
+        known"
+      - Mismatch between benchmark tasks (e.g. GSM8k math) and actual business workloads (creative writing, legal analysis)
+      - "Proper role of benchmarks: advancing research frontiers and initial model filtering, never as proxy for product decisions"
+  - title: Why Custom Business Metrics Over Generic Metrics
+    target_words: 572
+    key_points:
+      - Generic metrics (toxicity, helpfulness, hallucination, RAGAS-style) as mirage that optimizes the wrong signal and creates
+        false confidence
+      - "Hallucination example: generic detector cannot distinguish undesirable fabrication from desirable engaging personal story
+        aligned with brand voice"
+      - "Limitations of prefab scores: lack of domain context, no localization of failures, increased decision-making noise"
+      - Narrow valid role for generic metrics during exploratory data analysis (sorting by verbosity, retriever similarity, reference
+        quality)
+      - Requirement for deeply application-centric metrics anchored in concrete product constraints and user needs
+    diagrams:
+      - Anti-pattern dashboard of generic metrics (Helpfulness, Truthfulness, Personalization) labeled as something not to copy
+  - title: Choosing Binary Metrics Over Anything Else
+    target_words: 482
+    key_points:
+      - "Problems with Likert scales: subjective 3-vs-4 labeling, statistical noise in small movements, lazy satisficing around
+        the middle value"
+      - "Binary pass/fail advantages: forces precise quality definitions, higher inter-annotator consistency, immediate actionable
+        failure signals"
+      - Binary decisions reduce LLM judge variance compared with scalar ratings, improving repeatability
+      - Capturing nuance via multiple granular binary checks rather than one fuzzy overall score
+      - Writing-agent example breaking quality into binaries for content adherence, idea ordering, guideline following, research
+        anchoring
+      - Aggregating binary signals yields nuanced performance view without subjectivity or noise
+  - title: Conclusion
+    target_words: 86
+    key_points:
+      - Shift from vibe checks and leaderboards to rigorous EDD built on custom, binary, business-aligned metrics
+      - Granular pass/fail criteria deliver clearest optimization signal while avoiding scale noise
+      - Transition to next lesson's practical implementation of LLM judges for the writing workflow
+golden_sources:
+  - title: "Using LLM-as-a-Judge For Evaluation: A Complete Guide"
+    url: https://hamel.dev/blog/posts/llm-judge/
+  - title: Evaluating the Effectiveness of LLM-Evaluators (aka LLM-as-Judge)
+    url: https://eugeneyan.com/writing/llm-evaluators/
+  - title: Benchmark Overfitting in Large Language Models
+    url: https://openreview.net/forum?id=XbVMiW0jTM
+  - title: The Mirage of Generic AI Metrics
+    url: https://www.decodingai.com/p/the-mirage-of-generic-ai-metrics
+  - title: "The 5-Star Lie: You’re Doing AI Evaluations Wrong"
+    url: https://www.decodingai.com/p/the-5-star-lie-you-are-doing-ai-evals
+  - title: "Escaping POC Purgatory: Evaluation-Driven Development for AI Systems"
+    url: https://www.decodingai.com/p/escaping-poc-purgatory-evaluation
+other_sources: []

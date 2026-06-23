@@ -1,0 +1,35 @@
+{
+  "variant": "04_structured_outputs",
+  "lesson": "04_structured_outputs",
+  "split": "TEST",
+  "policy": "allowed",
+  "rl_preset": 1,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 2,
+  "oracle_name": "standard",
+  "r_w_rewards": [
+    0.6067,
+    0.6687,
+    0.6707,
+    0.6407
+  ],
+  "verdict": "NEAR",
+  "regret": 0.002,
+  "regret_counted": 0.002,
+  "entropy_bits": 0.9968,
+  "confidence": 0.533,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Section-scorer aggregate is P1 light (53% light vs 47% skip, 0% on standard/deep); this is the reward-trained peak. High-budget S4 (40%, 13 must-ev, depth_cov=6) and S3 (20%, 8 must-ev) drive the lean while S2 is brief-flagged; no sanctioned override condition met (vote not uncertain enough for downward, no upward from P1 allowed).",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "scorer_aggregate_P1",
+    "must_ev_in_S3_S4",
+    "no_standard_deep_votes"
+  ],
+  "grok_risk_flags": [
+    "close 47-53 split could tilt skip if gaps are already notebook-sourced"
+  ]
+}

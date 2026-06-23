@@ -111,6 +111,8 @@ TRAIN_ARTICLES: list[str] = [
 TEST_ARTICLES: list[str] = [
     "04_structured_outputs",
     "07_reasoning_planning",
+    "13_agent_framework",
+    "14_agent_system_design"
 ]
 
 # Output root — sibling to research_agent_local/
@@ -500,10 +502,13 @@ async def build_exploitation_base(article: str) -> Path:
     base_dir = BASES_DIR / article
     base_dir.mkdir(parents=True, exist_ok=True)
 
-    # Copy article_guideline.md into the base directory
+    # Always sync article_guideline.md from source so base dir never holds a stale version.
     dst_guideline = base_dir / ARTICLE_GUIDELINE_FILE
-    if not dst_guideline.exists():
+    src_text = src_guideline.read_text(encoding="utf-8")
+    guideline_changed = not dst_guideline.exists() or dst_guideline.read_text(encoding="utf-8") != src_text
+    if guideline_changed:
         shutil.copy2(src_guideline, dst_guideline)
+        logger.info(f"  Guideline synced from source for {article}")
 
     research_dir = str(base_dir)
 
@@ -511,6 +516,13 @@ async def build_exploitation_base(article: str) -> Path:
     t0 = time.monotonic()
     _rdir = base_dir / RESEARCH_OUTPUT_FOLDER
     _rdir.mkdir(parents=True, exist_ok=True)
+
+    # If the guideline changed, Steps 1 and 2 must re-run (their sentinels are stale).
+    if guideline_changed:
+        for stale in (_rdir / "_step1.done", _rdir / "_step2.done"):
+            if stale.exists():
+                stale.unlink()
+                logger.info(f"  Cleared stale sentinel {stale.name} (guideline changed)")
 
     if (_rdir / "_step1.done").exists():
         logger.info("  Step 1 already done, skipping …")

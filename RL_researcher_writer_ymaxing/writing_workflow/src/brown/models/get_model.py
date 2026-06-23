@@ -22,6 +22,7 @@ MODEL_TO_REQUIRED_API_KEY = {
     SupportedModels.GOOGLE_GEMINI_25_PRO: "GOOGLE_API_KEY",
     SupportedModels.GOOGLE_GEMINI_25_FLASH: "GOOGLE_API_KEY",
     SupportedModels.GOOGLE_GEMINI_25_FLASH_LITE: "GOOGLE_API_KEY",
+    SupportedModels.XAI_GROK_430: "XAI_API_KEY",
     SupportedModels.XAI_GROK_420: "XAI_API_KEY",
     SupportedModels.XAI_GROK_41_FAST: "XAI_API_KEY",
 }

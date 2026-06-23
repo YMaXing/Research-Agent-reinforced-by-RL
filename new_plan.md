@@ -18,7 +18,7 @@ improve digest generation pipeline (see CHECKPOINT INFERENCE AND COMPRESSION)
 
 improve section-level accuracy by upgrading the training data and pipeline
 
-# Article-level
+# Article-level (First Draft Done, ready for test data)
 
 downstream LLM pipeline aggregating section-level signals (see PHASE 0).
 
@@ -28,4 +28,32 @@ Potential complements to the plan: extract helpful information from digests
 
 # Guideline generation
 
-need to be generalized beyond lesson articles
+need to be generalized beyond lesson articles (16 articles)
+
+Candidates from TowardsAI's agentic course: 
+1. Lesson 4: Structured Outputs
+2. Lesson 7: Reasoning Planing
+3. Lesson 13: Agent Frameworks Overview & Comparison
+4. Lesson 14: LLM Agent System Design Considerations and Framework  
+5. Lesson 29: Defining the Evaluation Processes and Metrics Theory
+6. Lesson 31: Continuous Integration for AI Engineering
+
+Candidates from Lil'log:
+1. The Transformer Family Version 2.0 (https://lilianweng.github.io/posts/2023-01-27-the-transformer-family-v2/)
+2. Reward Hacking in Reinforcement Learning (https://lilianweng.github.io/posts/2024-11-28-reward-hacking/)
+
+Candidates from Pinecone:
+1. Hierarchical Navigable Small Worlds (HNSW) (https://www.pinecone.io/learn/series/faiss/hnsw/)
+
+Candidates from Ahead of AI:
+1. Beyond Standard LLMs
+Linear Attention Hybrids, Text Diffusion, Code World Models, and Small Recursive Transformers (https://magazine.sebastianraschka.com/p/beyond-standard-llms)
+2.Understanding Reasoning LLMs
+Methods and Strategies for Building and Refining Reasoning Models(https://magazine.sebastianraschka.com/p/understanding-reasoning-llms)
+
+Candidates from QuantaMagazine:
+1. Is Gravity Just Entropy Rising? Long-Shot Idea Gets Another Look. (https://www.quantamagazine.org/is-gravity-just-entropy-rising-long-shot-idea-gets-another-look-20250613/)
+2. How Space and Time Could Be a Quantum Error-Correcting Code (https://www.quantamagazine.org/how-space-and-time-could-be-a-quantum-error-correcting-code-20190103/#comments)
+3. How the Bird Eye Was Pushed to an Evolutionary Extreme (https://www.quantamagazine.org/how-the-bird-eye-was-pushed-to-an-evolutionary-extreme-20260513/)
+4. Insects and Other Animals Have Consciousness, Experts Declare (https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419/)
+5. Two Twisty Shapes Resolve a Centuries-Old Topology Puzzle (https://www.quantamagazine.org/two-twisty-shapes-resolve-a-centuries-old-topology-puzzle-20260120/)

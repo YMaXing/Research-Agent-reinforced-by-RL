@@ -92,6 +92,7 @@ _AGENT_DIR = _THIS_DIR.parent               # research_agent_local/
 _REPO_ROOT = _AGENT_DIR.parent              # RL_researcher_writer_ymaxing/
 _BASES_DIR = _REPO_ROOT / "rl_training_data" / "bases"
 _EPISODES_DIR = _REPO_ROOT / "rl_training_data" / "episodes"
+_TEST_EPISODES_DIR = _REPO_ROOT / "rl_training_data" / "test_episodes"
 
 # ---------------------------------------------------------------------------
 # Preset / arm constants  (mirrors _rl_preset.py)
@@ -104,6 +105,9 @@ ARM_IDX: dict[str, int] = {a: i for i, a in enumerate(ARMS)}
 
 #: Arm name → episode preset ID used to generate its articles.
 ARM_EPISODE: dict[str, int] = {"skip": 0, "light": 1, "standard": 3, "deep": 5}
+
+#: Test-article (no-variant) arm → episode preset ID in test_episodes/
+_TEST_ARM_EPISODE: dict[str, int] = {"skip": 0, "light": 1, "standard": 2, "deep": 3}
 
 #: Total number of arms.
 NUM_ARMS: int = 4
@@ -185,6 +189,22 @@ def _word_count(text: str) -> int:
 
 
 # ---------------------------------------------------------------------------
+# Episode directory helper
+# ---------------------------------------------------------------------------
+
+def _episode_dir(article: str, arm: str) -> Path:
+    """Return the episode directory for *arm* of *article*.
+
+    No-variant test articles (no ``__var_`` suffix) use ``test_episodes/``
+    with sequential preset IDs 0-3; training variants use ``episodes/`` with
+    preset IDs 0, 1, 3, 5.
+    """
+    if "__var_" not in article:
+        return _TEST_EPISODES_DIR / f"{article}__preset{_TEST_ARM_EPISODE[arm]}"
+    return _EPISODES_DIR / f"{article}__preset{ARM_EPISODE[arm]}"
+
+
+# ---------------------------------------------------------------------------
 # File loaders
 # ---------------------------------------------------------------------------
 
@@ -211,7 +231,7 @@ def _load_guideline_features(article: str) -> dict:
 
 def _read_article(article: str, arm: str) -> str:
     """Read the final article.md for *arm* (canonical run2, with fallbacks)."""
-    ep_dir = _EPISODES_DIR / f"{article}__preset{ARM_EPISODE[arm]}"
+    ep_dir = _episode_dir(article, arm)
     for name in ("article.md", "article_002.md", "article_001.md", "article_000.md"):
         p = ep_dir / name
         if p.exists():
@@ -221,7 +241,7 @@ def _read_article(article: str, arm: str) -> str:
 
 def _read_article_runs(article: str, arm: str) -> list[str]:
     """Read all 3 generation runs for *arm* (for stability signal S5)."""
-    ep_dir = _EPISODES_DIR / f"{article}__preset{ARM_EPISODE[arm]}"
+    ep_dir = _episode_dir(article, arm)
     return [
         _read_text(ep_dir / name)
         for name in ("article_000.md", "article_001.md", "article_002.md")
@@ -494,7 +514,9 @@ def _variant_of(article: str) -> str:
         return "var_minimal"
     if "__var_demanding" in article:
         return "var_demanding"
-    return "var_standard"
+    if "__var_standard" in article:
+        return "var_standard"
+    return "no_variant"  # no-variant test articles
 
 
 def compute_article_oracle(article: str) -> dict:
@@ -573,26 +595,34 @@ def main() -> None:
         type=str,
         default=None,
         metavar="NAME",
-        help="Process only this article-variant (default: all 24).",
+        help="Process a single article-variant (default: all 24).",
+    )
+    parser.add_argument(
+        "--articles",
+        nargs="+",
+        metavar="NAME",
+        help="Process one or more article-variants (space-separated).",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Print results to stdout; do not write any files.",
     )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite existing article_oracle.json files (default: skip if already present).",
+    )
     args = parser.parse_args()
 
-    if args.article:
-        if args.article not in ALL_ARTICLES:
-            sys.exit(
-                f"ERROR: unknown article '{args.article}'.\nValid choices:\n"
-                + "\n".join(f"  {a}" for a in ALL_ARTICLES)
-            )
+    if args.articles:
+        targets = args.articles
+    elif args.article:
         targets = [args.article]
     else:
         targets = ALL_ARTICLES
 
-    mode = "DRY-RUN" if args.dry_run else "WRITE"
+    mode = "DRY-RUN" if args.dry_run else ("FORCE" if args.force else "WRITE")
     print(
         f"compute_article_oracle.py  [{mode}]  "
         f"4-arm scheme (skip/light/standard/deep)\n"
@@ -621,9 +651,12 @@ def main() -> None:
 
             if not args.dry_run:
                 out_path = _BASES_DIR / article / "article_oracle.json"
-                out_path.write_text(
-                    json.dumps(data, indent=2), encoding="utf-8"
-                )
+                if out_path.exists() and not args.force:
+                    print(f"  SKIP (already exists; use --force to overwrite): {out_path.name}")
+                else:
+                    out_path.write_text(
+                        json.dumps(data, indent=2), encoding="utf-8"
+                    )
 
         except Exception as exc:
             print(f"  ERROR: {exc}")
@@ -652,7 +685,7 @@ def main() -> None:
     if not args.dry_run and results:
         print(
             f"\n  Wrote {len(results)} article_oracle.json file(s) "
-            "under rl_training_data/bases/"
+            f"under rl_training_data/bases/{'  (--force active)' if args.force else ''}"
         )
 
     if errors:

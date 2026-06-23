@@ -18,6 +18,7 @@ Usage (from writing_workflow/):
   uv run python rl_writing_generator.py --dry-run                    # plan only
   uv run python rl_writing_generator.py --articles 02_workflows_vs_agents
   uv run python rl_writing_generator.py --presets 0 1
+  uv run python rl_writing_generator.py --test                       # held-out test episodes
 """
 
 from __future__ import annotations
@@ -69,7 +70,12 @@ TRAIN_ARTICLES: list[str] = [
     "06_tools",
 ]
 
-N_PRESETS = 6  # preset IDs 0-5
+# Held-out test articles — must match Phase 1
+TEST_ARTICLES: list[str] = ["04_structured_outputs", "07_reasoning_planning"]
+
+TEST_EPISODES_DIR = _THIS_DIR.parent / "rl_training_data" / "test_episodes"
+
+N_PRESETS = 4  # preset IDs 0-3 (skip / light / standard / deep)
 MAX_RETRIES = 3
 RETRY_BACKOFF_BASE = 60  # seconds; attempt N waits N * 60s
 DEFAULT_CONCURRENCY = 4  # concurrent episodes; Tier 2: 1K RPM / 5M TPM
@@ -183,15 +189,19 @@ async def run_pipeline(
     preset_ids: Sequence[int] | None = None,
     dry_run: bool = False,
     max_concurrent: int = DEFAULT_CONCURRENCY,
+    test_mode: bool = False,
 ) -> None:
     """Run the writing pipeline across all requested episodes.
 
     Args:
-        articles: Article folder names (default: all 5 train articles).
-        preset_ids: Preset IDs 0-5 (default: all 6).
+        articles: Article folder names (default: all 7 train articles, or test articles in test mode).
+        preset_ids: Preset IDs 0-3 (default: all 4).
         dry_run: Print plan without executing.
+        test_mode: Use held-out test articles and TEST_EPISODES_DIR.
     """
-    arts = list(articles or TRAIN_ARTICLES)
+    episodes_dir = TEST_EPISODES_DIR if test_mode else EPISODES_DIR
+    default_articles = TEST_ARTICLES if test_mode else TRAIN_ARTICLES
+    arts = list(articles or default_articles)
     pids = sorted(set(preset_ids if preset_ids is not None else range(N_PRESETS)))
 
     # Build ordered episode list
@@ -199,7 +209,7 @@ async def run_pipeline(
     for art in arts:
         for pid in pids:
             ep_name = _episode_dir_name(art, pid)
-            ep_dir = EPISODES_DIR / ep_name
+            ep_dir = episodes_dir / ep_name
             episodes.append((ep_name, ep_dir))
 
     # Categorise
@@ -209,6 +219,7 @@ async def run_pipeline(
 
     logger.info("=" * 70)
     logger.info("Phase 2a: RL Writing Data Generation")
+    logger.info(f"  Mode:               {'test (held-out)' if test_mode else 'train'}")
     logger.info(f"  Articles:           {arts}")
     logger.info(f"  Presets:            {pids}")
     logger.info(f"  Total episodes:     {len(episodes)}")
@@ -216,7 +227,7 @@ async def run_pipeline(
     logger.info(f"  Ready to generate:  {len(ready)}")
     logger.info(f"  Missing research:   {len(missing)}")
     logger.info(f"  Max concurrent:     {max_concurrent}")
-    logger.info(f"  Episodes dir:       {EPISODES_DIR}")
+    logger.info(f"  Episodes dir:       {episodes_dir}")
     logger.info("=" * 70)
 
     if dry_run:
@@ -273,7 +284,12 @@ def main() -> None:
         nargs="+",
         type=int,
         default=None,
-        help="Preset IDs to run (0-5, default: all 6)",
+        help="Preset IDs to run (0, 1, 2, 3 — default: all 4)",
+    )
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Use held-out test articles and test_episodes/ output directory",
     )
     parser.add_argument(
         "--dry-run",
@@ -308,6 +324,7 @@ def main() -> None:
             preset_ids=args.presets,
             dry_run=args.dry_run,
             max_concurrent=args.concurrency,
+            test_mode=args.test,
         )
     )
 

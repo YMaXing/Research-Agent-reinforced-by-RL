@@ -59,6 +59,7 @@ _THIS_DIR = Path(__file__).resolve().parent
 _REPO_ROOT = _THIS_DIR.parent.parent
 _BASES_DIR = _REPO_ROOT / "rl_training_data" / "bases"
 _EPISODES_DIR = _REPO_ROOT / "rl_training_data" / "episodes"
+_TEST_EPISODES_DIR = _REPO_ROOT / "rl_training_data" / "test_episodes"
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -85,6 +86,16 @@ _ARM_PRESETS: dict[str, list[int]] = {
     "light":    [1],  # single_balanced  (1 round,  balanced)
     "standard": [3],  # depth_then_breadth (2 rounds, depth→breadth)
     "deep":     [5],  # depth_breadth_depth (3 rounds, depth→breadth→depth)
+}
+
+# No-variant (test-set) articles: rl_data_generator uses sequential IDs 0,1,2,3
+# and writes to test_episodes/ rather than episodes/
+_TEST_EPISODE_ROUNDS: dict[int, int] = {0: 0, 1: 1, 2: 2, 3: 3}
+_TEST_ARM_PRESETS: dict[str, list[int]] = {
+    "skip":     [0],  # 0 rounds
+    "light":    [1],  # 1 round
+    "standard": [2],  # 2 rounds
+    "deep":     [3],  # 3 rounds
 }
 _ARM_ROUNDS: dict[str, int] = {"skip": 0, "light": 1, "standard": 2, "deep": 3}
 _ARM_ORDER = ["skip", "light", "standard", "deep"]
@@ -229,14 +240,16 @@ def _section_reward(
 # ---------------------------------------------------------------------------
 
 def _load_episode(episode_dir: Path) -> dict[str, list[tuple[str, str, int]]]:
-    """Load reasoning.json and return {dim: [(raw, norm, score), ...]} in order."""
+    """Load reasoning.json (or reasons.json) and return {dim: [(raw, norm, score), ...]}."""
     path = episode_dir / "reasoning.json"
+    if not path.exists():
+        path = episode_dir / "reasons.json"  # test-set grader writes reasons.json
     if not path.exists():
         return {}
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
-        log.warning("  Malformed reasoning.json in %s (%s); skipping episode.", episode_dir.name, exc)
+        log.warning("  Malformed %s in %s (%s); skipping episode.", path.name, episode_dir.name, exc)
         return {}
     return {
         dim: _parse_sections_ordered(data[dim])
@@ -250,8 +263,10 @@ def _load_episode(episode_dir: Path) -> dict[str, list[tuple[str, str, int]]]:
 # ---------------------------------------------------------------------------
 
 def _count_reasoning_sections(episode_dir: Path) -> int:
-    """Count distinct content sections in one preset's reasoning.json (reference dim)."""
+    """Count distinct content sections in one preset's reasoning/reasons file."""
     path = episode_dir / "reasoning.json"
+    if not path.exists():
+        path = episode_dir / "reasons.json"
     if not path.exists():
         return 0
     data = json.loads(path.read_text(encoding="utf-8"))
@@ -261,11 +276,18 @@ def _count_reasoning_sections(episode_dir: Path) -> int:
 
 def process_article_variant(
     article: str,
-    variant: str,
+    variant: str | None,
     dry_run: bool = False,
 ) -> bool:
-    """Derive and write the section oracle for one (article, variant) pair."""
-    art_var = f"{article}__{variant}"
+    """Derive and write the section oracle for one (article, variant) pair.
+
+    Pass ``variant=None`` for no-variant (test-set) articles whose bases and
+    episode directories carry no variant suffix, e.g.
+    ``bases/<article>/`` and ``episodes/<article>__preset{p}/``.
+    The reward formula will use the ``'standard'`` variant in that case.
+    """
+    no_variant = variant is None
+    art_var = article if no_variant else f"{article}__{variant}"
     bases_dir = _BASES_DIR / art_var
 
     if not bases_dir.exists():
@@ -276,6 +298,7 @@ def process_article_variant(
     # Some variant digests were truncated during generation (section_coverage has
     # fewer entries than the article actually has).  When that happens, fall back
     # to the base (non-variant) directory, which has the complete coverage block.
+    # (No-variant articles are already in the base directory; skip fallback.)
     digest_path = bases_dir / "research_digest.md"
     if not digest_path.exists():
         log.warning("  No digest: %s", art_var)
@@ -284,11 +307,12 @@ def process_article_variant(
     digest = digest_path.read_text(encoding="utf-8")
     sec_ids = _extract_sec_ids_ordered(digest)
 
-    # Check completeness against the episode's reasoning.json
-    ep0_dir = _EPISODES_DIR / f"{art_var}__preset0"
+    # Check completeness against the episode's reasoning/reasons file
+    _ep_root = _TEST_EPISODES_DIR if no_variant else _EPISODES_DIR
+    ep0_dir = _ep_root / f"{article}__preset0" if no_variant else _ep_root / f"{art_var}__preset0"
     expected_n = _count_reasoning_sections(ep0_dir) if ep0_dir.exists() else len(sec_ids)
 
-    if len(sec_ids) < expected_n:
+    if len(sec_ids) < expected_n and not no_variant:
         # Try the base directory (no variant suffix) as fallback
         base_digest_path = _BASES_DIR / article / "research_digest.md"
         if base_digest_path.exists():
@@ -318,21 +342,32 @@ def process_article_variant(
 
     sec_norms = [_sec_id_to_norm(sid) for sid in sec_ids]
 
-    # Active preset IDs (archived presets 2 and 4 are excluded)
-    _ACTIVE_PRESETS = sorted(_EPISODE_ROUNDS.keys())  # [0, 1, 3, 5]
+    # Select preset map and episodes root based on variant mode
+    if no_variant:
+        _ep_rounds = _TEST_EPISODE_ROUNDS   # {0:0, 1:1, 2:2, 3:3}
+        _arm_presets = _TEST_ARM_PRESETS    # skip→0, light→1, standard→2, deep→3
+    else:
+        _ep_rounds = _EPISODE_ROUNDS        # {0:0, 1:1, 3:2, 5:3}
+        _arm_presets = _ARM_PRESETS         # skip→0, light→1, standard→3, deep→5
+    _ACTIVE_PRESETS = sorted(_ep_rounds.keys())
 
     # Load only the active episodes upfront (dict keyed by preset id)
     episode_dims: dict[int, dict[str, list[tuple[str, str, int]]]] = {}
     for p in _ACTIVE_PRESETS:
-        ep_dir = _EPISODES_DIR / f"{art_var}__preset{p}"
+        ep_dir = (
+            _TEST_EPISODES_DIR / f"{article}__preset{p}"
+            if no_variant
+            else _EPISODES_DIR / f"{art_var}__preset{p}"
+        )
         if not ep_dir.exists():
             log.warning("  Missing episode dir: %s__preset%d", art_var, p)
             episode_dims[p] = {}
         else:
             episode_dims[p] = _load_episode(ep_dir)
 
-    # Determine the variant short name for the reward formula
-    variant_short = variant.replace("var_", "")  # minimal / standard / demanding
+    # Determine the variant short name for the reward formula.
+    # No-variant (test-set) articles use 'standard' as the default formula.
+    variant_short = "standard" if no_variant else variant.replace("var_", "")
 
     # For each section, compute per-arm rewards from the 4 active presets
     sections_output: dict[str, dict] = {}
@@ -342,7 +377,7 @@ def process_article_variant(
         preset_rewards: dict[int, float] = {}
         for p in _ACTIVE_PRESETS:
             ep = episode_dims[p]
-            nr = _EPISODE_ROUNDS[p]
+            nr = _ep_rounds[p]
 
             def _score(dim: str, _ep=ep, _sn=sec_norm, _si=sec_idx) -> float:
                 return _get_score(_ep.get(dim, []), _sn, _si)
@@ -362,7 +397,7 @@ def process_article_variant(
         # Map active presets → 4 arms (each arm now maps to exactly one preset)
         arm_rewards: dict[str, float] = {
             arm: max(preset_rewards[p] for p in preset_ids)
-            for arm, preset_ids in _ARM_PRESETS.items()
+            for arm, preset_ids in _arm_presets.items()
         }
         oracle = max(_ARM_ORDER, key=arm_rewards.__getitem__)
 
@@ -387,7 +422,7 @@ def process_article_variant(
     output = {
         "version": 2,
         "article": article,
-        "variant": variant,
+        "variant": variant if variant is not None else "no_variant",
         "sections": sections_output,
         # Legacy 'presets' field kept for backward compat with any code that
         # reads the old format before load_section_groups is updated.
@@ -440,8 +475,27 @@ def main() -> int:
 
     ok = fail = 0
     for article in articles:
-        for variant in args.variants:
-            log.info("Processing %s__%s", article, variant)
+        # Detect no-variant (test-set) articles: bases/<article>/ exists but no
+        # bases/<article>__var_*/ directories exist for any of the 3 variants.
+        has_variant_dirs = any(
+            (_BASES_DIR / f"{article}__{v}").exists() for v in _VARIANTS
+        )
+        if has_variant_dirs:
+            variants_to_run: list[str | None] = [
+                v for v in args.variants if (_BASES_DIR / f"{article}__{v}").exists()
+            ]
+        else:
+            log.info(
+                "  %s: no variant directories found — processing as no-variant article",
+                article,
+            )
+            variants_to_run = [None]
+
+        for variant in variants_to_run:
+            if variant is not None:
+                log.info("Processing %s__%s", article, variant)
+            else:
+                log.info("Processing %s (no-variant)", article)
             if process_article_variant(article, variant, dry_run=args.dry_run):
                 ok += 1
             else:

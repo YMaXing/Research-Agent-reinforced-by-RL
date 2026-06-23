@@ -8,6 +8,7 @@ class SupportedModels(StrEnum):
     GOOGLE_GEMINI_25_PRO = "google_genai:gemini-2.5-pro"
     GOOGLE_GEMINI_25_FLASH = "google_genai:gemini-2.5-flash"
     GOOGLE_GEMINI_25_FLASH_LITE = "google_genai:gemini-2.5-flash-lite"
+    XAI_GROK_430 = "xai:grok-4.3"
     XAI_GROK_420 = "xai:grok-4.20-0309-reasoning"
     XAI_GROK_41_FAST = "xai:grok-4-1-fast-reasoning"
     FAKE_MODEL = "fake"

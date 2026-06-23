@@ -1,0 +1,175 @@
+# Lesson 14: A Decision Framework for AI System Design
+
+In the last two lessons, we defined the scope for our capstone project: two production-oriented agents, Nova (research) and Brown (writing), that collaborate to produce publish-ready technical articles. We also justified our framework choices, opting for FastMCP to make Nova’s tools portable and steerable, while using LangGraph to give the Brown writing workflow durability and auditability.
+
+With those foundational choices made, we now move to the next critical layer: system design. This is the discipline that determines whether our agents behave like polished, dependable products or like fragile research demos that collapse under real workloads. Core design variables—such as reasoning budgets, context strategies, orchestration styles, and human-in-the-loop (HITL) policies—each exert an order-of-magnitude influence on cost, latency, and reliability.
+
+This lesson introduces a reusable 7-step decision playbook that moves from business value definition to a complete system design. We will apply this framework to our capstone, yielding the global Nova-versus-Brown architecture, component interaction diagrams, and a decision matrix you can reuse on your own projects. By the end, you will know where extra thinking tokens deliver value, when to parallelize, when human gates are non-negotiable, and how to keep context lean without sacrificing signal. With the stakes clear, we will now walk through the general framework before specializing it for our capstone.
+
+## A General AI Engineering Decision Framework
+
+Building a reliable agent system requires a structured approach. This playbook provides a step-by-step process to move from a problem statement to a design that balances capability, cost, and reliability.
+
+### 1. Define Value, Constraints, Cost & Latency
+
+First, you must explicitly define your success criteria. This includes the required output quality, any privacy or compliance constraints, the expected volume of tasks, and your per-task spending limits. These targets dictate every downstream choice. For instance, a real-time support bot demands sub-second latency and can tolerate moderate accuracy, whereas a high-accuracy batch research job measures throughput in hours and has a near-zero tolerance for hallucinations.
+
+### 2. Choose Model Family & Capability Mix
+
+Your next decision is whether to use closed APIs or open-weight models. Closed APIs from providers like OpenAI, Google, and Anthropic deliver state-of-the-art performance with low operational overhead. However, they can lead to vendor lock-in. Open-weight models, on the other hand, guarantee privacy, deep customization, and data locality, but place the entire burden of GPU management and infrastructure security on your team.
+
+### 3. Define Your Context Strategy
+
+As we saw in previous lessons, a large context window is not a cure-all. It is a common mistake to dump everything into a prompt and assume the LLM can handle it. Research shows this leads to the "lost-in-the-middle" performance cliff, where models struggle to use information buried in the middle of long contexts [[1]](https://arxiv.org/abs/2307.03172). Recent analyses further show this effect is most pronounced when inputs occupy up to 50% of the context window. Beyond that, a simpler distance-based bias emerges, where performance is better when relevant information is closer to the end of the input [[10]](https://openreview.net/forum?id=vlUk8z8LaM). Instead of naive full-document dumps, you should prioritize selective retrieval, compression, and structured summaries to manage costs and improve reliability.
+
+For example, when an agent needs to remember the last few turns of a conversation, a sliding window summary is a cost-effective approach. For retrieving specific facts from a large knowledge base, Retrieval-Augmented Generation (RAG) is more suitable as it identifies and fetches only the most relevant information.
+
+### 4. Pick an Orchestration Style
+
+The orchestration style depends on the task's predictability. As we discussed in Lesson 2, you should use predictable workflows for processes that are auditable and mostly linear. For open-ended problems that require dynamic tool use, autonomous agents are a better fit. This choice depends on process complexity and monitoring needs. Orchestration offers a centralized view for complex, stateful processes with conditional branches and exception paths. Simpler, high-throughput tasks might benefit from decentralized choreography [[11]](https://tetrate.io/learn/ai/multi-agent-systems). For many production systems, the goal is predictability. Deterministic, inspectable workflows (e.g., defined in YAML) provide cost control and auditability, while still allowing for conditional routing and loops to handle variability [[12]](https://opensource.microsoft.com/blog/2026/05/14/conductor-deterministic-orchestration-for-multi-agent-ai-workflows).
+
+Often, the best solution is a hybrid design that combines both. For example, an agent might handle an unpredictable research phase, then hand off its findings to a structured workflow for report generation.
+
+### 5. Establish a HITL & Evaluation Loop
+
+The level of human oversight should be tied directly to business risk and the cost of error. Instead of choosing between full autonomy and full manual control, define clear triggers for human intervention. These can include low-confidence scores from the model, requests for sensitive actions like database writes, or policy flags that require compliance checks.
+
+For a financial trading agent, you might require human approval for any trade exceeding a certain value. For a content summarizer, you might only trigger a human review if the model's confidence score falls below 90%. Mature HITL systems move beyond simple confidence scores. Escalation should also be triggered by context-dependent factors, such as financial thresholds for transactions, reputational risk involving VIP clients, or when multi-agent complexity degrades cumulative reliability [[13]](https://galileo.ai/blog/human-in-the-loop-agent-oversight). The architectural goal is to move from hardcoded guardrails in individual agents to a centralized policy engine, making governance manageable at scale [[13]](https://galileo.ai/blog/human-in-the-loop-agent-oversight).
+
+### 6. Set Tool Boundaries & Portability
+
+An LLM’s job is to understand intent and orchestrate high-level steps, not to perform deterministic calculations or heavy data processing. Delegate tasks like math, data validation, or file manipulation to traditional code. This separation of concerns makes your system more reliable and efficient. This approach mirrors the evolution from monolithic applications to microservices. The large, brittle prompt is the new monolith. By breaking down capabilities into modular agents, each with a bounded context and a well-defined contract, you build a system that is more governable and scalable [[14]](https://www.teksystems.com/en/insights/article/multi-agent-ai-systems-microservices).
+
+Furthermore, using standards like the Model Context Protocol (MCP) ensures your tools are portable. This allows you to expose the same tool to different clients, like a VS Code extension or a command-line interface, without being locked into a single vendor’s ecosystem.
+
+### 7. Choose Durability & Observability
+
+Finally, match your system's durability to the task's requirements. For long-running, stateful jobs, you need built-in checkpoints, resumability, and detailed tracing to survive failures and debug complex behavior. A simple, stateless loop with a basic retry policy may suffice for quick, idempotent tasks. A financial reporting workflow that runs overnight needs to be ableto resume from the last successful step if it fails, while a simple web-scraping task can likely just be restarted from the beginning. These choices should link back to the success criteria you defined in the first step.
+
+This framework is iterative. You will likely revisit earlier steps as you uncover new constraints during implementation. Once the high-level decisions are framed, you must quantify how each inference-time lever multiplies cost and latency so you can budget them deliberately.
+
+## Inference-Time Scaling and the Cost/Latency Calculus
+
+Understanding how to manage cost and latency at runtime is central to effective system design. There are four independent levers you can adjust, often on a per-step basis, within a workflow: model size, series scaling, parallel scaling, and input context scaling. How they interact and multiply determines your final cost and performance.
+
+https://images.spr.so/cdn-cgi/imagedelivery/j42No7y-dcokJuNgXeA0ig/8182d40f-9b03-4f68-a890-06878604bb8e/image/w=1920,quality=90,fit=scale-down 
+Image 1: The four independent levers that drive runtime cost and latency in LLM agent systems, along with optimization strategies.
+
+### Model Size Scaling
+
+This is the most straightforward lever. Larger, more capable models like GPT-4.5 have higher per-token costs than smaller, optimized models like Gemini Flash-Lite. For high-value tasks where mistakes are expensive, such as legal contract analysis, using a frontier model is justified. For high-volume, lower-stakes tasks like categorizing customer support tickets, a cheaper, faster model is a better choice.
+
+### Series Scaling
+
+This refers to increasing the internal computational steps a model takes before answering, often through "thinking tokens" [[2]](https://docs.claude.com/en/docs/build-with-claude/extended-thinking). You should treat these extra reasoning steps as a dial that you turn up only for the most complex planning or validation steps. The value of series scaling is often underestimated. While single-step accuracy gains from scaling models may show diminishing returns, these marginal improvements can compound into exponential gains in the length of a task an agent can successfully complete. Research demonstrates that for long-horizon execution, sequential test-time compute (more thinking) is significantly more effective than parallel compute like majority voting [[15]](https://arxiv.org/html/2509.09677v1). This is partly because longer tasks can trigger a "self-conditioning" effect, where a model becomes more likely to make mistakes after observing its own prior errors—a failure mode that dedicated thinking time helps mitigate [[15]](https://arxiv.org/html/2509.09677v1).
+
+It is critical to cap this budget to control both spending and added latency. An unbounded "think until perfect" approach is a recipe for runaway costs, whereas a budgeted "max 8k thinking tokens" provides a predictable guardrail. Failure to budget correctly can lead to predictable failure modes, including task derailment, unnecessary step repetition, or even a complete loss of conversation history as the agent loses track of its objective [[16]](https://arxiv.org/html/2503.13657v1).
+
+### Parallel Scaling
+
+This involves running the same prompt multiple times in parallel and selecting the best response, often through a majority vote. This technique, also known as self-consistency, can significantly improve reliability. However, the gains come at a linear cost multiplier. Research shows that for a given budget, parallel scaling can sometimes outperform additional serial reasoning [[3]](https://arxiv.org/html/2502.12215v1).
+
+### Input Context Scaling
+
+While relevant information is valuable, each additional token carries a direct cost and adds to latency. The key is to find the optimal balance. Techniques like RAG, summarization, caching, and selective retrieval are designed to keep the effective context small while preserving the necessary signal.
+
+To illustrate the impact of these levers, let's contrast two design approaches for a research task.
+
+A naive design might use the largest reasoning model, dump an entire document into the context, and run five parallel attempts to ensure accuracy.
+
+*   **Model:** GPT-5.5 ($5.00 / 1M input tokens, $30.00 / 1M output tokens) [[4]](https://openai.com/api/pricing/)
+*   **Input Tokens:** 200,000 (from a full document)
+*   **Output Tokens:** 20,000 (long-form analysis)
+*   **Number of Parallel Runs:** 5
+*   **Calculation:** (200k * $5/1M + 20k * $30/1M) * 5 = ($1.00 + $0.60) * 5 = **$8.00**
+
+A budgeted design, however, might use a smaller model, retrieve only relevant chunks with RAG, and use a single pass.
+
+*   **Model:** GPT-5.4 mini ($0.75 / 1M input tokens, $4.50 / 1M output tokens) [[4]](https://openai.com/api/pricing/)
+*   **Input Tokens:** 5,000 (from RAG chunks and summary)
+*   **Output Tokens:** 2,000 (concise answer)
+*   **Number of Parallel Runs:** 1
+*   **Calculation:** (5k * $0.75/1M + 2k * $4.50/1M) * 1 = ($0.00375 + $0.009) * 1 = **$0.01275**
+
+This budgeted approach achieves a roughly 600x cost reduction while still meeting the quality target. Additional optimizations like prompt caching and delegating heavy computation to external tools can further reduce costs. With the scaling levers quantified, we can now apply the full 7-step framework to produce the concrete global architecture for our capstone.
+
+## Our Capstone: Global System Design
+
+Now, let’s apply this framework to our capstone project. This section provides a higher-resolution architectural map than we saw in Lesson 12, cementing the intuition for how our two agents, Nova and Brown, work together to automate research and writing.
+
+https://images.spr.so/cdn-cgi/imagedelivery/j42No7y-dcokJuNgXeA0ig/7a5049bb-562c-4d03-a1b1-0ce253cd4ed8/image/w=1920,quality=90,fit=scale-down 
+Image 2: Global architecture of the two-agent capstone system, Nova and Brown, and their interfaces.
+
+The diagram above illustrates the core architectural principle of our capstone: a clean separation of concerns. Unpredictable, open-ended research is handled by Nova as an MCP agent, while predictable, iterative drafting and review are managed by Brown as a stateful LangGraph workflow. This separation prevents context bloat and makes each component easier to debug and evolve independently. Let's examine each component in greater detail.
+
+### Research Agent (Nova)
+
+Nova is an agent designed for comprehensive, automated research. Its architecture is built around the Model Context Protocol (MCP) to ensure its tools are portable and reusable [[5]](https://modelcontextprotocol.io/docs/getting-started/intro). A simple MCP client runs an LLM-driven loop that follows a “Research Recipe” based on a master prompt. This recipe guides the agent through a multi-step process: query sources, scrape and transcribe them, run iterative research loops with Perplexity, filter the results, select top sources for a full scrape, and finally compile everything into a `research.md` file.
+
+For the MCP client, we use FastMCP’s built-in `Client` class. Our implementation is just ~200 lines of Python that wrap this client: it connects to the server, fetches the research prompt, and runs a simple ReAct-style loop. In this loop, the LLM decides which tool to call next, executes it via `client.call_tool()`, and feeds the result back into the conversation. The entire process is steerable, with configurable HITL gates and a critical stop rule to prevent failures.
+
+https://images.spr.so/cdn-cgi/imagedelivery/j42No7y-dcokJuNgXeA0ig/15b5ba4a-cced-48e7-8b0a-8a265e430c78/image/w=1920,quality=90,fit=scale-down 
+Image 3: End-to-end agent flow for the Nova Research Agent
+
+### Writing Workflows (Brown)
+
+Brown is a stateful writing system built with LangGraph for orchestration. It manages state, checkpoints, and interrupts, making it a durable and reliable workflow engine [[6]](https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/). We front this engine with a FastMCP server, which exposes Brown’s capabilities as three coarse-grained MCP tools. This hybrid architecture allows any MCP-compatible client, like an IDE, to trigger complex, long-running writing tasks with a simple tool call.
+
+The exposed tools are:
+
+*   **Generate Article:** This orchestrates the full writing process. It loads context (guidelines, research, profiles), generates media items using an orchestrator-worker pattern, writes the first draft, and then runs a configurable number of review-edit cycles.
+*   **Edit Article:** This runs a single review-edit cycle on the entire article based on human feedback, prioritizing human input over automated reviews.
+*   **Edit Selected Text:** This runs a single review-edit cycle on a specific portion of the article, enabling targeted revisions while maintaining awareness of the full document.
+
+https://images.spr.so/cdn-cgi/imagedelivery/j42No7y-dcokJuNgXeA0ig/b2a704cb-c430-4702-babf-7da80cb1e8e4/image/w=1920,quality=90,fit=scale-down 
+Image 4: Sequence diagram illustrating the interaction flow for the Brown agent's "Generate Article" workflow.
+
+The handoff between Nova and Brown is simple and file-based. Nova produces a `research.md` file and a structured `.nova/` directory. Brown takes these, along with the original `article_guideline.md` and writing profiles, as inputs. The final outputs are a polished `article.md`, a folder of assets, and structured review artifacts. This clean, file-based contract ensures the system is modular and debuggable.
+
+While simple and robust for our current scope, it is important to recognize the potential scalability limits of this approach. As agent workloads grow to operate over entire codebases or synthesize hundreds of legal documents, the inefficiency of rewriting entire immutable files for small, incremental updates can become a bottleneck. Production systems at that scale may require more sophisticated solutions like specialized file systems or shared memory to support efficient access and computation [[17]](https://www.amplifypartners.com/blog-posts/file-systems-for-agents).
+
+The `article_guideline.md` is where the human comes into the loop. It acts as the seed, where the human defines what they want to write, the narrative of the article, and any other important details. Since the writing itself is automated, a clear, well-articulated article guideline is what distinguishes a high-quality article from generic AI-generated slop. If the ideas are not clearly enumerated and connected, the output will be sloppy. Leaving too many gaps for the AI to fill leads to hollow text, as LLMs are excellent at translation and synthesis but poor at generating truly original ideas.
+
+The architecture and diagrams are now concrete. The final step is to translate these framework principles into an explicit, implementable decision matrix.
+
+## Decision Matrix & Defaults for the Capstone
+
+This matrix translates the abstract principles of the 7-step framework into specific, implementable defaults for our capstone. It is the exact blueprint we will implement starting in the next lesson. Each row captures a decision dimension, our chosen default, and an explicit rationale that links back to the cost, latency, reliability, or debuggability goals we established. This matrix will serve as a living blueprint to prevent ad-hoc choices during implementation.
+
+Table 1: Decision matrix for the capstone project.
+| Decision Dimension | Our Default Choice | Rationale |
+| :--- | :--- | :--- |
+| **Model Family & Tiers** | **Research Agent Thinking:** Gemini 2.5 Pro (reasoning-capable) with budgeted thinking.<br>**Tools (Scrape/Clean):** Fast, cheap models or non-LLM logic.<br>**Writing:** Reliable mid-tier model. | This tiered approach directly manages the **Model Size Scaling** lever. We reserve the expensive, powerful model for the most complex reasoning tasks (planning research), while delegating deterministic or simple tasks to cheaper models or pure code to optimize our cost-performance ratio. This directly addresses the cost levers by using the right model for the right job. |
+| **Reasoning Budgets** | **Reasoning Effort:** Medium by default, with capped thinking tokens.<br>**Parallel Attempts:** Off by default. | This gives us direct control over the **Series and Parallel Scaling** levers. We start with a conservative budget to control cost and latency, preventing common failure modes like task derailment or step repetition [[16]](https://arxiv.org/html/2503.13657v1). Expensive parallel runs are reserved only for critical validation steps where single-pass reliability proves insufficient. |
+| **Context Strategy** | Strict summaries and selective retrieval. Caching for boilerplate prompts, summaries, and retrieval features. | This is our primary method for controlling the **Input Context Scaling** lever. By aggressively managing the context window with summaries and selective retrieval, we avoid the "lost-in-the-middle" problem, minimize token costs, and improve performance. |
+| **Orchestration & Portability** | **Research (Nova):** MCP-driven agent loop (FastMCP server + client).<br>**Writing (Brown):** LangGraph for durability, fronted by FastMCP for tool access. | This choice matches the orchestration style to the job. MCP solves the portability problem, making our research tools reusable and preventing framework lock-in. LangGraph solves the durability problem for the complex writing process, providing the necessary checkpoints and resumability that a simple agent loop would lack. |
+| **HITL Policy** | Approve next research queries, the full-scrape URL list, and the final article. Critical stop on tool failures (e.g., 0/N scrapes successful). | This policy provides key control points to manage cost, ensure quality, and steer the agents through ambiguous decision points without requiring constant human micromanagement. It strikes a balance between autonomy and oversight, preventing costly errors before they happen. |
+| **Artifacts & Contracts** | Guaranteed file-based handoffs (`research.md`, `article.md`, assets, reviews) with a stable on-disk layout. | This file-based contract decouples the **Nova** research agent from the **Brown** writing workflow and ensures a clean separation of concerns. This makes the system modular, simplifies debugging, and enables easy replayability for evaluation and auditing, which is essential for iterative development and quality assurance. |
+
+## Conclusion
+
+In this lesson, we introduced a structured 7-step decision framework for AI system design. We then applied it directly to our capstone project, producing the clean Nova-versus-Brown global architecture, three supporting diagrams, and a concrete decision matrix. This demonstrates that adopting a system-level view—rather than focusing only on prompts or single models—is the foundation that turns prototypes into scalable, production-ready agent products that remain debuggable and cost-effective.
+
+The decisions and diagrams we have recorded in this lesson will be referenced repeatedly in all future implementation lessons. This ensures that every code-level choice stays aligned with our original cost, latency, and quality goals. In the next lesson, we will begin the hands-on construction of the FastMCP server and client loop for Nova, defining the core research tools and orchestrating the process that produces the final `research.md` file. The Brown writing workflow implementation will follow in Lessons 19–22.
+
+The real skill you are developing is the ability to make these system-level trade-offs repeatedly across projects, turning AI engineering from an art into a repeatable engineering practice.
+
+## References
+
+- [1] [Lost in the Middle: How Language Models Use Long Contexts](https://arxiv.org/abs/2307.03172)
+- [2] [Extended thinking & interleaved thinking docs](https://docs.claude.com/en/docs/build-with-claude/extended-thinking)
+- [3] [Revisiting the Test-Time Scaling of o1-like Models](https://arxiv.org/html/2502.12215v1)
+- [4] [API Pricing](https://openai.com/api/pricing/)
+- [5] [What is the Model Context Protocol (MCP)?](https://modelcontextprotocol.io/docs/getting-started/intro)
+- [6] [Human-in-the-loop](https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/)
+- [7] [LLM System Design & Model Selection](https://www.oreilly.com/radar/llm-system-design-and-model-selection/)
+- [8] [Intro to Perplexity](https://www.perplexity.ai/hub/blog/introducing-perplexity-deep-research)
+- [9] [Gemini Review](https://gemini.google/overview/deep-research/)
+- [10] [Positional Biases Shift as Inputs Approach Context Window Limits](https://openreview.net/forum?id=vlUk8z8LaM)
+- [11] [Multi-Agent Systems: Orchestration vs. Choreography](https://tetrate.io/learn/ai/multi-agent-systems)
+- [12] [Conductor: Deterministic Orchestration for Multi-Agent AI Workflows](https://opensource.microsoft.com/blog/2026/05/14/conductor-deterministic-orchestration-for-multi-agent-ai-workflows)
+- [13] [Human-in-the-Loop Agent Oversight](https://galileo.ai/blog/human-in-the-loop-agent-oversight)
+- [14] [Multi-Agent AI Systems Are the New Microservices](https://www.teksystems.com/en/insights/article/multi-agent-ai-systems-microservices)
+- [15] [The Illusion of Diminishing Returns: Measuring Long Horizon Execution in LLMs](https://arxiv.org/html/2509.09677v1)
+- [16] [A Taxonomy of Failure Modes for Multi-Agent Systems](https://arxiv.org/html/2503.13657v1)
+- [17] [File Systems for Agents](https://www.amplifypartners.com/blog-posts/file-systems-for-agents)

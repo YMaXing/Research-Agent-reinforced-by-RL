@@ -1,0 +1,1756 @@
+{
+  "table_of_contents": [
+    {
+      "title": "",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          51.2314453125,
+          45.87890625
+        ],
+        [
+          213.7587890625,
+          45.87890625
+        ],
+        [
+          213.7587890625,
+          68.818359375
+        ],
+        [
+          51.2314453125,
+          68.818359375
+        ]
+      ]
+    },
+    {
+      "title": "Review",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          52.4091796875,
+          99.02197265625
+        ],
+        [
+          103.48560333251953,
+          99.02197265625
+        ],
+        [
+          103.48560333251953,
+          113.4114990234375
+        ],
+        [
+          52.4091796875,
+          113.4114990234375
+        ]
+      ]
+    },
+    {
+      "title": "Evolution of the vertebrate retina by repurposing of a\ncomposite ancestral median eye",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          52.998046875,
+          114.580810546875
+        ],
+        [
+          534.2728881835938,
+          114.580810546875
+        ],
+        [
+          534.2728881835938,
+          155.42559814453125
+        ],
+        [
+          52.998046875,
+          155.42559814453125
+        ]
+      ]
+    },
+    {
+      "title": "SUMMARY",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          52.4091796875,
+          248.89306640625
+        ],
+        [
+          98.4345474243164,
+          248.89306640625
+        ],
+        [
+          98.4345474243164,
+          258.129638671875
+        ],
+        [
+          52.4091796875,
+          258.129638671875
+        ]
+      ]
+    },
+    {
+      "title": "Introduction",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          51.52587890625,
+          472.7484436035156
+        ],
+        [
+          104.95507049560547,
+          472.7484436035156
+        ],
+        [
+          104.95507049560547,
+          481.34619140625
+        ],
+        [
+          51.52587890625,
+          481.34619140625
+        ]
+      ]
+    },
+    {
+      "title": "Reconstructing the bilaterian ancestral condition",
+      "heading_level": null,
+      "page_id": 0,
+      "polygon": [
+        [
+          304.1587829589844,
+          668.68505859375
+        ],
+        [
+          511.5696716308594,
+          668.68505859375
+        ],
+        [
+          511.5696716308594,
+          679.3572769165039
+        ],
+        [
+          304.1587829589844,
+          679.3572769165039
+        ]
+      ]
+    },
+    {
+      "title": "Current Biology",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          51.0,
+          49.31982421875
+        ],
+        [
+          174.75,
+          49.31982421875
+        ],
+        [
+          174.75,
+          66.90673828125
+        ],
+        [
+          51.0,
+          66.90673828125
+        ]
+      ]
+    },
+    {
+      "title": "Review",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          51.75,
+          68.0537109375
+        ],
+        [
+          104.25,
+          68.0537109375
+        ],
+        [
+          104.25,
+          78.75
+        ],
+        [
+          51.75,
+          78.75
+        ]
+      ]
+    },
+    {
+      "title": "Functional roles of lateral versus median\nphotoreceptors",
+      "heading_level": null,
+      "page_id": 2,
+      "polygon": [
+        [
+          302.0888671875,
+          373.9130859375
+        ],
+        [
+          476.25,
+          373.9130859375
+        ],
+        [
+          476.25,
+          393.7939453125
+        ],
+        [
+          302.0888671875,
+          393.7939453125
+        ]
+      ]
+    },
+    {
+      "title": "Review",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          425.162109375,
+          48.55517578125
+        ],
+        [
+          550.001953125,
+          48.55517578125
+        ],
+        [
+          550.001953125,
+          82.00347900390625
+        ],
+        [
+          425.162109375,
+          82.00347900390625
+        ]
+      ]
+    },
+    {
+      "title": "Bleaching opsins and the emergence of pigment\nepithelium",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          58.2978515625,
+          396.8525390625
+        ],
+        [
+          263.8248596191406,
+          396.8525390625
+        ],
+        [
+          263.8248596191406,
+          416.7333984375
+        ],
+        [
+          58.2978515625,
+          416.7333984375
+        ]
+      ]
+    },
+    {
+      "title": "Understanding circuitry and complexity from signal\nambiguity",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          310.84698486328125,
+          100.1689453125
+        ],
+        [
+          527.0361328125,
+          100.1689453125
+        ],
+        [
+          527.0361328125,
+          120.36810302734375
+        ],
+        [
+          310.84698486328125,
+          120.36810302734375
+        ]
+      ]
+    },
+    {
+      "title": "Differences between photoreceptors of vertebrates and\nother chordates",
+      "heading_level": null,
+      "page_id": 3,
+      "polygon": [
+        [
+          306.2109375,
+          703.7712783813477
+        ],
+        [
+          543.9269409179688,
+          703.7712783813477
+        ],
+        [
+          543.9269409179688,
+          723.1812515258789
+        ],
+        [
+          306.2109375,
+          723.1812515258789
+        ]
+      ]
+    },
+    {
+      "title": "",
+      "heading_level": null,
+      "page_id": 4,
+      "polygon": [
+        [
+          50.34814453125,
+          49.7021484375
+        ],
+        [
+          172.24365234375,
+          49.7021484375
+        ],
+        [
+          172.24365234375,
+          66.5244140625
+        ],
+        [
+          50.34814453125,
+          66.5244140625
+        ]
+      ]
+    },
+    {
+      "title": "Retina-like circuitry in the pineal gland: the vertebrate's\n'third eye'",
+      "heading_level": null,
+      "page_id": 4,
+      "polygon": [
+        [
+          51.2314453125,
+          681.3017578125
+        ],
+        [
+          286.1491394042969,
+          681.3017578125
+        ],
+        [
+          286.1491394042969,
+          701.2975845336914
+        ],
+        [
+          51.2314453125,
+          701.2975845336914
+        ]
+      ]
+    },
+    {
+      "title": "Two independent origins of bipolar cells?",
+      "heading_level": null,
+      "page_id": 5,
+      "polygon": [
+        [
+          57.708984375,
+          638.0070953369141
+        ],
+        [
+          233.8638916015625,
+          638.0070953369141
+        ],
+        [
+          233.8638916015625,
+          646.51025390625
+        ],
+        [
+          57.708984375,
+          646.51025390625
+        ]
+      ]
+    },
+    {
+      "title": "Off-cone bipolar cells may have emerged from a ciliary\n'motor' lineage",
+      "heading_level": null,
+      "page_id": 6,
+      "polygon": [
+        [
+          51.0,
+          659.25
+        ],
+        [
+          285.0,
+          658.5
+        ],
+        [
+          285.0,
+          679.7724609375
+        ],
+        [
+          51.75,
+          679.7724609375
+        ]
+      ]
+    },
+    {
+      "title": "Review",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          426.04541015625,
+          49.31982421875
+        ],
+        [
+          549.8853759765625,
+          49.31982421875
+        ],
+        [
+          549.8853759765625,
+          82.00347900390625
+        ],
+        [
+          426.04541015625,
+          82.00347900390625
+        ]
+      ]
+    },
+    {
+      "title": "Box 1. Lamprey pineal parietopsin photoreceptors: ciliary or 'chimeric'?",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          61.8310546875,
+          104.7568359375
+        ],
+        [
+          331.2460021972656,
+          104.7568359375
+        ],
+        [
+          331.2460021972656,
+          112.96636962890625
+        ],
+        [
+          61.8310546875,
+          112.96636962890625
+        ]
+      ]
+    },
+    {
+      "title": "Rod bipolar cells may derive from a 'chimeric'\nparietopsin photoreceptor",
+      "heading_level": null,
+      "page_id": 7,
+      "polygon": [
+        [
+          58.2978515625,
+          528.4203796386719
+        ],
+        [
+          252.75575256347656,
+          528.4203796386719
+        ],
+        [
+          252.75575256347656,
+          547.8303527832031
+        ],
+        [
+          58.2978515625,
+          547.8303527832031
+        ]
+      ]
+    },
+    {
+      "title": "Completing the retina",
+      "heading_level": null,
+      "page_id": 8,
+      "polygon": [
+        [
+          302.0888671875,
+          671.25
+        ],
+        [
+          396.75,
+          671.25
+        ],
+        [
+          396.75,
+          680.15478515625
+        ],
+        [
+          302.0888671875,
+          680.15478515625
+        ]
+      ]
+    },
+    {
+      "title": "Review",
+      "heading_level": null,
+      "page_id": 9,
+      "polygon": [
+        [
+          426.33984375,
+          49.31982421875
+        ],
+        [
+          549.8853759765625,
+          49.31982421875
+        ],
+        [
+          549.8853759765625,
+          82.00347900390625
+        ],
+        [
+          426.33984375,
+          82.00347900390625
+        ]
+      ]
+    },
+    {
+      "title": "Box 2. Hagfish: introduction of lamination and displaced cells?",
+      "heading_level": null,
+      "page_id": 9,
+      "polygon": [
+        [
+          62.419921875,
+          104.7568359375
+        ],
+        [
+          296.3840637207031,
+          104.7568359375
+        ],
+        [
+          296.3840637207031,
+          112.96636962890625
+        ],
+        [
+          62.419921875,
+          112.96636962890625
+        ]
+      ]
+    },
+    {
+      "title": "Discussion",
+      "heading_level": null,
+      "page_id": 9,
+      "polygon": [
+        [
+          308.27197265625,
+          503.52099609375
+        ],
+        [
+          357.0411071777344,
+          503.52099609375
+        ],
+        [
+          357.0411071777344,
+          515.0053100585938
+        ],
+        [
+          308.27197265625,
+          515.0053100585938
+        ]
+      ]
+    },
+    {
+      "title": "",
+      "heading_level": null,
+      "page_id": 10,
+      "polygon": [
+        [
+          50.93701171875,
+          50.84912109375
+        ],
+        [
+          171.65478515625,
+          50.84912109375
+        ],
+        [
+          171.65478515625,
+          66.90673828125
+        ],
+        [
+          50.93701171875,
+          66.90673828125
+        ]
+      ]
+    },
+    {
+      "title": "Box 3. Evolution of retinal cell classes and types.",
+      "heading_level": null,
+      "page_id": 10,
+      "polygon": [
+        [
+          55.9423828125,
+          105.49456787109375
+        ],
+        [
+          239.7647247314453,
+          105.49456787109375
+        ],
+        [
+          239.7647247314453,
+          113.16796875
+        ],
+        [
+          55.9423828125,
+          113.16796875
+        ]
+      ]
+    },
+    {
+      "title": "Review",
+      "heading_level": null,
+      "page_id": 11,
+      "polygon": [
+        [
+          426.04541015625,
+          49.7021484375
+        ],
+        [
+          549.8853759765625,
+          49.7021484375
+        ],
+        [
+          549.8853759765625,
+          82.00347900390625
+        ],
+        [
+          426.04541015625,
+          82.00347900390625
+        ]
+      ]
+    },
+    {
+      "title": "ACKNOWLEDGMENTS",
+      "heading_level": null,
+      "page_id": 11,
+      "polygon": [
+        [
+          57.41455078125,
+          265.82403564453125
+        ],
+        [
+          135.93568420410156,
+          265.82403564453125
+        ],
+        [
+          135.93568420410156,
+          272.7977600097656
+        ],
+        [
+          57.41455078125,
+          272.7977600097656
+        ]
+      ]
+    },
+    {
+      "title": "DECLARATION OF INTERESTS",
+      "heading_level": null,
+      "page_id": 11,
+      "polygon": [
+        [
+          58.59228515625,
+          408.70458984375
+        ],
+        [
+          162.6184844970703,
+          408.70458984375
+        ],
+        [
+          162.6184844970703,
+          417.7021789550781
+        ],
+        [
+          58.59228515625,
+          417.7021789550781
+        ]
+      ]
+    },
+    {
+      "title": "REFERENCES",
+      "heading_level": null,
+      "page_id": 11,
+      "polygon": [
+        [
+          59.18115234375,
+          454.58349609375
+        ],
+        [
+          106.70125579833984,
+          454.58349609375
+        ],
+        [
+          106.70125579833984,
+          462.99462890625
+        ],
+        [
+          59.18115234375,
+          462.99462890625
+        ]
+      ]
+    },
+    {
+      "title": "",
+      "heading_level": null,
+      "page_id": 12,
+      "polygon": [
+        [
+          51.2314453125,
+          50.466796875
+        ],
+        [
+          171.3603515625,
+          50.466796875
+        ],
+        [
+          171.3603515625,
+          65.759765625
+        ],
+        [
+          51.2314453125,
+          65.759765625
+        ]
+      ]
+    },
+    {
+      "title": "Review",
+      "heading_level": null,
+      "page_id": 12,
+      "polygon": [
+        [
+          52.998046875,
+          68.05596923828125
+        ],
+        [
+          103.48561096191406,
+          68.05596923828125
+        ],
+        [
+          103.48561096191406,
+          82.00347900390625
+        ],
+        [
+          52.998046875,
+          82.00347900390625
+        ]
+      ]
+    },
+    {
+      "title": "Review",
+      "heading_level": null,
+      "page_id": 13,
+      "polygon": [
+        [
+          425.162109375,
+          50.08447265625
+        ],
+        [
+          550.001953125,
+          50.08447265625
+        ],
+        [
+          550.001953125,
+          82.00347900390625
+        ],
+        [
+          425.162109375,
+          82.00347900390625
+        ]
+      ]
+    },
+    {
+      "title": "",
+      "heading_level": null,
+      "page_id": 14,
+      "polygon": [
+        [
+          51.8203125,
+          50.08447265625
+        ],
+        [
+          171.94921875,
+          50.08447265625
+        ],
+        [
+          171.94921875,
+          66.14208984375
+        ],
+        [
+          51.8203125,
+          66.14208984375
+        ]
+      ]
+    },
+    {
+      "title": "Review",
+      "heading_level": null,
+      "page_id": 14,
+      "polygon": [
+        [
+          51.8203125,
+          68.05596923828125
+        ],
+        [
+          103.48561096191406,
+          68.05596923828125
+        ],
+        [
+          103.48561096191406,
+          82.00347900390625
+        ],
+        [
+          51.8203125,
+          82.00347900390625
+        ]
+      ]
+    },
+    {
+      "title": "Review",
+      "heading_level": null,
+      "page_id": 15,
+      "polygon": [
+        [
+          425.162109375,
+          49.31982421875
+        ],
+        [
+          550.001953125,
+          49.31982421875
+        ],
+        [
+          550.001953125,
+          82.00347900390625
+        ],
+        [
+          425.162109375,
+          82.00347900390625
+        ]
+      ]
+    },
+    {
+      "title": "",
+      "heading_level": null,
+      "page_id": 16,
+      "polygon": [
+        [
+          51.2314453125,
+          50.08447265625
+        ],
+        [
+          171.3603515625,
+          50.08447265625
+        ],
+        [
+          171.3603515625,
+          66.14208984375
+        ],
+        [
+          51.2314453125,
+          66.14208984375
+        ]
+      ]
+    },
+    {
+      "title": "Review",
+      "heading_level": null,
+      "page_id": 16,
+      "polygon": [
+        [
+          51.8203125,
+          68.05596923828125
+        ],
+        [
+          103.48561096191406,
+          68.05596923828125
+        ],
+        [
+          103.48561096191406,
+          82.00347900390625
+        ],
+        [
+          51.8203125,
+          82.00347900390625
+        ]
+      ]
+    },
+    {
+      "title": "Review",
+      "heading_level": null,
+      "page_id": 17,
+      "polygon": [
+        [
+          426.04541015625,
+          50.08447265625
+        ],
+        [
+          549.8853759765625,
+          50.08447265625
+        ],
+        [
+          549.8853759765625,
+          82.00347900390625
+        ],
+        [
+          426.04541015625,
+          82.00347900390625
+        ]
+      ]
+    }
+  ],
+  "page_stats": [
+    {
+      "page_id": 0,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          1508
+        ],
+        [
+          "Line",
+          84
+        ],
+        [
+          "Text",
+          12
+        ],
+        [
+          "SectionHeader",
+          6
+        ],
+        [
+          "Picture",
+          2
+        ],
+        [
+          "PageFooter",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 1,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          1223
+        ],
+        [
+          "Line",
+          122
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 2,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          110
+        ],
+        [
+          "Span",
+          74
+        ],
+        [
+          "Text",
+          8
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 3,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          2017
+        ],
+        [
+          "Line",
+          121
+        ],
+        [
+          "Text",
+          11
+        ],
+        [
+          "SectionHeader",
+          4
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 4,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          1386
+        ],
+        [
+          "Line",
+          109
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 5,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          1613
+        ],
+        [
+          "Line",
+          116
+        ],
+        [
+          "Text",
+          7
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "PageHeader",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 6,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          98
+        ],
+        [
+          "Span",
+          45
+        ],
+        [
+          "Text",
+          5
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 7,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          1941
+        ],
+        [
+          "Line",
+          96
+        ],
+        [
+          "Text",
+          11
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 8,
+      "text_extraction_method": "surya",
+      "block_counts": [
+        [
+          "Line",
+          107
+        ],
+        [
+          "Span",
+          33
+        ],
+        [
+          "Text",
+          3
+        ],
+        [
+          "PageHeader",
+          2
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Figure",
+          1
+        ],
+        [
+          "Caption",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "FigureGroup",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 9,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          1951
+        ],
+        [
+          "Line",
+          93
+        ],
+        [
+          "Text",
+          6
+        ],
+        [
+          "SectionHeader",
+          3
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 10,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          2230
+        ],
+        [
+          "Line",
+          62
+        ],
+        [
+          "Text",
+          9
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 11,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          2069
+        ],
+        [
+          "Line",
+          118
+        ],
+        [
+          "ListItem",
+          33
+        ],
+        [
+          "SectionHeader",
+          4
+        ],
+        [
+          "Text",
+          4
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 12,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          2345
+        ],
+        [
+          "Line",
+          126
+        ],
+        [
+          "ListItem",
+          40
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 13,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          2487
+        ],
+        [
+          "Line",
+          127
+        ],
+        [
+          "ListItem",
+          41
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 14,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          2385
+        ],
+        [
+          "Line",
+          129
+        ],
+        [
+          "ListItem",
+          39
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 15,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          2386
+        ],
+        [
+          "Line",
+          129
+        ],
+        [
+          "ListItem",
+          40
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "PageFooter",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 16,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          2418
+        ],
+        [
+          "Line",
+          129
+        ],
+        [
+          "ListItem",
+          41
+        ],
+        [
+          "SectionHeader",
+          2
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    },
+    {
+      "page_id": 17,
+      "text_extraction_method": "pdftext",
+      "block_counts": [
+        [
+          "Span",
+          837
+        ],
+        [
+          "Line",
+          45
+        ],
+        [
+          "ListItem",
+          13
+        ],
+        [
+          "PageFooter",
+          2
+        ],
+        [
+          "ListGroup",
+          2
+        ],
+        [
+          "Picture",
+          1
+        ],
+        [
+          "SectionHeader",
+          1
+        ],
+        [
+          "Reference",
+          1
+        ]
+      ],
+      "block_metadata": {
+        "llm_request_count": 0,
+        "llm_error_count": 0,
+        "llm_tokens_used": 0,
+        "previous_text": "",
+        "previous_type": "",
+        "previous_order": 0
+      }
+    }
+  ],
+  "debug_data_path": "debug_data/Evolution of the vertebrate retina by repurposing of a"
+}

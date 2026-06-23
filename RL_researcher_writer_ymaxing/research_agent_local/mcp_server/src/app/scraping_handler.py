@@ -52,6 +52,86 @@ def is_pdf_url(url: str) -> bool:
     return False
 
 
+async def scrape_katex_article(url: str, firecrawl_app: AsyncFirecrawl) -> dict:
+    """Scrape a KaTeX/MathJax-heavy page, preserving LaTeX formulas.
+
+    Standard scraping (Firecrawl markdown) loses math because it converts the
+    *visual* KaTeX HTML span to garbled unicode rather than reading the embedded
+    LaTeX source.  This function instead:
+
+    1. Requests the raw JS-rendered HTML from Firecrawl (``rawHtml`` format).
+    2. Uses BeautifulSoup to locate every ``.katex-display`` (block) and
+       ``.katex`` (inline) span and replaces each with the original LaTeX text
+       stored in the hidden ``<annotation encoding="application/x-tex">`` tag.
+    3. Converts the cleaned HTML to Markdown via ``html2text``.
+
+    Falls back to the normal ``scrape_url`` path if rawHtml is unavailable.
+    """
+    import html2text as _h2t
+    from bs4 import BeautifulSoup
+
+    # Ask Firecrawl for the full JS-rendered HTML (includes KaTeX annotations).
+    try:
+        res = await firecrawl_app.scrape(url, formats=["rawHtml"])
+        raw_html: str | None = getattr(res, "rawHtml", None) or getattr(res, "raw_html", None)
+        title: str = (
+            res.metadata.title
+            if res and res.metadata and res.metadata.title
+            else "N/A"
+        )
+    except Exception as exc:
+        logger.error(f"Firecrawl rawHtml request failed for {url}: {exc}")
+        return {"url": url, "title": "Scraping Failed", "markdown": str(exc), "success": False}
+
+    if not raw_html:
+        logger.warning(f"rawHtml empty for {url} — falling back to standard scrape.")
+        return await scrape_url(url, firecrawl_app)
+
+    soup = BeautifulSoup(raw_html, "html.parser")
+
+    # Step 1: replace display math blocks ($$...$$) first — katex-display spans
+    # wrap a child katex span, so we must replace outer before inner.
+    for span in soup.find_all("span", class_="katex-display"):
+        annotation = span.find("annotation", {"encoding": "application/x-tex"})
+        if annotation:
+            latex = annotation.get_text()
+            span.replace_with(soup.new_string(f"\n\n$$\n{latex}\n$$\n\n"))
+
+    # Step 2: replace remaining inline math spans ($...$).
+    for span in soup.find_all("span", class_="katex"):
+        annotation = span.find("annotation", {"encoding": "application/x-tex"})
+        if annotation:
+            latex = annotation.get_text()
+            span.replace_with(soup.new_string(f"${latex}$"))
+
+    # Step 3: target the main article body; fall back to <body>.
+    main = (
+        soup.find("article")
+        or soup.find("main")
+        or soup.find("div", class_="post-content")
+        or soup.find("div", class_="content")
+        or soup.body
+    )
+    cleaned_html = str(main) if main else str(soup)
+
+    # Step 4: HTML → Markdown.
+    converter = _h2t.HTML2Text()
+    converter.ignore_links = False
+    converter.ignore_images = True   # images are URLs, not useful as ground-truth text
+    converter.body_width = 0         # no hard line-wrapping
+    converter.protect_links = True
+    markdown = converter.handle(cleaned_html)
+
+    # Collapse runs of 3+ blank lines to 2.
+    markdown = re.sub(r"\n{3,}", "\n\n", markdown)
+
+    logger.info(
+        f"✅ KaTeX-aware scrape: {url}  "
+        f"({len(markdown.splitlines())} lines, LaTeX preserved)"
+    )
+    return {"url": url, "title": title, "markdown": markdown, "success": bool(markdown.strip())}
+
+
 async def scrape_with_jina(url: str) -> dict:
     """Scrape a URL using the Jina.ai Reader API.
 
@@ -403,7 +483,29 @@ async def scrape_and_clean(url: str, article_guidelines: str, firecrawl_app: Asy
                 scraped = scraped_nocache
 
         if cleaned_md.strip() == "<!-- NO_CONTENT -->":
-            cleaned_md = ""
+            # Both Firecrawl attempts (cached + no-cache) returned only boilerplate.
+            # This typically means the page is a JS SPA whose content is injected
+            # after the initial HTML loads (e.g. openai.com/api/pricing/).
+            # Fall back to Jina.ai, which handles client-rendered pages better.
+            logger.warning(
+                f"⚠️  Both Firecrawl attempts returned only boilerplate for {url} "
+                f"— falling back to Jina.ai."
+            )
+            jina_result = await scrape_with_jina(url)
+            if jina_result["success"] and jina_result["markdown"].strip():
+                jina_tokens = chat_model.get_num_tokens(jina_result["markdown"])
+                logger.info(f"📥 Jina.ai scraped: {url} (✓) ({jina_tokens} tokens)")
+                jina_cleaned = await clean_markdown(jina_result["markdown"], article_guidelines, url, chat_model)
+                if jina_cleaned.strip() and jina_cleaned.strip() != "<!-- NO_CONTENT -->":
+                    scraped = jina_result
+                    cleaned_md = jina_cleaned
+                    logger.info(f"✅ Jina.ai fallback succeeded for {url}")
+                else:
+                    logger.warning(f"⚠️  Jina.ai fallback also returned no content for {url} — leaving empty.")
+                    cleaned_md = ""
+            else:
+                logger.warning(f"⚠️  Jina.ai fallback failed for {url} — leaving empty.")
+                cleaned_md = ""
 
         scraped["markdown"] = cleaned_md
         number_of_tokens = chat_model.get_num_tokens(scraped["markdown"])

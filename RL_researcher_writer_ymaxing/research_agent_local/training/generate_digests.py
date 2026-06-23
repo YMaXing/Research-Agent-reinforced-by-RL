@@ -117,6 +117,7 @@ _BREADTH_ITEMS = [
 
 _SKIP_SECTION_KEYWORDS = {
     "global context",
+    "context of the article",  # external-article equivalent of "global context"
     "anchoring",
     "achoring",  # typo present in some guidelines
     "narrative flow",
@@ -501,13 +502,30 @@ PER-SECTION FEATURES (all non-negative integers; use 0 when no signal)
 ARTICLE-WIDE FEATURE
 
   external_evidence_policy
-    "forbidden"  guideline tells the writer to stick to supplied / golden
-                 sources and NOT to bring in outside research.
+    "forbidden"  The guideline EXPLICITLY tells the writer to restrict
+                 research to the supplied / golden sources and NOT to
+                 fetch or cite outside web sources. This must be an overt
+                 prohibition such as "do not use sources beyond the
+                 provided list", "only reference the supplied materials",
+                 or "no external research allowed".
     "allowed"    guideline neither forbids nor requires outside evidence
                  (this is the default for most guidelines).
     "required"   guideline explicitly demands the writer cite external
                  sources, fresh benchmarks, or recent papers beyond the
                  supplied set.
+
+  CRITICAL DISTINCTION — the following instruction types do NOT constitute
+  a "forbidden" evidence policy; classify them as "allowed" instead:
+    - Pedagogical scope instructions such as "use only previously introduced
+      concepts" or "avoid concepts not yet taught to the reader" — these
+      govern what vocabulary the writer exposes to the reader, NOT what
+      research sources may be consulted.
+    - Code-priority instructions such as "always prioritize this code over
+      every other piece of code found in the sources" — these govern which
+      code examples to showcase, not whether external research is allowed.
+    - Course-anchoring constraints about not reintroducing already-known
+      concepts or foreshadowing future lessons.
+  When in doubt, default to "allowed".
 
 OUTPUT — exactly this JSON shape (use the section IDs from the listing above):
 
@@ -1789,7 +1807,7 @@ async def process_article(
     force: bool,
 ) -> bool:
     base_dir = _BASES_DIR / article_dir
-    article_title = ARTICLES[article_dir]
+    article_title = ARTICLES.get(article_dir) or _derive_article_title(base_dir)
 
     log.info("=" * 65)
     log.info(f"Article: {article_dir}  ({article_title})")
@@ -2008,7 +2026,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "--articles",
         nargs="+",
-        choices=list(ARTICLES.keys()),
         default=list(ARTICLES.keys()),
         metavar="ARTICLE",
         help=(

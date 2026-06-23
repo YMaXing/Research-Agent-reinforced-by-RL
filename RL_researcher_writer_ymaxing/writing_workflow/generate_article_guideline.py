@@ -175,6 +175,89 @@ _ANCHORING_VARIANTS = [
 ]
 
 # ---------------------------------------------------------------------------
+# External (non-course) article mode
+# ---------------------------------------------------------------------------
+# Required headings for standalone articles — no Anchoring or Narrative Flow.
+_REQUIRED_H2_EXTERNAL = [
+    "Context of the Article",
+    "Article Outline",
+    "Golden Sources",
+]
+
+_EXTERNAL_SYSTEM_PROMPT = """\
+You are an expert science and technical writer.
+
+Your task: generate a complete, detailed article guideline from a structured brief.
+
+The guideline is used by a writing team to produce a full, standalone article
+(not part of a course). It must contain enough per-section bullet-point detail
+that a writer can produce the complete article without any additional instructions.
+
+REQUIRED OUTPUT STRUCTURE (produce in this exact order):
+
+  ## Context of the Article
+      ### What We Are Planning to Share
+      ### Why We Think It's Valuable
+      ### Expected Length of the Article
+      ### Theory / Practice Ratio
+
+  ## Article Outline
+  (numbered list: 1. Section 1 Title, 2. Section 2 Title, …)
+
+  ## Section 1 - <Title>
+  ## Section 2 - <Title>
+  … (one block per section listed in the brief)
+
+  ## Golden Sources
+  ## Other Sources     (omit if the brief has none)
+
+ABSOLUTE FORMATTING RULES (violating any of these is a hard failure):
+  1. Every H2 heading MUST start with exactly `## ` at column 0. NEVER wrap an
+     H2 in bold. The very first line of your output MUST be exactly:
+     `## Context of the Article`
+  2. Every section's length annotation MUST be on its own line, formatted
+     EXACTLY as: `-  **Section length:** N words`
+     This is the LAST line of each `## Section N` block.
+  3. The `### Theory / Practice Ratio` value MUST be reproduced VERBATIM from
+     the brief.
+  4. The `### Expected Length of the Article` MUST use the brief's
+     `Target Length` value verbatim, formatted as: `**N,NNN words**`.
+  5. Each `## Section N` block MUST use the section's `target_words` from the
+     brief verbatim in its `**Section length:**` line. Do NOT re-estimate.
+  6. The `## Golden Sources` and `## Other Sources` lists MUST contain ONLY
+     the sources listed in the brief, formatted as a Markdown list with
+     `[Title](URL)` link syntax. NEVER invent, substitute, or add sources.
+  7. Do NOT name specific papers, researchers, organisms, or tools UNLESS they
+     are explicitly listed in the brief. Stay generic otherwise.
+  8. For the FINAL `## Section N` block, simply omit the `Transition to
+     Section N+1:` line.
+  9. The brief's key_points define the CONTENT BUDGET for each section.
+     Cover every key_point. Do NOT introduce additional top-level concepts
+     beyond what the brief names. You may expand each key_point with a concrete
+     illustrative example, a failure mode, or a contrast with an adjacent
+     concept already named in the brief.
+ 10. DIAGRAM REQUIREMENTS ARE MANDATORY. For every `- [diagram] …` entry in
+     the brief, emit an explicit instruction bullet in that section describing
+     exactly what the diagram must show. NEVER drop or omit a diagram entry.
+
+PER-SECTION REQUIREMENTS — each ## Section N block must contain:
+  • Detailed bullet points expanding every key_point from the brief
+  • For every `- [diagram]` entry: an explicit "Include a Mermaid diagram …" bullet
+  • Named researchers/experiments/findings ONLY when present in the brief
+  • A `Transition to Section N+1:` line (omit for the final section)
+  • The `-  **Section length:** N words` line as the very last line
+
+STYLE:
+  • Bullet-heavy and detail-dense (not prose paragraphs)
+  • Name the exact findings, methods, and evidence from the brief
+  • Never use vague instructions like "explain X" — always specify the angle,
+    the depth, and the concrete evidence to use
+  • Use "we" / "our" for the writing team, "the reader" for the audience
+
+Return ONLY the guideline text.  No preamble, no explanation, no code fences.\
+"""
+
+# ---------------------------------------------------------------------------
 # System prompt
 # ---------------------------------------------------------------------------
 
@@ -479,24 +562,40 @@ def _write_file(path: Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
-def _load_brief(brief_path: Path) -> dict[str, Any]:
-    """Load and validate a brief YAML file."""
+def _load_brief(brief_path: Path, external: bool = False) -> dict[str, Any]:
+    """Load and validate a brief YAML file.
+
+    When ``external=True`` (standalone article, not a course lesson), the
+    course-specific keys (lesson_number, lesson_scope, audience, concepts_*)
+    are not required.
+    """
     with brief_path.open(encoding="utf-8") as f:
         data = yaml.safe_load(f)
-    required = [
-        "lesson_number",
-        "title",
-        "topic_summary",
-        "why_valuable",
-        "target_length_words",
-        "theory_practice_ratio",
-        "lesson_scope",
-        "audience",
-        "concepts_from_previous_lessons",
-        "concepts_for_future_lessons",
-        "sections",
-        "golden_sources",
-    ]
+    if external:
+        required = [
+            "title",
+            "topic_summary",
+            "why_valuable",
+            "target_length_words",
+            "theory_practice_ratio",
+            "sections",
+            "golden_sources",
+        ]
+    else:
+        required = [
+            "lesson_number",
+            "title",
+            "topic_summary",
+            "why_valuable",
+            "target_length_words",
+            "theory_practice_ratio",
+            "lesson_scope",
+            "audience",
+            "concepts_from_previous_lessons",
+            "concepts_for_future_lessons",
+            "sections",
+            "golden_sources",
+        ]
     missing = [k for k in required if k not in data]
     if missing:
         raise ValueError(f"Brief '{brief_path.name}' is missing required keys: {missing}")
@@ -506,10 +605,20 @@ def _load_brief(brief_path: Path) -> dict[str, Any]:
 
 
 def _brief_to_text(brief: dict[str, Any]) -> str:
-    """Render a brief dict into a compact, human-readable text for the LLM prompt."""
-    lines = [
-        f"# Lesson {brief['lesson_number']}: {brief['title']}",
-        "",
+    """Render a brief dict into a compact, human-readable text for the LLM prompt.
+
+    Course-specific fields (lesson_number, lesson_scope, audience, concepts_*)
+    are included only when present, so this function works for both course and
+    external (standalone) briefs.
+    """
+    lesson_num = brief.get("lesson_number", 0)
+    title = brief.get("title", "Untitled")
+    if lesson_num:
+        lines: list[str] = [f"# Lesson {lesson_num}: {title}", ""]
+    else:
+        lines = [f"# {title}", ""]
+
+    lines += [
         "## Topic Summary",
         brief["topic_summary"].strip(),
         "",
@@ -518,18 +627,23 @@ def _brief_to_text(brief: dict[str, Any]) -> str:
         "",
         f"## Target Length: {brief['target_length_words']:,} words",
         f"## Theory / Practice Ratio: {brief['theory_practice_ratio']}",
-        "",
-        f"## Lesson Scope: {brief['lesson_scope']}",
-        f"## Audience: {brief['audience']}",
-        "",
-        "## Concepts from Previous Lessons",
     ]
-    for c in brief["concepts_from_previous_lessons"]:
-        lines.append(f"- {c}")
+    if brief.get("lesson_scope"):
+        lines += ["", f"## Lesson Scope: {brief['lesson_scope']}"]
+    if brief.get("audience"):
+        lines.append(f"## Audience: {brief['audience']}")
 
-    lines += ["", "## Concepts for Future Lessons"]
-    for c in brief["concepts_for_future_lessons"]:
-        lines.append(f"- {c}")
+    prev = brief.get("concepts_from_previous_lessons") or []
+    if prev:
+        lines += ["", "## Concepts from Previous Lessons"]
+        for c in prev:
+            lines.append(f"- {c}")
+
+    fut = brief.get("concepts_for_future_lessons") or []
+    if fut:
+        lines += ["", "## Concepts for Future Lessons"]
+        for c in fut:
+            lines.append(f"- {c}")
 
     lines += ["", "## Sections"]
     for s in brief["sections"]:
@@ -830,25 +944,28 @@ def _validate_output(
     guideline: str,
     expected_sections: int,
     brief: dict[str, Any] | None = None,
+    external: bool = False,
 ) -> list[str]:
     """Return a list of validation error strings (empty list = valid)."""
     errors: list[str] = []
 
-    for heading in _REQUIRED_H2:
+    required_h2 = _REQUIRED_H2_EXTERNAL if external else _REQUIRED_H2
+    for heading in required_h2:
         if f"## {heading}" not in guideline:
             errors.append(f"Missing required section: ## {heading}")
 
-    if not any(f"## {v}" in guideline for v in _ANCHORING_VARIANTS):
+    if not external and not any(f"## {v}" in guideline for v in _ANCHORING_VARIANTS):
         errors.append("Missing required section: ## Anchoring the Lesson in the Course")
 
     # Rule 1: no bolded H2 headings, and the first non-empty line must be the
-    # exact `## Global Context of the Lesson` heading (no leading bold/asterisks).
+    # correct opening heading for the article type.
     bold_h2 = re.findall(r"^\*+\s*##\s", guideline, re.MULTILINE)
     if bold_h2:
         errors.append(f"Found {len(bold_h2)} bolded/asterisk-wrapped H2 heading(s); H2s must start with exactly '## ' at column 0")
+    expected_first = "## Context of the Article" if external else "## Global Context of the Lesson"
     first_nonempty = next((ln for ln in guideline.splitlines() if ln.strip()), "")
-    if first_nonempty.strip() != "## Global Context of the Lesson":
-        errors.append(f"First non-empty line must be '## Global Context of the Lesson' (got: {first_nonempty[:80]!r})")
+    if first_nonempty.strip() != expected_first:
+        errors.append(f"First non-empty line must be '{expected_first}' (got: {first_nonempty[:80]!r})")
 
     section_count = len(re.findall(r"^## Section \d+", guideline, re.MULTILINE))
     if section_count == 0:
@@ -1030,6 +1147,7 @@ async def _generate_guideline(
     llm,
     brief: dict[str, Any],
     few_shot_articles: list[str],
+    external: bool = False,
 ) -> str:
     """Build the few-shot prompt and call the LLM; returns generated text."""
     sep = "=" * 70
@@ -1077,7 +1195,7 @@ async def _generate_guideline(
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             messages = [
-                SystemMessage(content=_SYSTEM_PROMPT),
+                SystemMessage(content=_EXTERNAL_SYSTEM_PROMPT if external else _SYSTEM_PROMPT),
                 HumanMessage(content=user_message),
             ]
             response = await llm.ainvoke(messages)
@@ -1121,6 +1239,7 @@ async def generate_for_brief(
     force: bool,
     dry_run: bool,
     llm,
+    external: bool = False,
 ) -> None:
     """Generate an article_guideline.md from a brief YAML for one article."""
     brief_path = _BRIEFS_DIR / f"{article}.yaml"
@@ -1140,7 +1259,7 @@ async def generate_for_brief(
         )
         return
 
-    brief = _load_brief(brief_path)
+    brief = _load_brief(brief_path, external=external)
     expected_sections = len(brief["sections"])
     logger.info(
         "Generating guideline: %s  (%d sections, ~%d words target) …",
@@ -1157,9 +1276,9 @@ async def generate_for_brief(
         )
         return
 
-    guideline_text = await _generate_guideline(llm, brief, few_shot_articles)
+    guideline_text = await _generate_guideline(llm, brief, few_shot_articles, external=external)
 
-    errors = _validate_output(guideline_text, expected_sections, brief)
+    errors = _validate_output(guideline_text, expected_sections, brief, external=external)
     if errors:
         logger.warning("Validation issues for %s:", article)
         for e in errors:
@@ -1427,7 +1546,15 @@ async def from_article_mode(
 
 
 async def run_pipeline(args: argparse.Namespace) -> None:
-    few_shot = list(args.few_shot) if args.few_shot else list(_DEFAULT_FEW_SHOT)
+    # External articles don't use course-based few-shot examples by default;
+    # the external system prompt is self-contained. Pass --few-shot explicitly
+    # to provide an external article few-shot example (e.g. --few-shot Bird_Eye_Extreme).
+    if args.few_shot:
+        few_shot = list(args.few_shot)
+    elif getattr(args, "external", False):
+        few_shot = []
+    else:
+        few_shot = list(_DEFAULT_FEW_SHOT)
 
     # Remove the target article(s) from the few-shot pool to prevent leakage
     if args.article:
@@ -1480,6 +1607,7 @@ async def run_pipeline(args: argparse.Namespace) -> None:
     logger.info("=" * 70)
     logger.info("Phase 0b: Article Guideline Synthesis")
     logger.info("  Articles  : %s", articles)
+    logger.info("  Mode      : %s", "external" if getattr(args, "external", False) else "course")
     logger.info("  Few-shot  : %s", few_shot)
     logger.info("  Model     : %s", _GENERATION_MODEL)
     logger.info("  Dry-run   : %s", args.dry_run)
@@ -1489,7 +1617,7 @@ async def run_pipeline(args: argparse.Namespace) -> None:
     for article in articles:
         logger.info("─" * 60)
         try:
-            await generate_for_brief(article, few_shot, args.force, args.dry_run, llm)
+            await generate_for_brief(article, few_shot, args.force, args.dry_run, llm, external=getattr(args, "external", False))
         except Exception:
             logger.exception("FAILED: %s", article)
 
@@ -1555,6 +1683,17 @@ def _parse_args() -> argparse.Namespace:
         "--dry-run",
         action="store_true",
         help="Show what would be done without making LLM calls or writing files.",
+    )
+    parser.add_argument(
+        "--external",
+        action="store_true",
+        help=(
+            "Generate a standalone (non-course) article guideline using the external "
+            "template (## Context of the Article / ## Article Outline; no Anchoring "
+            "or Narrative Flow sections). Brief YAML only requires: title, "
+            "topic_summary, why_valuable, target_length_words, theory_practice_ratio, "
+            "sections, golden_sources."
+        ),
     )
     return parser.parse_args()
 

@@ -11,11 +11,9 @@ expose the MCP transport, but no orchestration LLM is involved.
 
 Corpus
 ------
-  24 article-variants: 8 lessons × 3 guideline variants
+  Training: 24 article-variants — 8 lessons × 3 guideline variants
     (var_minimal, var_standard, var_demanding)
-
-  All 8 lessons are currently in the training set.
-  No held-out test set exists yet.
+  Test:      6 no-variant held-out lessons (04, 07, 13, 14, 29, 31).
 
 Oracle
 ------
@@ -39,10 +37,23 @@ Reward-regret
   rewards are tainted (generated with the very exploration the policy forbids) and
   the oracle is policy-forced to P0.
 
+Split reporting
+---------------
+  Results are split into TRAIN (24 variants) and TEST (6 no-variant held-outs).
+  TEST articles are the primary metric; TRAIN is provided for reference.
+  A 4×4 per-arm confusion matrix and majority/random baselines are printed for
+  each split.
+
 Usage (from research_agent_local/)
 -----------------------------------
-  # Test-lesson variants only (default, full pipeline)
+  # All articles — train variants + test held-outs (default)
   uv run python -m mcp_client.src.test_grok_planner
+
+  # Test held-outs only
+  uv run python -m mcp_client.src.test_grok_planner --test-only
+
+  # Training variants only
+  uv run python -m mcp_client.src.test_grok_planner --train-only
 
   # RL model only — faster, no Grok 4.2 call
   uv run python -m mcp_client.src.test_grok_planner --rl-only
@@ -50,17 +61,11 @@ Usage (from research_agent_local/)
   # Grok 4.2 standalone baseline — no RL section signals
   uv run python -m mcp_client.src.test_grok_planner --grok-only
 
-  # All 24 variants (default, same as no flag)
-  uv run python -m mcp_client.src.test_grok_planner
-
-  # Only demanding variants
+  # Only demanding training variants
   uv run python -m mcp_client.src.test_grok_planner --variants demanding
 
-  # Specific full variant names
-  uv run python -m mcp_client.src.test_grok_planner --articles 02_workflows_vs_agents__var_demanding,09_RAG__var_minimal
-
-  # Bare lesson names expand to all 3 variants
-  uv run python -m mcp_client.src.test_grok_planner --articles 02_workflows_vs_agents,09_RAG
+  # Specific articles (bare test slug → no expansion; bare train slug → 3 variants)
+  uv run python -m mcp_client.src.test_grok_planner --articles 04_structured_outputs,09_RAG
 
   # Save per-variant JSON results
   uv run python -m mcp_client.src.test_grok_planner --save-json
@@ -101,8 +106,7 @@ _PRESET_NAMES = {0: "skip", 1: "light", 2: "standard", 3: "deep"}
 _VARIANTS = ("var_minimal", "var_standard", "var_demanding")
 
 # ---------------------------------------------------------------------------
-# Corpus: 8 lessons × 3 variants = 24 article-variants
-# All 8 lessons are in the training set.  No held-out test set exists yet.
+# Corpus
 # ---------------------------------------------------------------------------
 _TRAIN_LESSONS = {
     "02_workflows_vs_agents",
@@ -114,6 +118,21 @@ _TRAIN_LESSONS = {
     "10_memory_knowledge_access",
     "11_multimodal",
 }
+
+# Held-out test lessons — no-variant (single research run, no __var_ suffix).
+# Research dirs live in bases/<slug>/ (same root as training variants).
+_TEST_LESSONS = {
+    "04_structured_outputs",
+    "07_reasoning_planning",
+    "13_agent_framework",
+    "14_agent_system_design",
+    "29_evaluation_metrics",
+    "31_CI",
+    # External (non-course) standalone articles — no variant expansion.
+    # Add new external test articles here as they are built.
+    "Bird_Eye_Extreme",
+}
+
 _ALL_LESSONS = sorted(_TRAIN_LESSONS)
 
 # Full 24-variant list (variant ordering: minimal → standard → demanding)
@@ -122,6 +141,12 @@ _ALL_VARIANTS: list[str] = [
     for lesson in _ALL_LESSONS
     for var in _VARIANTS
 ]
+
+# Sorted no-variant test article slugs
+_TEST_ARTICLES: list[str] = sorted(_TEST_LESSONS)
+
+# Combined default run: 24 training variants + 6 test articles
+_ALL_ARTICLES: list[str] = _ALL_VARIANTS + _TEST_ARTICLES
 
 
 def _lesson_of(variant_name: str) -> str:
@@ -133,18 +158,28 @@ def _lesson_of(variant_name: str) -> str:
 
 
 def _expand_articles(names: list[str]) -> list[str]:
-    """Expand bare lesson names to all 3 variants; pass through full variant names.
+    """Expand bare lesson names to all 3 variants; pass no-variant test slugs through.
 
-    ``["02_workflows_vs_agents", "09_RAG__var_minimal"]``
-    → ``["02_workflows_vs_agents__var_minimal",
-          "02_workflows_vs_agents__var_standard",
-          "02_workflows_vs_agents__var_demanding",
-          "09_RAG__var_minimal"]``
+    Rules:
+      - Name contains ``__var_``          → pass through (already a specific variant).
+      - Name is in ``_TEST_LESSONS``       → pass through (no-variant held-out).
+      - Otherwise (bare training lesson)   → expand to all 3 guideline variants.
+
+    Examples::
+
+        ["02_workflows_vs_agents", "04_structured_outputs", "09_RAG__var_minimal"]
+        → ["02_workflows_vs_agents__var_minimal",
+           "02_workflows_vs_agents__var_standard",
+           "02_workflows_vs_agents__var_demanding",
+           "04_structured_outputs",          # no expansion — test article
+           "09_RAG__var_minimal"]
     """
     out: list[str] = []
     for name in names:
         if "__var_" in name:
             out.append(name)
+        elif name in _TEST_LESSONS:
+            out.append(name)  # no-variant test article — no expansion
         else:
             for var in _VARIANTS:
                 out.append(f"{name}__{var}")
@@ -220,7 +255,7 @@ async def run_variant(
         return {"variant": variant, "error": f"Directory not found: {research_dir}"}
 
     lesson = _lesson_of(variant)
-    split = "TRAIN"  # all lessons are currently in the training set
+    split = "TEST" if lesson in _TEST_LESSONS else "TRAIN"
 
     # --- Direct MCP tool call (no LLM agent loop) ---
     tool_args: dict = {"research_directory": str(research_dir)}
@@ -428,6 +463,173 @@ def _print_variant_result(r: dict) -> None:
     print(f"  Verdict    : {_VERDICT_SYM.get(verdict, verdict)}")
 
 
+def _confusion_matrix(results: list[dict]) -> None:
+    """Print a 4×4 confusion matrix (oracle rows × predicted columns) for a result set."""
+    scoreable = [
+        r for r in results
+        if r.get("oracle_preset") is not None and r.get("chosen_preset") is not None
+        and r.get("verdict") not in ("NO_ORACLE", "ERROR", None)
+        and "error" not in r
+    ]
+    if not scoreable:
+        print("  (no scoreable results for confusion matrix)")
+        return
+
+    mat = [[0] * _NUM_PRESETS for _ in range(_NUM_PRESETS)]
+    for r in scoreable:
+        mat[r["oracle_preset"]][r["chosen_preset"]] += 1
+
+    print(f"  {'':24} Predicted →")
+    header = f"  {'Oracle ↓':24}" + "".join(f"  {_PRESET_NAMES[i]:>8}" for i in range(_NUM_PRESETS))
+    print(header)
+    print(f"  {'-'*60}")
+    for oracle_arm in range(_NUM_PRESETS):
+        row_total = sum(mat[oracle_arm])
+        if row_total == 0:
+            continue
+        row = f"  P{oracle_arm} {_PRESET_NAMES[oracle_arm]:<20}" + "".join(
+            f"  {mat[oracle_arm][pred]:>8}" for pred in range(_NUM_PRESETS)
+        )
+        print(row + f"  (n={row_total})")
+
+
+def _baselines(results: list[dict]) -> None:
+    """Print majority-class and uniform-random accuracy baselines."""
+    scoreable = [
+        r for r in results
+        if r.get("oracle_preset") is not None
+        and r.get("verdict") not in ("NO_ORACLE", "ERROR", None)
+        and "error" not in r
+    ]
+    if not scoreable:
+        return
+
+    n = len(scoreable)
+    # Majority-class: predict the most common oracle arm
+    from collections import Counter
+    oracle_counts = Counter(r["oracle_preset"] for r in scoreable)
+    majority_arm, majority_n = oracle_counts.most_common(1)[0]
+    majority_acc = majority_n / n
+
+    # Uniform random: 1/_NUM_PRESETS expected accuracy
+    random_acc = 1.0 / _NUM_PRESETS
+
+    # Weighted random: predict arm proportional to oracle distribution
+    weighted_acc = sum((c / n) ** 2 for c in oracle_counts.values())
+
+    dist_str = "  ".join(f"P{arm}={cnt}" for arm, cnt in sorted(oracle_counts.items()))
+    print(f"  Oracle distribution: {dist_str}")
+    print(
+        f"  Majority-class baseline (always P{majority_arm} {_PRESET_NAMES[majority_arm]}): "
+        f"{majority_acc:.1%}  ({majority_n}/{n})"
+    )
+    print(f"  Uniform-random baseline (1/{_NUM_PRESETS}):  {random_acc:.1%}")
+    print(f"  Weighted-random baseline:  {weighted_acc:.1%}")
+
+
+def _split_stats(results: list[dict]) -> tuple[int, int, int, int, list[float], int]:
+    """Return (exact, near, miss, error, regret_counted_list, n_forbidden) for a result set."""
+    counts: dict[str, int] = {}
+    for r in results:
+        v = r.get("verdict", "ERROR")
+        counts[v] = counts.get(v, 0) + 1
+    counted = [r["regret_counted"] for r in results if r.get("regret_counted") is not None]
+    n_forbidden = sum(1 for r in results if r.get("policy") == "forbidden")
+    return (
+        counts.get("EXACT", 0),
+        counts.get("NEAR", 0),
+        counts.get("MISS", 0),
+        counts.get("ERROR", 0) + counts.get("NO_ORACLE", 0),
+        counted,
+        n_forbidden,
+    )
+
+
+def _print_split_block(
+    label: str,
+    results: list[dict],
+    mode: str,
+) -> None:
+    """Print the per-row table, stats, confusion matrix, and baselines for one split."""
+    if not results:
+        return
+    sep = "=" * 80
+    print(f"\n{sep}")
+    print(f"  {label}  [{mode}]  (n={len(results)})")
+    print(sep)
+    header = f"  {'Article':<46} {'Spl':>4}  {'RL':>4}  {'Grok':>4}  {'Chsn':>4}  → {'Orcl':<4}  Verdict"
+    print(header)
+    print(f"  {'-'*76}")
+
+    for r in results:
+        rl_p = r.get("rl_preset")
+        gp = r.get("grok_preset")
+        chosen = r.get("chosen_preset")
+        op = r.get("oracle_preset")
+        v = r.get("verdict", "ERROR")
+        rl_str = f"P{rl_p}" if rl_p is not None else "—"
+        gp_str = f"P{gp}" if gp is not None else "—"
+        ch_str = f"P{chosen}" if chosen is not None else "?"
+        op_str = f"P{op}" if op is not None else "?"
+        sym = {"EXACT": "✓", "NEAR": "~", "MISS": "✗"}.get(v, "?")
+        print(
+            f"  {r['variant']:<46} {r.get('split','?'):>4}  "
+            f"{rl_str:>4}  {gp_str:>4}  {ch_str:>4}  → {op_str:<4}  {sym} {v}"
+        )
+
+    exact, near, miss, error, counted, n_forbidden = _split_stats(results)
+    total = len(results)
+    n_scoreable = exact + near + miss
+    mae = (
+        sum(abs(r["chosen_preset"] - r["oracle_preset"])
+            for r in results
+            if r.get("chosen_preset") is not None and r.get("oracle_preset") is not None)
+        / n_scoreable if n_scoreable else 0.0
+    )
+    mean_regret = sum(counted) / len(counted) if counted else 0.0
+    max_regret = max(counted) if counted else 0.0
+    print(
+        f"\n  n={total}  exact={exact} ({exact/total:.0%})  "
+        f"near={near} ({near/total:.0%})  miss={miss} ({miss/total:.0%})  "
+        f"no-oracle/error={error}"
+    )
+    print(f"  Ordinal MAE: {mae:.3f}")
+    print(
+        f"  Reward-regret (allowed/required only, n={len(counted)}; "
+        f"{n_forbidden} forbidden excluded):  mean={mean_regret:.4f}  max={max_regret:.4f}"
+    )
+
+    print(f"\n  --- Confusion matrix ---")
+    _confusion_matrix(results)
+
+    print(f"\n  --- Baselines ---")
+    _baselines(results)
+
+    # Per-variant-type breakdown (training variants only)
+    variant_rows = [r for r in results if "__var_" in r.get("variant", "")]
+    for var_type in _VARIANTS:
+        vt_r = [
+            r for r in variant_rows
+            if var_type in r.get("variant", "")
+            and r.get("verdict") not in ("NO_ORACLE", "ERROR", None)
+            and "error" not in r
+        ]
+        if not vt_r:
+            continue
+        n = len(vt_r)
+        s_exact = sum(1 for r in vt_r if r["verdict"] == "EXACT")
+        s_near = sum(1 for r in vt_r if r["verdict"] in ("EXACT", "NEAR"))
+        vt_regrets = [r["regret_counted"] for r in vt_r if r.get("regret_counted") is not None]
+        regret_str = (
+            f"regret mean={sum(vt_regrets)/len(vt_regrets):.4f} max={max(vt_regrets):.4f}"
+            if vt_regrets else "regret n/a (all policy-forced)"
+        )
+        print(
+            f"  {var_type:<16} ({n:2d}):  "
+            f"exact {s_exact}/{n}   exact+near {s_near}/{n}   {regret_str}"
+        )
+
+
 def _print_summary(
     results: list[dict],
     rl_only: bool,
@@ -442,72 +644,33 @@ def _print_summary(
         mode = "Grok-only (standalone baseline)"
     else:
         mode = "RL + Grok 4.2"
-    sep = "#" * 80
-    print(f"\n{sep}")
-    print(f"  SUMMARY  [{mode}]")
-    print(sep)
-    header = f"  {'Variant':<46} {'Spl':>4}  {'RL':>4}  {'Grok':>4}  {'Chsn':>4}  → {'Orcl':<4}  Verdict"
-    print(header)
-    print(f"  {'-'*76}")
 
-    counts: dict[str, int] = {}
-    for r in results:
-        rl_p = r.get("rl_preset")
-        gp = r.get("grok_preset")
-        chosen = r.get("chosen_preset")
-        op = r.get("oracle_preset")
-        v = r.get("verdict", "ERROR")
-        counts[v] = counts.get(v, 0) + 1
-        rl_str = f"P{rl_p}" if rl_p is not None else "—"
-        gp_str = f"P{gp}" if gp is not None else "—"
-        ch_str = f"P{chosen}" if chosen is not None else "?"
-        op_str = f"P{op}" if op is not None else "?"
-        sym = {"EXACT": "✓", "NEAR": "~", "MISS": "✗"}.get(v, "?")
+    train_results = [r for r in results if r.get("split") == "TRAIN"]
+    test_results  = [r for r in results if r.get("split") == "TEST"]
+
+    if test_results:
+        _print_split_block("TEST  (held-out, primary metric)", test_results, mode)
+    if train_results:
+        _print_split_block("TRAIN (reference)", train_results, mode)
+
+    # Combined totals when both splits present
+    if train_results and test_results:
+        sep = "#" * 80
+        print(f"\n{sep}")
+        print(f"  COMBINED  [{mode}]  (n={len(results)})")
+        print(sep)
+        exact, near, miss, error, counted, n_forbidden = _split_stats(results)
+        total = len(results)
+        mean_regret = sum(counted) / len(counted) if counted else 0.0
+        max_regret = max(counted) if counted else 0.0
         print(
-            f"  {r['variant']:<46} {r.get('split','?'):>4}  "
-            f"{rl_str:>4}  {gp_str:>4}  {ch_str:>4}  → {op_str:<4}  {sym} {v}"
+            f"  n={total}  exact={exact} ({exact/total:.0%})  "
+            f"near={near} ({near/total:.0%})  miss={miss} ({miss/total:.0%})  "
+            f"no-oracle/error={error}"
         )
-
-    total = len(results)
-    exact = counts.get("EXACT", 0)
-    near = counts.get("NEAR", 0)
-    miss = counts.get("MISS", 0)
-    error = counts.get("ERROR", 0) + counts.get("NO_ORACLE", 0)
-    # Regret aggregate excludes forbidden-policy articles (tainted rewards).
-    counted = [r["regret_counted"] for r in results if r.get("regret_counted") is not None]
-    n_forbidden = sum(1 for r in results if r.get("policy") == "forbidden")
-    mean_regret = sum(counted) / len(counted) if counted else 0.0
-    max_regret = max(counted) if counted else 0.0
-    print(f"\n  Total {total} variants:  exact={exact}  near={near}  miss={miss}  no-oracle/error={error}")
-    print(
-        f"  Reward-regret (allowed/required only, n={len(counted)}; "
-        f"{n_forbidden} forbidden excluded):  mean={mean_regret:.4f}  max={max_regret:.4f}"
-    )
-
-    # Per-variant-type breakdown (minimal / standard / demanding)
-    for var_type in _VARIANTS:
-        vt_r = [
-            r for r in results
-            if var_type in r.get("variant", "")
-            and r.get("verdict") not in ("NO_ORACLE", "ERROR", None)
-            and "error" not in r
-        ]
-        if not vt_r:
-            continue
-        n = len(vt_r)
-        s_exact = sum(1 for r in vt_r if r["verdict"] == "EXACT")
-        s_near = sum(1 for r in vt_r if r["verdict"] in ("EXACT", "NEAR"))
-        vt_regrets = [r["regret_counted"] for r in vt_r if r.get("regret_counted") is not None]
-        if vt_regrets:
-            vt_mean = sum(vt_regrets) / len(vt_regrets)
-            vt_max = max(vt_regrets)
-            regret_str = f"regret mean={vt_mean:.4f} max={vt_max:.4f}"
-        else:
-            regret_str = "regret n/a (all policy-forced)"
         print(
-            f"  {var_type:<16} ({n:2d} variants):  "
-            f"exact {s_exact}/{n}   exact+near {s_near}/{n}   "
-            f"{regret_str}"
+            f"  Reward-regret (allowed/required only, n={len(counted)}; "
+            f"{n_forbidden} forbidden excluded):  mean={mean_regret:.4f}  max={max_regret:.4f}"
         )
 
 
@@ -532,21 +695,30 @@ async def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
             "Test predict_exploration_preset via direct MCP tool call. "
-            "Evaluates all 24 article-variants (8 lessons × 3 guideline variants) "
-            "against the article_oracle.json oracle. "
+            "Evaluates 24 training variants (8 lessons \u00d7 3 guideline variants) and/or "
+            "6 held-out test articles (no-variant) against article_oracle.json. "
             "No LLM orchestration layer — the tool makes the final decision internally."
         )
     )
     parser.add_argument(
         "--all", action="store_true",
-        help="(No-op: all 24 variants are always run by default. Kept for future use.)",
+        help="Run all articles: 24 training variants + 6 held-out test articles (default behaviour).",
+    )
+    parser.add_argument(
+        "--train-only", action="store_true",
+        help="Run only the 24 training variants (skip held-out test articles).",
+    )
+    parser.add_argument(
+        "--test-only", action="store_true",
+        help="Run only the 6 held-out test articles (no training variants).",
     )
     parser.add_argument(
         "--articles", type=str,
         help=(
             "Comma-separated variant names or bare lesson names. "
-            "Bare lesson names expand to all 3 variants. "
-            "E.g.: 02_workflows_vs_agents,09_RAG__var_minimal"
+            "Bare training lesson names expand to all 3 variants; "
+            "bare test lesson names (04, 07, 13, 14, 29, 31) pass through unchanged. "
+            "E.g.: 04_structured_outputs,02_workflows_vs_agents,09_RAG__var_minimal"
         ),
     )
     parser.add_argument(
@@ -583,12 +755,19 @@ async def main() -> None:
     if n_modes > 1:
         print("ERROR: --rl-only, --rl-guards-only and --grok-only are mutually exclusive.")
         return
+    if args.train_only and args.test_only:
+        print("ERROR: --train-only and --test-only are mutually exclusive.")
+        return
 
     # Build variant list
     if args.articles:
         variant_list = _expand_articles([a.strip() for a in args.articles.split(",")])
+    elif args.test_only:
+        variant_list = list(_TEST_ARTICLES)
+    elif args.train_only:
+        variant_list = list(_ALL_VARIANTS)
     else:
-        variant_list = list(_ALL_VARIANTS)  # --all is implied; no separate test set yet
+        variant_list = list(_ALL_ARTICLES)  # default: train + test
 
     # Apply --variants filter
     if args.variants:
@@ -639,7 +818,7 @@ async def main() -> None:
             results = []
             for variant in variant_list:
                 lesson = _lesson_of(variant)
-                split = "TRAIN" if lesson in _TRAIN_LESSONS else "TEST"
+                split = "TEST" if lesson in _TEST_LESSONS else "TRAIN"
                 print(f"\n{'='*80}")
                 print(f"  Variant : {variant}  [{split}]")
                 print("=" * 80)

@@ -62,6 +62,7 @@ _AGENT_DIR = _THIS_DIR.parent
 _REPO_ROOT = _AGENT_DIR.parent
 _BASES_DIR = _REPO_ROOT / "rl_training_data" / "bases"
 _EPISODES_DIR = _REPO_ROOT / "rl_training_data" / "episodes"
+_TEST_EPISODES_DIR = _REPO_ROOT / "rl_training_data" / "test_episodes"
 
 # ---------------------------------------------------------------------------
 # Preset vocabulary  (4-preset scheme; episode preset id -> arm)
@@ -69,6 +70,9 @@ _EPISODES_DIR = _REPO_ROOT / "rl_training_data" / "episodes"
 ARMS = ["skip", "light", "standard", "deep"]
 ARM_EPISODE = {"skip": 0, "light": 1, "standard": 3, "deep": 5}  # archived: 2, 4
 ARM_ROUNDS = {"skip": 0, "light": 1, "standard": 2, "deep": 3}
+
+# No-variant (test-set) articles use sequential preset IDs 0-3 in test_episodes/
+_TEST_ARM_EPISODE = {"skip": 0, "light": 1, "standard": 2, "deep": 3}
 
 # ---------------------------------------------------------------------------
 # Decision constants  (documented, tunable)
@@ -239,7 +243,9 @@ def _variant_level(article: str) -> str:
         return "minimal"
     if "__var_demanding" in article:
         return "demanding"
-    return "standard"
+    if "__var_standard" in article:
+        return "standard"
+    return "no_variant"  # no-variant test articles
 
 
 def load_variant(article: str) -> VariantData | None:
@@ -258,9 +264,14 @@ def load_variant(article: str) -> VariantData | None:
     depth = sum(int(s.get("must_cover_depth", 0)) for s in gf_secs.values())
     g_bullets = _guideline_bullets(_read(base / "article_guideline.md"))
 
+    # No-variant test articles use test_episodes/ with sequential preset IDs 0-3
+    test = "__var_" not in article
+    arm_ep = _TEST_ARM_EPISODE if test else ARM_EPISODE
+    ep_root = _TEST_EPISODES_DIR if test else _EPISODES_DIR
+
     arms: dict[str, ArmData] = {}
-    for arm, ep in ARM_EPISODE.items():
-        ep_dir = _EPISODES_DIR / f"{article}__preset{ep}"
+    for arm, ep in arm_ep.items():
+        ep_dir = ep_root / f"{article}__preset{ep}"
         ad = ArmData(arm=arm)
         final = ep_dir / "article.md"
         if final.exists():
@@ -625,13 +636,23 @@ _DEFAULT_HF_MODEL = "BAAI/bge-small-en-v1.5"
 def build_embedder(kind: str, model: str | None):
     if kind == "tfidf":
         return TfidfEmbedder()
-    # Default: semantic HF embedder.
+    # Default: semantic HF embedder — fall back to tfidf if torch is absent.
+    try:
+        import torch  # noqa: F401
+    except ModuleNotFoundError:
+        print(
+            "WARNING: 'torch' not found — falling back to tfidf embedder.\n"
+            "  For semantic embeddings install torch+transformers or use the training venv.\n"
+        )
+        return TfidfEmbedder()
     return HFEmbedder(model or _DEFAULT_HF_MODEL)
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--article", help="single article-variant")
+    ap.add_argument("--articles", nargs="+", metavar="NAME",
+                    help="one or more article-variants (space-separated)")
     ap.add_argument("--all", action="store_true", help="detailed report for every variant")
     ap.add_argument("--embedder", choices=["tfidf", "hf"], default="hf",
                     help="embedding backend (default: hf)")
@@ -641,7 +662,9 @@ def main() -> None:
     emb = build_embedder(args.embedder, args.model)
     print(f"embedder = {emb.name}\n")
 
-    if args.article:
+    if args.articles:
+        targets = args.articles
+    elif args.article:
         targets = [args.article]
     elif args.all:
         targets = _ALL_ARTICLES

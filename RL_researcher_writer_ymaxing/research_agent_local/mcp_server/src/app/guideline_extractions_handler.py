@@ -62,59 +62,97 @@ def extract_urls_by_section(text: str) -> dict[str, list[str]]:
 
 
 def extract_urls(text: str) -> list[str]:
-    """Extract all HTTP/HTTPS URLs from the given text."""
+    """Extract all HTTP/HTTPS URLs from the given text, skipping image files.
+
+    Image URLs (ending in .webp, .jpg, .jpeg, .png, .gif, .svg, .bmp, .ico,
+    .tiff, .avif) are excluded because they are writing directives ("Insert an
+    image with the URL …"), not research sources to scrape.
+    """
+    _IMAGE_EXTS = re.compile(
+        r"\.(webp|jpe?g|png|gif|svg|bmp|ico|tiff?|avif)(\?[^\s)>\"',]*)?$",
+        re.IGNORECASE,
+    )
+    # Strip HTML comments first so URLs inside <!-- ... --> are not extracted.
+    text = re.sub(r"<!--.*?-->", "", text, flags=re.DOTALL)
     url_pattern = re.compile(r"https?://[^\s)>\"',]+")
-    return url_pattern.findall(text)
+    return [u for u in url_pattern.findall(text) if not _IMAGE_EXTS.search(u)]
 
 
 def extract_url_titles(text: str) -> dict[str, str]:
-    """Extract {url: title} mapping from markdown links [title](url) in text."""
+    """Extract {url: title} mapping from markdown links [title](url) in text.
+
+    HTML comments (<!-- ... -->) are stripped first so that paywalled-URL
+    comments of the form <!-- [Title](URL) --> do not leak into the mapping.
+    """
+    text = re.sub(r"<!--.*?-->", "", text, flags=re.DOTALL)
     pattern = re.compile(r'\[([^\]]+)\]\((https?://[^\)]+)\)')
     return {url: title.strip() for title, url in pattern.findall(text)}
 
 
 def extract_local_paths(text: str) -> list[str]:
-    """Extract local file paths that are referenced inside double quotes or as standalone filenames.
+    """Extract local file paths referenced on their own line inside double quotes.
 
-    We treat a reference as a local file path if it:
-      • is wrapped in double quotes e.g. "code.py" or "src/main.py", OR
-      • appears as a standalone filename with valid extension (e.g., at the start of a line or after whitespace)
-      • does NOT start with an URL scheme such as http:// or https://
-      • has a file extension that is one of: .py, .ipynb, .md
+    Matches lines whose *entire content* (ignoring surrounding whitespace) is a
+    quoted filename, e.g.:
+
+        "Evolution and tinkering.md"
+        "src/main.py"
+
+    A line-anchored pattern is used deliberately so that inline prose quotes like
+        ``"The bird retina is one of the most metabolically active tissues..."``
+    are never mistaken for local-file references, even when the opening quote uses
+    ASCII U+0022 while the closing quote uses a curly character (U+201D).
+
+    Accepted extensions: .py  .ipynb  .md
     """
-    local_files = []
+    text = re.sub(r"<!--.*?-->", "", text, flags=re.DOTALL)
 
-    # First, find anything inside double quotes
-    candidate_pattern = re.compile(r'"([^"]+)"')
-    quoted_candidates = candidate_pattern.findall(text)
+    # Match a line whose only content (after optional whitespace) is a quoted
+    # filename with one of the accepted extensions.  Both straight (U+0022) and
+    # curly (U+201C / U+201D) opening/closing quote variants are accepted.
+    _OPEN_Q  = r'["\u201c]'
+    _CLOSE_Q = r'["\u201d]'
+    line_pattern = re.compile(
+        rf'^\s*{_OPEN_Q}([^"\u201c\u201d\n]+\.(?:py|ipynb|md)){_CLOSE_Q}\s*$',
+        re.MULTILINE | re.IGNORECASE,
+    )
 
-    for c in quoted_candidates:
-        c = c.strip()
-        # Skip if it looks like a URL
-        if re.match(r"https?://", c, re.IGNORECASE):
-            continue
-        # Must have one of the allowed file extensions
-        if re.search(r"\.(py|ipynb|md)$", c, re.IGNORECASE):
-            if c not in local_files:
-                local_files.append(c)
-
-    # Second, find standalone filenames (not wrapped in quotes)
-    # Look for files that appear after whitespace or at start of line and have valid extensions
-    standalone_pattern = re.compile(r'(?:^|\s)([^\s"]+\.(py|ipynb|md))(?:\s|$)', re.MULTILINE | re.IGNORECASE)
-    standalone_matches = standalone_pattern.findall(text)
-
-    for match in standalone_matches:
-        filename = match[0].strip()
-
-        # Skip if it looks like a URL
-        if re.match(r"https?://", filename, re.IGNORECASE):
-            continue
-
-        # Skip if it contains URL-like patterns (has protocol or domain-like structure)
-        if "://" in filename or filename.count(".") > 2:
-            continue
-
-        if filename not in local_files:
+    local_files: list[str] = []
+    for m in line_pattern.finditer(text):
+        filename = m.group(1).strip()
+        if not re.match(r"https?://", filename, re.IGNORECASE) and filename not in local_files:
             local_files.append(filename)
-
     return local_files
+
+
+def extract_local_paths_by_section(text: str) -> dict[str, list[str]]:
+    """Extract local file references and classify them as 'golden' or 'exploitation'.
+
+    Uses the same section-classification rules as :func:`extract_urls_by_section`:
+    ``## Other Sources`` → exploitation; everything else → golden.
+
+    Returns:
+        ``{"golden": [...], "exploitation": [...]}``
+    """
+    golden: list[str] = []
+    exploitation: list[str] = []
+
+    parts = re.split(r"(?m)^(?=## )", text)
+    for part in parts:
+        if not part.strip():
+            continue
+        first_line = part.split("\n", 1)[0]
+        if re.match(r"^## ", first_line):
+            header_lower = first_line.lstrip("#").strip().lower()
+            section_type = _classify_section(header_lower)
+        else:
+            section_type = "golden"
+
+        for path in extract_local_paths(part):
+            if section_type == "exploitation":
+                exploitation.append(path)
+            else:
+                golden.append(path)
+
+    return {"golden": golden, "exploitation": exploitation}
+

@@ -20,6 +20,7 @@ Usage (from writing_workflow/):
   uv run python rl_grading_generator.py --dry-run                    # plan only
   uv run python rl_grading_generator.py --articles 02_workflows_vs_agents
   uv run python rl_grading_generator.py --presets 0 1
+  uv run python rl_grading_generator.py --test                       # held-out test episodes
 """
 
 from __future__ import annotations
@@ -55,6 +56,9 @@ _THIS_DIR = Path(__file__).resolve().parent
 # Episode dirs produced by Phase 1 / Phase 2a
 EPISODES_DIR = _THIS_DIR.parent / "rl_training_data" / "episodes"
 
+# Held-out test episodes dir
+TEST_EPISODES_DIR = _THIS_DIR.parent / "rl_training_data" / "test_episodes"
+
 # Eval dataset with ground-truth articles and guidelines
 EVAL_DATA_DIR = _THIS_DIR / "inputs" / "evals" / "dataset" / "data"
 
@@ -76,7 +80,10 @@ TRAIN_ARTICLES: list[str] = [
     "11_multimodal",
 ]
 
-N_PRESETS = 6  # preset IDs 0-5
+# Held-out test articles -- must match Phase 1 / Phase 2a
+TEST_ARTICLES: list[str] = ["04_structured_outputs", "07_reasoning_planning"]
+
+N_PRESETS = 4  # preset IDs 0-3 (skip / light / standard / deep)
 MAX_RETRIES = 3
 RETRY_BACKOFF_BASE = 30  # seconds; attempt N waits N * 30s
 
@@ -248,8 +255,11 @@ async def run_pipeline(
     presets: Sequence[int],
     dry_run: bool = False,
     max_concurrent: int = DEFAULT_CONCURRENCY,
+    test_mode: bool = False,
 ) -> None:
     """Iterate over all (article, preset) combinations and grade each episode."""
+    episodes_dir = TEST_EPISODES_DIR if test_mode else EPISODES_DIR
+
     ready: list[tuple[Path, str, str]] = []  # (ep_dir, article_name, ep_name) -- has article.md, no scores.json
     done: list[str] = []  # already have scores.json
     missing_article: list[str] = []  # article.md absent
@@ -258,7 +268,7 @@ async def run_pipeline(
     for article in articles:
         for preset_id in presets:
             ep_name = _episode_dir_name(article, preset_id)
-            ep_dir = EPISODES_DIR / ep_name
+            ep_dir = episodes_dir / ep_name
 
             if not ep_dir.exists():
                 missing_research.append(ep_name)
@@ -281,11 +291,13 @@ async def run_pipeline(
     # Report plan
     logger.info("=" * 60)
     logger.info("Phase 2b grading plan")
+    logger.info(f"  Mode            : {'test (held-out)' if test_mode else 'train'}")
     logger.info(f"  To grade    : {len(ready)}")
     logger.info(f"  Already done: {len(done)}")
     logger.info(f"  Missing article.md : {len(missing_article)}")
     logger.info(f"  Missing research.md: {len(missing_research)}")
     logger.info(f"  Max concurrent  : {max_concurrent}")
+    logger.info(f"  Episodes dir    : {episodes_dir}")
     if missing_article:
         logger.info(f"  [no article.md] {missing_article}")
     if missing_research:
@@ -331,9 +343,9 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--articles",
         nargs="+",
-        default=TRAIN_ARTICLES,
+        default=None,
         metavar="ARTICLE",
-        help="Article names to process (default: all train articles)",
+        help="Article names to process (default: all train articles, or test articles with --test)",
     )
     parser.add_argument(
         "--presets",
@@ -341,7 +353,12 @@ def _parse_args() -> argparse.Namespace:
         type=int,
         default=list(range(N_PRESETS)),
         metavar="N",
-        help="Preset IDs to process (default: 0-5)",
+        help="Preset IDs to process (0, 1, 2, 3 — default: all 4)",
+    )
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Use held-out test articles and test_episodes/ output directory",
     )
     parser.add_argument(
         "--dry-run",
@@ -360,12 +377,14 @@ def _parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = _parse_args()
+    default_articles = TEST_ARTICLES if args.test else TRAIN_ARTICLES
     asyncio.run(
         run_pipeline(
-            articles=args.articles,
+            articles=args.articles if args.articles is not None else default_articles,
             presets=args.presets,
             dry_run=args.dry_run,
             max_concurrent=args.concurrency,
+            test_mode=args.test,
         )
     )
 

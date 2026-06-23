@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict
 
-from ..app.guideline_extractions_handler import extract_local_paths, extract_url_titles, extract_urls_by_section
+from ..app.guideline_extractions_handler import extract_local_paths_by_section, extract_url_titles, extract_urls_by_section
 from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
     GUIDELINES_FILENAMES_FILE,
@@ -71,8 +71,10 @@ def extract_guidelines_urls_tool(research_folder: str) -> Dict[str, Any]:
     exploitation_youtube_urls = [u for u in exploitation_urls if "youtube.com" in u]
     exploitation_other_urls = [u for u in exploitation_urls if "github.com" not in u and "youtube.com" not in u]
 
-    # Extract local file references
-    local_file_paths = extract_local_paths(text)
+    # Extract local file references, split by section (golden vs exploitation)
+    local_paths_by_section = extract_local_paths_by_section(text)
+    local_file_paths = local_paths_by_section["golden"]           # golden local files
+    exploitation_local_file_paths = local_paths_by_section["exploitation"]  # exploitation local files
 
     # Extract {url: title} mapping from markdown links [title](url)
     url_titles = extract_url_titles(text)
@@ -83,7 +85,7 @@ def extract_guidelines_urls_tool(research_folder: str) -> Dict[str, Any]:
         "github_urls": github_source_urls,
         "youtube_videos_urls": youtube_source_urls,
         "other_urls": web_source_urls,
-        "local_file_paths": local_file_paths,
+        "local_file_paths": local_file_paths,                     # golden local files (step 2.1)
         # URL→title mapping extracted from markdown links in the guideline
         "url_titles": url_titles,
         # Exploitation sources from "Other Sources" section (processed in step 2.5
@@ -91,6 +93,7 @@ def extract_guidelines_urls_tool(research_folder: str) -> Dict[str, Any]:
         "exploitation_github_urls": exploitation_github_urls,
         "exploitation_youtube_videos_urls": exploitation_youtube_urls,
         "exploitation_other_urls": exploitation_other_urls,
+        "exploitation_local_file_paths": exploitation_local_file_paths,  # exploitation local files (step 2.1)
     }
 
     # Write to GUIDELINES_FILENAMES_FILE in the research folder
@@ -112,13 +115,15 @@ def extract_guidelines_urls_tool(research_folder: str) -> Dict[str, Any]:
         "exploitation_github_sources_count": len(exploitation_github_urls),
         "exploitation_youtube_sources_count": len(exploitation_youtube_urls),
         "exploitation_web_sources_count": len(exploitation_other_urls),
+        "exploitation_local_files_count": len(exploitation_local_file_paths),
         "output_path": str(output_path.resolve()),
         "message": (
             f"Successfully extracted URLs from article guidelines in '{research_folder}'. "
             f"Golden sources — {len(github_source_urls)} GitHub, {len(youtube_source_urls)} YouTube, "
             f"{len(web_source_urls)} other URLs, {len(local_file_paths)} local files. "
             f"Exploitation sources (Other Sources section) — {len(exploitation_github_urls)} GitHub, "
-            f"{len(exploitation_youtube_urls)} YouTube, {len(exploitation_other_urls)} other URLs. "
+            f"{len(exploitation_youtube_urls)} YouTube, {len(exploitation_other_urls)} other URLs, "
+            f"{len(exploitation_local_file_paths)} local files. "
             f"Results saved to: {output_path.resolve()}"
         ),
     }

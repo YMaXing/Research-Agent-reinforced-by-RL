@@ -11,6 +11,7 @@ from ..config.constants import (
     GUIDELINES_FILENAMES_FILE,
     LOCAL_FILES_FROM_RESEARCH_FOLDER,
     RESEARCH_OUTPUT_FOLDER,
+    URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER,
 )
 from ..utils.file_utils import validate_guidelines_filenames_file, validate_research_folder
 
@@ -102,9 +103,14 @@ def process_local_files_tool(research_directory: str) -> Dict[str, Any]:
 
     # Load JSON metadata
     data = json.loads(metadata_path.read_text(encoding="utf-8"))
-    local_files = data.get("local_file_paths", [])
 
-    if not local_files:
+    # Golden local files  → local_files_from_research/  (tagged <golden_source type="local_files">)
+    # Exploitation local files → urls_from_guidelines_exploitation/  (tagged <research_source type="guideline_exploitation">)
+    golden_files       = data.get("local_file_paths", [])
+    exploitation_files = data.get("exploitation_local_file_paths", [])
+
+    all_local_files = golden_files + exploitation_files
+    if not all_local_files:
         return {
             "status": "success",
             "message": f"No local files to process in research folder '{research_directory}'.",
@@ -114,9 +120,11 @@ def process_local_files_tool(research_directory: str) -> Dict[str, Any]:
             "errors": [],
         }
 
-    # Create destination folder if it doesn't exist
-    dest_folder = research_output_path / LOCAL_FILES_FROM_RESEARCH_FOLDER
-    dest_folder.mkdir(parents=True, exist_ok=True)
+    # Destination folders
+    golden_dest_folder = research_output_path / LOCAL_FILES_FROM_RESEARCH_FOLDER
+    exploit_dest_folder = research_output_path / URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER
+    golden_dest_folder.mkdir(parents=True, exist_ok=True)
+    exploit_dest_folder.mkdir(parents=True, exist_ok=True)
 
     processed = 0
     warnings = []
@@ -126,49 +134,55 @@ def process_local_files_tool(research_directory: str) -> Dict[str, Any]:
     # Initialize notebook converter for .ipynb files
     notebook_converter = NotebookToMarkdownConverter(include_outputs=True, include_metadata=False)
 
-    for rel_path in local_files:
-        # Local files are relative to the research folder
-        src_path = research_path / rel_path
+    def _copy_one(rel_path: str, dest_folder: Path) -> None:
+        """Copy one local file to dest_folder, skipping if already present."""
+        nonlocal processed
+        dest_name = rel_path.replace("/", "_").replace("\\", "_")
+        if dest_name.lower().endswith(".ipynb"):
+            dest_name = dest_name.rsplit(".ipynb", 1)[0] + ".md"
+        dest_path = dest_folder / dest_name
 
+        # Idempotent: skip if already in destination (re-run or pre-placed manually).
+        if dest_path.exists():
+            processed += 1
+            processed_files.append(dest_name)
+            logger.info(f"  Already in place, skipping copy: {dest_name}")
+            return
+
+        src_path = research_path / rel_path
         if not src_path.exists():
             warnings.append(f"Referenced local file not found: {rel_path}")
-            continue
-
-        # Sanitize destination filename (replace path separators with underscores)
-        dest_name = rel_path.replace("/", "_").replace("\\", "_")
+            return
 
         try:
-            # Handle .ipynb files specially by converting to markdown
             if src_path.suffix.lower() == ".ipynb":
-                # Convert .ipynb to .md extension for destination
-                dest_name = dest_name.rsplit(".ipynb", 1)[0] + ".md"
-                dest_path = dest_folder / dest_name
-
-                # Convert notebook to markdown string
                 markdown_content = notebook_converter.convert_notebook_to_string(src_path)
-
-                # Write markdown content to destination
                 dest_path.write_text(markdown_content, encoding="utf-8")
             else:
-                # For other file types, copy as before
-                dest_path = dest_folder / dest_name
                 shutil.copy2(src_path, dest_path)
-
             processed += 1
             processed_files.append(dest_name)
         except Exception as e:
             errors.append(f"Failed to process {rel_path}: {str(e)}")
 
-    # Build result message using the dedicated function
-    result_message = build_result_message(research_directory, processed, local_files, dest_folder, warnings, errors)
+    for rel_path in golden_files:
+        _copy_one(rel_path, golden_dest_folder)
+
+    for rel_path in exploitation_files:
+        _copy_one(rel_path, exploit_dest_folder)
+
+    # Build result message
+    result_message = build_result_message(
+        research_directory, processed, all_local_files, golden_dest_folder, warnings, errors
+    )
 
     return {
         "status": "success" if processed > 0 else "warning",
         "files_processed": processed,
-        "files_total": len(local_files),
+        "files_total": len(all_local_files),
         "processed_files": processed_files,
         "warnings": warnings,
         "errors": errors,
-        "output_directory": str(dest_folder.resolve()),
+        "output_directory": str(golden_dest_folder.resolve()),
         "message": result_message,
     }
