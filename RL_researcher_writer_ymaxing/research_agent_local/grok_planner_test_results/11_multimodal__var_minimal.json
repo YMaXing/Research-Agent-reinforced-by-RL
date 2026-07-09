@@ -22,15 +22,14 @@
   "confidence": 0.5517,
   "floor_applied": false,
   "grok_override": false,
-  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0; section-scorer aggregate is also P0 skip (55%, entropy 1.70); all must-ev=0 and most sections are brief-flagged with surface-level guideline intent.",
+  "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN mandates P0 (overrides all else). Scorer aggregate is also P0 skip (55% budget-weighted mass); uncertain entropy but standard/deep masses only 14% each, so no sanctioned escalation. Most sections flagged 'brief', guideline demands conceptual overview only.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "external-evidence-forbidden",
-    "scorer-P0-vote",
-    "brief-flags-dominant"
+    "forbidden-evidence-policy",
+    "scorer-P0-vote-mass",
+    "brevity-flags"
   ],
   "grok_risk_flags": [
-    "scorer entropy >1.5",
-    "32 unbacked anchors"
+    "none"
   ]
 }

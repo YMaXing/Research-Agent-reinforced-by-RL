@@ -3,10 +3,10 @@
   "lesson": "29_evaluation_metrics",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": null,
-  "grok_preset": 2,
-  "chosen_preset": 2,
-  "chosen_by": "Grok-only",
+  "rl_preset": 0,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -15,24 +15,23 @@
     0.7138,
     0.685
   ],
-  "verdict": "NEAR",
-  "regret": 0.0738,
-  "regret_counted": 0.0738,
-  "entropy_bits": null,
-  "confidence": null,
-  "floor_applied": null,
-  "grok_override": null,
-  "grok_reasoning": "Dominant depth gaps (article-wide need_depth 13-32) plus 47 unbacked anchors and must-ev=1-2 in S3-S5 (18%+ budgets) show concrete missing evidence for business-metric examples, overfitting cases, and LLM-judge tradeoffs; cov is only mid-6/8 depth in weakest high-budget sections (S2/S5) despite golden sources already pulled. S2 brief flag and ALLOWED (not required) external policy keep us from P3; default cheaper arm is overridden by size of depth mandate and orphans.",
-  "grok_override_reason": null,
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.3424,
+  "confidence": 0.4559,
+  "floor_applied": true,
+  "grok_override": true,
+  "grok_reasoning": "Aggregate RL vote is P0 skip but tied 46/46 with light (MODERATE, not decisive = UNCERTAIN). Budget-weighted section mass exactly matches (skip 46%, light 46%, standard 0%, deep 9%); standard and deep masses both <<30% so no sanctioned upward escalation. Sanctioned P0→P1 nudge applies directly (runner-up light mass 46%≥25%, no higher vote concentration). Must-ev counts in S3/S4/S5 plus 47 unbacked anchors justify cheap insurance without violating S2's 'brief' flag or large-section skip vote.",
+  "grok_override_reason": "applied sanctioned P0-to-P1 nudge on tied uncertain vote with light mass ≥25% and no escalation signal above 30%",
   "grok_decision_drivers": [
-    "dominant_depth_gaps",
-    "47_unbacked_anchors",
-    "must-ev_in_S3-S5",
-    "moderate_cov_6d_in_large_sections"
+    "tied moderate aggregate vote",
+    "P0→P1 nudge criteria met",
+    "budget-weighted section mass",
+    "must-ev in mid-budget sections"
   ],
   "grok_risk_flags": [
-    "S2 brief flag may limit absorption",
-    "golden sources may already address some depth",
-    "over-escalation if must-ev examples are generic"
+    "S2 (35% budget) voted skip and is brief-flagged",
+    "dominant gaps are depth but preset is breadth-balanced"
   ]
 }

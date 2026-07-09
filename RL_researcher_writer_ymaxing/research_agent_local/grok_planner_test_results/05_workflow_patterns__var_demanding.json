@@ -22,15 +22,16 @@
   "confidence": 0.4805,
   "floor_applied": true,
   "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P1 light (48% vote) as the reward peak; external-evidence REQUIRED forbids P0 while override policy bars upward moves from any P1+ recommendation; per-section deep votes and depth gaps were already weighted by the GRPO model.",
+  "grok_reasoning": "Scorer aggregate is P1 light (48% budget-weighted mass on light, moderate confidence); standard-vote mass=0% while deep-vote mass=37% triggers the explicit deep-or-nothing guard that forbids stepping into the P2 valley from a P1 RL pick. External-evidence policy requires at least P1, which this satisfies exactly; per-section RL picks show mixed skip/light/deep but the calibrated vote-mass signal (not raw must-ev or 42 unbacked anchors) determines level. Dominant gap is depth yet escalation policy bars upward move.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
     "scorer_aggregate_P1",
+    "deep_or_nothing_guard",
     "external_evidence_required",
-    "no_sanctioned_upward"
+    "standard_vote_mass_0"
   ],
   "grok_risk_flags": [
-    "vote_split_48_37",
-    "high_must_ev_in_S1_S2"
+    "37% deep mass in S2/S5/S7 could leave theory depth gaps",
+    "high must-ev counts across S1/S2/S7"
   ]
 }

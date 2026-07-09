@@ -173,6 +173,7 @@ def build_article_evidence(
             "top2_margin": round(top2_margin, 4),
             "section_vote_mass": [round(m, 4) for m in vote_mass],
             "escalation_mass": round(vote_mass[2] + vote_mass[3], 4),
+            "standard_mass": round(vote_mass[2], 4),
             "deep_mass": round(vote_mass[3], 4),
         }
 
@@ -307,23 +308,18 @@ def render_evidence_brief(
         out.append(f"- Soft vote distribution:  {_pct_row(rl['distribution'])}")
         out.append(f"- Read: {_interpret_rl(rl['confidence'], rl['entropy_bits'])}")
         if "section_vote_mass" in rl:
-            esc = rl.get("escalation_mass", 0.0)
-            deep = rl.get("deep_mass", 0.0)
+            std_m = rl.get("standard_mass", 0.0)
+            deep_m = rl.get("deep_mass", 0.0)
             out.append(
                 f"- Budget-weighted section votes:  {_pct_row(rl['section_vote_mass'])}"
             )
             bar = f"{_ESCALATION_MASS_THRESHOLD*100:.0f}%"
-            if esc >= _ESCALATION_MASS_THRESHOLD:
-                verdict = (
-                    f"clears the {bar} escalation bar — if the vote above is NOT "
-                    "decisive, escalation is on the table."
-                )
-            else:
-                verdict = f"below the {bar} escalation bar — no escalation signal."
             out.append(
-                f"- Escalation signal: standard+deep budget mass = {esc*100:.0f}% "
-                f"(deep-only {deep*100:.0f}%). This is the share of the writing budget "
-                f"whose own section wants \u2265standard exploration; it {verdict}"
+                f"- Escalation gates: standard-vote mass = {std_m*100:.0f}%  \u00b7  "
+                f"deep-vote mass = {deep_m*100:.0f}%  (bar {bar}). "
+                f"P2 needs standard-vote mass \u2265 {bar}; P3 (from P2) needs "
+                f"deep-vote mass \u2265 {bar}. If deep-vote mass is high but "
+                f"standard-vote mass < {bar}, do NOT step into the P2 valley \u2014 stay put."
             )
         out.append("")
 
@@ -560,25 +556,28 @@ large intro section voting skip can hide small-but-heavy technical sections that
 deep exploration — the vote mass exposes exactly that.
 
 OVERRIDE POLICY
-  - SANCTIONED UPWARD ESCALATION — allowed ONLY when the scorer vote is UNCERTAIN:
-      * To P2 standard: if the RL pick is P0 or P1 AND the combined budget-weighted
-        mass of sections voting standard-or-deep is >= 30% — choose P2. The article's
-        heavy sections are telling you exploration pays off.
-      * To P3 deep: if the RL pick is P2 (or you have just escalated to P2) AND the
-        budget-weighted mass of sections voting DEEP ALONE is >= 30% — choose P3.
-        Standard-voting mass alone is NOT enough to reach deep.
-      * Escalate at most to P2 from a P0/P1 pick, or to P3 from a P2 pick, in a single
-        decision. NEVER escalate when the vote is DECISIVE.
-      * Multiple high-budget sections voting deep is EVIDENCE FOR escalation, not a
-        reason to stay at skip. Treat a split skip/deep pattern as a call to escalate
-        when the deep-voting sections carry >= 30% budget mass; otherwise stay cheaper.
+  - SANCTIONED UPWARD ESCALATION — allowed ONLY when the scorer vote is UNCERTAIN.
+    Escalation targets the LEVEL the sections themselves voted for, so use the
+    preset-SPECIFIC vote mass, never a combined total:
+      * To P2 standard: if the RL pick is P0 or P1 AND the budget-weighted mass of
+        sections voting STANDARD specifically is >= 30% — choose P2. Enough of the
+        article's budget wants exactly two rounds.
+      * To P3 deep: if the RL pick is P2 AND the budget-weighted mass of sections
+        voting DEEP specifically is >= 30% — choose P3.
+      * DEEP-OR-NOTHING GUARD: if the RL pick is P1 and the escalation mass is
+        dominated by DEEP votes (deep-vote mass is high but STANDARD-vote mass < 30%),
+        do NOT step into P2 — the standard middle sits in a reward valley for such
+        articles. Stay at P1. P3 is reachable only from a P2 pick, never a two-level
+        jump from P1.
+      * Escalate at most one preset level in a single decision (P0/P1 -> P2, or
+        P2 -> P3). NEVER escalate when the vote is DECISIVE.
   - DOWNWARD OVERRIDE: you MAY choose one level BELOW the scorer's pick when most
     high-budget sections are brief-flagged or already well-covered (depth_score >= 6),
-    or the vote is highly uncertain with no dominant arm AND the standard/deep budget
-    mass is below 30% (no real escalation signal).
+    or the vote is highly uncertain with no dominant arm AND neither standard-vote nor
+    deep-vote mass reaches 30% (no real escalation signal).
   - SANCTIONED P0 -> P1 NUDGE: if the scorer votes P0 skip, its runner-up is P1 light
-    with substantial mass (>= 25%), AND the standard/deep budget mass is below 30% —
-    you MAY choose P1 light as cheap insurance.
+    with substantial mass (>= 25%), AND neither standard-vote nor deep-vote mass
+    reaches 30% — you MAY choose P1 light as cheap insurance.
 
 USE need_depth / need_breadth FOR ROUND COMPOSITION, NOT LEVEL
 Once you have chosen a preset, need_depth / need_breadth tell you which sections need
@@ -676,7 +675,8 @@ step by step:
   2. Read the budget-weighted section-vote mass, then check whether a sanctioned
      escalation, downward override, or P0->P1 nudge applies (see OVERRIDE POLICY in
      your instructions). Escalate above the RL pick ONLY when the vote is uncertain
-     AND the standard/deep budget mass clears 30%.
+     AND the preset-SPECIFIC vote mass clears 30% (standard-vote mass for P2,
+     deep-vote mass for P3).
   3. State your final choice and the single most decisive reason.
 
 Then output ONLY the JSON block specified in your instructions (nothing after it)."""

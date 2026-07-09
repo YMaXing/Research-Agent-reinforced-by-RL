@@ -6,33 +6,33 @@
 |---|---|---|---|---|---|---|
 | 1 | 04_structured_outputs | P1 | P1 | P1 | P2 | ~ NEAR |
 | 2 | 07_reasoning_planning | P0 | P0 | P0 | P0 | ✓ EXACT |
-| 3 | 13_agent_framework | P0 | P0 | P0 | P3 | ✗ MISS |
+| 3 | 13_agent_framework | P0 | P1 | P1 | P3 | ✗ MISS |
 | 4 | 14_agent_system_design | P1 | P1 | P1 | P1 | ✓ EXACT |
-| 5 | 29_evaluation_metrics | P0 | P0 | P0 | P1 | ~ NEAR |
+| 5 | 29_evaluation_metrics | P0 | P1 | P1 | P1 | ✓ EXACT |
 | 6 | 31_CI | P0 | P0 | P0 | P1 | ~ NEAR |
 | 7 | Bird_Eye_Extreme | P0 | P0 | P0 | P1 | ~ NEAR |
 | 8 | Dark_Dimension | P0 | P0 | P0 | P0 | ✓ EXACT |
 | 9 | Distinct_AI_Models | P0 | P1 | P1 | P1 | ✓ EXACT |
-| 10 | Earth_Oceans_Origin | P1 | P1 | P1 | P3 | ✗ MISS |
+| 10 | Earth_Oceans_Origin | P1 | P2 | P2 | P3 | ~ NEAR |
 | 11 | Gravity_Entropy | P1 | P1 | P1 | P1 | ✓ EXACT |
 | 12 | HNSW | P0 | P1 | P1 | P1 | ✓ EXACT |
 | 13 | Insects_Consciousness | P0 | P1 | P1 | P1 | ✓ EXACT |
 | 14 | Space-Time_QECC | P0 | P0 | P0 | P1 | ~ NEAR |
-| 15 | State_of_LLM_Reasoning (policy: forbidden) | P0 | P0 | P0 | P0 | ✓ EXACT |
+| 15 | State_of_LLM_Reasoning (forbidden) | P0 | P0 | P0 | P0 | ✓ EXACT |
 | 16 | Understanding_Reasoning_LLMs | P0 | P0 | P0 | P2 | ✗ MISS |
 
-**Overall:** n=16 · exact=8 (50%) · near=5 (31%) · miss=3 (19%) · no-oracle/error=0
-**Ordinal MAE:** 0.750
-**Reward-regret** (allowed/required only, n=15; 1 forbidden excluded): mean=0.0677, max=0.2759
+**Overall:** n=16 · exact=9 (56%) · near=5 (31%) · miss=2 (12%) · no-oracle/error=0
+**Ordinal MAE:** 0.562
+**Reward-regret** (allowed/required only, n=15; 1 forbidden excluded): mean=0.0420, max=0.2351
 
 ### Confusion matrix
 
 | Oracle ↓ \ Predicted → | skip | light | standard | deep | n |
 |---|---|---|---|---|---|
 | P0 skip | 3 | 0 | 0 | 0 | 3 |
-| P1 light | 4 | 5 | 0 | 0 | 9 |
+| P1 light | 3 | 6 | 0 | 0 | 9 |
 | P2 standard | 1 | 1 | 0 | 0 | 2 |
-| P3 deep | 1 | 1 | 0 | 0 | 2 |
+| P3 deep | 0 | 1 | 1 | 0 | 2 |
 
 ### Baselines
 
@@ -70,11 +70,11 @@
 | 21 | 10_memory_knowledge_access__var_demanding (required) | P2 | P2 | P2 | P2 | ✓ EXACT |
 | 22 | 11_multimodal__var_minimal (forbidden) | P0 | P0 | P0 | P0 | ✓ EXACT |
 | 23 | 11_multimodal__var_standard | P1 | P1 | P1 | P1 | ✓ EXACT |
-| 24 | 11_multimodal__var_demanding (required) | P2 | P2 | P2 | P2 | ✓ EXACT |
+| 24 | 11_multimodal__var_demanding (required) | P2 | P3 | P3 | P2 | ~ NEAR |
 
-**Overall:** n=24 · exact=20 (83%) · near=4 (17%) · miss=0 (0%) · no-oracle/error=0
-**Ordinal MAE:** 0.167
-**Reward-regret** (allowed/required only, n=16; 8 forbidden excluded): mean=0.0139, max=0.0992
+**Overall:** n=24 · exact=19 (79%) · near=5 (21%) · miss=0 (0%) · no-oracle/error=0
+**Ordinal MAE:** 0.208
+**Reward-regret** (allowed/required only, n=16; 8 forbidden excluded): mean=0.0137, max=0.0992
 
 ### Confusion matrix (Train)
 
@@ -82,7 +82,7 @@
 |---|---|---|---|---|---|
 | P0 skip | 9 | 1 | 0 | 0 | 10 |
 | P1 light | 1 | 6 | 2 | 0 | 9 |
-| P2 standard | 0 | 0 | 3 | 0 | 3 |
+| P2 standard | 0 | 0 | 2 | 1 | 3 |
 | P3 deep | 0 | 0 | 0 | 2 | 2 |
 
 ### Baselines (Train)
@@ -98,14 +98,14 @@
 |---|---|---|---|---|
 | var_minimal | 8 | 8/8 | 8/8 | n/a (all policy-forced) |
 | var_standard | 8 | 5/8 | 8/8 | mean=0.0203, max=0.0992 |
-| var_demanding | 8 | 7/8 | 8/8 | mean=0.0075, max=0.0601 |
+| var_demanding | 8 | 6/8 | 8/8 | mean=0.0070, max=0.0601 |
 
 ---
 
 ## Combined — Train + Test (n=40)
 
-- n=40 · exact=28 (70%) · near=9 (23%) · miss=3 (8%) · no-oracle/error=0
-- Reward-regret (allowed/required only, n=31; 9 forbidden excluded): mean=0.0400, max=0.2759
+- n=40 · exact=28 (70%) · near=10 (25%) · miss=2 (5%) · no-oracle/error=0
+- Reward-regret (allowed/required only, n=31; 9 forbidden excluded): mean=0.0274, max=0.2351
 
 ---
 
@@ -129,13 +129,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is P1 light (53% light, 47% skip, 0% for standard/deep); moderate confidence but primary reward-trained signal. No section votes above light; high-budget S4 already at depth cov=6 while scorer weighed the must-ev totals. No sanctioned override condition met (vote not P0, entropy ~1 bit, not >1.5). Follow P1 as the unimodal peak.
+**Reasoning:** Aggregate scorer vote is P1 light (53% light / 47% skip, MODERATE confidence); budget-weighted section votes identically 53% light with 0% standard and 0% deep, so both escalation gates (≥30%) are closed. Largest-budget section (S4 40%) voted light while high-must-ev sections (S3/S4 total 33 must-ev) already pulled the RL pick upward from pure skip; no brief-flagged or well-covered majority justifies downward override to P0.
 
-**Decision drivers:** scorer_aggregate_P1 · no_higher_section_votes · balanced_gaps_already_priced
+**Decision drivers:** scorer_aggregate · budget_vote_mass · zero_escalation_mass
 
 **Risk flags:**
-- close 47-53 split could tilt either way on marginal coverage
-- high must-ev in S3/S4 (21 total) but scorer already internalized
+- moderate (not decisive) confidence
+- high must-ev in S3/S4 could still be under-covered
 
 ### 2. 07_reasoning_planning — ✓ EXACT
 
@@ -153,13 +153,14 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | yes |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is P0 skip at 55% (moderate confidence, 21% light runner-up, 24% deep). S7 (24% budget) votes deep·1.00 and light mass is <25%, so the single sanctioned P0→P1 nudge is blocked. Scorer already priced in the 42 unbacked anchors, dominant depth gaps, must-ev counts, and per-section cov/need numbers; no override condition is met.
+**Reasoning:** Aggregate RL vote is P0 (55% skip, moderate confidence, not decisive). Budget-weighted section mass is skip 55% / light 21% / standard 0% / deep 24%; standard mass <<30% and deep mass <30% so no sanctioned escalation applies and the deep-or-nothing guard instructs staying put rather than entering the P2 valley. Light mass 21% falls short of the >=25% threshold for a P0->P1 nudge. Raw gaps (42 unbacked anchors, must-ev in S1/S4/S5/S8, low cov in S1/S4) are ignored per instructions; level is set solely by calibrated vote mass.
 
-**Decision drivers:** scorer_aggregate_P0 · deep_voting_section_blocks_nudge · no_sanctioned_override
+**Decision drivers:** scorer_aggregate_P0 · vote_mass_below_escalation_gates · no_P0->P1_nudge
 
 **Risk flags:**
-- 24% deep vote on high-budget S7
-- many must-ev and orphans still present
+- S7_24pct_budget_votes_deep
+- S4_14pct_light_with_3_must_ev_8_orphans
+- moderate_not_decisive_confidence
 
 ### 3. 13_agent_framework — ✗ MISS
 
@@ -167,23 +168,25 @@ Each entry below expands one row of the summary table with the underlying scorer
 |---|---|
 | Policy | allowed |
 | RL preset | P0 |
-| Grok preset | P0 |
-| Chosen preset (by Grok4.2) | P0 |
+| Grok preset | P1 |
+| Chosen preset (by Grok4.2) | P1 |
 | Oracle | P3 (deep) |
 | Rewards (P0 / P1 / P2 / P3) | 0.6446 / 0.6716 / 0.5805 / 0.6939 |
-| Regret (counted) | 0.0492 (0.0492) |
+| Regret (counted) | 0.0223 (0.0223) |
 | Entropy | 1.3375 bits |
 | Confidence | 0.5336 |
 | Floor applied | yes |
-| Grok override | no |
+| Grok override | **yes** |
 
-**Reasoning:** Section-scorer aggregate is P0 skip (53% skip, 37% light, 10% deep, 0% standard) at moderate confidence. Sanctioned P0->P1 nudge disallowed because S11/S12 individually vote deep (depth-or-nothing pattern). Scorer already priced in 42 unbacked anchors, high must-ev in S4 (15), and dominant depth gaps; per-section cov scores show strong coverage on largest-budget deep-dive sections.
+**Reasoning:** Aggregate RL vote is P0 skip (53% soft / 55% budget-weighted) but only moderate confidence (not decisive). Light holds 36-37% vote mass (>=25% runner-up threshold) while standard=0% and deep=9% both sit far below 30% escalation gates; this exactly triggers the sanctioned P0→P1 nudge. High-gap intro sections (S1 28/6 need, cov 1·0; S2 26/6, cov 3·0) plus S4 (18% budget, 15 must-ev, 7 orphans) dominate the light votes, making one balanced round cheap insurance against unbacked anchors without crossing into the standard-vote <30% reward valley.
 
-**Decision drivers:** scorer_aggregate_P0 · deep_voting_sections_block_nudge · scorer_already_weighed_must_ev_orphans
+**Override reason:** applied sanctioned P0→P1 nudge per policy (light mass >=25%, no standard/deep mass >=30%)
+
+**Decision drivers:** moderate-confidence aggregate · 36% light vote mass · P0-to-P1 nudge rule · S1/S2/S4 gap profile
 
 **Risk flags:**
-- moderate_vote_entropy
-- S1_S2_light_votes_and_S4_high_must_ev
+- light round may yield mostly duplicate golden-source data
+- S4's 15 must-ev could still need one deeper metric refresh
 
 ### 4. 14_agent_system_design — ✓ EXACT
 
@@ -201,37 +204,39 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Scorer aggregate is P1 light (44% plurality); entropy 1.53 bits flags uncertainty but does not trigger sanctioned downward override as high-budget sections (S2/S4/S3) are mixed on RL picks and coverage; dominant gap is depth but scorer already weighted all must-ev/orphans against reward trade-off; external-evidence is only ALLOWED so P1 is the unimodal peak.
+**Reasoning:** Scorer aggregate is P1 light (44% light mass, 34% skip, 22% deep) but UNCERTAIN (entropy 1.53). Standard-vote mass is 0% and deep-vote mass is 22%, both below the 30% escalation gate, so no sanctioned upward move to P2; the explicit guard against stepping into the P2 valley when deep votes dominate without standard support applies directly. High-budget sections (S2 31% skip, S4 28% light, S3 22% deep) are mixed yet the budget-weighted peak remains at light; raw must-ev/unbacked counts were ignored per instructions. This places the decision at the reward peak without over- or under-escalation.
 
-**Decision drivers:** scorer aggregate P1 · entropy uncertainty · no sanctioned override
+**Decision drivers:** budget-weighted vote mass peaking at light · escalation gates not met (0%/22%<30%) · UNCERTAIN but no dominant escalation arm
 
 **Risk flags:**
-- vote spread could undervalue S3 depth needs
-- if gaps are deeper than scorer priced then light buys only partial evidence
+- S3 deep vote + high need_depth could justify more depth
+- dominant gap type is depth across large-budget S2/S4
 
-### 5. 29_evaluation_metrics — ~ NEAR
+### 5. 29_evaluation_metrics — ✓ EXACT
 
 | Field | Value |
 |---|---|
 | Policy | allowed |
 | RL preset | P0 |
-| Grok preset | P0 |
-| Chosen preset (by Grok4.2) | P0 |
+| Grok preset | P1 |
+| Chosen preset (by Grok4.2) | P1 |
 | Oracle | P1 (light) |
 | Rewards (P0 / P1 / P2 / P3) | 0.5118 / 0.7876 / 0.7138 / 0.685 |
-| Regret (counted) | 0.2759 (0.2759) |
+| Regret (counted) | 0.0 (0.0) |
 | Entropy | 1.3424 bits |
 | Confidence | 0.4559 |
 | Floor applied | yes |
-| Grok override | no |
+| Grok override | **yes** |
 
-**Reasoning:** Section-scorer aggregate is P0 skip (46% skip / 46% light / 9% deep, moderate confidence). S2 (35% budget) votes skip·1.00 while only the 9% intro section votes deep·1.00; this triggers the 'multiple sections voting deep → keep P0' clause and blocks the single sanctioned P0→P1 nudge. Gap table and 47 unbacked anchors already priced into the scorer's reward-optimal vote; no hard external-evidence requirement.
+**Reasoning:** Aggregate RL vote is P0 skip but tied 46/46 with light (MODERATE, not decisive = UNCERTAIN). Budget-weighted section mass exactly matches (skip 46%, light 46%, standard 0%, deep 9%); standard and deep masses both <<30% so no sanctioned upward escalation. Sanctioned P0→P1 nudge applies directly (runner-up light mass 46%≥25%, no higher vote concentration). Must-ev counts in S3/S4/S5 plus 47 unbacked anchors justify cheap insurance without violating S2's 'brief' flag or large-section skip vote.
 
-**Decision drivers:** scorer_aggregate_P0 · deep_vote_in_S1_blocks_nudge · largest_section_skip
+**Override reason:** applied sanctioned P0-to-P1 nudge on tied uncertain vote with light mass ≥25% and no escalation signal above 30%
+
+**Decision drivers:** tied moderate aggregate vote · P0→P1 nudge criteria met · budget-weighted section mass · must-ev in mid-budget sections
 
 **Risk flags:**
-- vote tie may undervalue S1 depth gap
-- dominant depth gaps could justify light touch-up
+- S2 (35% budget) voted skip and is brief-flagged
+- dominant gaps are depth but preset is breadth-balanced
 
 ### 6. 31_CI — ~ NEAR
 
@@ -249,12 +254,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is P0 skip at 100% (decisive, entropy=0); every individual section also votes skip·1.00. No sanctioned upward nudge applies (light has 0% mass). Gap table and 42 unbacked anchors were already priced into the scorer's reward-optimal vote; external-evidence policy is only ALLOWED, not required.
+**Reasoning:** Aggregate RL vote is P0 skip at 100% (DECISIVE, entropy=0). All 9 sections, including high-budget S6 (31%), S5 (17%) and must-ev-heavy S2/S5/S6, vote skip·1.00 with zero mass on light/standard/deep. No escalation gates met (std=0%, deep=0% <<30%); external-evidence=ALLOWED not required. Do not escalate on raw gaps (42 unbacked anchors, depth-dominant).
 
-**Decision drivers:** scorer_100pct_P0 · no_sanctioned_override · all_sections_skip
+**Decision drivers:** decisive_100pct_skip_vote · zero_escalation_mass · no_hard_constraint
 
 **Risk flags:**
-- high must-ev counts could indicate under-covered evidence if scorer miscalibrated
+- high must-ev in S5/S6 could still need sourcing
+- S6 1350-word length might hide qualitative gaps
 
 ### 7. Bird_Eye_Extreme — ~ NEAR
 
@@ -272,12 +278,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Scorer aggregate is decisively P0 skip (80% mass, 20% light runner-up, 0% standard/deep). This meets no sanctioned upward-nudge condition (>=25% light mass required) and the asymmetric policy forbids escalating a P0 vote on gap-table grounds alone. Scorer already priced in the 31 unbacked anchors, S1/S3 must-ev counts, and dominant depth gaps; existing local golden sources plus one exploitation pass suffice for the 2050-word theory article.
+**Reasoning:** Scorer aggregate is decisive P0 (80% skip, 0% standard, 0% deep) with identical budget-weighted section-vote mass; all escalation gates (standard-mass ≥30%, deep-mass ≥30%) are at 0% and light runner-up is only 20% (below 25% nudge threshold). Per-section RL picks are uniformly skip (except S1 light·1.00) despite must-ev and orphan counts, confirming the learned reward peak sits at no exploration. External-evidence policy is only ALLOWED, not required, so gaps do not override the calibrated signal.
 
-**Decision drivers:** scorer's decisive 80% P0 vote · nudge threshold not met (20%<25%) · no section votes standard/deep
+**Decision drivers:** decisive_scorer_P0 · zero_escalation_mass · budget_vote_alignment
 
 **Risk flags:**
-- moderate residual depth gaps in S1/S3 could leave a few must-ev thin if local files insufficient
+- 31 unbacked anchors
+- S3 must-ev=6 and high need-depth
 
 ### 8. Dark_Dimension — ✓ EXACT
 
@@ -295,12 +302,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is P0 skip at 100% (decisive, every section also votes skip·1.00). Vote distribution shows 0% mass on light so the single sanctioned P0→P1 nudge is unavailable; gap table (27 unbacked anchors, must-ev 5-8, depth-dominant) was already priced into the scorer's reward-optimal pick and cannot justify escalation per instructions.
+**Reasoning:** Aggregate scorer vote is P0 skip at 100% (DECISIVE, entropy=0). All three sections independently vote skip·1.00 with 100% budget-weighted mass on skip; standard- and deep-vote masses are both 0% so no sanctioned escalation applies. Two of three sections carry explicit 'brief' flags that prohibit absorbing extra research; external-evidence policy is only ALLOWED, not required. Raw must-ev/orphan counts are ignored per instructions when the learned signal is this decisive.
 
-**Decision drivers:** scorer_100pct_P0 · no_sanctioned_nudge_condition · all_sections_skip
+**Decision drivers:** decisive scorer vote · zero escalation mass · section brief flags
 
 **Risk flags:**
-- high must-ev and orphans could leave some claims undersourced
+- all cov_breadth=0
+- high must-ev in S3 (46% budget)
 
 ### 9. Distinct_AI_Models — ✓ EXACT
 
@@ -318,39 +326,41 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | **yes** |
 
-**Reasoning:** Scorer aggregate is P0 skip (60% mass, moderate confidence) with P1 light as runner-up at 40%. This exactly matches the sanctioned upward nudge (P0→P1 only) because runner-up mass ≥25%, no section votes standard/deep, and external-evidence is ALLOWED. Per-section table shows persistent must-ev (3–4 per section), 30 article-wide unbacked anchors, and S3/S4 (weakest, both voting light) still needing depth on convergence evidence and experimental critiques; light balanced round buys cheap insurance for these without violating brief flags on S1/S3.
+**Reasoning:** Section-scorer aggregate is P0 skip (60% mass, 40% light runner-up) but only moderate confidence and therefore uncertain. Budget-weighted section votes exactly track this split (S1+S2 60% skip; S3+S4 40% light), with zero standard or deep mass, so no sanctioned escalation to P2. Sanctioned P0→P1 nudge applies directly (light mass ≥25%, higher-preset masses <30%). Decisive signals are the 30 unbacked anchors + must-ev counts (3–4 per section) plus dominant depth gaps that the light sections themselves voted to address.
 
-**Override reason:** sanctioned P0-to-P1 nudge triggered by 40% light mass and absence of any standard/deep sectional votes
+**Override reason:** Sanctioned P0→P1 nudge triggered by substantial light mass (>=25%) and absence of standard/deep votes
 
-**Decision drivers:** scorer P0 with substantial P1 runner-up · sanctioned cheap-insurance nudge · must-ev + unbacked anchors in S3/S4
+**Decision drivers:** scorer uncertainty + 40% light mass · sanctioned P0-to-P1 nudge · must-ev and orphan counts
 
 **Risk flags:**
-- light round may still add little if exploitation already saturated the listed golden sources
-- brief-flagged S3 could be diluted if exploration pulls in excess depth
+- brief=yes flags on S1/S3 could limit absorption of new evidence
+- possible overlap with already-provided golden sources
 
-### 10. Earth_Oceans_Origin — ✗ MISS
+### 10. Earth_Oceans_Origin — ~ NEAR
 
 | Field | Value |
 |---|---|
 | Policy | allowed |
 | RL preset | P1 |
-| Grok preset | P1 |
-| Chosen preset (by Grok4.2) | P1 |
+| Grok preset | P2 |
+| Chosen preset (by Grok4.2) | P2 |
 | Oracle | P3 (deep) |
 | Rewards (P0 / P1 / P2 / P3) | 0.4707 / 0.5086 / 0.5917 / 0.6133 |
-| Regret (counted) | 0.1046 (0.1046) |
+| Regret (counted) | 0.0216 (0.0216) |
 | Entropy | 0.9367 bits |
 | Confidence | 0.6471 |
 | Floor applied | yes |
-| Grok override | no |
+| Grok override | **yes** |
 
-**Reasoning:** Section-scorer aggregate is P1 light (65% light, 35% standard, moderate confidence). High-budget sections S2/S3 are brief-flagged with solid depth cov (7 and 6); dominant gap is breadth but scorer already priced must-ev/unbacked anchors (38 total) into its P1 vote. No sanctioned override applies: cannot escalate above P1, and conditions for dropping to P0 not decisive enough to depart from primary signal.
+**Reasoning:** Aggregate RL vote is P1 light at moderate 65% confidence (uncertain) with exactly 35% budget-weighted standard mass. This meets the sanctioned-upward-escalation rule (RL pick=P1 + uncertain + standard-vote mass≥30%). S3 (35% budget, RL=standard·1.00, must-ev=5, need_depth=2) plus 38 article-wide unbacked anchors and dominant breadth gaps supply the concrete justification; no deep mass so P2 is the calibrated peak.
 
-**Decision drivers:** scorer_aggregate_P1 · brief_flags_on_high_budget · no_upward_override_allowed
+**Override reason:** sanctioned escalation from uncertain P1 to P2 because standard-vote mass=35% clears 30% threshold
+
+**Decision drivers:** uncertain aggregate (65%) · standard-vote mass=35% · S3 must-ev=5 + need_depth=2
 
 **Risk flags:**
-- 35% standard mass on S3 (high must-ev=5)
-- breadth-dominant gaps could benefit from extra round
+- possible diminishing returns on breadth if cov_b=3 already suffices
+- S2 (37%) voted light so extra round may add redundancy
 
 ### 11. Gravity_Entropy — ✓ EXACT
 
@@ -368,13 +378,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is P1 light (58% light, 42% skip, 0% for standard/deep) with moderate confidence; this is the reward-trained peak. Multiple high-budget sections (S2/S3) are brief-flagged and cannot absorb extra material; dominant gap is depth (not breadth) while several sections already show depth_score >=6-7. Scorer already priced the 32 unbacked anchors, must-ev counts, and per-section needs (S2/S5 weakest) against the unimodal reward curve; no sanctioned override condition is met.
+**Reasoning:** Scorer aggregate is P1 light (58% light / 42% skip mass, moderate confidence, UNCERTAIN). Budget-weighted section votes show 0% mass on standard or deep (far below 30% escalation gate), so no sanctioned upward move; raw gaps (32 unbacked anchors, must-ev totals) are ignored per policy. Multiple high-budget sections are already at cov ≥7·4 or brief-flagged, aligning with light touch-up rather than P0 or P2.
 
-**Decision drivers:** scorer_aggregate_P1 · brief_flags_on_S2_S3 · depth_dominant_gaps · no_higher_votes
+**Decision drivers:** scorer_aggregate_P1 · zero_escalation_mass · brief_flags_on_S2_S3
 
 **Risk flags:**
-- S2 low coverage (4·4) but brief-flagged may limit upside
-- 42% skip mass could make light marginal if gaps are already overstated
+- moderate scorer confidence (58%)
+- depth-dominant gaps in S2/S5
 
 ### 12. HNSW — ✓ EXACT
 
@@ -392,15 +402,15 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | **yes** |
 
-**Reasoning:** Scorer aggregate is P0 (54% skip, 46% light, 0% on P2/P3); this exactly matches the sanctioned P0→P1 nudge (runner-up ≥25%, no section votes standard/deep). Decisive drivers are S4 (46% budget, RL pick light·1.00, 9 must-ev, 12 orphans) plus dominant depth gaps, while brief-flagged S1/S2 stay protected.
+**Reasoning:** Aggregate RL vote is P0 skip (54% mass, moderate confidence, not decisive). Budget-weighted section votes show 46% light (driven by S4's 46% share voting light·1.00 with must-ev=9, orphans=12, cov=4·3). Standard- and deep-vote masses are 0% so no sanctioned escalation to P2/P3; P0→P1 nudge applies directly (light runner-up ≥25%, no higher masses). This supplies cheap insurance for dominant depth gaps and 47 unbacked anchors without entering reward valley.
 
-**Override reason:** Sanctioned cheap-insurance nudge from P0 to P1 per asymmetric policy; scorer already priced gaps but distribution + S4's must-ev justify light touch-up
+**Override reason:** Sanctioned P0→P1 nudge triggered by 46% light mass + uncertain scorer (no std/deep mass ≥30%)
 
-**Decision drivers:** scorer vote split 54/46 · S4 high-budget must-ev · sanctioned P0->P1 condition · no P2/P3 section votes
+**Decision drivers:** RL uncertainty + light mass · S4 must-ev/orphans · P0-to-P1 nudge policy
 
 **Risk flags:**
-- light round may still add little on brief S2
-- depth-dominant gaps could need more than one balanced round
+- Existing cov already moderate (esp. S1/S3); light round could still duplicate material
+- Depth-dominant gaps in S2/S4 might need more but 0% std vote bars P2
 
 ### 13. Insects_Consciousness — ✓ EXACT
 
@@ -418,15 +428,15 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | **yes** |
 
-**Reasoning:** Scorer aggregate P0 (68% skip, 32% light runner-up); exactly matches sanctioned P0->P1 nudge (substantial light mass, no std/deep section votes); 22 unbacked anchors + per-section must-ev 4-6 justify cheap insurance without violating asymmetry or reward curve.
+**Reasoning:** Scorer aggregate is P0 skip (68% mass, 32% light) and is UNCERTAIN (moderate confidence <70%). Budget-weighted votes show exactly the P0->P1 nudge conditions: light mass 32% (>=25%), standard-mass 0% and deep-mass 0% (both <30%). Per-section table shows consistent must-ev (4-6 per section), 22 article-wide unbacked anchors, and dominant depth gaps even in high-budget S2/S3 despite their skip votes; P1 supplies cheap insurance without crossing into the P2 valley.
 
-**Override reason:** Sanctioned single-level P0->P1 nudge condition met; scorer's primary signal respected but overridden per explicit policy for cheap insurance
+**Override reason:** applied sanctioned P0->P1 nudge per policy (light runner-up >=25% with no higher-preset mass)
 
-**Decision drivers:** scorer P0+32% light mass · sanctioned nudge clause · must-ev and unbacked count
+**Decision drivers:** P0->P1 nudge · light-vote mass 32% · must-ev + orphan counts
 
 **Risk flags:**
-- over-escalation dilutes flow if gaps are already priced in
-- depth-dominant gaps may need more than light
+- existing golden sources may already cover many must-ev
+- could be marginal gain if cov d·b already meets minimal guideline
 
 ### 14. Space-Time_QECC — ~ NEAR
 
@@ -444,12 +454,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | yes |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is decisively P0 (84% skip, 0% light/standard, 16% deep). The 16% deep mass is exactly accounted for by S2's 16% budget voting deep·1.00 with cov 0·0, yet the learned vote still peaks at skip; per asymmetric override rules, no sanctioned P0→P1 nudge exists because runner-up is not light at ≥25% and a section individually votes deep. Scorer already priced the 27 unbacked anchors, S2 must-ev=4, and brief-flagged high-budget sections, so reward peak is at P0.
+**Reasoning:** Aggregate RL vote is decisive P0 skip at 84% budget-weighted mass (soft votes: skip 84%, deep 16%, light/standard 0%). Deep-vote mass from S2 (16% budget, high-need but only one section) sits below the 30% sanctioned-escalation gate; decisive vote forbids upward moves per override policy. Article-wide must-ev/unbacked anchors exist but instructions prohibit escalating on raw gap counts; external-evidence policy is only ALLOWED, not required.
 
-**Decision drivers:** scorer 84% P0 decisive · no sanctioned upward nudge · gap table not re-derived
+**Decision drivers:** decisive P0 aggregate · deep-mass <30% · no escalation gate met
 
 **Risk flags:**
-- S2 zero coverage + deep vote could indicate under-explored core mechanics
+- S2 zero coverage + deep vote
+- 27 unbacked anchors
 
 ### 15. State_of_LLM_Reasoning — ✓ EXACT (policy: forbidden)
 
@@ -467,12 +478,12 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | yes |
 | Grok override | no |
 
-**Reasoning:** External-evidence policy is explicitly FORBIDDEN, mandating P0 skip per hard constraints. Scorer aggregate is also decisive P0 (71% skip, 0% standard). Per-section table shows depth-dominant gaps and unbacked anchors but these were already priced into the scorer vote; policy overrides any escalation.
+**Reasoning:** HARD CONSTRAINT: external-evidence policy=forbidden mandates P0; scorer aggregate is decisive P0 (71% skip, 69% budget-weighted) with zero standard-mass and only 13% deep-mass (no escalation possible)
 
-**Decision drivers:** external_evidence_forbidden · scorer_P0_71pct
+**Decision drivers:** hard_constraint_forbidden · decisive_scorer_vote
 
 **Risk flags:**
-- some sections show low cov_d and high must-ev
+- none
 
 ### 16. Understanding_Reasoning_LLMs — ✗ MISS
 
@@ -490,14 +501,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | yes |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is decisive P0 skip (92% mass, 0% light/standard, only 8% deep); S6's individual deep vote and high must-ev/unbacked anchors (52 total) were already priced into the GRPO-trained recommendation. No sanctioned upward nudge applies (runner-up not P1 at ≥25%, depth-or-nothing pattern present). Gap table ignored per asymmetric-override policy.
+**Reasoning:** Aggregate RL vote is P0 skip at 92% (DECISIVE, entropy near-zero). Budget-weighted mass is 92% skip / 8% deep (S6 only); standard-mass=0% and deep-mass=8% both <<30% escalation gate. No P0→P1 nudge (light mass=0%). High must-ev/unbacked counts and zero coverage scores exist but instructions forbid escalating on raw gaps when scorer is decisive; external-evidence policy only ALLOWS, does not require.
 
-**Decision drivers:** scorer_92pct_skip · decisive_vote · no_sanctioned_P0->P1
+**Decision drivers:** decisive_scorer_aggregate · low_preset_specific_vote_mass · no_sanctioned_escalation
 
 **Risk flags:**
-- S5 45% budget + 8 must-ev could be under-covered
-- all cov 0·0 but scorer already weighed
-
+- S5 (45% budget) and S7 show 8/5 must-ev yet scorer still picked skip
+- all sections at cov 0·0 after exploitation pass
 
 
 ### Train split (n=24)
@@ -512,20 +522,21 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Chosen preset (by Grok4.2) | P0 |
 | Oracle | P0 (skip) |
 | Rewards (P0 / P1 / P2 / P3) | 0.4962 / 0.6931 / 0.45 / 0.475 |
-| Regret (counted) | 0.0 (excluded — forbidden) |
+| Regret (counted) | 0.0 (excluded — forbidden policy, not counted in regret stats) |
 | Entropy | 1.543 bits |
 | Confidence | 0.4231 |
 | Floor applied | no |
 | Grok override | **yes** |
 
-**Reasoning:** Hard constraint: external-evidence policy explicitly set to FORBIDDEN (exploration output cannot be used). This overrides the uncertain P1-light aggregate vote (42% light, entropy 1.54 bits) and per-section gaps (e.g. S5 standard pick, 48 unbacked anchors). Guideline also demands conceptual overview only with no external libraries/case studies.
+**Reasoning:** Hard constraint: external-evidence policy=FORBIDDEN explicitly requires P0 skip (exploration output cannot be used). Scorer aggregate is P1 light (UNCERTAIN, entropy 1.54 bits; budget-weighted votes: light 42%, skip 35%, standard 23%, deep 0%) but override policy mandates P0 when evidence is forbidden. All 'must stay brief' flags, surface-level conceptual scope, and explicit bans on external examples reinforce no exploration needed.
 
-**Override reason:** External-evidence policy = forbidden mandates P0; cannot escalate or use exploration
+**Override reason:** Hard constraint forces P0 despite scorer's P1 light recommendation
 
-**Decision drivers:** external-evidence policy · hard constraint override
+**Decision drivers:** external-evidence-forbidden · hard-constraint · brevity-flags
 
 **Risk flags:**
-- scorer uncertainty and dominant depth gaps ignored due to policy
+- scorer uncertainty could miss minor internal gaps
+- guideline cites sources but policy forbids using them
 
 #### 18. 02_workflows_vs_agents__var_standard — ✓ EXACT
 
@@ -543,14 +554,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | yes |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is P1 light (58% light, 29% standard, 13% deep; moderate confidence). No sanctioned override conditions met: not highly uncertain (dominant light arm), high-budget sections (S5 30%, S4 18%) not mostly brief-flagged or depth_score >=6 across the board, and upward moves from a P1+ vote are forbidden. Dominant depth gaps and 47 unbacked anchors were already priced into the scorer's P1 recommendation.
+**Reasoning:** Aggregate RL pick is P1 light at 58% budget-weighted mass (MODERATE confidence). Standard-vote mass=29% falls short of the 30% gate for sanctioned escalation to P2; deep mass=13% is far below. High-budget S5 (light vote, cov 8·6) plus brief flags on S1/S4 lock in the peak without override.
 
-**Decision drivers:** scorer_aggregate_P1 · no_sanctioned_override · moderate_confidence
+**Decision drivers:** RL aggregate vote · standard-mass <30% gate · high-budget section alignment
 
 **Risk flags:**
-- S2_deep_vote_and_S3/S6_standard_votes
-- must_ev_4_in_largest_section_S5
-- depth-dominant_gaps
+- S2/S3 depth gaps could be understated if guideline examples require fresher 2025 sources
+- moderate scorer confidence on hybrid-spectrum article
 
 #### 19. 02_workflows_vs_agents__var_demanding — ~ NEAR
 
@@ -568,13 +578,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Scorer's budget-weighted aggregate is P2 standard (49% top-pick, 29% skip runner-up, moderate confidence). No sanctioned override applies: S5 (29% budget) votes skip with cov 8·6 but the RL model already priced this against must-ev and depth needs in S2-S4 (standard ·1.00 each). Dominant gap type is depth, matching the depth-first round in the chosen preset; external-evidence policy is ALLOWED and gaps justify exploration.
+**Reasoning:** Aggregate RL vote is P2 standard (49% budget-weighted mass on standard, exceeding 30% gate; 0% deep). Vote is moderate/uncertain (not >=70% decisive) but per-section table shows high-budget S2/S3/S4 (49% combined) voting standard with must-ev 2-3, depth gaps (need_d 6-7), and unbacked anchors; S5's skip (29%, cov 8·6) is outweighed. No sanctioned escalation to P3 (deep mass=0) or downward override (dominant standard arm, multiple must-ev). Dominant gap=depth, external policy=allowed.
 
-**Decision drivers:** scorer_aggregate_P2 · moderate_49pct · no_sanctioned_override
+**Decision drivers:** aggregate RL pick P2 + 49% standard mass · must-ev and depth gaps in S2-S4/S6 · no deep mass for P3
 
 **Risk flags:**
-- S5_skip_vote_on_high_budget_section
-- vote_entropy_from_29pct_skip
+- S5 large skip vote may make extra rounds duplicative
+- many must-ev could still need targeted depth if sources thin
 
 #### 20. 03_context_engineering__var_minimal — ✓ EXACT (policy: forbidden)
 
@@ -586,18 +596,19 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Chosen preset (by Grok4.2) | P0 |
 | Oracle | P0 (skip) |
 | Rewards (P0 / P1 / P2 / P3) | 0.7625 / 0.7783 / 0.6314 / 0.7269 |
-| Regret (counted) | 0.0 (excluded — forbidden) |
+| Regret (counted) | 0.0 (excluded — forbidden policy, not counted in regret stats) |
 | Entropy | 0.8967 bits |
 | Confidence | 0.6908 |
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** External-evidence policy is explicitly FORBIDDEN, which hard-constrains to P0 skip regardless of other signals. Scorer aggregate is 69% skip (moderate confidence, 0% on std/deep); every section is brief-flagged with 0 must-ev, cov scores already meet guideline surface-level intent, and the guideline repeatedly stresses conceptual overview with no external examples or depth required.
+**Reasoning:** HARD CONSTRAINT: external-evidence policy=FORBIDDEN explicitly requires P0 skip (exploration output cannot be used). Scorer aggregate is also P0 (69% skip, 72% budget-weighted skip mass); standard- and deep-vote masses are 0% so no sanctioned escalation applies. Every section is flagged 'brief: yes' and the guideline demands only surface-level conceptual treatment with no external examples or code.
 
-**Decision drivers:** external-evidence-forbidden · scorer-P0-dominant · all-sections-brief-flagged
+**Decision drivers:** external-evidence-forbidden · scorer-P0 · all-sections-brief
 
 **Risk flags:**
-- internal exploitation may have left conceptual anchors unbacked
+- moderate scorer confidence
+- many unbacked anchors but policy forbids using exploration to fill them
 
 #### 21. 03_context_engineering__var_standard — ~ NEAR
 
@@ -615,13 +626,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is P1 light (53% vs 47% skip, 0% on standard/deep) as the reward-trained peak; high-budget sections (S3/S4/S6/S7) already show cov d≥5-8 on many must-ev items and the scorer weighed the 68 orphans + dominant depth gaps. No override conditions met (no brief flags, vote not uncertain enough for downward). Light balanced round targets the direction without over-escalation risk.
+**Reasoning:** Scorer aggregate is P1 light (53% soft vote, 51% budget-weighted) but UNCERTAIN (moderate confidence, near-tie with 49% skip, 0% standard/deep). No sanctioned escalation (standard-vote mass=0% <<30%). Several high-budget sections (S6 20%, S4 15%, S7 15%) show high must-ev (6/3), depth needs (55/33/55) and orphans (18/10/18) despite decent cov; dominant article gap is depth. P1 matches the reward peak without inflating to unsupported P2.
 
-**Decision drivers:** scorer aggregate (primary) · moderate confidence · no sanctioned override
+**Decision drivers:** scorer aggregate P1 (51% budget mass) · zero escalation mass for standard/deep · high must-ev + depth gaps in S6/S7/S4
 
 **Risk flags:**
-- close skip/light split could undervalue S6/S7 depth gaps
-- if must-ev sourcing is harder than scored, light may leave a few anchors thin
+- close 51-49 split could justify P0 downward
+- many sections already at cov_d >=6
 
 #### 22. 03_context_engineering__var_demanding — ✓ EXACT (policy: required)
 
@@ -639,14 +650,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | yes |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is P1 light (68% mass, moderate confidence) after budget-weighting every section; this is the reward-trained peak. External-evidence policy is REQUIRED so P0 is forbidden, but no sanctioned upward override exists from a P1+ vote and dominant gaps are already priced into the scorer. Per-section table shows depth-dominant needs and must-ev (esp. S6 11, S4 6) yet high cov d·b scores (mostly 7-8·6) and light RL picks on the largest-budget sections; escalation would cross the single-peaked reward curve.
+**Reasoning:** Aggregate RL vote P1 light (68% mass, standard mass only 23%); escalation gate requires standard-vote mass >=30% when uncertain, which is not met; external-evidence=REQUIRED forbids P0 while high must-ev/depth gaps (esp. S6 11, S4 6) were already factored into the budget-weighted scorer votes.
 
-**Decision drivers:** scorer_aggregate_P1 · external_required_minimum · depth_dominant_but_high_cov
+**Decision drivers:** scorer_aggregate · vote_mass_below_30pct · external_policy_floor
 
 **Risk flags:**
-- S3/S8 standard votes
-- 52 unbacked anchors
-- S6 high must-ev
+- moderate (68%) confidence
+- S3/S8 standard votes totaling 23%
 
 #### 23. 05_workflow_patterns__var_minimal — ✓ EXACT (policy: forbidden)
 
@@ -658,20 +668,20 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Chosen preset (by Grok4.2) | P0 |
 | Oracle | P0 (skip) |
 | Rewards (P0 / P1 / P2 / P3) | 0.872 / 0.8408 / 0.796 / 0.746 |
-| Regret (counted) | 0.0 (excluded — forbidden) |
+| Regret (counted) | 0.0 (excluded — forbidden policy, not counted in regret stats) |
 | Entropy | 0.9912 bits |
 | Confidence | 0.5552 |
 | Floor applied | no |
 | Grok override | **yes** |
 
-**Reasoning:** External-evidence policy is explicitly FORBIDDEN, which is a hard constraint mandating P0 skip regardless of the section-scorer's P1-light aggregate (56% light, 44% skip). All 7 sections are brief-flagged, guideline demands only surface-level conceptual overview with no external libs/case studies, and exploration output cannot be used.
+**Reasoning:** Hard constraint: external-evidence policy=FORBIDDEN mandates P0 skip (exploration output cannot be used). Scorer aggregate is moderate P1 (56% light, 44% skip; 0% standard/deep) but OVERRIDE POLICY and HARD CONSTRAINTS require ignoring it. All sections flagged 'brief', guideline demands surface-level conceptual overview with no external libs/cases/benchmarks.
 
-**Override reason:** Hard constraint from external-evidence policy = forbidden requires P0 despite scorer's P1 vote
+**Override reason:** external-evidence policy explicitly FORBIDDEN, forcing P0 regardless of scorer or gap counts
 
-**Decision drivers:** external-evidence policy · all sections brief-flagged · surface-level guideline
+**Decision drivers:** hard-constraint-forbidden · all-sections-brief · 0% std/deep mass
 
 **Risk flags:**
-- scorer lean toward light but policy is absolute
+- many unbacked anchors (52) and must-ev items cannot be filled
 
 #### 24. 05_workflow_patterns__var_standard — ~ NEAR
 
@@ -689,13 +699,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Scorer aggregate is P2 standard (49% top vote, 41% light runner-up, moderate confidence); dominant gap type is depth with high need_d in S1/S2 (40/44) plus 52 article-wide unbacked anchors; high-budget sections mostly cov_d >=6 but scorer already priced this in; no sanctioned override condition met.
+**Reasoning:** Aggregate RL pick is P2 (49% standard-vote mass >30% gate); uncertain but no qualifying escalation (deep mass only 10%) or downward (dominant arm, depth-dominant gaps, no briefs). Matches weakest-section needs without overbuying on already-covered cov.
 
-**Decision drivers:** scorer_aggregate_P2 · dominant_depth_gaps
+**Decision drivers:** aggregate RL pick · standard-vote mass >=30% · dominant gap type
 
 **Risk flags:**
-- vote split 49-41 could tilt light on marginal returns
-- S2 theory-only with 14 orphans
+- moderate scorer entropy could undervalue S2 deep vote
+- high unbacked anchors but instructions forbid raw-gap escalation
 
 #### 25. 05_workflow_patterns__var_demanding — ✓ EXACT (policy: required)
 
@@ -713,13 +723,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | yes |
 | Grok override | no |
 
-**Reasoning:** Scorer aggregate is P1 light (48% vote) as the reward peak; external-evidence REQUIRED forbids P0 while override policy bars upward moves from any P1+ recommendation; per-section deep votes and depth gaps were already weighted by the GRPO model.
+**Reasoning:** Scorer aggregate is P1 light (48% budget-weighted mass on light, moderate confidence); standard-vote mass=0% while deep-vote mass=37% triggers the explicit deep-or-nothing guard that forbids stepping into the P2 valley from a P1 RL pick. External-evidence policy requires at least P1, which this satisfies exactly; per-section RL picks show mixed skip/light/deep but the calibrated vote-mass signal (not raw must-ev or 42 unbacked anchors) determines level. Dominant gap is depth yet escalation policy bars upward move.
 
-**Decision drivers:** scorer_aggregate_P1 · external_evidence_required · no_sanctioned_upward
+**Decision drivers:** scorer_aggregate_P1 · deep_or_nothing_guard · external_evidence_required · standard_vote_mass_0
 
 **Risk flags:**
-- vote_split_48_37
-- high_must_ev_in_S1_S2
+- 37% deep mass in S2/S5/S7 could leave theory depth gaps
+- high must-ev counts across S1/S2/S7
 
 #### 26. 06_tools__var_minimal — ✓ EXACT (policy: forbidden)
 
@@ -731,19 +741,18 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Chosen preset (by Grok4.2) | P0 |
 | Oracle | P0 (skip) |
 | Rewards (P0 / P1 / P2 / P3) | 0.6903 / 0.6818 / 0.557 / 0.3205 |
-| Regret (counted) | 0.0 (excluded — forbidden) |
+| Regret (counted) | 0.0 (excluded — forbidden policy, not counted in regret stats) |
 | Entropy | 0.9643 bits |
 | Confidence | 0.6107 |
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** External-evidence policy explicitly FORBIDDEN (mandates P0); section-scorer aggregate is P0 skip (61% mass, 0% on std/deep); every high-budget section (S3–S7) is brief-flagged with surface-level mandate and cov d·b already >=3·2.
+**Reasoning:** External-evidence policy is explicitly FORBIDDEN, mandating P0 skip per hard constraints. Scorer aggregate is also P0 (61% skip, 0% standard/deep mass); all sections flagged 'brief' or surface-level only; guideline forbids external libs/case studies/benchmarks.
 
-**Decision drivers:** external-evidence-forbidden · scorer-aggregate-P0 · universal-brevity-flags
+**Decision drivers:** forbidden-policy · scorer-P0-vote · brevity-flags
 
 **Risk flags:**
-- moderate scorer entropy (39% light)
-- many unbacked anchors (47) but policy and brevity override
+- none
 
 #### 27. 06_tools__var_standard — ✓ EXACT
 
@@ -761,13 +770,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is P0 skip (59%, runner-up standard 18%) but uncertain (entropy 1.61). Multiple sections individually vote standard/deep (S2, S6, S8), violating the exact conditions for the single sanctioned P0→P1 nudge. Scorer already priced in the 52 unbacked anchors, high must-ev counts, and dominant depth gaps; instructions forbid re-deriving escalation from the per-section table. External-evidence policy=ALLOWED does not trigger mandatory exploration.
+**Reasoning:** Aggregate RL vote is P0 skip (59% mass) despite uncertainty (entropy 1.61). Standard mass=18% and deep mass=9% both <<30% escalation gate, so no sanctioned upward move per override policy. Largest section (S3, 26% budget) voted skip·1.00 with brief=yes (must stay short); do not escalate on raw must-ev/orphans counts.
 
-**Decision drivers:** scorer_aggregate_P0 · sanctioned_nudge_conditions_not_met · no_hard_constraint
+**Decision drivers:** aggregate RL vote · escalation masses below 30% · S3 brief flag
 
 **Risk flags:**
-- high uncertainty
-- large depth gaps in S3/S4 despite brief flag
+- high must-ev in S3/S4 could leave unsourced claims
+- uncertain scorer on code-heavy article
 
 #### 28. 06_tools__var_demanding — ✓ EXACT (policy: required)
 
@@ -785,13 +794,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is P3 deep (38% mass) despite high uncertainty (entropy 1.92 bits). This is the primary signal; high-budget S3 (24%, RL pick deep·1.00, need_depth=8) and S8 (must-ev=4, RL pick deep·1.00) dominate the weighted vote. Guideline explicitly demands named production examples, real-world failure modes, text-to-SQL mechanisms, sandbox security mitigations and concrete RAG/memory anchors in S8/S9, which the prior exploitation pass only partially met. No sanctioned downward override applies given the must-ev and depth-dominant economics.
+**Reasoning:** Aggregate RL pick is P3 deep (38% deep-vote mass) on an uncertain scorer (entropy 1.92). Deep mass clears the 30% bar while standard mass (26%) does not; high-budget sections S3 (24%, deep·1.00, need_depth 8) and S8 (11%, deep·1.00, must-ev=4, cov 5·4) drive the peak. External-evidence=REQUIRED and depth-dominant article gaps (42 unbacked anchors) align with P3; no sanctioned downward override applies as deep mass dominates and several sections remain under-covered on must-ev items.
 
-**Decision drivers:** scorer_P3_recommendation · must-ev_in_S8_S9 · depth_gaps_in_S3
+**Decision drivers:** P3 aggregate on uncertain scorer · 38% deep-vote mass from S3+S8 · must-ev=4 in S8 and depth-dominant gaps · REQUIRED external-evidence policy
 
 **Risk flags:**
-- high entropy could justify P2 if gaps were overestimated
-- P3 may surface diminishing returns on code-heavy sections
+- scorer entropy >1.5 could over-weight S3/S8 at expense of well-covered S5/S7
+- diminishing returns on already cov-7 sections if depth rounds add duplicates
 
 #### 29. 08_react_practice__var_minimal — ✓ EXACT (policy: forbidden)
 
@@ -803,18 +812,18 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Chosen preset (by Grok4.2) | P0 |
 | Oracle | P0 (skip) |
 | Rewards (P0 / P1 / P2 / P3) | 0.6543 / 0.1224 / 0.0647 / 0.3828 |
-| Regret (counted) | 0.0 (excluded — forbidden) |
+| Regret (counted) | 0.0 (excluded — forbidden policy, not counted in regret stats) |
 | Entropy | 0.8727 bits |
 | Confidence | 0.7069 |
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** External-evidence policy explicitly FORBIDDEN (exploration output cannot be used), mandating P0; section-scorer aggregate decisively votes P0 skip (71% / 0% on P2/P3) with only one light section; guideline repeatedly demands 'must stay brief', surface-level notebook mirroring, and no external libraries/case studies.
+**Reasoning:** External-evidence policy is explicitly FORBIDDEN, mandating P0. Scorer aggregate is decisive P0 skip (71% budget-weighted vote mass); standard- and deep-vote masses are both 0% so no sanctioned escalation applies. All sections are brief-flagged and guideline demands surface-level treatment with no external examples allowed.
 
-**Decision drivers:** external-evidence-forbidden · scorer-aggregate-P0 · brevity-flags
+**Decision drivers:** forbidden-evidence-policy · decisive-P0-vote · brief-flags-on-all-sections
 
 **Risk flags:**
-- none - hard constraint overrides all gap signals
+- none - hard constraint aligns with scorer
 
 #### 30. 08_react_practice__var_standard — ✓ EXACT
 
@@ -832,15 +841,15 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | **yes** |
 
-**Reasoning:** Scorer aggregate is P0 (51%) but P1 runner-up holds 49% mass; sanctioned upward nudge from P0 to P1 is permitted because no section votes standard/deep and conditions match exactly. Largest-budget sections (S4/S5) individually select light and carry high must-ev (12+18); P1 is the reward peak per the unimodal curve and cheap-insurance clause.
+**Reasoning:** Aggregate P0 (51% skip) is uncertain with 49% light runner-up from high-budget S4/S5 (both RL-pick light, 49% total mass). This triggers the exact sanctioned P0->P1 nudge (>=25% light, 0% standard/deep mass). Balanced gaps and must-ev already baked into per-section votes; S5 brief flag caps absorption.
 
-**Override reason:** applied single sanctioned P0->P1 nudge (substantial runner-up mass, no std/deep section votes)
+**Override reason:** applied sanctioned P0->P1 nudge per policy (runner-up light mass 49% >=25%, no higher votes)
 
-**Decision drivers:** scorer aggregate + vote split · sanctioned P0->P1 nudge condition · section RL picks on high-budget rows
+**Decision drivers:** budget-weighted vote mass · P0->P1 nudge eligibility · S4/S5 light picks
 
 **Risk flags:**
-- S5 brief=yes may limit absorption
-- 51/49 split could be noise
+- S5 brief=yes may dilute light round value
+- close 51-49 split could still peak at P0
 
 #### 31. 08_react_practice__var_demanding — ✓ EXACT (policy: required)
 
@@ -858,13 +867,14 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is P2 standard (46% vs 45% skip; moderate confidence). External-evidence policy is REQUIRED so P0 forbidden; dominant gap type is depth with 42 unbacked anchors and high-budget S5 (28%, standard·1.00, need_depth 22, cov 7) plus S4 (18%, standard·1.00) driving the weighted vote. No sanctioned downward override triggered because not all high-budget sections are brief-flagged and unmet depth pressure remains substantial.
+**Reasoning:** Scorer aggregate is P2 standard (46% standard-vote mass >30% gate) on an UNCERTAIN but non-decisive vote (46% top-pick, 45% skip). Largest-budget section S5 (28%) and S4 (18%) both vote standard with high need_depth (22/13); external-evidence policy forbids P0 and dominant gap type is depth. No sanctioned upward move (deep mass=0%) and no downward override trigger (standard mass dominant, not all high-budget sections brief-flagged).
 
-**Decision drivers:** scorer_aggregate_P2 · external_evidence_required · dominant_depth_gaps · S5_S4_budgeted_standard_votes
+**Decision drivers:** scorer_aggregate_P2 · standard_vote_mass_46pct · S5_28pct_standard_need_depth_22 · required_external_evidence
 
 **Risk flags:**
-- bimodal vote (skip/standard tie)
-- S5 brief flag could limit absorption
+- near-tie skip_vote_45pct
+- brief_yes_on_largest_S5
+- many_unbacked_anchors_42
 
 #### 32. 09_RAG__var_minimal — ✓ EXACT (policy: forbidden)
 
@@ -876,18 +886,19 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Chosen preset (by Grok4.2) | P0 |
 | Oracle | P0 (skip) |
 | Rewards (P0 / P1 / P2 / P3) | 0.7317 / 0.5683 / 0.4467 / 0.3627 |
-| Regret (counted) | 0.0 (excluded — forbidden) |
+| Regret (counted) | 0.0 (excluded — forbidden policy, not counted in regret stats) |
 | Entropy | 0.9588 bits |
 | Confidence | 0.6318 |
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** External-evidence policy is explicitly FORBIDDEN; exploration output cannot be used, so P0 is the only valid choice per hard constraints. Section-scorer aggregate also votes P0 skip (63% mass, 0% on P2/P3). Per-section must-ev and unbacked anchors exist but are already priced into the scorer's P0 recommendation; guideline demands surface-level theory only with no external examples permitted.
+**Reasoning:** External-evidence policy is explicitly FORBIDDEN, which hard-constrains to P0; section-scorer aggregate is also P0 skip (63% budget-weighted mass, 0% standard/deep); every section is brief-flagged with surface-level guideline intent and a 1500-word hard cap.
 
-**Decision drivers:** external-evidence-forbidden · scorer-P0-vote
+**Decision drivers:** hard-forbidden-policy · scorer-P0-vote · all-sections-brief
 
 **Risk flags:**
-- moderate scorer entropy (37% on light)
+- moderate scorer confidence (63%)
+- high unbacked anchors (42) but irrelevant under policy
 
 #### 33. 09_RAG__var_standard — ~ NEAR
 
@@ -905,13 +916,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | yes |
 | Grok override | no |
 
-**Reasoning:** Scorer aggregate is P0 skip at 52% (moderate; standard runner-up 29%). Sanctioned P0-to-P1 nudge disallowed: light only 19% (below 25% mass), runner-up not light, and S4 (29% budget) votes standard. No hard external-evidence constraint and gap table (48 unbacked anchors, high must-ev in S3/S4) ignored per instructions as scorer already weighted them for reward peak.
+**Reasoning:** Section-scorer aggregate is P0 skip (52% mass, MODERATE/UNCERTAIN). Budget-weighted standard-vote mass sits at 29% (explicitly flagged as below the 30% bar) and deep-vote mass is 0%; light mass is only 19% so the P0→P1 nudge also fails. No sanctioned escalation or downward override applies. Decisive signals are therefore the RL aggregate itself plus the exact escalation-gate numbers that keep us at skip.
 
-**Decision drivers:** scorer_aggregate_P0 · nudges_not_met
+**Decision drivers:** scorer-aggregate-P0 · standard-mass-29pct-below-gate · no-nudge-conditions-met
 
 **Risk flags:**
-- moderate vote entropy
-- S4 standard vote on largest section
+- S4 (29% budget) voted standard with 6 must-ev
+- 48 unbacked anchors but policy forbids raw-gap escalation
 
 #### 34. 09_RAG__var_demanding — ✓ EXACT
 
@@ -929,14 +940,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is P3 deep (59% deep, 0% skip) with moderate confidence; this is the primary signal. Dominant gap type is depth, weakest high-budget sections (S1/S2) show low cov (4/8 depth) + high need_depth (10/2 and 7/4), S3 carries 8 must-ev, S6 carries 5 must-ev, and 32 unbacked anchors remain. Guideline demands many named tools/benchmarks/production examples plus one failure-mode case study; these align with the scorer's reward-optimal pick of deep (3 rounds: depth → breadth → depth). No sanctioned override applies.
+**Reasoning:** Scorer aggregate is P3 deep (59% soft / 64% budget-weighted deep mass); moderate but not decisive. Deep-vote mass >>30% bar while standard mass=17%<30% so no sanctioned escalation or P2-valley risk; dominant depth gaps (need_d 10/7/7 in S1/S2/S6), 32 unbacked anchors, 8 must-ev in S3, and guideline's repeated 'must cover in depth' for embeddings, chunking, metadata, agentic distinction, plus production examples all align with P3. No downward override as high-budget weakest sections (S1 15%, S2 14%) show low cov (4·4 / 4·2).
 
-**Decision drivers:** scorer_P3_59pct · depth_dominant_gaps_S1_S2_S6 · 23_total_must_ev_plus_32_unbacked
+**Decision drivers:** scorer P3 + 64% deep mass · depth-dominant gaps + 32 orphans · must-ev counts across S1-S3/S6
 
 **Risk flags:**
-- moderate_vote_entropy_23pct_light
-- S1_brief_flag_limits_absorption
-- possible_diminishing_returns_on_final_depth_round
+- moderate scorer confidence on demanding variant
+- S4/S5 already cov 7+, possible diminishing returns
 
 #### 35. 10_memory_knowledge_access__var_minimal — ✓ EXACT (policy: forbidden)
 
@@ -948,15 +958,15 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Chosen preset (by Grok4.2) | P0 |
 | Oracle | P0 (skip) |
 | Rewards (P0 / P1 / P2 / P3) | 0.6893 / 0.64 / 0.6446 / 0.5982 |
-| Regret (counted) | 0.0 (excluded — forbidden) |
+| Regret (counted) | 0.0 (excluded — forbidden policy, not counted in regret stats) |
 | Entropy | 0.8631 bits |
 | Confidence | 0.7143 |
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** External-evidence policy is explicitly FORBIDDEN, mandating P0 skip per hard constraints. Section-scorer aggregate is decisively P0 (71% skip, 0% standard/deep); all sections are brief-flagged with high existing cov d·b (>=6·6) and guideline demands surface-level conceptual overview only.
+**Reasoning:** Hard constraint: external-evidence policy=FORBIDDEN explicitly requires P0 skip (exploration output cannot be used). Scorer aggregate is decisive P0 at 71% budget-weighted mass (standard=0%, deep=0%); every section is brief-flagged and already meets cov≥6.
 
-**Decision drivers:** forbidden-policy · scorer-decisive-P0 · brevity-flags
+**Decision drivers:** forbidden-evidence-policy · decisive-P0-vote · all-sections-brief
 
 **Risk flags:**
 - none
@@ -977,13 +987,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate votes P1 light (63% mass) despite entropy 1.52 uncertainty; this is the reward-trained peak after pricing in all must-ev, orphans, need_depth (esp. S1/S3), and dominant depth gaps. No sanctioned override triggered (cannot escalate P1+; not all high-budget sections are brief/well-covered). Per-section RL picks and brief flag on S5 further anchor at light.
+**Reasoning:** Scorer aggregate is P1 (63% light mass); uncertain but light-dominant with standard/deep masses only 15% each (below 30% escalation gates). S5 brief-flagged, S6/S7 already well-covered (cov 7·6), dominant gap type is depth but policy bars re-deriving level from raw gaps.
 
-**Decision drivers:** section-scorer aggregate · vote entropy/uncertainty · no sanctioned override
+**Decision drivers:** scorer_aggregate · vote_mass_below_threshold · brief_flag_on_S5
 
 **Risk flags:**
-- S3 deep vote + high must-ev could leave depth shortfall
-- 32 unbacked anchors if light yields duplicates
+- depth_gaps_in_S3_S1_may_remain
+- must-ev_4_in_S5_with_brief
 
 #### 37. 10_memory_knowledge_access__var_demanding — ✓ EXACT (policy: required)
 
@@ -1001,12 +1011,13 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** Scorer aggregate is P2 standard at 81% (decisive, all high-budget sections vote standard or deep); dominant gap=depth and must-ev totals align with 2-round depth->breadth; external-evidence=REQUIRED rules out P0; no override conditions triggered per asymmetric policy.
+**Reasoning:** The GRPO-trained section-scorer's aggregate is decisively P2 standard (81% budget-weighted mass on standard, 19% on deep). This already incorporates the per-section need_depth (3-7), must-ev counts (2-5), unbacked anchors (28 total), and dominant depth-gap economics; S6's lone deep vote (19% budget) falls below the 30% sanctioned-escalation gate for P3. External-evidence policy is REQUIRED but satisfied by P2; no brief flags or high-coverage sections justify a downward override.
 
-**Decision drivers:** scorer_aggregate · dominant_depth_gaps · external_required
+**Decision drivers:** decisive_scorer_81pct_standard · standard_vote_mass_81pct · deep_vote_mass_below_30pct · required_external_evidence_met
 
 **Risk flags:**
-- S6 deep vote + high must-ev could under-serve production lessons
+- S6 (19% budget) and S1/S7 weakest sections show elevated need_depth
+- guideline demands many named production examples and one failure-mode case study
 
 #### 38. 11_multimodal__var_minimal — ✓ EXACT (policy: forbidden)
 
@@ -1018,19 +1029,18 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Chosen preset (by Grok4.2) | P0 |
 | Oracle | P0 (skip) |
 | Rewards (P0 / P1 / P2 / P3) | 0.369 / 0.3362 / 0.3024 / 0.2631 |
-| Regret (counted) | 0.0 (excluded — forbidden) |
+| Regret (counted) | 0.0 (excluded — forbidden policy, not counted in regret stats) |
 | Entropy | 1.699 bits |
 | Confidence | 0.5517 |
 | Floor applied | no |
 | Grok override | no |
 
-**Reasoning:** External-evidence policy is explicitly FORBIDDEN, mandating P0; section-scorer aggregate is also P0 skip (55%, entropy 1.70); all must-ev=0 and most sections are brief-flagged with surface-level guideline intent.
+**Reasoning:** Hard constraint: external-evidence policy=FORBIDDEN mandates P0 (overrides all else). Scorer aggregate is also P0 skip (55% budget-weighted mass); uncertain entropy but standard/deep masses only 14% each, so no sanctioned escalation. Most sections flagged 'brief', guideline demands conceptual overview only.
 
-**Decision drivers:** external-evidence-forbidden · scorer-P0-vote · brief-flags-dominant
+**Decision drivers:** forbidden-evidence-policy · scorer-P0-vote-mass · brevity-flags
 
 **Risk flags:**
-- scorer entropy >1.5
-- 32 unbacked anchors
+- none
 
 #### 39. 11_multimodal__var_standard — ✓ EXACT
 
@@ -1048,33 +1058,36 @@ Each entry below expands one row of the summary table with the underlying scorer
 | Floor applied | yes |
 | Grok override | no |
 
-**Reasoning:** Section-scorer aggregate is P1 light (48% light vs 45% skip, moderate confidence); no sanctioned override applies (not P0, not uncertain >1.5 bits, not all high-budget sections brief/well-covered). S3/S5 show strong coverage (5·5/8·5) yet S1/S7 remain depth-weak (4·4 cov, deep/light votes) with depth-dominant gaps and 42 unbacked anchors; scorer already priced these, so P1 is the reward peak.
+**Reasoning:** Aggregate RL vote is P1 light (budget-weighted: light 55%, skip 39%, standard 0%, deep 6%); moderate confidence, not decisive. Escalation gates unmet (standard-mass 0% <<30%, deep-mass 6% <<30%), no sanctioned upward move; downward override also fails as high-budget sections (S3 23% skip cov 5·5, S5 15% light cov 8·5) mix well-covered with depth gaps in S1/S7 and 11 must-ev bullets. Dominant gap=depth but raw counts do not override the calibrated vote peak at P1.
 
-**Decision drivers:** scorer_aggregate_P1 · moderate_vote_split · mixed_high-budget_cov · depth_dominant_no_escalation
+**Decision drivers:** budget-weighted vote mass · escalation gates unmet · high-budget section coverage
 
 **Risk flags:**
-- close skip/light split could undervalue S1/S7 depth
-- must-ev in S3/S5 might need one extra source
+- S1 deep vote (6% budget) may leave intro gaps
+- 11 must-ev items could need more than light touch-up
 
-#### 40. 11_multimodal__var_demanding — ✓ EXACT (policy: required)
+#### 40. 11_multimodal__var_demanding — ~ NEAR (policy: required)
 
 | Field | Value |
 |---|---|
 | Policy | **required** |
 | RL preset | P2 |
-| Grok preset | P2 |
-| Chosen preset (by Grok4.2) | P2 |
+| Grok preset | P3 |
+| Chosen preset (by Grok4.2) | P3 |
 | Oracle | P2 (standard) |
 | Rewards (P0 / P1 / P2 / P3) | 0.4383 / 0.5775 / 0.6064 / 0.6104 |
-| Regret (counted) | 0.0 (0.0) |
+| Regret (counted) | -0.004 (-0.004) |
 | Entropy | 1.1036 bits |
 | Confidence | 0.6313 |
 | Floor applied | no |
-| Grok override | no |
+| Grok override | **yes** |
 
-**Reasoning:** Section-scorer aggregate is P2 standard (63% vote, 34% deep, moderate confidence); high must-ev counts (S5:6, S2:5, S3:4, S4:4) plus dominant depth gaps and 38 unbacked anchors already priced into the GRPO vote. External-evidence REQUIRED eliminates P0; no sanctioned downward conditions met (no brief flags, clear dominant arm, several high-budget sections show unmet need_depth).
+**Reasoning:** Scorer aggregate is P2 standard (63% standard / 34% deep mass; MODERATE confidence, not decisive). Budget-weighted votes show 64% standard + 33% deep; deep mass >=30% from S4 (18%, deep·1.00, 4 must-ev) and S5 (15%, deep·1.00, 6 must-ev) triggers sanctioned P2->P3 escalation per override policy. 38 unbacked anchors, dominant depth gaps, high must-ev in large sections (S2/S3/S4/S5), and REQUIRED external-evidence policy confirm need for extra depth round.
 
-**Decision drivers:** scorer_aggregate_P2 · must_ev_in_S2_S3_S4_S5 · external_ev_required · dominant_depth_gaps
+**Override reason:** Sanctioned upward escalation from P2 to P3 because vote uncertain and deep-vote mass (33%) clears 30% threshold on heavy technical sections
+
+**Decision drivers:** budget-weighted deep mass 33% · high must-ev in S4/S5 (4-6) · 38 unbacked anchors · REQUIRED evidence policy
 
 **Risk flags:**
-- 34% deep mass could indicate marginal extra value in S4/S5 but asymmetry penalizes over-escalation
+- possible diminishing returns on already-strong S3/S5 coverage
+- guideline length could inflate perceived gaps

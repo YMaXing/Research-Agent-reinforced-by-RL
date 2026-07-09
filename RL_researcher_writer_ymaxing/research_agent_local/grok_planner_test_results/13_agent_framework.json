@@ -3,10 +3,10 @@
   "lesson": "13_agent_framework",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": null,
-  "grok_preset": 2,
-  "chosen_preset": 2,
-  "chosen_by": "Grok-only",
+  "rl_preset": 0,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
@@ -15,23 +15,23 @@
     0.5805,
     0.6939
   ],
-  "verdict": "NEAR",
-  "regret": 0.1133,
-  "regret_counted": 0.1133,
-  "entropy_bits": null,
-  "confidence": null,
-  "floor_applied": null,
-  "grok_override": null,
-  "grok_reasoning": "Dominant depth gap (need d/b skewed high in S1–S4), 42 article-wide unbacked anchors, and must-ev spikes (15 in 18% S4 landscape survey, 6 in S3 axes, 3–7 in intros) create concrete evidence needs for adoption metrics, golden-source citations, and capstone mappings. Deep-dive sections (S5–S12) already show solid cov (4–5 depth, 0 orphans), so targeted depth-then-breadth fills the high-budget gaps without waste. External-evidence ALLOWED but not required; P3 unwarranted as gaps are not uniformly large.",
-  "grok_override_reason": null,
+  "verdict": "MISS",
+  "regret": 0.0223,
+  "regret_counted": 0.0223,
+  "entropy_bits": 1.3375,
+  "confidence": 0.5336,
+  "floor_applied": true,
+  "grok_override": true,
+  "grok_reasoning": "Aggregate RL vote is P0 skip (53% soft / 55% budget-weighted) but only moderate confidence (not decisive). Light holds 36-37% vote mass (>=25% runner-up threshold) while standard=0% and deep=9% both sit far below 30% escalation gates; this exactly triggers the sanctioned P0→P1 nudge. High-gap intro sections (S1 28/6 need, cov 1·0; S2 26/6, cov 3·0) plus S4 (18% budget, 15 must-ev, 7 orphans) dominate the light votes, making one balanced round cheap insurance against unbacked anchors without crossing into the standard-vote <30% reward valley.",
+  "grok_override_reason": "applied sanctioned P0→P1 nudge per policy (light mass >=25%, no standard/deep mass >=30%)",
   "grok_decision_drivers": [
-    "must-ev & depth in S4/S1–S3",
-    "42 unbacked anchors",
-    "dominant depth gap",
-    "strong later-section cov"
+    "moderate-confidence aggregate",
+    "36% light vote mass",
+    "P0-to-P1 nudge rule",
+    "S1/S2/S4 gap profile"
   ],
   "grok_risk_flags": [
-    "golden sources may already cover more than table implies",
-    "future-dated pepy metrics could inflate perceived gap"
+    "light round may yield mostly duplicate golden-source data",
+    "S4's 15 must-ev could still need one deeper metric refresh"
   ]
 }

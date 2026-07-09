@@ -3,10 +3,10 @@
   "lesson": "Space-Time_QECC",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": null,
-  "grok_preset": 2,
-  "chosen_preset": 2,
-  "chosen_by": "Grok-only",
+  "rl_preset": 0,
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -16,22 +16,21 @@
     0.5188
   ],
   "verdict": "NEAR",
-  "regret": 0.0944,
-  "regret_counted": 0.0944,
-  "entropy_bits": null,
-  "confidence": null,
-  "floor_applied": null,
-  "grok_override": null,
-  "grok_reasoning": "S2 zero coverage + need 8/6 and must-ev 4 is the decisive hole; 27 unbacked anchors and 21 total must-ev confirm sizeable balanced gaps, yet brief flags on large sections and strong S4 coverage keep it from P3",
+  "regret": 0.14,
+  "regret_counted": 0.14,
+  "entropy_bits": 0.6343,
+  "confidence": 0.84,
+  "floor_applied": true,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate RL vote is decisive P0 skip at 84% budget-weighted mass (soft votes: skip 84%, deep 16%, light/standard 0%). Deep-vote mass from S2 (16% budget, high-need but only one section) sits below the 30% sanctioned-escalation gate; decisive vote forbids upward moves per override policy. Article-wide must-ev/unbacked anchors exist but instructions prohibit escalating on raw gap counts; external-evidence policy is only ALLOWED, not required.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "S2 zero-cov + max-depth need",
-    "21 must-ev",
-    "27 unbacked anchors",
-    "balanced gaps + brief constraints"
+    "decisive P0 aggregate",
+    "deep-mass <30%",
+    "no escalation gate met"
   ],
   "grok_risk_flags": [
-    "golden sources may not contain all quoted remarks",
-    "S5 small budget could still hide missed dS/CFT refs"
+    "S2 zero coverage + deep vote",
+    "27 unbacked anchors"
   ]
 }

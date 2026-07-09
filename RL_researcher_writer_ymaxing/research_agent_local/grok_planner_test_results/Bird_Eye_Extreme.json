@@ -3,10 +3,10 @@
   "lesson": "Bird_Eye_Extreme",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": null,
-  "grok_preset": 2,
-  "chosen_preset": 2,
-  "chosen_by": "Grok-only",
+  "rl_preset": 0,
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -16,23 +16,21 @@
     0.4522
   ],
   "verdict": "NEAR",
-  "regret": 0.161,
-  "regret_counted": 0.161,
-  "entropy_bits": null,
-  "confidence": null,
-  "floor_applied": null,
-  "grok_override": null,
-  "grok_reasoning": "31 unbacked anchors and dominant depth gap (needs 17–25 vs cov only 3–4d/2b) plus high must-ev (4–6 per section, esp. S3 at 29% budget) show concrete sizeable gaps in key claims, quotes, numbers, and transcriptomic/evolutionary evidence. S1+S3 are weakest; external-evidence allowed. P2 depth-first then breadth buys the missing sourced facts without P3 overkill on a 2050-word theory piece.",
+  "regret": 0.2351,
+  "regret_counted": 0.2351,
+  "entropy_bits": 0.7121,
+  "confidence": 0.8049,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is decisive P0 (80% skip, 0% standard, 0% deep) with identical budget-weighted section-vote mass; all escalation gates (standard-mass ≥30%, deep-mass ≥30%) are at 0% and light runner-up is only 20% (below 25% nudge threshold). Per-section RL picks are uniformly skip (except S1 light·1.00) despite must-ev and orphan counts, confirming the learned reward peak sits at no exploration. External-evidence policy is only ALLOWED, not required, so gaps do not override the calibrated signal.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "unbacked_anchors_31",
-    "dominant_depth_gap",
-    "must-ev_4-6",
-    "S3_budget+need_25",
-    "low_cov_3-4d"
+    "decisive_scorer_P0",
+    "zero_escalation_mass",
+    "budget_vote_alignment"
   ],
   "grok_risk_flags": [
-    "local_golden_sources_may_already_cover_some_quotes",
-    "S2/S4 stronger so marginal over-exploration there"
+    "31 unbacked anchors",
+    "S3 must-ev=6 and high need-depth"
   ]
 }

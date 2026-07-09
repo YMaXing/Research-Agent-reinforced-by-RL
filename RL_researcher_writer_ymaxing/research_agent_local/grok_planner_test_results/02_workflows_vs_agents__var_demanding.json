@@ -22,15 +22,15 @@
   "confidence": 0.4943,
   "floor_applied": false,
   "grok_override": false,
-  "grok_reasoning": "Scorer's budget-weighted aggregate is P2 standard (49% top-pick, 29% skip runner-up, moderate confidence). No sanctioned override applies: S5 (29% budget) votes skip with cov 8·6 but the RL model already priced this against must-ev and depth needs in S2-S4 (standard ·1.00 each). Dominant gap type is depth, matching the depth-first round in the chosen preset; external-evidence policy is ALLOWED and gaps justify exploration.",
+  "grok_reasoning": "Aggregate RL vote is P2 standard (49% budget-weighted mass on standard, exceeding 30% gate; 0% deep). Vote is moderate/uncertain (not >=70% decisive) but per-section table shows high-budget S2/S3/S4 (49% combined) voting standard with must-ev 2-3, depth gaps (need_d 6-7), and unbacked anchors; S5's skip (29%, cov 8·6) is outweighed. No sanctioned escalation to P3 (deep mass=0) or downward override (dominant standard arm, multiple must-ev). Dominant gap=depth, external policy=allowed.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer_aggregate_P2",
-    "moderate_49pct",
-    "no_sanctioned_override"
+    "aggregate RL pick P2 + 49% standard mass",
+    "must-ev and depth gaps in S2-S4/S6",
+    "no deep mass for P3"
   ],
   "grok_risk_flags": [
-    "S5_skip_vote_on_high_budget_section",
-    "vote_entropy_from_29pct_skip"
+    "S5 large skip vote may make extra rounds duplicative",
+    "many must-ev could still need targeted depth if sources thin"
   ]
 }

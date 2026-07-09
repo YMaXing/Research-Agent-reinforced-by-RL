@@ -22,14 +22,14 @@
   "confidence": 0.5552,
   "floor_applied": false,
   "grok_override": true,
-  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, which is a hard constraint mandating P0 skip regardless of the section-scorer's P1-light aggregate (56% light, 44% skip). All 7 sections are brief-flagged, guideline demands only surface-level conceptual overview with no external libs/case studies, and exploration output cannot be used.",
-  "grok_override_reason": "Hard constraint from external-evidence policy = forbidden requires P0 despite scorer's P1 vote",
+  "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN mandates P0 skip (exploration output cannot be used). Scorer aggregate is moderate P1 (56% light, 44% skip; 0% standard/deep) but OVERRIDE POLICY and HARD CONSTRAINTS require ignoring it. All sections flagged 'brief', guideline demands surface-level conceptual overview with no external libs/cases/benchmarks.",
+  "grok_override_reason": "external-evidence policy explicitly FORBIDDEN, forcing P0 regardless of scorer or gap counts",
   "grok_decision_drivers": [
-    "external-evidence policy",
-    "all sections brief-flagged",
-    "surface-level guideline"
+    "hard-constraint-forbidden",
+    "all-sections-brief",
+    "0% std/deep mass"
   ],
   "grok_risk_flags": [
-    "scorer lean toward light but policy is absolute"
+    "many unbacked anchors (52) and must-ev items cannot be filled"
   ]
 }

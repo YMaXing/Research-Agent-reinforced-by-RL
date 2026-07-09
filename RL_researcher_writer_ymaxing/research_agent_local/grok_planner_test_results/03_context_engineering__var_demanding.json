@@ -22,16 +22,15 @@
   "confidence": 0.6766,
   "floor_applied": true,
   "grok_override": false,
-  "grok_reasoning": "Section-scorer aggregate is P1 light (68% mass, moderate confidence) after budget-weighting every section; this is the reward-trained peak. External-evidence policy is REQUIRED so P0 is forbidden, but no sanctioned upward override exists from a P1+ vote and dominant gaps are already priced into the scorer. Per-section table shows depth-dominant needs and must-ev (esp. S6 11, S4 6) yet high cov d·b scores (mostly 7-8·6) and light RL picks on the largest-budget sections; escalation would cross the single-peaked reward curve.",
+  "grok_reasoning": "Aggregate RL vote P1 light (68% mass, standard mass only 23%); escalation gate requires standard-vote mass >=30% when uncertain, which is not met; external-evidence=REQUIRED forbids P0 while high must-ev/depth gaps (esp. S6 11, S4 6) were already factored into the budget-weighted scorer votes.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer_aggregate_P1",
-    "external_required_minimum",
-    "depth_dominant_but_high_cov"
+    "scorer_aggregate",
+    "vote_mass_below_30pct",
+    "external_policy_floor"
   ],
   "grok_risk_flags": [
-    "S3/S8 standard votes",
-    "52 unbacked anchors",
-    "S6 high must-ev"
+    "moderate (68%) confidence",
+    "S3/S8 standard votes totaling 23%"
   ]
 }

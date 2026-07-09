@@ -22,15 +22,15 @@
   "confidence": 0.5339,
   "floor_applied": false,
   "grok_override": false,
-  "grok_reasoning": "Section-scorer aggregate is P1 light (53% vs 47% skip, 0% on standard/deep) as the reward-trained peak; high-budget sections (S3/S4/S6/S7) already show cov d≥5-8 on many must-ev items and the scorer weighed the 68 orphans + dominant depth gaps. No override conditions met (no brief flags, vote not uncertain enough for downward). Light balanced round targets the direction without over-escalation risk.",
+  "grok_reasoning": "Scorer aggregate is P1 light (53% soft vote, 51% budget-weighted) but UNCERTAIN (moderate confidence, near-tie with 49% skip, 0% standard/deep). No sanctioned escalation (standard-vote mass=0% <<30%). Several high-budget sections (S6 20%, S4 15%, S7 15%) show high must-ev (6/3), depth needs (55/33/55) and orphans (18/10/18) despite decent cov; dominant article gap is depth. P1 matches the reward peak without inflating to unsupported P2.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer aggregate (primary)",
-    "moderate confidence",
-    "no sanctioned override"
+    "scorer aggregate P1 (51% budget mass)",
+    "zero escalation mass for standard/deep",
+    "high must-ev + depth gaps in S6/S7/S4"
   ],
   "grok_risk_flags": [
-    "close skip/light split could undervalue S6/S7 depth gaps",
-    "if must-ev sourcing is harder than scored, light may leave a few anchors thin"
+    "close 51-49 split could justify P0 downward",
+    "many sections already at cov_d >=6"
   ]
 }

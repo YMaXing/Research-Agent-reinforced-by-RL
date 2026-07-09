@@ -3,10 +3,10 @@
   "lesson": "Earth_Oceans_Origin",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": null,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok-only",
+  "rl_preset": 1,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
@@ -15,23 +15,22 @@
     0.5917,
     0.6133
   ],
-  "verdict": "MISS",
-  "regret": 0.1046,
-  "regret_counted": 0.1046,
-  "entropy_bits": null,
-  "confidence": null,
-  "floor_applied": null,
-  "grok_override": null,
-  "grok_reasoning": "Coverage already strong (6-7/8 depth, 3/6 breadth) with zero orphans; dominant gap is breadth not depth and all but S4 are explicitly brief. However 38 article-wide unbacked anchors plus high must-ev (6 in 37% S2, 5 in 35% S3) on named missions, papers, quotes and experiments justify one balanced round; external-evidence is only ALLOWED, not required, so no escalation past P1.",
-  "grok_override_reason": null,
+  "verdict": "NEAR",
+  "regret": 0.0216,
+  "regret_counted": 0.0216,
+  "entropy_bits": 0.9367,
+  "confidence": 0.6471,
+  "floor_applied": true,
+  "grok_override": true,
+  "grok_reasoning": "Aggregate RL vote is P1 light at moderate 65% confidence (uncertain) with exactly 35% budget-weighted standard mass. This meets the sanctioned-upward-escalation rule (RL pick=P1 + uncertain + standard-vote mass≥30%). S3 (35% budget, RL=standard·1.00, must-ev=5, need_depth=2) plus 38 article-wide unbacked anchors and dominant breadth gaps supply the concrete justification; no deep mass so P2 is the calibrated peak.",
+  "grok_override_reason": "sanctioned escalation from uncertain P1 to P2 because standard-vote mass=35% clears 30% threshold",
   "grok_decision_drivers": [
-    "high must-ev in largest sections",
-    "38 unbacked anchors",
-    "breadth-dominant gaps",
-    "already-high cov + brief constraints"
+    "uncertain aggregate (65%)",
+    "standard-vote mass=35%",
+    "S3 must-ev=5 + need_depth=2"
   ],
   "grok_risk_flags": [
-    "local golden-source files may already cover must-ev",
-    "under-counting qualitative depth for specific experimental quotes in S3"
+    "possible diminishing returns on breadth if cov_b=3 already suffices",
+    "S2 (37%) voted light so extra round may add redundancy"
   ]
 }

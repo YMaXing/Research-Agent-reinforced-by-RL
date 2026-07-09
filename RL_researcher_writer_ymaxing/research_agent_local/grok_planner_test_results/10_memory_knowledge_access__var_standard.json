@@ -22,15 +22,15 @@
   "confidence": 0.6261,
   "floor_applied": false,
   "grok_override": false,
-  "grok_reasoning": "Section-scorer aggregate votes P1 light (63% mass) despite entropy 1.52 uncertainty; this is the reward-trained peak after pricing in all must-ev, orphans, need_depth (esp. S1/S3), and dominant depth gaps. No sanctioned override triggered (cannot escalate P1+; not all high-budget sections are brief/well-covered). Per-section RL picks and brief flag on S5 further anchor at light.",
+  "grok_reasoning": "Scorer aggregate is P1 (63% light mass); uncertain but light-dominant with standard/deep masses only 15% each (below 30% escalation gates). S5 brief-flagged, S6/S7 already well-covered (cov 7·6), dominant gap type is depth but policy bars re-deriving level from raw gaps.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "section-scorer aggregate",
-    "vote entropy/uncertainty",
-    "no sanctioned override"
+    "scorer_aggregate",
+    "vote_mass_below_threshold",
+    "brief_flag_on_S5"
   ],
   "grok_risk_flags": [
-    "S3 deep vote + high must-ev could leave depth shortfall",
-    "32 unbacked anchors if light yields duplicates"
+    "depth_gaps_in_S3_S1_may_remain",
+    "must-ev_4_in_S5_with_brief"
   ]
 }

@@ -22,15 +22,15 @@
   "confidence": 0.5864,
   "floor_applied": false,
   "grok_override": false,
-  "grok_reasoning": "Section-scorer aggregate is P0 skip (59%, runner-up standard 18%) but uncertain (entropy 1.61). Multiple sections individually vote standard/deep (S2, S6, S8), violating the exact conditions for the single sanctioned P0→P1 nudge. Scorer already priced in the 52 unbacked anchors, high must-ev counts, and dominant depth gaps; instructions forbid re-deriving escalation from the per-section table. External-evidence policy=ALLOWED does not trigger mandatory exploration.",
+  "grok_reasoning": "Aggregate RL vote is P0 skip (59% mass) despite uncertainty (entropy 1.61). Standard mass=18% and deep mass=9% both <<30% escalation gate, so no sanctioned upward move per override policy. Largest section (S3, 26% budget) voted skip·1.00 with brief=yes (must stay short); do not escalate on raw must-ev/orphans counts.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer_aggregate_P0",
-    "sanctioned_nudge_conditions_not_met",
-    "no_hard_constraint"
+    "aggregate RL vote",
+    "escalation masses below 30%",
+    "S3 brief flag"
   ],
   "grok_risk_flags": [
-    "high uncertainty",
-    "large depth gaps in S3/S4 despite brief flag"
+    "high must-ev in S3/S4 could leave unsourced claims",
+    "uncertain scorer on code-heavy article"
   ]
 }

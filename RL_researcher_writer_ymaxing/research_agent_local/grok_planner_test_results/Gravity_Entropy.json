@@ -3,10 +3,10 @@
   "lesson": "Gravity_Entropy",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": null,
-  "grok_preset": 2,
-  "chosen_preset": 2,
-  "chosen_by": "Grok-only",
+  "rl_preset": 1,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -15,23 +15,22 @@
     0.6604,
     0.5609
   ],
-  "verdict": "NEAR",
-  "regret": 0.0623,
-  "regret_counted": 0.0623,
-  "entropy_bits": null,
-  "confidence": null,
-  "floor_applied": null,
-  "grok_override": null,
-  "grok_reasoning": "32 unbacked anchors and 18 must-ev bullets (esp. 5 each in S3/S4) signal large evidence gaps; dominant depth pressure (S2 need 16/8 cov 4·4; S5 weakest) plus explicit quote/derivation demands in guideline justify depth-first round then breadth, but S2/S3 'brief=yes' caps escalation and total 2000-word budget keeps it from P3.",
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 0.9815,
+  "confidence": 0.58,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is P1 light (58% light / 42% skip mass, moderate confidence, UNCERTAIN). Budget-weighted section votes show 0% mass on standard or deep (far below 30% escalation gate), so no sanctioned upward move; raw gaps (32 unbacked anchors, must-ev totals) are ignored per policy. Multiple high-budget sections are already at cov ≥7·4 or brief-flagged, aligning with light touch-up rather than P0 or P2.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "unbacked_anchors_32",
-    "must_ev_high",
-    "depth_dominant_S2_S5",
-    "high_orphans"
+    "scorer_aggregate_P1",
+    "zero_escalation_mass",
+    "brief_flags_on_S2_S3"
   ],
   "grok_risk_flags": [
-    "brief sections limit extra absorption",
-    "arxiv golden sources may already hold quotes"
+    "moderate scorer confidence (58%)",
+    "depth-dominant gaps in S2/S5"
   ]
 }

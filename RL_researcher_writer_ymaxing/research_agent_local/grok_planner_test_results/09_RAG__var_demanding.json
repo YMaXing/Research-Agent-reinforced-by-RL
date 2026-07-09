@@ -22,16 +22,15 @@
   "confidence": 0.5937,
   "floor_applied": false,
   "grok_override": false,
-  "grok_reasoning": "Section-scorer aggregate is P3 deep (59% deep, 0% skip) with moderate confidence; this is the primary signal. Dominant gap type is depth, weakest high-budget sections (S1/S2) show low cov (4/8 depth) + high need_depth (10/2 and 7/4), S3 carries 8 must-ev, S6 carries 5 must-ev, and 32 unbacked anchors remain. Guideline demands many named tools/benchmarks/production examples plus one failure-mode case study; these align with the scorer's reward-optimal pick of deep (3 rounds: depth → breadth → depth). No sanctioned override applies.",
+  "grok_reasoning": "Scorer aggregate is P3 deep (59% soft / 64% budget-weighted deep mass); moderate but not decisive. Deep-vote mass >>30% bar while standard mass=17%<30% so no sanctioned escalation or P2-valley risk; dominant depth gaps (need_d 10/7/7 in S1/S2/S6), 32 unbacked anchors, 8 must-ev in S3, and guideline's repeated 'must cover in depth' for embeddings, chunking, metadata, agentic distinction, plus production examples all align with P3. No downward override as high-budget weakest sections (S1 15%, S2 14%) show low cov (4·4 / 4·2).",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer_P3_59pct",
-    "depth_dominant_gaps_S1_S2_S6",
-    "23_total_must_ev_plus_32_unbacked"
+    "scorer P3 + 64% deep mass",
+    "depth-dominant gaps + 32 orphans",
+    "must-ev counts across S1-S3/S6"
   ],
   "grok_risk_flags": [
-    "moderate_vote_entropy_23pct_light",
-    "S1_brief_flag_limits_absorption",
-    "possible_diminishing_returns_on_final_depth_round"
+    "moderate scorer confidence on demanding variant",
+    "S4/S5 already cov 7+, possible diminishing returns"
   ]
 }

@@ -3,10 +3,10 @@
   "lesson": "State_of_LLM_Reasoning",
   "split": "TEST",
   "policy": "forbidden",
-  "rl_preset": null,
+  "rl_preset": 0,
   "grok_preset": 0,
   "chosen_preset": 0,
-  "chosen_by": "Grok-only",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
@@ -18,18 +18,17 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": null,
-  "entropy_bits": null,
-  "confidence": null,
-  "floor_applied": null,
-  "grok_override": null,
-  "grok_reasoning": "The brief states external-evidence policy = FORBIDDEN in all-caps with the explicit note that exploration output cannot be used, so only skip is valid. This matches the hard constraint that overrides all per-section gaps (high need_depth in S2/S1, 72 unbacked anchors, many must-ev >3). Existing coverage is treated as already sufficient under the no-external-evidence rule.",
+  "entropy_bits": 1.1204,
+  "confidence": 0.7143,
+  "floor_applied": true,
+  "grok_override": false,
+  "grok_reasoning": "HARD CONSTRAINT: external-evidence policy=forbidden mandates P0; scorer aggregate is decisive P0 (71% skip, 69% budget-weighted) with zero standard-mass and only 13% deep-mass (no escalation possible)",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "external-evidence-forbidden",
-    "hard-constraint-override"
+    "hard_constraint_forbidden",
+    "decisive_scorer_vote"
   ],
   "grok_risk_flags": [
-    "policy misread as required",
-    "internal sources later deemed insufficient"
+    "none"
   ]
 }

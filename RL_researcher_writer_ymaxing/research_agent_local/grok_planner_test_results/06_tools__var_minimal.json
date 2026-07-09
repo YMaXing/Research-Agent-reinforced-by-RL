@@ -22,15 +22,14 @@
   "confidence": 0.6107,
   "floor_applied": false,
   "grok_override": false,
-  "grok_reasoning": "External-evidence policy explicitly FORBIDDEN (mandates P0); section-scorer aggregate is P0 skip (61% mass, 0% on std/deep); every high-budget section (S3–S7) is brief-flagged with surface-level mandate and cov d·b already >=3·2.",
+  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0 skip per hard constraints. Scorer aggregate is also P0 (61% skip, 0% standard/deep mass); all sections flagged 'brief' or surface-level only; guideline forbids external libs/case studies/benchmarks.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "external-evidence-forbidden",
-    "scorer-aggregate-P0",
-    "universal-brevity-flags"
+    "forbidden-policy",
+    "scorer-P0-vote",
+    "brevity-flags"
   ],
   "grok_risk_flags": [
-    "moderate scorer entropy (39% light)",
-    "many unbacked anchors (47) but policy and brevity override"
+    "none"
   ]
 }

@@ -3,10 +3,10 @@
   "lesson": "Dark_Dimension",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": null,
-  "grok_preset": 2,
-  "chosen_preset": 2,
-  "chosen_by": "Grok-only",
+  "rl_preset": 0,
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
@@ -15,23 +15,22 @@
     0.6923,
     0.6287
   ],
-  "verdict": "MISS",
-  "regret": 0.1217,
-  "regret_counted": 0.1217,
-  "entropy_bits": null,
-  "confidence": null,
-  "floor_applied": null,
-  "grok_override": null,
-  "grok_reasoning": "27 article-wide unbacked anchors, high must-ev (5/6/8 per section), and large unmet need_depth (12-14) despite partial cov (5-7) signal concrete evidence gaps, especially in high-budget S2 (34%) and S3 (46%); dominant depth gap plus mandatory named sources (Khoury, Vafa, DESI, Andriot quotes) justify depth-first pass, but brief flags on S1/S3 and 'allowed not required' policy prevent P3 escalation.",
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": -0.0,
+  "confidence": 1.0,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate scorer vote is P0 skip at 100% (DECISIVE, entropy=0). All three sections independently vote skip·1.00 with 100% budget-weighted mass on skip; standard- and deep-vote masses are both 0% so no sanctioned escalation applies. Two of three sections carry explicit 'brief' flags that prohibit absorbing extra research; external-evidence policy is only ALLOWED, not required. Raw must-ev/orphan counts are ignored per instructions when the learned signal is this decisive.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "must-ev",
-    "unbacked_anchors",
-    "need_depth",
-    "dominant_gap_type"
+    "decisive scorer vote",
+    "zero escalation mass",
+    "section brief flags"
   ],
   "grok_risk_flags": [
-    "brief=yes on large S3 may cap absorption",
-    "existing golden sources might already cover more than numbers show"
+    "all cov_breadth=0",
+    "high must-ev in S3 (46% budget)"
   ]
 }

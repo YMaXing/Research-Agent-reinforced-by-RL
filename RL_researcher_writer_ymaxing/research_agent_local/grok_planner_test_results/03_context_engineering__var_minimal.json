@@ -22,14 +22,15 @@
   "confidence": 0.6908,
   "floor_applied": false,
   "grok_override": false,
-  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, which hard-constrains to P0 skip regardless of other signals. Scorer aggregate is 69% skip (moderate confidence, 0% on std/deep); every section is brief-flagged with 0 must-ev, cov scores already meet guideline surface-level intent, and the guideline repeatedly stresses conceptual overview with no external examples or depth required.",
+  "grok_reasoning": "HARD CONSTRAINT: external-evidence policy=FORBIDDEN explicitly requires P0 skip (exploration output cannot be used). Scorer aggregate is also P0 (69% skip, 72% budget-weighted skip mass); standard- and deep-vote masses are 0% so no sanctioned escalation applies. Every section is flagged 'brief: yes' and the guideline demands only surface-level conceptual treatment with no external examples or code.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
     "external-evidence-forbidden",
-    "scorer-P0-dominant",
-    "all-sections-brief-flagged"
+    "scorer-P0",
+    "all-sections-brief"
   ],
   "grok_risk_flags": [
-    "internal exploitation may have left conceptual anchors unbacked"
+    "moderate scorer confidence",
+    "many unbacked anchors but policy forbids using exploration to fill them"
   ]
 }

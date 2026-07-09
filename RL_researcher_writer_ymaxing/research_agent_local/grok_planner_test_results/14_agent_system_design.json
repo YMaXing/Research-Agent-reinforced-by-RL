@@ -3,10 +3,10 @@
   "lesson": "14_agent_system_design",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": null,
-  "grok_preset": 2,
-  "chosen_preset": 2,
-  "chosen_by": "Grok-only",
+  "rl_preset": 1,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -15,23 +15,22 @@
     0.5966,
     0.5837
   ],
-  "verdict": "NEAR",
-  "regret": 0.0894,
-  "regret_counted": 0.0894,
-  "entropy_bits": null,
-  "confidence": null,
-  "floor_applied": null,
-  "grok_override": null,
-  "grok_reasoning": "Dominant gap is depth with 42 article-wide unbacked anchors; S2 (31% budget, need_depth 29, must-ev 7, 9 orphans) and S4 (28% budget, need_depth 36, must-ev 6, 11 orphans) show large evidence-driven shortfalls exactly where writing spend is highest. S3 adds quantitative scaling examples that require cited benchmarks/numbers (must-ev 5). S5/S6 already strong with low needs, so full P3 unnecessary. This justifies depth-then-breadth gap-filling over cheaper P1.",
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.5305,
+  "confidence": 0.4379,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is P1 light (44% light mass, 34% skip, 22% deep) but UNCERTAIN (entropy 1.53). Standard-vote mass is 0% and deep-vote mass is 22%, both below the 30% escalation gate, so no sanctioned upward move to P2; the explicit guard against stepping into the P2 valley when deep votes dominate without standard support applies directly. High-budget sections (S2 31% skip, S4 28% light, S3 22% deep) are mixed yet the budget-weighted peak remains at light; raw must-ev/unbacked counts were ignored per instructions. This places the decision at the reward peak without over- or under-escalation.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "unmet_depth_large_sections",
-    "must-ev_total_27",
-    "42_unbacked_anchors",
-    "dominant_depth_gap"
+    "budget-weighted vote mass peaking at light",
+    "escalation gates not met (0%/22%<30%)",
+    "UNCERTAIN but no dominant escalation arm"
   ],
   "grok_risk_flags": [
-    "some anchors satisfiable from listed golden sources without new rounds",
-    "S1/S3 images may not need fresh evidence"
+    "S3 deep vote + high need_depth could justify more depth",
+    "dominant gap type is depth across large-budget S2/S4"
   ]
 }

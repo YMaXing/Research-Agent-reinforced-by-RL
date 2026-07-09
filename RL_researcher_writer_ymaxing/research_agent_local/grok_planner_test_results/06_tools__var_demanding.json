@@ -22,15 +22,16 @@
   "confidence": 0.3829,
   "floor_applied": false,
   "grok_override": false,
-  "grok_reasoning": "Section-scorer aggregate is P3 deep (38% mass) despite high uncertainty (entropy 1.92 bits). This is the primary signal; high-budget S3 (24%, RL pick deep·1.00, need_depth=8) and S8 (must-ev=4, RL pick deep·1.00) dominate the weighted vote. Guideline explicitly demands named production examples, real-world failure modes, text-to-SQL mechanisms, sandbox security mitigations and concrete RAG/memory anchors in S8/S9, which the prior exploitation pass only partially met. No sanctioned downward override applies given the must-ev and depth-dominant economics.",
+  "grok_reasoning": "Aggregate RL pick is P3 deep (38% deep-vote mass) on an uncertain scorer (entropy 1.92). Deep mass clears the 30% bar while standard mass (26%) does not; high-budget sections S3 (24%, deep·1.00, need_depth 8) and S8 (11%, deep·1.00, must-ev=4, cov 5·4) drive the peak. External-evidence=REQUIRED and depth-dominant article gaps (42 unbacked anchors) align with P3; no sanctioned downward override applies as deep mass dominates and several sections remain under-covered on must-ev items.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer_P3_recommendation",
-    "must-ev_in_S8_S9",
-    "depth_gaps_in_S3"
+    "P3 aggregate on uncertain scorer",
+    "38% deep-vote mass from S3+S8",
+    "must-ev=4 in S8 and depth-dominant gaps",
+    "REQUIRED external-evidence policy"
   ],
   "grok_risk_flags": [
-    "high entropy could justify P2 if gaps were overestimated",
-    "P3 may surface diminishing returns on code-heavy sections"
+    "scorer entropy >1.5 could over-weight S3/S8 at expense of well-covered S5/S7",
+    "diminishing returns on already cov-7 sections if depth rounds add duplicates"
   ]
 }

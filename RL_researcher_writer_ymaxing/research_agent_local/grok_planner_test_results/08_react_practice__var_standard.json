@@ -22,15 +22,15 @@
   "confidence": 0.5108,
   "floor_applied": false,
   "grok_override": true,
-  "grok_reasoning": "Scorer aggregate is P0 (51%) but P1 runner-up holds 49% mass; sanctioned upward nudge from P0 to P1 is permitted because no section votes standard/deep and conditions match exactly. Largest-budget sections (S4/S5) individually select light and carry high must-ev (12+18); P1 is the reward peak per the unimodal curve and cheap-insurance clause.",
-  "grok_override_reason": "applied single sanctioned P0->P1 nudge (substantial runner-up mass, no std/deep section votes)",
+  "grok_reasoning": "Aggregate P0 (51% skip) is uncertain with 49% light runner-up from high-budget S4/S5 (both RL-pick light, 49% total mass). This triggers the exact sanctioned P0->P1 nudge (>=25% light, 0% standard/deep mass). Balanced gaps and must-ev already baked into per-section votes; S5 brief flag caps absorption.",
+  "grok_override_reason": "applied sanctioned P0->P1 nudge per policy (runner-up light mass 49% >=25%, no higher votes)",
   "grok_decision_drivers": [
-    "scorer aggregate + vote split",
-    "sanctioned P0->P1 nudge condition",
-    "section RL picks on high-budget rows"
+    "budget-weighted vote mass",
+    "P0->P1 nudge eligibility",
+    "S4/S5 light picks"
   ],
   "grok_risk_flags": [
-    "S5 brief=yes may limit absorption",
-    "51/49 split could be noise"
+    "S5 brief=yes may dilute light round value",
+    "close 51-49 split could still peak at P0"
   ]
 }

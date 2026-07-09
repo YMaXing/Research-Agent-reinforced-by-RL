@@ -3,10 +3,10 @@
   "lesson": "04_structured_outputs",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": null,
-  "grok_preset": 2,
-  "chosen_preset": 2,
-  "chosen_by": "Grok-only",
+  "rl_preset": 1,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
@@ -15,24 +15,22 @@
     0.6707,
     0.6407
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": null,
-  "confidence": null,
-  "floor_applied": null,
-  "grok_override": null,
-  "grok_reasoning": "32 unbacked anchors and high must-ev totals (~31) concentrated in large-budget sections (S4:13 must-ev at 40%, S3:8 at 20%) create concrete evidence gaps that prevent writing without sourced facts, despite solid cov in S2/S4. S6 (need_depth 7, cov 1) and S1 (need_depth 6, cov 2) add depth pressure; dominant gap is balanced. P2 fills mandatory evidence via depth-then-breadth without overkill on brief sections or 0% S7.",
+  "verdict": "NEAR",
+  "regret": 0.002,
+  "regret_counted": 0.002,
+  "entropy_bits": 0.9968,
+  "confidence": 0.533,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate scorer vote is P1 light (53% light / 47% skip, MODERATE confidence); budget-weighted section votes identically 53% light with 0% standard and 0% deep, so both escalation gates (≥30%) are closed. Largest-budget section (S4 40%) voted light while high-must-ev sections (S3/S4 total 33 must-ev) already pulled the RL pick upward from pure skip; no brief-flagged or well-covered majority justifies downward override to P0.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "high must-ev in high-budget sections",
-    "32 unbacked anchors",
-    "need_depth in S1/S3/S6",
-    "balanced dominant gap"
+    "scorer_aggregate",
+    "budget_vote_mass",
+    "zero_escalation_mass"
   ],
   "grok_risk_flags": [
-    "notebook/golden sources may already suffice for code-heavy sections",
-    "S2 brief flag could limit absorption",
-    "over-exploring low-budget conclusion"
+    "moderate (not decisive) confidence",
+    "high must-ev in S3/S4 could still be under-covered"
   ]
 }

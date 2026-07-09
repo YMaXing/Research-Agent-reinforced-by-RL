@@ -22,13 +22,15 @@
   "confidence": 0.4231,
   "floor_applied": false,
   "grok_override": true,
-  "grok_reasoning": "Hard constraint: external-evidence policy explicitly set to FORBIDDEN (exploration output cannot be used). This overrides the uncertain P1-light aggregate vote (42% light, entropy 1.54 bits) and per-section gaps (e.g. S5 standard pick, 48 unbacked anchors). Guideline also demands conceptual overview only with no external libraries/case studies.",
-  "grok_override_reason": "External-evidence policy = forbidden mandates P0; cannot escalate or use exploration",
+  "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN explicitly requires P0 skip (exploration output cannot be used). Scorer aggregate is P1 light (UNCERTAIN, entropy 1.54 bits; budget-weighted votes: light 42%, skip 35%, standard 23%, deep 0%) but override policy mandates P0 when evidence is forbidden. All 'must stay brief' flags, surface-level conceptual scope, and explicit bans on external examples reinforce no exploration needed.",
+  "grok_override_reason": "Hard constraint forces P0 despite scorer's P1 light recommendation",
   "grok_decision_drivers": [
-    "external-evidence policy",
-    "hard constraint override"
+    "external-evidence-forbidden",
+    "hard-constraint",
+    "brevity-flags"
   ],
   "grok_risk_flags": [
-    "scorer uncertainty and dominant depth gaps ignored due to policy"
+    "scorer uncertainty could miss minor internal gaps",
+    "guideline cites sources but policy forbids using them"
   ]
 }

@@ -22,12 +22,12 @@
   "confidence": 0.7143,
   "floor_applied": false,
   "grok_override": false,
-  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0 skip per hard constraints. Section-scorer aggregate is decisively P0 (71% skip, 0% standard/deep); all sections are brief-flagged with high existing cov d·b (>=6·6) and guideline demands surface-level conceptual overview only.",
+  "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN explicitly requires P0 skip (exploration output cannot be used). Scorer aggregate is decisive P0 at 71% budget-weighted mass (standard=0%, deep=0%); every section is brief-flagged and already meets cov≥6.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "forbidden-policy",
-    "scorer-decisive-P0",
-    "brevity-flags"
+    "forbidden-evidence-policy",
+    "decisive-P0-vote",
+    "all-sections-brief"
   ],
   "grok_risk_flags": [
     "none"

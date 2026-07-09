@@ -22,14 +22,15 @@
   "confidence": 0.5217,
   "floor_applied": true,
   "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P0 skip at 52% (moderate; standard runner-up 29%). Sanctioned P0-to-P1 nudge disallowed: light only 19% (below 25% mass), runner-up not light, and S4 (29% budget) votes standard. No hard external-evidence constraint and gap table (48 unbacked anchors, high must-ev in S3/S4) ignored per instructions as scorer already weighted them for reward peak.",
+  "grok_reasoning": "Section-scorer aggregate is P0 skip (52% mass, MODERATE/UNCERTAIN). Budget-weighted standard-vote mass sits at 29% (explicitly flagged as below the 30% bar) and deep-vote mass is 0%; light mass is only 19% so the P0→P1 nudge also fails. No sanctioned escalation or downward override applies. Decisive signals are therefore the RL aggregate itself plus the exact escalation-gate numbers that keep us at skip.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer_aggregate_P0",
-    "nudges_not_met"
+    "scorer-aggregate-P0",
+    "standard-mass-29pct-below-gate",
+    "no-nudge-conditions-met"
   ],
   "grok_risk_flags": [
-    "moderate vote entropy",
-    "S4 standard vote on largest section"
+    "S4 (29% budget) voted standard with 6 must-ev",
+    "48 unbacked anchors but policy forbids raw-gap escalation"
   ]
 }

@@ -22,14 +22,16 @@
   "confidence": 0.814,
   "floor_applied": false,
   "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P2 standard at 81% (decisive, all high-budget sections vote standard or deep); dominant gap=depth and must-ev totals align with 2-round depth->breadth; external-evidence=REQUIRED rules out P0; no override conditions triggered per asymmetric policy.",
+  "grok_reasoning": "The GRPO-trained section-scorer's aggregate is decisively P2 standard (81% budget-weighted mass on standard, 19% on deep). This already incorporates the per-section need_depth (3-7), must-ev counts (2-5), unbacked anchors (28 total), and dominant depth-gap economics; S6's lone deep vote (19% budget) falls below the 30% sanctioned-escalation gate for P3. External-evidence policy is REQUIRED but satisfied by P2; no brief flags or high-coverage sections justify a downward override.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer_aggregate",
-    "dominant_depth_gaps",
-    "external_required"
+    "decisive_scorer_81pct_standard",
+    "standard_vote_mass_81pct",
+    "deep_vote_mass_below_30pct",
+    "required_external_evidence_met"
   ],
   "grok_risk_flags": [
-    "S6 deep vote + high must-ev could under-serve production lessons"
+    "S6 (19% budget) and S1/S7 weakest sections show elevated need_depth",
+    "guideline demands many named production examples and one failure-mode case study"
   ]
 }

@@ -22,16 +22,17 @@
   "confidence": 0.4598,
   "floor_applied": false,
   "grok_override": false,
-  "grok_reasoning": "Section-scorer aggregate is P2 standard (46% vs 45% skip; moderate confidence). External-evidence policy is REQUIRED so P0 forbidden; dominant gap type is depth with 42 unbacked anchors and high-budget S5 (28%, standard·1.00, need_depth 22, cov 7) plus S4 (18%, standard·1.00) driving the weighted vote. No sanctioned downward override triggered because not all high-budget sections are brief-flagged and unmet depth pressure remains substantial.",
+  "grok_reasoning": "Scorer aggregate is P2 standard (46% standard-vote mass >30% gate) on an UNCERTAIN but non-decisive vote (46% top-pick, 45% skip). Largest-budget section S5 (28%) and S4 (18%) both vote standard with high need_depth (22/13); external-evidence policy forbids P0 and dominant gap type is depth. No sanctioned upward move (deep mass=0%) and no downward override trigger (standard mass dominant, not all high-budget sections brief-flagged).",
   "grok_override_reason": null,
   "grok_decision_drivers": [
     "scorer_aggregate_P2",
-    "external_evidence_required",
-    "dominant_depth_gaps",
-    "S5_S4_budgeted_standard_votes"
+    "standard_vote_mass_46pct",
+    "S5_28pct_standard_need_depth_22",
+    "required_external_evidence"
   ],
   "grok_risk_flags": [
-    "bimodal vote (skip/standard tie)",
-    "S5 brief flag could limit absorption"
+    "near-tie skip_vote_45pct",
+    "brief_yes_on_largest_S5",
+    "many_unbacked_anchors_42"
   ]
 }

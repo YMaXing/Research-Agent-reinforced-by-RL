@@ -22,14 +22,15 @@
   "confidence": 0.4872,
   "floor_applied": false,
   "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P2 standard (49% top vote, 41% light runner-up, moderate confidence); dominant gap type is depth with high need_d in S1/S2 (40/44) plus 52 article-wide unbacked anchors; high-budget sections mostly cov_d >=6 but scorer already priced this in; no sanctioned override condition met.",
+  "grok_reasoning": "Aggregate RL pick is P2 (49% standard-vote mass >30% gate); uncertain but no qualifying escalation (deep mass only 10%) or downward (dominant arm, depth-dominant gaps, no briefs). Matches weakest-section needs without overbuying on already-covered cov.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer_aggregate_P2",
-    "dominant_depth_gaps"
+    "aggregate RL pick",
+    "standard-vote mass >=30%",
+    "dominant gap type"
   ],
   "grok_risk_flags": [
-    "vote split 49-41 could tilt light on marginal returns",
-    "S2 theory-only with 14 orphans"
+    "moderate scorer entropy could undervalue S2 deep vote",
+    "high unbacked anchors but instructions forbid raw-gap escalation"
   ]
 }

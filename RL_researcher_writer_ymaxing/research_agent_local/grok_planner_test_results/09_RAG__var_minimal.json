@@ -22,13 +22,15 @@
   "confidence": 0.6318,
   "floor_applied": false,
   "grok_override": false,
-  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN; exploration output cannot be used, so P0 is the only valid choice per hard constraints. Section-scorer aggregate also votes P0 skip (63% mass, 0% on P2/P3). Per-section must-ev and unbacked anchors exist but are already priced into the scorer's P0 recommendation; guideline demands surface-level theory only with no external examples permitted.",
+  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, which hard-constrains to P0; section-scorer aggregate is also P0 skip (63% budget-weighted mass, 0% standard/deep); every section is brief-flagged with surface-level guideline intent and a 1500-word hard cap.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "external-evidence-forbidden",
-    "scorer-P0-vote"
+    "hard-forbidden-policy",
+    "scorer-P0-vote",
+    "all-sections-brief"
   ],
   "grok_risk_flags": [
-    "moderate scorer entropy (37% on light)"
+    "moderate scorer confidence (63%)",
+    "high unbacked anchors (42) but irrelevant under policy"
   ]
 }

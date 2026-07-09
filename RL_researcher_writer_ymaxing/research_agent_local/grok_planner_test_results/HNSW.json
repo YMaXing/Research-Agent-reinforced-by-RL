@@ -3,10 +3,10 @@
   "lesson": "HNSW",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": null,
-  "grok_preset": 2,
-  "chosen_preset": 2,
-  "chosen_by": "Grok-only",
+  "rl_preset": 0,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -15,23 +15,22 @@
     0.5239,
     0.5556
   ],
-  "verdict": "NEAR",
-  "regret": 0.2433,
-  "regret_counted": 0.2433,
-  "entropy_bits": null,
-  "confidence": null,
-  "floor_applied": null,
-  "grok_override": null,
-  "grok_reasoning": "47 article-wide unbacked anchors with dominant depth gaps; S4 (46% budget) shows need_depth=40 + must-ev=9 and cov only 4/8, S2 (35%) has need_depth=32 + must-ev=4 and cov 3/8. Golden sources (HNSW paper, skip-list PDF, Faiss HNSW.cpp) plus empirical Sift1M sweeps clearly remain under-covered on mandatory mechanics/benchmarks. Brief flags on S2 and ALLOWED (not required) policy keep us from P3; gaps are too large for P1.",
-  "grok_override_reason": null,
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 0.996,
+  "confidence": 0.5373,
+  "floor_applied": false,
+  "grok_override": true,
+  "grok_reasoning": "Aggregate RL vote is P0 skip (54% mass, moderate confidence, not decisive). Budget-weighted section votes show 46% light (driven by S4's 46% share voting light·1.00 with must-ev=9, orphans=12, cov=4·3). Standard- and deep-vote masses are 0% so no sanctioned escalation to P2/P3; P0→P1 nudge applies directly (light runner-up ≥25%, no higher masses). This supplies cheap insurance for dominant depth gaps and 47 unbacked anchors without entering reward valley.",
+  "grok_override_reason": "Sanctioned P0→P1 nudge triggered by 46% light mass + uncertain scorer (no std/deep mass ≥30%)",
   "grok_decision_drivers": [
-    "47 unbacked anchors",
-    "high must-ev in S4/S2",
-    "dominant depth gaps in 81% budget",
-    "low depth cov (3-4/8)"
+    "RL uncertainty + light mass",
+    "S4 must-ev/orphans",
+    "P0-to-P1 nudge policy"
   ],
   "grok_risk_flags": [
-    "brief=yes on S2 might limit absorption",
-    "golden sources may already address some orphans not reflected in cov"
+    "Existing cov already moderate (esp. S1/S3); light round could still duplicate material",
+    "Depth-dominant gaps in S2/S4 might need more but 0% std vote bars P2"
   ]
 }

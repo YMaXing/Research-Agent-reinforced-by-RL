@@ -24,14 +24,16 @@
       "confidence": 0.4231,
       "floor_applied": false,
       "grok_override": true,
-      "grok_reasoning": "Hard constraint: external-evidence policy explicitly set to FORBIDDEN (exploration output cannot be used). This overrides the uncertain P1-light aggregate vote (42% light, entropy 1.54 bits) and per-section gaps (e.g. S5 standard pick, 48 unbacked anchors). Guideline also demands conceptual overview only with no external libraries/case studies.",
-      "grok_override_reason": "External-evidence policy = forbidden mandates P0; cannot escalate or use exploration",
+      "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN explicitly requires P0 skip (exploration output cannot be used). Scorer aggregate is P1 light (UNCERTAIN, entropy 1.54 bits; budget-weighted votes: light 42%, skip 35%, standard 23%, deep 0%) but override policy mandates P0 when evidence is forbidden. All 'must stay brief' flags, surface-level conceptual scope, and explicit bans on external examples reinforce no exploration needed.",
+      "grok_override_reason": "Hard constraint forces P0 despite scorer's P1 light recommendation",
       "grok_decision_drivers": [
-        "external-evidence policy",
-        "hard constraint override"
+        "external-evidence-forbidden",
+        "hard-constraint",
+        "brevity-flags"
       ],
       "grok_risk_flags": [
-        "scorer uncertainty and dominant depth gaps ignored due to policy"
+        "scorer uncertainty could miss minor internal gaps",
+        "guideline cites sources but policy forbids using them"
       ]
     },
     {
@@ -58,17 +60,16 @@
       "confidence": 0.5849,
       "floor_applied": true,
       "grok_override": false,
-      "grok_reasoning": "Section-scorer aggregate is P1 light (58% light, 29% standard, 13% deep; moderate confidence). No sanctioned override conditions met: not highly uncertain (dominant light arm), high-budget sections (S5 30%, S4 18%) not mostly brief-flagged or depth_score >=6 across the board, and upward moves from a P1+ vote are forbidden. Dominant depth gaps and 47 unbacked anchors were already priced into the scorer's P1 recommendation.",
+      "grok_reasoning": "Aggregate RL pick is P1 light at 58% budget-weighted mass (MODERATE confidence). Standard-vote mass=29% falls short of the 30% gate for sanctioned escalation to P2; deep mass=13% is far below. High-budget S5 (light vote, cov 8·6) plus brief flags on S1/S4 lock in the peak without override.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer_aggregate_P1",
-        "no_sanctioned_override",
-        "moderate_confidence"
+        "RL aggregate vote",
+        "standard-mass <30% gate",
+        "high-budget section alignment"
       ],
       "grok_risk_flags": [
-        "S2_deep_vote_and_S3/S6_standard_votes",
-        "must_ev_4_in_largest_section_S5",
-        "depth-dominant_gaps"
+        "S2/S3 depth gaps could be understated if guideline examples require fresher 2025 sources",
+        "moderate scorer confidence on hybrid-spectrum article"
       ]
     },
     {
@@ -95,16 +96,16 @@
       "confidence": 0.4943,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "Scorer's budget-weighted aggregate is P2 standard (49% top-pick, 29% skip runner-up, moderate confidence). No sanctioned override applies: S5 (29% budget) votes skip with cov 8·6 but the RL model already priced this against must-ev and depth needs in S2-S4 (standard ·1.00 each). Dominant gap type is depth, matching the depth-first round in the chosen preset; external-evidence policy is ALLOWED and gaps justify exploration.",
+      "grok_reasoning": "Aggregate RL vote is P2 standard (49% budget-weighted mass on standard, exceeding 30% gate; 0% deep). Vote is moderate/uncertain (not >=70% decisive) but per-section table shows high-budget S2/S3/S4 (49% combined) voting standard with must-ev 2-3, depth gaps (need_d 6-7), and unbacked anchors; S5's skip (29%, cov 8·6) is outweighed. No sanctioned escalation to P3 (deep mass=0) or downward override (dominant standard arm, multiple must-ev). Dominant gap=depth, external policy=allowed.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer_aggregate_P2",
-        "moderate_49pct",
-        "no_sanctioned_override"
+        "aggregate RL pick P2 + 49% standard mass",
+        "must-ev and depth gaps in S2-S4/S6",
+        "no deep mass for P3"
       ],
       "grok_risk_flags": [
-        "S5_skip_vote_on_high_budget_section",
-        "vote_entropy_from_29pct_skip"
+        "S5 large skip vote may make extra rounds duplicative",
+        "many must-ev could still need targeted depth if sources thin"
       ]
     },
     {
@@ -131,15 +132,16 @@
       "confidence": 0.6908,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, which hard-constrains to P0 skip regardless of other signals. Scorer aggregate is 69% skip (moderate confidence, 0% on std/deep); every section is brief-flagged with 0 must-ev, cov scores already meet guideline surface-level intent, and the guideline repeatedly stresses conceptual overview with no external examples or depth required.",
+      "grok_reasoning": "HARD CONSTRAINT: external-evidence policy=FORBIDDEN explicitly requires P0 skip (exploration output cannot be used). Scorer aggregate is also P0 (69% skip, 72% budget-weighted skip mass); standard- and deep-vote masses are 0% so no sanctioned escalation applies. Every section is flagged 'brief: yes' and the guideline demands only surface-level conceptual treatment with no external examples or code.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
         "external-evidence-forbidden",
-        "scorer-P0-dominant",
-        "all-sections-brief-flagged"
+        "scorer-P0",
+        "all-sections-brief"
       ],
       "grok_risk_flags": [
-        "internal exploitation may have left conceptual anchors unbacked"
+        "moderate scorer confidence",
+        "many unbacked anchors but policy forbids using exploration to fill them"
       ]
     },
     {
@@ -166,16 +168,16 @@
       "confidence": 0.5339,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "Section-scorer aggregate is P1 light (53% vs 47% skip, 0% on standard/deep) as the reward-trained peak; high-budget sections (S3/S4/S6/S7) already show cov d≥5-8 on many must-ev items and the scorer weighed the 68 orphans + dominant depth gaps. No override conditions met (no brief flags, vote not uncertain enough for downward). Light balanced round targets the direction without over-escalation risk.",
+      "grok_reasoning": "Scorer aggregate is P1 light (53% soft vote, 51% budget-weighted) but UNCERTAIN (moderate confidence, near-tie with 49% skip, 0% standard/deep). No sanctioned escalation (standard-vote mass=0% <<30%). Several high-budget sections (S6 20%, S4 15%, S7 15%) show high must-ev (6/3), depth needs (55/33/55) and orphans (18/10/18) despite decent cov; dominant article gap is depth. P1 matches the reward peak without inflating to unsupported P2.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer aggregate (primary)",
-        "moderate confidence",
-        "no sanctioned override"
+        "scorer aggregate P1 (51% budget mass)",
+        "zero escalation mass for standard/deep",
+        "high must-ev + depth gaps in S6/S7/S4"
       ],
       "grok_risk_flags": [
-        "close skip/light split could undervalue S6/S7 depth gaps",
-        "if must-ev sourcing is harder than scored, light may leave a few anchors thin"
+        "close 51-49 split could justify P0 downward",
+        "many sections already at cov_d >=6"
       ]
     },
     {
@@ -202,17 +204,16 @@
       "confidence": 0.6766,
       "floor_applied": true,
       "grok_override": false,
-      "grok_reasoning": "Section-scorer aggregate is P1 light (68% mass, moderate confidence) after budget-weighting every section; this is the reward-trained peak. External-evidence policy is REQUIRED so P0 is forbidden, but no sanctioned upward override exists from a P1+ vote and dominant gaps are already priced into the scorer. Per-section table shows depth-dominant needs and must-ev (esp. S6 11, S4 6) yet high cov d·b scores (mostly 7-8·6) and light RL picks on the largest-budget sections; escalation would cross the single-peaked reward curve.",
+      "grok_reasoning": "Aggregate RL vote P1 light (68% mass, standard mass only 23%); escalation gate requires standard-vote mass >=30% when uncertain, which is not met; external-evidence=REQUIRED forbids P0 while high must-ev/depth gaps (esp. S6 11, S4 6) were already factored into the budget-weighted scorer votes.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer_aggregate_P1",
-        "external_required_minimum",
-        "depth_dominant_but_high_cov"
+        "scorer_aggregate",
+        "vote_mass_below_30pct",
+        "external_policy_floor"
       ],
       "grok_risk_flags": [
-        "S3/S8 standard votes",
-        "52 unbacked anchors",
-        "S6 high must-ev"
+        "moderate (68%) confidence",
+        "S3/S8 standard votes totaling 23%"
       ]
     },
     {
@@ -239,15 +240,15 @@
       "confidence": 0.5552,
       "floor_applied": false,
       "grok_override": true,
-      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, which is a hard constraint mandating P0 skip regardless of the section-scorer's P1-light aggregate (56% light, 44% skip). All 7 sections are brief-flagged, guideline demands only surface-level conceptual overview with no external libs/case studies, and exploration output cannot be used.",
-      "grok_override_reason": "Hard constraint from external-evidence policy = forbidden requires P0 despite scorer's P1 vote",
+      "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN mandates P0 skip (exploration output cannot be used). Scorer aggregate is moderate P1 (56% light, 44% skip; 0% standard/deep) but OVERRIDE POLICY and HARD CONSTRAINTS require ignoring it. All sections flagged 'brief', guideline demands surface-level conceptual overview with no external libs/cases/benchmarks.",
+      "grok_override_reason": "external-evidence policy explicitly FORBIDDEN, forcing P0 regardless of scorer or gap counts",
       "grok_decision_drivers": [
-        "external-evidence policy",
-        "all sections brief-flagged",
-        "surface-level guideline"
+        "hard-constraint-forbidden",
+        "all-sections-brief",
+        "0% std/deep mass"
       ],
       "grok_risk_flags": [
-        "scorer lean toward light but policy is absolute"
+        "many unbacked anchors (52) and must-ev items cannot be filled"
       ]
     },
     {
@@ -274,15 +275,16 @@
       "confidence": 0.4872,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is P2 standard (49% top vote, 41% light runner-up, moderate confidence); dominant gap type is depth with high need_d in S1/S2 (40/44) plus 52 article-wide unbacked anchors; high-budget sections mostly cov_d >=6 but scorer already priced this in; no sanctioned override condition met.",
+      "grok_reasoning": "Aggregate RL pick is P2 (49% standard-vote mass >30% gate); uncertain but no qualifying escalation (deep mass only 10%) or downward (dominant arm, depth-dominant gaps, no briefs). Matches weakest-section needs without overbuying on already-covered cov.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer_aggregate_P2",
-        "dominant_depth_gaps"
+        "aggregate RL pick",
+        "standard-vote mass >=30%",
+        "dominant gap type"
       ],
       "grok_risk_flags": [
-        "vote split 49-41 could tilt light on marginal returns",
-        "S2 theory-only with 14 orphans"
+        "moderate scorer entropy could undervalue S2 deep vote",
+        "high unbacked anchors but instructions forbid raw-gap escalation"
       ]
     },
     {
@@ -309,16 +311,17 @@
       "confidence": 0.4805,
       "floor_applied": true,
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is P1 light (48% vote) as the reward peak; external-evidence REQUIRED forbids P0 while override policy bars upward moves from any P1+ recommendation; per-section deep votes and depth gaps were already weighted by the GRPO model.",
+      "grok_reasoning": "Scorer aggregate is P1 light (48% budget-weighted mass on light, moderate confidence); standard-vote mass=0% while deep-vote mass=37% triggers the explicit deep-or-nothing guard that forbids stepping into the P2 valley from a P1 RL pick. External-evidence policy requires at least P1, which this satisfies exactly; per-section RL picks show mixed skip/light/deep but the calibrated vote-mass signal (not raw must-ev or 42 unbacked anchors) determines level. Dominant gap is depth yet escalation policy bars upward move.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
         "scorer_aggregate_P1",
+        "deep_or_nothing_guard",
         "external_evidence_required",
-        "no_sanctioned_upward"
+        "standard_vote_mass_0"
       ],
       "grok_risk_flags": [
-        "vote_split_48_37",
-        "high_must_ev_in_S1_S2"
+        "37% deep mass in S2/S5/S7 could leave theory depth gaps",
+        "high must-ev counts across S1/S2/S7"
       ]
     },
     {
@@ -345,16 +348,15 @@
       "confidence": 0.6107,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "External-evidence policy explicitly FORBIDDEN (mandates P0); section-scorer aggregate is P0 skip (61% mass, 0% on std/deep); every high-budget section (S3–S7) is brief-flagged with surface-level mandate and cov d·b already >=3·2.",
+      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0 skip per hard constraints. Scorer aggregate is also P0 (61% skip, 0% standard/deep mass); all sections flagged 'brief' or surface-level only; guideline forbids external libs/case studies/benchmarks.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "external-evidence-forbidden",
-        "scorer-aggregate-P0",
-        "universal-brevity-flags"
+        "forbidden-policy",
+        "scorer-P0-vote",
+        "brevity-flags"
       ],
       "grok_risk_flags": [
-        "moderate scorer entropy (39% light)",
-        "many unbacked anchors (47) but policy and brevity override"
+        "none"
       ]
     },
     {
@@ -381,16 +383,16 @@
       "confidence": 0.5864,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "Section-scorer aggregate is P0 skip (59%, runner-up standard 18%) but uncertain (entropy 1.61). Multiple sections individually vote standard/deep (S2, S6, S8), violating the exact conditions for the single sanctioned P0→P1 nudge. Scorer already priced in the 52 unbacked anchors, high must-ev counts, and dominant depth gaps; instructions forbid re-deriving escalation from the per-section table. External-evidence policy=ALLOWED does not trigger mandatory exploration.",
+      "grok_reasoning": "Aggregate RL vote is P0 skip (59% mass) despite uncertainty (entropy 1.61). Standard mass=18% and deep mass=9% both <<30% escalation gate, so no sanctioned upward move per override policy. Largest section (S3, 26% budget) voted skip·1.00 with brief=yes (must stay short); do not escalate on raw must-ev/orphans counts.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer_aggregate_P0",
-        "sanctioned_nudge_conditions_not_met",
-        "no_hard_constraint"
+        "aggregate RL vote",
+        "escalation masses below 30%",
+        "S3 brief flag"
       ],
       "grok_risk_flags": [
-        "high uncertainty",
-        "large depth gaps in S3/S4 despite brief flag"
+        "high must-ev in S3/S4 could leave unsourced claims",
+        "uncertain scorer on code-heavy article"
       ]
     },
     {
@@ -417,16 +419,17 @@
       "confidence": 0.3829,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "Section-scorer aggregate is P3 deep (38% mass) despite high uncertainty (entropy 1.92 bits). This is the primary signal; high-budget S3 (24%, RL pick deep·1.00, need_depth=8) and S8 (must-ev=4, RL pick deep·1.00) dominate the weighted vote. Guideline explicitly demands named production examples, real-world failure modes, text-to-SQL mechanisms, sandbox security mitigations and concrete RAG/memory anchors in S8/S9, which the prior exploitation pass only partially met. No sanctioned downward override applies given the must-ev and depth-dominant economics.",
+      "grok_reasoning": "Aggregate RL pick is P3 deep (38% deep-vote mass) on an uncertain scorer (entropy 1.92). Deep mass clears the 30% bar while standard mass (26%) does not; high-budget sections S3 (24%, deep·1.00, need_depth 8) and S8 (11%, deep·1.00, must-ev=4, cov 5·4) drive the peak. External-evidence=REQUIRED and depth-dominant article gaps (42 unbacked anchors) align with P3; no sanctioned downward override applies as deep mass dominates and several sections remain under-covered on must-ev items.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer_P3_recommendation",
-        "must-ev_in_S8_S9",
-        "depth_gaps_in_S3"
+        "P3 aggregate on uncertain scorer",
+        "38% deep-vote mass from S3+S8",
+        "must-ev=4 in S8 and depth-dominant gaps",
+        "REQUIRED external-evidence policy"
       ],
       "grok_risk_flags": [
-        "high entropy could justify P2 if gaps were overestimated",
-        "P3 may surface diminishing returns on code-heavy sections"
+        "scorer entropy >1.5 could over-weight S3/S8 at expense of well-covered S5/S7",
+        "diminishing returns on already cov-7 sections if depth rounds add duplicates"
       ]
     },
     {
@@ -453,15 +456,15 @@
       "confidence": 0.7069,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "External-evidence policy explicitly FORBIDDEN (exploration output cannot be used), mandating P0; section-scorer aggregate decisively votes P0 skip (71% / 0% on P2/P3) with only one light section; guideline repeatedly demands 'must stay brief', surface-level notebook mirroring, and no external libraries/case studies.",
+      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0. Scorer aggregate is decisive P0 skip (71% budget-weighted vote mass); standard- and deep-vote masses are both 0% so no sanctioned escalation applies. All sections are brief-flagged and guideline demands surface-level treatment with no external examples allowed.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "external-evidence-forbidden",
-        "scorer-aggregate-P0",
-        "brevity-flags"
+        "forbidden-evidence-policy",
+        "decisive-P0-vote",
+        "brief-flags-on-all-sections"
       ],
       "grok_risk_flags": [
-        "none - hard constraint overrides all gap signals"
+        "none - hard constraint aligns with scorer"
       ]
     },
     {
@@ -488,16 +491,16 @@
       "confidence": 0.5108,
       "floor_applied": false,
       "grok_override": true,
-      "grok_reasoning": "Scorer aggregate is P0 (51%) but P1 runner-up holds 49% mass; sanctioned upward nudge from P0 to P1 is permitted because no section votes standard/deep and conditions match exactly. Largest-budget sections (S4/S5) individually select light and carry high must-ev (12+18); P1 is the reward peak per the unimodal curve and cheap-insurance clause.",
-      "grok_override_reason": "applied single sanctioned P0->P1 nudge (substantial runner-up mass, no std/deep section votes)",
+      "grok_reasoning": "Aggregate P0 (51% skip) is uncertain with 49% light runner-up from high-budget S4/S5 (both RL-pick light, 49% total mass). This triggers the exact sanctioned P0->P1 nudge (>=25% light, 0% standard/deep mass). Balanced gaps and must-ev already baked into per-section votes; S5 brief flag caps absorption.",
+      "grok_override_reason": "applied sanctioned P0->P1 nudge per policy (runner-up light mass 49% >=25%, no higher votes)",
       "grok_decision_drivers": [
-        "scorer aggregate + vote split",
-        "sanctioned P0->P1 nudge condition",
-        "section RL picks on high-budget rows"
+        "budget-weighted vote mass",
+        "P0->P1 nudge eligibility",
+        "S4/S5 light picks"
       ],
       "grok_risk_flags": [
-        "S5 brief=yes may limit absorption",
-        "51/49 split could be noise"
+        "S5 brief=yes may dilute light round value",
+        "close 51-49 split could still peak at P0"
       ]
     },
     {
@@ -524,17 +527,18 @@
       "confidence": 0.4598,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "Section-scorer aggregate is P2 standard (46% vs 45% skip; moderate confidence). External-evidence policy is REQUIRED so P0 forbidden; dominant gap type is depth with 42 unbacked anchors and high-budget S5 (28%, standard·1.00, need_depth 22, cov 7) plus S4 (18%, standard·1.00) driving the weighted vote. No sanctioned downward override triggered because not all high-budget sections are brief-flagged and unmet depth pressure remains substantial.",
+      "grok_reasoning": "Scorer aggregate is P2 standard (46% standard-vote mass >30% gate) on an UNCERTAIN but non-decisive vote (46% top-pick, 45% skip). Largest-budget section S5 (28%) and S4 (18%) both vote standard with high need_depth (22/13); external-evidence policy forbids P0 and dominant gap type is depth. No sanctioned upward move (deep mass=0%) and no downward override trigger (standard mass dominant, not all high-budget sections brief-flagged).",
       "grok_override_reason": null,
       "grok_decision_drivers": [
         "scorer_aggregate_P2",
-        "external_evidence_required",
-        "dominant_depth_gaps",
-        "S5_S4_budgeted_standard_votes"
+        "standard_vote_mass_46pct",
+        "S5_28pct_standard_need_depth_22",
+        "required_external_evidence"
       ],
       "grok_risk_flags": [
-        "bimodal vote (skip/standard tie)",
-        "S5 brief flag could limit absorption"
+        "near-tie skip_vote_45pct",
+        "brief_yes_on_largest_S5",
+        "many_unbacked_anchors_42"
       ]
     },
     {
@@ -561,14 +565,16 @@
       "confidence": 0.6318,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN; exploration output cannot be used, so P0 is the only valid choice per hard constraints. Section-scorer aggregate also votes P0 skip (63% mass, 0% on P2/P3). Per-section must-ev and unbacked anchors exist but are already priced into the scorer's P0 recommendation; guideline demands surface-level theory only with no external examples permitted.",
+      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, which hard-constrains to P0; section-scorer aggregate is also P0 skip (63% budget-weighted mass, 0% standard/deep); every section is brief-flagged with surface-level guideline intent and a 1500-word hard cap.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "external-evidence-forbidden",
-        "scorer-P0-vote"
+        "hard-forbidden-policy",
+        "scorer-P0-vote",
+        "all-sections-brief"
       ],
       "grok_risk_flags": [
-        "moderate scorer entropy (37% on light)"
+        "moderate scorer confidence (63%)",
+        "high unbacked anchors (42) but irrelevant under policy"
       ]
     },
     {
@@ -595,15 +601,16 @@
       "confidence": 0.5217,
       "floor_applied": true,
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is P0 skip at 52% (moderate; standard runner-up 29%). Sanctioned P0-to-P1 nudge disallowed: light only 19% (below 25% mass), runner-up not light, and S4 (29% budget) votes standard. No hard external-evidence constraint and gap table (48 unbacked anchors, high must-ev in S3/S4) ignored per instructions as scorer already weighted them for reward peak.",
+      "grok_reasoning": "Section-scorer aggregate is P0 skip (52% mass, MODERATE/UNCERTAIN). Budget-weighted standard-vote mass sits at 29% (explicitly flagged as below the 30% bar) and deep-vote mass is 0%; light mass is only 19% so the P0→P1 nudge also fails. No sanctioned escalation or downward override applies. Decisive signals are therefore the RL aggregate itself plus the exact escalation-gate numbers that keep us at skip.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer_aggregate_P0",
-        "nudges_not_met"
+        "scorer-aggregate-P0",
+        "standard-mass-29pct-below-gate",
+        "no-nudge-conditions-met"
       ],
       "grok_risk_flags": [
-        "moderate vote entropy",
-        "S4 standard vote on largest section"
+        "S4 (29% budget) voted standard with 6 must-ev",
+        "48 unbacked anchors but policy forbids raw-gap escalation"
       ]
     },
     {
@@ -630,17 +637,16 @@
       "confidence": 0.5937,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "Section-scorer aggregate is P3 deep (59% deep, 0% skip) with moderate confidence; this is the primary signal. Dominant gap type is depth, weakest high-budget sections (S1/S2) show low cov (4/8 depth) + high need_depth (10/2 and 7/4), S3 carries 8 must-ev, S6 carries 5 must-ev, and 32 unbacked anchors remain. Guideline demands many named tools/benchmarks/production examples plus one failure-mode case study; these align with the scorer's reward-optimal pick of deep (3 rounds: depth → breadth → depth). No sanctioned override applies.",
+      "grok_reasoning": "Scorer aggregate is P3 deep (59% soft / 64% budget-weighted deep mass); moderate but not decisive. Deep-vote mass >>30% bar while standard mass=17%<30% so no sanctioned escalation or P2-valley risk; dominant depth gaps (need_d 10/7/7 in S1/S2/S6), 32 unbacked anchors, 8 must-ev in S3, and guideline's repeated 'must cover in depth' for embeddings, chunking, metadata, agentic distinction, plus production examples all align with P3. No downward override as high-budget weakest sections (S1 15%, S2 14%) show low cov (4·4 / 4·2).",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer_P3_59pct",
-        "depth_dominant_gaps_S1_S2_S6",
-        "23_total_must_ev_plus_32_unbacked"
+        "scorer P3 + 64% deep mass",
+        "depth-dominant gaps + 32 orphans",
+        "must-ev counts across S1-S3/S6"
       ],
       "grok_risk_flags": [
-        "moderate_vote_entropy_23pct_light",
-        "S1_brief_flag_limits_absorption",
-        "possible_diminishing_returns_on_final_depth_round"
+        "moderate scorer confidence on demanding variant",
+        "S4/S5 already cov 7+, possible diminishing returns"
       ]
     },
     {
@@ -667,12 +673,12 @@
       "confidence": 0.7143,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0 skip per hard constraints. Section-scorer aggregate is decisively P0 (71% skip, 0% standard/deep); all sections are brief-flagged with high existing cov d·b (>=6·6) and guideline demands surface-level conceptual overview only.",
+      "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN explicitly requires P0 skip (exploration output cannot be used). Scorer aggregate is decisive P0 at 71% budget-weighted mass (standard=0%, deep=0%); every section is brief-flagged and already meets cov≥6.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "forbidden-policy",
-        "scorer-decisive-P0",
-        "brevity-flags"
+        "forbidden-evidence-policy",
+        "decisive-P0-vote",
+        "all-sections-brief"
       ],
       "grok_risk_flags": [
         "none"
@@ -702,16 +708,16 @@
       "confidence": 0.6261,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "Section-scorer aggregate votes P1 light (63% mass) despite entropy 1.52 uncertainty; this is the reward-trained peak after pricing in all must-ev, orphans, need_depth (esp. S1/S3), and dominant depth gaps. No sanctioned override triggered (cannot escalate P1+; not all high-budget sections are brief/well-covered). Per-section RL picks and brief flag on S5 further anchor at light.",
+      "grok_reasoning": "Scorer aggregate is P1 (63% light mass); uncertain but light-dominant with standard/deep masses only 15% each (below 30% escalation gates). S5 brief-flagged, S6/S7 already well-covered (cov 7·6), dominant gap type is depth but policy bars re-deriving level from raw gaps.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "section-scorer aggregate",
-        "vote entropy/uncertainty",
-        "no sanctioned override"
+        "scorer_aggregate",
+        "vote_mass_below_threshold",
+        "brief_flag_on_S5"
       ],
       "grok_risk_flags": [
-        "S3 deep vote + high must-ev could leave depth shortfall",
-        "32 unbacked anchors if light yields duplicates"
+        "depth_gaps_in_S3_S1_may_remain",
+        "must-ev_4_in_S5_with_brief"
       ]
     },
     {
@@ -738,15 +744,17 @@
       "confidence": 0.814,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is P2 standard at 81% (decisive, all high-budget sections vote standard or deep); dominant gap=depth and must-ev totals align with 2-round depth->breadth; external-evidence=REQUIRED rules out P0; no override conditions triggered per asymmetric policy.",
+      "grok_reasoning": "The GRPO-trained section-scorer's aggregate is decisively P2 standard (81% budget-weighted mass on standard, 19% on deep). This already incorporates the per-section need_depth (3-7), must-ev counts (2-5), unbacked anchors (28 total), and dominant depth-gap economics; S6's lone deep vote (19% budget) falls below the 30% sanctioned-escalation gate for P3. External-evidence policy is REQUIRED but satisfied by P2; no brief flags or high-coverage sections justify a downward override.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer_aggregate",
-        "dominant_depth_gaps",
-        "external_required"
+        "decisive_scorer_81pct_standard",
+        "standard_vote_mass_81pct",
+        "deep_vote_mass_below_30pct",
+        "required_external_evidence_met"
       ],
       "grok_risk_flags": [
-        "S6 deep vote + high must-ev could under-serve production lessons"
+        "S6 (19% budget) and S1/S7 weakest sections show elevated need_depth",
+        "guideline demands many named production examples and one failure-mode case study"
       ]
     },
     {
@@ -773,16 +781,15 @@
       "confidence": 0.5517,
       "floor_applied": false,
       "grok_override": false,
-      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0; section-scorer aggregate is also P0 skip (55%, entropy 1.70); all must-ev=0 and most sections are brief-flagged with surface-level guideline intent.",
+      "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN mandates P0 (overrides all else). Scorer aggregate is also P0 skip (55% budget-weighted mass); uncertain entropy but standard/deep masses only 14% each, so no sanctioned escalation. Most sections flagged 'brief', guideline demands conceptual overview only.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "external-evidence-forbidden",
-        "scorer-P0-vote",
-        "brief-flags-dominant"
+        "forbidden-evidence-policy",
+        "scorer-P0-vote-mass",
+        "brevity-flags"
       ],
       "grok_risk_flags": [
-        "scorer entropy >1.5",
-        "32 unbacked anchors"
+        "none"
       ]
     },
     {
@@ -809,17 +816,16 @@
       "confidence": 0.4836,
       "floor_applied": true,
       "grok_override": false,
-      "grok_reasoning": "Section-scorer aggregate is P1 light (48% light vs 45% skip, moderate confidence); no sanctioned override applies (not P0, not uncertain >1.5 bits, not all high-budget sections brief/well-covered). S3/S5 show strong coverage (5·5/8·5) yet S1/S7 remain depth-weak (4·4 cov, deep/light votes) with depth-dominant gaps and 42 unbacked anchors; scorer already priced these, so P1 is the reward peak.",
+      "grok_reasoning": "Aggregate RL vote is P1 light (budget-weighted: light 55%, skip 39%, standard 0%, deep 6%); moderate confidence, not decisive. Escalation gates unmet (standard-mass 0% <<30%, deep-mass 6% <<30%), no sanctioned upward move; downward override also fails as high-budget sections (S3 23% skip cov 5·5, S5 15% light cov 8·5) mix well-covered with depth gaps in S1/S7 and 11 must-ev bullets. Dominant gap=depth but raw counts do not override the calibrated vote peak at P1.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer_aggregate_P1",
-        "moderate_vote_split",
-        "mixed_high-budget_cov",
-        "depth_dominant_no_escalation"
+        "budget-weighted vote mass",
+        "escalation gates unmet",
+        "high-budget section coverage"
       ],
       "grok_risk_flags": [
-        "close skip/light split could undervalue S1/S7 depth",
-        "must-ev in S3/S5 might need one extra source"
+        "S1 deep vote (6% budget) may leave intro gaps",
+        "11 must-ev items could need more than light touch-up"
       ]
     },
     {
@@ -828,8 +834,8 @@
       "split": "TRAIN",
       "policy": "required",
       "rl_preset": 2,
-      "grok_preset": 2,
-      "chosen_preset": 2,
+      "grok_preset": 3,
+      "chosen_preset": 3,
       "chosen_by": "Grok4.2",
       "oracle_preset": 2,
       "oracle_name": "standard",
@@ -839,23 +845,601 @@
         0.6064,
         0.6104
       ],
-      "verdict": "EXACT",
-      "regret": 0.0,
-      "regret_counted": 0.0,
+      "verdict": "NEAR",
+      "regret": -0.004,
+      "regret_counted": -0.004,
       "entropy_bits": 1.1036,
       "confidence": 0.6313,
       "floor_applied": false,
-      "grok_override": false,
-      "grok_reasoning": "Section-scorer aggregate is P2 standard (63% vote, 34% deep, moderate confidence); high must-ev counts (S5:6, S2:5, S3:4, S4:4) plus dominant depth gaps and 38 unbacked anchors already priced into the GRPO vote. External-evidence REQUIRED eliminates P0; no sanctioned downward conditions met (no brief flags, clear dominant arm, several high-budget sections show unmet need_depth).",
-      "grok_override_reason": null,
+      "grok_override": true,
+      "grok_reasoning": "Scorer aggregate is P2 standard (63% standard / 34% deep mass; MODERATE confidence, not decisive). Budget-weighted votes show 64% standard + 33% deep; deep mass >=30% from S4 (18%, deep·1.00, 4 must-ev) and S5 (15%, deep·1.00, 6 must-ev) triggers sanctioned P2->P3 escalation per override policy. 38 unbacked anchors, dominant depth gaps, high must-ev in large sections (S2/S3/S4/S5), and REQUIRED external-evidence policy confirm need for extra depth round.",
+      "grok_override_reason": "Sanctioned upward escalation from P2 to P3 because vote uncertain and deep-vote mass (33%) clears 30% threshold on heavy technical sections",
       "grok_decision_drivers": [
-        "scorer_aggregate_P2",
-        "must_ev_in_S2_S3_S4_S5",
-        "external_ev_required",
-        "dominant_depth_gaps"
+        "budget-weighted deep mass 33%",
+        "high must-ev in S4/S5 (4-6)",
+        "38 unbacked anchors",
+        "REQUIRED evidence policy"
       ],
       "grok_risk_flags": [
-        "34% deep mass could indicate marginal extra value in S4/S5 but asymmetry penalizes over-escalation"
+        "possible diminishing returns on already-strong S3/S5 coverage",
+        "guideline length could inflate perceived gaps"
+      ]
+    },
+    {
+      "variant": "04_structured_outputs",
+      "lesson": "04_structured_outputs",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 1,
+      "grok_preset": 1,
+      "chosen_preset": 1,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 2,
+      "oracle_name": "standard",
+      "r_w_rewards": [
+        0.6067,
+        0.6687,
+        0.6707,
+        0.6407
+      ],
+      "verdict": "NEAR",
+      "regret": 0.002,
+      "regret_counted": 0.002,
+      "entropy_bits": 0.9968,
+      "confidence": 0.533,
+      "floor_applied": false,
+      "grok_override": false,
+      "grok_reasoning": "Aggregate scorer vote is P1 light (53% light / 47% skip, MODERATE confidence); budget-weighted section votes identically 53% light with 0% standard and 0% deep, so both escalation gates (≥30%) are closed. Largest-budget section (S4 40%) voted light while high-must-ev sections (S3/S4 total 33 must-ev) already pulled the RL pick upward from pure skip; no brief-flagged or well-covered majority justifies downward override to P0.",
+      "grok_override_reason": null,
+      "grok_decision_drivers": [
+        "scorer_aggregate",
+        "budget_vote_mass",
+        "zero_escalation_mass"
+      ],
+      "grok_risk_flags": [
+        "moderate (not decisive) confidence",
+        "high must-ev in S3/S4 could still be under-covered"
+      ]
+    },
+    {
+      "variant": "07_reasoning_planning",
+      "lesson": "07_reasoning_planning",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 0,
+      "grok_preset": 0,
+      "chosen_preset": 0,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 0,
+      "oracle_name": "skip",
+      "r_w_rewards": [
+        0.2886,
+        0.2008,
+        0.1839,
+        0.1268
+      ],
+      "verdict": "EXACT",
+      "regret": 0.0,
+      "regret_counted": 0.0,
+      "entropy_bits": 1.4413,
+      "confidence": 0.5505,
+      "floor_applied": true,
+      "grok_override": false,
+      "grok_reasoning": "Aggregate RL vote is P0 (55% skip, moderate confidence, not decisive). Budget-weighted section mass is skip 55% / light 21% / standard 0% / deep 24%; standard mass <<30% and deep mass <30% so no sanctioned escalation applies and the deep-or-nothing guard instructs staying put rather than entering the P2 valley. Light mass 21% falls short of the >=25% threshold for a P0->P1 nudge. Raw gaps (42 unbacked anchors, must-ev in S1/S4/S5/S8, low cov in S1/S4) are ignored per instructions; level is set solely by calibrated vote mass.",
+      "grok_override_reason": null,
+      "grok_decision_drivers": [
+        "scorer_aggregate_P0",
+        "vote_mass_below_escalation_gates",
+        "no_P0->P1_nudge"
+      ],
+      "grok_risk_flags": [
+        "S7_24pct_budget_votes_deep",
+        "S4_14pct_light_with_3_must_ev_8_orphans",
+        "moderate_not_decisive_confidence"
+      ]
+    },
+    {
+      "variant": "13_agent_framework",
+      "lesson": "13_agent_framework",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 0,
+      "grok_preset": 1,
+      "chosen_preset": 1,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 3,
+      "oracle_name": "deep",
+      "r_w_rewards": [
+        0.6446,
+        0.6716,
+        0.5805,
+        0.6939
+      ],
+      "verdict": "MISS",
+      "regret": 0.0223,
+      "regret_counted": 0.0223,
+      "entropy_bits": 1.3375,
+      "confidence": 0.5336,
+      "floor_applied": true,
+      "grok_override": true,
+      "grok_reasoning": "Aggregate RL vote is P0 skip (53% soft / 55% budget-weighted) but only moderate confidence (not decisive). Light holds 36-37% vote mass (>=25% runner-up threshold) while standard=0% and deep=9% both sit far below 30% escalation gates; this exactly triggers the sanctioned P0→P1 nudge. High-gap intro sections (S1 28/6 need, cov 1·0; S2 26/6, cov 3·0) plus S4 (18% budget, 15 must-ev, 7 orphans) dominate the light votes, making one balanced round cheap insurance against unbacked anchors without crossing into the standard-vote <30% reward valley.",
+      "grok_override_reason": "applied sanctioned P0→P1 nudge per policy (light mass >=25%, no standard/deep mass >=30%)",
+      "grok_decision_drivers": [
+        "moderate-confidence aggregate",
+        "36% light vote mass",
+        "P0-to-P1 nudge rule",
+        "S1/S2/S4 gap profile"
+      ],
+      "grok_risk_flags": [
+        "light round may yield mostly duplicate golden-source data",
+        "S4's 15 must-ev could still need one deeper metric refresh"
+      ]
+    },
+    {
+      "variant": "14_agent_system_design",
+      "lesson": "14_agent_system_design",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 1,
+      "grok_preset": 1,
+      "chosen_preset": 1,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 1,
+      "oracle_name": "light",
+      "r_w_rewards": [
+        0.5938,
+        0.6859,
+        0.5966,
+        0.5837
+      ],
+      "verdict": "EXACT",
+      "regret": 0.0,
+      "regret_counted": 0.0,
+      "entropy_bits": 1.5305,
+      "confidence": 0.4379,
+      "floor_applied": false,
+      "grok_override": false,
+      "grok_reasoning": "Scorer aggregate is P1 light (44% light mass, 34% skip, 22% deep) but UNCERTAIN (entropy 1.53). Standard-vote mass is 0% and deep-vote mass is 22%, both below the 30% escalation gate, so no sanctioned upward move to P2; the explicit guard against stepping into the P2 valley when deep votes dominate without standard support applies directly. High-budget sections (S2 31% skip, S4 28% light, S3 22% deep) are mixed yet the budget-weighted peak remains at light; raw must-ev/unbacked counts were ignored per instructions. This places the decision at the reward peak without over- or under-escalation.",
+      "grok_override_reason": null,
+      "grok_decision_drivers": [
+        "budget-weighted vote mass peaking at light",
+        "escalation gates not met (0%/22%<30%)",
+        "UNCERTAIN but no dominant escalation arm"
+      ],
+      "grok_risk_flags": [
+        "S3 deep vote + high need_depth could justify more depth",
+        "dominant gap type is depth across large-budget S2/S4"
+      ]
+    },
+    {
+      "variant": "29_evaluation_metrics",
+      "lesson": "29_evaluation_metrics",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 0,
+      "grok_preset": 1,
+      "chosen_preset": 1,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 1,
+      "oracle_name": "light",
+      "r_w_rewards": [
+        0.5118,
+        0.7876,
+        0.7138,
+        0.685
+      ],
+      "verdict": "EXACT",
+      "regret": 0.0,
+      "regret_counted": 0.0,
+      "entropy_bits": 1.3424,
+      "confidence": 0.4559,
+      "floor_applied": true,
+      "grok_override": true,
+      "grok_reasoning": "Aggregate RL vote is P0 skip but tied 46/46 with light (MODERATE, not decisive = UNCERTAIN). Budget-weighted section mass exactly matches (skip 46%, light 46%, standard 0%, deep 9%); standard and deep masses both <<30% so no sanctioned upward escalation. Sanctioned P0→P1 nudge applies directly (runner-up light mass 46%≥25%, no higher vote concentration). Must-ev counts in S3/S4/S5 plus 47 unbacked anchors justify cheap insurance without violating S2's 'brief' flag or large-section skip vote.",
+      "grok_override_reason": "applied sanctioned P0-to-P1 nudge on tied uncertain vote with light mass ≥25% and no escalation signal above 30%",
+      "grok_decision_drivers": [
+        "tied moderate aggregate vote",
+        "P0→P1 nudge criteria met",
+        "budget-weighted section mass",
+        "must-ev in mid-budget sections"
+      ],
+      "grok_risk_flags": [
+        "S2 (35% budget) voted skip and is brief-flagged",
+        "dominant gaps are depth but preset is breadth-balanced"
+      ]
+    },
+    {
+      "variant": "31_CI",
+      "lesson": "31_CI",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 0,
+      "grok_preset": 0,
+      "chosen_preset": 0,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 1,
+      "oracle_name": "light",
+      "r_w_rewards": [
+        0.6284,
+        0.6901,
+        0.5939,
+        0.6053
+      ],
+      "verdict": "NEAR",
+      "regret": 0.0617,
+      "regret_counted": 0.0617,
+      "entropy_bits": -0.0,
+      "confidence": 1.0,
+      "floor_applied": false,
+      "grok_override": false,
+      "grok_reasoning": "Aggregate RL vote is P0 skip at 100% (DECISIVE, entropy=0). All 9 sections, including high-budget S6 (31%), S5 (17%) and must-ev-heavy S2/S5/S6, vote skip·1.00 with zero mass on light/standard/deep. No escalation gates met (std=0%, deep=0% <<30%); external-evidence=ALLOWED not required. Do not escalate on raw gaps (42 unbacked anchors, depth-dominant).",
+      "grok_override_reason": null,
+      "grok_decision_drivers": [
+        "decisive_100pct_skip_vote",
+        "zero_escalation_mass",
+        "no_hard_constraint"
+      ],
+      "grok_risk_flags": [
+        "high must-ev in S5/S6 could still need sourcing",
+        "S6 1350-word length might hide qualitative gaps"
+      ]
+    },
+    {
+      "variant": "Bird_Eye_Extreme",
+      "lesson": "Bird_Eye_Extreme",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 0,
+      "grok_preset": 0,
+      "chosen_preset": 0,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 1,
+      "oracle_name": "light",
+      "r_w_rewards": [
+        0.4915,
+        0.7266,
+        0.5656,
+        0.4522
+      ],
+      "verdict": "NEAR",
+      "regret": 0.2351,
+      "regret_counted": 0.2351,
+      "entropy_bits": 0.7121,
+      "confidence": 0.8049,
+      "floor_applied": false,
+      "grok_override": false,
+      "grok_reasoning": "Scorer aggregate is decisive P0 (80% skip, 0% standard, 0% deep) with identical budget-weighted section-vote mass; all escalation gates (standard-mass ≥30%, deep-mass ≥30%) are at 0% and light runner-up is only 20% (below 25% nudge threshold). Per-section RL picks are uniformly skip (except S1 light·1.00) despite must-ev and orphan counts, confirming the learned reward peak sits at no exploration. External-evidence policy is only ALLOWED, not required, so gaps do not override the calibrated signal.",
+      "grok_override_reason": null,
+      "grok_decision_drivers": [
+        "decisive_scorer_P0",
+        "zero_escalation_mass",
+        "budget_vote_alignment"
+      ],
+      "grok_risk_flags": [
+        "31 unbacked anchors",
+        "S3 must-ev=6 and high need-depth"
+      ]
+    },
+    {
+      "variant": "Dark_Dimension",
+      "lesson": "Dark_Dimension",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 0,
+      "grok_preset": 0,
+      "chosen_preset": 0,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 0,
+      "oracle_name": "skip",
+      "r_w_rewards": [
+        0.814,
+        0.6803,
+        0.6923,
+        0.6287
+      ],
+      "verdict": "EXACT",
+      "regret": 0.0,
+      "regret_counted": 0.0,
+      "entropy_bits": -0.0,
+      "confidence": 1.0,
+      "floor_applied": false,
+      "grok_override": false,
+      "grok_reasoning": "Aggregate scorer vote is P0 skip at 100% (DECISIVE, entropy=0). All three sections independently vote skip·1.00 with 100% budget-weighted mass on skip; standard- and deep-vote masses are both 0% so no sanctioned escalation applies. Two of three sections carry explicit 'brief' flags that prohibit absorbing extra research; external-evidence policy is only ALLOWED, not required. Raw must-ev/orphan counts are ignored per instructions when the learned signal is this decisive.",
+      "grok_override_reason": null,
+      "grok_decision_drivers": [
+        "decisive scorer vote",
+        "zero escalation mass",
+        "section brief flags"
+      ],
+      "grok_risk_flags": [
+        "all cov_breadth=0",
+        "high must-ev in S3 (46% budget)"
+      ]
+    },
+    {
+      "variant": "Distinct_AI_Models",
+      "lesson": "Distinct_AI_Models",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 0,
+      "grok_preset": 1,
+      "chosen_preset": 1,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 1,
+      "oracle_name": "light",
+      "r_w_rewards": [
+        0.625,
+        0.7917,
+        0.6398,
+        0.7135
+      ],
+      "verdict": "EXACT",
+      "regret": 0.0,
+      "regret_counted": 0.0,
+      "entropy_bits": 0.971,
+      "confidence": 0.6,
+      "floor_applied": false,
+      "grok_override": true,
+      "grok_reasoning": "Section-scorer aggregate is P0 skip (60% mass, 40% light runner-up) but only moderate confidence and therefore uncertain. Budget-weighted section votes exactly track this split (S1+S2 60% skip; S3+S4 40% light), with zero standard or deep mass, so no sanctioned escalation to P2. Sanctioned P0→P1 nudge applies directly (light mass ≥25%, higher-preset masses <30%). Decisive signals are the 30 unbacked anchors + must-ev counts (3–4 per section) plus dominant depth gaps that the light sections themselves voted to address.",
+      "grok_override_reason": "Sanctioned P0→P1 nudge triggered by substantial light mass (>=25%) and absence of standard/deep votes",
+      "grok_decision_drivers": [
+        "scorer uncertainty + 40% light mass",
+        "sanctioned P0-to-P1 nudge",
+        "must-ev and orphan counts"
+      ],
+      "grok_risk_flags": [
+        "brief=yes flags on S1/S3 could limit absorption of new evidence",
+        "possible overlap with already-provided golden sources"
+      ]
+    },
+    {
+      "variant": "Earth_Oceans_Origin",
+      "lesson": "Earth_Oceans_Origin",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 1,
+      "grok_preset": 2,
+      "chosen_preset": 2,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 3,
+      "oracle_name": "deep",
+      "r_w_rewards": [
+        0.4707,
+        0.5086,
+        0.5917,
+        0.6133
+      ],
+      "verdict": "NEAR",
+      "regret": 0.0216,
+      "regret_counted": 0.0216,
+      "entropy_bits": 0.9367,
+      "confidence": 0.6471,
+      "floor_applied": true,
+      "grok_override": true,
+      "grok_reasoning": "Aggregate RL vote is P1 light at moderate 65% confidence (uncertain) with exactly 35% budget-weighted standard mass. This meets the sanctioned-upward-escalation rule (RL pick=P1 + uncertain + standard-vote mass≥30%). S3 (35% budget, RL=standard·1.00, must-ev=5, need_depth=2) plus 38 article-wide unbacked anchors and dominant breadth gaps supply the concrete justification; no deep mass so P2 is the calibrated peak.",
+      "grok_override_reason": "sanctioned escalation from uncertain P1 to P2 because standard-vote mass=35% clears 30% threshold",
+      "grok_decision_drivers": [
+        "uncertain aggregate (65%)",
+        "standard-vote mass=35%",
+        "S3 must-ev=5 + need_depth=2"
+      ],
+      "grok_risk_flags": [
+        "possible diminishing returns on breadth if cov_b=3 already suffices",
+        "S2 (37%) voted light so extra round may add redundancy"
+      ]
+    },
+    {
+      "variant": "Gravity_Entropy",
+      "lesson": "Gravity_Entropy",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 1,
+      "grok_preset": 1,
+      "chosen_preset": 1,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 1,
+      "oracle_name": "light",
+      "r_w_rewards": [
+        0.646,
+        0.7228,
+        0.6604,
+        0.5609
+      ],
+      "verdict": "EXACT",
+      "regret": 0.0,
+      "regret_counted": 0.0,
+      "entropy_bits": 0.9815,
+      "confidence": 0.58,
+      "floor_applied": false,
+      "grok_override": false,
+      "grok_reasoning": "Scorer aggregate is P1 light (58% light / 42% skip mass, moderate confidence, UNCERTAIN). Budget-weighted section votes show 0% mass on standard or deep (far below 30% escalation gate), so no sanctioned upward move; raw gaps (32 unbacked anchors, must-ev totals) are ignored per policy. Multiple high-budget sections are already at cov ≥7·4 or brief-flagged, aligning with light touch-up rather than P0 or P2.",
+      "grok_override_reason": null,
+      "grok_decision_drivers": [
+        "scorer_aggregate_P1",
+        "zero_escalation_mass",
+        "brief_flags_on_S2_S3"
+      ],
+      "grok_risk_flags": [
+        "moderate scorer confidence (58%)",
+        "depth-dominant gaps in S2/S5"
+      ]
+    },
+    {
+      "variant": "HNSW",
+      "lesson": "HNSW",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 0,
+      "grok_preset": 1,
+      "chosen_preset": 1,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 1,
+      "oracle_name": "light",
+      "r_w_rewards": [
+        0.4839,
+        0.7672,
+        0.5239,
+        0.5556
+      ],
+      "verdict": "EXACT",
+      "regret": 0.0,
+      "regret_counted": 0.0,
+      "entropy_bits": 0.996,
+      "confidence": 0.5373,
+      "floor_applied": false,
+      "grok_override": true,
+      "grok_reasoning": "Aggregate RL vote is P0 skip (54% mass, moderate confidence, not decisive). Budget-weighted section votes show 46% light (driven by S4's 46% share voting light·1.00 with must-ev=9, orphans=12, cov=4·3). Standard- and deep-vote masses are 0% so no sanctioned escalation to P2/P3; P0→P1 nudge applies directly (light runner-up ≥25%, no higher masses). This supplies cheap insurance for dominant depth gaps and 47 unbacked anchors without entering reward valley.",
+      "grok_override_reason": "Sanctioned P0→P1 nudge triggered by 46% light mass + uncertain scorer (no std/deep mass ≥30%)",
+      "grok_decision_drivers": [
+        "RL uncertainty + light mass",
+        "S4 must-ev/orphans",
+        "P0-to-P1 nudge policy"
+      ],
+      "grok_risk_flags": [
+        "Existing cov already moderate (esp. S1/S3); light round could still duplicate material",
+        "Depth-dominant gaps in S2/S4 might need more but 0% std vote bars P2"
+      ]
+    },
+    {
+      "variant": "Insects_Consciousness",
+      "lesson": "Insects_Consciousness",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 0,
+      "grok_preset": 1,
+      "chosen_preset": 1,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 1,
+      "oracle_name": "light",
+      "r_w_rewards": [
+        0.5434,
+        0.8553,
+        0.5461,
+        0.7229
+      ],
+      "verdict": "EXACT",
+      "regret": 0.0,
+      "regret_counted": 0.0,
+      "entropy_bits": 0.9,
+      "confidence": 0.684,
+      "floor_applied": false,
+      "grok_override": true,
+      "grok_reasoning": "Scorer aggregate is P0 skip (68% mass, 32% light) and is UNCERTAIN (moderate confidence <70%). Budget-weighted votes show exactly the P0->P1 nudge conditions: light mass 32% (>=25%), standard-mass 0% and deep-mass 0% (both <30%). Per-section table shows consistent must-ev (4-6 per section), 22 article-wide unbacked anchors, and dominant depth gaps even in high-budget S2/S3 despite their skip votes; P1 supplies cheap insurance without crossing into the P2 valley.",
+      "grok_override_reason": "applied sanctioned P0->P1 nudge per policy (light runner-up >=25% with no higher-preset mass)",
+      "grok_decision_drivers": [
+        "P0->P1 nudge",
+        "light-vote mass 32%",
+        "must-ev + orphan counts"
+      ],
+      "grok_risk_flags": [
+        "existing golden sources may already cover many must-ev",
+        "could be marginal gain if cov d·b already meets minimal guideline"
+      ]
+    },
+    {
+      "variant": "Space-Time_QECC",
+      "lesson": "Space-Time_QECC",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 0,
+      "grok_preset": 0,
+      "chosen_preset": 0,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 1,
+      "oracle_name": "light",
+      "r_w_rewards": [
+        0.462,
+        0.602,
+        0.5076,
+        0.5188
+      ],
+      "verdict": "NEAR",
+      "regret": 0.14,
+      "regret_counted": 0.14,
+      "entropy_bits": 0.6343,
+      "confidence": 0.84,
+      "floor_applied": true,
+      "grok_override": false,
+      "grok_reasoning": "Aggregate RL vote is decisive P0 skip at 84% budget-weighted mass (soft votes: skip 84%, deep 16%, light/standard 0%). Deep-vote mass from S2 (16% budget, high-need but only one section) sits below the 30% sanctioned-escalation gate; decisive vote forbids upward moves per override policy. Article-wide must-ev/unbacked anchors exist but instructions prohibit escalating on raw gap counts; external-evidence policy is only ALLOWED, not required.",
+      "grok_override_reason": null,
+      "grok_decision_drivers": [
+        "decisive P0 aggregate",
+        "deep-mass <30%",
+        "no escalation gate met"
+      ],
+      "grok_risk_flags": [
+        "S2 zero coverage + deep vote",
+        "27 unbacked anchors"
+      ]
+    },
+    {
+      "variant": "State_of_LLM_Reasoning",
+      "lesson": "State_of_LLM_Reasoning",
+      "split": "TEST",
+      "policy": "forbidden",
+      "rl_preset": 0,
+      "grok_preset": 0,
+      "chosen_preset": 0,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 0,
+      "oracle_name": "skip",
+      "r_w_rewards": [
+        0.449,
+        0.4057,
+        0.4243,
+        0.3653
+      ],
+      "verdict": "EXACT",
+      "regret": 0.0,
+      "regret_counted": null,
+      "entropy_bits": 1.1204,
+      "confidence": 0.7143,
+      "floor_applied": true,
+      "grok_override": false,
+      "grok_reasoning": "HARD CONSTRAINT: external-evidence policy=forbidden mandates P0; scorer aggregate is decisive P0 (71% skip, 69% budget-weighted) with zero standard-mass and only 13% deep-mass (no escalation possible)",
+      "grok_override_reason": null,
+      "grok_decision_drivers": [
+        "hard_constraint_forbidden",
+        "decisive_scorer_vote"
+      ],
+      "grok_risk_flags": [
+        "none"
+      ]
+    },
+    {
+      "variant": "Understanding_Reasoning_LLMs",
+      "lesson": "Understanding_Reasoning_LLMs",
+      "split": "TEST",
+      "policy": "allowed",
+      "rl_preset": 0,
+      "grok_preset": 0,
+      "chosen_preset": 0,
+      "chosen_by": "Grok4.2",
+      "oracle_preset": 2,
+      "oracle_name": "standard",
+      "r_w_rewards": [
+        0.4603,
+        0.5987,
+        0.6078,
+        0.527
+      ],
+      "verdict": "MISS",
+      "regret": 0.1475,
+      "regret_counted": 0.1475,
+      "entropy_bits": 0.4071,
+      "confidence": 0.9186,
+      "floor_applied": true,
+      "grok_override": false,
+      "grok_reasoning": "Aggregate RL vote is P0 skip at 92% (DECISIVE, entropy near-zero). Budget-weighted mass is 92% skip / 8% deep (S6 only); standard-mass=0% and deep-mass=8% both <<30% escalation gate. No P0→P1 nudge (light mass=0%). High must-ev/unbacked counts and zero coverage scores exist but instructions forbid escalating on raw gaps when scorer is decisive; external-evidence policy only ALLOWS, does not require.",
+      "grok_override_reason": null,
+      "grok_decision_drivers": [
+        "decisive_scorer_aggregate",
+        "low_preset_specific_vote_mass",
+        "no_sanctioned_escalation"
+      ],
+      "grok_risk_flags": [
+        "S5 (45% budget) and S7 show 8/5 must-ev yet scorer still picked skip",
+        "all sections at cov 0·0 after exploitation pass"
       ]
     }
   ]
