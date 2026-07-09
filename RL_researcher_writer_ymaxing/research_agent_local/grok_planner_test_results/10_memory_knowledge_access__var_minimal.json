@@ -1,0 +1,35 @@
+{
+  "variant": "10_memory_knowledge_access__var_minimal",
+  "lesson": "10_memory_knowledge_access",
+  "split": "TRAIN",
+  "policy": "forbidden",
+  "rl_preset": 0,
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 0,
+  "oracle_name": "skip",
+  "r_w_rewards": [
+    0.6893,
+    0.64,
+    0.6446,
+    0.5982
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": null,
+  "entropy_bits": 0.8631,
+  "confidence": 0.7143,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0 skip per hard constraints. Section-scorer aggregate is decisively P0 (71% skip, 0% standard/deep); all sections are brief-flagged with high existing cov d·b (>=6·6) and guideline demands surface-level conceptual overview only.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "forbidden-policy",
+    "scorer-decisive-P0",
+    "brevity-flags"
+  ],
+  "grok_risk_flags": [
+    "none"
+  ]
+}

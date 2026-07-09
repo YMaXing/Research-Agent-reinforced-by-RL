@@ -1,0 +1,35 @@
+{
+  "variant": "05_workflow_patterns__var_standard",
+  "lesson": "05_workflow_patterns",
+  "split": "TRAIN",
+  "policy": "allowed",
+  "rl_preset": 2,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 1,
+  "oracle_name": "light",
+  "r_w_rewards": [
+    0.6149,
+    0.8085,
+    0.7092,
+    0.7192
+  ],
+  "verdict": "NEAR",
+  "regret": 0.0992,
+  "regret_counted": 0.0992,
+  "entropy_bits": 1.3697,
+  "confidence": 0.4872,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is P2 standard (49% top vote, 41% light runner-up, moderate confidence); dominant gap type is depth with high need_d in S1/S2 (40/44) plus 52 article-wide unbacked anchors; high-budget sections mostly cov_d >=6 but scorer already priced this in; no sanctioned override condition met.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "scorer_aggregate_P2",
+    "dominant_depth_gaps"
+  ],
+  "grok_risk_flags": [
+    "vote split 49-41 could tilt light on marginal returns",
+    "S2 theory-only with 14 orphans"
+  ]
+}

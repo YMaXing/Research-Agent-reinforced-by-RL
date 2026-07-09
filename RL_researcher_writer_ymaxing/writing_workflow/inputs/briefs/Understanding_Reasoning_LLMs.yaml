@@ -1,0 +1,148 @@
+# Auto-extracted brief for: Understanding_Reasoning_LLMs
+# Source: article_ground_truth.md
+# REVIEW BEFORE USE — check all fields, especially those marked
+# '# TODO: review' which require course-context knowledge.
+# Then run:
+#   uv run python generate_article_guideline.py --article Understanding_Reasoning_LLMs
+
+lesson_number: 5
+title: Understanding Reasoning LLMs
+topic_summary:
+  "Plan coverage of reasoning models as a key LLM specialization trend for 2025, defining the term around multi-step
+  intermediate thinking for complex tasks. Use DeepSeek-R1's training pipeline (cold-start RL, SFT+RL iterations, distillation)
+  as central case study while contrasting the four main building approaches. Address when reasoning models are appropriate
+  vs. inefficient, their strengths/weaknesses, comparisons to o1, and practical budget-conscious methods like small-scale
+  distillation or journey learning.
+
+  "
+why_valuable:
+  "Reasoning capabilities are central to agentic AI systems that must decompose complex goals, self-correct, and
+  handle multi-step problems reliably. AI engineers need to understand the tradeoffs in training vs. inference techniques,
+  emergence phenomena, and cost-effective distillation to select or build appropriate models rather than defaulting to expensive
+  proprietary options.
+
+  "
+target_length_words: 4202
+theory_practice_ratio: 100% theory - 0% practice
+lesson_scope:
+  "Following lessons on core LLM training (SFT, RLHF) and specialization patterns like RAG, this lesson examines
+  reasoning as an advanced specialization; it equips readers with model-building blueprints before later lessons on integrating
+  reasoning LLMs into agent loops, self-verification, and multi-agent orchestration.
+
+  "
+audience:
+  "AI engineers who already understand standard pre-training, instruction tuning, RLHF pipelines, and basic prompting
+  techniques such as CoT, and who want to specialize LLMs for complex, multi-step agentic tasks.
+
+  "
+concepts_from_previous_lessons:
+  - "RLHF pipeline: standard SFT-before-RL flow vs. pure RL cold-start approaches"
+  - Chain-of-thought prompting and its impact on reasoning accuracy
+  - Test-time compute scaling laws and optimal allocation of inference resources
+  - Distillation vs. direct training for transferring capabilities to smaller models
+concepts_for_future_lessons:
+  - Integrating reasoning LLMs into agentic systems for task decomposition and self-correction
+  - Hybrid inference-time scaling + RL+SFT pipelines in production agent deployments
+  - Journey learning and exposure to error paths for building reliable self-verifying agents
+  - Cost vs. capability tradeoffs when choosing reasoning models for multi-agent workflows
+sections:
+  - title: Methods and Strategies for Building and Refining Reasoning Models
+    target_words: 253
+    key_points:
+      - "LLM specialization trend: reasoning models as 2025 extension beyond RAG and domain fine-tuning"
+      - Reasoning specialization targets complex multi-step tasks (math, puzzles, coding) without replacing general LLM uses
+      - "Core drawbacks that accompany reasoning gains: when the specialization is not free"
+      - Article roadmap contrasting definition, applicability, DeepSeek case study, four techniques, landscape implications, and
+        budget strategies
+    diagrams:
+      - High-level LLM development stages diagram emphasizing Stage 4 specialization for reasoning vs. common Stages 1-3
+  - title: How do we define "reasoning model"?
+    target_words: 347
+    key_points:
+      - "Reasoning definition: multi-step generation with explicit or hidden intermediate steps for complex queries vs. direct
+        factual recall"
+      - Spectrum from basic reasoning present in all modern LLMs to specialized excellence on hard puzzles/math proofs
+      - "Two manifestations of reasoning: visible thought traces in output vs. invisible internal iterations (o1-style)"
+      - Philosophical question of whether models are truly 'thinking' during these steps or simply generating plausible chains
+      - Evolving and debated definitions in literature, why a working definition is needed for this lesson
+    diagrams:
+      - "Side-by-side contrast: standard LLM direct answer vs. reasoning model with visible intermediate steps"
+      - "Two-level reasoning framework: internal multi-step processing vs. user-visible reasoning in responses"
+  - title: When should we use reasoning models?
+    target_words: 160
+    key_points:
+      - "Task matching: reasoning models excel at puzzles, advanced math, and hard coding but are overkill for summarization or
+        simple QA"
+      - "Practical downsides: higher latency/cost, verbosity, and risk of overthinking errors on straightforward tasks"
+      - "Decision heuristic for engineers: apply right LLM type to task complexity to balance performance and efficiency"
+    diagrams:
+      - Strengths vs. weaknesses summary graphic for reasoning models (complex task power contrasted with cost and overthinking
+        risks)
+  - title: A brief look at the DeepSeek training pipeline
+    target_words: 286
+    key_points:
+      - "Three DeepSeek R1 variants and their relationships: R1-Zero (cold-start pure RL), R1 (refined with SFT+RL), and distilled
+        smaller models"
+      - "Cold-start concept: skipping initial SFT before RL and its implications vs. conventional RLHF"
+      - Pipeline as both case study and reusable blueprint, highlighting verifiable rewards and consistency mechanisms
+      - "Distillation nuance: not classical logit-based KD but SFT of smaller models on large-model CoT outputs"
+    diagrams:
+      - End-to-end flowchart of DeepSeek's three-model development process from V3 base through RL, SFT, and distillation branches
+  - title: The 4 main ways to build and improve reasoning models
+    target_words: 1942
+    key_points:
+      - "Inference-time scaling: CoT prompting, majority voting, beam search, MCTS and process reward models; analogy to human
+        extra thinking time"
+      - "Pure RL (R1-Zero): accuracy + format rewards without any SFT; emergence of 'Aha' moment and spontaneous reasoning traces"
+      - "SFT + RL hybrid (R1): cold-start data generation, consistency rewards, verifiable RL signals, and multi-stage iteration
+        benefits"
+      - "Pure SFT and distillation: transferring reasoning via high-quality CoT datasets to smaller models; efficiency gains and
+        limitations"
+      - "Comparative effectiveness: distillation outperforms pure RL on smaller models; benchmark insights and missing comparison
+        experiments"
+      - "Open questions around o1/o3: likely blend of training and heavy inference-time scaling"
+    diagrams:
+      - Classic CoT prompting example and its effect on output length/complexity
+      - Search strategy taxonomy using process reward models (annotated from test-time compute paper)
+      - Pure RL cold-start process for DeepSeek-R1-Zero with reward types and Aha moment illustration
+      - Multi-stage SFT+RL pipeline for flagship DeepSeek-R1 including cold-start data and consistency rewards
+      - Distillation branch highlighting SFT data reuse to create smaller Llama/Qwen reasoning variants
+      - Benchmark comparison tables across R1 variants, o1, and distilled models
+      - "Journey learning vs. shortcut learning: including error paths and corrections in SFT data"
+  - title: Thoughts about DeepSeek R1
+    target_words: 332
+    key_points:
+      - Appreciation for open MIT license, detailed report, and demonstrated emergent reasoning from pure RL
+      - "Head-to-head with o1: comparable benchmark quality but superior inference efficiency suggesting training-heavy vs. inference-heavy
+        bets"
+      - "Limits to comparison: unknown o1 size, MoE status, exact mix of techniques, and base model strength"
+      - "Training cost realities: $6M figure likely refers to base V3, true R1 cost remains undisclosed"
+      - Positioning as milestone for open-weight reasoning models
+  - title: Developing reasoning models on a limited budget
+    target_words: 605
+    key_points:
+      - "Distillation practicality: Sky-T1 case with 17K samples, $450 budget, and near-o1 performance"
+      - "Pure RL at small scale: TinyZero 3B model under $30 exhibiting emergent self-verification"
+      - "Journey learning concept: training on incorrect paths + corrections vs. only golden solutions (shortcut learning)"
+      - Self-correction reinforcement through exposure to mistakes in SFT data
+      - "Future directions: combining insights from these budget projects with DeepSeek techniques"
+    diagrams:
+      - Sky-T1 cost and performance summary relative to o1
+      - TinyZero self-verification trace example
+      - Journey learning diagram contrasting full error trajectories against shortcut-only SFT
+  - title: Conclusion
+    target_words: 277
+    key_points:
+      - "Four approaches recap: inference scaling (no training, high serving cost), pure RL (research insight, emergent behavior),
+        SFT+RL (production blueprint), distillation (efficient but derivative)"
+      - "Hybrid future: combining SFT+RL with inference-time scaling as likely o1 pattern"
+      - "Strategic guidance: match technique to constraints (budget, performance targets, innovation needs)"
+      - "Outlook for agentic AI: continued rapid progress in efficient, smaller reasoning models"
+golden_sources:
+  - title: "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning"
+    url: https://arxiv.org/abs/2501.12948
+  - title: Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters
+    url: https://arxiv.org/abs/2408.03314
+  - title: "O1 Replication Journey: A Strategic Progress Report – Part 1"
+    url: https://arxiv.org/abs/2410.18982
+other_sources: []

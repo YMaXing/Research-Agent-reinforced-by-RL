@@ -1,0 +1,37 @@
+{
+  "variant": "Insects_Consciousness",
+  "lesson": "Insects_Consciousness",
+  "split": "TEST",
+  "policy": "allowed",
+  "rl_preset": null,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok-only",
+  "oracle_preset": 1,
+  "oracle_name": "light",
+  "r_w_rewards": [
+    0.5434,
+    0.8553,
+    0.5461,
+    0.7229
+  ],
+  "verdict": "NEAR",
+  "regret": 0.3092,
+  "regret_counted": 0.3092,
+  "entropy_bits": null,
+  "confidence": null,
+  "floor_applied": null,
+  "grok_override": null,
+  "grok_reasoning": "22 unbacked anchors and high must-ev (4-6 per section) show concrete depth gaps on specific experiments, expert quotes (Sebo, Andrews, Godfrey-Smith) and behavioral citations required by the guideline; dominant gap type is depth, weakest sections are the two largest (S2 45%, S3 24%) with need_d scores of 14 and cov_d stuck at 6/8; external-evidence is only ALLOWED so default to cheaper arm rules out P3 despite sizeable gaps.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "unbacked_anchors_22",
+    "must-ev_15_total",
+    "dominant_depth_gap",
+    "S2+S3_budget_69pct"
+  ],
+  "grok_risk_flags": [
+    "coverage numbers may already incorporate golden sources",
+    "guideline length could tempt over-researching non-mandatory breadth"
+  ]
+}

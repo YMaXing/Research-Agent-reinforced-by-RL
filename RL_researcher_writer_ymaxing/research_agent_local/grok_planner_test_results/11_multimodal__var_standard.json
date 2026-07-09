@@ -1,0 +1,37 @@
+{
+  "variant": "11_multimodal__var_standard",
+  "lesson": "11_multimodal",
+  "split": "TRAIN",
+  "policy": "allowed",
+  "rl_preset": 1,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 1,
+  "oracle_name": "light",
+  "r_w_rewards": [
+    0.6854,
+    0.6666,
+    0.4056,
+    0.6013
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.2765,
+  "confidence": 0.4836,
+  "floor_applied": true,
+  "grok_override": false,
+  "grok_reasoning": "Section-scorer aggregate is P1 light (48% light vs 45% skip, moderate confidence); no sanctioned override applies (not P0, not uncertain >1.5 bits, not all high-budget sections brief/well-covered). S3/S5 show strong coverage (5·5/8·5) yet S1/S7 remain depth-weak (4·4 cov, deep/light votes) with depth-dominant gaps and 42 unbacked anchors; scorer already priced these, so P1 is the reward peak.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "scorer_aggregate_P1",
+    "moderate_vote_split",
+    "mixed_high-budget_cov",
+    "depth_dominant_no_escalation"
+  ],
+  "grok_risk_flags": [
+    "close skip/light split could undervalue S1/S7 depth",
+    "must-ev in S3/S5 might need one extra source"
+  ]
+}

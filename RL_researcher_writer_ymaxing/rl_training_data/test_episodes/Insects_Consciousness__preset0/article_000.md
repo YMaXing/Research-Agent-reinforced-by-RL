@@ -1,0 +1,112 @@
+# The Widening Circle of Consciousness
+
+In 2022, researchers observed bumblebees doing something remarkable. In a lab at Queen Mary University of London, the small, fuzzy insects were given wooden balls to play with. The bees pushed and rolled them around, not for food, mating, or any other reward. The behavior had no obvious connection to survival. It was, apparently, just for fun [[35]](https://www.scientificamerican.com/article/ball-rolling-bumble-bees-just-wanna-have-fun?ref=refind), [[36]](https://www.theguardian.com/science/2022/oct/27/bumblebees-playing-wooden-balls-bees-study). This display, so decoupled from instinct, is one of many recent findings that challenge our assumptions about the inner lives of animals.
+
+This experiment is part of a wave of research that has led to a new scientific consensus. For decades, there has been broad agreement that animals similar to us, like other mammals and birds, have conscious experiences. However, recent studies have begun to acknowledge that consciousness may also be widespread among animals very different from us. This shift culminated in the 2024 New York Declaration on Animal Consciousness, which formally embraces this expanded view. The declaration states, "the empirical evidence indicates at least a realistic possibility of conscious experience in all vertebrates (including all reptiles, amphibians and fishes) and many invertebrates (including, at minimum, cephalopod mollusks, decapod crustaceans and insects)" [[The New York Declaration on Animal Consciousness]](http://www.nydeclaration.com/). The key takeaway is its cautious but firm position: the chance of consciousness in these creatures is high enough to take seriously.
+
+Unveiled on April 19, 2024, at a conference at New York University, the declaration was spearheaded by philosophers Kristin Andrews, Jeff Sebo, and Jonathan Birch [[24]](https://www.kimmela.org/2024/05/05/a-new-declaration-on-animal-consciousness/), [[42]](https://www.theatlantic.com/science/archive/2024/04/animal-consciousness-declaration-new-york/678223). It was initially signed by a prominent group of biologists, psychologists, and philosophers, including Anil Seth, Christof Koch, David Chalmers, and Peter Godfrey-Smith, and has since gathered hundreds more signatures [[3]](https://advancedconsciousness.org/revisiting-animal-consciousness), [[42]](https://www.theatlantic.com/science/archive/2024/04/animal-consciousness-declaration-new-york/678223).
+
+The declaration focuses on phenomenal consciousness, the most basic form of subjective experience. This is what philosopher Thomas Nagel, in his influential 1974 essay, described as the "what it is like to be" an organism. As he put it, "fundamentally an organism has conscious mental states if and only if there is something that it is like to be that organism - something it is like for the organism" [[43]](https://www.informationphilosopher.com/solutions/philosophers/nagelt/), [[46]](https://thephilosophicalsalon.com/thomas-nagels-bat-and-ours). This raw feeling is distinct from more complex capacities like self-awareness or metacognition, which the declaration does not claim for these animals [[The Background of the New York Declaration]](https://sites.google.com/nyu.edu/nydeclaration/background?authuser=0).
+
+This growing understanding of animal minds draws a sharp line between biological consciousness and artificial intelligence. While large language models like ChatGPT can produce impressive text, they lack the behavioral and physiological indicators of subjective experience we see in animals. As signatory Anil Seth notes, the declaration should galvanize "an understanding and appreciation that we have much more in common with other animals than we do with things like ChatGPT" [[1]](https://www.theatlantic.com/science/archive/2024/04/animal-consciousness-declaration-new-york/678223/), [[2]](https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419).
+
+```mermaid
+flowchart LR
+    %% Conceptual Timeline Contrasting Declarations
+    subgraph "Timeline of Consciousness Declarations"
+        Y2012["2012"]
+        Y2024["2024"]
+
+        Y2012 -- "Cambridge Declaration" --> CD["Cambridge Declaration"]
+        CD -- "Identified as conscious" --> S2012((Mammals & Birds))
+        CD -- "Terminology shift from" --> T1["'Consciousness'"]
+
+        Y2012 -.-> Y2024
+
+        Y2024 -- "New York Declaration" --> NYD["New York Declaration"]
+        NYD -- "Identified as possibly conscious" --> S2024((All Vertebrates +<br/>Cephalopods, Decapods, Insects))
+        NYD -- "Terminology shift to" --> T2["'Realistic possibility of<br/>phenomenal consciousness'"]
+    end
+
+    %% Visualizing the Widening Circle of Species
+    subgraph "Widening Circle of Species"
+        S2012 -- "Scope expands to include" --> S2024
+    end
+```
+Image 1: A conceptual timeline contrasting the 2012 Cambridge Declaration with the 2024 New York Declaration, visualizing the widening circle of species considered possibly conscious and noting the shift in terminology.
+
+The 2024 Declaration is the formal culmination of a rapid accumulation of behavioral evidence gathered over the last 10–15 years. The next section examines that evidence in detail, explains why the field moved to a public declaration, and dismantles the old neural-complexity barrier that long excluded invertebrates from consideration.
+
+## A Growing Awareness
+
+The New York Declaration did not emerge from a vacuum. It rests on over a decade of striking experimental results that have consistently pointed toward rich inner lives in a wide range of animals. This accumulation of evidence made the old assumptions untenable [[The Background of the New York Declaration]](https://sites.google.com/nyu.edu/nydeclaration/background?authuser=0).
+
+Here are six key examples of the research that shifted the consensus:
+1.  **Octopuses** demonstrate behaviors consistent with pain. In a conditioned place preference test, octopuses that received a noxious injection in one chamber developed a lasting aversion to it. They later developed a preference for a different chamber where they received pain-relieving anesthetic, mirroring responses used to infer pain in mammals [[The Background of the New York Declaration]](https://sites.google.com/nyu.edu/nydeclaration/background?authuser=0).
+2.  **Cuttlefish** have shown a form of episodic-like memory. They can recall not just what happened where and when, but also how they experienced it, such as whether they saw or smelled a prey item. This "source memory" suggests a more detailed and integrated recollection of past events [[The Background of the New York Declaration]](https://sites.google.com/nyu.edu/nydeclaration/background?authuser=0).
+3.  **Zebrafish** have passed a version of the mirror-mark test. After being familiarized with a mirror, they attempt to scrape off a colored mark on their body that is only visible in their reflection, a behavior often linked to a degree of self-recognition [[insects-and-other-animals-have-consciousness-experts-declare.md]](https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419).
+4.  **Bumblebees** engage in apparent play. As mentioned, they voluntarily roll wooden balls without any external reward, a behavior that meets the key criteria for play and suggests they find the activity intrinsically rewarding [[38]](https://www.sciencedirect.com/science/article/pii/S0003347222002366), [[The Background of the New York Declaration]](https://sites.google.com/nyu.edu/nydeclaration/background?authuser=0).
+5.  **Fruit flies** exhibit distinct sleep patterns. They have both "quiet sleep" with reduced brain activity and "active sleep" where brain activity persists. Social isolation has also been shown to disrupt their sleep, hinting at complex internal states influenced by their environment [[The Background of the New York Declaration]](https://sites.google.com/nyu.edu/nydeclaration/background?authuser=0).
+6.  **Crayfish** display "anxiety-like" states. When exposed to mild electric shocks, they become more averse to exploring bright, open spaces. This behavior is reversed by benzodiazepines, the same class of drugs used to treat anxiety in humans [[The Background of the New York Declaration]](https://sites.google.com/nyu.edu/nydeclaration/background?authuser=0).
+
+As this evidence mounted, an informal agreement grew among specialists. However, this consensus was not reaching policymakers or the public. The declaration was created to bridge that gap. As co-organizer Jeff Sebo explained, the goal was "to point to where we think the field is now and where the field is headed" [[insects-and-other-animals-have-consciousness-experts-declare.md]](https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419).
+
+This represents a significant evolution from the last major consensus statement, the 2012 Cambridge Declaration on Consciousness. That document asserted that "non-human animals, including all mammals and birds, and many other creatures, including octopuses, also possess these neurological substrates" for consciousness [[CambridgeDeclarationOnConsciousness.md]](http://fcmconference.org/img/CambridgeDeclarationOnConsciousness.pdf). The 2024 New York Declaration expands this circle to include all vertebrates and many invertebrates, while carefully framing the claim as a "realistic possibility" of phenomenal consciousness, reflecting a more nuanced scientific stance [[The New York Declaration on Animal Consciousness]](http://www.nydeclaration.com/). As philosopher Peter Godfrey-Smith notes, the complex behaviors of creatures like octopuses make it "very hard not to think that there’s quite a lot going on inside them" [[insects-and-other-animals-have-consciousness-experts-declare.md]](https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419).
+
+A major barrier to accepting invertebrate consciousness has been their radically different nervous systems. Yet, this is no longer seen as an insurmountable obstacle. A bee’s brain has only about a million neurons compared to a human’s 86 billion, but those neurons form an incredibly dense and complex network, sufficient for play and social learning [[insects-and-other-animals-have-consciousness-experts-declare.md]](https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419). The octopus provides another example with its highly distributed nervous system. Two-thirds of its 500 million neurons are in its arms, which can continue to perform complex, goal-directed actions for hours after being severed from the central brain, showing that sophisticated control does not require a centralized command center [[10]](https://neuroscience.stanford.edu/news/octopus-brains), [[13]](https://pmc.ncbi.nlm.nih.gov/articles/PMC8988249).
+
+Furthermore, the long-held belief that a cerebral cortex is necessary for consciousness has been dismantled. Research shows that other animals achieve similar functions with entirely different brain structures. The avian pallium in birds and the vertical lobe in octopuses perform cortex-like roles in memory and multisensory integration [[47]](https://asknature.org/strategy/complex-memory-processing-in-the-cephalopod-vertical-lobe/), [[49]](https://asknature.org/strategy/bird-brains-use-unique-structure-to-support-high-intelligence). As Kristin Andrews notes, "when you look at birds and reptiles and amphibians, they have very different brain structures... and yet some of those brain structures, we’re finding, are doing the same kind of work that a cerebral cortex does in humans" [[insects-and-other-animals-have-consciousness-experts-declare.md]](https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419). Peter Godfrey-Smith adds that consciousness arises not from specific hardware but from electrical patterns, suggesting it "can exist in an architecture that looks completely alien" [[insects-and-other-animals-have-consciousness-experts-declare.md]](https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419), [[27]](https://iai.tv/articles/studies-on-animal-minds-suggest-consciousness-is-not-computation-auid-3535).
+
+The evidentiary and architectural arguments have now shifted the scientific default. This new understanding brings with it a host of downstream ethical obligations, practical tensions, and laboratory-policy implications that follow once we accept this realistic possibility.
+
+## Mindful Relations
+
+Accepting the realistic possibility of consciousness in a wider range of animals compels us to rethink our relationship with them. This shift has profound ethical and practical consequences, from the farm to the laboratory. The declaration's core message is that "when there is a realistic possibility of conscious experience in an animal, it is irresponsible to ignore that possibility in decisions affecting that animal" [[The New York Declaration on Animal Consciousness]](http://www.nydeclaration.com/).
+
+This principle extends our ethical obligations beyond simply preventing pain. Jeff Sebo argues that it is not enough to avoid causing physical discomfort. "We also have to provide them with the kinds of enrichment and opportunities that allow them to express their instincts and explore their environments and engage in social systems and otherwise be the kinds of complex agents they are" [[31]](https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419).
+
+However, applying this principle to insects creates practical tensions. As Peter Godfrey-Smith points out, our relationship with many insects is "inevitably a somewhat antagonistic one." Pests destroy crops, and mosquitoes carry deadly diseases. "The idea that we could just sort of make peace with the mosquitoes—it’s a very different thought than the idea that we could make peace with fish and octopuses," he says [[insects-and-other-animals-have-consciousness-experts-declare.md]](https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419). This forces us into a world of difficult trade-offs rather than simple avoidance of harm.
+
+This new awareness also exposes a significant welfare gap in scientific research. While lab mice are protected by welfare standards, insects like *Drosophila melanogaster* (fruit flies) are used in countless experiments with no equivalent oversight [[19]](https://www.thetransmitter.org/policy/knowledge-gaps-in-cephalopod-care-could-stall-welfare-standards). This stands in contrast to the growing regulations for other invertebrates. The United Kingdom, for example, amended its Animal Welfare (Sentience) Bill in 2022 to include all decapod crustaceans and cephalopod molluscs after a government-commissioned review found strong evidence of their sentience [[6]](https://www.eurogroupforanimals.org/news/uk-sentience-bill-passes-final-stages-recognise-decapod-and-cephalopod-sentience-law), [[7]](https://www.eurogroupforanimals.org/news/decapods-and-cephalopods-be-recognised-sentient-beings-under-uk-law). This sets a clear precedent for how scientific consensus can translate into policy.
+
+The rapid shift in our understanding of animal minds also offers a cautionary lesson for the field of AI. While Sebo and other experts agree that "current AI systems are very unlikely to be conscious," the animal literature shows how quickly a scientific consensus can change. This should encourage "caution and humility" as we develop increasingly complex AI agents [[insects-and-other-animals-have-consciousness-experts-declare.md]](https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419).
+
+Ultimately, the declaration is a call to action for the scientific community itself. Kristin Andrews urges researchers to leverage the resources they already have. "All these nematode worms and fruit flies that are in almost every university—study consciousness in them," she says. "You already have them... Make that project a consciousness project. Imagine that!" [[insects-and-other-animals-have-consciousness-experts-declare.md]](https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419). By studying simpler models, we may not only expand our understanding of consciousness across the animal kingdom but also make progress on the fundamental scientific question of what consciousness is and how it arises [[14]](https://www.multiverses.xyz/podcast/animal-minds-kristin-andrews-on-assuming-consciousness-in-other-species).
+
+## References
+
+- [1] [https://www.theatlantic.com/science/archive/2024/04/animal-consciousness-declaration-new-york/678223](https://www.theatlantic.com/science/archive/2024/04/animal-consciousness-declaration-new-york/678223)
+- [2] [https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419](https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419)
+- [3] [https://advancedconsciousness.org/revisiting-animal-consciousness](https://advancedconsciousness.org/revisiting-animal-consciousness)
+- [4] [https://www.animalask.org/post/does-sentience-legislation-help-animals](https://www.animalask.org/post/does-sentience-legislation-help-animals)
+- [5] [https://naturewatch.org/study-confirms-animal-sentience-in-crustaceans](https://naturewatch.org/study-confirms-animal-sentience-in-crustaceans)
+- [6] [https://www.eurogroupforanimals.org/news/uk-sentience-bill-passes-final-stages-recognise-decapod-and-cephalopod-sentience-law](https://www.eurogroupforanimals.org/news/uk-sentience-bill-passes-final-stages-recognise-decapod-and-cephalopod-sentience-law)
+- [7] [https://www.eurogroupforanimals.org/news/decapods-and-cephalopods-be-recognised-sentient-beings-under-uk-law](https://www.eurogroupforanimals.org/news/decapods-and-cephalopods-be-recognised-sentient-beings-under-uk-law)
+- [8] [https://researchbriefings.files.parliament.uk/documents/CBP-9423/CBP-9423.pdf](https://researchbriefings.files.parliament.uk/documents/CBP-9423/CBP-9423.pdf)
+- [9] [https://www.sciencealert.com/octopus-arms-are-controlled-by-a-nervous-system-thats-like-no-other](https://www.sciencealert.com/octopus-arms-are-controlled-by-a-nervous-system-thats-like-no-other)
+- [10] [https://neuroscience.stanford.edu/news/octopus-brains](https://neuroscience.stanford.edu/news/octopus-brains)
+- [11] [https://www.youtube.com/watch?v=W9Gnw7B7oGM](https://www.youtube.com/watch?v=W9Gnw7B7oGM)
+- [12] [https://www.nature.com/articles/s41467-024-55475-5](https://www.nature.com/articles/s41467-024-55475-5)
+- [13] [https://pmc.ncbi.nlm.nih.gov/articles/PMC8988249/](https://pmc.ncbi.nlm.nih.gov/articles/PMC8988249/)
+- [14] [https://www.multiverses.xyz/podcast/animal-minds-kristin-andrews-on-assuming-consciousness-in-other-species](https://www.multiverses.xyz/podcast/animal-minds-kristin-andrews-on-assuming-consciousness-in-other-species)
+- [19] [https://www.thetransmitter.org/policy/knowledge-gaps-in-cephalopod-care-could-stall-welfare-standards](https://www.thetransmitter.org/policy/knowledge-gaps-in-cephalopod-care-could-stall-welfare-standards)
+- [21] [https://www.youtube.com/watch?v=ak3WuQhtoW4](https://www.youtube.com/watch?v=ak3WuQhtoW4)
+- [22] [https://jeffsebo.net](https://jeffsebo.net)
+- [24] [https://www.kimmela.org/2024/05/05/a-new-declaration-on-animal-consciousness](https://www.kimmela.org/2024/05/05/a-new-declaration-on-animal-consciousness)
+- [25] [https://www.youtube.com/watch?v=Mi4-EOThAIc](https://www.youtube.com/watch?v=Mi4-EOThAIc)
+- [27] [https://iai.tv/articles/studies-on-animal-minds-suggest-consciousness-is-not-computation-auid-3535](https://iai.tv/articles/studies-on-animal-minds-suggest-consciousness-is-not-computation-auid-3535)
+- [31] [https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419](https://www.quantamagazine.org/insects-and-other-animals-have-consciousness-experts-declare-20240419)
+- [32] [https://sites.google.com/nyu.edu/nydeclaration/background](https://sites.google.com/nyu.edu/nydeclaration/background)
+- [35] [https://www.scientificamerican.com/article/ball-rolling-bumble-bees-just-wanna-have-fun?ref=refind](https://www.scientificamerican.com/article/ball-rolling-bumble-bees-just-wanna-have-fun?ref=refind)
+- [36] [https://www.theguardian.com/science/2022/oct/27/bumblebees-playing-wooden-balls-bees-study](https://www.theguardian.com/science/2022/oct/27/bumblebees-playing-wooden-balls-bees-study)
+- [38] [https://www.sciencedirect.com/science/article/pii/S0003347222002366](https://www.sciencedirect.com/science/article/pii/S0003347222002366)
+- [40] [https://www.kimmela.org/2024/05/05/a-new-declaration-on-animal-consciousness](https://www.kimmela.org/2024/05/05/a-new-declaration-on-animal-consciousness)
+- [42] [https://www.theatlantic.com/science/archive/2024/04/animal-consciousness-declaration-new-york/678223](https://www.theatlantic.com/science/archive/2024/04/animal-consciousness-declaration-new-york/678223)
+- [43] [https://www.informationphilosopher.com/solutions/philosophers/nagelt](https://www.informationphilosopher.com/solutions/philosophers/nagelt)
+- [46] [https://thephilosophicalsalon.com/thomas-nagels-bat-and-ours](https://thephilosophicalsalon.com/thomas-nagels-bat-and-ours)
+- [47] [https://asknature.org/strategy/complex-memory-processing-in-the-cephalopod-vertical-lobe](https://asknature.org/strategy/complex-memory-processing-in-the-cephalopod-vertical-lobe)
+- [49] [https://asknature.org/strategy/bird-brains-use-unique-structure-to-support-high-intelligence](https://asknature.org/strategy/bird-brains-use-unique-structure-to-support-high-intelligence)
+- [The Background of the New York Declaration](https://sites.google.com/nyu.edu/nydeclaration/background?authuser=0)
+- [The New York Declaration on Animal Consciousness](http://www.nydeclaration.com/)
+- [Cambridge Declaration on Consciousness](http://fcmconference.org/img/CambridgeDeclarationOnConsciousness.pdf)
+- [What Is It Like to Be a Bat?](https://www.sas.upenn.edu/~cavitch/pdf-library/Nagel_Bat.pdf)

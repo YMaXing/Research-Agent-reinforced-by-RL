@@ -1,0 +1,37 @@
+{
+  "variant": "Space-Time_QECC",
+  "lesson": "Space-Time_QECC",
+  "split": "TEST",
+  "policy": "allowed",
+  "rl_preset": null,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok-only",
+  "oracle_preset": 1,
+  "oracle_name": "light",
+  "r_w_rewards": [
+    0.462,
+    0.602,
+    0.5076,
+    0.5188
+  ],
+  "verdict": "NEAR",
+  "regret": 0.0944,
+  "regret_counted": 0.0944,
+  "entropy_bits": null,
+  "confidence": null,
+  "floor_applied": null,
+  "grok_override": null,
+  "grok_reasoning": "S2 zero coverage + need 8/6 and must-ev 4 is the decisive hole; 27 unbacked anchors and 21 total must-ev confirm sizeable balanced gaps, yet brief flags on large sections and strong S4 coverage keep it from P3",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "S2 zero-cov + max-depth need",
+    "21 must-ev",
+    "27 unbacked anchors",
+    "balanced gaps + brief constraints"
+  ],
+  "grok_risk_flags": [
+    "golden sources may not contain all quoted remarks",
+    "S5 small budget could still hide missed dS/CFT refs"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "variant": "11_multimodal__var_demanding",
+  "lesson": "11_multimodal",
+  "split": "TRAIN",
+  "policy": "required",
+  "rl_preset": 2,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 2,
+  "oracle_name": "standard",
+  "r_w_rewards": [
+    0.4383,
+    0.5775,
+    0.6064,
+    0.6104
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.1036,
+  "confidence": 0.6313,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Section-scorer aggregate is P2 standard (63% vote, 34% deep, moderate confidence); high must-ev counts (S5:6, S2:5, S3:4, S4:4) plus dominant depth gaps and 38 unbacked anchors already priced into the GRPO vote. External-evidence REQUIRED eliminates P0; no sanctioned downward conditions met (no brief flags, clear dominant arm, several high-budget sections show unmet need_depth).",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "scorer_aggregate_P2",
+    "must_ev_in_S2_S3_S4_S5",
+    "external_ev_required",
+    "dominant_depth_gaps"
+  ],
+  "grok_risk_flags": [
+    "34% deep mass could indicate marginal extra value in S4/S5 but asymmetry penalizes over-escalation"
+  ]
+}

@@ -3,10 +3,10 @@
   "lesson": "31_CI",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 0,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "rl_preset": null,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok-only",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -16,19 +16,23 @@
     0.6053
   ],
   "verdict": "NEAR",
-  "regret": 0.0617,
-  "regret_counted": 0.0617,
-  "entropy_bits": -0.0,
-  "confidence": 1.0,
-  "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Section-scorer aggregate is decisive P0 skip (100% mass, every section votes skip·1.00). No runner-up mass (>=25%) on P1, so the single sanctioned P0->P1 nudge is unavailable. Gap table and 42 unbacked anchors were already priced into the scorer; instructions forbid re-deriving escalation from them.",
+  "regret": 0.0962,
+  "regret_counted": 0.0962,
+  "entropy_bits": null,
+  "confidence": null,
+  "floor_applied": null,
+  "grok_override": null,
+  "grok_reasoning": "42 unbacked anchors and dominant depth gaps drive choice; largest-budget sections (S6 31% with must-ev 5, S5 17% with must-ev 5, S2 14% with must-ev 6) show low cov (3-5 depth) vs high need (8-13 depth) requiring sourced tool/config evidence from golden sources. P2 depth-first then breadth fills these without P3 cost, as S5 is brief, S9/S7 already strong, and small-budget sections (S1/S8/S9 <5%) add little justification for deeper rounds.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer_decisive_P0",
-    "no_sanctioned_nudge_condition"
+    "unbacked_anchors_42",
+    "high_must-ev_in_large_sections",
+    "dominant_depth_gaps",
+    "section_budgets_S6_S5_S2"
   ],
   "grok_risk_flags": [
-    "high must-ev counts could indicate missing sources if scorer under-estimated"
+    "S5 brief flag may limit absorption",
+    "notebook/golden sources might already suffice for some configs",
+    "possible over-coverage in low-budget intro/conclusion"
   ]
 }

@@ -1,0 +1,88 @@
+# Auto-extracted brief for: Dark_Dimension
+# Source: article_ground_truth.md
+# REVIEW BEFORE USE — check all fields, especially those marked
+# '# TODO: review' which require course-context knowledge.
+# Then run:
+#   uv run python generate_article_guideline.py --article Dark_Dimension
+
+lesson_number: 7
+title: A Dark Dimension Could Link Two of the Universe’s Great Unknowns
+topic_summary:
+  "Plan lesson examining the hypothesis that dark energy and dark matter are physically coupled rather than independent.
+  Cover how recent DESI observations of time-varying dark energy (including phantom-regime behavior) motivate interacting
+  dark-sector models, how such coupling can resolve the Hubble tension as a bookkeeping effect, and how string-theory frameworks
+  posit a shared origin via a micron-scale dark dimension in which gravitons acquire mass to mimic dark matter.
+
+  "
+why_valuable:
+  "For AI engineers, the lesson illustrates how theorists unify disparate invisible phenomena through higher-dimensional
+  models and interdisciplinary constraints; these same skills in handling uncertainty, semantic abstraction, and multi-angle
+  validation translate directly to designing agentic systems that integrate incomplete observations across modalities.
+
+  "
+target_length_words: 1741
+theory_practice_ratio: 100% theory - 0% practice
+lesson_scope:
+  "This lesson follows coverage of the standard Lambda-CDM model, dark-matter evidence, and the Hubble tension;
+  it precedes lessons that examine concrete experimental tests of extra-dimensional predictions and their analogies to agentic
+  uncertainty modeling.
+
+  "
+audience:
+  "AI engineers and technical readers who understand basic cosmology, the cosmological constant, and the distinction
+  between dark energy and dark matter but have not yet explored coupled dark-sector models or string-theory extra dimensions.
+
+  "
+concepts_from_previous_lessons:
+  - Standard Lambda-CDM cosmology and the presumed constancy of dark energy
+  - Observational evidence for dark matter from galactic rotation curves and structure formation
+  - The Hubble tension between early-universe and late-universe expansion-rate measurements
+concepts_for_future_lessons:
+  - Phenomenological tests of string-inspired models using astrophysical signatures
+  - Long-range forces beyond gravity and their constraints from tidal-tail observations
+  - Interdisciplinary convergence of cosmology, particle physics, and string theory for model selection
+sections:
+  - title: Introduction
+    target_words: 352
+    key_points:
+      - Universe composition (70 % dark energy, 25 % dark matter) and why both are semantically invisible rather than literally
+        dark
+      - Default assumption that dark energy and dark matter are unrelated versus emerging evidence they may be physically intertwined
+      - DESI 2024/2025 results showing dark energy strength peaked ~2 Gyr ago then weakened, appearing to enter a phantom regime
+      - Phantom-regime analogy (ball rolling uphill) and apparent violation of energy conservation unless an external influence
+        exists
+      - Quote from Tait framing the possibility of a unified dark-sector theory in which one component influences the other
+  - title: Dark Interactions
+    target_words: 593
+    key_points:
+      - 2005 Khoury et al. model posing whether dark-energy density could increase via interaction with dark matter, producing
+        apparent (not true) phantom behavior
+      - Recent dark-sector QCD analogue constructed by Khoury, Lin, Trodden in which dark-energy density and dark-matter mass
+        evolve in concert
+      - Alternative January 2025 model in which dark matter transfers a fraction of its energy to dark energy, easing the brake
+        on cosmic expansion
+      - "Andriot’s bookkeeping argument: apparent phantom regime arises when evolving dark-matter mass is incorrectly assigned
+        to the dark-energy ledger"
+      - Vafa’s critique that computing dark energy independently of dark matter is invalid and produces unphysical phantom results
+      - How coupled dark-energy–dark-matter scenarios can naturally reconcile the ~9 % Hubble-tension discrepancy without invoking
+        systematic error or entirely new physics
+  - title: A Dark Dimension
+    target_words: 796
+    key_points:
+      - String-theory foundation allowing naturally varying dark energy and, by extension, time-dependent dark-matter particle
+        masses (Vafa 2019/2022)
+      - Proposal of one micron-scale dark dimension (far larger than Planck-scale extra dimensions) as the common origin for both
+        dark components
+      - Mechanism by which gravitons leaking into the dark dimension acquire mass, becoming dark gravitons whose gravitational
+        influence mimics dark matter
+      - "Natural coupling: any change in dark-dimension radius simultaneously modulates both dark-energy density and dark-matter
+        mass"
+      - July 2025 Obied–Vafa–Bedroya–Wu model predictions (slow, density-proportional change in dark energy) shown to be consistent
+        with DESI data
+      - "Consequence of coupling: possible new long-range force between dark-matter particles, testable via modified galactic
+        tidal tails"
+      - Kamionkowski–Kesden 2006 tidal-tail bound already constrains extra force strength; string-derived value falls comfortably
+        inside the observational limit
+      - Value of attacking the dark-sector problem from multiple directions (observational cosmology, particle physics, string
+        theory) until data select among possibilities
+golden_sources: []

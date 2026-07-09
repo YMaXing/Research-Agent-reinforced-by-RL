@@ -1,14 +1,10 @@
 # Hierarchical Navigable Small Worlds (HNSW)
 
-* * *
+![Hierarchical Navigable Small World (HNSW) graph overview](https://cdn.sanity.io/images/vr8gru94/production/d6e3a660654d9cb55f7ac137a736539e227296b6-1920x1080.png)
 
-https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fd6e3a660654d9cb55f7ac137a736539e227296b6-1920x1080.png&w=3840&q=75
-
-Hierarchical Navigable Small World (HNSW) graphs are among the top-performing indexes for [vector similarity search](https://www.pinecone.io/learn/what-is-similarity-search/)\[1\]. HNSW is a hugely popular technology that time and time again produces state-of-the-art performance with super fast search speeds and fantastic recall.
+Hierarchical Navigable Small World (HNSW) graphs are among the top-performing indexes for [vector similarity search](https://www.pinecone.io/learn/what-is-similarity-search/) [[1]](). HNSW is a hugely popular technology that time and time again produces state-of-the-art performance with super fast search speeds and fantastic recall.
 
 Yet despite being a popular and robust algorithm for approximate nearest neighbors (ANN) searches, understanding how it works is far from easy.
-
-* * *
 
 This article helps demystify HNSW and explains this intelligent algorithm in an easy-to-understand way. Towards the end of the article, we’ll look at how to implement HNSW using [Faiss](https://www.pinecone.io/learn/series/faiss/) and which parameter settings give us the performance we need.
 
@@ -20,43 +16,37 @@ There is a significant leap in complexity from a _‘proximity’_ graph to _‘
 
 ### Probability Skip List
 
-The probability skip list was introduced _way back_ in 1990 by _William Pugh_ \[2\]. It allows fast search like a sorted array, while using a linked list structure for easy (and fast) insertion of new elements (something that is not possible with sorted arrays).
+The probability skip list was introduced _way back_ in 1990 by _William Pugh_ [[2]](). It allows fast search like a sorted array, while using a linked list structure for easy (and fast) insertion of new elements (something that is not possible with sorted arrays).
 
 Skip lists work by building several layers of linked lists. On the first layer, we find links that _skip_ many intermediate nodes/vertices. As we move down the layers, the number of _‘skips’_ by each link is decreased.
 
 To search a skip list, we start at the highest layer with the longest _‘skips’_ and move along the edges towards the right (below). If we find that the current node ‘key’ is _greater than_ the key we are searching for — we know we have overshot our target, so we move down to previous node in the _next_ level.
 
-https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F9065d31e1b2e33ca697a56082f0ece7eff1c2d9b-1920x500.png&w=3840&q=75
-
-A probability skip list structure, we start on the top layer. If our current key is greater than the key we are searching for (or we reach end), we drop to the next layer.
+![A probability skip list structure. We start on the top layer. If our current key is greater than the key we are searching for (or we reach the end), we drop to the next layer.](https://cdn.sanity.io/images/vr8gru94/production/9065d31e1b2e33ca697a56082f0ece7eff1c2d9b-1920x500.png)
 
 HNSW inherits the same layered format with longer edges in the highest layers (for fast search) and shorter edges in the lower layers (for accurate search).
 
 ### Navigable Small World Graphs
 
-Vector search using _Navigable Small World_ (NSW) graphs was introduced over the course of several papers from 2011-14 \[4, 5, 6\]. The idea is that if we take a proximity graph but build it so that we have both long-range and short-range links, then search times are reduced to (poly/)logarithmic complexity.
+Vector search using _Navigable Small World_ (NSW) graphs was introduced over the course of several papers from 2011-14 [[4, 5, 6]](). The idea is that if we take a proximity graph but build it so that we have both long-range and short-range links, then search times are reduced to (poly/)logarithmic complexity.
 
 Each vertex in the graph connects to several other vertices. We call these connected vertices _friends_, and each vertex keeps a _friend list_, creating our graph.
 
 When searching an NSW graph, we begin at a pre-defined _entry-point_. This entry point connects to several nearby vertices. We identify which of these vertices is the closest to our query vector and move there.
 
-https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F5ca4fca27b2a9bf89b06748b39b7b6238fd4548c-1920x1080.png&w=3840&q=75
-
-The search process through a NSW graph. Starting at a pre-defined entry point, the algorithm greedily traverses to connected vertices that are nearer to the query vector.
+![The search process through a NSW graph. Starting at a pre-defined entry point, the algorithm greedily traverses to connected vertices that are nearer to the query vector.](https://cdn.sanity.io/images/vr8gru94/production/5ca4fca27b2a9bf89b06748b39b7b6238fd4548c-1920x1080.png)
 
 We repeat the _greedy-routing search_ process of moving from vertex to vertex by identifying the nearest neighboring vertices in each friend list. Eventually, we will find no nearer vertices than our current vertex — this is a local minimum and acts as our stopping condition.
 
 * * *
 
-_Navigable small world models are defined as any network with (poly/)logarithmic complexity using greedy routing. The efficiency of greedy routing breaks down for larger networks (1-10K+ vertices) when a graph is not navigable_ _\[7\]._
+_Navigable small world models are defined as any network with (poly/)logarithmic complexity using greedy routing. The efficiency of greedy routing breaks down for larger networks (1-10K+ vertices) when a graph is not navigable_ [[7]]().
 
 * * *
 
-The _routing_ (literally the route we take through the graph) consists of two phases. We start with the “zoom-out” phase where we pass through low-degree vertices (degree is the number of links a vertex has) — and the later “zoom-in” phase where we pass through higher-degree vertices \[8\].
+The _routing_ (literally the route we take through the graph) consists of two phases. We start with the "zoom-out" phase where we pass through low-degree vertices (degree is the number of links a vertex has) — and the later "zoom-in" phase where we pass through higher-degree vertices [[8]]().
 
-https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fd65da887accc1d8d577f236459b16946c9f71a96-1920x960.png&w=3840&q=75
-
-High-degree vertices have many links, whereas low-degree vertices have very few links.
+![High-degree vertices have many links, whereas low-degree vertices have very few links.](https://cdn.sanity.io/images/vr8gru94/production/d65da887accc1d8d577f236459b16946c9f71a96-1920x960.png)
 
 Our _stopping condition_ is finding no nearer vertices in our current vertex’s friend list. Because of this, we are more likely to hit a local minimum and stop too early when in the _zoom-out_ phase (fewer links, less likely to find a nearer vertex).
 
@@ -70,29 +60,23 @@ HNSW is a natural evolution of NSW, which borrows inspiration from hierarchical 
 
 Adding hierarchy to NSW produces a graph where links are separated across different layers. At the top layer, we have the longest links, and at the bottom layer, we have the shortest.
 
-https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F42d4a3ffc43e5dc2758ba8e5d2ef29d4c4d78254-1920x1040.png&w=3840&q=75
-
-Layered graph of HNSW, the top layer is our entry point and contains only the longest links, as we move down the layers, the link lengths become shorter and more numerous.
+![Layered graph of HNSW. The top layer is our entry point and contains only the longest links. As we move down the layers, the link lengths become shorter and more numerous.](https://cdn.sanity.io/images/vr8gru94/production/42d4a3ffc43e5dc2758ba8e5d2ef29d4c4d78254-1920x1040.png)
 
 During the search, we enter the top layer, where we find the longest links. These vertices will tend to be higher-degree vertices (with links separated across multiple layers), meaning that we, by default, start in the _zoom-in_ phase described for NSW.
 
 We traverse edges in each layer just as we did for NSW, greedily moving to the nearest vertex until we find a local minimum. Unlike NSW, at this point, we shift to the current vertex in a lower layer and begin searching again. We repeat this process until finding the local minimum of our bottom layer — _layer 0_.
 
-https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fe63ca5c638bc3cd61cc1cd2ab33b101d82170426-1920x1080.png&w=3840&q=75
-
-The search process through the multi-layer structure of an HNSW graph.
+![The search process through the multi-layer structure of an HNSW graph.](https://cdn.sanity.io/images/vr8gru94/production/e63ca5c638bc3cd61cc1cd2ab33b101d82170426-1920x1080.png)
 
 ## Graph Construction
 
-During graph construction, vectors are iteratively inserted one-by-one. The number of layers is represented by parameter _L_. The probability of a vector insertion at a given layer is given by a probability function normalized by the _‘level multiplier’ m\_L_, where _m\_L = ~0_ means vectors are inserted at _layer 0_ only.
+During graph construction, vectors are iteratively inserted one-by-one. The number of layers is represented by parameter _L_. The probability of a vector insertion at a given layer is given by a probability function normalized by the _‘level multiplier’ m_L_, where _m_L = ~0_ means vectors are inserted at _layer 0_ only.
 
-https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Ff105cb148aae44f77fa7e3df7b7f8c0256bcbec4-1920x980.png&w=3840&q=75
+![The probability function is repeated for each layer (other than layer 0). The vector is added to its insertion layer and every layer below it.](https://cdn.sanity.io/images/vr8gru94/production/f105cb148aae44f77fa7e3df7b7f8c0256bcbec4-1920x980.png)
 
-The probability function is repeated for each layer (other than layer 0). The vector is added to its insertion layer and every layer below it.
+The creators of HNSW found that the best performance is achieved when we minimize the overlap of shared neighbors across layers. _Decreasing m_L_ can help minimize overlap (pushing more vectors to _layer 0_), but this increases the average number of traversals during search. So, we use an _m_L_ value which balances both. _A rule of thumb for this optimal value is_ _`1/ln(M)`_ [[1]]().
 
-The creators of HNSW found that the best performance is achieved when we minimize the overlap of shared neighbors across layers. _Decreasing m\_L_ can help minimize overlap (pushing more vectors to _layer 0_), but this increases the average number of traversals during search. So, we use an _m\_L_ value which balances both. _A rule of thumb for this optimal value is_ _`1/ln(M)`_ _\[1\]_.
-
-Graph construction starts at the top layer. After entering the graph the algorithm greedily traverse across edges, finding the _ef_ nearest neighbors to our inserted vector _q_ — at this point _ef = 1_.
+Graph construction starts at the top layer. After entering the graph the algorithm greedily traverses across edges, finding the _ef_ nearest neighbors to our inserted vector _q_ — at this point _ef = 1_.
 
 After finding the local minimum, it moves down to the next layer (just as is done during search). This process is repeated until reaching our chosen _insertion layer_. Here begins phase two of construction.
 
@@ -100,11 +84,9 @@ The _ef_ value is increased to `efConstruction` (a parameter we set), meaning mo
 
 _M_ neighbors are added as links from these candidates — the most straightforward selection criteria are to choose the closest vectors.
 
-After working through multiple iterations, there are two more parameters that are considered when adding links. _M\_max_, which defines the maximum number of links a vertex can have, and _M\_max0_, which defines the same but for vertices in _layer 0_.
+After working through multiple iterations, there are two more parameters that are considered when adding links. _M_max_, which defines the maximum number of links a vertex can have, and _M_max0_, which defines the same but for vertices in _layer 0_.
 
-https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fdc5cb11ea197ceb4e1f18214066c8c51526b9af5-1920x1080.png&w=3840&q=75
-
-Explanation of the number of links assigned to each vertex and the effect of M, M\_max, and M\_max0.
+![Explanation of the number of links assigned to each vertex and the effect of M, M_max, and M_max0.](https://cdn.sanity.io/images/vr8gru94/production/dc5cb11ea197ceb4e1f18214066c8c51526b9af5-1920x1080.png)
 
 The stopping condition for insertion is reaching the local minimum in _layer 0_.
 
@@ -114,43 +96,48 @@ We will implement HNSW using the Facebook AI Similarity Search (Faiss) library, 
 
 To initialize the HNSW index we write:
 
-In\[2\]:
-
 ```python
+import faiss
+import numpy as np
 
+# setup our HNSW parameters
+d = 128  # vector size
+M = 32
+
+index = faiss.IndexHNSWFlat(d, M)
+print(index.hnsw)
 ```
 
-Out\[2\]:
+**Output:**
 
 ```
 <faiss.swigfaiss.HNSW; proxy of <Swig Object of type 'faiss::HNSW *' at 0x7f91183ef120> >
 ```
 
-With this, we have set our `M` parameter — the number of neighbors we add to each vertex on insertion, but we’re missing _M\_max_ and _M\_max0_.
+With this, we have set our `M` parameter — the number of neighbors we add to each vertex on insertion, but we’re missing _M_max_ and _M_max0_.
 
-In Faiss, these two parameters are set automatically in the `set_default_probas` method, called at index initialization. The _M\_max_ value is set to `M`, and _M\_max0_ set to `M*2` (find further detail in the [notebook](https://github.com/pinecone-io/examples/blob/master/learn/search/faiss-ebook/hnsw-faiss/hnsw_faiss.ipynb)).
+In Faiss, these two parameters are set automatically in the `set_default_probas` method, called at index initialization. The _M_max_ value is set to `M`, and _M_max0_ set to `M*2` (find further detail in the [notebook](https://github.com/pinecone-io/examples/blob/master/learn/search/faiss-ebook/hnsw-faiss/hnsw_faiss.ipynb)).
 
 Before building our `index` with `index.add(xb)`, we will find that the number of layers (or _levels_ in Faiss) are not set:
 
-In\[3\]:
-
 ```python
-
+# the HNSW index starts with no levels
+index.hnsw.max_level
 ```
 
-Out\[3\]:
+**Output:**
 
 ```
 -1
 ```
 
-In\[4\]:
-
 ```python
-
+# and levels (or layers) are empty too
+levels = faiss.vector_to_array(index.hnsw.levels)
+np.bincount(levels)
 ```
 
-Out\[4\]:
+**Output:**
 
 ```
 array([], dtype=int64)
@@ -158,45 +145,41 @@ array([], dtype=int64)
 
 If we go ahead and build the index, we’ll find that both of these parameters are now set.
 
-In\[5\]:
-
 ```python
-
+index.add(xb)
 ```
 
-In\[6\]:
-
 ```python
-
+# after adding our data we will find that the level
+# has been set automatically
+index.hnsw.max_level
 ```
 
-Out\[6\]:
+**Output:**
 
 ```
 4
 ```
 
-In\[7\]:
-
 ```python
-
+# and levels (or layers) are now populated
+levels = faiss.vector_to_array(index.hnsw.levels)
+np.bincount(levels)
 ```
 
-Out\[7\]:
+**Output:**
 
 ```
 array([     0, 968746,  30276,    951,     26,      1], dtype=int64)
 ```
 
-Here we have the number of levels in our graph, _0_ -\> _4_ as described by `max_level`. And we have `levels`, which shows the distribution of vertices on each level from _0_ to _4_ (ignoring the first `0` value). We can even find which vector is our entry point:
-
-In\[8\]:
+Here we have the number of levels in our graph, _0_ → _4_ as described by `max_level`. And we have `levels`, which shows the distribution of vertices on each level from _0_ to _4_ (ignoring the first `0` value). We can even find which vector is our entry point:
 
 ```python
-
+index.hnsw.entry_point
 ```
 
-Out\[8\]:
+**Output:**
 
 ```
 118295
@@ -204,31 +187,47 @@ Out\[8\]:
 
 That’s a high-level view of our Faiss-flavored HNSW graph, but before we test the index, let’s dive a little deeper into how Faiss is building this structure.
 
-#### Graph Structure
+### Graph Structure
 
-When we initialize our index we pass our vector dimensionality `d` and number of neighbors for each vertex `M`. This calls the method ‘`set_default_probas`’, passing `M` and `1 / log(M)` in the place of `levelMult` (equivalent to _m\_L_ above). A Python equivalent of this method looks like:
+When we initialize our index we pass our vector dimensionality `d` and number of neighbors for each vertex `M`. This calls the method `set_default_probas`, passing `M` and `1 / log(M)` in the place of `levelMult` (equivalent to _m_L_ above). A Python equivalent of this method looks like:
 
 ```python
-
+def set_default_probas(M: int, m_L: float):
+    nn = 0  # set nearest neighbors count = 0
+    cum_nneighbor_per_level = []
+    level = 0  # we start at level 0
+    assign_probas = []
+    while True:
+        # calculate probability for current level
+        proba = np.exp(-level / m_L) * (1 - np.exp(-1 / m_L))
+        # once we reach low prob threshold, we've created enough levels
+        if proba < 1e-9: break
+        assign_probas.append(proba)
+        # neighbors is == M on every level except level 0 where == M*2
+        nn += M*2 if level == 0 else M
+        cum_nneighbor_per_level.append(nn)
+        level += 1
+    return assign_probas, cum_nneighbor_per_level
 ```
 
 Here we are building two vectors — `assign_probas`, the _probability_ of insertion at a given layer, and `cum_nneighbor_per_level`, the cumulative total of nearest neighbors assigned to a vertex at different insertion levels.
 
-In\[10\]:
-
 ```python
-
+assign_probas, cum_nneighbor_per_level = set_default_probas(
+    32, 1/np.log(32)
+)
+assign_probas, cum_nneighbor_per_level
 ```
 
-Out\[10\]:
+**Output:**
 
 ```
-([0.96875,\
-  0.030273437499999986,\
-  0.0009460449218749991,\
-  2.956390380859371e-05,\
-  9.23871994018553e-07,\
-  2.887099981307982e-08],
+([0.96875,
+  0.030273437499999986,
+  0.000946044921875,
+  2.956390380859375e-05,
+  9.238719940185547e-07,
+  2.887099981307983e-08],
  [64, 96, 128, 160, 192, 224])
 ```
 
@@ -237,37 +236,43 @@ From this, we can see the significantly higher probability of inserting a vector
 Our `assign_probas` vector is used by another method called `random_level` — it is in this function that each vertex is assigned an insertion level.
 
 ```python
-
+def random_level(assign_probas: list, rng):
+    # get random float from 'r'andom 'n'umber 'g'enerator
+    f = rng.uniform() 
+    for level in range(len(assign_probas)):
+        # if the random float is less than level probability...
+        if f < assign_probas[level]:
+            # ... we assert at this level
+            return level
+        # otherwise subtract level probability and try again
+        f -= assign_probas[level]
+    # below happens with very low probability
+    return len(assign_probas) - 1
 ```
 
 We generate a random float using Numpy’s random number generator `rng` (initialized below) in `f`. For each `level`, we check if `f` is less than the assigned probability for that level in `assign_probas` — if so, that is our insertion layer.
 
-If `f` is too high, we subtract the `assign_probas` value from `f` and try again for the next level. The result of this logic is that vectors are _most likely_ going to be inserted at _level 0_. Still, if not, there is a decreasing probability of insertion at ease increment level.
+If `f` is too high, we subtract the `assign_probas` value from `f` and try again for the next level. The result of this logic is that vectors are _most likely_ going to be inserted at _level 0_. Still, if not, there is a decreasing probability of insertion at each increment level.
 
 Finally, if no levels satisfy the probability condition, we insert the vector at the highest level with `return len(assign_probas) - 1`. If we compare the distribution between our Python implementation and that of Faiss, we see very similar results:
 
-In\[12\]:
-
 ```python
+chosen_levels = []
+rng = np.random.default_rng(12345)
+for _ in range(1_000_000):
+    chosen_levels.append(random_level(assign_probas, rng))
 
+np.bincount(chosen_levels)
 ```
 
-In\[13\]:
-
-```python
-
-```
-
-Out\[13\]:
+**Output:**
 
 ```
 array([968821,  30170,    985,     23,       1],
       dtype=int64)
 ```
 
-https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F75658a08c25dabc1405f769c76fd2929c051853b-1920x930.png&w=3840&q=75
-
-Distribution of vertices across layers in both the Faiss implementation (left) and the Python implementation (right).
+![Distribution of vertices across layers in both the Faiss implementation (left) and the Python implementation (right).](https://cdn.sanity.io/images/vr8gru94/production/75658a08c25dabc1405f769c76fd2929c051853b-1920x930.png)
 
 The Faiss implementation also ensures that we _always_ have at least one vertex in the highest layer to act as the entry point to our graph.
 
@@ -280,30 +285,30 @@ We will be modifying three parameters: `M`, `efSearch`, and `efConstruction`. An
 As we did before, we initialize our index like so:
 
 ```python
-
+index = faiss.IndexHNSWFlat(d, M)
 ```
 
 The two other parameters, `efConstruction` and `efSearch` can be modified _after_ we have initialized our `index`.
 
 ```python
-
+index.hnsw.efConstruction = efConstruction
+index.add(xb)  # build the index
+index.hnsw.efSearch = efSearch
+# and now we can search
+index.search(xq[:1000], k=1)
 ```
 
 Our `efConstruction` value _must_ be set before we construct the index via `index.add(xb)`, but `efSearch` can be set anytime before searching.
 
 Let’s take a look at the recall performance first.
 
-https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fe8c281c3626226a76389fa344a71eb57f70cf879-1920x980.png&w=3840&q=75
-
-Recall@1 performance for various M, efConstruction, and efSearch parameters.
+![Recall@1 performance for various M, efConstruction, and efSearch parameters.](https://cdn.sanity.io/images/vr8gru94/production/e8c281c3626226a76389fa344a71eb57f70cf879-1920x980.png)
 
 High `M` and `efSearch` values can make a big difference in recall performance — and it’s also evident that a reasonable `efConstruction` value is needed. We can also increase `efConstruction` to achieve higher recall at lower `M` and `efSearch` values.
 
 However, this performance does not come for free. As always, we have a balancing act between recall and search time — let’s take a look.
 
-https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2F876bf66aba408959042888efe72c55db4d6b3b41-1920x980.png&w=3840&q=75
-
-Search time in µs for various M, efConstruction, and efSearch parameters when searching for 1000 queries. Note that the y-axis is using a log scale.
+![Search time in µs for various M, efConstruction, and efSearch parameters when searching for 1000 queries. Note that the y-axis is using a log scale.](https://cdn.sanity.io/images/vr8gru94/production/876bf66aba408959042888efe72c55db4d6b3b41-1920x980.png)
 
 Although higher parameter values provide us with better recall, the effect on search times can be dramatic. Here we search for `1000` similar vectors (`xq[:1000]`), and our recall/search-time can vary from 80%-1ms to 100%-50ms. If we’re happy with a rather terrible recall, search times can even reach 0.1ms.
 
@@ -313,21 +318,17 @@ When we search using a few queries, it _is_ true that `efConstruction` has littl
 
 If you believe your queries will mostly be low volume, `efConstruction` is a great parameter to increase. It can improve recall with little effect on _search time_, particularly when using lower `M` values.
 
-https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fef1a2edd25adb202c0a98a1f33a0e72d1295b554-1720x1080.png&w=3840&q=75
-
-efConstruction and search time when searching for only one query. When using lower M values, the search time remains almost unchanged for different efConstruction values.
+![efConstruction and search time when searching for only one query. When using lower M values, the search time remains almost unchanged for different efConstruction values.](https://cdn.sanity.io/images/vr8gru94/production/ef1a2edd25adb202c0a98a1f33a0e72d1295b554-1720x1080.png)
 
 That all looks great, but what about the memory usage of the HNSW index? Here things can get slightly _less_ appealing.
 
-https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fe04d23ccd76d8bdc568542bebe75a75e7d36a21e-1480x1050.png&w=3840&q=75
-
-Memory usage with increasing values of M using our Sift1M dataset. efSearch and efConstruction have no effect on the memory usage.
+![Memory usage with increasing values of M using our Sift1M dataset. efSearch and efConstruction have no effect on the memory usage.](https://cdn.sanity.io/images/vr8gru94/production/e04d23ccd76d8bdc568542bebe75a75e7d36a21e-1480x1050.png)
 
 Both `efConstruction` and `efSearch` do not affect index memory usage, leaving us only with `M`. Even with `M` at a low value of `2`, our index size is already above 0.5GB, reaching almost 5GB with an `M` of `512`.
 
 So although HNSW produces incredible performance, we need to weigh that against high memory usage and the inevitable high infrastructure costs that this can produce.
 
-#### Improving Memory Usage and Search Speeds
+### Improving Memory Usage and Search Speeds
 
 HNSW is not the best index in terms of memory utilization. However, if this is important and using [another index](https://www.pinecone.io/learn/series/faiss/vector-indexes/) isn’t an option, we can improve it by compressing our vectors using [product quantization (PQ)](https://www.pinecone.io/learn/series/faiss/product-quantization/). Using PQ will reduce recall and increase search time — but as always, much of ANN is a case of balancing these three factors.
 
@@ -337,20 +338,12 @@ That’s it for this article covering the Hierarchical Navigable Small World gra
 
 ## References
 
-\[1\] E. Bernhardsson, [ANN Benchmarks](https://github.com/erikbern/ann-benchmarks) (2021), GitHub
-
-\[2\] W. Pugh, [Skip lists: a probabilistic alternative to balanced trees](https://15721.courses.cs.cmu.edu/spring2018/papers/08-oltpindexes1/pugh-skiplists-cacm1990.pdf) (1990), Communications of the ACM, vol. 33, no.6, pp. 668-676
-
-\[3\] Y. Malkov, D. Yashunin, [Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs](https://arxiv.org/abs/1603.09320) (2016), IEEE Transactions on Pattern Analysis and Machine Intelligence
-
-\[4\] Y. Malkov et al., [Approximate Nearest Neighbor Search Small World Approach](https://www.iiis.org/CDs2011/CD2011IDI/ICTA_2011/PapersPdf/CT175ON.pdf) (2011), International Conference on Information and Communication Technologies & Applications
-
-\[5\] Y. Malkov et al., [Scalable Distributed Algorithm for Approximate Nearest Neighbor Search Problem in High Dimensional General Metric Spaces](https://www.researchgate.net/publication/262334462_Scalable_Distributed_Algorithm_for_Approximate_Nearest_Neighbor_Search_Problem_in_High_Dimensional_General_Metric_Spaces) (2012), Similarity Search and Applications, pp. 132-147
-
-\[6\] Y. Malkov et al., [Approximate nearest neighbor algorithm based on navigable small world graphs](https://publications.hse.ru/mirror/pubs/share/folder/x5p6h7thif/direct/128296059) (2014), Information Systems, vol. 45, pp. 61-68
-
-\[7\] M. Boguna et al., [Navigability of complex networks](https://arxiv.org/abs/0709.0303) (2009), Nature Physics, vol. 5, no. 1, pp. 74-80
-
-\[8\] Y. Malkov, A. Ponomarenko, [Growing homophilic networks are natural navigable small worlds](https://arxiv.org/abs/1507.06529) (2015), PloS one
-
-Facebook Research, [Faiss HNSW Implementation](https://github.com/facebookresearch/faiss/blob/main/faiss/impl/HNSW.cpp), GitHub
+- [1] E. Bernhardsson. (2021). ANN Benchmarks. (https://github.com/erikbern/ann-benchmarks)
+- [2] W. Pugh. (1990). Skip lists: a probabilistic alternative to balanced trees. (https://15721.courses.cs.cmu.edu/spring2018/papers/08-oltpindexes1/pugh-skiplists-cacm1990.pdf)
+- [3] Y. Malkov & D. Yashunin. (2016). Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs. (https://arxiv.org/abs/1603.09320)
+- [4] Y. Malkov et al. (2011). Approximate Nearest Neighbor Search Small World Approach. (https://www.iiis.org/CDs2011/CD2011IDI/ICTA_2011/PapersPdf/CT175ON.pdf)
+- [5] Y. Malkov et al. (2012). Scalable Distributed Algorithm for Approximate Nearest Neighbor Search Problem in High Dimensional General Metric Spaces. (https://www.researchgate.net/publication/262334462_Scalable_Distributed_Algorithm_for_Approximate_Nearest_Neighbor_Search_Problem_in_High_Dimensional_General_Metric_Spaces)
+- [6] Y. Malkov et al. (2014). Approximate nearest neighbor algorithm based on navigable small world graphs. (https://publications.hse.ru/mirror/pubs/share/folder/x5p6h7thif/direct/128296059)
+- [7] M. Boguna et al. (2009). Navigability of complex networks. (https://arxiv.org/abs/0709.0303)
+- [8] Y. Malkov & A. Ponomarenko. (2015). Growing homophilic networks are natural navigable small worlds. (https://arxiv.org/abs/1507.06529)
+- [9] Facebook Research. Faiss HNSW Implementation. (https://github.com/facebookresearch/faiss/blob/main/faiss/impl/HNSW.cpp)

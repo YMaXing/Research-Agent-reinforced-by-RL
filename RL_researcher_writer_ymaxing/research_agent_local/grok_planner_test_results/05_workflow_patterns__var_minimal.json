@@ -1,0 +1,35 @@
+{
+  "variant": "05_workflow_patterns__var_minimal",
+  "lesson": "05_workflow_patterns",
+  "split": "TRAIN",
+  "policy": "forbidden",
+  "rl_preset": 1,
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 0,
+  "oracle_name": "skip",
+  "r_w_rewards": [
+    0.872,
+    0.8408,
+    0.796,
+    0.746
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": null,
+  "entropy_bits": 0.9912,
+  "confidence": 0.5552,
+  "floor_applied": false,
+  "grok_override": true,
+  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, which is a hard constraint mandating P0 skip regardless of the section-scorer's P1-light aggregate (56% light, 44% skip). All 7 sections are brief-flagged, guideline demands only surface-level conceptual overview with no external libs/case studies, and exploration output cannot be used.",
+  "grok_override_reason": "Hard constraint from external-evidence policy = forbidden requires P0 despite scorer's P1 vote",
+  "grok_decision_drivers": [
+    "external-evidence policy",
+    "all sections brief-flagged",
+    "surface-level guideline"
+  ],
+  "grok_risk_flags": [
+    "scorer lean toward light but policy is absolute"
+  ]
+}

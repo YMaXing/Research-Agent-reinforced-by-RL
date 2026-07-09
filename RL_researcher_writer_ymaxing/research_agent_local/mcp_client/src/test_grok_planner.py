@@ -13,7 +13,11 @@ Corpus
 ------
   Training: 24 article-variants — 8 lessons × 3 guideline variants
     (var_minimal, var_standard, var_demanding)
-  Test:      6 no-variant held-out lessons (04, 07, 13, 14, 29, 31).
+  Test:      16 no-variant held-out lessons (04, 07, 13, 14, 29, 31,
+             Bird_Eye_Extreme, Dark_Dimension, Distinct_AI_Models,
+             Earth_Oceans_Origin, Gravity_Entropy, HNSW,
+             Insects_Consciousness, Space-Time_QECC, State_of_LLM_Reasoning,
+             Understanding_Reasoning_LLMs).
 
 Oracle
 ------
@@ -39,7 +43,7 @@ Reward-regret
 
 Split reporting
 ---------------
-  Results are split into TRAIN (24 variants) and TEST (6 no-variant held-outs).
+  Results are split into TRAIN (24 variants) and TEST (16 no-variant held-outs).
   TEST articles are the primary metric; TRAIN is provided for reference.
   A 4×4 per-arm confusion matrix and majority/random baselines are printed for
   each split.
@@ -49,7 +53,7 @@ Usage (from research_agent_local/)
   # All articles — train variants + test held-outs (default)
   uv run python -m mcp_client.src.test_grok_planner
 
-  # Test held-outs only
+  # Test held-outs only (all 16)
   uv run python -m mcp_client.src.test_grok_planner --test-only
 
   # Training variants only
@@ -122,6 +126,7 @@ _TRAIN_LESSONS = {
 # Held-out test lessons — no-variant (single research run, no __var_ suffix).
 # Research dirs live in bases/<slug>/ (same root as training variants).
 _TEST_LESSONS = {
+    # Course lessons
     "04_structured_outputs",
     "07_reasoning_planning",
     "13_agent_framework",
@@ -131,6 +136,15 @@ _TEST_LESSONS = {
     # External (non-course) standalone articles — no variant expansion.
     # Add new external test articles here as they are built.
     "Bird_Eye_Extreme",
+    "Dark_Dimension",
+    "Distinct_AI_Models",
+    "Earth_Oceans_Origin",
+    "Gravity_Entropy",
+    "HNSW",
+    "Insects_Consciousness",
+    "Space-Time_QECC",
+    "State_of_LLM_Reasoning",
+    "Understanding_Reasoning_LLMs",
 }
 
 _ALL_LESSONS = sorted(_TRAIN_LESSONS)
@@ -145,7 +159,7 @@ _ALL_VARIANTS: list[str] = [
 # Sorted no-variant test article slugs
 _TEST_ARTICLES: list[str] = sorted(_TEST_LESSONS)
 
-# Combined default run: 24 training variants + 6 test articles
+# Combined default run: 24 training variants + 16 test articles
 _ALL_ARTICLES: list[str] = _ALL_VARIANTS + _TEST_ARTICLES
 
 
@@ -696,13 +710,13 @@ async def main() -> None:
         description=(
             "Test predict_exploration_preset via direct MCP tool call. "
             "Evaluates 24 training variants (8 lessons \u00d7 3 guideline variants) and/or "
-            "6 held-out test articles (no-variant) against article_oracle.json. "
+            "16 held-out test articles (no-variant) against article_oracle.json. "
             "No LLM orchestration layer — the tool makes the final decision internally."
         )
     )
     parser.add_argument(
         "--all", action="store_true",
-        help="Run all articles: 24 training variants + 6 held-out test articles (default behaviour).",
+        help="Run all articles: 24 training variants + 16 held-out test articles (default behaviour).",
     )
     parser.add_argument(
         "--train-only", action="store_true",
@@ -710,7 +724,7 @@ async def main() -> None:
     )
     parser.add_argument(
         "--test-only", action="store_true",
-        help="Run only the 6 held-out test articles (no training variants).",
+        help="Run only the 16 held-out test articles (no training variants).",
     )
     parser.add_argument(
         "--articles", type=str,

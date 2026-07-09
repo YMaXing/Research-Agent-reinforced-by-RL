@@ -10,7 +10,12 @@ from ..utils.file_utils import collect_directory_markdowns, collect_directory_ma
 from ..utils.markdown_utils import get_first_line_title, markdown_collapsible
 from .generate_queries_handler import PROMPT_GENERATE_QUERIES_AND_REASONS, generate_queries_with_reasons
 from .github_handler import process_github_url
-from .guideline_extractions_handler import extract_local_paths, extract_urls
+from .guideline_extractions_handler import (
+    extract_local_file_reference_urls,
+    extract_local_paths,
+    extract_urls,
+    load_reference_url_blocklist,
+)
 from .notebook_handler import NotebookToMarkdownConverter
 from .tavily_handler import (
     PROMPT_WEB_SEARCH,
@@ -54,6 +59,8 @@ __all__ = [
     # Text processing
     "extract_urls",
     "extract_local_paths",
+    "extract_local_file_reference_urls",
+    "load_reference_url_blocklist",
     # Markdown processing
     "markdown_collapsible",
     "get_first_line_title",

@@ -1,0 +1,36 @@
+{
+  "variant": "05_workflow_patterns__var_demanding",
+  "lesson": "05_workflow_patterns",
+  "split": "TRAIN",
+  "policy": "required",
+  "rl_preset": 1,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 1,
+  "oracle_name": "light",
+  "r_w_rewards": [
+    0.5417,
+    0.6549,
+    -0.06,
+    0.4766
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.4516,
+  "confidence": 0.4805,
+  "floor_applied": true,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is P1 light (48% vote) as the reward peak; external-evidence REQUIRED forbids P0 while override policy bars upward moves from any P1+ recommendation; per-section deep votes and depth gaps were already weighted by the GRPO model.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "scorer_aggregate_P1",
+    "external_evidence_required",
+    "no_sanctioned_upward"
+  ],
+  "grok_risk_flags": [
+    "vote_split_48_37",
+    "high_must_ev_in_S1_S2"
+  ]
+}

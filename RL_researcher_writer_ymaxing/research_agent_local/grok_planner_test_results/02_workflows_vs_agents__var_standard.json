@@ -1,0 +1,37 @@
+{
+  "variant": "02_workflows_vs_agents__var_standard",
+  "lesson": "02_workflows_vs_agents",
+  "split": "TRAIN",
+  "policy": "allowed",
+  "rl_preset": 1,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 1,
+  "oracle_name": "light",
+  "r_w_rewards": [
+    0.6292,
+    0.794,
+    0.7335,
+    0.51
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.3513,
+  "confidence": 0.5849,
+  "floor_applied": true,
+  "grok_override": false,
+  "grok_reasoning": "Section-scorer aggregate is P1 light (58% light, 29% standard, 13% deep; moderate confidence). No sanctioned override conditions met: not highly uncertain (dominant light arm), high-budget sections (S5 30%, S4 18%) not mostly brief-flagged or depth_score >=6 across the board, and upward moves from a P1+ vote are forbidden. Dominant depth gaps and 47 unbacked anchors were already priced into the scorer's P1 recommendation.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "scorer_aggregate_P1",
+    "no_sanctioned_override",
+    "moderate_confidence"
+  ],
+  "grok_risk_flags": [
+    "S2_deep_vote_and_S3/S6_standard_votes",
+    "must_ev_4_in_largest_section_S5",
+    "depth-dominant_gaps"
+  ]
+}

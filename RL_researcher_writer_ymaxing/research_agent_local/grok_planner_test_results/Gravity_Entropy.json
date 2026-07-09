@@ -1,0 +1,37 @@
+{
+  "variant": "Gravity_Entropy",
+  "lesson": "Gravity_Entropy",
+  "split": "TEST",
+  "policy": "allowed",
+  "rl_preset": null,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok-only",
+  "oracle_preset": 1,
+  "oracle_name": "light",
+  "r_w_rewards": [
+    0.646,
+    0.7228,
+    0.6604,
+    0.5609
+  ],
+  "verdict": "NEAR",
+  "regret": 0.0623,
+  "regret_counted": 0.0623,
+  "entropy_bits": null,
+  "confidence": null,
+  "floor_applied": null,
+  "grok_override": null,
+  "grok_reasoning": "32 unbacked anchors and 18 must-ev bullets (esp. 5 each in S3/S4) signal large evidence gaps; dominant depth pressure (S2 need 16/8 cov 4·4; S5 weakest) plus explicit quote/derivation demands in guideline justify depth-first round then breadth, but S2/S3 'brief=yes' caps escalation and total 2000-word budget keeps it from P3.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "unbacked_anchors_32",
+    "must_ev_high",
+    "depth_dominant_S2_S5",
+    "high_orphans"
+  ],
+  "grok_risk_flags": [
+    "brief sections limit extra absorption",
+    "arxiv golden sources may already hold quotes"
+  ]
+}

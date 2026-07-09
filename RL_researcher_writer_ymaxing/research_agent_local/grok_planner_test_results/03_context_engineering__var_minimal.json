@@ -1,0 +1,35 @@
+{
+  "variant": "03_context_engineering__var_minimal",
+  "lesson": "03_context_engineering",
+  "split": "TRAIN",
+  "policy": "forbidden",
+  "rl_preset": 0,
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 0,
+  "oracle_name": "skip",
+  "r_w_rewards": [
+    0.7625,
+    0.7783,
+    0.6314,
+    0.7269
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": null,
+  "entropy_bits": 0.8967,
+  "confidence": 0.6908,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, which hard-constrains to P0 skip regardless of other signals. Scorer aggregate is 69% skip (moderate confidence, 0% on std/deep); every section is brief-flagged with 0 must-ev, cov scores already meet guideline surface-level intent, and the guideline repeatedly stresses conceptual overview with no external examples or depth required.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "external-evidence-forbidden",
+    "scorer-P0-dominant",
+    "all-sections-brief-flagged"
+  ],
+  "grok_risk_flags": [
+    "internal exploitation may have left conceptual anchors unbacked"
+  ]
+}

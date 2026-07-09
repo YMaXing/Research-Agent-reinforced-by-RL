@@ -1,0 +1,36 @@
+{
+  "variant": "02_workflows_vs_agents__var_demanding",
+  "lesson": "02_workflows_vs_agents",
+  "split": "TRAIN",
+  "policy": "allowed",
+  "rl_preset": 2,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 1,
+  "oracle_name": "light",
+  "r_w_rewards": [
+    0.4835,
+    0.5722,
+    0.5121,
+    0.4478
+  ],
+  "verdict": "NEAR",
+  "regret": 0.0601,
+  "regret_counted": 0.0601,
+  "entropy_bits": 1.4988,
+  "confidence": 0.4943,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Scorer's budget-weighted aggregate is P2 standard (49% top-pick, 29% skip runner-up, moderate confidence). No sanctioned override applies: S5 (29% budget) votes skip with cov 8·6 but the RL model already priced this against must-ev and depth needs in S2-S4 (standard ·1.00 each). Dominant gap type is depth, matching the depth-first round in the chosen preset; external-evidence policy is ALLOWED and gaps justify exploration.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "scorer_aggregate_P2",
+    "moderate_49pct",
+    "no_sanctioned_override"
+  ],
+  "grok_risk_flags": [
+    "S5_skip_vote_on_high_budget_section",
+    "vote_entropy_from_29pct_skip"
+  ]
+}

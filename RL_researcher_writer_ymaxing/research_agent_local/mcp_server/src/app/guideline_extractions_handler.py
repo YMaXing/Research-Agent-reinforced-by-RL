@@ -1,6 +1,15 @@
 """Text processing utilities for URL and file extraction."""
 
+import json
 import re
+from pathlib import Path
+
+from ..config.constants import (
+    ARTICLE_GUIDELINE_FILE,
+    GUIDELINES_FILENAMES_FILE,
+    RESEARCH_OUTPUT_FOLDER,
+)
+from ..utils.url_utils import normalize_url_for_match
 
 
 # ---------------------------------------------------------------------------
@@ -155,4 +164,96 @@ def extract_local_paths_by_section(text: str) -> dict[str, list[str]]:
                 golden.append(path)
 
     return {"golden": golden, "exploitation": exploitation}
+
+
+# ---------------------------------------------------------------------------
+# Reference-only URL handling
+# ---------------------------------------------------------------------------
+#
+# Article guidelines list a locally-supplied source using the convention:
+#
+#     <!-- [Title](https://arxiv.org/abs/2205.12293) -->
+#     "Evolving Dark Sector and the Dark Dimension Scenario.md"
+#
+# The file content is provided locally, so the commented-out URL is *reference
+# only* and must never be scraped or picked up as a research source. Without
+# this guard, Tavily can rediscover the same URL during the exploitation /
+# exploration phases and it gets fully scraped again in step 6 — wasting API
+# credits and duplicating content in the downstream writer context.
+
+
+def extract_local_file_reference_urls(text: str) -> list[str]:
+    """Extract reference-only URLs commented out directly above a local-file line.
+
+    A URL qualifies when it appears inside one or more HTML comments that are
+    immediately followed (ignoring blank lines) by a line whose sole content is a
+    quoted local-file reference (``.py`` / ``.ipynb`` / ``.md``). Any other
+    intervening content breaks the pairing so unrelated commented URLs elsewhere
+    in the guideline are not captured.
+
+    Returns an order-preserving, de-duplicated list of the raw URLs.
+    """
+    _open_q = r'["\u201c]'
+    _close_q = r'["\u201d]'
+    local_file_line = re.compile(
+        rf'^\s*{_open_q}[^"\u201c\u201d\n]+\.(?:py|ipynb|md){_close_q}\s*$',
+        re.IGNORECASE,
+    )
+    comment_line = re.compile(r"^\s*<!--.*?-->\s*$")
+    url_re = re.compile(r"https?://[^\s)>\"'\]]+")
+
+    result: list[str] = []
+    pending: list[str] = []
+    for line in text.splitlines():
+        if comment_line.match(line):
+            pending.extend(url_re.findall(line))
+        elif not line.strip():
+            continue  # blank line — keep any pending URLs
+        elif local_file_line.match(line):
+            result.extend(pending)
+            pending = []
+        else:
+            pending = []  # any other content breaks the comment→file pairing
+
+    seen: set[str] = set()
+    deduped: list[str] = []
+    for u in result:
+        if u not in seen:
+            seen.add(u)
+            deduped.append(u)
+    return deduped
+
+
+def load_reference_url_blocklist(research_directory: str) -> set[str]:
+    """Return the set of normalised reference-only URLs to exclude from research.
+
+    Reads ``local_file_reference_urls`` from GUIDELINES_FILENAMES_FILE. For
+    research directories built before that key existed, it falls back to
+    re-deriving the URLs directly from the article guideline so already-generated
+    bases are protected without re-running the extraction step. URLs are returned
+    normalised via :func:`normalize_url_for_match` so callers can match
+    rediscovered URL variants (e.g. ``/abs/`` vs ``/pdf/`` arXiv links).
+    """
+    research_path = Path(research_directory)
+    gf_path = research_path / RESEARCH_OUTPUT_FOLDER / GUIDELINES_FILENAMES_FILE
+
+    urls: list[str] = []
+    if gf_path.exists():
+        try:
+            data = json.loads(gf_path.read_text(encoding="utf-8"))
+            urls = list(data.get("local_file_reference_urls", []) or [])
+        except (ValueError, OSError):
+            urls = []
+
+    if not urls:
+        guideline_path = research_path / ARTICLE_GUIDELINE_FILE
+        if guideline_path.exists():
+            try:
+                urls = extract_local_file_reference_urls(
+                    guideline_path.read_text(encoding="utf-8")
+                )
+            except OSError:
+                urls = []
+
+    return {norm for u in urls if (norm := normalize_url_for_match(u))}
 

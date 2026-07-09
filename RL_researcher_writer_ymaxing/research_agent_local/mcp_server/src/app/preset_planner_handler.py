@@ -40,6 +40,16 @@ import _digest_parse  # noqa: E402  # type: ignore[import-not-found]
 _PLANNER_MODEL = "grok-4.20-0309-reasoning"
 
 # ---------------------------------------------------------------------------
+# Calibrated escalation thresholds
+# ---------------------------------------------------------------------------
+# When the RL aggregate vote is UNCERTAIN (confidence < _DECISIVE_CONFIDENCE or
+# entropy > 1.5 bits), Grok may escalate above the RL pick, but only when the
+# budget-weighted section-vote mass clears _ESCALATION_MASS_THRESHOLD. These MUST
+# stay in sync with the numeric thresholds written into _PLANNER_SYSTEM.
+_DECISIVE_CONFIDENCE = 0.70
+_ESCALATION_MASS_THRESHOLD = 0.30
+
+# ---------------------------------------------------------------------------
 # Article evidence packet constants
 # ---------------------------------------------------------------------------
 _POLICY_MEANING: dict[str, str] = {
@@ -141,6 +151,19 @@ def build_article_evidence(
     if agg_probs is not None and preset is not None:
         ranked = sorted(agg_probs, reverse=True)
         top2_margin = ranked[0] - ranked[1] if len(ranked) >= 2 else 0.0
+        # Budget-weighted HARD section-vote mass: for each preset, the fraction of
+        # the article's writing budget whose own section argmax-voted for it. This is
+        # the calibrated escalation signal — a large intro section voting skip would
+        # otherwise blur out small-but-heavy technical sections that vote deep in the
+        # soft aggregate distribution above.
+        vote_mass = [0.0] * NUM_PRESETS
+        for s in section_signals:
+            cp = s.get("chosen_preset")
+            if cp is not None and 0 <= cp < NUM_PRESETS:
+                vote_mass[cp] += s["weight"]
+        mass_total = sum(vote_mass)
+        if mass_total > 0:
+            vote_mass = [m / mass_total for m in vote_mass]
         rl_aggregate = {
             "preset": int(preset),
             "preset_name": PRESET_NAMES.get(int(preset), str(preset)),
@@ -148,6 +171,9 @@ def build_article_evidence(
             "confidence": round(agg_probs[preset], 4),
             "entropy_bits": round(entropy(agg_probs), 4),
             "top2_margin": round(top2_margin, 4),
+            "section_vote_mass": [round(m, 4) for m in vote_mass],
+            "escalation_mass": round(vote_mass[2] + vote_mass[3], 4),
+            "deep_mass": round(vote_mass[3], 4),
         }
 
     return {
@@ -181,20 +207,23 @@ def build_article_evidence(
 def _interpret_rl(conf: float, h: float) -> str:
     if h > 1.5:
         return (
-            f"UNCERTAIN (entropy {h:.2f} bits > 1.5) — the scorer is spread "
-            "across presets, so your own reading of the gaps carries more weight."
+            f"UNCERTAIN (entropy {h:.2f} bits > 1.5) — the scorer is spread across "
+            "presets and NOT decisive; let the budget-weighted section votes set the level."
         )
     if conf >= 0.70:
         return (
             f"DECISIVE ({conf:.0%} of the vote on its top pick) — a strong learned "
-            "signal; depart from it only with a concrete reason."
+            "signal; trust it and do not escalate above it without a hard constraint."
         )
     if conf >= 0.40:
         return (
-            f"MODERATE ({conf:.0%} on its top pick) — a real lean, but confirm it "
-            "against the per-section gaps below."
+            f"MODERATE ({conf:.0%} on its top pick) — a real lean but NOT decisive; "
+            "weigh the budget-weighted section votes below to set the level."
         )
-    return f"WEAK ({conf:.0%} on its top pick) — treat it only as a soft prior."
+    return (
+        f"WEAK ({conf:.0%} on its top pick) — NOT decisive; let the budget-weighted "
+        "section votes set the level."
+    )
 
 
 def _pct_row(dist: list[float]) -> str:
@@ -275,8 +304,27 @@ def render_evidence_brief(
         )
         out.append("")
         out.append(f"- Recommendation: **P{rl['preset']} {rl['preset_name']}**")
-        out.append(f"- Vote distribution:  {_pct_row(rl['distribution'])}")
+        out.append(f"- Soft vote distribution:  {_pct_row(rl['distribution'])}")
         out.append(f"- Read: {_interpret_rl(rl['confidence'], rl['entropy_bits'])}")
+        if "section_vote_mass" in rl:
+            esc = rl.get("escalation_mass", 0.0)
+            deep = rl.get("deep_mass", 0.0)
+            out.append(
+                f"- Budget-weighted section votes:  {_pct_row(rl['section_vote_mass'])}"
+            )
+            bar = f"{_ESCALATION_MASS_THRESHOLD*100:.0f}%"
+            if esc >= _ESCALATION_MASS_THRESHOLD:
+                verdict = (
+                    f"clears the {bar} escalation bar — if the vote above is NOT "
+                    "decisive, escalation is on the table."
+                )
+            else:
+                verdict = f"below the {bar} escalation bar — no escalation signal."
+            out.append(
+                f"- Escalation signal: standard+deep budget mass = {esc*100:.0f}% "
+                f"(deep-only {deep*100:.0f}%). This is the share of the writing budget "
+                f"whose own section wants \u2265standard exploration; it {verdict}"
+            )
         out.append("")
 
     # --- 3. Per-section breakdown ---
@@ -487,44 +535,56 @@ A single exploitation pass has already run. From it you receive a guided brief w
 
 THE REWARD CURVE IS SINGLE-PEAKED
 Article reward as a function of preset is unimodal: one optimum, declining on both
-sides. The section-scorer's aggregate vote is the reward-trained estimate of that
-peak. Stepping above its pick almost always steps down the far side of the curve.
-The asymmetry is severe: a correct escalation from the optimum typically gains ~0.03
-reward; an over-escalation costs up to 0.7 (past the peak, extra exploration dilutes
-the article's guideline-adherence, flow, and structure while buying diminishing
-returns on depth and breadth enhancement). The downside is large and sometimes
-catastrophic; the upside of an escalation override is almost always small.
+sides. Over-escalating past the peak dilutes the article's guideline-adherence, flow
+and structure while buying diminishing returns; under-escalating leaves evidence gaps
+unfilled. BOTH directions lose reward — aim for the peak, and do NOT reflexively round
+toward the cheapest arm.
 
-DO NOT DERIVE ESCALATION FROM THE GAP TABLE
-Coverage gaps (must-ev, unbacked anchors, need_depth) describe what is missing, but
-they carry NO information about the reward trade-off. Every article shows dozens of
-unbacked anchors and non-zero must-ev — these signals are universally present across
-all preset levels and are not predictive of whether escalation actually helps. The
-scorer already priced them in against the reward. Re-deriving escalation from the gap
-table double-counts signals the scorer already weighed and has a strong systematic
-bias toward over-escalation.
+TRUST THE SCORER WHEN IT IS CONFIDENT; READ THE VOTES WHEN IT IS NOT
+The section-scorer's aggregate vote is the reward-trained estimate of the peak, but it
+is only as trustworthy as it is confident, and it can be mis-calibrated on articles
+unlike those it was trained on:
+  - DECISIVE (confidence >= 70% and low entropy): a strong learned signal. Do NOT pick
+    a preset above it — upward escalation is almost never correct here.
+  - UNCERTAIN (confidence < 70% OR entropy > 1.5 bits): the learned signal is weak. The
+    budget-weighted per-section votes carry real information the aggregate has blurred
+    away; use them to set the level via the escalation rule below.
 
-ASYMMETRIC OVERRIDE POLICY
-  - NEVER choose a preset ABOVE the section-scorer's pick when it votes P1 or higher.
-    The scorer already independently catches every genuinely demanding article at the
-    correct level (P2/P3) — if it votes P1, standard or deep is almost never correct.
-    An upward override of a P1+ vote is almost always wrong.
-  - You MAY choose one level BELOW the scorer's pick when the gap table shows most
-    high-budget sections are brief-flagged, already well-covered (depth_score >= 6),
-    or the vote is highly uncertain (entropy > 1.5 bits, no dominant arm).
-  - SINGLE SANCTIONED UPWARD NUDGE (P0 -> P1 only): if the scorer votes P0 skip AND
-    its runner-up is P1 light with substantial mass (>= 25% of the vote) AND no
-    section individually votes standard or deep — you MAY choose P1 light as cheap
-    insurance. If multiple sections individually vote standard/deep (a
-    depth-or-nothing pattern), keep P0 — the light middle arm sits in a reward valley
-    and will lose reward, not gain it.
-  - There is NO valid upward override from P1 to P2, or P2 to P3, regardless of
-    what the gap table shows.
+DO NOT ESCALATE ON RAW GAP COUNTS
+Coverage gaps (must-ev, unbacked anchors, need_depth) are universally present across
+every article and preset level and carry little information about whether escalation
+helps. Do NOT escalate just because these counts look large. The single calibrated
+escalation signal is the BUDGET-WEIGHTED SECTION-VOTE MASS in the brief: the share of
+the article's writing budget whose own section voted skip / light / standard / deep. A
+large intro section voting skip can hide small-but-heavy technical sections that need
+deep exploration — the vote mass exposes exactly that.
 
-USE THE PER-SECTION TABLE FOR DIRECTION, NOT LEVEL
-If you choose to run exploration, need_depth / need_breadth tell you which sections
-need depth-first vs. breadth-first rounds. Let them inform the composition of the
-exploration rounds (depth -> breadth vs. balanced), not the decision to escalate.
+OVERRIDE POLICY
+  - SANCTIONED UPWARD ESCALATION — allowed ONLY when the scorer vote is UNCERTAIN:
+      * To P2 standard: if the RL pick is P0 or P1 AND the combined budget-weighted
+        mass of sections voting standard-or-deep is >= 30% — choose P2. The article's
+        heavy sections are telling you exploration pays off.
+      * To P3 deep: if the RL pick is P2 (or you have just escalated to P2) AND the
+        budget-weighted mass of sections voting DEEP ALONE is >= 30% — choose P3.
+        Standard-voting mass alone is NOT enough to reach deep.
+      * Escalate at most to P2 from a P0/P1 pick, or to P3 from a P2 pick, in a single
+        decision. NEVER escalate when the vote is DECISIVE.
+      * Multiple high-budget sections voting deep is EVIDENCE FOR escalation, not a
+        reason to stay at skip. Treat a split skip/deep pattern as a call to escalate
+        when the deep-voting sections carry >= 30% budget mass; otherwise stay cheaper.
+  - DOWNWARD OVERRIDE: you MAY choose one level BELOW the scorer's pick when most
+    high-budget sections are brief-flagged or already well-covered (depth_score >= 6),
+    or the vote is highly uncertain with no dominant arm AND the standard/deep budget
+    mass is below 30% (no real escalation signal).
+  - SANCTIONED P0 -> P1 NUDGE: if the scorer votes P0 skip, its runner-up is P1 light
+    with substantial mass (>= 25%), AND the standard/deep budget mass is below 30% —
+    you MAY choose P1 light as cheap insurance.
+
+USE need_depth / need_breadth FOR ROUND COMPOSITION, NOT LEVEL
+Once you have chosen a preset, need_depth / need_breadth tell you which sections need
+depth-first vs. breadth-first rounds — let them shape the composition of the rounds
+(depth -> breadth vs. balanced). The escalation LEVEL, by contrast, comes from the
+budget-weighted section-vote mass, not from these raw gap columns.
 
 PRIMARY-SOURCE APPENDIX (may follow the brief)
 You may also receive the full author-written article guideline reproduced verbatim.
@@ -612,9 +672,11 @@ _PLANNER_USER_TEMPLATE = """\
 ## Your task
 Decide the single exploration preset for THIS article. Work through the brief above
 step by step:
-  1. State what the section-scorer's aggregate vote is and how confident it is.
-  2. Check whether any sanctioned override condition is met (see ASYMMETRIC OVERRIDE
-     POLICY in your instructions). Remember: never override a P1+ vote upward.
+  1. State the section-scorer's aggregate vote and whether it is DECISIVE or UNCERTAIN.
+  2. Read the budget-weighted section-vote mass, then check whether a sanctioned
+     escalation, downward override, or P0->P1 nudge applies (see OVERRIDE POLICY in
+     your instructions). Escalate above the RL pick ONLY when the vote is uncertain
+     AND the standard/deep budget mass clears 30%.
   3. State your final choice and the single most decisive reason.
 
 Then output ONLY the JSON block specified in your instructions (nothing after it)."""

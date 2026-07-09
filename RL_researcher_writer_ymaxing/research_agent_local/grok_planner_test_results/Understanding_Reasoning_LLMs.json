@@ -1,0 +1,38 @@
+{
+  "variant": "Understanding_Reasoning_LLMs",
+  "lesson": "Understanding_Reasoning_LLMs",
+  "split": "TEST",
+  "policy": "allowed",
+  "rl_preset": null,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok-only",
+  "oracle_preset": 2,
+  "oracle_name": "standard",
+  "r_w_rewards": [
+    0.4603,
+    0.5987,
+    0.6078,
+    0.527
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": null,
+  "confidence": null,
+  "floor_applied": null,
+  "grok_override": null,
+  "grok_reasoning": "All 8 sections show 0·0 coverage against uniform 8/6 need and 26 must-ev bullets (especially S5 at 45% budget with 8 must-ev, S7 at 14% with 5). 52 unbacked anchors and balanced gap type confirm evidence is entirely missing for the theory-heavy DeepSeek pipeline, benchmarks, emergence details, and budget methods (Sky-T1/TinyZero/journey learning). P0/P1 insufficient; P3 not justified given 'brief' flags on S1/S5 and 'allowed' (not required) external policy.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "zero coverage across all sections",
+    "high must-ev in dominant S5+S7",
+    "52 unbacked anchors",
+    "balanced gaps with depth mandates"
+  ],
+  "grok_risk_flags": [
+    "golden sources may already suffice for core claims",
+    "brief sections could receive excess depth",
+    "over-reliance on DeepSeek paper vs. broader comparisons"
+  ]
+}

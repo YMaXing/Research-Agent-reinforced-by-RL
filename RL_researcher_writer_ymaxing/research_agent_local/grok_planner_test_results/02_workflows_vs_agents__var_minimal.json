@@ -1,0 +1,34 @@
+{
+  "variant": "02_workflows_vs_agents__var_minimal",
+  "lesson": "02_workflows_vs_agents",
+  "split": "TRAIN",
+  "policy": "forbidden",
+  "rl_preset": 1,
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 0,
+  "oracle_name": "skip",
+  "r_w_rewards": [
+    0.4962,
+    0.6931,
+    0.45,
+    0.475
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": null,
+  "entropy_bits": 1.543,
+  "confidence": 0.4231,
+  "floor_applied": false,
+  "grok_override": true,
+  "grok_reasoning": "Hard constraint: external-evidence policy explicitly set to FORBIDDEN (exploration output cannot be used). This overrides the uncertain P1-light aggregate vote (42% light, entropy 1.54 bits) and per-section gaps (e.g. S5 standard pick, 48 unbacked anchors). Guideline also demands conceptual overview only with no external libraries/case studies.",
+  "grok_override_reason": "External-evidence policy = forbidden mandates P0; cannot escalate or use exploration",
+  "grok_decision_drivers": [
+    "external-evidence policy",
+    "hard constraint override"
+  ],
+  "grok_risk_flags": [
+    "scorer uncertainty and dominant depth gaps ignored due to policy"
+  ]
+}

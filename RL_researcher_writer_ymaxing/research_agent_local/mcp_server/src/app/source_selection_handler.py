@@ -18,6 +18,7 @@ from ..config.prompts import (
 from ..config.settings import settings
 from ..models.query_models import SourceSelection, TopSourceSelection
 from ..utils.llm_utils import get_chat_model
+from ..utils.url_utils import normalize_url_for_match
 
 logger = logging.getLogger(__name__)
 
@@ -118,16 +119,38 @@ async def _select_sources_for_phase(
     return accepted
 
 
-async def select_sources(article_guidelines: str, md_results: str) -> List[int]:
+async def select_sources(
+    article_guidelines: str,
+    md_results: str,
+    blocklist: set[str] | None = None,
+) -> List[int]:
     """Use an LLM to select the best subset of sources.
 
     Splits sources by phase (exploitation vs exploration) and evaluates each
     phase independently with a phase-appropriate prompt and acceptance threshold.
+
+    Any source whose URL matches ``blocklist`` (normalised reference-only URLs of
+    locally-supplied files) is dropped before evaluation so it can never be kept.
     """
     parsed_results = parse_tavily_results(md_results)
     if not parsed_results:
         logger.warning(f"⚠️  No sources found in {TAVILY_RESULTS_FILE} - accepting none.")
         return []
+
+    if blocklist:
+        before = len(parsed_results)
+        parsed_results = {
+            sid: entry
+            for sid, entry in parsed_results.items()
+            if normalize_url_for_match(entry.get("url", "")) not in blocklist
+        }
+        if len(parsed_results) != before:
+            logger.info(
+                f"Excluded {before - len(parsed_results)} reference-only source(s) "
+                f"from keep-selection (local-file blocklist)."
+            )
+        if not parsed_results:
+            return []
 
     # Split by phase
     exploitation: Dict[int, Dict[str, str]] = {}
@@ -205,15 +228,31 @@ def load_scraped_guideline_context(research_directory: str) -> str:
 
 
 async def select_top_sources(
-    article_guidelines: str, guideline_ctx: str, md_results_selected: str, max_sources: int = 5
+    article_guidelines: str,
+    guideline_ctx: str,
+    md_results_selected: str,
+    max_sources: int = 5,
+    blocklist: set[str] | None = None,
 ) -> Dict[str, Any]:
     """Select up to max_sources top sources to scrape fully.
+
+    Any source whose URL matches ``blocklist`` (normalised reference-only URLs of
+    locally-supplied files) is excluded from the candidate pool before selection
+    and dropped again from the final list, so such URLs are never scraped.
 
     Returns:
         dict: Contains 'selected_urls' (List[str]), 'url_to_phase' (Dict[str, str]),
               and 'reasoning' (str)
     """
     sources = parse_results_selected(md_results_selected)
+    if blocklist and sources:
+        before = len(sources)
+        sources = [s for s in sources if normalize_url_for_match(s["url"]) not in blocklist]
+        if len(sources) != before:
+            logger.info(
+                f"Excluded {before - len(sources)} reference-only source(s) from scrape "
+                f"candidates (local-file blocklist)."
+            )
     if not sources:
         msg = "⚠️  No sources found in tavily_results_selected.md. Nothing to select."
         logger.warning(msg)
@@ -264,6 +303,9 @@ async def select_top_sources(
 
     # Ensure max sources limit
     selected = response.selected_urls[:max_sources]
+    # Backstop: drop any blocklisted URL the LLM may still have returned.
+    if blocklist:
+        selected = [u for u in selected if normalize_url_for_match(u) not in blocklist]
     logger.info(f"👍 {len(selected)} sources selected to scrape.")
     return {
         "selected_urls": selected,

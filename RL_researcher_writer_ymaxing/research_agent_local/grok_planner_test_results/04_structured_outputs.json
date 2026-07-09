@@ -3,10 +3,10 @@
   "lesson": "04_structured_outputs",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 1,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "rl_preset": null,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok-only",
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
@@ -15,21 +15,24 @@
     0.6707,
     0.6407
   ],
-  "verdict": "NEAR",
-  "regret": 0.002,
-  "regret_counted": 0.002,
-  "entropy_bits": 0.9968,
-  "confidence": 0.533,
-  "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Section-scorer aggregate is P1 light (53% light vs 47% skip, 0% on standard/deep); this is the reward-trained peak. High-budget S4 (40%, 13 must-ev, depth_cov=6) and S3 (20%, 8 must-ev) drive the lean while S2 is brief-flagged; no sanctioned override condition met (vote not uncertain enough for downward, no upward from P1 allowed).",
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": null,
+  "confidence": null,
+  "floor_applied": null,
+  "grok_override": null,
+  "grok_reasoning": "32 unbacked anchors and high must-ev totals (~31) concentrated in large-budget sections (S4:13 must-ev at 40%, S3:8 at 20%) create concrete evidence gaps that prevent writing without sourced facts, despite solid cov in S2/S4. S6 (need_depth 7, cov 1) and S1 (need_depth 6, cov 2) add depth pressure; dominant gap is balanced. P2 fills mandatory evidence via depth-then-breadth without overkill on brief sections or 0% S7.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer_aggregate_P1",
-    "must_ev_in_S3_S4",
-    "no_standard_deep_votes"
+    "high must-ev in high-budget sections",
+    "32 unbacked anchors",
+    "need_depth in S1/S3/S6",
+    "balanced dominant gap"
   ],
   "grok_risk_flags": [
-    "close 47-53 split could tilt skip if gaps are already notebook-sourced"
+    "notebook/golden sources may already suffice for code-heavy sections",
+    "S2 brief flag could limit absorption",
+    "over-exploring low-budget conclusion"
   ]
 }

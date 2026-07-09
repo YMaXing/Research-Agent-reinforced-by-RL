@@ -108,10 +108,11 @@ logger = logging.getLogger("repair_missing_tavily")
 # Paths
 # ---------------------------------------------------------------------------
 _TRAINING_DATA_DIR = _THIS_DIR.parent.parent / "rl_training_data"
-# Both subdirectories that can contain episode-like dirs with .research/ folders
+# Subdirectories that can contain episode-like dirs with .research/ folders
 _SEARCH_ROOTS = [
     _TRAINING_DATA_DIR / "episodes",
     _TRAINING_DATA_DIR / "bases",
+    _TRAINING_DATA_DIR / "test_episodes",
 ]
 
 _PHASE_TAG: dict[str, str] = {

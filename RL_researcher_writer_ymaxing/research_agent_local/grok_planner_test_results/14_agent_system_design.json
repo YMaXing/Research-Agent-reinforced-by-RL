@@ -3,10 +3,10 @@
   "lesson": "14_agent_system_design",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 1,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "rl_preset": null,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok-only",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -15,22 +15,23 @@
     0.5966,
     0.5837
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 1.5305,
-  "confidence": 0.4379,
-  "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Section-scorer aggregate is P1 light (44% light vs 34% skip / 22% deep) as the budget-weighted primary signal, even though uncertain (entropy 1.53 bits, no single dominant arm). High-budget sections (S2 31% skip with cov 6·3, S4 28% light with cov 5·4, S3 22% deep with cov 7·4) already show solid coverage; dominant gap type is depth but the scorer priced all must-ev/unbacked anchors into its P1 vote. No sanctioned override condition is met for moving below P1 (not all high-budget sections meet depth_score >=6 and brief-flagged criteria), and upward moves are forbidden for a P1+ vote.",
+  "verdict": "NEAR",
+  "regret": 0.0894,
+  "regret_counted": 0.0894,
+  "entropy_bits": null,
+  "confidence": null,
+  "floor_applied": null,
+  "grok_override": null,
+  "grok_reasoning": "Dominant gap is depth with 42 article-wide unbacked anchors; S2 (31% budget, need_depth 29, must-ev 7, 9 orphans) and S4 (28% budget, need_depth 36, must-ev 6, 11 orphans) show large evidence-driven shortfalls exactly where writing spend is highest. S3 adds quantitative scaling examples that require cited benchmarks/numbers (must-ev 5). S5/S6 already strong with low needs, so full P3 unnecessary. This justifies depth-then-breadth gap-filling over cheaper P1.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer_aggregate_P1",
-    "high_entropy_no_override",
-    "solid_cov_on_largest_sections"
+    "unmet_depth_large_sections",
+    "must-ev_total_27",
+    "42_unbacked_anchors",
+    "dominant_depth_gap"
   ],
   "grok_risk_flags": [
-    "S3 deep vote + high need_d on S4 could indicate underestimated depth gap",
-    "uncertainty may place true peak at P0"
+    "some anchors satisfiable from listed golden sources without new rounds",
+    "S1/S3 images may not need fresh evidence"
   ]
 }

@@ -1,0 +1,36 @@
+{
+  "variant": "06_tools__var_demanding",
+  "lesson": "06_tools",
+  "split": "TRAIN",
+  "policy": "required",
+  "rl_preset": 3,
+  "grok_preset": 3,
+  "chosen_preset": 3,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 3,
+  "oracle_name": "deep",
+  "r_w_rewards": [
+    0.3794,
+    0.4551,
+    0.4288,
+    0.4949
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.9158,
+  "confidence": 0.3829,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Section-scorer aggregate is P3 deep (38% mass) despite high uncertainty (entropy 1.92 bits). This is the primary signal; high-budget S3 (24%, RL pick deep·1.00, need_depth=8) and S8 (must-ev=4, RL pick deep·1.00) dominate the weighted vote. Guideline explicitly demands named production examples, real-world failure modes, text-to-SQL mechanisms, sandbox security mitigations and concrete RAG/memory anchors in S8/S9, which the prior exploitation pass only partially met. No sanctioned downward override applies given the must-ev and depth-dominant economics.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "scorer_P3_recommendation",
+    "must-ev_in_S8_S9",
+    "depth_gaps_in_S3"
+  ],
+  "grok_risk_flags": [
+    "high entropy could justify P2 if gaps were overestimated",
+    "P3 may surface diminishing returns on code-heavy sections"
+  ]
+}

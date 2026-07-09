@@ -7,7 +7,18 @@ no LLM mocking or file I/O is required.
 
 import pytest
 
-from src.app.guideline_extractions_handler import extract_local_paths, extract_urls, extract_urls_by_section
+from src.app.guideline_extractions_handler import (
+    extract_local_file_reference_urls,
+    extract_local_paths,
+    extract_urls,
+    extract_urls_by_section,
+    load_reference_url_blocklist,
+)
+from src.config.constants import (
+    ARTICLE_GUIDELINE_FILE,
+    GUIDELINES_FILENAMES_FILE,
+    RESEARCH_OUTPUT_FOLDER,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -186,3 +197,96 @@ class TestExtractUrlsBySection:
         text = "## OTHER SOURCES\n1. [X](https://x.example.com)\n"
         result = extract_urls_by_section(text)
         assert "https://x.example.com" in result["exploitation"]
+
+
+# ---------------------------------------------------------------------------
+# extract_local_file_reference_urls
+# ---------------------------------------------------------------------------
+
+
+class TestExtractLocalFileReferenceUrls:
+    def test_pairs_commented_url_with_local_file(self):
+        text = (
+            "## Golden Sources\n\n"
+            "<!-- [Evolving Dark Sector](https://arxiv.org/abs/2205.12293) -->\n"
+            '"Evolving Dark Sector and the Dark Dimension Scenario.md"\n'
+        )
+        urls = extract_local_file_reference_urls(text)
+        assert urls == ["https://arxiv.org/abs/2205.12293"]
+
+    def test_multiple_sections_collected(self):
+        text = (
+            "## Golden Sources\n\n"
+            "<!-- [A](https://arxiv.org/abs/2205.12293) -->\n"
+            '"A.md"\n\n'
+            "## Other Sources\n\n"
+            "<!-- [B](https://link.aps.org/doi/10.1103/9lf2-33zf) -->\n"
+            '"B.md"\n'
+        )
+        urls = extract_local_file_reference_urls(text)
+        assert "https://arxiv.org/abs/2205.12293" in urls
+        assert "https://link.aps.org/doi/10.1103/9lf2-33zf" in urls
+
+    def test_deduplicates_repeated_urls(self):
+        text = (
+            "<!-- [A](https://arxiv.org/abs/2205.12293) -->\n"
+            '"A.md"\n\n'
+            "<!-- [B](https://arxiv.org/abs/2205.12293) -->\n"
+            '"B.md"\n'
+        )
+        urls = extract_local_file_reference_urls(text)
+        assert urls == ["https://arxiv.org/abs/2205.12293"]
+
+    def test_commented_url_without_local_file_is_ignored(self):
+        text = (
+            "<!-- [A](https://arxiv.org/abs/2205.12293) -->\n"
+            "Some prose that is not a local file.\n"
+        )
+        assert extract_local_file_reference_urls(text) == []
+
+    def test_uncommented_url_is_not_captured(self):
+        text = (
+            "[A](https://arxiv.org/abs/2205.12293)\n"
+            '"A.md"\n'
+        )
+        assert extract_local_file_reference_urls(text) == []
+
+    def test_returns_empty_for_no_matches(self):
+        assert extract_local_file_reference_urls("just text") == []
+
+
+# ---------------------------------------------------------------------------
+# load_reference_url_blocklist
+# ---------------------------------------------------------------------------
+
+
+class TestLoadReferenceUrlBlocklist:
+    def _make_dir(self, tmp_path):
+        (tmp_path / RESEARCH_OUTPUT_FOLDER).mkdir()
+        return tmp_path
+
+    def test_reads_normalised_urls_from_json(self, tmp_path):
+        self._make_dir(tmp_path)
+        gf = tmp_path / RESEARCH_OUTPUT_FOLDER / GUIDELINES_FILENAMES_FILE
+        gf.write_text(
+            '{"local_file_reference_urls": ["https://arxiv.org/abs/2205.12293"]}',
+            encoding="utf-8",
+        )
+        blocklist = load_reference_url_blocklist(str(tmp_path))
+        assert "arxiv.org/abs/2205.12293" in blocklist
+
+    def test_falls_back_to_guideline_when_key_missing(self, tmp_path):
+        self._make_dir(tmp_path)
+        gf = tmp_path / RESEARCH_OUTPUT_FOLDER / GUIDELINES_FILENAMES_FILE
+        gf.write_text("{}", encoding="utf-8")
+        (tmp_path / ARTICLE_GUIDELINE_FILE).write_text(
+            "<!-- [A](https://arxiv.org/pdf/2205.12293v2) -->\n" '"A.md"\n',
+            encoding="utf-8",
+        )
+        blocklist = load_reference_url_blocklist(str(tmp_path))
+        # /pdf/…v2 must normalise to the same key as /abs/… (no version).
+        assert "arxiv.org/abs/2205.12293" in blocklist
+
+    def test_returns_empty_when_nothing_available(self, tmp_path):
+        self._make_dir(tmp_path)
+        assert load_reference_url_blocklist(str(tmp_path)) == set()

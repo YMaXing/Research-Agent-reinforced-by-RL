@@ -82,6 +82,12 @@ If the user doesn't provide a research directory, you should ask for it before e
     • "exploitation_youtube_videos_urls" - YouTube links listed under "Other Sources";
     • "exploitation_other_urls" - all other HTTP/HTTPS links (including arXiv papers) listed under "Other Sources".
 
+    **Reference-only URLs** (blocklisted from scraping):
+    • "local_file_reference_urls" - URLs commented out (``<!-- [Title](URL) -->``) directly above a
+      quoted local-file reference. The file content is supplied locally, so these URLs are recorded
+      only so the pipeline can exclude them from the exploitation/exploration phases and from step 6
+      full-scraping — they are never scraped or selected as research sources.
+
     Only extensions allowed for local files are: ".py", ".ipynb", and ".md".
     The extracted data is saved to the GUIDELINES_FILENAMES_FILE within the RESEARCH_OUTPUT_DIRECTORY directory.
 

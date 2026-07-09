@@ -37,6 +37,14 @@ JINA_HEADERS = {
 }
 
 
+def _build_jina_headers() -> dict:
+    """Build Jina.ai request headers, adding Authorization when an API key is configured."""
+    headers = dict(JINA_HEADERS)
+    if settings.jina_api_key:
+        headers["Authorization"] = f"Bearer {settings.jina_api_key.get_secret_value()}"
+    return headers
+
+
 def is_pdf_url(url: str) -> bool:
     """Return True if the URL points to a PDF document.
 
@@ -147,7 +155,7 @@ async def scrape_with_jina(url: str) -> dict:
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 jina_url,
-                headers=JINA_HEADERS,
+                headers=_build_jina_headers(),
                 timeout=JINA_TIMEOUT_SECONDS,
                 follow_redirects=True,
             )

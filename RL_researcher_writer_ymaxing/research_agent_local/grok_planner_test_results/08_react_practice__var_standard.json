@@ -1,0 +1,36 @@
+{
+  "variant": "08_react_practice__var_standard",
+  "lesson": "08_react_practice",
+  "split": "TRAIN",
+  "policy": "allowed",
+  "rl_preset": 0,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 1,
+  "oracle_name": "light",
+  "r_w_rewards": [
+    0.3892,
+    0.5431,
+    0.259,
+    0.3283
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 0.9997,
+  "confidence": 0.5108,
+  "floor_applied": false,
+  "grok_override": true,
+  "grok_reasoning": "Scorer aggregate is P0 (51%) but P1 runner-up holds 49% mass; sanctioned upward nudge from P0 to P1 is permitted because no section votes standard/deep and conditions match exactly. Largest-budget sections (S4/S5) individually select light and carry high must-ev (12+18); P1 is the reward peak per the unimodal curve and cheap-insurance clause.",
+  "grok_override_reason": "applied single sanctioned P0->P1 nudge (substantial runner-up mass, no std/deep section votes)",
+  "grok_decision_drivers": [
+    "scorer aggregate + vote split",
+    "sanctioned P0->P1 nudge condition",
+    "section RL picks on high-budget rows"
+  ],
+  "grok_risk_flags": [
+    "S5 brief=yes may limit absorption",
+    "51/49 split could be noise"
+  ]
+}

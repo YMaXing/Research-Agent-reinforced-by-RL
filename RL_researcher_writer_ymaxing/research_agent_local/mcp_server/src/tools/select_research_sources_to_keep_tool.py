@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 from ..app.source_selection_handler import select_sources
+from ..app.guideline_extractions_handler import load_reference_url_blocklist
 from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
     RESEARCH_OUTPUT_FOLDER,
@@ -89,7 +90,8 @@ async def select_research_sources_to_keep_tool(research_directory: str) -> Dict[
     article_guidelines = read_file_safe(guidelines_path)
     md_results = read_file_safe(results_path)
 
-    selected_ids = await select_sources(article_guidelines, md_results)
+    blocklist = load_reference_url_blocklist(research_directory)
+    selected_ids = await select_sources(article_guidelines, md_results, blocklist=blocklist)
 
     # Write the selected IDs (comma-separated) to file.
     selected_ids_path = research_output_path / TAVILY_SOURCES_SELECTED_FILE

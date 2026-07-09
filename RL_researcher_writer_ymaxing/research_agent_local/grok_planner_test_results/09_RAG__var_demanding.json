@@ -1,0 +1,37 @@
+{
+  "variant": "09_RAG__var_demanding",
+  "lesson": "09_RAG",
+  "split": "TRAIN",
+  "policy": "allowed",
+  "rl_preset": 3,
+  "grok_preset": 3,
+  "chosen_preset": 3,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 3,
+  "oracle_name": "deep",
+  "r_w_rewards": [
+    0.3767,
+    0.5314,
+    0.3625,
+    0.5497
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.3762,
+  "confidence": 0.5937,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Section-scorer aggregate is P3 deep (59% deep, 0% skip) with moderate confidence; this is the primary signal. Dominant gap type is depth, weakest high-budget sections (S1/S2) show low cov (4/8 depth) + high need_depth (10/2 and 7/4), S3 carries 8 must-ev, S6 carries 5 must-ev, and 32 unbacked anchors remain. Guideline demands many named tools/benchmarks/production examples plus one failure-mode case study; these align with the scorer's reward-optimal pick of deep (3 rounds: depth → breadth → depth). No sanctioned override applies.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "scorer_P3_59pct",
+    "depth_dominant_gaps_S1_S2_S6",
+    "23_total_must_ev_plus_32_unbacked"
+  ],
+  "grok_risk_flags": [
+    "moderate_vote_entropy_23pct_light",
+    "S1_brief_flag_limits_absorption",
+    "possible_diminishing_returns_on_final_depth_round"
+  ]
+}

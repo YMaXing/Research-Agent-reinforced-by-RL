@@ -1,0 +1,37 @@
+{
+  "variant": "08_react_practice__var_demanding",
+  "lesson": "08_react_practice",
+  "split": "TRAIN",
+  "policy": "required",
+  "rl_preset": 2,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 2,
+  "oracle_name": "standard",
+  "r_w_rewards": [
+    0.4094,
+    0.4042,
+    0.5843,
+    0.4348
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.3509,
+  "confidence": 0.4598,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Section-scorer aggregate is P2 standard (46% vs 45% skip; moderate confidence). External-evidence policy is REQUIRED so P0 forbidden; dominant gap type is depth with 42 unbacked anchors and high-budget S5 (28%, standard·1.00, need_depth 22, cov 7) plus S4 (18%, standard·1.00) driving the weighted vote. No sanctioned downward override triggered because not all high-budget sections are brief-flagged and unmet depth pressure remains substantial.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "scorer_aggregate_P2",
+    "external_evidence_required",
+    "dominant_depth_gaps",
+    "S5_S4_budgeted_standard_votes"
+  ],
+  "grok_risk_flags": [
+    "bimodal vote (skip/standard tie)",
+    "S5 brief flag could limit absorption"
+  ]
+}

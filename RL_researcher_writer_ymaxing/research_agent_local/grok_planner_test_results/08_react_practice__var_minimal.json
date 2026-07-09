@@ -1,0 +1,35 @@
+{
+  "variant": "08_react_practice__var_minimal",
+  "lesson": "08_react_practice",
+  "split": "TRAIN",
+  "policy": "forbidden",
+  "rl_preset": 0,
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 0,
+  "oracle_name": "skip",
+  "r_w_rewards": [
+    0.6543,
+    0.1224,
+    0.0647,
+    0.3828
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": null,
+  "entropy_bits": 0.8727,
+  "confidence": 0.7069,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "External-evidence policy explicitly FORBIDDEN (exploration output cannot be used), mandating P0; section-scorer aggregate decisively votes P0 skip (71% / 0% on P2/P3) with only one light section; guideline repeatedly demands 'must stay brief', surface-level notebook mirroring, and no external libraries/case studies.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "external-evidence-forbidden",
+    "scorer-aggregate-P0",
+    "brevity-flags"
+  ],
+  "grok_risk_flags": [
+    "none - hard constraint overrides all gap signals"
+  ]
+}

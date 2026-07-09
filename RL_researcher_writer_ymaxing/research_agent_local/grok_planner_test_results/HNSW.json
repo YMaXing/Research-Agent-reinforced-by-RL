@@ -1,0 +1,37 @@
+{
+  "variant": "HNSW",
+  "lesson": "HNSW",
+  "split": "TEST",
+  "policy": "allowed",
+  "rl_preset": null,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok-only",
+  "oracle_preset": 1,
+  "oracle_name": "light",
+  "r_w_rewards": [
+    0.4839,
+    0.7672,
+    0.5239,
+    0.5556
+  ],
+  "verdict": "NEAR",
+  "regret": 0.2433,
+  "regret_counted": 0.2433,
+  "entropy_bits": null,
+  "confidence": null,
+  "floor_applied": null,
+  "grok_override": null,
+  "grok_reasoning": "47 article-wide unbacked anchors with dominant depth gaps; S4 (46% budget) shows need_depth=40 + must-ev=9 and cov only 4/8, S2 (35%) has need_depth=32 + must-ev=4 and cov 3/8. Golden sources (HNSW paper, skip-list PDF, Faiss HNSW.cpp) plus empirical Sift1M sweeps clearly remain under-covered on mandatory mechanics/benchmarks. Brief flags on S2 and ALLOWED (not required) policy keep us from P3; gaps are too large for P1.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "47 unbacked anchors",
+    "high must-ev in S4/S2",
+    "dominant depth gaps in 81% budget",
+    "low depth cov (3-4/8)"
+  ],
+  "grok_risk_flags": [
+    "brief=yes on S2 might limit absorption",
+    "golden sources may already address some orphans not reflected in cov"
+  ]
+}

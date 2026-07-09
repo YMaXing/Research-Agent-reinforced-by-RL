@@ -28,7 +28,7 @@ Potential complements to the plan: extract helpful information from digests
 
 # Guideline generation
 
-need to be generalized beyond lesson articles (16 articles)
+need to be generalized beyond lesson articles (12 articles)
 
 Candidates from TowardsAI's agentic course: 
 1. Lesson 4: Structured Outputs
@@ -38,18 +38,8 @@ Candidates from TowardsAI's agentic course:
 5. Lesson 29: Defining the Evaluation Processes and Metrics Theory
 6. Lesson 31: Continuous Integration for AI Engineering
 
-Candidates from Lil'log:
-1. The Transformer Family Version 2.0 (https://lilianweng.github.io/posts/2023-01-27-the-transformer-family-v2/)
-2. Reward Hacking in Reinforcement Learning (https://lilianweng.github.io/posts/2024-11-28-reward-hacking/)
-
 Candidates from Pinecone:
 1. Hierarchical Navigable Small Worlds (HNSW) (https://www.pinecone.io/learn/series/faiss/hnsw/)
-
-Candidates from Ahead of AI:
-1. Beyond Standard LLMs
-Linear Attention Hybrids, Text Diffusion, Code World Models, and Small Recursive Transformers (https://magazine.sebastianraschka.com/p/beyond-standard-llms)
-2.Understanding Reasoning LLMs
-Methods and Strategies for Building and Refining Reasoning Models(https://magazine.sebastianraschka.com/p/understanding-reasoning-llms)
 
 Candidates from QuantaMagazine:
 1. Is Gravity Just Entropy Rising? Long-Shot Idea Gets Another Look. (https://www.quantamagazine.org/is-gravity-just-entropy-rising-long-shot-idea-gets-another-look-20250613/)

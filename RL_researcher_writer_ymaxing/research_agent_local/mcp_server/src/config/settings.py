@@ -61,6 +61,9 @@ class Settings(BaseSettings):
     tavily_api_key: SecretStr | None = Field(
         default=None, alias="TAVILY_API_KEY", description="The API key for the Tavily API"
     )
+    jina_api_key: SecretStr | None = Field(
+        default=None, alias="JINA_API_KEY", description="The API key for the Jina.ai Reader API"
+    )
 
     # Opik Monitoring Configuration
     opik_api_key: SecretStr | None = Field(

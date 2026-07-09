@@ -1,0 +1,35 @@
+{
+  "variant": "10_memory_knowledge_access__var_demanding",
+  "lesson": "10_memory_knowledge_access",
+  "split": "TRAIN",
+  "policy": "required",
+  "rl_preset": 2,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 2,
+  "oracle_name": "standard",
+  "r_w_rewards": [
+    0.3478,
+    0.5424,
+    0.5895,
+    0.5482
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 0.6932,
+  "confidence": 0.814,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is P2 standard at 81% (decisive, all high-budget sections vote standard or deep); dominant gap=depth and must-ev totals align with 2-round depth->breadth; external-evidence=REQUIRED rules out P0; no override conditions triggered per asymmetric policy.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "scorer_aggregate",
+    "dominant_depth_gaps",
+    "external_required"
+  ],
+  "grok_risk_flags": [
+    "S6 deep vote + high must-ev could under-serve production lessons"
+  ]
+}

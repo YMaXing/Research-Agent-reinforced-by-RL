@@ -1,0 +1,36 @@
+{
+  "variant": "03_context_engineering__var_standard",
+  "lesson": "03_context_engineering",
+  "split": "TRAIN",
+  "policy": "allowed",
+  "rl_preset": 1,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 0,
+  "oracle_name": "skip",
+  "r_w_rewards": [
+    0.6414,
+    0.6119,
+    0.5843,
+    0.5143
+  ],
+  "verdict": "NEAR",
+  "regret": 0.0295,
+  "regret_counted": 0.0295,
+  "entropy_bits": 0.9967,
+  "confidence": 0.5339,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Section-scorer aggregate is P1 light (53% vs 47% skip, 0% on standard/deep) as the reward-trained peak; high-budget sections (S3/S4/S6/S7) already show cov d≥5-8 on many must-ev items and the scorer weighed the 68 orphans + dominant depth gaps. No override conditions met (no brief flags, vote not uncertain enough for downward). Light balanced round targets the direction without over-escalation risk.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "scorer aggregate (primary)",
+    "moderate confidence",
+    "no sanctioned override"
+  ],
+  "grok_risk_flags": [
+    "close skip/light split could undervalue S6/S7 depth gaps",
+    "if must-ev sourcing is harder than scored, light may leave a few anchors thin"
+  ]
+}

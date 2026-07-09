@@ -4,14 +4,13 @@ import logging
 import os
 import uuid
 
-import opik
-from google import genai
-from opik.integrations.genai import track_genai
-from opik.integrations.langchain import OpikTracer
-from opik.integrations.openai import track_openai
-from opik.integrations.openai.opik_tracker import OpenAIClient
-
 from ..config.settings import settings
+
+# NOTE: opik, google.genai, and their integration packages are intentionally NOT
+# imported at module level.  The opik library performs a network handshake on
+# import that can hang in environments without a reachable Comet ML endpoint
+# (e.g. VS Code integrated terminals, CI, offline machines).  All opik-dependent
+# symbols are imported lazily inside the functions/methods that use them.
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +21,7 @@ class OpikContext:
 
     def initialize_thread_id(self) -> None:
         if is_opik_enabled():
+            import opik  # lazy: avoids network hang on module load
             self.thread_id = str(uuid.uuid4())
             opik.opik_context.update_current_trace(thread_id=self.thread_id)
 
@@ -30,6 +30,7 @@ class OpikContext:
 
     def update_thread_id(self) -> None:
         if is_opik_enabled():
+            import opik  # lazy
             opik.opik_context.update_current_trace(thread_id=self.thread_id)
 
 
@@ -46,6 +47,7 @@ def configure_opik():
     if not is_opik_enabled():
         return False
 
+    import opik  # lazy
     os.environ["OPIK_PROJECT_NAME"] = settings.opik_project_name
 
     try:
@@ -66,7 +68,7 @@ def configure_opik():
     return True
 
 
-def track_genai_client(client: genai.Client) -> genai.Client:
+def track_genai_client(client):
     """Track a Gemini client with Opik if configured.
 
     Args:
@@ -77,12 +79,13 @@ def track_genai_client(client: genai.Client) -> genai.Client:
     """
     # Apply Opik tracking if all required settings are configured
     if settings.opik_api_key and settings.opik_workspace and settings.opik_project_name:
+        from opik.integrations.genai import track_genai  # lazy
         return track_genai(client, project_name=settings.opik_project_name)
     else:
         return client
 
 
-def track_openai_client(client: OpenAIClient) -> OpenAIClient:
+def track_openai_client(client):
     """Track an OpenAI client with Opik if configured.
 
     Args:
@@ -93,6 +96,7 @@ def track_openai_client(client: OpenAIClient) -> OpenAIClient:
     """
     # Apply Opik tracking if all required settings are configured
     if settings.opik_api_key and settings.opik_workspace and settings.opik_project_name:
+        from opik.integrations.openai import track_openai  # lazy
         return track_openai(client)
     else:
         return client
@@ -117,10 +121,11 @@ class TrackedLangChainModel:
 
     def _inject_tracer(self, kwargs):
         """Inject OpikTracer into the config callbacks if not already present."""
+        from opik.integrations.langchain import OpikTracer  # lazy
         config = kwargs.get("config", {})
         callbacks = config.get("callbacks", [])
 
-        opik_tracer: OpikTracer = OpikTracer(project_name=self._project_name)
+        opik_tracer = OpikTracer(project_name=self._project_name)
 
         # Check if our tracer is already in the callbacks
         if opik_tracer not in callbacks:
@@ -160,6 +165,7 @@ class TrackedTavilyTool:
 
     def _inject_tracer(self, kwargs):
         """Inject OpikTracer into config (prevents duplicate tracers)."""
+        from opik.integrations.langchain import OpikTracer  # lazy
         config = kwargs.get("config", {}) or {}
         callbacks = config.get("callbacks", [])
         opik_tracer = OpikTracer(project_name=self._project_name)

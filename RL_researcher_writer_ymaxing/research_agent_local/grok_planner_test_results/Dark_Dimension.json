@@ -1,0 +1,37 @@
+{
+  "variant": "Dark_Dimension",
+  "lesson": "Dark_Dimension",
+  "split": "TEST",
+  "policy": "allowed",
+  "rl_preset": null,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok-only",
+  "oracle_preset": 0,
+  "oracle_name": "skip",
+  "r_w_rewards": [
+    0.814,
+    0.6803,
+    0.6923,
+    0.6287
+  ],
+  "verdict": "MISS",
+  "regret": 0.1217,
+  "regret_counted": 0.1217,
+  "entropy_bits": null,
+  "confidence": null,
+  "floor_applied": null,
+  "grok_override": null,
+  "grok_reasoning": "27 article-wide unbacked anchors, high must-ev (5/6/8 per section), and large unmet need_depth (12-14) despite partial cov (5-7) signal concrete evidence gaps, especially in high-budget S2 (34%) and S3 (46%); dominant depth gap plus mandatory named sources (Khoury, Vafa, DESI, Andriot quotes) justify depth-first pass, but brief flags on S1/S3 and 'allowed not required' policy prevent P3 escalation.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "must-ev",
+    "unbacked_anchors",
+    "need_depth",
+    "dominant_gap_type"
+  ],
+  "grok_risk_flags": [
+    "brief=yes on large S3 may cap absorption",
+    "existing golden sources might already cover more than numbers show"
+  ]
+}

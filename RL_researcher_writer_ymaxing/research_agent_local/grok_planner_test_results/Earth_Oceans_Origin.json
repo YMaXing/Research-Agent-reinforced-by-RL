@@ -1,0 +1,37 @@
+{
+  "variant": "Earth_Oceans_Origin",
+  "lesson": "Earth_Oceans_Origin",
+  "split": "TEST",
+  "policy": "allowed",
+  "rl_preset": null,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok-only",
+  "oracle_preset": 3,
+  "oracle_name": "deep",
+  "r_w_rewards": [
+    0.4707,
+    0.5086,
+    0.5917,
+    0.6133
+  ],
+  "verdict": "MISS",
+  "regret": 0.1046,
+  "regret_counted": 0.1046,
+  "entropy_bits": null,
+  "confidence": null,
+  "floor_applied": null,
+  "grok_override": null,
+  "grok_reasoning": "Coverage already strong (6-7/8 depth, 3/6 breadth) with zero orphans; dominant gap is breadth not depth and all but S4 are explicitly brief. However 38 article-wide unbacked anchors plus high must-ev (6 in 37% S2, 5 in 35% S3) on named missions, papers, quotes and experiments justify one balanced round; external-evidence is only ALLOWED, not required, so no escalation past P1.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "high must-ev in largest sections",
+    "38 unbacked anchors",
+    "breadth-dominant gaps",
+    "already-high cov + brief constraints"
+  ],
+  "grok_risk_flags": [
+    "local golden-source files may already cover must-ev",
+    "under-counting qualitative depth for specific experimental quotes in S3"
+  ]
+}

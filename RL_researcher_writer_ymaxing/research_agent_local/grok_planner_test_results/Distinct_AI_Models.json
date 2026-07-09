@@ -1,0 +1,37 @@
+{
+  "variant": "Distinct_AI_Models",
+  "lesson": "Distinct_AI_Models",
+  "split": "TEST",
+  "policy": "allowed",
+  "rl_preset": null,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok-only",
+  "oracle_preset": 1,
+  "oracle_name": "light",
+  "r_w_rewards": [
+    0.625,
+    0.7917,
+    0.6398,
+    0.7135
+  ],
+  "verdict": "NEAR",
+  "regret": 0.152,
+  "regret_counted": 0.152,
+  "entropy_bits": null,
+  "confidence": null,
+  "floor_applied": null,
+  "grok_override": null,
+  "grok_reasoning": "Article-wide 30 unbacked anchors + dominant depth gap; all sections show high need_depth (18-21) paired with must-ev (3-4) for named papers/quotes/experiments (e.g. Huh design, Isola/Efros quotes, Firth application). Weakest S3/S4 drive need despite S1/S3 'brief' constraint; existing cov only 5·2-3 out of 8/6 confirms sizeable sourced-evidence shortfalls in a 100% theory 2000-word piece.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "high need_depth + must-ev",
+    "30 unbacked anchors",
+    "depth-dominant gaps",
+    "weakest S3/S4"
+  ],
+  "grok_risk_flags": [
+    "brief sections may limit absorbable depth",
+    "provided .md sources might already address some orphans beyond numeric cov"
+  ]
+}

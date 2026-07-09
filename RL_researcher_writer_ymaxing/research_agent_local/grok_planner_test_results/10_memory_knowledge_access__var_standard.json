@@ -1,0 +1,36 @@
+{
+  "variant": "10_memory_knowledge_access__var_standard",
+  "lesson": "10_memory_knowledge_access",
+  "split": "TRAIN",
+  "policy": "allowed",
+  "rl_preset": 1,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 1,
+  "oracle_name": "light",
+  "r_w_rewards": [
+    0.4776,
+    0.5534,
+    0.4779,
+    0.4473
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.5226,
+  "confidence": 0.6261,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "Section-scorer aggregate votes P1 light (63% mass) despite entropy 1.52 uncertainty; this is the reward-trained peak after pricing in all must-ev, orphans, need_depth (esp. S1/S3), and dominant depth gaps. No sanctioned override triggered (cannot escalate P1+; not all high-budget sections are brief/well-covered). Per-section RL picks and brief flag on S5 further anchor at light.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "section-scorer aggregate",
+    "vote entropy/uncertainty",
+    "no sanctioned override"
+  ],
+  "grok_risk_flags": [
+    "S3 deep vote + high must-ev could leave depth shortfall",
+    "32 unbacked anchors if light yields duplicates"
+  ]
+}

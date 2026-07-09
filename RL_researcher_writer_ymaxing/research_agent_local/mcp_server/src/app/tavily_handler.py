@@ -97,6 +97,18 @@ async def run_tavily_search(query: str) -> Tuple[str, Dict[int, str], Dict[int, 
             )
             await asyncio.sleep(delay)
             continue
+        except Exception as exc:
+            # Catch unexpected transient errors from LangChain/Pydantic structured-output
+            # parsing (e.g. IndexError from tool_calls[0] on an empty tool-call list).
+            last_exc = exc
+            delay = _BASE_DELAY * (2 ** attempt)
+            logger.warning(
+                f"⚠️ Unexpected exception during LLM call for query {query!r} "
+                f"(attempt {attempt + 1}/{_MAX_RETRIES}): {type(exc).__name__}: {exc}. "
+                f"Retrying in {delay:.0f}s…"
+            )
+            await asyncio.sleep(delay)
+            continue
 
         response = raw_result.get("parsed") if isinstance(raw_result, dict) else raw_result
         if response is not None and hasattr(response, "sources") and response.sources:
@@ -110,8 +122,10 @@ async def run_tavily_search(query: str) -> Tuple[str, Dict[int, str], Dict[int, 
         )
         await asyncio.sleep(delay)
     else:
-        if last_exc is not None:
+        if last_exc is not None and isinstance(last_exc, (InternalServerError, RateLimitError)):
             raise last_exc  # all retries exhausted due to API errors
+        # Other exceptions (e.g. IndexError from LangChain parsing) fall through
+        # to the empty-response guard below, which returns ("", {}, {}).
 
     if response is None or not hasattr(response, "sources") or response.sources is None:
         parsing_error = raw_result.get("parsing_error") if isinstance(raw_result, dict) else None

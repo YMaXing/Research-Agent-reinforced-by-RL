@@ -1,0 +1,36 @@
+{
+  "variant": "11_multimodal__var_minimal",
+  "lesson": "11_multimodal",
+  "split": "TRAIN",
+  "policy": "forbidden",
+  "rl_preset": 0,
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 0,
+  "oracle_name": "skip",
+  "r_w_rewards": [
+    0.369,
+    0.3362,
+    0.3024,
+    0.2631
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": null,
+  "entropy_bits": 1.699,
+  "confidence": 0.5517,
+  "floor_applied": false,
+  "grok_override": false,
+  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0; section-scorer aggregate is also P0 skip (55%, entropy 1.70); all must-ev=0 and most sections are brief-flagged with surface-level guideline intent.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "external-evidence-forbidden",
+    "scorer-P0-vote",
+    "brief-flags-dominant"
+  ],
+  "grok_risk_flags": [
+    "scorer entropy >1.5",
+    "32 unbacked anchors"
+  ]
+}
