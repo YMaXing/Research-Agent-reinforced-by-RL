@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "required",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -27,9 +27,17 @@
     0.2634,
     0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is P1 light (already cost-adjusted); uncertain (entropy 1.57) with budget-weighted votes skip 35% / light 41% / standard 23% / deep 0%. Standard- and deep-vote masses both <30% so no sanctioned P2→P3 escalation; residual d/b=0/0 across all 100% self-contained budget and external-evidence=REQUIRED forbid any downward move to P0. RL picks already baked in the high must-ev counts (e.g. S6=11) and depth-dominant gaps.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "scorer_aggregate_P1",
+    "required_external_evidence",
+    "zero_residual_need",
+    "vote_masses_below_30pct"
+  ],
+  "grok_risk_flags": [
+    "uncertain_vote_spread",
+    "high must-ev in S6/S4 despite residuals=0"
+  ]
 }

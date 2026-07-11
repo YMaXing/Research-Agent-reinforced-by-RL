@@ -4,9 +4,9 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -27,9 +27,16 @@
     0.2188,
     0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is decisive P1 light (75% vote, 0% deep mass, 22% standard mass); all sections self-contained and RL pick already cost-adjusted upstream. No required-external-evidence constraint, no sanctioned upward path from P1, and guideline supplies only qualitative scope cues that do not override the strong learned signal.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "scorer_decisive_P1",
+    "vote_mass_below_threshold",
+    "self_contained_residual_context"
+  ],
+  "grok_risk_flags": [
+    "residual depth gaps in high-budget S2/S4",
+    "S3 standard vote not fully covered by light round"
+  ]
 }

@@ -4,9 +4,9 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 2,
-  "grok_preset": null,
+  "grok_preset": 2,
   "chosen_preset": 2,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
@@ -27,9 +27,16 @@
     0.6664,
     0.1999
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is P2 standard (67% budget-weighted standard mass, 20% deep mass); this is UNCERTAIN (67% top-pick <70%) but deep mass <30% so no sanctioned P2->P3 escalation applies. High-budget S4 (40%, residual 0/2, cov depth=6) and S3 (20%, residual 2/4, voted deep) plus balanced article-wide gaps give no basis for general downward override to P1. Self-contained flags and low-budget high-residual S6 are already factored into the cost-adjusted RL pick.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "scorer_aggregate_P2",
+    "standard_vote_mass_67pct",
+    "deep_mass_below_30pct_threshold"
+  ],
+  "grok_risk_flags": [
+    "S3 deep vote on 20% budget may under-serve implementation depth",
+    "S6 residual 6/0 on conclusion"
+  ]
 }

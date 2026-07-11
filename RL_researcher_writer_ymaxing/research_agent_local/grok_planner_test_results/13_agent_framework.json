@@ -4,9 +4,9 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 3,
-  "grok_preset": null,
+  "grok_preset": 3,
   "chosen_preset": 3,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
@@ -27,9 +27,16 @@
     0.1448,
     0.5059
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate RL pick is P3 deep (UNCERTAIN, 51% soft / 47% budget-weighted deep-vote mass). High-budget sections S4 (18%, resid 21/6, must-ev 15), S3 (9%, resid 18/6) and S2/S1 retain large residual depth gaps; dominant gap type is depth and 42 unbacked anchors exist. No sanctioned downward override applies as most high-budget sections are not well-covered (depth_score >=6 or resid near zero).",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "RL aggregate P3",
+    "deep-vote mass 47%",
+    "high-residual sections S4/S3/S2"
+  ],
+  "grok_risk_flags": [
+    "uncertain scorer entropy",
+    "many deep-dive sections already at resid 0/6 on depth (breadth-dominant)"
+  ]
 }

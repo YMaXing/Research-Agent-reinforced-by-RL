@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -27,9 +27,16 @@
     0.4653,
     0.1467
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate RL recommendation is P1 light (UNCERTAIN but primary signal); standard mass 47% and deep mass 15% with no qualifying override (no P2->P3 gate met, downward conditions fail due to dominant standard arm and non-zero residuals in S1/S2). Self-contained flags and low residuals in S3-S6 support not escalating; external-evidence policy is only ALLOWED, not required. P1 is the reward peak given hard guard against P1->P2.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "aggregate RL pick",
+    "vote-mass gates",
+    "no qualifying override"
+  ],
+  "grok_risk_flags": [
+    "S1/S2 residual depth gaps could need more than light touch-up",
+    "high uncertainty might undervalue standard mass"
+  ]
 }

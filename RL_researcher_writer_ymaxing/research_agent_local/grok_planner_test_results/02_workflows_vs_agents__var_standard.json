@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -27,9 +27,16 @@
     0.2132,
     0.1464
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate RL pick is P1 light (64% soft vote, 70% budget-weighted on light; moderate/not decisive). Deep-vote mass 13% and standard-vote mass 17% both <<30% so no P2→P3 escalation possible from a P1 pick (hard guard). All sections self-contained with strong existing cov (mostly 7-8·6); high-budget S5/S4/S6 already near-zero residual or brief-flagged, failing general-downward criteria for P0. Must-ev and depth gaps exist in S2/S3/S5 but vote mass (not raw counts) calibrates to P1 as the reward peak.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "budget-weighted light mass (70%)",
+    "self-contained + strong cov on largest sections",
+    "no sanctioned override conditions met"
+  ],
+  "grok_risk_flags": [
+    "moderate scorer confidence could undervalue depth needs in S2/S3 examples",
+    "specific Aug-2025 Gemini/Perplexity details may require more than light touch-up"
+  ]
 }

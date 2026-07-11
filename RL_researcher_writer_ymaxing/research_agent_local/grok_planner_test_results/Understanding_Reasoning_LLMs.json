@@ -4,9 +4,9 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 2,
-  "grok_preset": null,
+  "grok_preset": 2,
   "chosen_preset": 2,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
@@ -18,18 +18,24 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.2609,
-  "confidence": 0.4884,
+  "entropy_bits": 0.3651,
+  "confidence": 0.9302,
   "floor_applied": false,
   "rl_agg_probs": [
     0.0,
-    0.0581,
-    0.4884,
-    0.4535
+    0.0698,
+    0.9302,
+    0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate scorer vote is decisively P2 standard (93% mass on standard, 0% deep, 0% skip) — the calibrated peak per the brief. Large residuals in S5 (45% budget, 42 depth) and must-ev=12 drive this exact level; all sections self-contained with depth-dominant gaps, so P2's depth-then-breadth rounds close coverage without over-escalation. No override conditions met.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "decisive standard vote mass",
+    "S5 residual need",
+    "depth-dominant gaps"
+  ],
+  "grok_risk_flags": [
+    "S5 scale could still surface minor unbacked anchors post-P2"
+  ]
 }

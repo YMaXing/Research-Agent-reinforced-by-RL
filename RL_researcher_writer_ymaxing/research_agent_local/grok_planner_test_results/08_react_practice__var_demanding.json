@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "required",
   "rl_preset": 2,
-  "grok_preset": null,
+  "grok_preset": 2,
   "chosen_preset": 2,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
@@ -27,9 +27,17 @@
     0.5049,
     0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate RL recommendation is P2 standard (50% soft vote, 46% budget-weighted standard mass); UNCERTAIN (moderate confidence, 0% deep mass) so checked overrides. No P2->P3 (deep mass 0%<30%), no sanctioned downward (standard mass >30%, S5 28% budget has resid 15/0 despite brief flag, dominant depth gaps + required external-evidence). High-budget sections S5/S4 drive the standard lean.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "budget-weighted standard mass 46%",
+    "aggregate P2 rec",
+    "required external-evidence",
+    "residual depth in S5/S1"
+  ],
+  "grok_risk_flags": [
+    "S5 brief flag may limit absorption",
+    "all sections self-contained could tilt lighter if residuals over-estimated"
+  ]
 }

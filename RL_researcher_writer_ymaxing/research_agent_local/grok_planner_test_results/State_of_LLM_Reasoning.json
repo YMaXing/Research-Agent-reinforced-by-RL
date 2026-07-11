@@ -2,11 +2,11 @@
   "variant": "State_of_LLM_Reasoning",
   "lesson": "State_of_LLM_Reasoning",
   "split": "TEST",
-  "policy": "allowed",
+  "policy": "forbidden",
   "rl_preset": 1,
-  "grok_preset": null,
-  "chosen_preset": 1,
-  "chosen_by": "RL",
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
@@ -15,21 +15,27 @@
     0.4483,
     0.3533
   ],
-  "verdict": "NEAR",
-  "regret": 0.0486,
-  "regret_counted": 0.0486,
-  "entropy_bits": 1.4073,
-  "confidence": 0.5278,
-  "floor_applied": true,
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": null,
+  "entropy_bits": 1.8382,
+  "confidence": 0.1237,
+  "floor_applied": false,
   "rl_agg_probs": [
-    0.3358,
-    0.5278,
-    0.1364,
-    0.0
+    0.371,
+    0.1237,
+    0.3603,
+    0.145
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
-  "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_override": true,
+  "grok_reasoning": "FORBIDDEN external-evidence policy is a hard constraint requiring P0; overrides uncertain P1 aggregate (37% skip / 36% standard mass) and all self-contained sections with provided sources.",
+  "grok_override_reason": "Hard policy constraint forces P0 despite RL pick of P1",
+  "grok_decision_drivers": [
+    "external-evidence-forbidden",
+    "self-contained-flags",
+    "provided-sources"
+  ],
+  "grok_risk_flags": [
+    "residual depth gaps in S2 (19% budget) and S19 (15% budget)"
+  ]
 }

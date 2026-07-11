@@ -4,9 +4,9 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -18,18 +18,25 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 0.9649,
-  "confidence": 0.6098,
-  "floor_applied": true,
+  "entropy_bits": 0.996,
+  "confidence": 0.5373,
+  "floor_applied": false,
   "rl_agg_probs": [
+    0.4627,
+    0.5373,
     0.0,
-    0.6098,
-    0.3902,
     0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate RL vote is P1 light (54% budget-weighted light mass, 0% standard/deep); matches per-section picks on S1-S3 and already-cost-adjusted skip on largest S4; no override conditions met per policy (deep mass=0%, high must-ev/residuals in S2/S4 factored in, external-evidence only allowed).",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "scorer aggregate vote",
+    "budget-weighted section votes",
+    "must-ev in high-budget sections"
+  ],
+  "grok_risk_flags": [
+    "moderate confidence could undervalue S4 empirical gaps",
+    "residual depth in S2/S4"
+  ]
 }

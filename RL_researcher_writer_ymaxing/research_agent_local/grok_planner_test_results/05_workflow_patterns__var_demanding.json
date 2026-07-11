@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "required",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -27,9 +27,17 @@
     0.2558,
     0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is P1 light (63% mass, moderate confidence, 26% standard / 0% deep). External-evidence policy requires >=P1; P1->P2 escalation is hard-forbidden for any P1 pick. High residuals in S1/S2 (must-ev=7) and 42 unbacked anchors noted but do not override per DO-NOT-ESCALATE-ON-RAW-GAPS rule; vote mass already reflects this. All sections self-contained with dominant light vote keeps us at the RL peak.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "scorer_aggregate_P1",
+    "external_evidence_required",
+    "vote_mass_below_escalation_threshold",
+    "no_sanctioned_override"
+  ],
+  "grok_risk_flags": [
+    "S1/S2 residuals may still need targeted depth",
+    "moderate scorer confidence leaves small upside to standard"
+  ]
 }

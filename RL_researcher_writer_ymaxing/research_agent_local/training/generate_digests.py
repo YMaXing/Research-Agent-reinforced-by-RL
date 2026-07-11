@@ -47,7 +47,7 @@ import logging
 import math
 import re
 import sys
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -523,7 +523,17 @@ ARTICLE-WIDE FEATURE
                  fetch or cite outside web sources. This must be an overt
                  prohibition such as "do not use sources beyond the
                  provided list", "only reference the supplied materials",
-                 or "no external research allowed".
+                 or "no external research allowed" — OR the guideline's
+                 scope note explicitly frames the article as a low-effort /
+                 conceptual-overview treatment where depth, exhaustive
+                 coverage, or production code are explicitly stated as NOT
+                 required (e.g. "this article is a conceptual overview;
+                 surface-level treatment is expected and depth, exhaustive
+                 coverage, or production code are explicitly NOT required")
+                 — OR the article's entire stated scope is to summarize /
+                 survey a fixed, named set of provided sources (e.g. "a
+                 survey of the following N papers"), such that the golden
+                 sources structurally ARE the complete content requirement.
     "allowed"    guideline neither forbids nor requires outside evidence
                  (this is the default for most guidelines).
     "required"   guideline explicitly demands the writer cite external
@@ -582,27 +592,16 @@ def _empty_features(content_sections: list[tuple[int, str]]) -> dict[str, Any]:
     }
 
 
-async def extract_guideline_features(
+async def _extract_guideline_features_once(
     client,
     article_title: str,
     guideline: str,
     content_sections: list[tuple[int, str]],
-    dry_run: bool,
-) -> dict[str, Any]:
-    """
-    Single LLM call that parses the guideline into variant-agnostic numeric
-    signals. The LLM does not know which variant this is; differentiation
-    between minimal / standard / demanding arises solely from the guideline
-    text. Returns a sanitized dict; falls back to all-zeros on any error.
-    """
-    fallback = _empty_features(content_sections)
-    if dry_run or not content_sections:
-        return fallback
-
+) -> dict[str, Any] | None:
+    """Single LLM call. Returns a sanitized dict, or None on any failure."""
     section_listing = "\n".join(
         f"  {_make_section_id(n, t)}: {t}" for n, t in content_sections
     )
-
     try:
         response = await client.chat.completions.create(
             model=MODEL,
@@ -623,9 +622,9 @@ async def extract_guideline_features(
         )
         raw = response.choices[0].message.content.strip()
         parsed = json.loads(raw)
-    except Exception as e:
-        log.warning(f"    extract_guideline_features failed ({e}); using fallback.")
-        return fallback
+    except Exception as e:  # noqa: BLE001
+        log.warning(f"    extract_guideline_features attempt failed ({e}).")
+        return None
 
     policy = parsed.get("external_evidence_policy", "allowed")
     if policy not in ("forbidden", "allowed", "required"):
@@ -649,6 +648,66 @@ async def extract_guideline_features(
         }
 
     return {"external_evidence_policy": policy, "sections": sections_out}
+
+
+#: Number of independent extraction calls used to majority-vote the
+#: article-wide external_evidence_policy field. This field is a 3-way
+#: categorical decision with outsized downstream consequences (forbidden
+#: forces preset=skip deterministically), yet it is a genuinely semantic
+#: judgement — no regex/keyword rule reliably covers every guideline
+#: phrasing that implies it (confirmed 2026-07-11: one confirmed-forbidden
+#: article's trigger was a "conceptual overview / minimal effort" scope
+#: note, another's was an entirely different "survey of N named papers"
+#: framing — no shared textual pattern). Majority-of-3 is cheap (small,
+#: fast JSON-only calls) and directly targets the observed failure mode
+#: (an occasional single-draw flip), rather than trusting one draw.
+_POLICY_VOTE_ROUNDS = 3
+
+
+async def extract_guideline_features(
+    client,
+    article_title: str,
+    guideline: str,
+    content_sections: list[tuple[int, str]],
+    dry_run: bool,
+) -> dict[str, Any]:
+    """
+    Parses the guideline into variant-agnostic numeric signals. The LLM does
+    not know which variant this is; differentiation between minimal /
+    standard / demanding arises solely from the guideline text.
+
+    external_evidence_policy is majority-voted across _POLICY_VOTE_ROUNDS
+    independent calls (ties broken toward "allowed", matching the prompt's
+    own stated default) since it is a high-consequence categorical field
+    that a single temperature=0 draw does not reliably stabilize. Per-section
+    numeric features are taken from the first successful call only (lower
+    stakes; already stable under temperature=0, see 2026-07-11 noise study).
+
+    Falls back to all-zeros / "allowed" if every call fails.
+    """
+    fallback = _empty_features(content_sections)
+    if dry_run or not content_sections:
+        return fallback
+
+    results = await asyncio.gather(*[
+        _extract_guideline_features_once(client, article_title, guideline, content_sections)
+        for _ in range(_POLICY_VOTE_ROUNDS)
+    ])
+    successes = [r for r in results if r is not None]
+    if not successes:
+        log.warning("    extract_guideline_features: all attempts failed; using fallback.")
+        return fallback
+
+    votes = Counter(r["external_evidence_policy"] for r in successes)
+    top_count = max(votes.values())
+    tied = [p for p, c in votes.items() if c == top_count]
+    policy = "allowed" if "allowed" in tied else tied[0]
+    if len(votes) > 1:
+        log.info(f"    external_evidence_policy vote: {dict(votes)} -> {policy}")
+
+    out = dict(successes[0])
+    out["external_evidence_policy"] = policy
+    return out
 
 
 # ---------------------------------------------------------------------------

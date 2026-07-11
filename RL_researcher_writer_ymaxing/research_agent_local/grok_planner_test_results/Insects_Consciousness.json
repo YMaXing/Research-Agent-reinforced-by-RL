@@ -4,9 +4,9 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -27,9 +27,16 @@
     0.6112,
     0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate RL recommendation is P1 (weak/uncertain at 39% light, 68% budget-weighted standard mass); no sanctioned override applies (cannot escalate P1 to P2 per hard guard; downward to P0 blocked by >30% standard mass + non-zero residuals 8/3–8/5 and 22 unbacked anchors); self-contained + depth-dominant gaps support only cheap touch-up.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "RL pick P1 light",
+    "no qualifying override",
+    "residual/self-contained context"
+  ],
+  "grok_risk_flags": [
+    "68% standard vote mass may under-fill S2/S3 depth",
+    "high must-ev (4-6) could leave evidence gaps"
+  ]
 }

@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "required",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
@@ -27,9 +27,17 @@
     0.2634,
     0.2516
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate RL vote is P1 light (UNCERTAIN but no dominant arm, std/deep masses both <30%); external-evidence REQUIRED blocks P0 while hard guard blocks any P1->P2+; all sections self-contained with mostly low residuals (e.g. S5/S7/S8 at 0-1) already supply the needed evidence.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "RL aggregate vote",
+    "external-evidence REQUIRED",
+    "vote mass gates",
+    "self-contained + low residual"
+  ],
+  "grok_risk_flags": [
+    "Even vote split could undervalue S3/S4 depth needs",
+    "42 unbacked anchors but do not escalate on raw counts"
+  ]
 }

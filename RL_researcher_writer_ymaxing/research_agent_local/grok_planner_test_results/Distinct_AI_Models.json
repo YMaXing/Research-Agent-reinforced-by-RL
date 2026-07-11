@@ -4,9 +4,9 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 2,
-  "grok_preset": null,
+  "grok_preset": 2,
   "chosen_preset": 2,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -18,18 +18,25 @@
   "verdict": "NEAR",
   "regret": 0.17,
   "regret_counted": 0.17,
-  "entropy_bits": 0.6688,
-  "confidence": 0.8251,
+  "entropy_bits": 0.6726,
+  "confidence": 0.8258,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.0,
-    0.1749,
-    0.8251,
+    0.0006,
+    0.1736,
+    0.8258,
     0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is decisive at 83% for P2 standard (budget-weighted 82% standard, 0% deep mass). This aligns with dominant depth gaps, high residual need in S2/S4 (10+/5), 21 unbacked anchors, and must-ev counts, while all sections being self-contained is already factored into the cost-adjusted RL pick. No override triggers per policy (decisive vote, no 30% deep mass, not all high-budget sections brief-flagged).",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "decisive P2 vote mass",
+    "residual depth gaps + must-ev",
+    "no escalation guards met"
+  ],
+  "grok_risk_flags": [
+    "S3 light vote + brief flag could dilute depth round",
+    "self-contained flags might overstate existing coverage"
+  ]
 }

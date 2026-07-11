@@ -4,9 +4,9 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 2,
-  "grok_preset": null,
-  "chosen_preset": 2,
-  "chosen_by": "RL",
+  "grok_preset": 3,
+  "chosen_preset": 3,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -15,21 +15,28 @@
     0.526,
     0.568
   ],
-  "verdict": "NEAR",
-  "regret": 0.126,
-  "regret_counted": 0.126,
-  "entropy_bits": 1.3208,
-  "confidence": 0.5007,
+  "verdict": "MISS",
+  "regret": 0.084,
+  "regret_counted": 0.084,
+  "entropy_bits": 0.9908,
+  "confidence": 0.6277,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.0816,
-    0.0,
-    0.5007,
-    0.4177
+    0.0022,
+    0.0022,
+    0.6277,
+    0.368
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
-  "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_override": true,
+  "grok_reasoning": "P2 aggregate (63% moderate/uncertain) with deep-vote mass exactly 34% (>=30%) triggers sanctioned P2->P3 escalation per OVERRIDE POLICY; high residuals in S1 (10/8, 34% budget, deep vote) and S4 (11/4, 5 must-ev) plus 24 unbacked anchors and depth-dominant gaps confirm the reward peak is at P3, not P2.",
+  "grok_override_reason": "sanctioned P2->P3 escalation on uncertain vote + deep mass >=30%",
+  "grok_decision_drivers": [
+    "P2_to_P3_escalation_gate",
+    "deep_vote_mass_34pct",
+    "S1_S4_residuals"
+  ],
+  "grok_risk_flags": [
+    "diminishing returns on depth-heavy article",
+    "brief flags on S1/S3"
+  ]
 }

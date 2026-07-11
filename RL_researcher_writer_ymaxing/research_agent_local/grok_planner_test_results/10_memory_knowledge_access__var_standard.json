@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -27,9 +27,16 @@
     0.1553,
     0.1509
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate RL pick is P1 light (budget-weighted: light 44%, skip 26%, standard 15%, deep 15%); UNCERTAIN (entropy 1.86) but light is the clear dominant arm. No sanctioned upward escalation (pick is not P2 and deep-vote mass=15%<30%); general downward override does not apply because of the dominant light mass and because high-budget sections S1/S3/S4 still show large residual depth (18/0, 16/2, 14/0) plus must-ev counts. All sections self-contained and S5/S6/S7 already well-covered or brief-flagged; RL pick already cost-adjusted upstream.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "budget-weighted light-dominant vote mass",
+    "no P2->P3 or downward triggers met",
+    "residuals as context only"
+  ],
+  "grok_risk_flags": [
+    "S3 deep vote + high residual depth/must-ev may stay partly unaddressed",
+    "entropy spread could indicate edge-case under-coverage"
+  ]
 }

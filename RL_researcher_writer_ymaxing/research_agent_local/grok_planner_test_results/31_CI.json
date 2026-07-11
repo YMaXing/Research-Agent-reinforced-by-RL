@@ -4,9 +4,9 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -27,9 +27,16 @@
     0.0,
     0.1376
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Section-scorer aggregate is P1 light (already cost-adjusted); vote is uncertain (only 14% on top pick) with skip 73%, light 14%, deep 14%. Deep-vote mass 14% << 30% bars any sanctioned escalation; high-budget sections (S6 31%, S5 17%, S2 14%) retain notable residual d/b gaps (5/2, 6/2, 9/2) and must-ev counts so general downward override to P0 does not apply. All sections self-contained is contextual only and already baked into the RL pick.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "scorer-aggregate-P1",
+    "deep-mass-below-30",
+    "residuals-in-key-sections"
+  ],
+  "grok_risk_flags": [
+    "S2 deep vote + high must-ev may leave depth gaps",
+    "weak scorer confidence on uncertain article"
+  ]
 }

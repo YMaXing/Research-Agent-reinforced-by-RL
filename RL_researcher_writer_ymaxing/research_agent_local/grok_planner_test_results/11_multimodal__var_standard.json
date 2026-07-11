@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -27,9 +27,16 @@
     0.1405,
     0.0057
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate RL vote is P1 light (budget-weighted: light 64%, standard 15%, deep 0%); moderate confidence but no masses >=30% and no clear override triggers (S3/S7/S1 retain residual depth/must-ev despite many low-resid self-contained sections). Dominant gap is depth but already cost-adjusted; do not escalate on raw unbacked anchors.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "RL aggregate vote mass",
+    "deep/standard mass gates",
+    "residuals in high-budget sections"
+  ],
+  "grok_risk_flags": [
+    "S7/S3 gaps could need more depth than light supplies",
+    "moderate scorer confidence on non-training distribution"
+  ]
 }

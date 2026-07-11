@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -27,9 +27,16 @@
     0.1295,
     0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is P1 light (49% light / 38% skip / 13% standard / 0% deep); moderate confidence, light-dominant, standard- and deep-vote masses both <<30%. No sanctioned upward escalation from P1, no dominant-arm-free uncertainty for downward override to P0, and 100% self-contained flag plus per-section residuals (high in S1/S3, zero in largest S5/S4) already baked into the cost-adjusted RL pick. Dominant gap type balanced but strongest coverage in highest-budget sections (S5 cov 5·4, S4 cov 4·3) makes extra rounds low-value.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "scorer aggregate P1",
+    "low std/deep mass",
+    "high-budget residuals near zero"
+  ],
+  "grok_risk_flags": [
+    "S3 standard vote + residual 2/4 could leave prompt-construction gap",
+    "moderate scorer confidence on practice-heavy article"
+  ]
 }

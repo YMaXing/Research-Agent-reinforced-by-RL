@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 2,
-  "grok_preset": null,
-  "chosen_preset": 2,
-  "chosen_by": "RL",
+  "grok_preset": 3,
+  "chosen_preset": 3,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
@@ -15,9 +15,9 @@
     0.6285,
     0.6239
   ],
-  "verdict": "NEAR",
-  "regret": -0.0046,
-  "regret_counted": -0.0046,
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
   "entropy_bits": 1.9312,
   "confidence": 0.1811,
   "floor_applied": false,
@@ -27,9 +27,17 @@
     0.1811,
     0.3524
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
-  "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_override": true,
+  "grok_reasoning": "Aggregate RL pick is P2 standard but UNCERTAIN (entropy 1.93 bits). Deep-vote mass is 35% (>=30% threshold) while standard mass is only 18%; this exactly meets the sanctioned P2->P3 escalation for uncertain votes. Dominant gap type is depth, S4 (16% budget, resid 21/2, must-ev 9) and S2/S3 drive the deep signal, and 100% self-contained does not override per policy.",
+  "grok_override_reason": "Sanctioned upward P2->P3 escalation triggered by >=30% deep-vote mass on uncertain P2 pick",
+  "grok_decision_drivers": [
+    "uncertain_aggregate",
+    "deep_vote_mass_35pct",
+    "P2_to_P3_sanction",
+    "dominant_depth_gaps"
+  ],
+  "grok_risk_flags": [
+    "S3 brief flag + high must-ev may limit absorption",
+    "bimodal skip/deep votes (30%/35%) could indicate over-escalation"
+  ]
 }

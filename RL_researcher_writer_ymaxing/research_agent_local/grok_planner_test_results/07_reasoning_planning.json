@@ -4,9 +4,9 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
@@ -27,9 +27,13 @@
     0.315,
     0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Grok JSON parse failed; Deterministic fallback: section-scorer vote (light) adjusted for policy=allowed.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "rl_aggregate"
+  ],
+  "grok_risk_flags": [
+    "deterministic fallback — no LLM reasoning applied"
+  ]
 }

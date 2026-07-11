@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -27,9 +27,16 @@
     0.5385,
     0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate RL recommendation is P1 light (moderate confidence: 46% light / 54% standard mass). This is UNCERTAIN but no sanctioned override applies: cannot escalate P1 to P2 (hard guard), downward to P0 blocked by high residuals in S1(33), S2(38), S4(12), S7(9) plus standard-mass >30%. Self-contained flags and dominant depth gaps already factored into the cost-adjusted P1 pick.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "RL-aggregate-P1",
+    "no-sanctioned-override",
+    "high-residuals-in-key-sections"
+  ],
+  "grok_risk_flags": [
+    "close light/standard vote split may undervalue S3/S4/S7 practice depth",
+    "theory sections S1/S2 have largest residuals"
+  ]
 }

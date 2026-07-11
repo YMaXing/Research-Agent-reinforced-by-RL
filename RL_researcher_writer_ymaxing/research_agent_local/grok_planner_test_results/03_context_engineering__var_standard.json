@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
@@ -27,9 +27,16 @@
     0.0761,
     0.0666
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Aggregate RL pick is P1 light (58% light vote mass, only 8% standard / 7% deep); UNCERTAIN due to entropy but light is the clear dominant arm and both escalation gates sit far below 30%. 100% self-contained + no high-budget sections flagged brief, yet policy forbids any P1→P2 move and raw residuals/need_depth do not override the calibrated vote mass. No sanctioned downward trigger applies because light dominates.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "aggregate_vote_mass",
+    "low_std_deep_mass",
+    "self_contained_context"
+  ],
+  "grok_risk_flags": [
+    "high_residual_depth_in_S6_S7",
+    "uncertain_entropy"
+  ]
 }

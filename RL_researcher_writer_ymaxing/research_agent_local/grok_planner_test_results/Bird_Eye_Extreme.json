@@ -4,9 +4,9 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -18,18 +18,25 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.5741,
-  "confidence": 0.3898,
-  "floor_applied": false,
+  "entropy_bits": 0.8722,
+  "confidence": 0.7073,
+  "floor_applied": true,
   "rl_agg_probs": [
     0.0,
-    0.3898,
-    0.3174,
-    0.2928
+    0.7073,
+    0.0,
+    0.2927
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "DECISIVE P1-light aggregate (71% budget-weighted vote, 0% standard mass); deep mass=29% bars P2->P3 escalation and triggers depth-or-nothing guard against inferring P2; high residuals already baked into RL pick with all sections self-contained; no override criteria met.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "decisive_scorer_P1",
+    "deep_mass_below_30",
+    "self_contained_residual_context"
+  ],
+  "grok_risk_flags": [
+    "S3 deep vote + 7 must-ev could under-serve key transcriptomic evidence",
+    "dominant depth gaps might yield marginal returns even at light"
+  ]
 }

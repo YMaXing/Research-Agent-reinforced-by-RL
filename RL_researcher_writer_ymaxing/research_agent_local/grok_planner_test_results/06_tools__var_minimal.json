@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "forbidden",
   "rl_preset": 1,
-  "grok_preset": null,
-  "chosen_preset": 1,
-  "chosen_by": "RL",
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
@@ -15,8 +15,8 @@
     0.3558,
     0.3378
   ],
-  "verdict": "NEAR",
-  "regret": -0.0152,
+  "verdict": "EXACT",
+  "regret": 0.0,
   "regret_counted": null,
   "entropy_bits": 1.4407,
   "confidence": 0.3899,
@@ -27,9 +27,16 @@
     0.0,
     0.141
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
-  "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_override": true,
+  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0 skip because exploration output cannot be used. This is a hard constraint that overrides the uncertain P1 aggregate (skip 47%, light 39%). All 100% of budget is in self-contained sections flagged 'brief: yes'; guideline demands surface-level conceptual overview with no external libraries, case studies or production code.",
+  "grok_override_reason": "Hard constraint from forbidden external-evidence policy requires P0; also aligns with general downward override given universal self-contained + brevity flags",
+  "grok_decision_drivers": [
+    "external-evidence-forbidden",
+    "self-contained-flags",
+    "brevity-requirements"
+  ],
+  "grok_risk_flags": [
+    " scorer leaned light on heavy sections like S3/S4",
+    "residual depth gaps in code explanations"
+  ]
 }

@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "forbidden",
   "rl_preset": 1,
-  "grok_preset": null,
-  "chosen_preset": 1,
-  "chosen_by": "RL",
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
@@ -15,8 +15,8 @@
     0.4267,
     0.42
   ],
-  "verdict": "NEAR",
-  "regret": 0.0683,
+  "verdict": "EXACT",
+  "regret": 0.0,
   "regret_counted": null,
   "entropy_bits": 1.3443,
   "confidence": 0.0922,
@@ -27,9 +27,16 @@
     0.0206,
     0.2484
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
-  "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_override": true,
+  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN; hard constraint mandates P0 skip regardless of the section-scorer's P1-light recommendation (even though its soft-vote mass already leans 64% skip). All sections are self-contained with high brief flags and the guideline demands 100% theory with no external examples, libraries or benchmarks.",
+  "grok_override_reason": "Hard constraint from external-evidence policy=forbidden overrides RL pick",
+  "grok_decision_drivers": [
+    "external-evidence-forbidden",
+    "self-contained sections",
+    "brevity requirements"
+  ],
+  "grok_risk_flags": [
+    "scorer uncertainty",
+    "S4 deep vote mass"
+  ]
 }

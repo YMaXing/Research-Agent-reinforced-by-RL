@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": null,
+  "grok_preset": 1,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
@@ -27,9 +27,17 @@
     0.1667,
     0.2976
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is P1 light (UNCERTAIN, entropy 1.77 bits) with budget-weighted vote mass light 45%, standard 17%, deep exactly 30%. No sanctioned P2→P3 escalation applies (pick is not P2). General downward override to P0 does not trigger because deep mass reaches the 30% bar, S1/S2 (29% combined budget) retain high residual depth (6/0 and 3/2) plus must-ev, and light is the clear modal vote. 100% self-contained + many zero-residual high-budget sections already factored into the cost-adjusted RL pick.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "scorer aggregate P1 light",
+    "light vote mass dominant at 45%",
+    "deep-or-nothing guard on P1 pick",
+    "residuals concentrated in brief-flagged S1"
+  ],
+  "grok_risk_flags": [
+    "S1 residual depth 6/0 + brief flag may still leave fine-tuning/context-window evidence thin",
+    "30% deep mass could indicate underestimated need in S2/core components"
+  ]
 }

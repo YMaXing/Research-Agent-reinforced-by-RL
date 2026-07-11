@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "forbidden",
   "rl_preset": 1,
-  "grok_preset": null,
-  "chosen_preset": 1,
-  "chosen_by": "RL",
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
@@ -15,8 +15,8 @@
     0.4286,
     0.4353
   ],
-  "verdict": "NEAR",
-  "regret": 0.01,
+  "verdict": "EXACT",
+  "regret": 0.0,
   "regret_counted": null,
   "entropy_bits": 0.9911,
   "confidence": 0.5556,
@@ -27,9 +27,14 @@
     0.0,
     0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
-  "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_override": true,
+  "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN requires P0 skip (exploration output cannot be used). Scorer aggregate was P1 light (56% light / 44% skip, moderate confidence, all sections self-contained, many brief-flagged, low residuals in S3/S5/S7/S8), but policy overrides all votes and residual signals.",
+  "grok_override_reason": "external-evidence policy explicitly forbidden",
+  "grok_decision_drivers": [
+    "external-evidence-forbidden",
+    "hard-constraint"
+  ],
+  "grok_risk_flags": [
+    "scorer lean toward light ignored due to policy"
+  ]
 }

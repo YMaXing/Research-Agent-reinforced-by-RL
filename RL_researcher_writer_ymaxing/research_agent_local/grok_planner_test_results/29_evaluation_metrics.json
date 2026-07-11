@@ -4,9 +4,9 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 2,
-  "grok_preset": null,
+  "grok_preset": 2,
   "chosen_preset": 2,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -27,9 +27,16 @@
     0.6471,
     0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is P2 standard (65% budget-weighted standard mass, 0% deep mass); moderate but dominant signal with no sanctioned override. High-budget S2 (35%) is brief-flagged with depth_cov=6 yet resid_d=26 and dominant gap type is depth; S1/S3–S5 carry must-ev + orphans. This matches the already cost-adjusted RL pick for depth-first then breadth rounds without triggering downward (standard mass >30%) or P2→P3 (deep mass <30%).",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "scorer_aggregate_P2",
+    "standard_vote_mass_65pct",
+    "residual_depth_in_S2_S1"
+  ],
+  "grok_risk_flags": [
+    "moderate_confidence_65pct",
+    "brief_flag_on_largest_section"
+  ]
 }

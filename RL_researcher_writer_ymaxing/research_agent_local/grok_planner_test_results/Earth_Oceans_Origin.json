@@ -3,10 +3,10 @@
   "lesson": "Earth_Oceans_Origin",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 1,
-  "grok_preset": null,
-  "chosen_preset": 1,
-  "chosen_by": "RL",
+  "rl_preset": 3,
+  "grok_preset": 3,
+  "chosen_preset": 3,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
@@ -15,21 +15,28 @@
     0.7007,
     0.7253
   ],
-  "verdict": "MISS",
-  "regret": 0.1864,
-  "regret_counted": 0.1864,
-  "entropy_bits": 1.4699,
-  "confidence": 0.4232,
-  "floor_applied": true,
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.1363,
+  "confidence": 0.7196,
+  "floor_applied": false,
   "rl_agg_probs": [
-    0.1568,
-    0.4232,
-    0.4199,
-    0.0
+    0.1431,
+    0.1373,
+    0.0,
+    0.7196
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is decisive P3 (72% deep-vote mass, 0% standard) with S2/S3 (72% budget) both voting deep·1.00 and carrying residual depth gaps of 14/3 and 13/0 plus must-ev counts 8+5; dominant gap type is depth and unbacked anchors=27. DECISIVE vote plus high-budget sections not well-covered precludes sanctioned downward override; no P2->P3 escalation triggered.",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "decisive 72% deep scorer vote",
+    "S2/S3 residual depth + must-ev",
+    "dominant depth gaps"
+  ],
+  "grok_risk_flags": [
+    "brief flags on S2/S3 may limit absorption",
+    "diminishing returns past depth peak"
+  ]
 }

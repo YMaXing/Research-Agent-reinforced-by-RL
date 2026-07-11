@@ -4,9 +4,9 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 2,
-  "grok_preset": null,
+  "grok_preset": 2,
   "chosen_preset": 2,
-  "chosen_by": "RL",
+  "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
@@ -27,9 +27,16 @@
     0.58,
     0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is P2 (58% standard-vote mass, 42% skip, 0% deep); UNCERTAIN but no sanctioned override applies — deep mass 0% blocks P3, standard mass >30% blocks general downward despite self-contained flags and brief=yes on S2/S3. Dominant depth gaps, high residuals in S2–S5 (12/4, 9/1, 6/4), and must-ev/orphans align with the budget-weighted RL picks (three sections at standard).",
   "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_decision_drivers": [
+    "scorer aggregate P2 at 58%",
+    "standard-vote mass gate",
+    "residual depth in S2–S5"
+  ],
+  "grok_risk_flags": [
+    "moderate scorer confidence",
+    "brief flags on high-residual S2/S3 could limit absorption"
+  ]
 }

@@ -4,9 +4,9 @@
   "split": "TRAIN",
   "policy": "forbidden",
   "rl_preset": 1,
-  "grok_preset": null,
-  "chosen_preset": 1,
-  "chosen_by": "RL",
+  "grok_preset": 0,
+  "chosen_preset": 0,
+  "chosen_by": "Grok4.2",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
@@ -15,8 +15,8 @@
     0.3371,
     0.2914
   ],
-  "verdict": "NEAR",
-  "regret": -0.0489,
+  "verdict": "EXACT",
+  "regret": 0.0,
   "regret_counted": null,
   "entropy_bits": 1.0169,
   "confidence": 0.6261,
@@ -27,9 +27,16 @@
     0.0094,
     0.0
   ],
-  "grok_override": null,
-  "grok_reasoning": null,
-  "grok_override_reason": null,
-  "grok_decision_drivers": null,
-  "grok_risk_flags": null
+  "grok_override": true,
+  "grok_reasoning": "HARD CONSTRAINT: external-evidence policy is explicitly FORBIDDEN. Brief states exploration output cannot be used and only valid choice is skip. Scorer aggregate (P1 light, 63% mass on light) is overridden by this policy; all sections are self-contained with 'brief' flags and no external sources permitted per guideline.",
+  "grok_override_reason": "external-evidence policy = forbidden mandates P0 regardless of scorer vote or residual gaps",
+  "grok_decision_drivers": [
+    "external-evidence policy",
+    "self-contained flags",
+    "brevity requirements"
+  ],
+  "grok_risk_flags": [
+    "scorer lean toward light ignored due to policy",
+    "potential under-coverage on must-ev items in S1/S5/S6"
+  ]
 }
