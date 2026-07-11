@@ -3,34 +3,33 @@
   "lesson": "06_tools",
   "split": "TRAIN",
   "policy": "allowed",
-  "rl_preset": 0,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
-  "oracle_preset": 0,
-  "oracle_name": "skip",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
+  "oracle_preset": 3,
+  "oracle_name": "deep",
   "r_w_rewards": [
-    0.5598,
-    0.4525,
-    0.5707,
-    0.5184
+    0.5909,
+    0.4598,
+    0.6285,
+    0.6239
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 1.6098,
-  "confidence": 0.5864,
+  "verdict": "NEAR",
+  "regret": -0.0046,
+  "regret_counted": -0.0046,
+  "entropy_bits": 1.9312,
+  "confidence": 0.1811,
   "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL vote is P0 skip (59% mass) despite uncertainty (entropy 1.61). Standard mass=18% and deep mass=9% both <<30% escalation gate, so no sanctioned upward move per override policy. Largest section (S3, 26% budget) voted skip·1.00 with brief=yes (must stay short); do not escalate on raw must-ev/orphans counts.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "aggregate RL vote",
-    "escalation masses below 30%",
-    "S3 brief flag"
+  "rl_agg_probs": [
+    0.2967,
+    0.1699,
+    0.1811,
+    0.3524
   ],
-  "grok_risk_flags": [
-    "high must-ev in S3/S4 could leave unsourced claims",
-    "uncertain scorer on code-heavy article"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

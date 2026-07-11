@@ -3,34 +3,33 @@
   "lesson": "03_context_engineering",
   "split": "TRAIN",
   "policy": "forbidden",
-  "rl_preset": 0,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 1,
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
-    0.7625,
-    0.7783,
-    0.6314,
-    0.7269
+    0.5549,
+    0.5449,
+    0.4286,
+    0.4353
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "NEAR",
+  "regret": 0.01,
   "regret_counted": null,
-  "entropy_bits": 0.8967,
-  "confidence": 0.6908,
+  "entropy_bits": 0.9911,
+  "confidence": 0.5556,
   "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "HARD CONSTRAINT: external-evidence policy=FORBIDDEN explicitly requires P0 skip (exploration output cannot be used). Scorer aggregate is also P0 (69% skip, 72% budget-weighted skip mass); standard- and deep-vote masses are 0% so no sanctioned escalation applies. Every section is flagged 'brief: yes' and the guideline demands only surface-level conceptual treatment with no external examples or code.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "external-evidence-forbidden",
-    "scorer-P0",
-    "all-sections-brief"
+  "rl_agg_probs": [
+    0.4444,
+    0.5556,
+    0.0,
+    0.0
   ],
-  "grok_risk_flags": [
-    "moderate scorer confidence",
-    "many unbacked anchors but policy forbids using exploration to fill them"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

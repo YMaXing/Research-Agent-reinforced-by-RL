@@ -3,34 +3,33 @@
   "lesson": "Space-Time_QECC",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 0,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.462,
-    0.602,
-    0.5076,
-    0.5188
+    0.652,
+    0.526,
+    0.568
   ],
   "verdict": "NEAR",
-  "regret": 0.14,
-  "regret_counted": 0.14,
-  "entropy_bits": 0.6343,
-  "confidence": 0.84,
-  "floor_applied": true,
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL vote is decisive P0 skip at 84% budget-weighted mass (soft votes: skip 84%, deep 16%, light/standard 0%). Deep-vote mass from S2 (16% budget, high-need but only one section) sits below the 30% sanctioned-escalation gate; decisive vote forbids upward moves per override policy. Article-wide must-ev/unbacked anchors exist but instructions prohibit escalating on raw gap counts; external-evidence policy is only ALLOWED, not required.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "decisive P0 aggregate",
-    "deep-mass <30%",
-    "no escalation gate met"
+  "regret": 0.126,
+  "regret_counted": 0.126,
+  "entropy_bits": 1.3208,
+  "confidence": 0.5007,
+  "floor_applied": false,
+  "rl_agg_probs": [
+    0.0816,
+    0.0,
+    0.5007,
+    0.4177
   ],
-  "grok_risk_flags": [
-    "S2 zero coverage + deep vote",
-    "27 unbacked anchors"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

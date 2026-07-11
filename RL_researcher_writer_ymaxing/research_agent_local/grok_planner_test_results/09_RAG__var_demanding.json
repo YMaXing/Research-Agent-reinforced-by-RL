@@ -3,34 +3,33 @@
   "lesson": "09_RAG",
   "split": "TRAIN",
   "policy": "allowed",
-  "rl_preset": 3,
-  "grok_preset": 3,
-  "chosen_preset": 3,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 1,
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
-    0.3767,
-    0.5314,
-    0.3625,
-    0.5497
+    0.5167,
+    0.6519,
+    0.4467,
+    0.6438
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 1.3762,
-  "confidence": 0.5937,
+  "verdict": "MISS",
+  "regret": -0.0081,
+  "regret_counted": -0.0081,
+  "entropy_bits": 1.7676,
+  "confidence": 0.4524,
   "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P3 deep (59% soft / 64% budget-weighted deep mass); moderate but not decisive. Deep-vote mass >>30% bar while standard mass=17%<30% so no sanctioned escalation or P2-valley risk; dominant depth gaps (need_d 10/7/7 in S1/S2/S6), 32 unbacked anchors, 8 must-ev in S3, and guideline's repeated 'must cover in depth' for embeddings, chunking, metadata, agentic distinction, plus production examples all align with P3. No downward override as high-budget weakest sections (S1 15%, S2 14%) show low cov (4·4 / 4·2).",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer P3 + 64% deep mass",
-    "depth-dominant gaps + 32 orphans",
-    "must-ev counts across S1-S3/S6"
+  "rl_agg_probs": [
+    0.0833,
+    0.4524,
+    0.1667,
+    0.2976
   ],
-  "grok_risk_flags": [
-    "moderate scorer confidence on demanding variant",
-    "S4/S5 already cov 7+, possible diminishing returns"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

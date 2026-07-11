@@ -3,34 +3,33 @@
   "lesson": "08_react_practice",
   "split": "TRAIN",
   "policy": "allowed",
-  "rl_preset": 0,
-  "grok_preset": 1,
+  "rl_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.3892,
-    0.5431,
-    0.259,
-    0.3283
+    0.6148,
+    0.239,
+    0.3682
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 0.9997,
-  "confidence": 0.5108,
-  "floor_applied": false,
-  "grok_override": true,
-  "grok_reasoning": "Aggregate P0 (51% skip) is uncertain with 49% light runner-up from high-budget S4/S5 (both RL-pick light, 49% total mass). This triggers the exact sanctioned P0->P1 nudge (>=25% light, 0% standard/deep mass). Balanced gaps and must-ev already baked into per-section votes; S5 brief flag caps absorption.",
-  "grok_override_reason": "applied sanctioned P0->P1 nudge per policy (runner-up light mass 49% >=25%, no higher votes)",
-  "grok_decision_drivers": [
-    "budget-weighted vote mass",
-    "P0->P1 nudge eligibility",
-    "S4/S5 light picks"
+  "entropy_bits": 1.4169,
+  "confidence": 0.4892,
+  "floor_applied": true,
+  "rl_agg_probs": [
+    0.3813,
+    0.4892,
+    0.1295,
+    0.0
   ],
-  "grok_risk_flags": [
-    "S5 brief=yes may dilute light round value",
-    "close 51-49 split could still peak at P0"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

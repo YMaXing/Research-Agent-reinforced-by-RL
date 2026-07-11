@@ -3,34 +3,33 @@
   "lesson": "HNSW",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 0,
-  "grok_preset": 1,
+  "rl_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.4839,
-    0.7672,
-    0.5239,
-    0.5556
+    0.8753,
+    0.6018,
+    0.6643
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 0.996,
-  "confidence": 0.5373,
-  "floor_applied": false,
-  "grok_override": true,
-  "grok_reasoning": "Aggregate RL vote is P0 skip (54% mass, moderate confidence, not decisive). Budget-weighted section votes show 46% light (driven by S4's 46% share voting light·1.00 with must-ev=9, orphans=12, cov=4·3). Standard- and deep-vote masses are 0% so no sanctioned escalation to P2/P3; P0→P1 nudge applies directly (light runner-up ≥25%, no higher masses). This supplies cheap insurance for dominant depth gaps and 47 unbacked anchors without entering reward valley.",
-  "grok_override_reason": "Sanctioned P0→P1 nudge triggered by 46% light mass + uncertain scorer (no std/deep mass ≥30%)",
-  "grok_decision_drivers": [
-    "RL uncertainty + light mass",
-    "S4 must-ev/orphans",
-    "P0-to-P1 nudge policy"
+  "entropy_bits": 0.9649,
+  "confidence": 0.6098,
+  "floor_applied": true,
+  "rl_agg_probs": [
+    0.0,
+    0.6098,
+    0.3902,
+    0.0
   ],
-  "grok_risk_flags": [
-    "Existing cov already moderate (esp. S1/S3); light round could still duplicate material",
-    "Depth-dominant gaps in S2/S4 might need more but 0% std vote bars P2"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

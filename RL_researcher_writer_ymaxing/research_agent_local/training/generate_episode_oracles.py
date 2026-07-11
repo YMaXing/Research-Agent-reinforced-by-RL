@@ -216,22 +216,40 @@ def _section_reward(
     nr: int,
     variant: str,
 ) -> float:
-    """Compute section-level reward with variant-appropriate formula."""
-    if variant == "minimal":
-        gt_base     = 0.05 * cc + 0.05 * fl
-        explore     = cp * (0.60 * de + 0.40 * be) * 0.10
-        user_intent = 0.70 * ga + 0.10 * ra
-        cost        = -0.05 * nr
-    elif variant == "demanding":
-        gt_base     = 0.12 * cc + 0.08 * fl
-        explore     = cp * (0.55 * de + 0.35 * be) * 0.50
-        user_intent = (0.60 * ga + 0.40 * ra) * 0.25
-        cost        = -0.03 * nr
-    else:  # standard
-        gt_base     = 0.20 * cc + 0.20 * fl
-        explore     = cp * (0.60 * de + 0.40 * be) * 0.30
-        user_intent = (0.50 * ga + 0.50 * ra) * 0.30
-        cost        = -0.05 * nr
+    """Compute section-level reward with a UNIFIED formula (Formula "B").
+
+    Historically this branched on ``variant`` (minimal/standard/demanding)
+    with a 5x swing in explore-weight (0.10/0.30/0.50) and a cheaper
+    per-round cost for demanding (-0.03 vs -0.05). That branching was a
+    confound: build_rl_input strips the variant/policy tag from what the
+    section-level RL model actually sees, so GRPO's reward target changed
+    for a signal invisible to the model's input, teaching it to associate
+    escalation value with the ``demanding`` guideline fingerprint rather
+    than with genuine per-section gap signals (see reward-formula
+    deconfounding investigation, 2026-07-08).
+
+    Formula B (this one) removes the branch entirely and widens the
+    explore/cost coefficients relative to the old 'standard' branch:
+      - Section-level: nearly triples var_minimal's genuine standard/deep
+        share (7%->18%) without hurting var_demanding (49%->46%).
+      - Near-tie rate (arms within 0.06 of the best) drops 56%->41%,
+        approaching the ~37% floor set by grading-resolution (cost-only
+        ties where the top-2 arms have identical binary grades and differ
+        only by the deterministic cost term -- unfixable by any formula).
+      - GRPO's actual training signal (normalized advantage =
+        regret/max(std, sigma_floor)) is UNCHANGED overall (1.23->1.29) and
+        IMPROVES for the standard/deep classes specifically (1.22->1.31).
+      - Article-level oracle labels barely move: 1/40 flips across the full
+        train+test corpus (an escalation, not a loss), vs. 3/24 flips and a
+        halved P3 count under the plain-'standard'-for-all alternative.
+
+    ``variant`` is accepted for call-site compatibility (process_article_variant
+    still passes it) but is no longer used to select a formula branch.
+    """
+    gt_base     = 0.20 * cc + 0.20 * fl
+    explore     = cp * (0.60 * de + 0.40 * be) * 0.50
+    user_intent = (0.50 * ga + 0.50 * ra) * 0.30
+    cost        = -0.06 * nr
     return gt_base + explore + user_intent + cost
 
 

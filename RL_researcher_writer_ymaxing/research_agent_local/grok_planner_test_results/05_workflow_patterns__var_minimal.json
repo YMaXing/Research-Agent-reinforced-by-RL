@@ -4,32 +4,32 @@
   "split": "TRAIN",
   "policy": "forbidden",
   "rl_preset": 1,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
-    0.872,
-    0.8408,
-    0.796,
-    0.746
+    0.588,
+    0.644,
+    0.588,
+    0.52
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "NEAR",
+  "regret": -0.056,
   "regret_counted": null,
-  "entropy_bits": 0.9912,
-  "confidence": 0.5552,
-  "floor_applied": false,
-  "grok_override": true,
-  "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN mandates P0 skip (exploration output cannot be used). Scorer aggregate is moderate P1 (56% light, 44% skip; 0% standard/deep) but OVERRIDE POLICY and HARD CONSTRAINTS require ignoring it. All sections flagged 'brief', guideline demands surface-level conceptual overview with no external libs/cases/benchmarks.",
-  "grok_override_reason": "external-evidence policy explicitly FORBIDDEN, forcing P0 regardless of scorer or gap counts",
-  "grok_decision_drivers": [
-    "hard-constraint-forbidden",
-    "all-sections-brief",
-    "0% std/deep mass"
+  "entropy_bits": 1.4619,
+  "confidence": 0.36,
+  "floor_applied": true,
+  "rl_agg_probs": [
+    0.48,
+    0.36,
+    0.0,
+    0.16
   ],
-  "grok_risk_flags": [
-    "many unbacked anchors (52) and must-ev items cannot be filled"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

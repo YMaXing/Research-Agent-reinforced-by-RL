@@ -1,0 +1,79 @@
+{
+  "version": 2,
+  "article": "04_structured_outputs",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.45,
+        "standard": 0.4,
+        "deep": 0.53
+      }
+    },
+    "S2::section-2-understanding-why-structured-outputs-are-critical": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.5,
+        "standard": 0.75,
+        "deep": 0.58
+      }
+    },
+    "S3::section-3-implementing-structured-outputs-from-scratch-using-json": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.83,
+        "standard": 0.78,
+        "deep": 0.55
+      }
+    },
+    "S4::section-4-implementing-structured-outputs-from-scratch-using-pydantic": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.68,
+        "standard": 0.63,
+        "deep": 0.73
+      }
+    },
+    "S5::section-5-implementing-structured-outputs-using-gemini-and-pydantic": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.68,
+        "standard": 0.63,
+        "deep": 0.58
+      }
+    },
+    "S6::section-6-conclusion-structured-outputs-are-everywhere": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.65,
+        "standard": 0.78,
+        "deep": 0.73
+      }
+    },
+    "S7::lesson-code": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.0,
+        "light": -0.05,
+        "standard": -0.1,
+        "deep": -0.15
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "deep",
+    "S2::section-2-understanding-why-structured-outputs-are-critical": "standard",
+    "S3::section-3-implementing-structured-outputs-from-scratch-using-json": "light",
+    "S4::section-4-implementing-structured-outputs-from-scratch-using-pydantic": "deep",
+    "S5::section-5-implementing-structured-outputs-using-gemini-and-pydantic": "skip",
+    "S6::section-6-conclusion-structured-outputs-are-everywhere": "standard",
+    "S7::lesson-code": "skip"
+  }
+}

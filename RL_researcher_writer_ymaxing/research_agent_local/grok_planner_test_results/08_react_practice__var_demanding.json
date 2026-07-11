@@ -4,35 +4,32 @@
   "split": "TRAIN",
   "policy": "required",
   "rl_preset": 2,
-  "grok_preset": 2,
+  "grok_preset": null,
   "chosen_preset": 2,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
-    0.4094,
-    0.4042,
-    0.5843,
-    0.4348
+    0.5954,
+    0.5538,
+    0.7375,
+    0.5533
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.3509,
-  "confidence": 0.4598,
+  "entropy_bits": 1.4483,
+  "confidence": 0.5049,
   "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P2 standard (46% standard-vote mass >30% gate) on an UNCERTAIN but non-decisive vote (46% top-pick, 45% skip). Largest-budget section S5 (28%) and S4 (18%) both vote standard with high need_depth (22/13); external-evidence policy forbids P0 and dominant gap type is depth. No sanctioned upward move (deep mass=0%) and no downward override trigger (standard mass dominant, not all high-budget sections brief-flagged).",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer_aggregate_P2",
-    "standard_vote_mass_46pct",
-    "S5_28pct_standard_need_depth_22",
-    "required_external_evidence"
+  "rl_agg_probs": [
+    0.3362,
+    0.159,
+    0.5049,
+    0.0
   ],
-  "grok_risk_flags": [
-    "near-tie skip_vote_45pct",
-    "brief_yes_on_largest_S5",
-    "many_unbacked_anchors_42"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

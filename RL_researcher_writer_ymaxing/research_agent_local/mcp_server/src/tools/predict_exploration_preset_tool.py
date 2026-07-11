@@ -70,6 +70,7 @@ from typing import Any, Dict
 from ..config.settings import settings
 from ..app.preset_infer_handler import (
     PRESET_NAMES,
+    apply_cost_sensitive_rule,
     call_infer_server,
     entropy,
     guidance,
@@ -194,7 +195,12 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
           status               – "success" or "error"
           digest_generated     – True if the digest was generated on-the-fly
           rl_recommendation    – aggregate preset (0–3), name, confidence, entropy_bits,
-                                 floor_correction_applied. None when grok_only=True.
+                                 floor_correction_applied, agg_probs (the full 4-vector
+                                 [P0,P1,P2,P3] aggregate probability distribution, for
+                                 offline decision-rule analysis), raw_argmax_preset (the
+                                 preset before the cost-sensitive rule adjustment),
+                                 cost_rule_adjusted (True if the rule moved the pick
+                                 away from raw argmax). None when grok_only=True.
           section_signals      – per-section list of preset, name, top2 probs.
                                  Empty list when grok_only=True.
           guidance             – one-sentence synthesis from the RL stage.
@@ -305,11 +311,26 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
         logger.exception("RL inference failed")
         return {"status": "error", "message": f"RL inference failed: {exc}"}
 
+    # Cost-sensitive decision rule: adjusts the raw argmax using the empirical
+    # reward-asymmetry cost matrix (fit from train-set oracles), restricted to
+    # a 1-level move. Supersedes plain argmax as the pipeline's RL recommendation
+    # — see preset_infer_handler.apply_cost_sensitive_rule docstring for the
+    # backtest that validated this (TEST exact 7->10, regret -51%, 0 new misses).
+    raw_argmax_preset = preset
+    preset = apply_cost_sensitive_rule(preset, agg_probs)
+    cost_rule_adjusted = preset != raw_argmax_preset
+
     confidence = round(agg_probs[preset], 4)
     h = round(entropy(agg_probs), 4)
     section_floor = max((d["chosen"] for d in section_details), default=preset)
     floor_applied = preset <= 1 and section_floor >= 2 and h <= 1.5
     guidance_str = guidance(preset, confidence, h, floor_applied)
+    if cost_rule_adjusted:
+        guidance_str += (
+            f" Cost-sensitive rule adjusted the raw vote P{raw_argmax_preset} -> "
+            f"P{preset} (reward asymmetry: a miss in this direction is costlier "
+            f"than the alternative at this boundary)."
+        )
 
     # Build the structured, leakage-free evidence packet (Stage 1 → Stage 2).
     evidence = build_article_evidence(digest, preset, agg_probs, section_details)
@@ -363,6 +384,9 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
             "confidence": confidence,
             "entropy_bits": h,
             "floor_correction_applied": floor_applied,
+            "agg_probs": [round(float(p), 4) for p in agg_probs],
+            "raw_argmax_preset": raw_argmax_preset,
+            "cost_rule_adjusted": cost_rule_adjusted,
         },
         "section_signals": section_signals,
         "guidance": guidance_str,

@@ -4,34 +4,32 @@
   "split": "TRAIN",
   "policy": "required",
   "rl_preset": 2,
-  "grok_preset": 3,
-  "chosen_preset": 3,
-  "chosen_by": "Grok4.2",
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
-    0.4383,
-    0.5775,
-    0.6064,
-    0.6104
+    0.6767,
+    0.7854,
+    0.8025,
+    0.7883
   ],
-  "verdict": "NEAR",
-  "regret": -0.004,
-  "regret_counted": -0.004,
-  "entropy_bits": 1.1036,
-  "confidence": 0.6313,
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.2667,
+  "confidence": 0.6583,
   "floor_applied": false,
-  "grok_override": true,
-  "grok_reasoning": "Scorer aggregate is P2 standard (63% standard / 34% deep mass; MODERATE confidence, not decisive). Budget-weighted votes show 64% standard + 33% deep; deep mass >=30% from S4 (18%, deep·1.00, 4 must-ev) and S5 (15%, deep·1.00, 6 must-ev) triggers sanctioned P2->P3 escalation per override policy. 38 unbacked anchors, dominant depth gaps, high must-ev in large sections (S2/S3/S4/S5), and REQUIRED external-evidence policy confirm need for extra depth round.",
-  "grok_override_reason": "Sanctioned upward escalation from P2 to P3 because vote uncertain and deep-vote mass (33%) clears 30% threshold on heavy technical sections",
-  "grok_decision_drivers": [
-    "budget-weighted deep mass 33%",
-    "high must-ev in S4/S5 (4-6)",
-    "38 unbacked anchors",
-    "REQUIRED evidence policy"
+  "rl_agg_probs": [
+    0.1833,
+    0.1583,
+    0.6583,
+    0.0
   ],
-  "grok_risk_flags": [
-    "possible diminishing returns on already-strong S3/S5 coverage",
-    "guideline length could inflate perceived gaps"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

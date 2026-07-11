@@ -3,34 +3,33 @@
   "lesson": "Insects_Consciousness",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 0,
-  "grok_preset": 1,
+  "rl_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.5434,
-    0.8553,
-    0.5461,
-    0.7229
+    0.9821,
+    0.6629,
+    0.8318
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 0.9,
-  "confidence": 0.684,
-  "floor_applied": false,
-  "grok_override": true,
-  "grok_reasoning": "Scorer aggregate is P0 skip (68% mass, 32% light) and is UNCERTAIN (moderate confidence <70%). Budget-weighted votes show exactly the P0->P1 nudge conditions: light mass 32% (>=25%), standard-mass 0% and deep-mass 0% (both <30%). Per-section table shows consistent must-ev (4-6 per section), 22 article-wide unbacked anchors, and dominant depth gaps even in high-budget S2/S3 despite their skip votes; P1 supplies cheap insurance without crossing into the P2 valley.",
-  "grok_override_reason": "applied sanctioned P0->P1 nudge per policy (light runner-up >=25% with no higher-preset mass)",
-  "grok_decision_drivers": [
-    "P0->P1 nudge",
-    "light-vote mass 32%",
-    "must-ev + orphan counts"
+  "entropy_bits": 0.964,
+  "confidence": 0.3888,
+  "floor_applied": true,
+  "rl_agg_probs": [
+    0.0,
+    0.3888,
+    0.6112,
+    0.0
   ],
-  "grok_risk_flags": [
-    "existing golden sources may already cover many must-ev",
-    "could be marginal gain if cov d·b already meets minimal guideline"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

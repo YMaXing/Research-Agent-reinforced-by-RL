@@ -3,35 +3,33 @@
   "lesson": "07_reasoning_planning",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 0,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 1,
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
     0.2886,
-    0.2008,
-    0.1839,
-    0.1268
+    0.1908,
+    0.1639,
+    0.0968
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 1.4413,
-  "confidence": 0.5505,
+  "verdict": "NEAR",
+  "regret": 0.0978,
+  "regret_counted": 0.0978,
+  "entropy_bits": 1.2515,
+  "confidence": 0.6062,
   "floor_applied": true,
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL vote is P0 (55% skip, moderate confidence, not decisive). Budget-weighted section mass is skip 55% / light 21% / standard 0% / deep 24%; standard mass <<30% and deep mass <30% so no sanctioned escalation applies and the deep-or-nothing guard instructs staying put rather than entering the P2 valley. Light mass 21% falls short of the >=25% threshold for a P0->P1 nudge. Raw gaps (42 unbacked anchors, must-ev in S1/S4/S5/S8, low cov in S1/S4) are ignored per instructions; level is set solely by calibrated vote mass.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer_aggregate_P0",
-    "vote_mass_below_escalation_gates",
-    "no_P0->P1_nudge"
+  "rl_agg_probs": [
+    0.0787,
+    0.6062,
+    0.315,
+    0.0
   ],
-  "grok_risk_flags": [
-    "S7_24pct_budget_votes_deep",
-    "S4_14pct_light_with_3_must_ev_8_orphans",
-    "moderate_not_decisive_confidence"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

@@ -3,34 +3,33 @@
   "lesson": "Understanding_Reasoning_LLMs",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 0,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
     0.4603,
-    0.5987,
-    0.6078,
-    0.527
+    0.6608,
+    0.6879,
+    0.581
   ],
-  "verdict": "MISS",
-  "regret": 0.1475,
-  "regret_counted": 0.1475,
-  "entropy_bits": 0.4071,
-  "confidence": 0.9186,
-  "floor_applied": true,
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL vote is P0 skip at 92% (DECISIVE, entropy near-zero). Budget-weighted mass is 92% skip / 8% deep (S6 only); standard-mass=0% and deep-mass=8% both <<30% escalation gate. No P0→P1 nudge (light mass=0%). High must-ev/unbacked counts and zero coverage scores exist but instructions forbid escalating on raw gaps when scorer is decisive; external-evidence policy only ALLOWS, does not require.",
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.2609,
+  "confidence": 0.4884,
+  "floor_applied": false,
+  "rl_agg_probs": [
+    0.0,
+    0.0581,
+    0.4884,
+    0.4535
+  ],
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "decisive_scorer_aggregate",
-    "low_preset_specific_vote_mass",
-    "no_sanctioned_escalation"
-  ],
-  "grok_risk_flags": [
-    "S5 (45% budget) and S7 show 8/5 must-ev yet scorer still picked skip",
-    "all sections at cov 0·0 after exploitation pass"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

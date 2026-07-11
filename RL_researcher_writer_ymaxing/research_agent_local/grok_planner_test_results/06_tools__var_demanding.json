@@ -3,35 +3,33 @@
   "lesson": "06_tools",
   "split": "TRAIN",
   "policy": "required",
-  "rl_preset": 3,
-  "grok_preset": 3,
-  "chosen_preset": 3,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 1,
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
-    0.3794,
-    0.4551,
-    0.4288,
-    0.4949
+    0.5694,
+    0.5915,
+    0.5635,
+    0.609
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 1.9158,
-  "confidence": 0.3829,
+  "verdict": "MISS",
+  "regret": 0.0176,
+  "regret_counted": 0.0176,
+  "entropy_bits": 1.9965,
+  "confidence": 0.2634,
   "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL pick is P3 deep (38% deep-vote mass) on an uncertain scorer (entropy 1.92). Deep mass clears the 30% bar while standard mass (26%) does not; high-budget sections S3 (24%, deep·1.00, need_depth 8) and S8 (11%, deep·1.00, must-ev=4, cov 5·4) drive the peak. External-evidence=REQUIRED and depth-dominant article gaps (42 unbacked anchors) align with P3; no sanctioned downward override applies as deep mass dominates and several sections remain under-covered on must-ev items.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "P3 aggregate on uncertain scorer",
-    "38% deep-vote mass from S3+S8",
-    "must-ev=4 in S8 and depth-dominant gaps",
-    "REQUIRED external-evidence policy"
+  "rl_agg_probs": [
+    0.2215,
+    0.2634,
+    0.2634,
+    0.2516
   ],
-  "grok_risk_flags": [
-    "scorer entropy >1.5 could over-weight S3/S8 at expense of well-covered S5/S7",
-    "diminishing returns on already cov-7 sections if depth rounds add duplicates"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

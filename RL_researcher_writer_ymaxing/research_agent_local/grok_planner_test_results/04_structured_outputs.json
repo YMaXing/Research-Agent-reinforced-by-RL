@@ -3,34 +3,33 @@
   "lesson": "04_structured_outputs",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 1,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
     0.6067,
-    0.6687,
-    0.6707,
-    0.6407
+    0.7467,
+    0.7733,
+    0.7067
   ],
-  "verdict": "NEAR",
-  "regret": 0.002,
-  "regret_counted": 0.002,
-  "entropy_bits": 0.9968,
-  "confidence": 0.533,
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.2427,
+  "confidence": 0.6664,
   "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Aggregate scorer vote is P1 light (53% light / 47% skip, MODERATE confidence); budget-weighted section votes identically 53% light with 0% standard and 0% deep, so both escalation gates (≥30%) are closed. Largest-budget section (S4 40%) voted light while high-must-ev sections (S3/S4 total 33 must-ev) already pulled the RL pick upward from pure skip; no brief-flagged or well-covered majority justifies downward override to P0.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer_aggregate",
-    "budget_vote_mass",
-    "zero_escalation_mass"
+  "rl_agg_probs": [
+    0.1337,
+    0.0,
+    0.6664,
+    0.1999
   ],
-  "grok_risk_flags": [
-    "moderate (not decisive) confidence",
-    "high must-ev in S3/S4 could still be under-covered"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

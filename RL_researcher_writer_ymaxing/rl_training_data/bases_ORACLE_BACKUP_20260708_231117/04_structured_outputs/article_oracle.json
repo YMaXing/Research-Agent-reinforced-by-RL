@@ -1,0 +1,189 @@
+{
+  "version": 2,
+  "article": "04_structured_outputs",
+  "variant": "no_variant",
+  "computed_at": "2026-06-19T01:24:27.637637+00:00",
+  "oracle_arm": "standard",
+  "oracle_arm_idx": 2,
+  "runner_up_arm": "light",
+  "runner_up_arm_idx": 1,
+  "margin": 0.002,
+  "reward_spread": 0.064,
+  "r_w_rewards": {
+    "skip": 0.606667,
+    "light": 0.668667,
+    "standard": 0.670667,
+    "deep": 0.640667
+  },
+  "r_w_rewards_list": [
+    0.606667,
+    0.668667,
+    0.670667,
+    0.640667
+  ],
+  "decision_path": [
+    "near-tie band=['light', 'standard'] R_w=[light:0.6687, standard:0.6707]",
+    "active signals: [S4(\u0394\u22650.05), S3(\u0394\u22650.1)]  winner=standard  S4={light:0.878, standard:0.961}  S5={light:0.983, standard:0.979}"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 7,
+  "n_sections_with_target": 7,
+  "total_target_words": 2250,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.06667,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.45,
+        "standard": 0.4,
+        "deep": 0.53
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.45,
+        0.4,
+        0.53
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-understanding-why-structured-outputs-are-critical",
+      "title": "understanding why structured outputs are critical",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.13333,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.5,
+        "standard": 0.75,
+        "deep": 0.58
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.5,
+        0.75,
+        0.58
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-implementing-structured-outputs-from-scratch-using-json",
+      "title": "implementing structured outputs from scratch using json",
+      "target_words": 450,
+      "weight_words": 450,
+      "weight_frac": 0.2,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.83,
+        "standard": 0.78,
+        "deep": 0.55
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.83,
+        0.78,
+        0.55
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-implementing-structured-outputs-from-scratch-using-pydantic",
+      "title": "implementing structured outputs from scratch using pydantic",
+      "target_words": 900,
+      "weight_words": 900,
+      "weight_frac": 0.4,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.68,
+        "standard": 0.63,
+        "deep": 0.73
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.68,
+        0.63,
+        0.73
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-implementing-structured-outputs-using-gemini-and-pydantic",
+      "title": "implementing structured outputs using gemini and pydantic",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.13333,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.68,
+        "standard": 0.63,
+        "deep": 0.58
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.68,
+        0.63,
+        0.58
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-conclusion-structured-outputs-are-everywhere",
+      "title": "conclusion structured outputs are everywhere",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.06667,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.65,
+        "standard": 0.78,
+        "deep": 0.73
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.65,
+        0.78,
+        0.73
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::lesson-code",
+      "title": "S7::lesson-code",
+      "target_words": 0,
+      "weight_words": 0,
+      "weight_frac": 0.0,
+      "rewards": {
+        "skip": 0.0,
+        "light": -0.05,
+        "standard": -0.1,
+        "deep": -0.15
+      },
+      "rewards_by_preset": [
+        0.0,
+        -0.05,
+        -0.1,
+        -0.15
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    }
+  ]
+}

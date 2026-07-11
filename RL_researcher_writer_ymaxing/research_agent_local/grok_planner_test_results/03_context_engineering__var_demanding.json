@@ -4,33 +4,32 @@
   "split": "TRAIN",
   "policy": "required",
   "rl_preset": 1,
-  "grok_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
-    0.4295,
-    0.5055,
-    0.477,
-    0.4368
+    0.6184,
+    0.6747,
+    0.6166,
+    0.5247
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.1811,
-  "confidence": 0.6766,
-  "floor_applied": true,
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL vote P1 light (68% mass, standard mass only 23%); escalation gate requires standard-vote mass >=30% when uncertain, which is not met; external-evidence=REQUIRED forbids P0 while high must-ev/depth gaps (esp. S6 11, S4 6) were already factored into the budget-weighted scorer votes.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer_aggregate",
-    "vote_mass_below_30pct",
-    "external_policy_floor"
+  "entropy_bits": 1.5684,
+  "confidence": 0.365,
+  "floor_applied": false,
+  "rl_agg_probs": [
+    0.3716,
+    0.365,
+    0.2634,
+    0.0
   ],
-  "grok_risk_flags": [
-    "moderate (68%) confidence",
-    "S3/S8 standard votes totaling 23%"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

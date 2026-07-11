@@ -4,33 +4,32 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.6854,
-    0.6666,
-    0.4056,
-    0.6013
+    0.7036,
+    0.4276,
+    0.6151
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.2765,
-  "confidence": 0.4836,
+  "entropy_bits": 1.2563,
+  "confidence": 0.6805,
   "floor_applied": true,
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL vote is P1 light (budget-weighted: light 55%, skip 39%, standard 0%, deep 6%); moderate confidence, not decisive. Escalation gates unmet (standard-mass 0% <<30%, deep-mass 6% <<30%), no sanctioned upward move; downward override also fails as high-budget sections (S3 23% skip cov 5·5, S5 15% light cov 8·5) mix well-covered with depth gaps in S1/S7 and 11 must-ev bullets. Dominant gap=depth but raw counts do not override the calibrated vote peak at P1.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "budget-weighted vote mass",
-    "escalation gates unmet",
-    "high-budget section coverage"
+  "rl_agg_probs": [
+    0.1733,
+    0.6805,
+    0.1405,
+    0.0057
   ],
-  "grok_risk_flags": [
-    "S1 deep vote (6% budget) may leave intro gaps",
-    "11 must-ev items could need more than light touch-up"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

@@ -4,33 +4,32 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.6292,
-    0.794,
-    0.7335,
-    0.51
+    0.9497,
+    0.8553,
+    0.5642
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.3513,
-  "confidence": 0.5849,
+  "entropy_bits": 1.2929,
+  "confidence": 0.6404,
   "floor_applied": true,
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL pick is P1 light at 58% budget-weighted mass (MODERATE confidence). Standard-vote mass=29% falls short of the 30% gate for sanctioned escalation to P2; deep mass=13% is far below. High-budget S5 (light vote, cov 8·6) plus brief flags on S1/S4 lock in the peak without override.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "RL aggregate vote",
-    "standard-mass <30% gate",
-    "high-budget section alignment"
+  "rl_agg_probs": [
+    0.0,
+    0.6404,
+    0.2132,
+    0.1464
   ],
-  "grok_risk_flags": [
-    "S2/S3 depth gaps could be understated if guideline examples require fresher 2025 sources",
-    "moderate scorer confidence on hybrid-spectrum article"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

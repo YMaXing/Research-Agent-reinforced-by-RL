@@ -4,34 +4,32 @@
   "split": "TRAIN",
   "policy": "required",
   "rl_preset": 2,
-  "grok_preset": 2,
+  "grok_preset": null,
   "chosen_preset": 2,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
-    0.3478,
-    0.5424,
-    0.5895,
-    0.5482
+    0.5122,
+    0.7226,
+    0.7521,
+    0.7113
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 0.6932,
+  "entropy_bits": 0.6931,
   "confidence": 0.814,
   "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "The GRPO-trained section-scorer's aggregate is decisively P2 standard (81% budget-weighted mass on standard, 19% on deep). This already incorporates the per-section need_depth (3-7), must-ev counts (2-5), unbacked anchors (28 total), and dominant depth-gap economics; S6's lone deep vote (19% budget) falls below the 30% sanctioned-escalation gate for P3. External-evidence policy is REQUIRED but satisfied by P2; no brief flags or high-coverage sections justify a downward override.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "decisive_scorer_81pct_standard",
-    "standard_vote_mass_81pct",
-    "deep_vote_mass_below_30pct",
-    "required_external_evidence_met"
+  "rl_agg_probs": [
+    0.0,
+    0.186,
+    0.814,
+    0.0
   ],
-  "grok_risk_flags": [
-    "S6 (19% budget) and S1/S7 weakest sections show elevated need_depth",
-    "guideline demands many named production examples and one failure-mode case study"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

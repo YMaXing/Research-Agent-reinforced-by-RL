@@ -3,33 +3,33 @@
   "lesson": "10_memory_knowledge_access",
   "split": "TRAIN",
   "policy": "forbidden",
-  "rl_preset": 0,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 1,
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
-    0.6893,
-    0.64,
-    0.6446,
-    0.5982
+    0.425,
+    0.4739,
+    0.3371,
+    0.2914
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "NEAR",
+  "regret": -0.0489,
   "regret_counted": null,
-  "entropy_bits": 0.8631,
-  "confidence": 0.7143,
+  "entropy_bits": 1.0169,
+  "confidence": 0.6261,
   "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN explicitly requires P0 skip (exploration output cannot be used). Scorer aggregate is decisive P0 at 71% budget-weighted mass (standard=0%, deep=0%); every section is brief-flagged and already meets cov≥6.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "forbidden-evidence-policy",
-    "decisive-P0-vote",
-    "all-sections-brief"
+  "rl_agg_probs": [
+    0.3646,
+    0.6261,
+    0.0094,
+    0.0
   ],
-  "grok_risk_flags": [
-    "none"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

@@ -3,34 +3,33 @@
   "lesson": "Distinct_AI_Models",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 0,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.625,
-    0.7917,
-    0.6398,
-    0.7135
+    0.8988,
+    0.7288,
+    0.7925
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 0.971,
-  "confidence": 0.6,
+  "verdict": "NEAR",
+  "regret": 0.17,
+  "regret_counted": 0.17,
+  "entropy_bits": 0.6688,
+  "confidence": 0.8251,
   "floor_applied": false,
-  "grok_override": true,
-  "grok_reasoning": "Section-scorer aggregate is P0 skip (60% mass, 40% light runner-up) but only moderate confidence and therefore uncertain. Budget-weighted section votes exactly track this split (S1+S2 60% skip; S3+S4 40% light), with zero standard or deep mass, so no sanctioned escalation to P2. Sanctioned P0→P1 nudge applies directly (light mass ≥25%, higher-preset masses <30%). Decisive signals are the 30 unbacked anchors + must-ev counts (3–4 per section) plus dominant depth gaps that the light sections themselves voted to address.",
-  "grok_override_reason": "Sanctioned P0→P1 nudge triggered by substantial light mass (>=25%) and absence of standard/deep votes",
-  "grok_decision_drivers": [
-    "scorer uncertainty + 40% light mass",
-    "sanctioned P0-to-P1 nudge",
-    "must-ev and orphan counts"
+  "rl_agg_probs": [
+    0.0,
+    0.1749,
+    0.8251,
+    0.0
   ],
-  "grok_risk_flags": [
-    "brief=yes flags on S1/S3 could limit absorption of new evidence",
-    "possible overlap with already-provided golden sources"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

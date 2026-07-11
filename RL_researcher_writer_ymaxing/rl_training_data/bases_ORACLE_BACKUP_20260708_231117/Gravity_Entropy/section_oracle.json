@@ -1,0 +1,59 @@
+{
+  "version": 2,
+  "article": "Gravity_Entropy",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.5,
+        "standard": 0.57,
+        "deep": 0.55
+      }
+    },
+    "S2::section-2-a-force-emerges": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.68,
+        "standard": 0.78,
+        "deep": 0.55
+      }
+    },
+    "S3::section-3-apparent-attraction": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.83,
+        "standard": 0.6,
+        "deep": 0.55
+      }
+    },
+    "S4::section-4-strengths-and-weaknesses": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.8,
+        "standard": 0.63,
+        "deep": 0.58
+      }
+    },
+    "S5::section-5-testing-entropic-gravity": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.83,
+        "standard": 0.75,
+        "deep": 0.58
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "standard",
+    "S2::section-2-a-force-emerges": "standard",
+    "S3::section-3-apparent-attraction": "light",
+    "S4::section-4-strengths-and-weaknesses": "light",
+    "S5::section-5-testing-entropic-gravity": "light"
+  }
+}

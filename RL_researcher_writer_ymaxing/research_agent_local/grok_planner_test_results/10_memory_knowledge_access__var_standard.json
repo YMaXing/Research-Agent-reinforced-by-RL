@@ -4,33 +4,32 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.4776,
-    0.5534,
-    0.4779,
-    0.4473
+    0.5736,
+    0.5062,
+    0.4924
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.5226,
-  "confidence": 0.6261,
+  "entropy_bits": 1.8598,
+  "confidence": 0.4298,
   "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P1 (63% light mass); uncertain but light-dominant with standard/deep masses only 15% each (below 30% escalation gates). S5 brief-flagged, S6/S7 already well-covered (cov 7·6), dominant gap type is depth but policy bars re-deriving level from raw gaps.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer_aggregate",
-    "vote_mass_below_threshold",
-    "brief_flag_on_S5"
+  "rl_agg_probs": [
+    0.2641,
+    0.4298,
+    0.1553,
+    0.1509
   ],
-  "grok_risk_flags": [
-    "depth_gaps_in_S3_S1_may_remain",
-    "must-ev_4_in_S5_with_brief"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

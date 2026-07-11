@@ -4,33 +4,32 @@
   "split": "TRAIN",
   "policy": "forbidden",
   "rl_preset": 1,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
-    0.4962,
-    0.6931,
-    0.45,
-    0.475
+    0.5808,
+    0.6477,
+    0.4031,
+    0.5719
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "NEAR",
+  "regret": -0.0669,
   "regret_counted": null,
-  "entropy_bits": 1.543,
-  "confidence": 0.4231,
-  "floor_applied": false,
-  "grok_override": true,
-  "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN explicitly requires P0 skip (exploration output cannot be used). Scorer aggregate is P1 light (UNCERTAIN, entropy 1.54 bits; budget-weighted votes: light 42%, skip 35%, standard 23%, deep 0%) but override policy mandates P0 when evidence is forbidden. All 'must stay brief' flags, surface-level conceptual scope, and explicit bans on external examples reinforce no exploration needed.",
-  "grok_override_reason": "Hard constraint forces P0 despite scorer's P1 light recommendation",
-  "grok_decision_drivers": [
-    "external-evidence-forbidden",
-    "hard-constraint",
-    "brevity-flags"
+  "entropy_bits": 1.2306,
+  "confidence": 0.6695,
+  "floor_applied": true,
+  "rl_agg_probs": [
+    0.207,
+    0.6695,
+    0.0,
+    0.1235
   ],
-  "grok_risk_flags": [
-    "scorer uncertainty could miss minor internal gaps",
-    "guideline cites sources but policy forbids using them"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

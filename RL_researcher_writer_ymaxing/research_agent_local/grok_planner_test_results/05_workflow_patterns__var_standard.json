@@ -3,34 +3,33 @@
   "lesson": "05_workflow_patterns",
   "split": "TRAIN",
   "policy": "allowed",
-  "rl_preset": 2,
-  "grok_preset": 2,
-  "chosen_preset": 2,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 1,
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
-    0.6149,
-    0.8085,
-    0.7092,
-    0.7192
+    0.6333,
+    0.9041,
+    0.7621,
+    0.8021
   ],
-  "verdict": "NEAR",
-  "regret": 0.0992,
-  "regret_counted": 0.0992,
-  "entropy_bits": 1.3697,
-  "confidence": 0.4872,
-  "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL pick is P2 (49% standard-vote mass >30% gate); uncertain but no qualifying escalation (deep mass only 10%) or downward (dominant arm, depth-dominant gaps, no briefs). Matches weakest-section needs without overbuying on already-covered cov.",
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 0.9957,
+  "confidence": 0.4615,
+  "floor_applied": true,
+  "rl_agg_probs": [
+    0.0,
+    0.4615,
+    0.5385,
+    0.0
+  ],
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "aggregate RL pick",
-    "standard-vote mass >=30%",
-    "dominant gap type"
-  ],
-  "grok_risk_flags": [
-    "moderate scorer entropy could undervalue S2 deep vote",
-    "high unbacked anchors but instructions forbid raw-gap escalation"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

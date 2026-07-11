@@ -4,33 +4,32 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
-    0.6414,
-    0.6119,
-    0.5843,
-    0.5143
+    0.6893,
+    0.6745,
+    0.6342,
+    0.567
   ],
   "verdict": "NEAR",
-  "regret": 0.0295,
-  "regret_counted": 0.0295,
-  "entropy_bits": 0.9967,
-  "confidence": 0.5339,
+  "regret": 0.0148,
+  "regret_counted": 0.0148,
+  "entropy_bits": 1.5071,
+  "confidence": 0.5845,
   "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P1 light (53% soft vote, 51% budget-weighted) but UNCERTAIN (moderate confidence, near-tie with 49% skip, 0% standard/deep). No sanctioned escalation (standard-vote mass=0% <<30%). Several high-budget sections (S6 20%, S4 15%, S7 15%) show high must-ev (6/3), depth needs (55/33/55) and orphans (18/10/18) despite decent cov; dominant article gap is depth. P1 matches the reward peak without inflating to unsupported P2.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer aggregate P1 (51% budget mass)",
-    "zero escalation mass for standard/deep",
-    "high must-ev + depth gaps in S6/S7/S4"
+  "rl_agg_probs": [
+    0.2728,
+    0.5845,
+    0.0761,
+    0.0666
   ],
-  "grok_risk_flags": [
-    "close 51-49 split could justify P0 downward",
-    "many sections already at cov_d >=6"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

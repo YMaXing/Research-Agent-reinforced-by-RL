@@ -3,35 +3,33 @@
   "lesson": "29_evaluation_metrics",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 0,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.5118,
-    0.7876,
-    0.7138,
-    0.685
+    0.9047,
+    0.8138,
+    0.7803
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 1.3424,
-  "confidence": 0.4559,
-  "floor_applied": true,
-  "grok_override": true,
-  "grok_reasoning": "Aggregate RL vote is P0 skip but tied 46/46 with light (MODERATE, not decisive = UNCERTAIN). Budget-weighted section mass exactly matches (skip 46%, light 46%, standard 0%, deep 9%); standard and deep masses both <<30% so no sanctioned upward escalation. Sanctioned P0→P1 nudge applies directly (runner-up light mass 46%≥25%, no higher vote concentration). Must-ev counts in S3/S4/S5 plus 47 unbacked anchors justify cheap insurance without violating S2's 'brief' flag or large-section skip vote.",
-  "grok_override_reason": "applied sanctioned P0-to-P1 nudge on tied uncertain vote with light mass ≥25% and no escalation signal above 30%",
-  "grok_decision_drivers": [
-    "tied moderate aggregate vote",
-    "P0→P1 nudge criteria met",
-    "budget-weighted section mass",
-    "must-ev in mid-budget sections"
+  "verdict": "NEAR",
+  "regret": 0.0909,
+  "regret_counted": 0.0909,
+  "entropy_bits": 1.0827,
+  "confidence": 0.6471,
+  "floor_applied": false,
+  "rl_agg_probs": [
+    0.0294,
+    0.3235,
+    0.6471,
+    0.0
   ],
-  "grok_risk_flags": [
-    "S2 (35% budget) voted skip and is brief-flagged",
-    "dominant gaps are depth but preset is breadth-balanced"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

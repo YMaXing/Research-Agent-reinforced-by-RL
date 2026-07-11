@@ -3,33 +3,33 @@
   "lesson": "06_tools",
   "split": "TRAIN",
   "policy": "forbidden",
-  "rl_preset": 0,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 1,
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
-    0.6903,
-    0.6818,
-    0.557,
-    0.3205
+    0.4836,
+    0.4987,
+    0.3558,
+    0.3378
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "NEAR",
+  "regret": -0.0152,
   "regret_counted": null,
-  "entropy_bits": 0.9643,
-  "confidence": 0.6107,
-  "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0 skip per hard constraints. Scorer aggregate is also P0 (61% skip, 0% standard/deep mass); all sections flagged 'brief' or surface-level only; guideline forbids external libs/case studies/benchmarks.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "forbidden-policy",
-    "scorer-P0-vote",
-    "brevity-flags"
+  "entropy_bits": 1.4407,
+  "confidence": 0.3899,
+  "floor_applied": true,
+  "rl_agg_probs": [
+    0.469,
+    0.3899,
+    0.0,
+    0.141
   ],
-  "grok_risk_flags": [
-    "none"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

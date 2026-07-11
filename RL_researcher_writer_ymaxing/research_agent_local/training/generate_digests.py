@@ -130,6 +130,22 @@ _SKIP_SECTION_KEYWORDS = {
     "additional requirements",
 }
 
+# Bullets matching these patterns are structural/narrative directives (word-count
+# targets, transition sentences), not content demands. They must never become
+# orphan-anchor candidates: classify_orphan_anchors() flags anything not matched
+# by a source as "orphan", and these ALWAYS look orphan (no source discusses a
+# word-count target), then get force-classified into depth/breadth/unreachable —
+# a 3-way schema none of them semantically belong to. Empirically, this produced
+# wildly inconsistent routing across repeated digest generations on identical
+# input (confirmed 2026-07-11: the same "Transition to Section 2:" bullet was
+# routed "depth" in one run and "unreachable" in another, and "Section length:"
+# bullets were dropped entirely in a third run) — a major, avoidable contributor
+# to need_depth/need_breadth instability (which carries a 3x orphan multiplier).
+_STRUCTURAL_ANCHOR_RE = re.compile(
+    r"^(?:section length\s*:|transition to section\s+\d+\s*:)",
+    re.IGNORECASE,
+)
+
 # Recognized code language tags — only fenced blocks with these langs are extracted as artefacts.
 _CODE_LANGS = frozenset({
     "python", "py", "javascript", "js", "typescript", "ts", "bash", "sh",
@@ -230,7 +246,7 @@ def _extract_all_anchors(guideline: str) -> list[dict[str, str]]:
             text = re.sub(r"\*\*([^*]+)\*\*", r"\1", text)
             text = _normalize_text(text)
             text = text[:120].strip()
-            if len(text) >= 10:
+            if len(text) >= 10 and not _STRUCTURAL_ANCHOR_RE.match(text):
                 n, title = current_sec
                 anchors.append({
                     "anchor": text,
@@ -392,7 +408,7 @@ def extract_all_artefacts(
         "full_queries": sources["full_queries"],
     }
 
-    for source_type in ("golden_web", "golden_youtube", "golden_code", "exploitation"):
+    for source_type in ("golden_web", "golden_youtube", "golden_code", "golden_local", "exploitation"):
         stripped_bucket: dict[str, str] = {}
         for fname, content in sources[source_type].items():
             slug = fname[:-3] if fname.endswith(".md") else fname
@@ -602,6 +618,7 @@ async def extract_guideline_features(
                 },
             ],
             max_tokens=2048,
+            temperature=0,
             response_format={"type": "json_object"},
         )
         raw = response.choices[0].message.content.strip()
@@ -662,6 +679,12 @@ def collect_sources(base_dir: Path) -> dict:
         "golden_web": _read_md_dir(research_dir / "urls_from_guidelines"),
         "golden_youtube": _read_md_dir(research_dir / "urls_from_guidelines_youtube_videos"),
         "golden_code": _read_md_dir(research_dir / "urls_from_guidelines_code"),
+        # Locally-supplied golden sources (declared in the guideline via the
+        # `<!-- [Title](URL) --> "File.md"` reference-URL-blocklist convention and
+        # copied here by process_local_files_tool.py). Previously never read by this
+        # function — a real bug that left ~half the no-variant test articles'
+        # digests blind to real, already-scraped golden material (2026-07-10 fix).
+        "golden_local": _read_md_dir(research_dir / "local_files_from_research"),
         "exploitation": _read_md_dir(research_dir / "urls_from_guidelines_exploitation"),
         "tavily_results": _read_optional(research_dir / "tavily_results.md"),
         "full_queries": _read_optional(research_dir / "full_queries.md"),
@@ -752,12 +775,13 @@ async def compress_all_sources(
         "exploitation": 700,
         "golden_youtube": 350,
         "golden_code": 350,
+        "golden_local": 700,
     }
 
     keys: list[tuple[str, str]] = []
     tasks = []
 
-    for source_type in ("golden_web", "golden_youtube", "golden_code", "exploitation"):
+    for source_type in ("golden_web", "golden_youtube", "golden_code", "golden_local", "exploitation"):
         mt = _MAX_TOKENS[source_type]
         for filename, content in sources[source_type].items():
             keys.append((source_type, filename))
@@ -774,6 +798,7 @@ async def compress_all_sources(
         "golden_web": {},
         "golden_youtube": {},
         "golden_code": {},
+        "golden_local": {},
         "exploitation": {},
     }
     for (source_type, filename), summary in zip(keys, results):
@@ -832,7 +857,7 @@ def build_section_source_index(
             sec_lines[current_id].append(line)
 
     all_sources: list[tuple[str, str]] = []
-    for source_type in ("golden_web", "golden_youtube", "golden_code", "exploitation"):
+    for source_type in ("golden_web", "golden_youtube", "golden_code", "golden_local", "exploitation"):
         for fname, content in sources[source_type].items():
             slug = fname[:-3] if fname.endswith(".md") else fname
             all_sources.append((slug, content))
@@ -869,7 +894,7 @@ def classify_orphan_anchors(
     all_anchors = _extract_all_anchors(guideline)
 
     all_source_tokens: list[tuple[str, list[str]]] = []
-    for source_type in ("golden_web", "golden_youtube", "golden_code", "exploitation"):
+    for source_type in ("golden_web", "golden_youtube", "golden_code", "golden_local", "exploitation"):
         for fname, content in sources[source_type].items():
             slug = fname[:-3] if fname.endswith(".md") else fname
             all_source_tokens.append((slug, _tokenize(content[:20000])))
@@ -1007,6 +1032,7 @@ def assemble_context(
         ("golden_web", "golden_web"),
         ("golden_youtube", "golden_youtube"),
         ("golden_code", "golden_code"),
+        ("golden_local", "golden_local"),
         ("exploitation", "exploitation"),
     ]:
         for fname, summary in summaries[source_type].items():
@@ -1079,6 +1105,24 @@ IMPORTANT RULES:
 3. For orphan anchors, assign route="depth", route="breadth", or route="unreachable".
    "unreachable" = pure-lookup question (a fact that simply doesn't exist in any web source).
    "depth" or "breadth" = coverage gap that CAN be addressed with more exploration.
+   To choose between "depth" and "breadth", ask: does this anchor concern the article's OWN
+   core topic/mechanism/thesis (its theory, technical details, or the direct evidence that
+   supports or tests IT specifically) — that is "depth" (motivation, theoretical_foundations,
+   technical_nuances, latest_advancements, limitations_failure_modes, implementation_tradeoffs,
+   case_studies_metrics, artefact_available) — or does it primarily connect the topic to
+   something OUTSIDE itself (a different field, era, technology, industry, or a general survey
+   of who else works on adjacent questions) — that is "breadth" (adjacent_concepts,
+   cross_domain_analogies, historical_context, enabling_technologies, industry_applications,
+   adjacent_trends). Two worked examples:
+     - "Show how the model's own prediction matches recent experimental measurements" -> DEPTH
+       (case_studies_metrics: direct empirical support for THIS article's own claim, not an
+       external/adjacent topic).
+     - "Note that similar coupling ideas have been explored by researchers in a different
+       subfield" -> BREADTH (adjacent_concepts/historical_context: a survey of external/related
+       work, not the article's own core mechanism).
+   You MUST emit exactly one <orphan> tag for every anchor listed in <orphan_anchors_raw> for
+   this section — do not omit any, even if genuinely unsure of the route; when unsure, use your
+   single best judgement rather than skipping the anchor.
 4. depth_score and breadth_score in attributes are placeholders — the validator will
    overwrite them with deterministic counts. You may write any integer there.
 5. The artefact_available depth item: present="yes" iff the section's artefacts= attribute
@@ -1262,6 +1306,7 @@ async def generate_digest(
             },
         ],
         max_tokens=32768,
+        temperature=0,
     )
     return response.choices[0].message.content.strip()
 
@@ -1840,7 +1885,7 @@ async def _run_pipeline(
     log.info(f"    Extracted {len(artefact_registry)} artefacts")
 
     known_slugs: set[str] = set()
-    for source_type in ("golden_web", "golden_youtube", "golden_code", "exploitation"):
+    for source_type in ("golden_web", "golden_youtube", "golden_code", "golden_local", "exploitation"):
         for fname in sources[source_type]:
             slug = fname[:-3] if fname.endswith(".md") else fname
             known_slugs.add(slug)

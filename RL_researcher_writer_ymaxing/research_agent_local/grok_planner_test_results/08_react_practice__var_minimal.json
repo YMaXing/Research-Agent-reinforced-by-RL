@@ -3,33 +3,33 @@
   "lesson": "08_react_practice",
   "split": "TRAIN",
   "policy": "forbidden",
-  "rl_preset": 0,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 1,
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
-    0.6543,
-    0.1224,
-    0.0647,
-    0.3828
+    0.494,
+    0.409,
+    0.2886,
+    0.3028
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "NEAR",
+  "regret": 0.085,
   "regret_counted": null,
-  "entropy_bits": 0.8727,
-  "confidence": 0.7069,
+  "entropy_bits": 1.5548,
+  "confidence": 0.2931,
   "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0. Scorer aggregate is decisive P0 skip (71% budget-weighted vote mass); standard- and deep-vote masses are both 0% so no sanctioned escalation applies. All sections are brief-flagged and guideline demands surface-level treatment with no external examples allowed.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "forbidden-evidence-policy",
-    "decisive-P0-vote",
-    "brief-flags-on-all-sections"
+  "rl_agg_probs": [
+    0.431,
+    0.2931,
+    0.0,
+    0.2759
   ],
-  "grok_risk_flags": [
-    "none - hard constraint aligns with scorer"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

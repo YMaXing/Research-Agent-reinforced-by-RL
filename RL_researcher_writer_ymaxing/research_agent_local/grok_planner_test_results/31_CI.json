@@ -3,34 +3,33 @@
   "lesson": "31_CI",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 0,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 1,
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.6284,
-    0.6901,
-    0.5939,
-    0.6053
+    0.7103,
+    0.5883,
+    0.6199
   ],
-  "verdict": "NEAR",
-  "regret": 0.0617,
-  "regret_counted": 0.0617,
-  "entropy_bits": -0.0,
-  "confidence": 1.0,
-  "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL vote is P0 skip at 100% (DECISIVE, entropy=0). All 9 sections, including high-budget S6 (31%), S5 (17%) and must-ev-heavy S2/S5/S6, vote skip·1.00 with zero mass on light/standard/deep. No escalation gates met (std=0%, deep=0% <<30%); external-evidence=ALLOWED not required. Do not escalate on raw gaps (42 unbacked anchors, depth-dominant).",
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.1186,
+  "confidence": 0.1353,
+  "floor_applied": true,
+  "rl_agg_probs": [
+    0.7271,
+    0.1353,
+    0.0,
+    0.1376
+  ],
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "decisive_100pct_skip_vote",
-    "zero_escalation_mass",
-    "no_hard_constraint"
-  ],
-  "grok_risk_flags": [
-    "high must-ev in S5/S6 could still need sourcing",
-    "S6 1350-word length might hide qualitative gaps"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

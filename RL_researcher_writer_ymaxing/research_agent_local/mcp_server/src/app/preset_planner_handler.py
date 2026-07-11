@@ -139,6 +139,18 @@ def build_article_evidence(
             "need_breadth": gap.get("need_breadth", 0),
             "depth_score": cov.get("depth_score", 0),
             "breadth_score": cov.get("breadth_score", 0),
+            # Residual demand = raw need MINUS what's already covered. Raw need_depth
+            # is universally large across articles and preset levels (see "DO NOT
+            # ESCALATE ON RAW GAP COUNTS" in the planner system prompt) so it must
+            # never drive escalation; residual is the more honest "how much is
+            # actually still missing" figure and is context for the GENERAL DOWNWARD
+            # OVERRIDE (a section can show need_depth=14 yet be fully served by
+            # existing coverage, e.g. depth_score=6/8 already close to sufficient for
+            # a science-explainer article backed by golden sources). The P1/P2
+            # boundary itself is handled upstream by the deterministic cost-sensitive
+            # rule (preset_infer_handler.apply_cost_sensitive_rule), not by this signal.
+            "residual_depth": max(0, gap.get("need_depth", 0) - cov.get("depth_score", 0)),
+            "residual_breadth": max(0, gap.get("need_breadth", 0) - cov.get("breadth_score", 0)),
             "mandatory_bullets": gap.get("mandatory_bullets", 0),
             "must_cover_depth": gap.get("must_cover_depth", 0),
             "must_stay_brief": gap.get("must_stay_brief", 0),
@@ -315,11 +327,19 @@ def render_evidence_brief(
             )
             bar = f"{_ESCALATION_MASS_THRESHOLD*100:.0f}%"
             out.append(
-                f"- Escalation gates: standard-vote mass = {std_m*100:.0f}%  \u00b7  "
-                f"deep-vote mass = {deep_m*100:.0f}%  (bar {bar}). "
-                f"P2 needs standard-vote mass \u2265 {bar}; P3 (from P2) needs "
-                f"deep-vote mass \u2265 {bar}. If deep-vote mass is high but "
-                f"standard-vote mass < {bar}, do NOT step into the P2 valley \u2014 stay put."
+                f"- Vote-mass gates: standard-vote mass = {std_m*100:.0f}%  \u00b7  "
+                f"deep-vote mass = {deep_m*100:.0f}%  (bar {bar}). These masses ONLY "
+                f"gate a P2->P3 escalation (deep-vote mass \u2265 {bar} from a P2 pick) "
+                f"and the deep-or-nothing guard. They do NOT sanction escalating a P0/P1 "
+                f"pick up to P2 \u2014 see OVERRIDE POLICY."
+            )
+            self_contained_wt = sum(s["weight"] for s in secs if s.get("self_contained"))
+            out.append(
+                f"- Residual/self-containment context: {self_contained_wt*100:.0f}% of the "
+                f"writing budget sits in sections flagged self-contained (see \u00a73 table). "
+                f"This is descriptive context only \u2014 it is NOT a sanctioned mechanism for "
+                f"moving off the RL pick; the RL pick already incorporates a reward-calibrated "
+                f"cost-sensitive adjustment before you see it."
             )
         out.append("")
 
@@ -334,14 +354,14 @@ def render_evidence_brief(
 
     if include_rl:
         header = (
-            "| # | Section | Budget | RL pick | need d/b | cov d·b | must-ev | orphans d/b | brief |"
+            "| # | Section | Budget | RL pick | need d/b | cov d·b | resid d/b | self-cont | must-ev | orphans d/b | brief |"
         )
-        sep = "|---|---------|-------:|---------|:-------:|:------:|:------:|:----------:|:----:|"
+        sep = "|---|---------|-------:|---------|:-------:|:------:|:--------:|:--------:|:------:|:----------:|:----:|"
     else:
         header = (
-            "| # | Section | Budget | need d/b | cov d·b | must-ev | orphans d/b | brief |"
+            "| # | Section | Budget | need d/b | cov d·b | resid d/b | self-cont | must-ev | orphans d/b | brief |"
         )
-        sep = "|---|---------|-------:|:-------:|:------:|:------:|:----------:|:----:|"
+        sep = "|---|---------|-------:|:-------:|:------:|:--------:|:--------:|:------:|:----------:|:----:|"
     out.append(header)
     out.append(sep)
 
@@ -349,6 +369,8 @@ def render_evidence_brief(
         budget = f"{s['weight']*100:.0f}%"
         need = f"{s['need_depth']}/{s['need_breadth']}"
         cov = f"{s['depth_score']}·{s['breadth_score']}"
+        resid = f"{s.get('residual_depth', 0)}/{s.get('residual_breadth', 0)}"
+        self_cont = "yes" if s.get("self_contained") else "—"
         must_ev = str(s["must_cover_depth"])
         orph = f"{s['orphans']['depth']}/{s['orphans']['breadth']}"
         brief = "yes" if s["must_stay_brief"] else "—"
@@ -360,22 +382,34 @@ def render_evidence_brief(
             )
             out.append(
                 f"| {i} | {sec_label} | {budget} | {rl_pick} | {need} | {cov} | "
-                f"{must_ev} | {orph} | {brief} |"
+                f"{resid} | {self_cont} | {must_ev} | {orph} | {brief} |"
             )
         else:
             out.append(
                 f"| {i} | {sec_label} | {budget} | {need} | {cov} | "
-                f"{must_ev} | {orph} | {brief} |"
+                f"{resid} | {self_cont} | {must_ev} | {orph} | {brief} |"
             )
 
     out.append("")
     out.append("Legend:")
     out.append(
         "- **need d/b** — unmet depth / breadth gap pressure (higher = more "
-        "missing; includes orphaned guideline anchors)."
+        "missing; includes orphaned guideline anchors). Universally large across "
+        "articles and presets — do NOT use this raw number to escalate."
     )
     out.append(
         "- **cov d·b** — coverage already achieved (depth out of 8, breadth out of 6)."
+    )
+    out.append(
+        "- **resid d/b** — RESIDUAL need = need MINUS coverage already achieved. This "
+        "is the honest \"how much is actually still missing\" figure \u2014 context for "
+        "the GENERAL DOWNWARD OVERRIDE only, not a standalone trigger."
+    )
+    out.append(
+        "- **self-cont** — \"yes\" means the digest judged this section's already-scraped "
+        "sources well-matched to its topic. Supporting context, but NOT sufficient alone "
+        "\u2014 some genuinely-P2 articles have every section self-contained yet still need "
+        "real new depth/breadth; check resid d/b too."
     )
     out.append(
         "- **must-ev** — # mandatory bullets that REQUIRE named evidence (tools, "
@@ -496,6 +530,35 @@ def _apply_policy_guards(preset: int, policy: str) -> tuple[int, str | None]:
 
 
 # ---------------------------------------------------------------------------
+# Deterministic escalation guard (hard constraint clamp)
+# ---------------------------------------------------------------------------
+# The planner prompt explicitly states "NEVER escalate a P0 or P1 pick up to P2
+# or higher, regardless of vote mass or gap counts" (in both the system prompt
+# and the user template) — but a 2026-07-10 held-out backtest showed Grok
+# violating this anyway, using the budget-weighted vote-mass number to
+# functionally reconstruct a retired P1->P2 escalation (override_reason:
+# "departed from uncertain P1 aggregate to P2 because budget-weighted standard
+# mass (68%)..."), undoing a correct cost-rule-adjusted RL pick. A prompt-level
+# instruction alone is not reliable enough for this hard boundary; enforce it
+# in code, matching the existing forbidden/required policy-guard pattern. The
+# still-sanctioned P0->P1 nudge (one level up) is unaffected.
+
+def _apply_escalation_guard(preset: int, rl_preset: int) -> tuple[int, str | None]:
+    """Hard block: never let Grok escalate a P0/P1 RL pick all the way to P2+.
+
+    Returns ``(clamped_preset, note)`` where ``note`` is a short human-readable
+    string when a clamp fired, else None.
+    """
+    if rl_preset <= 1 and preset >= 2:
+        return (
+            1,
+            f"escalation_guard: clamped P{preset}->P1 (RL pick was P{rl_preset}; "
+            f"escalating a P0/P1 RL vote to P2+ is not permitted)",
+        )
+    return preset, None
+
+
+# ---------------------------------------------------------------------------
 # Grok 4.2 system prompts and user templates
 # ---------------------------------------------------------------------------
 
@@ -524,9 +587,11 @@ A single exploitation pass has already run. From it you receive a guided brief w
      anchors, need_depth, coverage scores) against the reward trade-off. Its
      aggregate vote is the reward-trained estimate of the optimal preset. Treat it
      as your primary signal and the approximate location of the reward peak.
-  2. A per-section table of coverage already achieved vs. what the guideline demands.
+  2. A per-section table of coverage already achieved vs. what the guideline demands,
+     including a RESIDUAL-need column (need minus coverage) and a self-contained flag.
      Use this to understand DIRECTION (which sections need depth-first vs.
-     breadth-first rounds) — NOT to re-derive whether to escalate.
+     breadth-first rounds) and, per the OVERRIDE POLICY below, as the basis for the
+     sanctioned downward step — NOT to re-derive escalation from raw need_depth.
   3. Article-wide gap economics (unbacked anchors, dominant gap type).
 
 THE REWARD CURVE IS SINGLE-PEAKED
@@ -544,7 +609,7 @@ unlike those it was trained on:
     a preset above it — upward escalation is almost never correct here.
   - UNCERTAIN (confidence < 70% OR entropy > 1.5 bits): the learned signal is weak. The
     budget-weighted per-section votes carry real information the aggregate has blurred
-    away; use them to set the level via the escalation rule below.
+    away; use them together with the OVERRIDE POLICY below, which may point up OR down.
 
 DO NOT ESCALATE ON RAW GAP COUNTS
 Coverage gaps (must-ev, unbacked anchors, need_depth) are universally present across
@@ -555,26 +620,47 @@ the article's writing budget whose own section voted skip / light / standard / d
 large intro section voting skip can hide small-but-heavy technical sections that need
 deep exploration — the vote mass exposes exactly that.
 
+RESIDUAL NEED IS CONTEXT, NOT A DECISION TRIGGER
+The brief's "resid d/b" column (need MINUS coverage already achieved) is NOT a raw gap
+count — it is the honest measure of what is actually still missing. It is useful context
+for the GENERAL DOWNWARD OVERRIDE below, but it is NOT a standalone trigger: the RL pick
+you are shown has ALREADY been adjusted by a reward-calibrated cost-sensitive rule before
+you see it (see PIPELINE NOTE below), so do not re-derive a P1/P2 boundary correction from
+residual need yourself — that correction is already baked into the pick.
+
+PIPELINE NOTE — THE RL PICK IS ALREADY COST-ADJUSTED
+The RL pick shown above is not a raw model argmax. It has already been passed through a
+deterministic, empirically-fit cost-sensitive rule that corrects for known reward
+asymmetries (under-shooting the true preset is usually costlier than a 1-level
+over-shoot). Do not attempt to re-derive that correction yourself from confidence,
+residual need, or self-containment — you would likely be duplicating or fighting a
+correction that was already made more reliably than a prompt-level judgement call can.
+Your job is to catch what a numeric rule CANNOT see (policy compliance, and genuinely
+qualitative red flags), not to re-second-guess the P0-P3 level itself.
+
 OVERRIDE POLICY
-  - SANCTIONED UPWARD ESCALATION — allowed ONLY when the scorer vote is UNCERTAIN.
-    Escalation targets the LEVEL the sections themselves voted for, so use the
-    preset-SPECIFIC vote mass, never a combined total:
-      * To P2 standard: if the RL pick is P0 or P1 AND the budget-weighted mass of
-        sections voting STANDARD specifically is >= 30% — choose P2. Enough of the
-        article's budget wants exactly two rounds.
+  - SANCTIONED UPWARD ESCALATION — P2 -> P3 ONLY, and ONLY when the scorer vote is
+    UNCERTAIN:
       * To P3 deep: if the RL pick is P2 AND the budget-weighted mass of sections
         voting DEEP specifically is >= 30% — choose P3.
-      * DEEP-OR-NOTHING GUARD: if the RL pick is P1 and the escalation mass is
-        dominated by DEEP votes (deep-vote mass is high but STANDARD-vote mass < 30%),
-        do NOT step into P2 — the standard middle sits in a reward valley for such
-        articles. Stay at P1. P3 is reachable only from a P2 pick, never a two-level
-        jump from P1.
-      * Escalate at most one preset level in a single decision (P0/P1 -> P2, or
-        P2 -> P3). NEVER escalate when the vote is DECISIVE.
-  - DOWNWARD OVERRIDE: you MAY choose one level BELOW the scorer's pick when most
-    high-budget sections are brief-flagged or already well-covered (depth_score >= 6),
-    or the vote is highly uncertain with no dominant arm AND neither standard-vote nor
-    deep-vote mass reaches 30% (no real escalation signal).
+      * NEVER escalate a P0 or P1 pick up to P2 or higher, regardless of vote mass or
+        gap counts. This is enforced as a HARD, NON-NEGOTIABLE CODE-LEVEL GUARD after
+        your response — any P2+ you return when the RL pick was P0/P1 will be silently
+        clamped back down, so there is no benefit to attempting it. (An earlier policy
+        revision sanctioned this escalation; it was retired after held-out evaluation
+        showed it fired twice and was wrong both times, and a later revision found the
+        LLM was still reaching this outcome via vote-mass reasoning despite an explicit
+        textual prohibition — hence the hard code-level guard now, not just a prompt rule.)
+      * NEVER escalate when the vote is DECISIVE.
+  - DEEP-OR-NOTHING GUARD: if the RL pick is P1 and the deep-vote mass is high while
+    the standard-vote mass is low (a depth-or-nothing pattern), do NOT infer that P2 is
+    worth trying — the standard middle sits in a reward valley for such articles. P3 is
+    reachable only from a P2 pick, never a two-level jump from P1.
+  - GENERAL DOWNWARD OVERRIDE: you MAY choose one level BELOW the scorer's pick when
+    most high-budget sections are brief-flagged or already well-covered (depth_score
+    >= 6, or residual need near zero), or the vote is highly uncertain with no
+    dominant arm AND neither standard-vote nor deep-vote mass reaches 30% (no real
+    escalation signal).
   - SANCTIONED P0 -> P1 NUDGE: if the scorer votes P0 skip, its runner-up is P1 light
     with substantial mass (>= 25%), AND neither standard-vote nor deep-vote mass
     reaches 30% — you MAY choose P1 light as cheap insurance.
@@ -582,8 +668,9 @@ OVERRIDE POLICY
 USE need_depth / need_breadth FOR ROUND COMPOSITION, NOT LEVEL
 Once you have chosen a preset, need_depth / need_breadth tell you which sections need
 depth-first vs. breadth-first rounds — let them shape the composition of the rounds
-(depth -> breadth vs. balanced). The escalation LEVEL, by contrast, comes from the
-budget-weighted section-vote mass, not from these raw gap columns.
+(depth -> breadth vs. balanced). The escalation/down-step LEVEL, by contrast, comes
+from the budget-weighted section-vote mass and residual-need/self-contained signals,
+not from these raw gap columns.
 
 PRIMARY-SOURCE APPENDIX (may follow the brief)
 You may also receive the full author-written article guideline reproduced verbatim.
@@ -637,6 +724,12 @@ HOW TO WEIGH THE SIGNALS
   - Weight sections by writing budget; gaps in tiny or "must stay brief" sections barely
     matter.
   - must-ev (must_cover_depth) is depth pressure even when need_depth looks modest.
+  - The table's "resid d/b" column is need MINUS existing coverage — a small residual
+    means the gap is mostly already filled; weigh this more heavily than the raw need
+    column when judging whether escalation is really warranted.
+  - "self-cont" flags a section whose already-gathered sources are well-matched to its
+    topic — supporting (not sufficient) evidence that little new exploration is needed
+    there; check it alongside resid d/b, not in isolation.
 
 PRIMARY-SOURCE APPENDIX (may follow the brief)
 You may also receive the full author-written article guideline reproduced verbatim.
@@ -671,12 +764,14 @@ _PLANNER_USER_TEMPLATE = """\
 ## Your task
 Decide the single exploration preset for THIS article. Work through the brief above
 step by step:
-  1. State the section-scorer's aggregate vote and whether it is DECISIVE or UNCERTAIN.
-  2. Read the budget-weighted section-vote mass, then check whether a sanctioned
-     escalation, downward override, or P0->P1 nudge applies (see OVERRIDE POLICY in
-     your instructions). Escalate above the RL pick ONLY when the vote is uncertain
-     AND the preset-SPECIFIC vote mass clears 30% (standard-vote mass for P2,
-     deep-vote mass for P3).
+  1. State the section-scorer's aggregate vote (already cost-adjusted upstream) and
+     whether it is DECISIVE or UNCERTAIN.
+  2. If UNCERTAIN, check whether a sanctioned P2->P3 escalation, a general downward
+     override, or a P0->P1 nudge applies (see OVERRIDE POLICY in your instructions).
+     Use the preset-SPECIFIC deep-vote mass for the P2->P3 escalation. NEVER escalate
+     a P0/P1 pick up to P2 or higher under any circumstance \u2014 this is enforced as a
+     hard code-level guard regardless of what you return, so do not spend reasoning
+     trying to justify it.
   3. State your final choice and the single most decisive reason.
 
 Then output ONLY the JSON block specified in your instructions (nothing after it)."""
@@ -761,16 +856,22 @@ async def call_grok_planner(
         parsed_preset = int(parsed["preset"])
         if parsed_preset not in range(NUM_PRESETS):
             raise ValueError(f"preset {parsed_preset} out of range 0-{NUM_PRESETS - 1}")
-        # Deterministic hard-constraint guard (forbidden->skip, required->>=light).
-        final_preset, guard_note = _apply_policy_guards(parsed_preset, policy)
+        # Deterministic hard-constraint guards, applied in order:
+        # (1) never let Grok escalate a P0/P1 RL pick to P2+ (see
+        #     _apply_escalation_guard docstring — a prompt instruction alone was
+        #     shown to be insufficient); (2) forbidden->skip, required->>=light.
+        escalated_preset, escalation_note = _apply_escalation_guard(parsed_preset, rl_preset)
+        final_preset, guard_note = _apply_policy_guards(escalated_preset, policy)
         drivers = parsed.get("decision_drivers", [])
         risk_flags = parsed.get("risk_flags", [])
         override_reason = parsed.get("override_reason")
-        if guard_note:
+        notes = [n for n in (escalation_note, guard_note) if n]
+        if notes:
             drivers = [*drivers, "policy_guard"]
-            risk_flags = [*risk_flags, guard_note]
+            risk_flags = [*risk_flags, *notes]
+            joined_notes = "; ".join(notes)
             override_reason = (
-                guard_note if not override_reason else f"{override_reason}; {guard_note}"
+                joined_notes if not override_reason else f"{override_reason}; {joined_notes}"
             )
         return {
             "preset": final_preset,

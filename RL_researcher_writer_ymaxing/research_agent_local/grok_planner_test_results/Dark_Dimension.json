@@ -3,34 +3,33 @@
   "lesson": "Dark_Dimension",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 0,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 3,
+  "grok_preset": null,
+  "chosen_preset": 3,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
-    0.814,
-    0.6803,
-    0.6923,
-    0.6287
+    0.91,
+    0.725,
+    0.7794,
+    0.7311
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": -0.0,
-  "confidence": 1.0,
+  "verdict": "MISS",
+  "regret": 0.1789,
+  "regret_counted": 0.1789,
+  "entropy_bits": 1.5158,
+  "confidence": 0.4649,
   "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Aggregate scorer vote is P0 skip at 100% (DECISIVE, entropy=0). All three sections independently vote skip·1.00 with 100% budget-weighted mass on skip; standard- and deep-vote masses are both 0% so no sanctioned escalation applies. Two of three sections carry explicit 'brief' flags that prohibit absorbing extra research; external-evidence policy is only ALLOWED, not required. Raw must-ev/orphan counts are ignored per instructions when the learned signal is this decisive.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "decisive scorer vote",
-    "zero escalation mass",
-    "section brief flags"
+  "rl_agg_probs": [
+    0.0,
+    0.3212,
+    0.2138,
+    0.4649
   ],
-  "grok_risk_flags": [
-    "all cov_breadth=0",
-    "high must-ev in S3 (46% budget)"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

@@ -4,34 +4,32 @@
   "split": "TRAIN",
   "policy": "required",
   "rl_preset": 1,
-  "grok_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
-    0.5417,
-    0.6549,
-    -0.06,
-    0.4766
+    0.7174,
+    0.8981,
+    0.773,
+    0.6479
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.4516,
-  "confidence": 0.4805,
+  "entropy_bits": 1.2857,
+  "confidence": 0.6279,
   "floor_applied": true,
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P1 light (48% budget-weighted mass on light, moderate confidence); standard-vote mass=0% while deep-vote mass=37% triggers the explicit deep-or-nothing guard that forbids stepping into the P2 valley from a P1 RL pick. External-evidence policy requires at least P1, which this satisfies exactly; per-section RL picks show mixed skip/light/deep but the calibrated vote-mass signal (not raw must-ev or 42 unbacked anchors) determines level. Dominant gap is depth yet escalation policy bars upward move.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer_aggregate_P1",
-    "deep_or_nothing_guard",
-    "external_evidence_required",
-    "standard_vote_mass_0"
+  "rl_agg_probs": [
+    0.1163,
+    0.6279,
+    0.2558,
+    0.0
   ],
-  "grok_risk_flags": [
-    "37% deep mass in S2/S5/S7 could leave theory depth gaps",
-    "high must-ev counts across S1/S2/S7"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

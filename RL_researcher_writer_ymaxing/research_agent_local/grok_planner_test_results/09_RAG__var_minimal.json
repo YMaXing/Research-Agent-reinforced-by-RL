@@ -3,34 +3,33 @@
   "lesson": "09_RAG",
   "split": "TRAIN",
   "policy": "forbidden",
-  "rl_preset": 0,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 1,
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
-    0.7317,
-    0.5683,
-    0.4467,
-    0.3627
+    0.475,
+    0.4067,
+    0.4267,
+    0.42
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "NEAR",
+  "regret": 0.0683,
   "regret_counted": null,
-  "entropy_bits": 0.9588,
-  "confidence": 0.6318,
-  "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, which hard-constrains to P0; section-scorer aggregate is also P0 skip (63% budget-weighted mass, 0% standard/deep); every section is brief-flagged with surface-level guideline intent and a 1500-word hard cap.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "hard-forbidden-policy",
-    "scorer-P0-vote",
-    "all-sections-brief"
+  "entropy_bits": 1.3443,
+  "confidence": 0.0922,
+  "floor_applied": true,
+  "rl_agg_probs": [
+    0.6388,
+    0.0922,
+    0.0206,
+    0.2484
   ],
-  "grok_risk_flags": [
-    "moderate scorer confidence (63%)",
-    "high unbacked anchors (42) but irrelevant under policy"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

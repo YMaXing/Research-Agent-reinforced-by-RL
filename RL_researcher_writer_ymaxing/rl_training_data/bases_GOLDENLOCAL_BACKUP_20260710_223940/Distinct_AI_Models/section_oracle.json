@@ -1,0 +1,49 @@
+{
+  "version": 2,
+  "article": "Distinct_AI_Models",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.94,
+        "standard": 0.63,
+        "deep": 0.72
+      }
+    },
+    "S2::section-2-the-company-being-kept": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.94,
+        "standard": 0.73,
+        "deep": 0.82
+      }
+    },
+    "S3::section-3-convergent-evolution": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.88,
+        "deep": 0.82
+      }
+    },
+    "S4::section-4-find-the-universals": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.99,
+        "standard": 0.73,
+        "deep": 0.82
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "light",
+    "S2::section-2-the-company-being-kept": "light",
+    "S3::section-3-convergent-evolution": "standard",
+    "S4::section-4-find-the-universals": "light"
+  }
+}

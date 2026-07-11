@@ -1,0 +1,49 @@
+{
+  "version": 2,
+  "article": "HNSW",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.62,
+        "standard": 0.4,
+        "deep": 0.47
+      }
+    },
+    "S2::section-2-foundations-of-hnsw": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.68,
+        "standard": 0.43,
+        "deep": 0.38
+      }
+    },
+    "S3::section-3-graph-construction": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.83,
+        "standard": 0.45,
+        "deep": 0.55
+      }
+    },
+    "S4::section-4-implementation-of-hnsw": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.83,
+        "standard": 0.63,
+        "deep": 0.7
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "skip",
+    "S2::section-2-foundations-of-hnsw": "light",
+    "S3::section-3-graph-construction": "light",
+    "S4::section-4-implementation-of-hnsw": "light"
+  }
+}

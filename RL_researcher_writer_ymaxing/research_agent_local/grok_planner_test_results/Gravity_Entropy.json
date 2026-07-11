@@ -3,34 +3,33 @@
   "lesson": "Gravity_Entropy",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 1,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.646,
-    0.7228,
-    0.6604,
-    0.5609
+    0.8247,
+    0.7382,
+    0.5747
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
+  "verdict": "NEAR",
+  "regret": 0.0865,
+  "regret_counted": 0.0865,
   "entropy_bits": 0.9815,
   "confidence": 0.58,
   "floor_applied": false,
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P1 light (58% light / 42% skip mass, moderate confidence, UNCERTAIN). Budget-weighted section votes show 0% mass on standard or deep (far below 30% escalation gate), so no sanctioned upward move; raw gaps (32 unbacked anchors, must-ev totals) are ignored per policy. Multiple high-budget sections are already at cov ≥7·4 or brief-flagged, aligning with light touch-up rather than P0 or P2.",
-  "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer_aggregate_P1",
-    "zero_escalation_mass",
-    "brief_flags_on_S2_S3"
+  "rl_agg_probs": [
+    0.42,
+    0.0,
+    0.58,
+    0.0
   ],
-  "grok_risk_flags": [
-    "moderate scorer confidence (58%)",
-    "depth-dominant gaps in S2/S5"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }
