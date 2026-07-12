@@ -18,23 +18,24 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": null,
-  "entropy_bits": 0.9911,
-  "confidence": 0.5556,
+  "entropy_bits": 0.6167,
+  "confidence": 0.1528,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.4444,
-    0.5556,
+    0.8472,
+    0.1528,
     0.0,
     0.0
   ],
   "grok_override": true,
-  "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN requires P0 skip (exploration output cannot be used). Scorer aggregate was P1 light (56% light / 44% skip, moderate confidence, all sections self-contained, many brief-flagged, low residuals in S3/S5/S7/S8), but policy overrides all votes and residual signals.",
-  "grok_override_reason": "external-evidence policy explicitly forbidden",
+  "grok_reasoning": "Hard constraint: external-evidence policy explicitly FORBIDDEN, so exploration output cannot be used and P0 is mandatory. Scorer aggregate was P1 (85% skip / 15% light mass, UNCERTAIN) but this is overridden by the policy and by every section being self-contained + brief-flagged with surface-level treatment required per guideline.",
+  "grok_override_reason": "external-evidence policy = forbidden mandates P0 regardless of scorer vote",
   "grok_decision_drivers": [
     "external-evidence-forbidden",
-    "hard-constraint"
+    "all-sections-self-contained-and-brief"
   ],
   "grok_risk_flags": [
-    "scorer lean toward light ignored due to policy"
+    "scorer picked light despite policy",
+    "high residual need numbers but irrelevant under forbid"
   ]
 }

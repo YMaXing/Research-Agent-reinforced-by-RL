@@ -28,15 +28,16 @@
     0.7196
   ],
   "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is decisive P3 (72% deep-vote mass, 0% standard) with S2/S3 (72% budget) both voting deep·1.00 and carrying residual depth gaps of 14/3 and 13/0 plus must-ev counts 8+5; dominant gap type is depth and unbacked anchors=27. DECISIVE vote plus high-budget sections not well-covered precludes sanctioned downward override; no P2->P3 escalation triggered.",
+  "grok_reasoning": "Scorer aggregate is P3 deep at 72% (DECISIVE, 0% standard mass). High-budget S2/S3 (72% total) both vote deep·1.00 with residuals 14/3 and 13/0, must-ev totals 13, 27 article-wide unbacked anchors, and dominant depth gap all align with the strong learned signal. Brief flags and self-contained status already factored into the cost-adjusted RL pick; no sanctioned downward override applies on a decisive vote.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "decisive 72% deep scorer vote",
-    "S2/S3 residual depth + must-ev",
-    "dominant depth gaps"
+    "decisive deep vote mass (72%)",
+    "high-budget section RL picks (S2/S3)",
+    "must-ev + residual depth gaps",
+    "unbacked anchors"
   ],
   "grok_risk_flags": [
-    "brief flags on S2/S3 may limit absorption",
-    "diminishing returns past depth peak"
+    "brief flags on large sections may limit absorption",
+    "many paywalled golden sources already locally available"
   ]
 }

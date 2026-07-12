@@ -2,7 +2,7 @@
   "variant": "05_workflow_patterns__var_demanding",
   "lesson": "05_workflow_patterns",
   "split": "TRAIN",
-  "policy": "required",
+  "policy": "allowed",
   "rl_preset": 1,
   "grok_preset": 1,
   "chosen_preset": 1,
@@ -18,26 +18,25 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.2857,
-  "confidence": 0.6279,
+  "entropy_bits": 1.3983,
+  "confidence": 0.4769,
   "floor_applied": true,
   "rl_agg_probs": [
     0.1163,
-    0.6279,
-    0.2558,
+    0.4769,
+    0.4068,
     0.0
   ],
   "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P1 light (63% mass, moderate confidence, 26% standard / 0% deep). External-evidence policy requires >=P1; P1->P2 escalation is hard-forbidden for any P1 pick. High residuals in S1/S2 (must-ev=7) and 42 unbacked anchors noted but do not override per DO-NOT-ESCALATE-ON-RAW-GAPS rule; vote mass already reflects this. All sections self-contained with dominant light vote keeps us at the RL peak.",
+  "grok_reasoning": "Scorer aggregate is P1 light (48% light / 41% standard mass, 0% deep); UNCERTAIN but no sanctioned override applies (not a P2 pick so cannot escalate, standard mass >30% blocks general downward, residuals in S1/S2 already baked into cost-adjusted RL pick, all sections self-contained).",
   "grok_override_reason": null,
   "grok_decision_drivers": [
     "scorer_aggregate_P1",
-    "external_evidence_required",
-    "vote_mass_below_escalation_threshold",
-    "no_sanctioned_override"
+    "vote_mass_no_deep",
+    "self_contained_all_sections"
   ],
   "grok_risk_flags": [
-    "S1/S2 residuals may still need targeted depth",
-    "moderate scorer confidence leaves small upside to standard"
+    "S1/S2 high residual+must-ev could need more depth than light delivers",
+    "bimodal light/standard vote may sit near reward slope"
   ]
 }

@@ -3,9 +3,9 @@
   "lesson": "06_tools",
   "split": "TRAIN",
   "policy": "allowed",
-  "rl_preset": 2,
-  "grok_preset": 3,
-  "chosen_preset": 3,
+  "rl_preset": 1,
+  "grok_preset": 1,
+  "chosen_preset": 1,
   "chosen_by": "Grok4.2",
   "oracle_preset": 3,
   "oracle_name": "deep",
@@ -15,29 +15,28 @@
     0.6285,
     0.6239
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 1.9312,
-  "confidence": 0.1811,
-  "floor_applied": false,
+  "verdict": "MISS",
+  "regret": 0.1641,
+  "regret_counted": 0.1641,
+  "entropy_bits": 1.3375,
+  "confidence": 0.0,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.2967,
-    0.1699,
-    0.1811,
-    0.3524
+    0.4666,
+    0.0,
+    0.0864,
+    0.4471
   ],
-  "grok_override": true,
-  "grok_reasoning": "Aggregate RL pick is P2 standard but UNCERTAIN (entropy 1.93 bits). Deep-vote mass is 35% (>=30% threshold) while standard mass is only 18%; this exactly meets the sanctioned P2->P3 escalation for uncertain votes. Dominant gap type is depth, S4 (16% budget, resid 21/2, must-ev 9) and S2/S3 drive the deep signal, and 100% self-contained does not override per policy.",
-  "grok_override_reason": "Sanctioned upward P2->P3 escalation triggered by >=30% deep-vote mass on uncertain P2 pick",
+  "grok_override": false,
+  "grok_reasoning": "RL aggregate votes P1 (cost-adjusted upstream); uncertain split (47% skip/45% deep) triggers depth-or-nothing guard and forbids any P1-to-P2+ escalation per hard policy. Downward to P0 disallowed (S3 26% budget + S4 16% retain high 53/6 and 32/6 residuals; deep mass >30%). Self-contained flags + notebook/goldens already factored in.",
+  "grok_override_reason": null,
   "grok_decision_drivers": [
-    "uncertain_aggregate",
-    "deep_vote_mass_35pct",
-    "P2_to_P3_sanction",
-    "dominant_depth_gaps"
+    "RL aggregate pick",
+    "depth-or-nothing guard",
+    "residuals on high-budget sections"
   ],
   "grok_risk_flags": [
-    "S3 brief flag + high must-ev may limit absorption",
-    "bimodal skip/deep votes (30%/35%) could indicate over-escalation"
+    "split vote may undervalue S3/S4 depth gaps",
+    "self-contained flag over-optimism if notebook insufficient"
   ]
 }

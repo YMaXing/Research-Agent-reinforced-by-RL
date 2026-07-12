@@ -2,10 +2,10 @@
   "variant": "13_agent_framework",
   "lesson": "13_agent_framework",
   "split": "TEST",
-  "policy": "allowed",
-  "rl_preset": 3,
-  "grok_preset": 3,
-  "chosen_preset": 3,
+  "policy": "forbidden",
+  "rl_preset": 1,
+  "grok_preset": 0,
+  "chosen_preset": 0,
   "chosen_by": "Grok4.2",
   "oracle_preset": 3,
   "oracle_name": "deep",
@@ -15,28 +15,26 @@
     0.5911,
     0.7841
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 1.5851,
-  "confidence": 0.5059,
+  "verdict": "MISS",
+  "regret": 0.1395,
+  "regret_counted": null,
+  "entropy_bits": 1.7681,
+  "confidence": 0.4398,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.0319,
-    0.3174,
-    0.1448,
-    0.5059
+    0.0782,
+    0.4398,
+    0.1706,
+    0.3114
   ],
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL pick is P3 deep (UNCERTAIN, 51% soft / 47% budget-weighted deep-vote mass). High-budget sections S4 (18%, resid 21/6, must-ev 15), S3 (9%, resid 18/6) and S2/S1 retain large residual depth gaps; dominant gap type is depth and 42 unbacked anchors exist. No sanctioned downward override applies as most high-budget sections are not well-covered (depth_score >=6 or resid near zero).",
-  "grok_override_reason": null,
+  "grok_override": true,
+  "grok_reasoning": "Hard constraint: external-evidence policy is FORBIDDEN, mandating P0 skip regardless of the uncertain P1-light aggregate vote (44% light, 31% deep) or any per-section residual needs. All sections are already flagged self-contained; exploration output cannot be used.",
+  "grok_override_reason": "External-evidence policy explicitly requires P0; scorer's P1 recommendation is overridden",
   "grok_decision_drivers": [
-    "RL aggregate P3",
-    "deep-vote mass 47%",
-    "high-residual sections S4/S3/S2"
+    "external-evidence policy forbidden",
+    "self-contained sections"
   ],
   "grok_risk_flags": [
-    "uncertain scorer entropy",
-    "many deep-dive sections already at resid 0/6 on depth (breadth-dominant)"
+    "golden sources cited in guideline may have post-scrape updates"
   ]
 }

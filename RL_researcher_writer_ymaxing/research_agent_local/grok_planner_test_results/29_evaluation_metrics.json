@@ -3,9 +3,9 @@
   "lesson": "29_evaluation_metrics",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 2,
-  "grok_preset": 2,
-  "chosen_preset": 2,
+  "rl_preset": 3,
+  "grok_preset": 3,
+  "chosen_preset": 3,
   "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
@@ -15,28 +15,28 @@
     0.8138,
     0.7803
   ],
-  "verdict": "NEAR",
-  "regret": 0.0909,
-  "regret_counted": 0.0909,
-  "entropy_bits": 1.0827,
-  "confidence": 0.6471,
+  "verdict": "MISS",
+  "regret": 0.1244,
+  "regret_counted": 0.1244,
+  "entropy_bits": 1.6498,
+  "confidence": 0.575,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.0294,
-    0.3235,
-    0.6471,
-    0.0
+    0.1118,
+    0.1498,
+    0.1635,
+    0.575
   ],
   "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P2 standard (65% budget-weighted standard mass, 0% deep mass); moderate but dominant signal with no sanctioned override. High-budget S2 (35%) is brief-flagged with depth_cov=6 yet resid_d=26 and dominant gap type is depth; S1/S3–S5 carry must-ev + orphans. This matches the already cost-adjusted RL pick for depth-first then breadth rounds without triggering downward (standard mass >30%) or P2→P3 (deep mass <30%).",
+  "grok_reasoning": "Scorer aggregate is P3 (already cost-adjusted) with 53% budget-weighted deep mass (dominant >30%) led by S2 (35%, deep·1.00, resid 17/6) and S5 (18%, deep·1.00, resid 17/6); entropy 1.65 makes it uncertain so votes control, but no sanctioned downward trigger applies (deep mass dominant, residuals not near-zero, 47 unbacked anchors, depth-dominant gaps). Self-contained flags are universal context only and do not override the RL pick per policy.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer_aggregate_P2",
-    "standard_vote_mass_65pct",
-    "residual_depth_in_S2_S1"
+    "scorer P3 aggregate + 53% deep mass",
+    "high-residual large sections S2/S5",
+    "no downward conditions met"
   ],
   "grok_risk_flags": [
-    "moderate_confidence_65pct",
-    "brief_flag_on_largest_section"
+    "potential diminishing returns past depth peak",
+    "all sections self-contained may limit new-source yield"
   ]
 }

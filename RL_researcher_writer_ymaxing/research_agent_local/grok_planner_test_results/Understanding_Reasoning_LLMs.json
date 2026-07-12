@@ -28,14 +28,15 @@
     0.0
   ],
   "grok_override": false,
-  "grok_reasoning": "Aggregate scorer vote is decisively P2 standard (93% mass on standard, 0% deep, 0% skip) — the calibrated peak per the brief. Large residuals in S5 (45% budget, 42 depth) and must-ev=12 drive this exact level; all sections self-contained with depth-dominant gaps, so P2's depth-then-breadth rounds close coverage without over-escalation. No override conditions met.",
+  "grok_reasoning": "Section-scorer aggregate is decisive P2 (93% standard vote mass, 0% deep) on a 4300-word theory article whose dominant gap is depth; largest section (S5, 45% budget) carries 42 residual depth need + 12 must-ev items while S4 adds further must-ev pressure, exactly matching the RL pick already cost-adjusted upstream. All sections self-contained yet residual gaps in high-budget technical cores preclude downward override; decisive vote bars any P3 escalation per policy.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "decisive standard vote mass",
-    "S5 residual need",
-    "depth-dominant gaps"
+    "decisive 93% standard vote mass",
+    "S5 45% budget + 42 resid depth/12 must-ev",
+    "dominant depth gaps"
   ],
   "grok_risk_flags": [
-    "S5 scale could still surface minor unbacked anchors post-P2"
+    "S5 brief flag vs 1950-word allocation may limit absorption",
+    "all sections self-contained could imply light suffices in hindsight"
   ]
 }

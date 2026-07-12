@@ -18,24 +18,24 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": null,
-  "entropy_bits": 1.4619,
-  "confidence": 0.36,
-  "floor_applied": true,
+  "entropy_bits": 1.5685,
+  "confidence": 0.2806,
+  "floor_applied": false,
   "rl_agg_probs": [
-    0.48,
-    0.36,
+    0.4019,
+    0.2806,
     0.0,
-    0.16
+    0.3175
   ],
   "grok_override": true,
-  "grok_reasoning": "External-evidence policy explicitly FORBIDDEN (hard constraint overriding all else); exploration output cannot be used. Scorer aggregate is uncertain P1 (36% light, 48% skip mass) but all 100% of budget is self-contained + brief-flagged with no external-evidence needs. Guideline demands only conceptual overview using provided notebook; no depth or new sources allowed.",
-  "grok_override_reason": "Hard policy constraint mandates P0 when external evidence is forbidden, overriding RL pick of P1",
+  "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN mandates P0 skip (exploration output cannot be used). Scorer aggregate is uncertain P1 (40% skip / 28% light / 32% deep) but this is overridden; 100% self-contained + every section brief-flagged + guideline explicitly demands surface-level conceptual overview with no external libs/cases.",
+  "grok_override_reason": "external-evidence policy explicitly forbids exploration, forcing P0 regardless of scorer vote",
   "grok_decision_drivers": [
     "external-evidence-forbidden",
-    "self-contained-flags",
-    "brevity-requirements"
+    "all-sections-brief-self-contained",
+    "guideline-surface-level"
   ],
   "grok_risk_flags": [
-    "Scorer saw minor residual depth gaps in S1/S2/S7 but policy blocks any use of new material"
+    "scorer deep mass 32% near escalation gate but hard guard blocks any P0->P2"
   ]
 }

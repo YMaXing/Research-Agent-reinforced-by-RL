@@ -18,8 +18,17 @@ Pipeline (8 stages):
   5. VALIDATE  — Deterministic post-processing: recount scores, build gap_profile
                  (with feature attrs injected), compute 2D preset oracle,
                  insert external_evidence_policy into digest_meta
-  6. STORE     — Write research_digest.md, section_oracle.json,
+  6. STORE     — Write research_digest.md, digest_section_placeholder.json,
                  guideline_features.json under rl_training_data/bases/<article>/
+
+NOTE: digest_section_placeholder.json is a DIGEST-STAGE HEURISTIC (per-section
+2D preset guess from gap_profile only) and is DELIBERATELY NOT named
+section_oracle.json — that filename is reserved for the REWARD-BASED oracle
+(version/article/variant/sections/presets schema) written later by
+generate_episode_oracles.py and read by train_grpo.py. The two schemas used
+to share the filename (last-writer-wins collision); regenerating digests for
+an already-graded article would silently destroy its GRPO reward labels.
+See /memories/repo/research_agent_local_architecture.md 2026-07-11 entry.
 
 Usage (from research_agent_local/):
   uv run --project mcp_client python training/generate_digests.py
@@ -1668,7 +1677,8 @@ def _compute_gap_profile_deterministic(
 
     Returns (gap_profile_xml_str, oracle_dict).
     oracle_dict maps section_id -> recommended_preset and is kept SEPARATE
-    from the digest (written to section_oracle.json).
+    from the digest (written to digest_section_placeholder.json — NOT
+    section_oracle.json, which is reserved for the reward-based schema).
     """
     policy = features.get("external_evidence_policy", "allowed")
     feat_sections: dict[str, dict[str, int]] = features.get("sections", {})
@@ -1886,11 +1896,12 @@ async def process_research_dir(research_dir: Path, dry_run: bool, force: bool) -
 
     The directory must contain ``article_guideline.md`` and a ``.research/``
     subfolder (the live MCP layout, identical to a base dir under
-    rl_training_data/bases/). Writes research_digest.md, section_oracle.json,
-    and guideline_features.json into ``research_dir``.  This is the entrypoint
-    used by predict_exploration_preset_tool.py so that on-the-fly digest
-    generation always produces the exact same v2 XML format the RL model and
-    infer.py expect (single source of truth — no format drift).
+    rl_training_data/bases/). Writes research_digest.md,
+    digest_section_placeholder.json (NOT section_oracle.json — see module
+    docstring), and guideline_features.json into ``research_dir``.  This is
+    the entrypoint used by predict_exploration_preset_tool.py so that
+    on-the-fly digest generation always produces the exact same v2 XML format
+    the RL model and infer.py expect (single source of truth — no format drift).
     """
     from openai import AsyncOpenAI
 
@@ -2085,9 +2096,12 @@ async def _run_pipeline(
     if not dry_run and digest:
         output_path.write_text(digest, encoding="utf-8")
         log.info(f"    Written: {output_path}")
-        oracle_path = base_dir / "section_oracle.json"
+        # NOT section_oracle.json — that filename is reserved for the reward-based
+        # schema written by generate_episode_oracles.py; writing there would
+        # silently destroy an already-graded article's GRPO reward labels.
+        oracle_path = base_dir / "digest_section_placeholder.json"
         oracle_path.write_text(json.dumps({"presets": oracle}, indent=2), encoding="utf-8")
-        log.info(f"    Oracle written: {oracle_path}")
+        log.info(f"    Digest placeholder written: {oracle_path}")
         features_path = base_dir / "guideline_features.json"
         features_path.write_text(json.dumps(features, indent=2), encoding="utf-8")
         log.info(f"    Features written: {features_path}")

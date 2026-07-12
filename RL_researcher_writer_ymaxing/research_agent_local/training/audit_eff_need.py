@@ -32,7 +32,7 @@ data_points = []
 for d in sorted(BASE.iterdir()):
     if d.name.endswith("_OLD"): continue
     digest_f = d / "research_digest.md"
-    oracle_f = d / "section_oracle.json"
+    oracle_f = d / "digest_section_placeholder.json"
     features_f = d / "guideline_features.json"
     if not (digest_f.exists() and oracle_f.exists() and features_f.exists()):
         continue

@@ -18,25 +18,25 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.2929,
-  "confidence": 0.6404,
+  "entropy_bits": 1.3645,
+  "confidence": 0.5714,
   "floor_applied": true,
   "rl_agg_probs": [
-    0.0,
-    0.6404,
-    0.2132,
-    0.1464
+    0.1299,
+    0.5714,
+    0.2987,
+    0.0
   ],
   "grok_override": false,
-  "grok_reasoning": "Aggregate RL pick is P1 light (64% soft vote, 70% budget-weighted on light; moderate/not decisive). Deep-vote mass 13% and standard-vote mass 17% both <<30% so no P2→P3 escalation possible from a P1 pick (hard guard). All sections self-contained with strong existing cov (mostly 7-8·6); high-budget S5/S4/S6 already near-zero residual or brief-flagged, failing general-downward criteria for P0. Must-ev and depth gaps exist in S2/S3/S5 but vote mass (not raw counts) calibrates to P1 as the reward peak.",
+  "grok_reasoning": "Section-scorer aggregate is P1 light (57% light, 30% standard, 0% deep mass); moderate confidence makes it UNCERTAIN but no sanctioned override applies. High-budget S5 (30%, standard pick, must-ev 4, residual near-zero on depth) and S4 already show strong coverage; 100% self-contained sections plus universal brief flags on large portions argue against escalation. Dominant gap type is depth but RL votes already baked in the cost-adjusted P1 recommendation; P2+ is prohibited from a P1 pick.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "budget-weighted light mass (70%)",
-    "self-contained + strong cov on largest sections",
-    "no sanctioned override conditions met"
+    "budget-weighted vote mass",
+    "self-contained + residual context",
+    "brief flags on high-budget sections"
   ],
   "grok_risk_flags": [
-    "moderate scorer confidence could undervalue depth needs in S2/S3 examples",
-    "specific Aug-2025 Gemini/Perplexity details may require more than light touch-up"
+    "S3 residual 46/4 + must-ev 3 could leave comparison gaps",
+    "42 unbacked anchors may need more sourcing than light round supplies"
   ]
 }

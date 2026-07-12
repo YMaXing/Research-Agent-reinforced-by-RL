@@ -3,9 +3,9 @@
   "lesson": "Gravity_Entropy",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 2,
-  "grok_preset": 2,
-  "chosen_preset": 2,
+  "rl_preset": 1,
+  "grok_preset": 1,
+  "chosen_preset": 1,
   "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
@@ -15,28 +15,28 @@
     0.7382,
     0.5747
   ],
-  "verdict": "NEAR",
-  "regret": 0.0865,
-  "regret_counted": 0.0865,
-  "entropy_bits": 0.9815,
-  "confidence": 0.58,
-  "floor_applied": false,
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 0.7509,
+  "confidence": 0.785,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.42,
     0.0,
-    0.58,
+    0.785,
+    0.215,
     0.0
   ],
   "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P2 (58% standard-vote mass, 42% skip, 0% deep); UNCERTAIN but no sanctioned override applies — deep mass 0% blocks P3, standard mass >30% blocks general downward despite self-contained flags and brief=yes on S2/S3. Dominant depth gaps, high residuals in S2–S5 (12/4, 9/1, 6/4), and must-ev/orphans align with the budget-weighted RL picks (three sections at standard).",
+  "grok_reasoning": "Decisive 78% budget-weighted vote for P1 light (0% deep mass, 22% standard) is the primary reward-trained signal. All sections self-contained with dominant depth gaps already partially covered (cov d·b around 4·1-4·3); no sanctioned override applies per policy as vote is not uncertain and residuals do not trigger downward from a decisive P1. Existing golden sources (Carney 2025, Jacobson 1995) cover must-ev anchors sufficiently for a light touch-up.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer aggregate P2 at 58%",
-    "standard-vote mass gate",
-    "residual depth in S2–S5"
+    "decisive scorer vote for P1",
+    "self-contained flags across 100% budget",
+    "low deep/standard mass below 30%"
   ],
   "grok_risk_flags": [
-    "moderate scorer confidence",
-    "brief flags on high-residual S2/S3 could limit absorption"
+    "high residuals in S3/S5 could leave some qubit-model quotes thin",
+    "must-ev count of 10 total might need one extra source if existing coverage misses a quote"
   ]
 }

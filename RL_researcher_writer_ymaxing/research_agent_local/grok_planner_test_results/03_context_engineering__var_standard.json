@@ -18,25 +18,26 @@
   "verdict": "NEAR",
   "regret": 0.0148,
   "regret_counted": 0.0148,
-  "entropy_bits": 1.5071,
-  "confidence": 0.5845,
-  "floor_applied": false,
+  "entropy_bits": 0.7553,
+  "confidence": 0.8509,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.2728,
-    0.5845,
-    0.0761,
-    0.0666
+    0.0,
+    0.8509,
+    0.0663,
+    0.0828
   ],
   "grok_override": false,
-  "grok_reasoning": "Aggregate RL pick is P1 light (58% light vote mass, only 8% standard / 7% deep); UNCERTAIN due to entropy but light is the clear dominant arm and both escalation gates sit far below 30%. 100% self-contained + no high-budget sections flagged brief, yet policy forbids any P1→P2 move and raw residuals/need_depth do not override the calibrated vote mass. No sanctioned downward trigger applies because light dominates.",
+  "grok_reasoning": "Decisive P1 light aggregate (85% vote mass) with standard/deep masses at 7%/8% (below 30% escalation gate). 100% self-contained budget and zero residuals in S5–S8 (47% of article) already meet coverage; high-residual sections are low-budget only. No override conditions met per policy.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "aggregate_vote_mass",
-    "low_std_deep_mass",
-    "self_contained_context"
+    "decisive scorer vote",
+    "residual distribution",
+    "self-contained flags",
+    "vote-mass gates"
   ],
   "grok_risk_flags": [
-    "high_residual_depth_in_S6_S7",
-    "uncertain_entropy"
+    "under-depth in S4 theory if residuals mislead",
+    "policy allows only downward here but gaps may still surface"
   ]
 }

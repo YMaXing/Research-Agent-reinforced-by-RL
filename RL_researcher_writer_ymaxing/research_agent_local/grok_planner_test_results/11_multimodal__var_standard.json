@@ -18,25 +18,26 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.2563,
-  "confidence": 0.6805,
-  "floor_applied": true,
+  "entropy_bits": 1.5759,
+  "confidence": 0.4177,
+  "floor_applied": false,
   "rl_agg_probs": [
-    0.1733,
-    0.6805,
-    0.1405,
-    0.0057
+    0.0291,
+    0.4177,
+    0.4269,
+    0.1262
   ],
   "grok_override": false,
-  "grok_reasoning": "Aggregate RL vote is P1 light (budget-weighted: light 64%, standard 15%, deep 0%); moderate confidence but no masses >=30% and no clear override triggers (S3/S7/S1 retain residual depth/must-ev despite many low-resid self-contained sections). Dominant gap is depth but already cost-adjusted; do not escalate on raw unbacked anchors.",
+  "grok_reasoning": "Scorer aggregate is P1 light (already cost-adjusted); vote is uncertain (entropy 1.58) with near-tie light 42% vs standard 43% but deep mass only 13% <30%. All sections self-contained, no sanctioned upward from P1 (hard guard), standard mass >30% blocks general downward to P0, and raw residuals (e.g. S3 46/2) cannot trigger escalation per policy. Dominant gap is depth but budget-weighted vote mass locates peak at light touch-up.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "RL aggregate vote mass",
-    "deep/standard mass gates",
-    "residuals in high-budget sections"
+    "scorer_aggregate_P1",
+    "vote_split_42L_43S",
+    "deep_mass_13pct",
+    "all_self_contained"
   ],
   "grok_risk_flags": [
-    "S7/S3 gaps could need more depth than light supplies",
-    "moderate scorer confidence on non-training distribution"
+    "near-tie_light_standard_may_miss_S3_depth",
+    "high_orphans_must_ev_in_foundations"
   ]
 }

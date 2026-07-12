@@ -1,5 +1,5 @@
 """
-Live verification of section_oracle.json and guideline_features.json
+Live verification of digest_section_placeholder.json and guideline_features.json
 across the three lesson-5 variants (minimal / standard / demanding).
 
 Run AFTER generate_digests.py has been executed with --force on all three:
@@ -73,7 +73,7 @@ def check_files_exist() -> bool:
     print("\n=== CHECK 1: Output files exist ===")
     ok = True
     for v in VARIANTS:
-        for fn in ("research_digest.md", "section_oracle.json", "guideline_features.json"):
+        for fn in ("research_digest.md", "digest_section_placeholder.json", "guideline_features.json"):
             ok &= _check_file_exists(v, fn)
     return ok
 
@@ -86,7 +86,7 @@ def check_oracle_tokens() -> bool:
     print("\n=== CHECK 2: Oracle presets are valid tokens ===")
     ok = True
     for v in VARIANTS:
-        oracle = _load(v, "section_oracle.json")
+        oracle = _load(v, "digest_section_placeholder.json")
         presets: dict[str, str] = oracle.get("presets", {})
         bad = {k: p for k, p in presets.items() if p not in VALID_PRESETS}
         if bad:
@@ -181,7 +181,7 @@ def check_feature_ordering() -> bool:
 def check_preset_ordering() -> bool:
     print("\n=== CHECK 5: Oracle preset ordering — demanding ≥ standard ≥ minimal ===")
 
-    all_oracles = {v: _load(v, "section_oracle.json").get("presets", {}) for v in VARIANTS}
+    all_oracles = {v: _load(v, "digest_section_placeholder.json").get("presets", {}) for v in VARIANTS}
     common = (
         set(all_oracles[VARIANTS[0]]) &
         set(all_oracles[VARIANTS[1]]) &

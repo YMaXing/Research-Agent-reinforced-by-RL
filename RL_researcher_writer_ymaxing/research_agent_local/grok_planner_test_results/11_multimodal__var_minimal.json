@@ -18,24 +18,23 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": null,
-  "entropy_bits": 1.9369,
-  "confidence": 0.3103,
+  "entropy_bits": 1.5399,
+  "confidence": 0.4479,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.3103,
-    0.3103,
-    0.1379,
-    0.2414
+    0.3104,
+    0.4479,
+    0.0002,
+    0.2415
   ],
   "grok_override": true,
-  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0 per hard constraints (exploration output cannot be used). Scorer aggregate is uncertain P1 (31% skip / 31% light) but policy overrides all signals including vote mass and residual gaps; article is a conceptual overview with brevity rules and no-external-examples mandate.",
-  "grok_override_reason": "Hard constraint requires P0 when external-evidence policy=forbidden; cannot use exploration",
+  "grok_reasoning": "Hard constraint: external-evidence policy = forbidden requires P0 skip. Scorer aggregate is P1 (UNCERTAIN, 45% light / 24% deep mass) but policy overrides all votes, residual gaps, and self-contained flags. Article is explicitly a surface-level conceptual overview with repeated 'must stay brief' mandates.",
+  "grok_override_reason": "external-evidence policy = FORBIDDEN mandates P0 regardless of scorer or gaps",
   "grok_decision_drivers": [
     "external-evidence-forbidden",
-    "hard-constraint"
+    "policy-hard-constraint"
   ],
   "grok_risk_flags": [
-    "scorer-P1 vs policy mismatch",
-    "self-contained sections already high cov"
+    "scorer uncertainty could indicate missed internal coverage gaps"
   ]
 }

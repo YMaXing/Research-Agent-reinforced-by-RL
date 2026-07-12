@@ -28,15 +28,16 @@
     0.2927
   ],
   "grok_override": false,
-  "grok_reasoning": "DECISIVE P1-light aggregate (71% budget-weighted vote, 0% standard mass); deep mass=29% bars P2->P3 escalation and triggers depth-or-nothing guard against inferring P2; high residuals already baked into RL pick with all sections self-contained; no override criteria met.",
+  "grok_reasoning": "Scorer aggregate is P1 light at 71% (DECISIVE), with 0% standard and 29% deep mass (below 30% gate). All sections self-contained, residuals high but already factored into the cost-adjusted RL pick; no sanctioned upward override from P1, no brief flags, external-evidence only ALLOWED. General downward to P0 not triggered as vote is decisive and residuals not near-zero.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "decisive_scorer_P1",
-    "deep_mass_below_30",
-    "self_contained_residual_context"
+    "scorer_aggregate",
+    "decisiveness",
+    "vote_mass_below_threshold",
+    "self-contained_context"
   ],
   "grok_risk_flags": [
-    "S3 deep vote + 7 must-ev could under-serve key transcriptomic evidence",
-    "dominant depth gaps might yield marginal returns even at light"
+    "S3 29% deep vote + high must-ev/orphans",
+    "dominant depth gaps may leave some anchors thin"
   ]
 }

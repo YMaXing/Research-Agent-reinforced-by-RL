@@ -28,15 +28,15 @@
     0.0
   ],
   "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is decisive at 83% for P2 standard (budget-weighted 82% standard, 0% deep mass). This aligns with dominant depth gaps, high residual need in S2/S4 (10+/5), 21 unbacked anchors, and must-ev counts, while all sections being self-contained is already factored into the cost-adjusted RL pick. No override triggers per policy (decisive vote, no 30% deep mass, not all high-budget sections brief-flagged).",
+  "grok_reasoning": "Scorer aggregate is decisive P2 standard (83% vote / 82% budget mass); deep-vote mass=0% and decisive confidence preclude any escalation per override policy. High residuals (e.g. 10/2 in S1, 11/5 in S4) plus must-ev=3-5 across all sections confirm gap-filling value without triggering downward override on self-contained flags. Dominant gap type is depth, matching P2 round composition.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "decisive P2 vote mass",
-    "residual depth gaps + must-ev",
-    "no escalation guards met"
+    "decisive_scorer_P2",
+    "zero_deep_mass",
+    "residual_must_ev_context"
   ],
   "grok_risk_flags": [
-    "S3 light vote + brief flag could dilute depth round",
-    "self-contained flags might overstate existing coverage"
+    "S3 brief flag could limit absorption",
+    "possible duplicate coverage on cross-modal experiments"
   ]
 }

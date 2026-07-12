@@ -103,7 +103,7 @@ def _generate_digest_via_subprocess(research_dir: Path) -> None:
 
     Runs the full v2 pipeline in the training venv, which has the pipeline deps
     and reads XAI_API_KEY from mcp_client/.env. Writes research_digest.md,
-    section_oracle.json, and guideline_features.json into ``research_dir``.
+    digest_section_placeholder.json, and guideline_features.json into ``research_dir``.
 
     Raises RuntimeError on non-zero exit.
     """
@@ -162,7 +162,7 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
 
     If research_digest.md does not yet exist in the research directory, the tool
     generates it on-the-fly via the v2 digest pipeline (generate_digests.py, run
-    in the training venv) and writes research_digest.md, section_oracle.json, and
+    in the training venv) and writes research_digest.md, digest_section_placeholder.json, and
     guideline_features.json before running inference. This requires the training
     venv and XAI_API_KEY (in mcp_client/.env) and the .research/ subfolder to
     contain the exploitation sources collected during step 3.

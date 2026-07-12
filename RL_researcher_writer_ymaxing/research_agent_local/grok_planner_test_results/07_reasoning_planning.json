@@ -18,22 +18,25 @@
   "verdict": "NEAR",
   "regret": 0.0978,
   "regret_counted": 0.0978,
-  "entropy_bits": 1.2515,
-  "confidence": 0.6062,
+  "entropy_bits": 1.2242,
+  "confidence": 0.6768,
   "floor_applied": true,
   "rl_agg_probs": [
-    0.0787,
-    0.6062,
-    0.315,
-    0.0
+    0.0,
+    0.6768,
+    0.1341,
+    0.1891
   ],
   "grok_override": false,
-  "grok_reasoning": "Grok JSON parse failed; Deterministic fallback: section-scorer vote (light) adjusted for policy=allowed.",
+  "grok_reasoning": "Aggregate scorer vote is P1 light (68% light mass, moderate confidence <70%). Deep-vote mass=19% and standard-vote mass=13% both <30% gate; policy forbids any upward move from a P1 pick. High-budget S5/S7 already show residual 0 and cov ≥5 while all sections are self-contained; dominant light vote plus cost-adjusted RL pick outweigh residual depth in smaller early sections.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "rl_aggregate"
+    "scorer_aggregate_68pct_light",
+    "vote_masses_below_30pct",
+    "high_budget_sections_well_covered"
   ],
   "grok_risk_flags": [
-    "deterministic fallback — no LLM reasoning applied"
+    "moderate confidence on depth-heavy S1-S4",
+    "possible under-coverage on must-ev items in S4/S8"
   ]
 }

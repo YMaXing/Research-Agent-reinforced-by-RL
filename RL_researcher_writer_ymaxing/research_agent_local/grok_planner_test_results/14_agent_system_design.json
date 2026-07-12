@@ -18,25 +18,26 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 0.9472,
+  "entropy_bits": 0.8113,
   "confidence": 0.75,
   "floor_applied": true,
   "rl_agg_probs": [
-    0.0312,
+    0.0,
     0.75,
-    0.2188,
+    0.25,
     0.0
   ],
   "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is decisive P1 light (75% vote, 0% deep mass, 22% standard mass); all sections self-contained and RL pick already cost-adjusted upstream. No required-external-evidence constraint, no sanctioned upward path from P1, and guideline supplies only qualitative scope cues that do not override the strong learned signal.",
+  "grok_reasoning": "Section-scorer aggregate is decisive P1 (75% light vote mass, 0% deep, 25% standard) on a 3200-word article where 100% of budget is in self-contained sections. High-budget S2/S4 residuals exist but scorer already cost-adjusted for them; dominant gap is depth yet vote mass bars sanctioned escalation and policy forbids upward move from P1. External-evidence is allowed not required.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer_decisive_P1",
-    "vote_mass_below_threshold",
-    "self_contained_residual_context"
+    "decisive P1 vote mass",
+    "self-contained sections",
+    "no deep mass",
+    "external-allowed-not-required"
   ],
   "grok_risk_flags": [
-    "residual depth gaps in high-budget S2/S4",
-    "S3 standard vote not fully covered by light round"
+    "residual depth in S2/S4 could still limit must-ev anchors",
+    "if guideline images demand fresh citations light may under-serve"
   ]
 }

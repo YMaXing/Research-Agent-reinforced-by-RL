@@ -642,3 +642,336 @@ never a genuinely correct discretionary numeric call. The architecture's two-sta
 intact and Grok is still called (and still produces qualitative `risk_flags` worth reading for
 human review), but its authority to *change* the numeric preset is now fully bounded by hard
 code-level guards rather than prompt-level trust.
+
+---
+---
+
+# Part 3 — Post-Phase-0 retrain (run14) failed; decision: STOP retraining, EXPAND the dataset (2026-07-12)
+
+**Scope:** (a) why the `run14_phase0` retrain (fresh model on the Phase-0-consistent digests)
+regressed on held-out test; (b) the decisive attribution measurement (run13 model on the *new*
+digests) that separates "model got worse" from "digests got harder"; (c) the verdict — another
+training run is **not** worth it, the binding constraint is the dataset; (d) a concrete,
+sourced specification of exactly what articles to add and where to get them.
+
+---
+
+## 14. What happened with run14_phase0
+
+Phase 0 (§10–13 above + the memory log) regenerated **all 40 digests** on one consistent
+pipeline version (anchor-hygiene + temperature=0 + improved depth/breadth prompt + policy
+majority-vote + golden_local fix), eliminating the May→July pipeline-version confound. A fresh
+GRPO run (`run14_phase0`, identical hyperparameters to the proven run13 recipe: epochs 200, lr
+5e-5, beta 0.15, entropy-coef 0.22, patience 50, lora 16/16, dropout 0.05, section granularity,
+hybrid weighting) was trained on those consistent digests and ran to **112 epochs** before being
+stopped.
+
+### 14.1 Training-metric trajectory (all TRAIN, 171 sections — memorization proxy, not generalization)
+
+| epoch window | strict top-1 | near-tie top-1 | E[R] | mean entropy H |
+|---|:--:|:--:|:--:|:--:|
+| peak strict | **ep104 = 0.8246** | — | 0.742 | 0.010 |
+| peak near-tie | — | **ep107 = 0.9532** | 0.743 | 0.018 |
+| ep98 (best/ checkpoint shipped for eval) | 0.8187 | 0.9474 | 0.742 | 0.016 |
+| last 10 (ep102–111) | 0.75–0.82 (fluctuating) | 0.94–0.95 | ~0.742 | **0.007–0.018 (collapsed)** |
+
+The run reached the same train ceiling as run13 (~0.82 strict / ~0.95 near-tie) and then
+**fluctuated in a heavily entropy-collapsed regime** (H ≈ 0.01) for the final ~15 epochs without
+climbing — the textbook "converged into memorization, no more generalization signal" plateau.
+Epochs 102–111 show strict bouncing 0.75↔0.82 with no upward trend; this is noise around a
+ceiling, not progress.
+
+### 14.2 Held-out eval — the retrain REGRESSED (both candidate checkpoints)
+
+Ran the full RL+Grok pipeline on two checkpoints; both gave **numerically identical aggregate
+regressions** vs. the established run13 baseline:
+
+| Config (TEST, n=16) | exact | near | miss | MAE | regret mean | regret max |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|
+| **run13_formulaB/best (production baseline)** | **10 (62%)** | 6 | **0** | **0.375** | **0.0384** | **0.170** |
+| run14_phase0/best (ep98) | 9 (56%) | 3 | **4 (25%)** | 0.812 | 0.0592 | 0.2735 |
+| run14_phase0/best_neartie (ep97) | 9 (56%) | 3 | **4 (25%)** | 0.812 | 0.0592 | 0.2735 |
+| run14_phase0 TRAIN (ep98) | 20 (83%) | 3 | 1 | 0.208 | 0.0042 | — |
+
+- **TRAIN improved (19→20 exact), TEST regressed hard (10→9 exact, 0→4 misses, MAE 0.375→0.812)**
+  — the classic overfitting scissors.
+- The 4 new misses are **severe** (2- and 3-level): `13_agent_framework` P3→P0, `Dark_Dimension`
+  P0→P3, `14_agent_system_design` P1→P3, `29_evaluation_metrics` P1→P3. run13 never produced a
+  2+-level test miss; run14 produces four. The model became **confidently wrong** (H≈0.01) on
+  held-out articles.
+- ep97 and ep98 being numerically identical rules out "unlucky single epoch" — the whole
+  collapse regime around ep97–104 generalizes equally poorly.
+
+**Action already taken:** reverted `infer.py::_DEFAULT_ADAPTER_DIR` to `run13_formulaB/best`.
+Production is unchanged and safe.
+
+### 14.3 The decisive attribution question — and its answer
+
+The critical ambiguity: is run14 worse because **(A) the model overfit**, or because **(B) the
+Phase-0-refreshed digests are simply harder/different inputs** that would hurt *any* model? These
+have opposite implications (A → training problem, maybe fixable by a better run; B → the new
+digests are the problem, retraining can't help). The clean way to separate them is to run the
+**known-good run13 model on the NEW digests** — same model that scored 10/16, now fed the same
+inputs run14 was trained on.
+
+**RESULT — run13_formulaB/best on the post-Phase-0 digests (n=16 TEST held-out):**
+
+| Metric | run13 on OLD digests (baseline) | run13 on NEW Phase-0 digests | Δ |
+|---|:--:|:--:|:--:|
+| Exact | **10/16 (62%)** | **10/16 (62%)** | 0 |
+| Near | 6 | 3 | −3 |
+| **Miss** | **0** | **3 (19%)** | **+3** |
+| **Ordinal MAE** | **0.375** | **0.625** | **+0.250** |
+| Regret mean | 0.0384 | 0.0472 | +0.0088 |
+| Regret max | 0.170 | 0.185 | +0.015 |
+
+The three new misses are all **severe (2–3 level)** and all newly broken by the digest refresh:
+`13_agent_framework` P3→P0, `29_evaluation_metrics` P1→P3, `Space-Time_QECC` P1→P3. run13 on the
+old digests produced **zero** test misses; on the new digests it produces three.
+
+**Interpretation → this is the "digests-harder" branch, not the "pure-overfit" branch.** The
+exact *count* held (10/16), but the *error quality* degraded sharply: 0→3 misses and MAE
++0.25 came from the **inputs changing**, not the model. The same known-good adapter, unchanged,
+regressed simply by being fed the Phase-0 digests. This means:
+
+- run14's regression is **substantially input/data-driven, not purely an optimizer failure.**
+  A big chunk of the "10→9 exact, 0→4 misses" run14 gap is inherited from the digests themselves;
+  the additional damage on top of that is overfitting. The optimizer is *not* the primary lever.
+- The Phase-0 digest refresh — while *correct* (it fixed the section_oracle clobber and the
+  golden-source routing) — moved the P1/P2/P3 boundary cases enough that the current 16-article
+  test set can no longer be cleared by *any* model trained on the current 24. The signal the
+  model needs to disambiguate `13_agent_framework`, `29_evaluation_metrics`, and
+  `Space-Time_QECC` is **not present in the training distribution.**
+
+Both the "pure-overfit" and "digests-harder" branches were pre-written to land on the same
+strategic conclusion (§15–16); the measured "digests-harder" result makes that conclusion
+**stronger**, because it shows retraining on the same 24 articles cannot recover what the digest
+refresh exposed. The lever is the data, definitively.
+
+### 14.4 Cost-matrix re-backtest against the new digest distributions (2026-07-12)
+
+Since the digest refresh shifted `agg_probs`, it was worth checking whether the shipped
+`_COST_MATRIX` thresholds (§9/§13, fit 2026-07-10) are still well-calibrated for the new
+distributions, or need re-tuning — historically the cheapest, highest-leverage lever in this
+whole investigation. Wrote a standalone, read-only backtest script
+(`grok_planner_test_results/_backtest_cost_matrix.py`) that loads all 40 saved per-article JSONs
+from the run13-on-new-digests eval (§14.3), refits `Cost[c][a] = E[R_w(true=c) - R_w(action=a)]`
+from the 24 TRAIN articles' raw `rl_agg_probs` + `r_w_rewards`, and backtests plain argmax vs.
+the shipped matrix vs. the refit matrix at the RL-only (pre-Grok) layer on both splits.
+
+**Finding 1 — the refit matrix is numerically identical to the shipped one** (max diff 0.0001,
+floating-point noise). This makes sense once you trace what actually changed: the cost matrix is
+fit from `r_w_rewards`, the **oracle-labeled ground-truth rewards**, which come from the frozen
+`section_oracle.json` files — Phase 0 explicitly protected these from being touched (that was the
+whole point of the digest-clobber fix, §Phase 0). Only the *digests* (the RL model's inputs)
+changed, not the *oracle rewards* the matrix is fit against. So there is nothing to re-tune in
+the matrix values themselves — the empirically-optimal thresholds are unchanged because the
+reward structure they encode is unchanged.
+
+**Finding 2 — the existing (unchanged) matrix is still doing real, useful work on the shifted
+inputs.** RL-only layer, constrained rule (max-step 1), shipped matrix vs. plain argmax:
+
+| Split | Policy | Exact | Near | Miss | MAE | Regret mean | Regret max |
+|---|---|:--:|:--:|:--:|:--:|:--:|:--:|
+| TEST (n=16) | argmax (no rule) | 9 (56%) | 5 | 2 | 0.5625 | 0.0816 | 0.4387 |
+| TEST (n=16) | shipped cost matrix | 9 (56%) | 5 | 2 | 0.5625 | **0.0502** | **0.1850** |
+| TRAIN (n=24) | argmax (no rule) | 10 (42%) | 11 | 3 | 0.7917 | 0.0666 | 0.2760 |
+| TRAIN (n=24) | shipped cost matrix | 10 (42%) | 12 | **2** | 0.7083 | **0.0389** | **0.1971** |
+
+No exact-count change on either split this time (unlike the original 7→10 win on the old
+digests), but **zero new misses, one TRAIN miss fixed** (`10_memory_knowledge_access__var_minimal`
+MISS→NEAR), and **regret cut ~38–42%** on both splits purely from the rule already in
+production — it is still earning its keep on the new distributions, just with less headroom
+than before because the underlying inputs are the thing that moved, not the decision boundary.
+
+**Finding 3 — the two RL-layer TEST misses are untouched by the rule at any threshold**, because
+the rule never even considered moving them: `13_agent_framework`
+(`agg_probs=[0.078,0.440,0.171,0.311]`, `raw_argmax=P1`, chosen=P1, oracle=**P3** — a 2-level gap
+outside `MAX_STEP=1` by construction) and `29_evaluation_metrics`
+(`agg_probs=[0.112,0.150,0.164,0.575]`, `raw_argmax=P3`, chosen=P3, oracle=**P1**, same story in
+reverse — 57.5% confident on the wrong side). Both are genuine digest-driven input shifts
+(§14.3), not decision-rule miscalibration — no cost matrix, however re-tuned, can fix a case
+where the *model's own vote* is confidently on the wrong side and the rule is (correctly)
+constrained from jumping 2 levels.
+
+**Bonus finding — the third full-pipeline miss (`Space-Time_QECC`) is a Grok-layer artifact, not
+an RL/cost-rule problem.** At the RL+cost-rule layer it scores `chosen=P2, oracle=P1` — a NEAR
+(regret 0.126), not a miss. The full RL+Grok eval (§14.3) shows Grok escalating it further,
+P2→P3, turning a recoverable near-miss into a severe 2-level miss. This is a Grok-prompt/guard
+question (already flagged in Part 1/2 as the deep-or-nothing / escalation-guard territory), not
+something the cost matrix can address — it fires *after* the matrix has already made its call.
+
+**Conclusion: the ~1-hour re-backtest was worth doing but confirms there is no cost-matrix lever
+left to pull.** The shipped matrix is already at its empirically-optimal fit for this reward
+structure and continues to reduce regret substantially on the new distributions; the residual
+TEST regression is fully explained by (a) the digest-driven input shift moving 2 articles'
+`agg_probs` outside the rule's ±1-level reach, and (b) one Grok-layer escalation on a third. None
+of this changes §15–16's verdict — if anything it further **narrows** the cheap, no-retrain
+options that have already been exhausted (Phase 0b/0c's cost rule, now re-validated) and reinforces
+that the remaining gap is a data problem, not a decision-layer or training problem. No production
+code change was made — `preset_infer_handler.py::_COST_MATRIX` is confirmed still correct and is
+left as-is.
+
+---
+
+## 15. Verdict: another training run is NOT worth it
+
+Three independent lines of evidence, all pointing the same way:
+
+1. **The failure mode is generalization, and generalization is data-bound here, not
+   optimization-bound.** run14 hit the *same* train ceiling as run13 (0.82/0.95) and then
+   overfit. The problem was never "the optimizer couldn't fit the training set" — it fits it
+   fine (83% train exact). The problem is that **24 training articles, all variant-triples of 8
+   base lessons, cannot teach the model the held-out archetypes** (standalone science explainers,
+   golden-local-satisfiable articles, no-variant P2/P3). More epochs on the same 24 → deeper
+   memorization, not better generalization. This was pre-registered as a risk in the run13
+   post-mortem ("decisive-confidence OOD errors need new DATA not epochs") and run14 confirmed it.
+
+2. **Entropy collapse is now a repeatable property of this dataset+recipe, not a tuning miss.**
+   Both run13 and run14 collapse to H≈0.01 by ep~85–100. run13 happened to land a
+   better-generalizing checkpoint *before* collapsing hard; run14 didn't. Chasing a lucky
+   pre-collapse checkpoint via periodic saves + stronger entropy regularization is a
+   *variance-reduction* play on a **~2-point exact-count metric whose binomial noise is already
+   σ≈2** (n=16). Even a "successful" anti-collapse rerun that recovers run13's 10/16 buys nothing
+   over just keeping run13 — and could as easily land at 8/16 by chance.
+
+3. **The measurement itself can't adjudicate small wins.** With n=16 and a 56% majority-class
+   (P1) baseline, no retrain can be *shown* to beat run13 by the only margins a retrain could
+   plausibly deliver (±1–2 exact). We are optimizing against a ruler too coarse to read the
+   result. Spending a ~10-hour retrain + eval cycle to move a needle we can't measure is
+   negative expected value.
+
+**Corollary — keep `run13_formulaB/best` as production.** It remains the best validated model
+(TEST 10/16, 0 misses, MAE 0.375, regret 0.0384). Nothing in run14 justifies replacing it.
+
+**The one cheap thing worth doing first (before any expensive data work):** the deterministic
+cost-sensitive rule (§9/§13) is already shipped and is where all the recent real gains came from.
+If the run13-on-new-digests eval (§14.3) shows the new digests shifted some `agg_probs`, it is
+worth a ~1-hour **re-backtest of the cost-matrix thresholds against the new distributions** — the
+rule is data-cheap to re-tune and has historically delivered more than any retrain. But that is
+tuning, not training.
+
+---
+
+## 16. The real lever: EXPAND (and rebalance) the dataset
+
+The binding constraint, restated precisely from all evidence across Parts 1–3:
+
+- **Train/test archetype shift.** TRAIN = 24 variant-triples of 8 *course-lesson* base articles
+  (agentic-AI engineering how-to content, all goldens URL-scraped). TEST = 16 *standalone*
+  articles (science explainers, deep-dive papers) — a genuinely different distribution the model
+  never trained on.
+- **Class imbalance + confound.** Current oracle-arm distribution (verified):
+  **TRAIN(24): skip=9, light=9, standard=3, deep=3** — and *every* train standard/deep example is
+  a `var_demanding` variant, so the model learned "demanding-fingerprint → escalate" rather than
+  "genuine depth-need → escalate." **TEST(16): skip=3, light=9, standard=2, deep=2** — a 56% P1
+  majority, which is why exact-hit is a near-useless discriminator.
+- **The residual test errors are all one archetype the training set lacks:** standalone articles
+  whose high guideline demand is *satisfiable from local golden sources* (the over-prediction
+  cluster: Insects, Gravity, Distinct, 29_eval, Space-Time). The model has never seen a
+  "high-demand-but-golden-satisfiable → light" training example.
+
+### 16.1 What kinds of articles we need (priority-ordered)
+
+**PRIORITY 1 — TEST-set expansion (fixes the MEASUREMENT bottleneck; do this FIRST).**
+The n=16 / σ≈2 measurement floor blocks *evaluating* every other improvement. Add **~16–24 new
+held-out articles**, stratified by oracle arm so no single class dominates. Target a test set of
+~32–40 articles with roughly balanced arms (≈8–10 each of skip/light/standard/deep). Crucially,
+include **golden-source-type diversity matching deployment**: a mix of URL-scraped-golden and
+local-file-golden ("golden_local") articles, since deployment sees both and the current test set's
+golden-local half is exactly where the model fails. Without this, we cannot tell whether *any*
+future fix (dataset or model) actually worked.
+
+**PRIORITY 2 — TRAIN-set articles in the MISSING REGIMES (fixes the model's blind spots).**
+Two specific archetypes, neither of which exists in training today:
+
+  - **(2a) High-demand + golden-satisfiable → oracle P1 ("the golden-discount lesson").**
+    Standalone articles whose guideline lists many specific anchors/must-cover items (large
+    `need_depth`), but where those anchors are fully answered by supplied **local golden sources**
+    — so the grader rewards *light* research. This is the exact fingerprint of the entire test
+    over-prediction cluster. The model currently reads "big gap numbers → escalate"; these
+    examples teach it to discount demand when golden coverage is high. **Need ~6–10 of these.**
+  - **(2b) No-variant genuine P2/P3 (breaks the `var_demanding`→escalate confound).**
+    Standalone articles that *genuinely* need standard/deep research and whose oracle is P2/P3 —
+    but that are NOT `var_demanding` variants of a course lesson. This decouples "escalate" from
+    the demanding-variant tag the model currently over-relies on. **Need ~4–6 of these
+    (some standard, some deep).**
+
+**AVOID (explicitly): more `var_minimal/standard/demanding` variants of the existing 8 lessons.**
+This is the cheapest option and the most tempting, but it *deepens* the very confound (2b) is
+meant to break, and adds no archetype diversity. Do not generate more variants.
+
+**AVOID: naive train/test reshuffle of the current 40** — moving the 5 over-prediction-cluster
+articles into train would leak the exact failure mode being measured; moving "clean" ones shrinks
+the already-too-small test set. Reshuffling is only safe *after* Priority-1 expansion backfills
+the test set (then promoting a few current test articles into train is near-free, since their
+4-arm episodes already exist).
+
+### 16.2 Where to get them (concrete, sourced)
+
+There is already tooling and raw material for this — it does **not** require inventing a pipeline
+from scratch:
+
+1. **Guideline synthesizer already exists:** `writing_workflow/generate_article_guideline.py`
+   (Phase 0b). It generates a full `article_guideline.md` from a structured YAML *brief* using
+   few-shot examples from the existing articles (`--article <name>`, `--from-article <name>` to
+   reverse-extract a brief from a finished article, `--eval-mode` to validate quality). Model =
+   Grok-4 reasoning, temperature 0.5.
+2. **Briefs already staged:** `writing_workflow/inputs/briefs/` already contains **18 YAML
+   briefs** — including all 8 current standalone test articles (Bird_Eye_Extreme, Dark_Dimension,
+   Distinct_AI_Models, Earth_Oceans_Origin, Gravity_Entropy, HNSW, Insects_Consciousness,
+   Space-Time_QECC, State_of_LLM_Reasoning, Understanding_Reasoning_LLMs) plus 13/14/29/31_CI and
+   two course-lesson briefs, and a `_TEMPLATE.yaml` documenting the full schema (lesson identity,
+   topic_summary, target_length_words, theory_practice_ratio, sections+key_points,
+   `golden_sources` [title+url], optional `other_sources`, `code_examples`). **Authoring a new
+   article = write one YAML brief + run the synthesizer.**
+3. **Golden-source material for the two needed archetypes is abundant and free:**
+   - For **(2a) golden-satisfiable science explainers**: pick a narrow scientific/technical topic
+     with 1–4 authoritative primary papers (arXiv / open-access journals), supply those papers as
+     **local golden files** (the `<!-- [Title](URL) --> "File.md"` convention → they land in
+     `.research/local_files_from_research/`, now correctly read post-golden_local-fix), and write
+     a guideline that demands detailed coverage of exactly what those papers contain. The existing
+     test articles (Space-Time_QECC = the 3 holographic-QEC papers; Understanding_Reasoning_LLMs =
+     4 reasoning papers) are the exact template to clone with new topics. Source pool: arXiv
+     cs.LG/cs.CL/quant-ph/astro-ph, Distill.pub, open-access Nature/Science summaries.
+   - For **(2b) genuine no-variant P2/P3**: pick topics that are *broad or fast-moving* enough
+     that a handful of golden sources genuinely do NOT cover the guideline's demands, forcing real
+     exploration (e.g. "survey of X across N subfields", "state of the art in Y as of 2026",
+     comparative/landscape articles). The guideline should list demands whose answers are NOT in
+     the supplied goldens → the grader rewards deeper exploration → oracle lands P2/P3.
+4. **Same-course held-out lessons remain available** for more course-archetype articles if
+   desired: the course eval dataset (`writing_workflow/inputs/evals/dataset/data/`) and the
+   synthesizer's own held-out split (09_RAG, 11_multimodal are the synthesizer's *validation*
+   articles) show the pattern; additional real course lessons (12_fine_tuning, 16_observability,
+   17_deployment per the `_TEMPLATE.yaml` scope notes) are natural candidates but are the SAME
+   archetype we already have plenty of — lower priority than the two standalone archetypes above.
+
+### 16.3 The cost that makes this "expensive" — be clear-eyed about it
+
+Each new article is NOT just a guideline. To get a trustworthy oracle label it needs the **full
+4-arm pipeline** (per §Test-Set/Per-Article Labeling): research × 4 presets (skip/light/standard/
+deep) → digest → writing × 3/preset → grading against an `article_ground_truth.md` → section
+oracle → article oracle. That requires, per article: a written **ground-truth reference article**
+(the grader's target — this is the real human/LLM effort), the research runs, and ~12 article
+generations + gradings. Ballpark: mostly API cost + a few hours of pipeline wall-time per article,
+plus the GT-authoring effort. For ~20–30 new articles this is a multi-day, real-budget effort —
+which is exactly why Priorities are ordered: **do the ~16–24 test articles first** (they unblock
+measurement and are where deployment actually operates), then the ~10–16 targeted train articles
+only if the expanded test set shows the archetype gaps still bite.
+
+### 16.4 Recommended sequence
+
+| # | Action | Cost | Why |
+|---|---|---|---|
+| 1 | Fill in §14.3 with the run13-on-new-digests number; if digests shifted `agg_probs`, re-backtest the cost-matrix thresholds (~1 h) | Cheap | Cheapest possible win; confirms production is still optimal on the new digests |
+| 2 | **Author + label ~16–24 new TEST articles**, stratified by oracle arm, incl. golden-local diversity | Expensive (days) | Breaks the n=16 measurement floor — prerequisite for trusting anything else |
+| 3 | Re-run run13 eval on the expanded test set to get the first *statistically meaningful* held-out number | ~30 min | Establishes whether the archetype gap is still material at n≈40 |
+| 4 | Only if step 3 confirms the gap: author + label ~10–16 new TRAIN articles in archetypes (2a) + (2b); THEN retrain (with periodic checkpoints + entropy floor to dodge collapse) | Expensive (days) | Teaches the golden-discount + decouples the demanding→escalate confound; retraining is worth it ONLY once the data actually contains the missing regimes |
+| 5 | (optional) after test backfill, promote a few current standalone test articles into train (near-free — episodes exist) to further balance | Cheap | Rebalance without shrinking the (now-larger) test set |
+
+**Bottom line:** stop retraining on the current 24 articles — it has hit its ceiling and further
+runs only overfit. The lever is data. Expand the **test set first** (to make improvement
+measurable) with arm-balanced, golden-source-diverse articles; then add **train articles in the two
+missing archetypes** (golden-satisfiable→P1, and no-variant genuine P2/P3). The synthesizer +
+briefs infrastructure to do this already exists; the real cost is the 4-arm labeling pipeline and
+ground-truth authoring per new article.

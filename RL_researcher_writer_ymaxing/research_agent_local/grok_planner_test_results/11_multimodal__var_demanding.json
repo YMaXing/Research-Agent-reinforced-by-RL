@@ -2,8 +2,8 @@
   "variant": "11_multimodal__var_demanding",
   "lesson": "11_multimodal",
   "split": "TRAIN",
-  "policy": "required",
-  "rl_preset": 2,
+  "policy": "allowed",
+  "rl_preset": 1,
   "grok_preset": 1,
   "chosen_preset": 1,
   "chosen_by": "Grok4.2",
@@ -18,26 +18,24 @@
   "verdict": "NEAR",
   "regret": 0.0171,
   "regret_counted": 0.0171,
-  "entropy_bits": 1.2667,
-  "confidence": 0.6583,
+  "entropy_bits": 1.7169,
+  "confidence": 0.4167,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.1833,
-    0.1583,
-    0.6583,
-    0.0
+    0.1167,
+    0.4167,
+    0.3833,
+    0.0833
   ],
-  "grok_override": true,
-  "grok_reasoning": "Aggregate RL vote is P2 standard (66% standard mass, moderate confidence, uncertain). However, residual d/b is 0/0 across 98% of budget (only S8 has 1/0), coverage scores are high (mostly ≥7 depth / ≥4 breadth, many at 8·5 or 8·4), every section is self-contained, and all high-budget sections (S3 23%, S4 18%, S5 15%) meet depth_score ≥6 or residual-near-zero. This triggers the sanctioned general downward override to P1; satisfies REQUIRED external-evidence policy with minimal waste given already-met needs.",
-  "grok_override_reason": "general downward override on near-zero residuals + high cov in high-budget sections (policy explicitly allows one level below when this pattern holds)",
+  "grok_override": false,
+  "grok_reasoning": "Aggregate RL pick is P1 light on uncertain vote (light 42%, standard 38%, deep 8%); no P2→P3 escalation (not a P2 pick and deep mass=8%<30%), no general downward override (standard mass>30% and multiple high-budget sections show large residual depth/must-ev), self-contained flags already baked into the cost-adjusted pick.",
+  "grok_override_reason": null,
   "grok_decision_drivers": [
-    "aggregate P2 vote (uncertain)",
-    "residual need near zero",
-    "high cov/self-contained",
-    "general downward override"
+    "RL aggregate pick",
+    "vote-mass gates",
+    "residual need in S3/S5"
   ],
   "grok_risk_flags": [
-    "38 unbacked anchors + must-ev counts (S5:6, S2:5) could still need targeted sourcing",
-    "demanding guideline with many named benchmarks/models may expose qualitative gaps not captured in cov scores"
+    "close light/standard split may undervalue depth in S3 (23%)"
   ]
 }

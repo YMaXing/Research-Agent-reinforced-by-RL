@@ -2,10 +2,10 @@
   "variant": "06_tools__var_demanding",
   "lesson": "06_tools",
   "split": "TRAIN",
-  "policy": "required",
-  "rl_preset": 1,
-  "grok_preset": 1,
-  "chosen_preset": 1,
+  "policy": "allowed",
+  "rl_preset": 2,
+  "grok_preset": 2,
+  "chosen_preset": 2,
   "chosen_by": "Grok4.2",
   "oracle_preset": 3,
   "oracle_name": "deep",
@@ -15,29 +15,29 @@
     0.5635,
     0.609
   ],
-  "verdict": "MISS",
-  "regret": 0.0176,
-  "regret_counted": 0.0176,
-  "entropy_bits": 1.9965,
-  "confidence": 0.2634,
+  "verdict": "NEAR",
+  "regret": 0.0455,
+  "regret_counted": 0.0455,
+  "entropy_bits": 0.7544,
+  "confidence": 0.8415,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.2215,
-    0.2634,
-    0.2634,
-    0.2516
+    0.0366,
+    0.0,
+    0.8415,
+    0.122
   ],
   "grok_override": false,
-  "grok_reasoning": "Aggregate RL vote is P1 light (UNCERTAIN but no dominant arm, std/deep masses both <30%); external-evidence REQUIRED blocks P0 while hard guard blocks any P1->P2+; all sections self-contained with mostly low residuals (e.g. S5/S7/S8 at 0-1) already supply the needed evidence.",
+  "grok_reasoning": "Aggregate RL recommendation is decisive P2 standard (84% budget-weighted vote mass on standard, only 12% deep). High must-ev (63 total) and depth residuals in largest sections (S3/S4) align with this without triggering any sanctioned override (no P2->P3 path, no broad well-covered pattern for downward nudge).",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "RL aggregate vote",
-    "external-evidence REQUIRED",
-    "vote mass gates",
-    "self-contained + low residual"
+    "scorer_aggregate",
+    "decisiveness",
+    "vote_mass_gates",
+    "high_budget_residuals"
   ],
   "grok_risk_flags": [
-    "Even vote split could undervalue S3/S4 depth needs",
-    "42 unbacked anchors but do not escalate on raw counts"
+    "depth gaps in S3/S4 could need more than 2 rounds",
+    "must-ev density in code-heavy sections"
   ]
 }

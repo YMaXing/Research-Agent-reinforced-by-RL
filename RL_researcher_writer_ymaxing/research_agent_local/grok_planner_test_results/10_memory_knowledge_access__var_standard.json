@@ -18,25 +18,25 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.8598,
-  "confidence": 0.4298,
-  "floor_applied": false,
+  "entropy_bits": 1.4043,
+  "confidence": 0.5514,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.2641,
-    0.4298,
-    0.1553,
-    0.1509
+    0.0,
+    0.5514,
+    0.2991,
+    0.1495
   ],
   "grok_override": false,
-  "grok_reasoning": "Aggregate RL pick is P1 light (budget-weighted: light 44%, skip 26%, standard 15%, deep 15%); UNCERTAIN (entropy 1.86) but light is the clear dominant arm. No sanctioned upward escalation (pick is not P2 and deep-vote mass=15%<30%); general downward override does not apply because of the dominant light mass and because high-budget sections S1/S3/S4 still show large residual depth (18/0, 16/2, 14/0) plus must-ev counts. All sections self-contained and S5/S6/S7 already well-covered or brief-flagged; RL pick already cost-adjusted upstream.",
+  "grok_reasoning": "Scorer aggregate is P1 light (55% light, 30% standard, 15% deep; moderate confidence = uncertain). No sanctioned P2→P3 escalation (pick is P1 not P2; deep-vote mass=15%<30%). No general downward override to P0 (high-budget sections S1/S3/S4 carry 45% budget with large residual depth 17/19/32 and RL votes standard/deep; dominant gap type is depth). Self-contained flags and brief on S5 already baked into the cost-adjusted RL pick; stay at P1.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "budget-weighted light-dominant vote mass",
-    "no P2->P3 or downward triggers met",
-    "residuals as context only"
+    "scorer_aggregate_P1",
+    "no_sanctioned_escalation",
+    "high_residual_depth_in_key_sections"
   ],
   "grok_risk_flags": [
-    "S3 deep vote + high residual depth/must-ev may stay partly unaddressed",
-    "entropy spread could indicate edge-case under-coverage"
+    "moderate scorer confidence",
+    "depth-dominant gaps in S3/S4 may still limit evidence"
   ]
 }

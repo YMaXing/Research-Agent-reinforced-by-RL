@@ -18,25 +18,25 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": null,
-  "entropy_bits": 1.5548,
-  "confidence": 0.2931,
-  "floor_applied": false,
+  "entropy_bits": 1.4232,
+  "confidence": 0.1724,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.431,
-    0.2931,
+    0.5517,
+    0.1724,
     0.0,
     0.2759
   ],
   "grok_override": true,
-  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN (exploration output cannot be used); this hard constraint overrides the UNCERTAIN P1 aggregate vote (43% skip / 29% light / 28% deep mass) and all per-section residual needs. All sections are self-contained with 'brief: yes' flags and the guideline demands surface-level treatment only.",
-  "grok_override_reason": "Hard constraint from external-evidence policy = forbidden mandates P0 skip",
+  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN (hard constraint overriding all else); exploration output cannot be used. Guideline repeatedly demands brevity, prohibits external libs/case studies/benchmarks, and labels most sections 'must stay brief' + self-contained with high residual but no sanctioned escalation from P0/P1.",
+  "grok_override_reason": "Hard constraint for forbidden external-evidence policy mandates P0 regardless of P1 aggregate vote",
   "grok_decision_drivers": [
-    "external-evidence policy",
-    "hard constraint",
-    "self-contained + brief flags"
+    "external-evidence-forbidden",
+    "brevity-flags",
+    "self-contained"
   ],
   "grok_risk_flags": [
-    "scorer uncertainty with 28% deep mass on S1/S6",
-    "potential residual depth gaps in S1/S3"
+    "scorer uncertainty with 28% deep mass",
+    "large residual needs in S5/S3"
   ]
 }

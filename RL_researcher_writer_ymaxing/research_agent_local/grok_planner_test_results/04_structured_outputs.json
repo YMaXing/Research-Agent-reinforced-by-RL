@@ -18,25 +18,25 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.2427,
-  "confidence": 0.6664,
+  "entropy_bits": 1.4599,
+  "confidence": 0.5327,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.1337,
-    0.0,
-    0.6664,
-    0.1999
+    0.2671,
+    0.0002,
+    0.5327,
+    0.2
   ],
   "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P2 standard (67% budget-weighted standard mass, 20% deep mass); this is UNCERTAIN (67% top-pick <70%) but deep mass <30% so no sanctioned P2->P3 escalation applies. High-budget S4 (40%, residual 0/2, cov depth=6) and S3 (20%, residual 2/4, voted deep) plus balanced article-wide gaps give no basis for general downward override to P1. Self-contained flags and low-budget high-residual S6 are already factored into the cost-adjusted RL pick.",
+  "grok_reasoning": "Section-scorer aggregate is P2 standard (already cost-adjusted) with 53% budget-weighted standard mass and only 20% deep mass; this is UNCERTAIN (moderate 53% top-pick) but the P2->P3 gate requires deep-mass >=30% so escalation is disallowed. High-budget sections S4 (40%, standard, must-ev=14, resid=16/6) and S3 (20%, deep) drive the dominant depth gap; S2 brief flag and universal self-contained flags do not meet GENERAL DOWNWARD OVERRIDE criteria because standard mass is clearly dominant (>30%) and high-budget sections are neither well-covered nor all brief. Therefore stay at the RL peak of P2.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer_aggregate_P2",
-    "standard_vote_mass_67pct",
-    "deep_mass_below_30pct_threshold"
+    "budget-weighted standard mass 53%",
+    "deep-mass <30% blocks P3",
+    "high-budget S4/S3 RL picks and residuals"
   ],
   "grok_risk_flags": [
-    "S3 deep vote on 20% budget may under-serve implementation depth",
-    "S6 residual 6/0 on conclusion"
+    "moderate scorer confidence",
+    "all sections self-contained could imply lower preset but policy forbids re-deriving from raw residuals"
   ]
 }

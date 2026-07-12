@@ -4,8 +4,8 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": 0,
-  "chosen_preset": 0,
+  "grok_preset": 1,
+  "chosen_preset": 1,
   "chosen_by": "Grok4.2",
   "oracle_preset": 1,
   "oracle_name": "light",
@@ -15,28 +15,29 @@
     0.7145,
     0.5436
   ],
-  "verdict": "NEAR",
-  "regret": 0.0722,
-  "regret_counted": 0.0722,
-  "entropy_bits": 1.5785,
-  "confidence": 0.373,
-  "floor_applied": false,
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.3649,
+  "confidence": 0.4402,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.2956,
-    0.373,
-    0.3314,
+    0.4615,
+    0.4402,
+    0.0983,
     0.0
   ],
-  "grok_override": true,
-  "grok_reasoning": "Scorer aggregate is P1 light but UNCERTAIN (entropy 1.58, votes split 40% light / 31% standard / 29% skip / 0% deep). All 6 sections show residual d/b exactly 0/0, coverage already at or above need (cov d·b 7·6 or 8·6), and 100% of budget is self-contained; this triggers the sanctioned general downward override. No escalation path exists from a P1 pick.",
-  "grok_override_reason": "general downward override: zero residuals + universal self-containment across all high-budget sections (including largest 29% S5 voting skip) indicate existing material already meets guideline demands",
+  "grok_override": false,
+  "grok_reasoning": "Section-scorer aggregate is P1 light (moderate confidence, 44% light / 46% skip vote split, standard 10%, deep 0%). This is already cost-adjusted upstream; residuals are zero in the two largest sections (S5 29%, S4 18%) with all sections self-contained, but S2/S3 gaps and 45 unbacked anchors were factored into the RL votes. No qualitative red flags (e.g. evidence policy=ALLOWED, examples section already strong) or sanctioned override conditions justify moving off the primary signal.",
+  "grok_override_reason": null,
   "grok_decision_drivers": [
-    "zero residual need",
-    "100% self-contained",
-    "uncertain split with 0% deep mass"
+    "scorer_aggregate_P1",
+    "budget_vote_mass",
+    "self-contained_residuals",
+    "no_escalation_signal"
   ],
   "grok_risk_flags": [
-    "48 unbacked anchors still reported article-wide",
-    "S6 must-ev=6 and demanding examples (Gemini CLI, Perplexity Deep Research) could benefit from fresh sources"
+    "close skip/light split could tilt P0 if residuals over-weighted",
+    "demanding guideline with many must-ev could surface minor gaps"
   ]
 }

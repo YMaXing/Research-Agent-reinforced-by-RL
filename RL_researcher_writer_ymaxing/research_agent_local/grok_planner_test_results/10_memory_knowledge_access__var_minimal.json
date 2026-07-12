@@ -18,25 +18,24 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": null,
-  "entropy_bits": 1.0169,
-  "confidence": 0.6261,
+  "entropy_bits": 1.5832,
+  "confidence": 0.3218,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.3646,
-    0.6261,
-    0.0094,
+    0.3216,
+    0.3218,
+    0.3567,
     0.0
   ],
   "grok_override": true,
-  "grok_reasoning": "HARD CONSTRAINT: external-evidence policy is explicitly FORBIDDEN. Brief states exploration output cannot be used and only valid choice is skip. Scorer aggregate (P1 light, 63% mass on light) is overridden by this policy; all sections are self-contained with 'brief' flags and no external sources permitted per guideline.",
-  "grok_override_reason": "external-evidence policy = forbidden mandates P0 regardless of scorer vote or residual gaps",
+  "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN requires P0; exploration output cannot be used. Scorer aggregate was P1 (uncertain, 36% standard mass) but policy overrides all votes, residual needs, and section budgets. Article guideline reinforces conceptual overview with strict brevity and no external libraries/case studies.",
+  "grok_override_reason": "External-evidence policy explicitly forbids exploration, forcing P0 despite scorer's P1 pick",
   "grok_decision_drivers": [
-    "external-evidence policy",
-    "self-contained flags",
-    "brevity requirements"
+    "external-evidence-forbidden",
+    "hard-constraint-override"
   ],
   "grok_risk_flags": [
-    "scorer lean toward light ignored due to policy",
-    "potential under-coverage on must-ev items in S1/S5/S6"
+    "policy misread could allow light touch-up",
+    "self-contained sections might still hide depth gaps"
   ]
 }

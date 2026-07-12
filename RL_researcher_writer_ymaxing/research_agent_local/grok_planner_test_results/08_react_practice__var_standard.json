@@ -18,25 +18,26 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.4169,
-  "confidence": 0.4892,
-  "floor_applied": true,
+  "entropy_bits": 0.9159,
+  "confidence": 0.3309,
+  "floor_applied": false,
   "rl_agg_probs": [
-    0.3813,
-    0.4892,
-    0.1295,
+    0.6691,
+    0.3309,
+    0.0,
     0.0
   ],
   "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P1 light (49% light / 38% skip / 13% standard / 0% deep); moderate confidence, light-dominant, standard- and deep-vote masses both <<30%. No sanctioned upward escalation from P1, no dominant-arm-free uncertainty for downward override to P0, and 100% self-contained flag plus per-section residuals (high in S1/S3, zero in largest S5/S4) already baked into the cost-adjusted RL pick. Dominant gap type balanced but strongest coverage in highest-budget sections (S5 cov 5·4, S4 cov 4·3) makes extra rounds low-value.",
+  "grok_reasoning": "Aggregate RL vote is P1 light (already cost-adjusted); UNCERTAIN (67% skip / 33% light, 0% standard+deep). No P2→P3 escalation (deep-mass=0%, not from P2). Downward override to P0 disallowed: high-budget S4 (20%, resid 41/4, 12 must-ev) and S2 not brief/well-covered; only S5 (29%) is brief. 100% self-contained + dominant depth gaps already factored into the P1 pick.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer aggregate P1",
-    "low std/deep mass",
-    "high-budget residuals near zero"
+    "RL-aggregate-P1",
+    "zero-higher-vote-mass",
+    "self-contained-budget",
+    "brief-on-S5"
   ],
   "grok_risk_flags": [
-    "S3 standard vote + residual 2/4 could leave prompt-construction gap",
-    "moderate scorer confidence on practice-heavy article"
+    "S4/S2 must-ev orphans may stay thin",
+    "uncertain vote could undervalue targeted depth"
   ]
 }

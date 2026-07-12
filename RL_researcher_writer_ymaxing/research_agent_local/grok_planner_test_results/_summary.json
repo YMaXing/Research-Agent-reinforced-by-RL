@@ -20,25 +20,25 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": null,
-      "entropy_bits": 1.2306,
-      "confidence": 0.6695,
+      "entropy_bits": 0.6194,
+      "confidence": 0.8462,
       "floor_applied": true,
       "rl_agg_probs": [
-        0.207,
-        0.6695,
         0.0,
-        0.1235
+        0.8462,
+        0.0,
+        0.1538
       ],
       "grok_override": true,
-      "grok_reasoning": "External-evidence policy is FORBIDDEN (hard constraint mandates P0). Scorer aggregate is P1 light (67% light, 15% deep mass) but policy and self-contained/brief flags on 100% of budget override it; residuals already near-zero in S3/S5/S6.",
-      "grok_override_reason": "Hard policy constraint requires P0 when external evidence is forbidden",
+      "grok_reasoning": "External-evidence policy explicitly FORBIDDEN (hard constraint overrides everything, mandating P0). Scorer's decisive P1 (85% light) is ignored per policy; 100% self-contained sections, many with 0 residual depth need and 'brief' flags confirm no exploration is usable.",
+      "grok_override_reason": "Hard constraint from external-evidence policy = forbidden requires P0, overriding RL pick of P1",
       "grok_decision_drivers": [
-        "external-evidence-forbidden",
-        "self-contained-flags",
-        "scorer-uncertainty-downward"
+        "external-evidence policy",
+        "hard constraints",
+        "self-contained + residual need"
       ],
       "grok_risk_flags": [
-        "scorer lean toward light could indicate minor gaps but policy blocks exploration"
+        "Scorer's 85% light vote on conceptual article; policy may be overly strict but is non-negotiable"
       ]
     },
     {
@@ -61,26 +61,26 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": 0.0,
-      "entropy_bits": 1.2929,
-      "confidence": 0.6404,
+      "entropy_bits": 1.3645,
+      "confidence": 0.5714,
       "floor_applied": true,
       "rl_agg_probs": [
-        0.0,
-        0.6404,
-        0.2132,
-        0.1464
+        0.1299,
+        0.5714,
+        0.2987,
+        0.0
       ],
       "grok_override": false,
-      "grok_reasoning": "Aggregate RL pick is P1 light (64% soft vote, 70% budget-weighted on light; moderate/not decisive). Deep-vote mass 13% and standard-vote mass 17% both <<30% so no P2→P3 escalation possible from a P1 pick (hard guard). All sections self-contained with strong existing cov (mostly 7-8·6); high-budget S5/S4/S6 already near-zero residual or brief-flagged, failing general-downward criteria for P0. Must-ev and depth gaps exist in S2/S3/S5 but vote mass (not raw counts) calibrates to P1 as the reward peak.",
+      "grok_reasoning": "Section-scorer aggregate is P1 light (57% light, 30% standard, 0% deep mass); moderate confidence makes it UNCERTAIN but no sanctioned override applies. High-budget S5 (30%, standard pick, must-ev 4, residual near-zero on depth) and S4 already show strong coverage; 100% self-contained sections plus universal brief flags on large portions argue against escalation. Dominant gap type is depth but RL votes already baked in the cost-adjusted P1 recommendation; P2+ is prohibited from a P1 pick.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "budget-weighted light mass (70%)",
-        "self-contained + strong cov on largest sections",
-        "no sanctioned override conditions met"
+        "budget-weighted vote mass",
+        "self-contained + residual context",
+        "brief flags on high-budget sections"
       ],
       "grok_risk_flags": [
-        "moderate scorer confidence could undervalue depth needs in S2/S3 examples",
-        "specific Aug-2025 Gemini/Perplexity details may require more than light touch-up"
+        "S3 residual 46/4 + must-ev 3 could leave comparison gaps",
+        "42 unbacked anchors may need more sourcing than light round supplies"
       ]
     },
     {
@@ -89,8 +89,8 @@
       "split": "TRAIN",
       "policy": "allowed",
       "rl_preset": 1,
-      "grok_preset": 0,
-      "chosen_preset": 0,
+      "grok_preset": 1,
+      "chosen_preset": 1,
       "chosen_by": "Grok4.2",
       "oracle_preset": 1,
       "oracle_name": "light",
@@ -100,29 +100,30 @@
         0.7145,
         0.5436
       ],
-      "verdict": "NEAR",
-      "regret": 0.0722,
-      "regret_counted": 0.0722,
-      "entropy_bits": 1.5785,
-      "confidence": 0.373,
-      "floor_applied": false,
+      "verdict": "EXACT",
+      "regret": 0.0,
+      "regret_counted": 0.0,
+      "entropy_bits": 1.3649,
+      "confidence": 0.4402,
+      "floor_applied": true,
       "rl_agg_probs": [
-        0.2956,
-        0.373,
-        0.3314,
+        0.4615,
+        0.4402,
+        0.0983,
         0.0
       ],
-      "grok_override": true,
-      "grok_reasoning": "Scorer aggregate is P1 light but UNCERTAIN (entropy 1.58, votes split 40% light / 31% standard / 29% skip / 0% deep). All 6 sections show residual d/b exactly 0/0, coverage already at or above need (cov d·b 7·6 or 8·6), and 100% of budget is self-contained; this triggers the sanctioned general downward override. No escalation path exists from a P1 pick.",
-      "grok_override_reason": "general downward override: zero residuals + universal self-containment across all high-budget sections (including largest 29% S5 voting skip) indicate existing material already meets guideline demands",
+      "grok_override": false,
+      "grok_reasoning": "Section-scorer aggregate is P1 light (moderate confidence, 44% light / 46% skip vote split, standard 10%, deep 0%). This is already cost-adjusted upstream; residuals are zero in the two largest sections (S5 29%, S4 18%) with all sections self-contained, but S2/S3 gaps and 45 unbacked anchors were factored into the RL votes. No qualitative red flags (e.g. evidence policy=ALLOWED, examples section already strong) or sanctioned override conditions justify moving off the primary signal.",
+      "grok_override_reason": null,
       "grok_decision_drivers": [
-        "zero residual need",
-        "100% self-contained",
-        "uncertain split with 0% deep mass"
+        "scorer_aggregate_P1",
+        "budget_vote_mass",
+        "self-contained_residuals",
+        "no_escalation_signal"
       ],
       "grok_risk_flags": [
-        "48 unbacked anchors still reported article-wide",
-        "S6 must-ev=6 and demanding examples (Gemini CLI, Perplexity Deep Research) could benefit from fresh sources"
+        "close skip/light split could tilt P0 if residuals over-weighted",
+        "demanding guideline with many must-ev could surface minor gaps"
       ]
     },
     {
@@ -145,24 +146,25 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": null,
-      "entropy_bits": 0.9911,
-      "confidence": 0.5556,
+      "entropy_bits": 0.6167,
+      "confidence": 0.1528,
       "floor_applied": false,
       "rl_agg_probs": [
-        0.4444,
-        0.5556,
+        0.8472,
+        0.1528,
         0.0,
         0.0
       ],
       "grok_override": true,
-      "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN requires P0 skip (exploration output cannot be used). Scorer aggregate was P1 light (56% light / 44% skip, moderate confidence, all sections self-contained, many brief-flagged, low residuals in S3/S5/S7/S8), but policy overrides all votes and residual signals.",
-      "grok_override_reason": "external-evidence policy explicitly forbidden",
+      "grok_reasoning": "Hard constraint: external-evidence policy explicitly FORBIDDEN, so exploration output cannot be used and P0 is mandatory. Scorer aggregate was P1 (85% skip / 15% light mass, UNCERTAIN) but this is overridden by the policy and by every section being self-contained + brief-flagged with surface-level treatment required per guideline.",
+      "grok_override_reason": "external-evidence policy = forbidden mandates P0 regardless of scorer vote",
       "grok_decision_drivers": [
         "external-evidence-forbidden",
-        "hard-constraint"
+        "all-sections-self-contained-and-brief"
       ],
       "grok_risk_flags": [
-        "scorer lean toward light ignored due to policy"
+        "scorer picked light despite policy",
+        "high residual need numbers but irrelevant under forbid"
       ]
     },
     {
@@ -185,33 +187,34 @@
       "verdict": "NEAR",
       "regret": 0.0148,
       "regret_counted": 0.0148,
-      "entropy_bits": 1.5071,
-      "confidence": 0.5845,
-      "floor_applied": false,
+      "entropy_bits": 0.7553,
+      "confidence": 0.8509,
+      "floor_applied": true,
       "rl_agg_probs": [
-        0.2728,
-        0.5845,
-        0.0761,
-        0.0666
+        0.0,
+        0.8509,
+        0.0663,
+        0.0828
       ],
       "grok_override": false,
-      "grok_reasoning": "Aggregate RL pick is P1 light (58% light vote mass, only 8% standard / 7% deep); UNCERTAIN due to entropy but light is the clear dominant arm and both escalation gates sit far below 30%. 100% self-contained + no high-budget sections flagged brief, yet policy forbids any P1→P2 move and raw residuals/need_depth do not override the calibrated vote mass. No sanctioned downward trigger applies because light dominates.",
+      "grok_reasoning": "Decisive P1 light aggregate (85% vote mass) with standard/deep masses at 7%/8% (below 30% escalation gate). 100% self-contained budget and zero residuals in S5–S8 (47% of article) already meet coverage; high-residual sections are low-budget only. No override conditions met per policy.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "aggregate_vote_mass",
-        "low_std_deep_mass",
-        "self_contained_context"
+        "decisive scorer vote",
+        "residual distribution",
+        "self-contained flags",
+        "vote-mass gates"
       ],
       "grok_risk_flags": [
-        "high_residual_depth_in_S6_S7",
-        "uncertain_entropy"
+        "under-depth in S4 theory if residuals mislead",
+        "policy allows only downward here but gaps may still surface"
       ]
     },
     {
       "variant": "03_context_engineering__var_demanding",
       "lesson": "03_context_engineering",
       "split": "TRAIN",
-      "policy": "required",
+      "policy": "allowed",
       "rl_preset": 1,
       "grok_preset": 1,
       "chosen_preset": 1,
@@ -227,27 +230,25 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": 0.0,
-      "entropy_bits": 1.5684,
-      "confidence": 0.365,
+      "entropy_bits": 1.7696,
+      "confidence": 0.3839,
       "floor_applied": false,
       "rl_agg_probs": [
-        0.3716,
-        0.365,
-        0.2634,
-        0.0
+        0.1505,
+        0.3839,
+        0.0829,
+        0.3827
       ],
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is P1 light (already cost-adjusted); uncertain (entropy 1.57) with budget-weighted votes skip 35% / light 41% / standard 23% / deep 0%. Standard- and deep-vote masses both <30% so no sanctioned P2→P3 escalation; residual d/b=0/0 across all 100% self-contained budget and external-evidence=REQUIRED forbid any downward move to P0. RL picks already baked in the high must-ev counts (e.g. S6=11) and depth-dominant gaps.",
+      "grok_reasoning": "Section-scorer aggregate is P1 light (already cost-adjusted upstream); vote is UNCERTAIN (entropy 1.77 bits) with 38% light / 38% deep mass and only 8% standard. High deep-vote mass meets the numeric gate but OVERRIDE POLICY explicitly forbids any P1→P2+ escalation (hard code-level guard) and flags this exact depth-or-nothing pattern as sitting in a reward valley. Self-contained flags and residual needs supply context but are not sanctioned triggers to move off the RL pick; dominant gap is depth yet must-ev and unbacked anchors are universal and already factored into the P1 recommendation.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
         "scorer_aggregate_P1",
-        "required_external_evidence",
-        "zero_residual_need",
-        "vote_masses_below_30pct"
+        "no_sanctioned_escalation_from_P1",
+        "deep_or_nothing_guard"
       ],
       "grok_risk_flags": [
-        "uncertain_vote_spread",
-        "high must-ev in S6/S4 despite residuals=0"
+        "38% deep mass + large residuals in S3/S6/S2 could leave depth gaps under-served"
       ]
     },
     {
@@ -270,25 +271,25 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": null,
-      "entropy_bits": 1.4619,
-      "confidence": 0.36,
-      "floor_applied": true,
+      "entropy_bits": 1.5685,
+      "confidence": 0.2806,
+      "floor_applied": false,
       "rl_agg_probs": [
-        0.48,
-        0.36,
+        0.4019,
+        0.2806,
         0.0,
-        0.16
+        0.3175
       ],
       "grok_override": true,
-      "grok_reasoning": "External-evidence policy explicitly FORBIDDEN (hard constraint overriding all else); exploration output cannot be used. Scorer aggregate is uncertain P1 (36% light, 48% skip mass) but all 100% of budget is self-contained + brief-flagged with no external-evidence needs. Guideline demands only conceptual overview using provided notebook; no depth or new sources allowed.",
-      "grok_override_reason": "Hard policy constraint mandates P0 when external evidence is forbidden, overriding RL pick of P1",
+      "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN mandates P0 skip (exploration output cannot be used). Scorer aggregate is uncertain P1 (40% skip / 28% light / 32% deep) but this is overridden; 100% self-contained + every section brief-flagged + guideline explicitly demands surface-level conceptual overview with no external libs/cases.",
+      "grok_override_reason": "external-evidence policy explicitly forbids exploration, forcing P0 regardless of scorer vote",
       "grok_decision_drivers": [
         "external-evidence-forbidden",
-        "self-contained-flags",
-        "brevity-requirements"
+        "all-sections-brief-self-contained",
+        "guideline-surface-level"
       ],
       "grok_risk_flags": [
-        "Scorer saw minor residual depth gaps in S1/S2/S7 but policy blocks any use of new material"
+        "scorer deep mass 32% near escalation gate but hard guard blocks any P0->P2"
       ]
     },
     {
@@ -311,33 +312,33 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": 0.0,
-      "entropy_bits": 0.9957,
-      "confidence": 0.4615,
+      "entropy_bits": 0.6194,
+      "confidence": 0.8462,
       "floor_applied": true,
       "rl_agg_probs": [
         0.0,
-        0.4615,
-        0.5385,
-        0.0
+        0.8462,
+        0.0,
+        0.1538
       ],
       "grok_override": false,
-      "grok_reasoning": "Aggregate RL recommendation is P1 light (moderate confidence: 46% light / 54% standard mass). This is UNCERTAIN but no sanctioned override applies: cannot escalate P1 to P2 (hard guard), downward to P0 blocked by high residuals in S1(33), S2(38), S4(12), S7(9) plus standard-mass >30%. Self-contained flags and dominant depth gaps already factored into the cost-adjusted P1 pick.",
+      "grok_reasoning": "Scorer aggregate is decisively P1 light (85% light vote mass, 0% standard, 15% deep from only S1); all 100% of budget is self-contained with moderate residuals (e.g. S3 9/6, S4 16/6) and cov already 4-6 on depth. DECISIVE confidence triggers 'trust it and do not escalate' rule; no sanctioned override (not uncertain, no P2 base for P3, no near-zero residuals or brief flags for downward to P0).",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "RL-aggregate-P1",
-        "no-sanctioned-override",
-        "high-residuals-in-key-sections"
+        "decisive P1 vote mass",
+        "self-contained sections",
+        "moderate residuals"
       ],
       "grok_risk_flags": [
-        "close light/standard vote split may undervalue S3/S4/S7 practice depth",
-        "theory sections S1/S2 have largest residuals"
+        "S1 deep vote + high orphans (11) could leave theory gaps",
+        "dominant depth gaps may need more than light"
       ]
     },
     {
       "variant": "05_workflow_patterns__var_demanding",
       "lesson": "05_workflow_patterns",
       "split": "TRAIN",
-      "policy": "required",
+      "policy": "allowed",
       "rl_preset": 1,
       "grok_preset": 1,
       "chosen_preset": 1,
@@ -353,27 +354,26 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": 0.0,
-      "entropy_bits": 1.2857,
-      "confidence": 0.6279,
+      "entropy_bits": 1.3983,
+      "confidence": 0.4769,
       "floor_applied": true,
       "rl_agg_probs": [
         0.1163,
-        0.6279,
-        0.2558,
+        0.4769,
+        0.4068,
         0.0
       ],
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is P1 light (63% mass, moderate confidence, 26% standard / 0% deep). External-evidence policy requires >=P1; P1->P2 escalation is hard-forbidden for any P1 pick. High residuals in S1/S2 (must-ev=7) and 42 unbacked anchors noted but do not override per DO-NOT-ESCALATE-ON-RAW-GAPS rule; vote mass already reflects this. All sections self-contained with dominant light vote keeps us at the RL peak.",
+      "grok_reasoning": "Scorer aggregate is P1 light (48% light / 41% standard mass, 0% deep); UNCERTAIN but no sanctioned override applies (not a P2 pick so cannot escalate, standard mass >30% blocks general downward, residuals in S1/S2 already baked into cost-adjusted RL pick, all sections self-contained).",
       "grok_override_reason": null,
       "grok_decision_drivers": [
         "scorer_aggregate_P1",
-        "external_evidence_required",
-        "vote_mass_below_escalation_threshold",
-        "no_sanctioned_override"
+        "vote_mass_no_deep",
+        "self_contained_all_sections"
       ],
       "grok_risk_flags": [
-        "S1/S2 residuals may still need targeted depth",
-        "moderate scorer confidence leaves small upside to standard"
+        "S1/S2 high residual+must-ev could need more depth than light delivers",
+        "bimodal light/standard vote may sit near reward slope"
       ]
     },
     {
@@ -396,26 +396,26 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": null,
-      "entropy_bits": 1.4407,
-      "confidence": 0.3899,
+      "entropy_bits": 1.0701,
+      "confidence": 0.7381,
       "floor_applied": true,
       "rl_agg_probs": [
-        0.469,
-        0.3899,
+        0.1746,
+        0.7381,
         0.0,
-        0.141
+        0.0873
       ],
       "grok_override": true,
-      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0 skip because exploration output cannot be used. This is a hard constraint that overrides the uncertain P1 aggregate (skip 47%, light 39%). All 100% of budget is in self-contained sections flagged 'brief: yes'; guideline demands surface-level conceptual overview with no external libraries, case studies or production code.",
-      "grok_override_reason": "Hard constraint from forbidden external-evidence policy requires P0; also aligns with general downward override given universal self-contained + brevity flags",
+      "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN explicitly mandates P0 (exploration output cannot be used). Scorer aggregate is decisive P1 (74% light) but is overridden by this policy; all sections are self-contained, most are brief-flagged, and guideline demands surface-level conceptual overview with no external libs/cases.",
+      "grok_override_reason": "External-evidence policy = forbidden requires P0 regardless of scorer vote",
       "grok_decision_drivers": [
         "external-evidence-forbidden",
-        "self-contained-flags",
-        "brevity-requirements"
+        "self-contained sections",
+        "brevity flags"
       ],
       "grok_risk_flags": [
-        " scorer leaned light on heavy sections like S3/S4",
-        "residual depth gaps in code explanations"
+        "scorer wanted light touch-up",
+        "high residual depth in S3/S4"
       ]
     },
     {
@@ -423,9 +423,9 @@
       "lesson": "06_tools",
       "split": "TRAIN",
       "policy": "allowed",
-      "rl_preset": 2,
-      "grok_preset": 3,
-      "chosen_preset": 3,
+      "rl_preset": 1,
+      "grok_preset": 1,
+      "chosen_preset": 1,
       "chosen_by": "Grok4.2",
       "oracle_preset": 3,
       "oracle_name": "deep",
@@ -435,40 +435,39 @@
         0.6285,
         0.6239
       ],
-      "verdict": "EXACT",
-      "regret": 0.0,
-      "regret_counted": 0.0,
-      "entropy_bits": 1.9312,
-      "confidence": 0.1811,
-      "floor_applied": false,
+      "verdict": "MISS",
+      "regret": 0.1641,
+      "regret_counted": 0.1641,
+      "entropy_bits": 1.3375,
+      "confidence": 0.0,
+      "floor_applied": true,
       "rl_agg_probs": [
-        0.2967,
-        0.1699,
-        0.1811,
-        0.3524
+        0.4666,
+        0.0,
+        0.0864,
+        0.4471
       ],
-      "grok_override": true,
-      "grok_reasoning": "Aggregate RL pick is P2 standard but UNCERTAIN (entropy 1.93 bits). Deep-vote mass is 35% (>=30% threshold) while standard mass is only 18%; this exactly meets the sanctioned P2->P3 escalation for uncertain votes. Dominant gap type is depth, S4 (16% budget, resid 21/2, must-ev 9) and S2/S3 drive the deep signal, and 100% self-contained does not override per policy.",
-      "grok_override_reason": "Sanctioned upward P2->P3 escalation triggered by >=30% deep-vote mass on uncertain P2 pick",
+      "grok_override": false,
+      "grok_reasoning": "RL aggregate votes P1 (cost-adjusted upstream); uncertain split (47% skip/45% deep) triggers depth-or-nothing guard and forbids any P1-to-P2+ escalation per hard policy. Downward to P0 disallowed (S3 26% budget + S4 16% retain high 53/6 and 32/6 residuals; deep mass >30%). Self-contained flags + notebook/goldens already factored in.",
+      "grok_override_reason": null,
       "grok_decision_drivers": [
-        "uncertain_aggregate",
-        "deep_vote_mass_35pct",
-        "P2_to_P3_sanction",
-        "dominant_depth_gaps"
+        "RL aggregate pick",
+        "depth-or-nothing guard",
+        "residuals on high-budget sections"
       ],
       "grok_risk_flags": [
-        "S3 brief flag + high must-ev may limit absorption",
-        "bimodal skip/deep votes (30%/35%) could indicate over-escalation"
+        "split vote may undervalue S3/S4 depth gaps",
+        "self-contained flag over-optimism if notebook insufficient"
       ]
     },
     {
       "variant": "06_tools__var_demanding",
       "lesson": "06_tools",
       "split": "TRAIN",
-      "policy": "required",
-      "rl_preset": 1,
-      "grok_preset": 1,
-      "chosen_preset": 1,
+      "policy": "allowed",
+      "rl_preset": 2,
+      "grok_preset": 2,
+      "chosen_preset": 2,
       "chosen_by": "Grok4.2",
       "oracle_preset": 3,
       "oracle_name": "deep",
@@ -478,30 +477,30 @@
         0.5635,
         0.609
       ],
-      "verdict": "MISS",
-      "regret": 0.0176,
-      "regret_counted": 0.0176,
-      "entropy_bits": 1.9965,
-      "confidence": 0.2634,
+      "verdict": "NEAR",
+      "regret": 0.0455,
+      "regret_counted": 0.0455,
+      "entropy_bits": 0.7544,
+      "confidence": 0.8415,
       "floor_applied": false,
       "rl_agg_probs": [
-        0.2215,
-        0.2634,
-        0.2634,
-        0.2516
+        0.0366,
+        0.0,
+        0.8415,
+        0.122
       ],
       "grok_override": false,
-      "grok_reasoning": "Aggregate RL vote is P1 light (UNCERTAIN but no dominant arm, std/deep masses both <30%); external-evidence REQUIRED blocks P0 while hard guard blocks any P1->P2+; all sections self-contained with mostly low residuals (e.g. S5/S7/S8 at 0-1) already supply the needed evidence.",
+      "grok_reasoning": "Aggregate RL recommendation is decisive P2 standard (84% budget-weighted vote mass on standard, only 12% deep). High must-ev (63 total) and depth residuals in largest sections (S3/S4) align with this without triggering any sanctioned override (no P2->P3 path, no broad well-covered pattern for downward nudge).",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "RL aggregate vote",
-        "external-evidence REQUIRED",
-        "vote mass gates",
-        "self-contained + low residual"
+        "scorer_aggregate",
+        "decisiveness",
+        "vote_mass_gates",
+        "high_budget_residuals"
       ],
       "grok_risk_flags": [
-        "Even vote split could undervalue S3/S4 depth needs",
-        "42 unbacked anchors but do not escalate on raw counts"
+        "depth gaps in S3/S4 could need more than 2 rounds",
+        "must-ev density in code-heavy sections"
       ]
     },
     {
@@ -524,26 +523,26 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": null,
-      "entropy_bits": 1.5548,
-      "confidence": 0.2931,
-      "floor_applied": false,
+      "entropy_bits": 1.4232,
+      "confidence": 0.1724,
+      "floor_applied": true,
       "rl_agg_probs": [
-        0.431,
-        0.2931,
+        0.5517,
+        0.1724,
         0.0,
         0.2759
       ],
       "grok_override": true,
-      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN (exploration output cannot be used); this hard constraint overrides the UNCERTAIN P1 aggregate vote (43% skip / 29% light / 28% deep mass) and all per-section residual needs. All sections are self-contained with 'brief: yes' flags and the guideline demands surface-level treatment only.",
-      "grok_override_reason": "Hard constraint from external-evidence policy = forbidden mandates P0 skip",
+      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN (hard constraint overriding all else); exploration output cannot be used. Guideline repeatedly demands brevity, prohibits external libs/case studies/benchmarks, and labels most sections 'must stay brief' + self-contained with high residual but no sanctioned escalation from P0/P1.",
+      "grok_override_reason": "Hard constraint for forbidden external-evidence policy mandates P0 regardless of P1 aggregate vote",
       "grok_decision_drivers": [
-        "external-evidence policy",
-        "hard constraint",
-        "self-contained + brief flags"
+        "external-evidence-forbidden",
+        "brevity-flags",
+        "self-contained"
       ],
       "grok_risk_flags": [
-        "scorer uncertainty with 28% deep mass on S1/S6",
-        "potential residual depth gaps in S1/S3"
+        "scorer uncertainty with 28% deep mass",
+        "large residual needs in S5/S3"
       ]
     },
     {
@@ -566,36 +565,37 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": 0.0,
-      "entropy_bits": 1.4169,
-      "confidence": 0.4892,
-      "floor_applied": true,
+      "entropy_bits": 0.9159,
+      "confidence": 0.3309,
+      "floor_applied": false,
       "rl_agg_probs": [
-        0.3813,
-        0.4892,
-        0.1295,
+        0.6691,
+        0.3309,
+        0.0,
         0.0
       ],
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is P1 light (49% light / 38% skip / 13% standard / 0% deep); moderate confidence, light-dominant, standard- and deep-vote masses both <<30%. No sanctioned upward escalation from P1, no dominant-arm-free uncertainty for downward override to P0, and 100% self-contained flag plus per-section residuals (high in S1/S3, zero in largest S5/S4) already baked into the cost-adjusted RL pick. Dominant gap type balanced but strongest coverage in highest-budget sections (S5 cov 5·4, S4 cov 4·3) makes extra rounds low-value.",
+      "grok_reasoning": "Aggregate RL vote is P1 light (already cost-adjusted); UNCERTAIN (67% skip / 33% light, 0% standard+deep). No P2→P3 escalation (deep-mass=0%, not from P2). Downward override to P0 disallowed: high-budget S4 (20%, resid 41/4, 12 must-ev) and S2 not brief/well-covered; only S5 (29%) is brief. 100% self-contained + dominant depth gaps already factored into the P1 pick.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer aggregate P1",
-        "low std/deep mass",
-        "high-budget residuals near zero"
+        "RL-aggregate-P1",
+        "zero-higher-vote-mass",
+        "self-contained-budget",
+        "brief-on-S5"
       ],
       "grok_risk_flags": [
-        "S3 standard vote + residual 2/4 could leave prompt-construction gap",
-        "moderate scorer confidence on practice-heavy article"
+        "S4/S2 must-ev orphans may stay thin",
+        "uncertain vote could undervalue targeted depth"
       ]
     },
     {
       "variant": "08_react_practice__var_demanding",
       "lesson": "08_react_practice",
       "split": "TRAIN",
-      "policy": "required",
-      "rl_preset": 2,
-      "grok_preset": 2,
-      "chosen_preset": 2,
+      "policy": "allowed",
+      "rl_preset": 1,
+      "grok_preset": 1,
+      "chosen_preset": 1,
       "chosen_by": "Grok4.2",
       "oracle_preset": 2,
       "oracle_name": "standard",
@@ -605,30 +605,29 @@
         0.7375,
         0.5533
       ],
-      "verdict": "EXACT",
-      "regret": 0.0,
-      "regret_counted": 0.0,
-      "entropy_bits": 1.4483,
-      "confidence": 0.5049,
+      "verdict": "NEAR",
+      "regret": 0.1837,
+      "regret_counted": 0.1837,
+      "entropy_bits": 1.7651,
+      "confidence": 0.4253,
       "floor_applied": false,
       "rl_agg_probs": [
-        0.3362,
-        0.159,
-        0.5049,
-        0.0
+        0.092,
+        0.4253,
+        0.3448,
+        0.1379
       ],
       "grok_override": false,
-      "grok_reasoning": "Aggregate RL recommendation is P2 standard (50% soft vote, 46% budget-weighted standard mass); UNCERTAIN (moderate confidence, 0% deep mass) so checked overrides. No P2->P3 (deep mass 0%<30%), no sanctioned downward (standard mass >30%, S5 28% budget has resid 15/0 despite brief flag, dominant depth gaps + required external-evidence). High-budget sections S5/S4 drive the standard lean.",
+      "grok_reasoning": "Aggregate RL vote is P1 light (43% light mass highest; uncertain but standard=34%, deep=14% <30% gates). No sanctioned override conditions met per policy (cannot escalate P1; downward not justified by brief flag on single largest section or vote split). All sections self-contained with ALLOWED evidence policy; residuals already factored upstream.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "budget-weighted standard mass 46%",
-        "aggregate P2 rec",
-        "required external-evidence",
-        "residual depth in S5/S1"
+        "aggregate RL pick",
+        "vote-mass distribution",
+        "override policy gates"
       ],
       "grok_risk_flags": [
-        "S5 brief flag may limit absorption",
-        "all sections self-contained could tilt lighter if residuals over-estimated"
+        "close light/standard split could undervalue S5/S6 depth gaps",
+        "high article-wide orphans (58) if self-contained flag misleads"
       ]
     },
     {
@@ -636,7 +635,7 @@
       "lesson": "09_RAG",
       "split": "TRAIN",
       "policy": "forbidden",
-      "rl_preset": 1,
+      "rl_preset": 3,
       "grok_preset": 0,
       "chosen_preset": 0,
       "chosen_by": "Grok4.2",
@@ -651,26 +650,23 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": null,
-      "entropy_bits": 1.3443,
-      "confidence": 0.0922,
-      "floor_applied": true,
+      "entropy_bits": 1.2669,
+      "confidence": 0.6589,
+      "floor_applied": false,
       "rl_agg_probs": [
-        0.6388,
-        0.0922,
-        0.0206,
-        0.2484
+        0.1727,
+        0.0,
+        0.1684,
+        0.6589
       ],
       "grok_override": true,
-      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN; hard constraint mandates P0 skip regardless of the section-scorer's P1-light recommendation (even though its soft-vote mass already leans 64% skip). All sections are self-contained with high brief flags and the guideline demands 100% theory with no external examples, libraries or benchmarks.",
-      "grok_override_reason": "Hard constraint from external-evidence policy=forbidden overrides RL pick",
+      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, so exploration output cannot be used; hard constraint mandates P0 skip. This overrides the section-scorer's P3 recommendation (66% deep vote mass) and all per-section residual gaps.",
+      "grok_override_reason": "Hard constraint from external-evidence policy = forbidden requires P0",
       "grok_decision_drivers": [
-        "external-evidence-forbidden",
-        "self-contained sections",
-        "brevity requirements"
+        "external-evidence policy"
       ],
       "grok_risk_flags": [
-        "scorer uncertainty",
-        "S4 deep vote mass"
+        "Scorer voted deep but policy forbids any exploration"
       ]
     },
     {
@@ -693,26 +689,26 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": 0.0,
-      "entropy_bits": 1.8377,
-      "confidence": 0.1909,
-      "floor_applied": false,
+      "entropy_bits": 1.3886,
+      "confidence": 0.5315,
+      "floor_applied": true,
       "rl_agg_probs": [
-        0.1972,
-        0.1909,
-        0.4653,
-        0.1467
+        0.0,
+        0.5315,
+        0.1246,
+        0.3438
       ],
       "grok_override": false,
-      "grok_reasoning": "Aggregate RL recommendation is P1 light (UNCERTAIN but primary signal); standard mass 47% and deep mass 15% with no qualifying override (no P2->P3 gate met, downward conditions fail due to dominant standard arm and non-zero residuals in S1/S2). Self-contained flags and low residuals in S3-S6 support not escalating; external-evidence policy is only ALLOWED, not required. P1 is the reward peak given hard guard against P1->P2.",
+      "grok_reasoning": "Aggregate RL pick is P1 light (53% light mass, 34% deep mass); moderate confidence but UNCERTAIN. Deep mass >=30% and depth-or-nothing pattern (standard only 12%) triggers deep-or-nothing guard; hard policy forbids any P1->P2 escalation. High residuals in top-budget sections (S4 24/5, S3 36/4) plus must-ev counts prevent general downward override to P0.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "aggregate RL pick",
-        "vote-mass gates",
-        "no qualifying override"
+        "aggregate RL pick P1",
+        "deep-mass guard",
+        "high-residual large sections"
       ],
       "grok_risk_flags": [
-        "S1/S2 residual depth gaps could need more than light touch-up",
-        "high uncertainty might undervalue standard mass"
+        "34% deep vote may indicate under-coverage on S3/S4 techniques",
+        "self-contained flags could mask missing specifics"
       ]
     },
     {
@@ -720,9 +716,9 @@
       "lesson": "09_RAG",
       "split": "TRAIN",
       "policy": "allowed",
-      "rl_preset": 1,
-      "grok_preset": 1,
-      "chosen_preset": 1,
+      "rl_preset": 2,
+      "grok_preset": 2,
+      "chosen_preset": 2,
       "chosen_by": "Grok4.2",
       "oracle_preset": 3,
       "oracle_name": "deep",
@@ -732,30 +728,29 @@
         0.4467,
         0.6438
       ],
-      "verdict": "MISS",
-      "regret": -0.0081,
-      "regret_counted": -0.0081,
-      "entropy_bits": 1.7676,
-      "confidence": 0.4524,
+      "verdict": "NEAR",
+      "regret": 0.1971,
+      "regret_counted": 0.1971,
+      "entropy_bits": 1.4992,
+      "confidence": 0.5,
       "floor_applied": false,
       "rl_agg_probs": [
-        0.0833,
-        0.4524,
-        0.1667,
-        0.2976
+        0.0,
+        0.2381,
+        0.5,
+        0.2619
       ],
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is P1 light (UNCERTAIN, entropy 1.77 bits) with budget-weighted vote mass light 45%, standard 17%, deep exactly 30%. No sanctioned P2→P3 escalation applies (pick is not P2). General downward override to P0 does not trigger because deep mass reaches the 30% bar, S1/S2 (29% combined budget) retain high residual depth (6/0 and 3/2) plus must-ev, and light is the clear modal vote. 100% self-contained + many zero-residual high-budget sections already factored into the cost-adjusted RL pick.",
+      "grok_reasoning": "Scorer aggregate is P2 (moderate 50% confidence, uncertain); budget-weighted votes show standard mass dominant at 50% while deep mass is only 26% (below 30% gate for sanctioned P2->P3). High-residual sections (S3 resid 54/2, must-ev 6) and no broad well-covered/brief pattern block downward override despite 100% self-containment. Dominant gap is depth but raw counts do not override the calibrated vote mass.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer aggregate P1 light",
-        "light vote mass dominant at 45%",
-        "deep-or-nothing guard on P1 pick",
-        "residuals concentrated in brief-flagged S1"
+        "budget-weighted standard vote mass 50%",
+        "deep mass <30% blocks P3",
+        "RL pick already cost-adjusted"
       ],
       "grok_risk_flags": [
-        "S1 residual depth 6/0 + brief flag may still leave fine-tuning/context-window evidence thin",
-        "30% deep mass could indicate underestimated need in S2/core components"
+        "moderate confidence on technical sections (S4 deep vote, S3 high orphans)",
+        "42 unbacked anchors could still surface post-P2"
       ]
     },
     {
@@ -778,26 +773,25 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": null,
-      "entropy_bits": 1.0169,
-      "confidence": 0.6261,
+      "entropy_bits": 1.5832,
+      "confidence": 0.3218,
       "floor_applied": false,
       "rl_agg_probs": [
-        0.3646,
-        0.6261,
-        0.0094,
+        0.3216,
+        0.3218,
+        0.3567,
         0.0
       ],
       "grok_override": true,
-      "grok_reasoning": "HARD CONSTRAINT: external-evidence policy is explicitly FORBIDDEN. Brief states exploration output cannot be used and only valid choice is skip. Scorer aggregate (P1 light, 63% mass on light) is overridden by this policy; all sections are self-contained with 'brief' flags and no external sources permitted per guideline.",
-      "grok_override_reason": "external-evidence policy = forbidden mandates P0 regardless of scorer vote or residual gaps",
+      "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN requires P0; exploration output cannot be used. Scorer aggregate was P1 (uncertain, 36% standard mass) but policy overrides all votes, residual needs, and section budgets. Article guideline reinforces conceptual overview with strict brevity and no external libraries/case studies.",
+      "grok_override_reason": "External-evidence policy explicitly forbids exploration, forcing P0 despite scorer's P1 pick",
       "grok_decision_drivers": [
-        "external-evidence policy",
-        "self-contained flags",
-        "brevity requirements"
+        "external-evidence-forbidden",
+        "hard-constraint-override"
       ],
       "grok_risk_flags": [
-        "scorer lean toward light ignored due to policy",
-        "potential under-coverage on must-ev items in S1/S5/S6"
+        "policy misread could allow light touch-up",
+        "self-contained sections might still hide depth gaps"
       ]
     },
     {
@@ -820,33 +814,33 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": 0.0,
-      "entropy_bits": 1.8598,
-      "confidence": 0.4298,
-      "floor_applied": false,
+      "entropy_bits": 1.4043,
+      "confidence": 0.5514,
+      "floor_applied": true,
       "rl_agg_probs": [
-        0.2641,
-        0.4298,
-        0.1553,
-        0.1509
+        0.0,
+        0.5514,
+        0.2991,
+        0.1495
       ],
       "grok_override": false,
-      "grok_reasoning": "Aggregate RL pick is P1 light (budget-weighted: light 44%, skip 26%, standard 15%, deep 15%); UNCERTAIN (entropy 1.86) but light is the clear dominant arm. No sanctioned upward escalation (pick is not P2 and deep-vote mass=15%<30%); general downward override does not apply because of the dominant light mass and because high-budget sections S1/S3/S4 still show large residual depth (18/0, 16/2, 14/0) plus must-ev counts. All sections self-contained and S5/S6/S7 already well-covered or brief-flagged; RL pick already cost-adjusted upstream.",
+      "grok_reasoning": "Scorer aggregate is P1 light (55% light, 30% standard, 15% deep; moderate confidence = uncertain). No sanctioned P2→P3 escalation (pick is P1 not P2; deep-vote mass=15%<30%). No general downward override to P0 (high-budget sections S1/S3/S4 carry 45% budget with large residual depth 17/19/32 and RL votes standard/deep; dominant gap type is depth). Self-contained flags and brief on S5 already baked into the cost-adjusted RL pick; stay at P1.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "budget-weighted light-dominant vote mass",
-        "no P2->P3 or downward triggers met",
-        "residuals as context only"
+        "scorer_aggregate_P1",
+        "no_sanctioned_escalation",
+        "high_residual_depth_in_key_sections"
       ],
       "grok_risk_flags": [
-        "S3 deep vote + high residual depth/must-ev may stay partly unaddressed",
-        "entropy spread could indicate edge-case under-coverage"
+        "moderate scorer confidence",
+        "depth-dominant gaps in S3/S4 may still limit evidence"
       ]
     },
     {
       "variant": "10_memory_knowledge_access__var_demanding",
       "lesson": "10_memory_knowledge_access",
       "split": "TRAIN",
-      "policy": "required",
+      "policy": "allowed",
       "rl_preset": 2,
       "grok_preset": 2,
       "chosen_preset": 2,
@@ -862,27 +856,26 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": 0.0,
-      "entropy_bits": 0.6931,
-      "confidence": 0.814,
+      "entropy_bits": 1.4726,
+      "confidence": 0.6396,
       "floor_applied": false,
       "rl_agg_probs": [
-        0.0,
-        0.186,
-        0.814,
-        0.0
+        0.0698,
+        0.1046,
+        0.6396,
+        0.1861
       ],
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is decisive P2 (81% standard vote mass, 0% deep) after upstream cost adjustment; this is the primary reward-peak signal. All high-budget sections (S5 19%, S6 19%, S4/S3/S1 15% each) carry 3-5 must-ev items plus 28 article-wide unbacked anchors and depth-dominant gaps, satisfying the REQUIRED external-evidence policy. Zero residuals and universal self-contained flags were already visible to the scorer, so no sanctioned downward override applies under the GENERAL DOWNWARD OVERRIDE criteria (dominant standard arm >30%, decisive confidence).",
+      "grok_reasoning": "Scorer aggregate is P2 standard (64% mass, moderate but dominant arm); deep mass only 19% <30% so no sanctioned P2->P3 escalation. High residuals in S1/S2/S3/S4/S5 (core budget) already baked into the cost-adjusted RL pick; self-contained flags do not trigger downward override given dominant standard vote and depth-dominant gaps.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "decisive_scorer_P2_81pct",
-        "must_ev_3-5_per_section",
-        "28_unbacked_anchors",
-        "required_external_evidence"
+        "scorer P2 aggregate + 64% standard mass",
+        "deep mass below escalation gate",
+        "residual context already reflected in RL pick"
       ],
       "grok_risk_flags": [
-        "residuals_at_zero_could_make_P2_marginal",
-        "demanding_guideline_needs_named_production_examples"
+        "moderate (not decisive) scorer confidence",
+        "S6 deep vote on 19% budget may need targeted depth round"
       ]
     },
     {
@@ -905,25 +898,24 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": null,
-      "entropy_bits": 1.9369,
-      "confidence": 0.3103,
+      "entropy_bits": 1.5399,
+      "confidence": 0.4479,
       "floor_applied": false,
       "rl_agg_probs": [
-        0.3103,
-        0.3103,
-        0.1379,
-        0.2414
+        0.3104,
+        0.4479,
+        0.0002,
+        0.2415
       ],
       "grok_override": true,
-      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, mandating P0 per hard constraints (exploration output cannot be used). Scorer aggregate is uncertain P1 (31% skip / 31% light) but policy overrides all signals including vote mass and residual gaps; article is a conceptual overview with brevity rules and no-external-examples mandate.",
-      "grok_override_reason": "Hard constraint requires P0 when external-evidence policy=forbidden; cannot use exploration",
+      "grok_reasoning": "Hard constraint: external-evidence policy = forbidden requires P0 skip. Scorer aggregate is P1 (UNCERTAIN, 45% light / 24% deep mass) but policy overrides all votes, residual gaps, and self-contained flags. Article is explicitly a surface-level conceptual overview with repeated 'must stay brief' mandates.",
+      "grok_override_reason": "external-evidence policy = FORBIDDEN mandates P0 regardless of scorer or gaps",
       "grok_decision_drivers": [
         "external-evidence-forbidden",
-        "hard-constraint"
+        "policy-hard-constraint"
       ],
       "grok_risk_flags": [
-        "scorer-P1 vs policy mismatch",
-        "self-contained sections already high cov"
+        "scorer uncertainty could indicate missed internal coverage gaps"
       ]
     },
     {
@@ -946,34 +938,35 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": 0.0,
-      "entropy_bits": 1.2563,
-      "confidence": 0.6805,
-      "floor_applied": true,
+      "entropy_bits": 1.5759,
+      "confidence": 0.4177,
+      "floor_applied": false,
       "rl_agg_probs": [
-        0.1733,
-        0.6805,
-        0.1405,
-        0.0057
+        0.0291,
+        0.4177,
+        0.4269,
+        0.1262
       ],
       "grok_override": false,
-      "grok_reasoning": "Aggregate RL vote is P1 light (budget-weighted: light 64%, standard 15%, deep 0%); moderate confidence but no masses >=30% and no clear override triggers (S3/S7/S1 retain residual depth/must-ev despite many low-resid self-contained sections). Dominant gap is depth but already cost-adjusted; do not escalate on raw unbacked anchors.",
+      "grok_reasoning": "Scorer aggregate is P1 light (already cost-adjusted); vote is uncertain (entropy 1.58) with near-tie light 42% vs standard 43% but deep mass only 13% <30%. All sections self-contained, no sanctioned upward from P1 (hard guard), standard mass >30% blocks general downward to P0, and raw residuals (e.g. S3 46/2) cannot trigger escalation per policy. Dominant gap is depth but budget-weighted vote mass locates peak at light touch-up.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "RL aggregate vote mass",
-        "deep/standard mass gates",
-        "residuals in high-budget sections"
+        "scorer_aggregate_P1",
+        "vote_split_42L_43S",
+        "deep_mass_13pct",
+        "all_self_contained"
       ],
       "grok_risk_flags": [
-        "S7/S3 gaps could need more depth than light supplies",
-        "moderate scorer confidence on non-training distribution"
+        "near-tie_light_standard_may_miss_S3_depth",
+        "high_orphans_must_ev_in_foundations"
       ]
     },
     {
       "variant": "11_multimodal__var_demanding",
       "lesson": "11_multimodal",
       "split": "TRAIN",
-      "policy": "required",
-      "rl_preset": 2,
+      "policy": "allowed",
+      "rl_preset": 1,
       "grok_preset": 1,
       "chosen_preset": 1,
       "chosen_by": "Grok4.2",
@@ -988,27 +981,25 @@
       "verdict": "NEAR",
       "regret": 0.0171,
       "regret_counted": 0.0171,
-      "entropy_bits": 1.2667,
-      "confidence": 0.6583,
+      "entropy_bits": 1.7169,
+      "confidence": 0.4167,
       "floor_applied": false,
       "rl_agg_probs": [
-        0.1833,
-        0.1583,
-        0.6583,
-        0.0
+        0.1167,
+        0.4167,
+        0.3833,
+        0.0833
       ],
-      "grok_override": true,
-      "grok_reasoning": "Aggregate RL vote is P2 standard (66% standard mass, moderate confidence, uncertain). However, residual d/b is 0/0 across 98% of budget (only S8 has 1/0), coverage scores are high (mostly ≥7 depth / ≥4 breadth, many at 8·5 or 8·4), every section is self-contained, and all high-budget sections (S3 23%, S4 18%, S5 15%) meet depth_score ≥6 or residual-near-zero. This triggers the sanctioned general downward override to P1; satisfies REQUIRED external-evidence policy with minimal waste given already-met needs.",
-      "grok_override_reason": "general downward override on near-zero residuals + high cov in high-budget sections (policy explicitly allows one level below when this pattern holds)",
+      "grok_override": false,
+      "grok_reasoning": "Aggregate RL pick is P1 light on uncertain vote (light 42%, standard 38%, deep 8%); no P2→P3 escalation (not a P2 pick and deep mass=8%<30%), no general downward override (standard mass>30% and multiple high-budget sections show large residual depth/must-ev), self-contained flags already baked into the cost-adjusted pick.",
+      "grok_override_reason": null,
       "grok_decision_drivers": [
-        "aggregate P2 vote (uncertain)",
-        "residual need near zero",
-        "high cov/self-contained",
-        "general downward override"
+        "RL aggregate pick",
+        "vote-mass gates",
+        "residual need in S3/S5"
       ],
       "grok_risk_flags": [
-        "38 unbacked anchors + must-ev counts (S5:6, S2:5) could still need targeted sourcing",
-        "demanding guideline with many named benchmarks/models may expose qualitative gaps not captured in cov scores"
+        "close light/standard split may undervalue depth in S3 (23%)"
       ]
     },
     {
@@ -1031,26 +1022,26 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": 0.0,
-      "entropy_bits": 1.2427,
-      "confidence": 0.6664,
+      "entropy_bits": 1.4599,
+      "confidence": 0.5327,
       "floor_applied": false,
       "rl_agg_probs": [
-        0.1337,
-        0.0,
-        0.6664,
-        0.1999
+        0.2671,
+        0.0002,
+        0.5327,
+        0.2
       ],
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is P2 standard (67% budget-weighted standard mass, 20% deep mass); this is UNCERTAIN (67% top-pick <70%) but deep mass <30% so no sanctioned P2->P3 escalation applies. High-budget S4 (40%, residual 0/2, cov depth=6) and S3 (20%, residual 2/4, voted deep) plus balanced article-wide gaps give no basis for general downward override to P1. Self-contained flags and low-budget high-residual S6 are already factored into the cost-adjusted RL pick.",
+      "grok_reasoning": "Section-scorer aggregate is P2 standard (already cost-adjusted) with 53% budget-weighted standard mass and only 20% deep mass; this is UNCERTAIN (moderate 53% top-pick) but the P2->P3 gate requires deep-mass >=30% so escalation is disallowed. High-budget sections S4 (40%, standard, must-ev=14, resid=16/6) and S3 (20%, deep) drive the dominant depth gap; S2 brief flag and universal self-contained flags do not meet GENERAL DOWNWARD OVERRIDE criteria because standard mass is clearly dominant (>30%) and high-budget sections are neither well-covered nor all brief. Therefore stay at the RL peak of P2.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer_aggregate_P2",
-        "standard_vote_mass_67pct",
-        "deep_mass_below_30pct_threshold"
+        "budget-weighted standard mass 53%",
+        "deep-mass <30% blocks P3",
+        "high-budget S4/S3 RL picks and residuals"
       ],
       "grok_risk_flags": [
-        "S3 deep vote on 20% budget may under-serve implementation depth",
-        "S6 residual 6/0 on conclusion"
+        "moderate scorer confidence",
+        "all sections self-contained could imply lower preset but policy forbids re-deriving from raw residuals"
       ]
     },
     {
@@ -1073,33 +1064,36 @@
       "verdict": "NEAR",
       "regret": 0.0978,
       "regret_counted": 0.0978,
-      "entropy_bits": 1.2515,
-      "confidence": 0.6062,
+      "entropy_bits": 1.2242,
+      "confidence": 0.6768,
       "floor_applied": true,
       "rl_agg_probs": [
-        0.0787,
-        0.6062,
-        0.315,
-        0.0
+        0.0,
+        0.6768,
+        0.1341,
+        0.1891
       ],
       "grok_override": false,
-      "grok_reasoning": "Grok JSON parse failed; Deterministic fallback: section-scorer vote (light) adjusted for policy=allowed.",
+      "grok_reasoning": "Aggregate scorer vote is P1 light (68% light mass, moderate confidence <70%). Deep-vote mass=19% and standard-vote mass=13% both <30% gate; policy forbids any upward move from a P1 pick. High-budget S5/S7 already show residual 0 and cov ≥5 while all sections are self-contained; dominant light vote plus cost-adjusted RL pick outweigh residual depth in smaller early sections.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "rl_aggregate"
+        "scorer_aggregate_68pct_light",
+        "vote_masses_below_30pct",
+        "high_budget_sections_well_covered"
       ],
       "grok_risk_flags": [
-        "deterministic fallback — no LLM reasoning applied"
+        "moderate confidence on depth-heavy S1-S4",
+        "possible under-coverage on must-ev items in S4/S8"
       ]
     },
     {
       "variant": "13_agent_framework",
       "lesson": "13_agent_framework",
       "split": "TEST",
-      "policy": "allowed",
-      "rl_preset": 3,
-      "grok_preset": 3,
-      "chosen_preset": 3,
+      "policy": "forbidden",
+      "rl_preset": 1,
+      "grok_preset": 0,
+      "chosen_preset": 0,
       "chosen_by": "Grok4.2",
       "oracle_preset": 3,
       "oracle_name": "deep",
@@ -1109,29 +1103,27 @@
         0.5911,
         0.7841
       ],
-      "verdict": "EXACT",
-      "regret": 0.0,
-      "regret_counted": 0.0,
-      "entropy_bits": 1.5851,
-      "confidence": 0.5059,
+      "verdict": "MISS",
+      "regret": 0.1395,
+      "regret_counted": null,
+      "entropy_bits": 1.7681,
+      "confidence": 0.4398,
       "floor_applied": false,
       "rl_agg_probs": [
-        0.0319,
-        0.3174,
-        0.1448,
-        0.5059
+        0.0782,
+        0.4398,
+        0.1706,
+        0.3114
       ],
-      "grok_override": false,
-      "grok_reasoning": "Aggregate RL pick is P3 deep (UNCERTAIN, 51% soft / 47% budget-weighted deep-vote mass). High-budget sections S4 (18%, resid 21/6, must-ev 15), S3 (9%, resid 18/6) and S2/S1 retain large residual depth gaps; dominant gap type is depth and 42 unbacked anchors exist. No sanctioned downward override applies as most high-budget sections are not well-covered (depth_score >=6 or resid near zero).",
-      "grok_override_reason": null,
+      "grok_override": true,
+      "grok_reasoning": "Hard constraint: external-evidence policy is FORBIDDEN, mandating P0 skip regardless of the uncertain P1-light aggregate vote (44% light, 31% deep) or any per-section residual needs. All sections are already flagged self-contained; exploration output cannot be used.",
+      "grok_override_reason": "External-evidence policy explicitly requires P0; scorer's P1 recommendation is overridden",
       "grok_decision_drivers": [
-        "RL aggregate P3",
-        "deep-vote mass 47%",
-        "high-residual sections S4/S3/S2"
+        "external-evidence policy forbidden",
+        "self-contained sections"
       ],
       "grok_risk_flags": [
-        "uncertain scorer entropy",
-        "many deep-dive sections already at resid 0/6 on depth (breadth-dominant)"
+        "golden sources cited in guideline may have post-scrape updates"
       ]
     },
     {
@@ -1154,26 +1146,27 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": 0.0,
-      "entropy_bits": 0.9472,
+      "entropy_bits": 0.8113,
       "confidence": 0.75,
       "floor_applied": true,
       "rl_agg_probs": [
-        0.0312,
+        0.0,
         0.75,
-        0.2188,
+        0.25,
         0.0
       ],
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is decisive P1 light (75% vote, 0% deep mass, 22% standard mass); all sections self-contained and RL pick already cost-adjusted upstream. No required-external-evidence constraint, no sanctioned upward path from P1, and guideline supplies only qualitative scope cues that do not override the strong learned signal.",
+      "grok_reasoning": "Section-scorer aggregate is decisive P1 (75% light vote mass, 0% deep, 25% standard) on a 3200-word article where 100% of budget is in self-contained sections. High-budget S2/S4 residuals exist but scorer already cost-adjusted for them; dominant gap is depth yet vote mass bars sanctioned escalation and policy forbids upward move from P1. External-evidence is allowed not required.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer_decisive_P1",
-        "vote_mass_below_threshold",
-        "self_contained_residual_context"
+        "decisive P1 vote mass",
+        "self-contained sections",
+        "no deep mass",
+        "external-allowed-not-required"
       ],
       "grok_risk_flags": [
-        "residual depth gaps in high-budget S2/S4",
-        "S3 standard vote not fully covered by light round"
+        "residual depth in S2/S4 could still limit must-ev anchors",
+        "if guideline images demand fresh citations light may under-serve"
       ]
     },
     {
@@ -1181,9 +1174,9 @@
       "lesson": "29_evaluation_metrics",
       "split": "TEST",
       "policy": "allowed",
-      "rl_preset": 2,
-      "grok_preset": 2,
-      "chosen_preset": 2,
+      "rl_preset": 3,
+      "grok_preset": 3,
+      "chosen_preset": 3,
       "chosen_by": "Grok4.2",
       "oracle_preset": 1,
       "oracle_name": "light",
@@ -1193,29 +1186,29 @@
         0.8138,
         0.7803
       ],
-      "verdict": "NEAR",
-      "regret": 0.0909,
-      "regret_counted": 0.0909,
-      "entropy_bits": 1.0827,
-      "confidence": 0.6471,
+      "verdict": "MISS",
+      "regret": 0.1244,
+      "regret_counted": 0.1244,
+      "entropy_bits": 1.6498,
+      "confidence": 0.575,
       "floor_applied": false,
       "rl_agg_probs": [
-        0.0294,
-        0.3235,
-        0.6471,
-        0.0
+        0.1118,
+        0.1498,
+        0.1635,
+        0.575
       ],
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is P2 standard (65% budget-weighted standard mass, 0% deep mass); moderate but dominant signal with no sanctioned override. High-budget S2 (35%) is brief-flagged with depth_cov=6 yet resid_d=26 and dominant gap type is depth; S1/S3–S5 carry must-ev + orphans. This matches the already cost-adjusted RL pick for depth-first then breadth rounds without triggering downward (standard mass >30%) or P2→P3 (deep mass <30%).",
+      "grok_reasoning": "Scorer aggregate is P3 (already cost-adjusted) with 53% budget-weighted deep mass (dominant >30%) led by S2 (35%, deep·1.00, resid 17/6) and S5 (18%, deep·1.00, resid 17/6); entropy 1.65 makes it uncertain so votes control, but no sanctioned downward trigger applies (deep mass dominant, residuals not near-zero, 47 unbacked anchors, depth-dominant gaps). Self-contained flags are universal context only and do not override the RL pick per policy.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer_aggregate_P2",
-        "standard_vote_mass_65pct",
-        "residual_depth_in_S2_S1"
+        "scorer P3 aggregate + 53% deep mass",
+        "high-residual large sections S2/S5",
+        "no downward conditions met"
       ],
       "grok_risk_flags": [
-        "moderate_confidence_65pct",
-        "brief_flag_on_largest_section"
+        "potential diminishing returns past depth peak",
+        "all sections self-contained may limit new-source yield"
       ]
     },
     {
@@ -1238,26 +1231,26 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": 0.0,
-      "entropy_bits": 1.1186,
-      "confidence": 0.1353,
-      "floor_applied": true,
+      "entropy_bits": 1.5597,
+      "confidence": 0.4197,
+      "floor_applied": false,
       "rl_agg_probs": [
-        0.7271,
-        0.1353,
+        0.2706,
+        0.4197,
         0.0,
-        0.1376
+        0.3096
       ],
       "grok_override": false,
-      "grok_reasoning": "Section-scorer aggregate is P1 light (already cost-adjusted); vote is uncertain (only 14% on top pick) with skip 73%, light 14%, deep 14%. Deep-vote mass 14% << 30% bars any sanctioned escalation; high-budget sections (S6 31%, S5 17%, S2 14%) retain notable residual d/b gaps (5/2, 6/2, 9/2) and must-ev counts so general downward override to P0 does not apply. All sections self-contained is contextual only and already baked into the RL pick.",
+      "grok_reasoning": "Aggregate RL pick is P1 light (42% light mass highest; UNCERTAIN at 1.56 bits entropy). Deep mass=31% from S6 (31% budget, resid 2/6) triggers no sanctioned override from a P1 (hard guard forbids any P1→P2+ escalation; depth-or-nothing pattern with 0% standard mass confirms P2 valley). No general downward to P0 (multiple high-budget sections retain residual need; no brief flags; deep mass ≥30%). Self-contained flags and ALLOWED policy already baked into RL pick.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer-aggregate-P1",
-        "deep-mass-below-30",
-        "residuals-in-key-sections"
+        "RL aggregate P1",
+        "vote mass distribution",
+        "no sanctioned override from P1"
       ],
       "grok_risk_flags": [
-        "S2 deep vote + high must-ev may leave depth gaps",
-        "weak scorer confidence on uncertain article"
+        "S6 deep vote + residual may under-serve Tier-3 CI depth",
+        "high self-contained % could mask subtle evidence gaps"
       ]
     },
     {
@@ -1290,16 +1283,17 @@
         0.2927
       ],
       "grok_override": false,
-      "grok_reasoning": "DECISIVE P1-light aggregate (71% budget-weighted vote, 0% standard mass); deep mass=29% bars P2->P3 escalation and triggers depth-or-nothing guard against inferring P2; high residuals already baked into RL pick with all sections self-contained; no override criteria met.",
+      "grok_reasoning": "Scorer aggregate is P1 light at 71% (DECISIVE), with 0% standard and 29% deep mass (below 30% gate). All sections self-contained, residuals high but already factored into the cost-adjusted RL pick; no sanctioned upward override from P1, no brief flags, external-evidence only ALLOWED. General downward to P0 not triggered as vote is decisive and residuals not near-zero.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "decisive_scorer_P1",
-        "deep_mass_below_30",
-        "self_contained_residual_context"
+        "scorer_aggregate",
+        "decisiveness",
+        "vote_mass_below_threshold",
+        "self-contained_context"
       ],
       "grok_risk_flags": [
-        "S3 deep vote + 7 must-ev could under-serve key transcriptomic evidence",
-        "dominant depth gaps might yield marginal returns even at light"
+        "S3 29% deep vote + high must-ev/orphans",
+        "dominant depth gaps may leave some anchors thin"
       ]
     },
     {
@@ -1332,16 +1326,15 @@
         0.0
       ],
       "grok_override": false,
-      "grok_reasoning": "Aggregate scorer vote is P1 light (80% mass on light, 0% on standard/deep) and is explicitly DECISIVE. All sections self-contained, dominant residual gaps are in depth not breadth, and high-budget S2/S3 already carry light votes; instructions prohibit escalating any P1 on raw gap counts or vote mass. No sanctioned upward path exists from P1 and no high-uncertainty trigger for downward override to P0 applies.",
+      "grok_reasoning": "DECISIVE P1 aggregate (80% light vote mass, 0% std/deep) on self-contained sections with existing matched sources; no sanctioned override applies per policy (high-budget S2/S3 both pick light, residuals already cost-adjusted upstream)",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "decisive P1 aggregate vote",
-        "zero standard/deep mass",
-        "self-contained + brief flags on large sections"
+        "decisive scorer vote",
+        "self-contained flags",
+        "no escalation signal"
       ],
       "grok_risk_flags": [
-        "residual depth gaps in S3 could still feel thin",
-        "possible missed recent DESI quotes if light round returns duplicates"
+        "residual depth in S3 could still limit must-ev coverage"
       ]
     },
     {
@@ -1374,16 +1367,16 @@
         0.0
       ],
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is decisive at 83% for P2 standard (budget-weighted 82% standard, 0% deep mass). This aligns with dominant depth gaps, high residual need in S2/S4 (10+/5), 21 unbacked anchors, and must-ev counts, while all sections being self-contained is already factored into the cost-adjusted RL pick. No override triggers per policy (decisive vote, no 30% deep mass, not all high-budget sections brief-flagged).",
+      "grok_reasoning": "Scorer aggregate is decisive P2 standard (83% vote / 82% budget mass); deep-vote mass=0% and decisive confidence preclude any escalation per override policy. High residuals (e.g. 10/2 in S1, 11/5 in S4) plus must-ev=3-5 across all sections confirm gap-filling value without triggering downward override on self-contained flags. Dominant gap type is depth, matching P2 round composition.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "decisive P2 vote mass",
-        "residual depth gaps + must-ev",
-        "no escalation guards met"
+        "decisive_scorer_P2",
+        "zero_deep_mass",
+        "residual_must_ev_context"
       ],
       "grok_risk_flags": [
-        "S3 light vote + brief flag could dilute depth round",
-        "self-contained flags might overstate existing coverage"
+        "S3 brief flag could limit absorption",
+        "possible duplicate coverage on cross-modal experiments"
       ]
     },
     {
@@ -1416,16 +1409,17 @@
         0.7196
       ],
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is decisive P3 (72% deep-vote mass, 0% standard) with S2/S3 (72% budget) both voting deep·1.00 and carrying residual depth gaps of 14/3 and 13/0 plus must-ev counts 8+5; dominant gap type is depth and unbacked anchors=27. DECISIVE vote plus high-budget sections not well-covered precludes sanctioned downward override; no P2->P3 escalation triggered.",
+      "grok_reasoning": "Scorer aggregate is P3 deep at 72% (DECISIVE, 0% standard mass). High-budget S2/S3 (72% total) both vote deep·1.00 with residuals 14/3 and 13/0, must-ev totals 13, 27 article-wide unbacked anchors, and dominant depth gap all align with the strong learned signal. Brief flags and self-contained status already factored into the cost-adjusted RL pick; no sanctioned downward override applies on a decisive vote.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "decisive 72% deep scorer vote",
-        "S2/S3 residual depth + must-ev",
-        "dominant depth gaps"
+        "decisive deep vote mass (72%)",
+        "high-budget section RL picks (S2/S3)",
+        "must-ev + residual depth gaps",
+        "unbacked anchors"
       ],
       "grok_risk_flags": [
-        "brief flags on S2/S3 may limit absorption",
-        "diminishing returns past depth peak"
+        "brief flags on large sections may limit absorption",
+        "many paywalled golden sources already locally available"
       ]
     },
     {
@@ -1433,9 +1427,9 @@
       "lesson": "Gravity_Entropy",
       "split": "TEST",
       "policy": "allowed",
-      "rl_preset": 2,
-      "grok_preset": 2,
-      "chosen_preset": 2,
+      "rl_preset": 1,
+      "grok_preset": 1,
+      "chosen_preset": 1,
       "chosen_by": "Grok4.2",
       "oracle_preset": 1,
       "oracle_name": "light",
@@ -1445,29 +1439,29 @@
         0.7382,
         0.5747
       ],
-      "verdict": "NEAR",
-      "regret": 0.0865,
-      "regret_counted": 0.0865,
-      "entropy_bits": 0.9815,
-      "confidence": 0.58,
-      "floor_applied": false,
+      "verdict": "EXACT",
+      "regret": 0.0,
+      "regret_counted": 0.0,
+      "entropy_bits": 0.7509,
+      "confidence": 0.785,
+      "floor_applied": true,
       "rl_agg_probs": [
-        0.42,
         0.0,
-        0.58,
+        0.785,
+        0.215,
         0.0
       ],
       "grok_override": false,
-      "grok_reasoning": "Scorer aggregate is P2 (58% standard-vote mass, 42% skip, 0% deep); UNCERTAIN but no sanctioned override applies — deep mass 0% blocks P3, standard mass >30% blocks general downward despite self-contained flags and brief=yes on S2/S3. Dominant depth gaps, high residuals in S2–S5 (12/4, 9/1, 6/4), and must-ev/orphans align with the budget-weighted RL picks (three sections at standard).",
+      "grok_reasoning": "Decisive 78% budget-weighted vote for P1 light (0% deep mass, 22% standard) is the primary reward-trained signal. All sections self-contained with dominant depth gaps already partially covered (cov d·b around 4·1-4·3); no sanctioned override applies per policy as vote is not uncertain and residuals do not trigger downward from a decisive P1. Existing golden sources (Carney 2025, Jacobson 1995) cover must-ev anchors sufficiently for a light touch-up.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer aggregate P2 at 58%",
-        "standard-vote mass gate",
-        "residual depth in S2–S5"
+        "decisive scorer vote for P1",
+        "self-contained flags across 100% budget",
+        "low deep/standard mass below 30%"
       ],
       "grok_risk_flags": [
-        "moderate scorer confidence",
-        "brief flags on high-residual S2/S3 could limit absorption"
+        "high residuals in S3/S5 could leave some qubit-model quotes thin",
+        "must-ev count of 10 total might need one extra source if existing coverage misses a quote"
       ]
     },
     {
@@ -1500,16 +1494,16 @@
         0.0
       ],
       "grok_override": false,
-      "grok_reasoning": "Aggregate RL vote is P1 light (54% budget-weighted light mass, 0% standard/deep); matches per-section picks on S1-S3 and already-cost-adjusted skip on largest S4; no override conditions met per policy (deep mass=0%, high must-ev/residuals in S2/S4 factored in, external-evidence only allowed).",
+      "grok_reasoning": "Aggregate RL vote is P1 light (54% light / 46% skip mass, 0% standard or deep). This is UNCERTAIN (<70% confidence) but no sanctioned overrides apply: deep mass=0% bars P2->P3, high-budget S4 votes skip yet S2/S3 retain must-ev and residual depth gaps, and brief-flagged sections do not dominate enough for downward to P0. Primary signal is the budget-weighted 54% light mass on theory/implementation sections needing targeted depth without higher-preset escalation.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "scorer aggregate vote",
-        "budget-weighted section votes",
-        "must-ev in high-budget sections"
+        "budget-weighted vote mass",
+        "0% standard/deep mass",
+        "per-section RL picks vs must-ev residuals"
       ],
       "grok_risk_flags": [
-        "moderate confidence could undervalue S4 empirical gaps",
-        "residual depth in S2/S4"
+        "S4 high must-ev (12) with only cov 4·2 could leave empirical tradeoff gaps",
+        "close 54/46 split risks under-exploring depth-dominant article"
       ]
     },
     {
@@ -1532,26 +1526,26 @@
       "verdict": "EXACT",
       "regret": 0.0,
       "regret_counted": 0.0,
-      "entropy_bits": 0.964,
-      "confidence": 0.3888,
-      "floor_applied": true,
+      "entropy_bits": 0.7897,
+      "confidence": 0.2368,
+      "floor_applied": false,
       "rl_agg_probs": [
+        0.7632,
+        0.2368,
         0.0,
-        0.3888,
-        0.6112,
         0.0
       ],
       "grok_override": false,
-      "grok_reasoning": "Aggregate RL recommendation is P1 (weak/uncertain at 39% light, 68% budget-weighted standard mass); no sanctioned override applies (cannot escalate P1 to P2 per hard guard; downward to P0 blocked by >30% standard mass + non-zero residuals 8/3–8/5 and 22 unbacked anchors); self-contained + depth-dominant gaps support only cheap touch-up.",
+      "grok_reasoning": "Section-scorer aggregate is P1 light (already cost-adjusted); vote mass is skip 76% / light 24% with 0% standard or deep, labeled WEAK/UNCERTAIN but dominant skip arm precludes 'no dominant arm' test for downward override. All sections self-contained with high must-ev and residuals, yet S1 is explicitly brief-flagged, S2/S3 RL picks are skip/light, and no condition for general downward override or P2→P3 escalation is met. Dominant gap type is depth but raw gap counts do not trigger escalation per policy.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "RL pick P1 light",
-        "no qualifying override",
-        "residual/self-contained context"
+        "RL aggregate P1 (cost-adjusted)",
+        "vote-mass gates at 0% for std/deep",
+        "brief flag + self-contained context"
       ],
       "grok_risk_flags": [
-        "68% standard vote mass may under-fill S2/S3 depth",
-        "high must-ev (4-6) could leave evidence gaps"
+        "Weak scorer confidence on P1 vs heavy skip mass",
+        "Residual depth needs remain high across all sections"
       ]
     },
     {
@@ -1584,16 +1578,16 @@
         0.368
       ],
       "grok_override": true,
-      "grok_reasoning": "P2 aggregate (63% moderate/uncertain) with deep-vote mass exactly 34% (>=30%) triggers sanctioned P2->P3 escalation per OVERRIDE POLICY; high residuals in S1 (10/8, 34% budget, deep vote) and S4 (11/4, 5 must-ev) plus 24 unbacked anchors and depth-dominant gaps confirm the reward peak is at P3, not P2.",
-      "grok_override_reason": "sanctioned P2->P3 escalation on uncertain vote + deep mass >=30%",
+      "grok_reasoning": "Scorer aggregate is P2 (moderate 63% confidence, uncertain); deep-vote mass 34% (>=30%) from S1 (34% budget, RL deep, resid 10/8, 7 must-ev) plus S4 resid 11/4 meets sanctioned P2->P3 override. Dominant gap=depth; 100% self-contained but residuals justify escalation.",
+      "grok_override_reason": "sanctioned P2->P3 escalation on uncertain vote + >=30% deep mass from high-budget technical sections",
       "grok_decision_drivers": [
-        "P2_to_P3_escalation_gate",
-        "deep_vote_mass_34pct",
-        "S1_S4_residuals"
+        "budget-weighted deep mass >=30%",
+        "S1/S4 residual needs",
+        "uncertain moderate confidence"
       ],
       "grok_risk_flags": [
-        "diminishing returns on depth-heavy article",
-        "brief flags on S1/S3"
+        "over-escalation past reward peak if residuals overestimate true gaps",
+        "all sections self-contained may limit new-source yield"
       ]
     },
     {
@@ -1626,15 +1620,14 @@
         0.145
       ],
       "grok_override": true,
-      "grok_reasoning": "FORBIDDEN external-evidence policy is a hard constraint requiring P0; overrides uncertain P1 aggregate (37% skip / 36% standard mass) and all self-contained sections with provided sources.",
-      "grok_override_reason": "Hard policy constraint forces P0 despite RL pick of P1",
+      "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN (hard constraint overrides everything, including the uncertain P1 aggregate vote and 36% standard-vote mass). All sections are already self-contained with residual needs met by the existing exploitation pass and listed sources.",
+      "grok_override_reason": "Hard constraint from external-evidence policy mandating P0 regardless of scorer pick",
       "grok_decision_drivers": [
-        "external-evidence-forbidden",
-        "self-contained-flags",
-        "provided-sources"
+        "external-evidence policy",
+        "self-contained flags across 100% budget"
       ],
       "grok_risk_flags": [
-        "residual depth gaps in S2 (19% budget) and S19 (15% budget)"
+        "Scorer uncertainty with split votes; large residual in S2/S19 could leave depth gaps"
       ]
     },
     {
@@ -1667,15 +1660,16 @@
         0.0
       ],
       "grok_override": false,
-      "grok_reasoning": "Aggregate scorer vote is decisively P2 standard (93% mass on standard, 0% deep, 0% skip) — the calibrated peak per the brief. Large residuals in S5 (45% budget, 42 depth) and must-ev=12 drive this exact level; all sections self-contained with depth-dominant gaps, so P2's depth-then-breadth rounds close coverage without over-escalation. No override conditions met.",
+      "grok_reasoning": "Section-scorer aggregate is decisive P2 (93% standard vote mass, 0% deep) on a 4300-word theory article whose dominant gap is depth; largest section (S5, 45% budget) carries 42 residual depth need + 12 must-ev items while S4 adds further must-ev pressure, exactly matching the RL pick already cost-adjusted upstream. All sections self-contained yet residual gaps in high-budget technical cores preclude downward override; decisive vote bars any P3 escalation per policy.",
       "grok_override_reason": null,
       "grok_decision_drivers": [
-        "decisive standard vote mass",
-        "S5 residual need",
-        "depth-dominant gaps"
+        "decisive 93% standard vote mass",
+        "S5 45% budget + 42 resid depth/12 must-ev",
+        "dominant depth gaps"
       ],
       "grok_risk_flags": [
-        "S5 scale could still surface minor unbacked anchors post-P2"
+        "S5 brief flag vs 1950-word allocation may limit absorption",
+        "all sections self-contained could imply light suffices in hindsight"
       ]
     }
   ]

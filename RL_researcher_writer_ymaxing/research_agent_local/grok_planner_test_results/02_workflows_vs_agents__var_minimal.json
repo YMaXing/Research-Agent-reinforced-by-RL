@@ -18,24 +18,24 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": null,
-  "entropy_bits": 1.2306,
-  "confidence": 0.6695,
+  "entropy_bits": 0.6194,
+  "confidence": 0.8462,
   "floor_applied": true,
   "rl_agg_probs": [
-    0.207,
-    0.6695,
     0.0,
-    0.1235
+    0.8462,
+    0.0,
+    0.1538
   ],
   "grok_override": true,
-  "grok_reasoning": "External-evidence policy is FORBIDDEN (hard constraint mandates P0). Scorer aggregate is P1 light (67% light, 15% deep mass) but policy and self-contained/brief flags on 100% of budget override it; residuals already near-zero in S3/S5/S6.",
-  "grok_override_reason": "Hard policy constraint requires P0 when external evidence is forbidden",
+  "grok_reasoning": "External-evidence policy explicitly FORBIDDEN (hard constraint overrides everything, mandating P0). Scorer's decisive P1 (85% light) is ignored per policy; 100% self-contained sections, many with 0 residual depth need and 'brief' flags confirm no exploration is usable.",
+  "grok_override_reason": "Hard constraint from external-evidence policy = forbidden requires P0, overriding RL pick of P1",
   "grok_decision_drivers": [
-    "external-evidence-forbidden",
-    "self-contained-flags",
-    "scorer-uncertainty-downward"
+    "external-evidence policy",
+    "hard constraints",
+    "self-contained + residual need"
   ],
   "grok_risk_flags": [
-    "scorer lean toward light could indicate minor gaps but policy blocks exploration"
+    "Scorer's 85% light vote on conceptual article; policy may be overly strict but is non-negotiable"
   ]
 }

@@ -1,6 +1,6 @@
 """Comprehensive one-shot audit of section-oracle class balance.
 
-Reads all section_oracle.json + guideline_features.json + research_digest.md
+Reads all digest_section_placeholder.json + guideline_features.json + research_digest.md
 under rl_training_data/bases/ and reports:
 
   1. Overall oracle-class distribution (skip/light/standard/deep)
@@ -97,16 +97,16 @@ def _load_dir(d: Path) -> dict:
         "sections": {},      # sec_id -> (need, eff_need, computed_label)
         "has_digest": (d / "research_digest.md").exists(),
         "has_features": (d / "guideline_features.json").exists(),
-        "has_oracle": (d / "section_oracle.json").exists(),
+        "has_oracle": (d / "digest_section_placeholder.json").exists(),
     }
     if result["has_oracle"]:
         try:
             result["oracle"] = (
-                json.loads((d / "section_oracle.json").read_text(encoding="utf-8"))
+                json.loads((d / "digest_section_placeholder.json").read_text(encoding="utf-8"))
                 .get("presets", {}) or {}
             )
         except (OSError, json.JSONDecodeError) as e:
-            print(f"  WARN: {d / 'section_oracle.json'}: {e}", file=sys.stderr)
+            print(f"  WARN: {d / 'digest_section_placeholder.json'}: {e}", file=sys.stderr)
 
     if result["has_features"]:
         try:
@@ -198,7 +198,7 @@ def main(bases_dir: Path) -> int:
         dir_data[(article, variant)] = info
 
     if not dir_data:
-        print("ERROR: no section_oracle.json files found.", file=sys.stderr)
+        print("ERROR: no digest_section_placeholder.json files found.", file=sys.stderr)
         return 1
 
     # Aggregate

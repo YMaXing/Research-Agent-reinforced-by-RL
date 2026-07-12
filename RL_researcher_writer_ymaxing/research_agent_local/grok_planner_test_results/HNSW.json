@@ -28,15 +28,15 @@
     0.0
   ],
   "grok_override": false,
-  "grok_reasoning": "Aggregate RL vote is P1 light (54% budget-weighted light mass, 0% standard/deep); matches per-section picks on S1-S3 and already-cost-adjusted skip on largest S4; no override conditions met per policy (deep mass=0%, high must-ev/residuals in S2/S4 factored in, external-evidence only allowed).",
+  "grok_reasoning": "Aggregate RL vote is P1 light (54% light / 46% skip mass, 0% standard or deep). This is UNCERTAIN (<70% confidence) but no sanctioned overrides apply: deep mass=0% bars P2->P3, high-budget S4 votes skip yet S2/S3 retain must-ev and residual depth gaps, and brief-flagged sections do not dominate enough for downward to P0. Primary signal is the budget-weighted 54% light mass on theory/implementation sections needing targeted depth without higher-preset escalation.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "scorer aggregate vote",
-    "budget-weighted section votes",
-    "must-ev in high-budget sections"
+    "budget-weighted vote mass",
+    "0% standard/deep mass",
+    "per-section RL picks vs must-ev residuals"
   ],
   "grok_risk_flags": [
-    "moderate confidence could undervalue S4 empirical gaps",
-    "residual depth in S2/S4"
+    "S4 high must-ev (12) with only cov 4·2 could leave empirical tradeoff gaps",
+    "close 54/46 split risks under-exploring depth-dominant article"
   ]
 }

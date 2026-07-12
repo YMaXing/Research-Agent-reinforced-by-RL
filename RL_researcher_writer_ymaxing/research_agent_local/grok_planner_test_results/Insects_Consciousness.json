@@ -18,25 +18,25 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 0.964,
-  "confidence": 0.3888,
-  "floor_applied": true,
+  "entropy_bits": 0.7897,
+  "confidence": 0.2368,
+  "floor_applied": false,
   "rl_agg_probs": [
+    0.7632,
+    0.2368,
     0.0,
-    0.3888,
-    0.6112,
     0.0
   ],
   "grok_override": false,
-  "grok_reasoning": "Aggregate RL recommendation is P1 (weak/uncertain at 39% light, 68% budget-weighted standard mass); no sanctioned override applies (cannot escalate P1 to P2 per hard guard; downward to P0 blocked by >30% standard mass + non-zero residuals 8/3–8/5 and 22 unbacked anchors); self-contained + depth-dominant gaps support only cheap touch-up.",
+  "grok_reasoning": "Section-scorer aggregate is P1 light (already cost-adjusted); vote mass is skip 76% / light 24% with 0% standard or deep, labeled WEAK/UNCERTAIN but dominant skip arm precludes 'no dominant arm' test for downward override. All sections self-contained with high must-ev and residuals, yet S1 is explicitly brief-flagged, S2/S3 RL picks are skip/light, and no condition for general downward override or P2→P3 escalation is met. Dominant gap type is depth but raw gap counts do not trigger escalation per policy.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "RL pick P1 light",
-    "no qualifying override",
-    "residual/self-contained context"
+    "RL aggregate P1 (cost-adjusted)",
+    "vote-mass gates at 0% for std/deep",
+    "brief flag + self-contained context"
   ],
   "grok_risk_flags": [
-    "68% standard vote mass may under-fill S2/S3 depth",
-    "high must-ev (4-6) could leave evidence gaps"
+    "Weak scorer confidence on P1 vs heavy skip mass",
+    "Residual depth needs remain high across all sections"
   ]
 }

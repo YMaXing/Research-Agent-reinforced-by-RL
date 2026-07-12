@@ -28,15 +28,14 @@
     0.0
   ],
   "grok_override": false,
-  "grok_reasoning": "Aggregate scorer vote is P1 light (80% mass on light, 0% on standard/deep) and is explicitly DECISIVE. All sections self-contained, dominant residual gaps are in depth not breadth, and high-budget S2/S3 already carry light votes; instructions prohibit escalating any P1 on raw gap counts or vote mass. No sanctioned upward path exists from P1 and no high-uncertainty trigger for downward override to P0 applies.",
+  "grok_reasoning": "DECISIVE P1 aggregate (80% light vote mass, 0% std/deep) on self-contained sections with existing matched sources; no sanctioned override applies per policy (high-budget S2/S3 both pick light, residuals already cost-adjusted upstream)",
   "grok_override_reason": null,
   "grok_decision_drivers": [
-    "decisive P1 aggregate vote",
-    "zero standard/deep mass",
-    "self-contained + brief flags on large sections"
+    "decisive scorer vote",
+    "self-contained flags",
+    "no escalation signal"
   ],
   "grok_risk_flags": [
-    "residual depth gaps in S3 could still feel thin",
-    "possible missed recent DESI quotes if light round returns duplicates"
+    "residual depth in S3 could still limit must-ev coverage"
   ]
 }

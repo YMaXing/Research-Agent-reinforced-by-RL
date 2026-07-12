@@ -28,14 +28,13 @@
     0.145
   ],
   "grok_override": true,
-  "grok_reasoning": "FORBIDDEN external-evidence policy is a hard constraint requiring P0; overrides uncertain P1 aggregate (37% skip / 36% standard mass) and all self-contained sections with provided sources.",
-  "grok_override_reason": "Hard policy constraint forces P0 despite RL pick of P1",
+  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN (hard constraint overrides everything, including the uncertain P1 aggregate vote and 36% standard-vote mass). All sections are already self-contained with residual needs met by the existing exploitation pass and listed sources.",
+  "grok_override_reason": "Hard constraint from external-evidence policy mandating P0 regardless of scorer pick",
   "grok_decision_drivers": [
-    "external-evidence-forbidden",
-    "self-contained-flags",
-    "provided-sources"
+    "external-evidence policy",
+    "self-contained flags across 100% budget"
   ],
   "grok_risk_flags": [
-    "residual depth gaps in S2 (19% budget) and S19 (15% budget)"
+    "Scorer uncertainty with split votes; large residual in S2/S19 could leave depth gaps"
   ]
 }

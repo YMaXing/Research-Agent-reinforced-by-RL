@@ -2,7 +2,7 @@
   "variant": "03_context_engineering__var_demanding",
   "lesson": "03_context_engineering",
   "split": "TRAIN",
-  "policy": "required",
+  "policy": "allowed",
   "rl_preset": 1,
   "grok_preset": 1,
   "chosen_preset": 1,
@@ -18,26 +18,24 @@
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.5684,
-  "confidence": 0.365,
+  "entropy_bits": 1.7696,
+  "confidence": 0.3839,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.3716,
-    0.365,
-    0.2634,
-    0.0
+    0.1505,
+    0.3839,
+    0.0829,
+    0.3827
   ],
   "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P1 light (already cost-adjusted); uncertain (entropy 1.57) with budget-weighted votes skip 35% / light 41% / standard 23% / deep 0%. Standard- and deep-vote masses both <30% so no sanctioned P2→P3 escalation; residual d/b=0/0 across all 100% self-contained budget and external-evidence=REQUIRED forbid any downward move to P0. RL picks already baked in the high must-ev counts (e.g. S6=11) and depth-dominant gaps.",
+  "grok_reasoning": "Section-scorer aggregate is P1 light (already cost-adjusted upstream); vote is UNCERTAIN (entropy 1.77 bits) with 38% light / 38% deep mass and only 8% standard. High deep-vote mass meets the numeric gate but OVERRIDE POLICY explicitly forbids any P1→P2+ escalation (hard code-level guard) and flags this exact depth-or-nothing pattern as sitting in a reward valley. Self-contained flags and residual needs supply context but are not sanctioned triggers to move off the RL pick; dominant gap is depth yet must-ev and unbacked anchors are universal and already factored into the P1 recommendation.",
   "grok_override_reason": null,
   "grok_decision_drivers": [
     "scorer_aggregate_P1",
-    "required_external_evidence",
-    "zero_residual_need",
-    "vote_masses_below_30pct"
+    "no_sanctioned_escalation_from_P1",
+    "deep_or_nothing_guard"
   ],
   "grok_risk_flags": [
-    "uncertain_vote_spread",
-    "high must-ev in S6/S4 despite residuals=0"
+    "38% deep mass + large residuals in S3/S6/S2 could leave depth gaps under-served"
   ]
 }
