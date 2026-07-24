@@ -7,6 +7,21 @@ and writes section_oracle.json with the full reward vector per arm.
 This REPLACES the heuristic oracle produced by generate_digests.py (_preset_2d)
 with empirically derived labels from actual episode runs.
 
+Version 3 (current): depth_enhancement/breadth_enhancement are no longer treated
+as raw 0/1 grader scores in the reward formula. The grader now reports, per
+section, a capped-but-uncapped-count `[instances=N; quality=strong|standard,...]`
+tag inside the reason text (see writing_workflow's new_follows_gt prompts); this
+module parses that tag and maps it through enhancement_reward.enhancement_credit()
+-- a tunable, saturating count x quality curve -- before folding it into
+_section_reward's explore term. See run13_rl_grok_pipeline_analysis.md Part 5
+(sections 25-27) for the bias this fixes and enhancement_reward.py for the tunable
+parameters. Legacy (pre-tag) reasoning.json files -- i.e. articles not yet
+re-graded with the new prompt -- keep their EXACT pre-v3 numeric behaviour: the
+raw 0/1 grader score is used directly, bypassing enhancement_credit() entirely.
+Re-running this script on an un-migrated article is a safe no-op with respect to
+its computed rewards; only re-graded articles (which carry the tag) see the new
+curve applied.
+
 Oracle schema written (version 2):
 {
   "version": 2,
@@ -44,6 +59,8 @@ import logging
 import re
 import sys
 from pathlib import Path
+
+from enhancement_reward import enhancement_credit
 
 logging.basicConfig(
     level=logging.INFO,
@@ -131,26 +148,63 @@ def _is_non_content(title: str) -> bool:
     return _normalize(title) in _NON_CONTENT_SECTIONS
 
 
-def _parse_sections_ordered(text: str) -> list[tuple[str, str, int]]:
+def _parse_enhancement_tag(reason_text: str) -> tuple[int, list[str]] | None:
+    """Extract the ``[instances=N; quality=tier1,tier2,...]`` tag from a
+    depth_enhancement/breadth_enhancement reason string.
+
+    Returns ``None`` when the tag is absent -- i.e. for reasoning.json files
+    graded before this tag was introduced. Callers MUST treat ``None`` as "use
+    the raw binary score directly, do not run enhancement_credit()" rather than
+    guessing a count/quality: a legacy score=1 could represent anywhere from 1
+    to 6 real instances, and silently assuming "1 standard instance" would
+    quietly shrink credit for likely-multi-instance sections that were simply
+    never re-examined, corrupting un-migrated oracle values as a side effect of
+    this change. Un-migrated articles keep their exact pre-v3 numeric behaviour
+    until they are actually re-graded and the tag becomes present.
+    """
+    m = re.search(r"\[instances=(\d+)(?:;\s*quality=([\w,]+))?\]", reason_text)
+    if not m:
+        return None
+    count = int(m.group(1))
+    quality_str = m.group(2)
+    qualities = [q.strip() for q in quality_str.split(",")] if quality_str else []
+    if count > 0 and not qualities:
+        # Tag present but no quality list (shouldn't normally happen) -- assume standard.
+        qualities = ["standard"] * min(count, 5)
+    return (count, qualities)
+
+
+def _parse_sections_ordered(text: str) -> list[tuple[str, str, int, tuple[int, list[str]] | None]]:
     """Parse per-section binary scores from one reasoning.json dimension value.
 
     Each block is separated by a blank line and formatted as:
-        Title (may contain colons):\n**[0|1]:** reasoning text
+        Title (may contain colons):\n**[0|1]:** [instances=N; quality=...] reasoning text
 
-    Returns list of (raw_title, norm_title, score) in order of appearance.
-    Skips non-content sections (References etc.).
+    The ``[instances=...]`` tag is only present for depth_enhancement/
+    breadth_enhancement entries (see writing_workflow's new_follows_gt prompts);
+    other dimensions and legacy (pre-tag) reasoning.json files simply won't match
+    it -- the 4th tuple element is ``None`` in that case (see
+    _parse_enhancement_tag for why this must NOT be silently defaulted).
+
+    Returns list of (raw_title, norm_title, score, enhancement_or_None) in order of
+    appearance. Skips non-content sections (References etc.).
     """
-    results: list[tuple[str, str, int]] = []
+    results: list[tuple[str, str, int, tuple[int, list[str]] | None]] = []
     for part in text.split("\n\n"):
         part = part.strip()
         if not part:
             continue
-        # Lazy match so it captures up to the LAST ":\n" before "**[01]:**"
-        m = re.match(r"^(.+?):\n\*\*([01]):\*\*", part)
+        # Lazy match so it captures up to the LAST ":\n" before "**[01]:**"; the
+        # remainder (reason text, possibly with the enhancement tag) is captured too.
+        m = re.match(r"^(.+?):\n\*\*([01]):\*\*(.*)$", part, re.DOTALL)
         if m:
             raw = m.group(1).strip()
-            if not _is_non_content(raw):
-                results.append((raw, _normalize(raw), int(m.group(2))))
+            if _is_non_content(raw):
+                continue
+            score = int(m.group(2))
+            reason_text = m.group(3)
+            enhancement = _parse_enhancement_tag(reason_text)
+            results.append((raw, _normalize(raw), score, enhancement))
     return results
 
 
@@ -175,7 +229,7 @@ def _sec_id_to_norm(sec_id: str) -> str:
 # ---------------------------------------------------------------------------
 
 def _get_score(
-    dim_entries: list[tuple[str, str, int]],  # (raw, norm, score) ordered
+    dim_entries: list[tuple[str, str, int, tuple[int, list[str]] | None]],  # (raw, norm, score, enhancement) ordered
     target_norm: str,
     ordinal_idx: int,
 ) -> float:
@@ -188,7 +242,7 @@ def _get_score(
     4. Return 0.0 if nothing works.
     """
     # Build lookup by norm title
-    by_norm = {norm: score for _, norm, score in dim_entries}
+    by_norm = {norm: score for _, norm, score, _enh in dim_entries}
 
     # 1. Exact
     if target_norm in by_norm:
@@ -204,6 +258,35 @@ def _get_score(
         return float(dim_entries[ordinal_idx][2])
 
     return 0.0
+
+
+def _get_enhancement(
+    dim_entries: list[tuple[str, str, int, tuple[int, list[str]] | None]],  # (raw, norm, score, enhancement) ordered
+    target_norm: str,
+    ordinal_idx: int,
+) -> tuple[int, list[str]] | None:
+    """Look up a section's (count, qualities) enhancement tag for a depth/breadth dimension.
+
+    Same 3-tier lookup strategy as _get_score (exact -> substring -> ordinal),
+    but returns the parsed ``(count, qualities)`` tuple (or ``None`` if the
+    section wasn't found at all, or the tag was absent -- legacy data) for use
+    with enhancement_reward.enhancement_credit(). Callers MUST fall back to the
+    raw binary score (via _get_score) when this returns ``None`` rather than
+    guessing a count -- see _parse_enhancement_tag for why.
+    """
+    by_norm = {norm: (score, enh) for _, norm, score, enh in dim_entries}
+
+    if target_norm in by_norm:
+        return by_norm[target_norm][1]
+
+    for norm, (_score, enh) in by_norm.items():
+        if target_norm in norm or norm in target_norm:
+            return enh
+
+    if ordinal_idx < len(dim_entries):
+        return dim_entries[ordinal_idx][3]
+
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -245,6 +328,13 @@ def _section_reward(
 
     ``variant`` is accepted for call-site compatibility (process_article_variant
     still passes it) but is no longer used to select a formula branch.
+
+    ``de``/``be`` (as of section_oracle.json version 3) are no longer raw 0/1
+    grader scores -- callers pass them through
+    ``enhancement_reward.enhancement_credit()`` first, so they are saturating
+    credit values in [0, 1] driven by the count and quality of qualifying
+    depth/breadth instances (see enhancement_reward.py). The formula's own math
+    is unchanged; it is agnostic to whether de/be are binary or fractional.
     """
     gt_base     = 0.20 * cc + 0.20 * fl
     explore     = cp * (0.60 * de + 0.40 * be) * 0.50
@@ -257,8 +347,8 @@ def _section_reward(
 # Per-episode loading
 # ---------------------------------------------------------------------------
 
-def _load_episode(episode_dir: Path) -> dict[str, list[tuple[str, str, int]]]:
-    """Load reasoning.json (or reasons.json) and return {dim: [(raw, norm, score), ...]}."""
+def _load_episode(episode_dir: Path) -> dict[str, list[tuple[str, str, int, tuple[int, list[str]] | None]]]:
+    """Load reasoning.json (or reasons.json) and return {dim: [(raw, norm, score, enhancement), ...]}."""
     path = episode_dir / "reasoning.json"
     if not path.exists():
         path = episode_dir / "reasons.json"  # test-set grader writes reasons.json
@@ -370,7 +460,7 @@ def process_article_variant(
     _ACTIVE_PRESETS = sorted(_ep_rounds.keys())
 
     # Load only the active episodes upfront (dict keyed by preset id)
-    episode_dims: dict[int, dict[str, list[tuple[str, str, int]]]] = {}
+    episode_dims: dict[int, dict[str, list[tuple[str, str, int, tuple[int, list[str]] | None]]]] = {}
     for p in _ACTIVE_PRESETS:
         ep_dir = (
             _TEST_EPISODES_DIR / f"{article}__preset{p}"
@@ -400,11 +490,22 @@ def process_article_variant(
             def _score(dim: str, _ep=ep, _sn=sec_norm, _si=sec_idx) -> float:
                 return _get_score(_ep.get(dim, []), _sn, _si)
 
+            def _enh_credit(dim: str, _ep=ep, _sn=sec_norm, _si=sec_idx) -> float:
+                """Enhancement credit for a depth/breadth dim: real (count, qualities)
+                tag -> enhancement_credit() curve; tag absent (legacy, un-migrated
+                reasoning.json) -> raw binary score, UNCHANGED from pre-v3 behaviour.
+                """
+                enh = _get_enhancement(_ep.get(dim, []), _sn, _si)
+                if enh is None:
+                    return _get_score(_ep.get(dim, []), _sn, _si)
+                _count, qualities = enh
+                return enhancement_credit(qualities)
+
             preset_rewards[p] = _section_reward(
                 cc=_score("ground_truth_core_content"),
                 fl=_score("ground_truth_flow"),
-                de=_score("ground_truth_depth_enhancement"),
-                be=_score("ground_truth_breadth_enhancement"),
+                de=_enh_credit("ground_truth_depth_enhancement"),
+                be=_enh_credit("ground_truth_breadth_enhancement"),
                 cp=_score("ground_truth_core_preservation"),
                 ga=_score("user_intent_guideline_adherence"),
                 ra=_score("user_intent_research_anchoring"),
@@ -436,9 +537,11 @@ def process_article_variant(
     if dry_run:
         return True
 
-    # Write section_oracle.json (version 2 format)
+    # Write section_oracle.json (version 3 format -- de/be now derived from the
+    # count x quality enhancement_credit() curve, see enhancement_reward.py, not
+    # the raw 0/1 grader score; schema shape is otherwise identical to version 2)
     output = {
-        "version": 2,
+        "version": 3,
         "article": article,
         "variant": variant if variant is not None else "no_variant",
         "sections": sections_output,

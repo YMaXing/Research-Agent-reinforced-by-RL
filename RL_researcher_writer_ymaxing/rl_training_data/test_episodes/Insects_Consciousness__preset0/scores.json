@@ -1,5 +1,5 @@
 {
-  "ground_truth_core_content": 0.666667,
+  "ground_truth_core_content": 1.0,
   "ground_truth_flow": 1.0,
   "ground_truth_structure": 0.666667,
   "ground_truth_depth_enhancement": 0.0,

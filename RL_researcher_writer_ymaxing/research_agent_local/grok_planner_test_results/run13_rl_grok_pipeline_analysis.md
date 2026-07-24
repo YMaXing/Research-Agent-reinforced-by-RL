@@ -880,7 +880,353 @@ held-out articles**, stratified by oracle arm so no single class dominates. Targ
 include **golden-source-type diversity matching deployment**: a mix of URL-scraped-golden and
 local-file-golden ("golden_local") articles, since deployment sees both and the current test set's
 golden-local half is exactly where the model fails. Without this, we cannot tell whether *any*
-future fix (dataset or model) actually worked.
+future fix (dataset or model) actually worked. §16.1.1 below turns "stratified, golden-diverse"
+into an exact, verified gap table instead of a slogan.
+
+#### 16.1.1 Concrete identification method — the arm × golden-type grid
+
+To identify *precisely* which kind of article to add next (not just "more of everything"),
+cross-tabulate the current 16 TEST articles by (a) oracle arm and (b) golden-source type —
+whether their `## Golden Sources` are locally-supplied files (`golden_local`, physically present
+before research starts) or scraped web URLs (`golden_web`, fetched live during research).
+Verified directly against the 16 saved oracle labels + the golden-type audit from §8.2:
+
+| Oracle arm | golden_local | golden_web | course-lesson (single-variant) | **Total** |
+|---|:--:|:--:|:--:|:--:|
+| **P0 skip** | Dark_Dimension, State_of_LLM_Reasoning | **— none —** | 07_reasoning_planning (pathological) | 3 |
+| **P1 light** | Bird_Eye_Extreme, Distinct_AI_Models, HNSW, Space-Time_QECC | Gravity_Entropy, Insects_Consciousness | 14_agent_system_design, 29_evaluation_metrics, 31_CI | 9 |
+| **P2 standard** | Understanding_Reasoning_LLMs | **— none —** | 04_structured_outputs | 2 |
+| **P3 deep** | Earth_Oceans_Origin | **— none —** | 13_agent_framework | 2 |
+
+Reading the grid, three concrete, checkable gaps fall out (this is the "identification method" —
+run this same cross-tab on any candidate new article before adding it, to see which cell it
+actually fills):
+
+1. **The `golden_web`-only column is nearly empty (2/16, both P1).** Every P0/P2/P3 example in
+   the test set is either `golden_local`-backed or a single-variant course lesson — there is
+   **not one** standalone "genuinely needs web exploration, no local paper dump" example at skip,
+   standard, or deep. This is a distinct axis from the local-golden-blind-spot story in §8: it
+   tests whether the model can recognize "well-covered by a *small number of canonical web
+   sources*" (→P0/P1) vs. "broad/current enough that even good web sources leave real gaps"
+   (→P2/P3), independent of the local-file mechanism entirely.
+2. **P2/P3 (standard/deep) cells are thin everywhere (2 each), each explained by only 2
+   articles.** This is the sharpest form of the n=16 problem: the *tail classes* — also where
+   nearly all the interesting model behavior lives (the whole over-prediction cluster is a P1/P2
+   boundary phenomenon) — have almost no statistical power. A single borderline oracle at this
+   arm swings the per-class rate by 50 points.
+3. **Target composition for the +16–24 new articles** (fills every cell to ~4–6, i.e. a
+   ~32–40-article test set with ~8–10 per arm):
+
+   | Oracle arm target | golden_local | golden_web | course-style | Add (≈) |
+   |---|:--:|:--:|:--:|:--:|
+   | P0 skip | +1–2 | **+3–4 (priority)** | +0–1 | 5–7 |
+   | P1 light | +0–1 | +2–3 | +0–1 | 2–5 (already near target — lowest priority) |
+   | P2 standard | +2–3 | **+3–4 (priority)** | +1–2 | 6–8 |
+   | P3 deep | +2–3 | **+3–4 (priority)** | +1–2 | 6–8 |
+
+   The bolded cells (`golden_web` at P0/P2/P3) are the highest-value additions: they are
+   currently **zero-count**, and filling them gives a second, independent diagnostic axis —
+   whether the model's residual error is really about *golden-source type* specifically, or
+   about *depth-need calibration* in general, something the current 16-article grid genuinely
+   cannot distinguish.
+
+#### 16.1.2 A cheaper alternative — augment existing articles via guideline edits, not net-new authoring
+
+Prompted by a direct question: since brief-writing and golden-source curation are the slowest
+steps, can we fill most of §16.1.1's grid by **editing the guidelines of the current 16/40
+articles** (golden-source designation, section-level depth demands) instead of authoring new
+topics from scratch? **Checked against the actual pipeline, not assumed — and the answer is yes,
+this is provably cheap, because it is exactly the mechanism TRAIN's 24 variant-articles already
+use.**
+
+**Verified evidence (not speculation).** Diffed the three `06_tools` guideline-demand variants
+directly:
+
+- `article_ground_truth.md` (the expensive, hand/LLM-authored grading target) is **byte-identical**
+  across `06_tools__var_minimal` and `06_tools__var_demanding` (`diff -q` reports no difference;
+  both 6,015 words) — the SAME reference article grades all three depth-variants.
+- The base research corpus snapshot (`research.md`, synthesizer fixture copy) is likewise
+  **byte-identical** across variants (69,340 words, `diff -q` clean).
+- Only `article_guideline.md` differs, and only modestly (5,697 vs 5,745 words) — per-section
+  `target_words` and depth language (`var_minimal` Section 3: "Must stay brief... ~390 words";
+  `var_demanding` Section 3: same topic, "~1000 words", more granular technical demands).
+- In the **real RL-training bases** (`rl_training_data/bases/06_tools__var_minimal` vs.
+  `__var_demanding`), each variant *does* re-run its own independent `.research/` + 4-arm
+  labeling pass (`research_digest.md` differs; `oracle_arm_idx` is 0 for minimal vs. 3 for
+  demanding) — so the **labeling pipeline cost is not eliminated**, but the **ground-truth
+  authoring cost — the single most expensive, least automatable step in §16.3 — is entirely
+  reused.** This is the real reason variant-based augmentation is so much cheaper than net-new
+  topics: you skip writing a new ideal reference article, and you skip re-designing section
+  structure/key-points; you only edit demand parameters and re-run the (already-tooled) labeling
+  pipeline.
+
+**Three concrete augmentation levers, each mapped to a specific §16.1.1 grid gap:**
+
+1. **Force-scrape lever (cheapest of all — fills the empty `golden_web` cells directly), refined
+   in §16.1.3 below to avoid an actual live re-scrape.** The naive version: take an existing
+   `golden_local` test article (e.g. `Space-Time_QECC`, `Earth_Oceans_Origin`,
+   `Understanding_Reasoning_LLMs`) and delete the quoted filename line under one or more
+   `## Golden Sources` entries, leaving just the URL:
+   ```
+   <!-- [Title](https://arxiv.org/abs/XXXX.YYYYY) -->
+   ```
+   (no `"Title.md"` line) so the pipeline scrapes it live. This fills the empty `golden_web` cells
+   at effectively zero authoring cost, **but** it re-introduces exactly the scraping
+   glitches/incompleteness the `golden_local` choice was made to avoid (per the repo owner: the
+   Marker-processed local files are more complete, token-efficient, and better-formatted than a
+   live scrape of the same paper — content bulk is otherwise identical) — an unwanted confound
+   between "source-type label" and "content quality." §16.1.3 gives a verified, zero-code-change
+   way to get the `golden_web` label attributed to the *same* Marker-quality content, isolating
+   the label effect cleanly.
+2. **Golden-removal lever (manufactures genuine (2b) no-variant P2/P3 examples from existing
+   topics).** Strip one or more golden sources (local or web) from a currently-P0/P1 article.
+   With the same guideline demands but less supplied material, sections that used to be
+   satisfiable locally now have a real coverage gap that only exploration can close — pushing
+   the true reward-optimal arm toward P2/P3. This directly targets Priority 2's archetype (2b)
+   using topics that already have a ground truth, guideline, and section structure — no new
+   topic needed.
+3. **Golden-enrichment lever (manufactures genuine (2a) golden-satisfiable examples from the
+   *existing hardest cases*).** Take a currently-P2/P3 article whose oracle is expensive
+   specifically because its guideline demands aren't locally covered (`13_agent_framework`,
+   `Earth_Oceans_Origin`, `Understanding_Reasoning_LLMs`, `04_structured_outputs`) and add
+   comprehensive golden sources that substantively answer the section demands. If the added
+   material genuinely closes the gaps, the true oracle should shift toward P1/P0 — manufacturing
+   the exact "golden-discount" archetype (2a) that Priority 2 calls for, again with zero new
+   topic-authoring.
+4. **Section-level (mixed-depth) variants — the user's specific "section-level" idea, one step
+   beyond what TRAIN already does.** TRAIN's `var_minimal/standard/demanding` scheme escalates
+   depth *uniformly* across an entire article. A richer version — not yet used anywhere in this
+   dataset — edits the `target_words`/depth language for **only a subset of sections** in an
+   existing guideline (e.g. keep 4 of 6 sections at their original scope, deepen 2 specific
+   sections' demands and strip their local golden coverage). Because rewards are already computed
+   **per section** (`train_grpo.py`), this produces a within-article contrast the current
+   whole-article variants cannot — directly exercising the model's ability to weigh
+   heterogeneous per-section need rather than one global label, which is closer to what
+   real-world articles look like than a uniform escalation.
+
+#### 16.1.3 The bookkeeping trick — attribute `golden_web` without any live re-scrape
+
+Prompted by a direct follow-up: since the whole reason several test articles use `golden_local`
+is that the Marker-processed local files are measurably higher-quality than a live scrape of the
+same paper (more complete, more token-efficient, cleaner formatting — content bulk is otherwise
+identical), forcing a real re-scrape (Lever 1's naive version) would trade the label-diagnostic
+we want for a quality regression we don't. Traced the actual code path that decides whether a URL
+gets scraped, and there is an existing, unrelated piece of infrastructure that does exactly what's
+needed — **no source changes required, only file placement.**
+
+**What the code actually does (verified, not assumed).** Each preset episode for an article is
+its own directory, named `<article>__preset<0-3>`, placed as **siblings** under one parent
+folder — confirmed directly: `rl_training_data/test_episodes/Space-Time_QECC__preset0` through
+`__preset3` sit side by side (`training/rl_data_generator.py::_episode_dir_name` / `EPISODES_DIR`
+/ `TEST_EPISODES_DIR`). Before scraping any golden/other URL, the tool
+(`scrape_and_clean_other_urls_tool.py`) calls `find_cached_web_files(urls, research_path)`
+(`utils/scraping_cache_utils.py`) — built so an article's 4 preset arms don't each re-scrape the
+*same* URL independently. It scans every **sibling** directory's
+`.research/{urls_from_guidelines,...}/*.md` files for a `**Source URL:** <url>` marker in the
+first 15 lines, and if found in *any* sibling, `copy_cached_files()` just `shutil.copy2`s that
+file straight into the current episode's `urls_from_guidelines/` folder — **the live scrape call
+is skipped entirely** for that URL. This mechanism doesn't care whether the cached file was
+originally produced by a real scrape; it only checks for the literal Source-URL marker.
+
+**The recipe (zero code changes, pure data placement):**
+
+1. In the guideline, keep the golden source as a **plain URL entry** (delete the quoted
+   `"Title.md"` line) so `extract_guidelines_urls_tool.py` routes it into `other_urls`/
+   `arxiv_urls`, not `local_file_paths` — this is what makes the pipeline *attempt* to scrape it
+   (and therefore hit the cache lookup) instead of silently reading a supplied local file.
+2. Create one small **seed sibling directory** in the same parent as the article's real preset
+   episodes, with a name containing the literal substring `__preset` so
+   `_get_article_base_name()` truncates it to the correct base (e.g.
+   `rl_training_data/test_episodes/Space-Time_QECC__preset_goldenseed/`). It never needs to run
+   through the actual research/write/grade pipeline itself — it only needs to exist as a
+   directory the cache-scanner can see.
+3. Inside it, place `.research/urls_from_guidelines/<any-name>.md` containing:
+   ```
+   # <Title>
+
+   **Source URL:** <the exact URL string as it appears in the guideline>
+
+   <the Marker-processed body content, verbatim>
+   ```
+   The URL must match **byte-for-byte** what's in the guideline (same `/abs/` vs `/pdf/` form,
+   etc. — matching is exact-string, not normalized), and the marker must fall within the first 15
+   lines of the file.
+4. Run the real 4-arm pipeline for that article as normal. Every preset episode's
+   `scrape_and_clean_other_urls_tool` call will find the seed as a sibling, detect the Source-URL
+   match, and copy the seeded file into its own `urls_from_guidelines/` — no Firecrawl/arxiv2md
+   call happens for that URL, so no scraping glitches or incompleteness are possible; the exact
+   Marker-quality bytes are what `generate_digests.py::collect_sources()` reads into the
+   `golden_web` bucket (`research_dir / "urls_from_guidelines"`, line 747).
+5. Delete/archive the seed directory once all 4 presets have run (it's a cache donor only, not a
+   real preset arm, and shouldn't be mistaken for one later).
+
+**This is a genuine, not merely cosmetic, manipulation.** `generate_digests.py`'s COMPRESS-stage
+prompt explicitly includes a `Source type: {source_type}` line (verified at the call site) when
+summarizing each source — so a source relabeled `golden_web` is handed to the compression LLM
+with a different declared provenance than the identical bytes would get as `golden_local`, which
+can genuinely change how it's compressed/weighted, independent of any content difference. That is
+precisely the isolated variable the new grid cell needs to test.
+
+**Be explicit about what this does and doesn't validate.** This technique cleanly isolates "does
+the `golden_web` *label* change treatment, holding content quality fixed at Marker level" —
+exactly what's needed to fill §16.1.1's empty grid cells for measurement purposes. It does **not**
+exercise "does the pipeline handle typical live-scrape noise/incompleteness gracefully" — if that
+separate question is ever worth answering, a genuinely-scraped variant (Lever 1's naive form)
+would still be needed as its own, distinctly-labeled condition, not conflated with this one.
+
+**Caveats to respect before mass-producing this (same discipline as §10/§13.1's pre-registered
+separation tests):**
+
+- **Statistical non-independence.** An augmented variant of `Space-Time_QECC` shares topic
+  vocabulary and content with the original — if the model mishandles one, it will likely
+  mishandle the other for the *same* underlying reason. These are not fully independent draws;
+  report them tagged by base-topic (e.g. `Space-Time_QECC__webforced`,
+  `Space-Time_QECC__degoldenated`) so a single systematic failure isn't miscounted as several
+  independent test failures when computing per-arm rates. Keep a genuine mix of new topics
+  (§16.1.1's sourced pools) alongside augmented variants — don't rely on augmentation alone for
+  topic diversity.
+- **Pilot before scaling.** Run 1–2 augmented variants through the full 4-arm pipeline first and
+  confirm the oracle actually moves the *expected* direction (e.g. a golden-stripped
+  `Space-Time_QECC` variant should shift toward P2/P3, not stay flat) before committing to
+  producing a dozen of them — the same "pre-register the separation test" discipline used
+  throughout this investigation.
+- **This does not shrink the cost of net-new topics** (still needed for the empty `golden_web`
+  cells' full diversity and to avoid pure topic-recycling) — it only removes the ground-truth-
+  authoring cost for *augmenting the 16/40 topics that already have one*. See the revised cost
+  breakdown in §16.3.
+
+#### 16.1.4 A direct challenge, and a bigger discovery it surfaced: `golden_local` is an out-of-distribution token
+
+Direct challenge received: since §16.1.3's sibling-cache trick still calls for re-running the
+full 4-arm research/write/grade pipeline, is that even necessary — don't the downstream writing
+and grading steps (everything after `research_instructions_prompt.py` step 2) treat a
+`golden_local` source and the "same" content scraped from a URL identically, since the bulk of
+the content is the same? **Traced every downstream consumer to check. For the oracle-labeling
+pipeline, the challenge is correct — no rerun of research/write/grade is needed.** But tracing it
+turned up something more important: the *RL model's own inference-time input* is not indifferent
+to source type, and the specific way it isn't indifferent looks like a real, previously-unexamined
+contributor to the golden_local failure cluster.
+
+**Where the challenge is right (verified, not assumed).**
+- `generate_digests.py`'s COMPRESS-stage prompt (`_COMPRESS_USER_TEMPLATE`) includes a
+  `Source type: {source_type}` line, but the instructions that follow it are byte-identical
+  regardless of type, and the token budget (`_MAX_TOKENS`) is the same (700) for `golden_web` and
+  `golden_local`. No differential treatment.
+- The GENERATE-stage digest prompt (`_DIGEST_SYSTEM`/`_DIGEST_USER_TEMPLATE`) computes
+  `depth_score`/`breadth_score`/`need_depth`/`need_breadth` from `present="yes/no"` evidence
+  flags via a **deterministic validator** (`_count_checklist`) — purely evidence-presence-based,
+  with zero reference to source type anywhere in the formula or the instructions.
+- A full grep of the entire `writing_workflow/` codebase (the article-writing and grading
+  scripts) for `golden_local`, `golden_web`, and `source_type` returns **zero matches** — the
+  writer and grader never see or condition on source type at all.
+- Conclusion: the **oracle** (the reward-derived ground-truth preset label, which is what a
+  4-arm rerun would recompute) is provably content-driven, not type-driven. Relabeling a source's
+  acquisition method does not require recomputing it. The challenge is correct on this point.
+
+**Where it's incomplete — the RL model's input is a different story.** Traced
+`training/_rl_preset.py::build_rl_input()` (the function that builds the *exact* per-section
+prompt the trained Qwen3-4B policy reads at inference time) line by line. It deliberately strips
+the full source text from the model's input ("full source text is not needed for preset
+selection and creates a length confounder... the downstream writer LLM receives the full digest")
+— but it explicitly **keeps a compact `sources_summary` block containing slug + type**:
+```python
+sm = re.search(r'<s slug="' + re.escape(slug) + r'"([^>]*)>', all_sources_m.group(1))
+if sm:
+    _sm_parts.append(f'  <s slug="{slug}"{sm.group(1)}/>')
+```
+`sm.group(1)` is literally ` type="golden_local"` or ` type="golden_web"` — this string is
+embedded verbatim into the model's per-section input as `<sources_summary>`. **The RL model does
+see the type label, as a literal token, on every inference call.**
+
+**The discovery: this token is out-of-distribution for `golden_local`.** Grepped
+`type="golden_local"` across every TRAIN base's `research_digest.md` (all 24: `02`–`11` base +
+`var_minimal`/`var_standard`/`var_demanding` for each) — **zero occurrences, confirmed
+exhaustively.** Every TRAIN golden source is `golden_web` (course-lesson goldens are all
+blog/video URLs — the same fact already noted in §8.2, now traced one level deeper: it means the
+*token* `golden_local` never once appears anywhere in the RL model's training data). Grepped the
+16 TEST digests: **8 articles carry 23 individual `golden_local` sources** — `Bird_Eye_Extreme`
+(1), `Dark_Dimension` (2), `Distinct_AI_Models` (1), `Earth_Oceans_Origin` (2), `HNSW` (7),
+`Space-Time_QECC` (3), `State_of_LLM_Reasoning` (3), `Understanding_Reasoning_LLMs` (4) — every
+one of which is a member of Part 1/2's over-prediction / under-prediction failure clusters. The
+model has **never once been trained on the token it sees for exactly the test articles it fails
+on most.** This is a structurally plausible, previously unexamined contributor to the residual
+generalization gap — separate from (and possibly compounding) the orphan-routing / self-
+containment mechanisms already diagnosed in §8–10 and §14.3.
+
+**What this means for the augmentation trick — cheaper than §16.1.3, and reframed as a diagnostic,
+not a data-expansion lever.** Since the oracle doesn't care about type but the *live model input*
+does, and since we don't need new content (the compressed text is unaffected by the label), there
+is an even simpler mechanism than §16.1.3's sibling-cache injection: **directly edit the `type=`
+attribute in the existing, already-computed `research_digest.md` files** for the 8 affected
+articles — `sed 's/type="golden_local"/type="golden_web"/'` — no pipeline rerun of any kind, not
+even a research/scrape step. Then re-run only the (already-cheap) RL+Grok inference call against
+the **unchanged** oracle to see whether `rl_agg_probs` shifts.
+
+**But this does NOT create new, independent test articles — it is an ablation on the *same* 8
+topics with the *same* oracle**, so:
+- **Count toward §16.1.1's Target Composition: 0.** These are perfectly correlated with the
+  existing 8 measurements (same content, same ground truth, same failure history) — counting them
+  as new arm-cell fills would repeat exactly the non-independence mistake §16.1.2 warned about,
+  and would not move the n=16-floor problem at all.
+- **Recommended instead as a near-zero-cost, high-priority diagnostic — run before further data
+  collection, not as part of it.** If swapping the token measurably changes accuracy/regret on
+  those 8 articles (holding the oracle fixed), that's direct evidence the `golden_local` cluster
+  is at least partly an **OOD-token artifact**, not purely a coverage/data problem — and the fix
+  would be dramatically cheaper than authoring new topics: either (a) add a `golden_local`-typed
+  source to 1–2 *existing* TRAIN articles (a few-hour job, no new topic, no new ground truth,
+  just gives the model *any* in-training exposure to the token) or (b) a one-line code fix in
+  `generate_digests.py`/`_rl_preset.py` to stop surfacing `golden_local` as a distinct type at
+  all (collapse it into `golden_web` / a single `golden` label) if the distinction was never
+  meant to carry decision-relevant signal in the first place. Both are cheaper than anything
+  else in §16.
+
+#### 16.1.5 Experiment run (2026-07-12) — result: the token is not inert, but its effect was too small to flip any decision here
+
+Ran it. Backed up all 8 affected articles' `research_digest.md` and their existing baseline
+JSONs, `sed`-relabeled every `type="golden_local"` → `type="golden_web"` in place (23 occurrences
+across 8 files, zero pipeline rerun), re-ran RL+Grok inference restricted to those 8 articles
+(`test_grok_planner --articles ... --save-json`), then restored the original digests and JSONs
+afterward. Ablation results archived separately in
+`grok_planner_test_results/_goldenlocal_ablation/`.
+
+**Per-article comparison (raw RL `agg_probs`, before vs. after relabeling):**
+
+| Article | OLD `agg_probs` [P0,P1,P2,P3] | NEW `agg_probs` [P0,P1,P2,P3] | Changed? | Verdict (old→new) |
+|---|---|---|:--:|:--:|
+| `Bird_Eye_Extreme` | `[0.000, 0.707, 0.000, 0.293]` | `[0.000, 0.707, 0.293, 0.000]` | **yes** (P2/P3 mass swapped) | EXACT → EXACT |
+| `Dark_Dimension` | `[0.200, 0.800, 0.000, 0.000]` | `[0.200, 0.800, 0.000, 0.000]` | no | NEAR → NEAR |
+| `Distinct_AI_Models` | `[0.001, 0.174, 0.826, 0.000]` | `[0.175, 0.000, 0.825, 0.000]` | **yes** (P0/P1 mass swapped) | NEAR → NEAR |
+| `Earth_Oceans_Origin` | `[0.143, 0.137, 0.000, 0.720]` | `[0.143, 0.137, 0.000, 0.720]` | no | EXACT → EXACT |
+| `HNSW` (7 local sources — the most of any article) | `[0.463, 0.537, 0.000, 0.000]` | `[0.463, 0.537, 0.000, 0.000]` | no | EXACT → EXACT |
+| `Space-Time_QECC` | `[0.002, 0.002, 0.628, 0.368]` | `[0.080, 0.000, 0.580, 0.340]` | **yes** (mass shifted toward P0, away from P2/P3) | MISS → MISS |
+| `State_of_LLM_Reasoning` | `[0.371, 0.124, 0.360, 0.145]` | `[0.371, 0.124, 0.360, 0.145]` | no | EXACT → EXACT |
+| `Understanding_Reasoning_LLMs` | `[0.000, 0.070, 0.930, 0.000]` | `[0.000, 0.070, 0.930, 0.000]` | no | EXACT → EXACT |
+
+**Aggregate: n=8, exact=5, near=2, miss=1 — identical on both runs, article-for-article.** Not a
+single verdict changed. Regret values are identical to 3 decimals for every article.
+
+**Interpretation — a real but small effect, not a hidden major driver.**
+- **The token is demonstrably not inert.** 3 of 8 articles show a genuine shift in `agg_probs`
+  purely from the type-label swap (same digest content otherwise) — this rules out "the type
+  label never influences the model" as a blanket claim. The mechanism traced in §16.1.4
+  (`sources_summary` embeds the literal token, only for sections that cite that specific source)
+  explains why exactly 3 shifted and 5 didn't: `HNSW` has by far the *most* `golden_local`
+  sources (7) yet shows **zero** change — consistent with the shift depending on which specific
+  sections cite the tagged source and how much section-weight they carry, not on how many
+  `golden_local` sources the article has overall.
+- **But the shift wasn't large enough to cross a decision boundary in this sample.**
+  `Space-Time_QECC` shows the largest movement (P0 mass 0.002→0.080, P2 0.628→0.580, P3
+  0.368→0.340) — and it's the one MISS in the set — but the RL argmax stays P2 either way, and
+  Grok's escalation to P3 fires identically both times, so the final verdict and regret are
+  unchanged.
+- **Conclusion: this is a real, now-quantified artifact worth fixing on principle (§16.1.4's
+  fix (b) — collapsing the type distinction — is a clean, near-zero-cost, permanent
+  improvement), but it does not appear to be a major hidden driver of the residual test
+  regression by itself, at least on this 8-article sample.** It does not change §15–16's
+  verdict, and it does not add or remove anything from the Target Composition count (§16.1.4
+  already established this correctly at 0). Worth re-running this same ablation automatically
+  whenever new `golden_local` test articles are added (§16.1.1/§16.2), since a larger or
+  differently-composed sample could show a bigger effect than this one did.
 
 **PRIORITY 2 — TRAIN-set articles in the MISSING REGIMES (fixes the model's blind spots).**
 Two specific archetypes, neither of which exists in training today:
@@ -925,20 +1271,96 @@ from scratch:
    topic_summary, target_length_words, theory_practice_ratio, sections+key_points,
    `golden_sources` [title+url], optional `other_sources`, `code_examples`). **Authoring a new
    article = write one YAML brief + run the synthesizer.**
-3. **Golden-source material for the two needed archetypes is abundant and free:**
-   - For **(2a) golden-satisfiable science explainers**: pick a narrow scientific/technical topic
-     with 1–4 authoritative primary papers (arXiv / open-access journals), supply those papers as
-     **local golden files** (the `<!-- [Title](URL) --> "File.md"` convention → they land in
-     `.research/local_files_from_research/`, now correctly read post-golden_local-fix), and write
-     a guideline that demands detailed coverage of exactly what those papers contain. The existing
-     test articles (Space-Time_QECC = the 3 holographic-QEC papers; Understanding_Reasoning_LLMs =
-     4 reasoning papers) are the exact template to clone with new topics. Source pool: arXiv
-     cs.LG/cs.CL/quant-ph/astro-ph, Distill.pub, open-access Nature/Science summaries.
-   - For **(2b) genuine no-variant P2/P3**: pick topics that are *broad or fast-moving* enough
-     that a handful of golden sources genuinely do NOT cover the guideline's demands, forcing real
-     exploration (e.g. "survey of X across N subfields", "state of the art in Y as of 2026",
-     comparative/landscape articles). The guideline should list demands whose answers are NOT in
-     the supplied goldens → the grader rewards deeper exploration → oracle lands P2/P3.
+3. **Golden-source material — exact mechanics, plus concrete pools for each gap cell in
+   §16.1.1's grid:**
+
+   - **`golden_web` mechanics (fills the empty web-only cells at P0/P2/P3):** add a plain URL
+     entry to the guideline's `## Golden Sources` section —
+     `<!-- [Title](https://arxiv.org/abs/XXXX.YYYYY) -->` with **no filename line under it**.
+     Nothing needs pre-downloading: `scraping_handler.py::scrape_arxiv_url()` already
+     special-cases `arxiv.org` URLs and calls the vendored `arxiv2md` package
+     (`mcp_server/.venv/bin/arxiv2md`, wraps `arxiv2md.ingest_paper()`) automatically during the
+     research phase to fetch clean per-section Markdown; non-arXiv web URLs (blog posts, docs)
+     go through the normal Firecrawl/Jina scrape path. This is the natural mechanism for
+     "well-documented, but not locally dumped" topics — exactly the missing cells.
+   - **`golden_local` mechanics (for topics that should use the local-file convention):**
+     (1) fetch the source as Markdown — either the CLI (`arxiv2md <arxiv-id>`, the same tool the
+     pipeline calls) or the repo's own `pdftomd.py` for non-arXiv PDFs; (2) save the result as
+     `"<Title>.md"` in the article's own research-directory root — the same directory passed as
+     `research_directory` to `process_local_files_tool` (sibling to `.research/`, *not* inside
+     it); (3) reference it in the guideline exactly like the existing articles:
+     ```
+     ## Golden Sources
+     <!-- [Title](https://arxiv.org/abs/XXXX.YYYYY) -->
+     "Title.md"
+     ```
+     (`extract_guidelines_urls_tool.py` parses the quoted filename;
+     `process_local_files_tool.py::_copy_one` resolves it as `research_path / rel_path` and
+     copies it into `.research/local_files_from_research/`.) This is the exact mechanism §8's
+     golden-local fix made the digest pipeline finally read — new articles using it are handled
+     correctly from day one.
+   - **An immediately-usable, zero-scrape-cost pool already sitting in the repo.**
+     `research_agent_local/.arxiv2md_cache/` already holds 26 previously-fetched arXiv papers as
+     cached Markdown. Cross-checked against every currently-staged brief: **18 of the 26 are not
+     referenced anywhere** — free, already-converted raw material:
+
+     | arXiv ID | Title | Suggested fit |
+     |---|---|---|
+     | 2307.16789 | ToolLLM: Facilitating LLMs to Master 16000+ Real-world APIs | agent-tooling explainer (P0/P1 `golden_local`) |
+     | 2309.02427 | Cognitive Architectures for Language Agents | agent-framework explainer (P0/P1) |
+     | 2312.05934 | Fine-Tuning or Retrieval? Comparing Knowledge Injection in LLMs | comparison/landscape → P2/P3 candidate |
+     | 2404.04302 | CBR-RAG: Case-Based Reasoning for RAG in Legal QA | narrow RAG-variant explainer (P0/P1) |
+     | 2404.16130 | From Local to Global: A GraphRAG Approach to Query-Focused Summarization | RAG-variant explainer (P0/P1) |
+     | 2407.01449 | ColPali: Efficient Document Retrieval with Vision-Language Models | narrow single-paper explainer (P0/P1) |
+     | 2409.11402 | NVLM: Open Frontier-Class Multimodal LLMs | multimodal explainer (P0/P1) |
+     | 2409.12191 | Qwen2-VL: Enhancing Vision-Language Models' Perception | multimodal explainer (P0/P1) |
+     | 2501.00309 | Retrieval-Augmented Generation with Graphs (GraphRAG) | RAG-variant explainer (P0/P1) |
+     | 2502.02390 | CoAT: Chain-of-Associated-Thoughts Framework | reasoning-technique explainer (P0/P1) |
+     | 2502.05171 | Scaling by Thinking in Continuous Space | test-time-scaling survey pool (below) |
+     | 2502.06703 | Can 1B LLM Surpass 405B LLM? Rethinking Compute-Optimal Test-Time Scaling | test-time-scaling survey pool |
+     | 2502.12521 | Inference-Time Computations for LLM Reasoning and Planning: A Benchmark | test-time-scaling survey pool |
+     | 2502.13842 | Inner Thinking Transformer: Dynamic Depth Scaling | test-time-scaling survey pool |
+     | 2502.14382 | S*: Test-Time Scaling for Code Generation | test-time-scaling survey pool |
+     | 2502.18600 | Chain of Draft: Thinking Faster by Writing Less | test-time-scaling survey pool |
+     | 2503.04378 | HelpSteer3: Human-Annotated Feedback for Inference-Time Scaling | test-time-scaling survey pool |
+     | 2602.02852 | *(title extraction failed — inspect `source.html` directly before using)* | verify first |
+
+     Seven of these (`2502.05171`, `2502.06703`, `2502.12521`, `2502.13842`, `2502.14382`,
+     `2502.18600`, `2503.04378`) cluster tightly around **test-time-compute scaling** — a
+     fast-moving area with real breadth. This is a strong candidate for a **(2b)-style genuine
+     no-variant P2/P3 article** (Priority 2 above): write a guideline demanding a comparative
+     "state of test-time scaling" survey whose demands deliberately exceed what these 7 papers
+     alone answer (e.g. current production-deployment tradeoffs, cost/latency comparisons, or
+     techniques published after these papers) — the goldens then only partially satisfy the
+     guideline, and closing the rest genuinely requires standard/deep exploration, which is
+     exactly the missing archetype. The remaining papers (ToolLLM, Cognitive Architectures,
+     GraphRAG ×2, ColPali, NVLM, Qwen2-VL, CBR-RAG, CoAT) are each narrow enough to support a
+     single-paper-or-small-cluster P0/P1 `golden_local` explainer, on the same template as the
+     existing `Space-Time_QECC` / `Understanding_Reasoning_LLMs` articles — useful to add volume
+     to the `golden_local` P1 cell, or repurposed toward P2 if paired with a guideline that asks
+     for more than the paper alone covers.
+   - **External source pools for the empty `golden_web`-only P0/P2/P3 cells (net-new topics, not
+     yet cached anywhere):**
+     - *Science-explainer style, parallel to the 8 existing science-explainer test articles:*
+       mine recent submissions directly from arXiv category listings — `arxiv.org/list/cs.LG/recent`,
+       `cs.CL`, `cs.AI`, `quant-ph`, `astro-ph`, `cond-mat`, `q-bio.NC` — plus Distill.pub-style
+       single-paper explainers. For the P0/P1 `golden_web` cells: a topic fully covered by 1–2
+       highly comprehensive papers, referenced as a plain `golden_web` URL, never downloaded
+       locally. For the P2/P3 `golden_web` cells: a genuinely contested or fast-iterating
+       subfield where a handful of good web sources still leave real gaps.
+     - *Agent-framework "landscape" style, parallel to the course-lesson archetype but
+       standalone/no-variant (fills the `course-style` P2/P3 cells):* comparative pieces sourced
+       from official framework docs and engineering blogs rather than arXiv — e.g. "current state
+       of open-source agent frameworks" (LangGraph/AutoGen/CrewAI docs as `golden_web`),
+       "landscape of vector database options for RAG", "state of AI coding-agent benchmarks in
+       2026" — broad enough that the linked docs alone don't answer everything, forcing real
+       exploration.
+   - **Course-lesson pool for additional P2/P3 course-style volume:** the `_TEMPLATE.yaml` scope
+     notes and `writing_workflow/inputs/evals/dataset/data/` already flag natural additional
+     lessons not yet built (`12_fine_tuning`, `16_observability`, `17_deployment`) — same course
+     archetype as TRAIN, so lower priority than the standalone `golden_web`/`golden_local` cells
+     above; use mainly to round out course-style P2/P3 volume if those cells are still thin after
+     the standalone additions.
 4. **Same-course held-out lessons remain available** for more course-archetype articles if
    desired: the course eval dataset (`writing_workflow/inputs/evals/dataset/data/`) and the
    synthesizer's own held-out split (09_RAG, 11_multimodal are the synthesizer's *validation*
@@ -946,32 +1368,1402 @@ from scratch:
    17_deployment per the `_TEMPLATE.yaml` scope notes) are natural candidates but are the SAME
    archetype we already have plenty of — lower priority than the two standalone archetypes above.
 
-### 16.3 The cost that makes this "expensive" — be clear-eyed about it
+### 16.3 The cost that makes this "expensive" — be clear-eyed about it (and where augmentation helps)
 
-Each new article is NOT just a guideline. To get a trustworthy oracle label it needs the **full
-4-arm pipeline** (per §Test-Set/Per-Article Labeling): research × 4 presets (skip/light/standard/
-deep) → digest → writing × 3/preset → grading against an `article_ground_truth.md` → section
-oracle → article oracle. That requires, per article: a written **ground-truth reference article**
-(the grader's target — this is the real human/LLM effort), the research runs, and ~12 article
-generations + gradings. Ballpark: mostly API cost + a few hours of pipeline wall-time per article,
-plus the GT-authoring effort. For ~20–30 new articles this is a multi-day, real-budget effort —
-which is exactly why Priorities are ordered: **do the ~16–24 test articles first** (they unblock
-measurement and are where deployment actually operates), then the ~10–16 targeted train articles
-only if the expanded test set shows the archetype gaps still bite.
+Every article, new or augmented, needs the **full 4-arm pipeline** to get a trustworthy oracle
+label (per §Test-Set/Per-Article Labeling): research × 4 presets (skip/light/standard/deep) →
+digest → writing × 3/preset → grading against an `article_ground_truth.md` → section oracle →
+article oracle — ~12 article generations + gradings, mostly API cost + a few hours of pipeline
+wall-time. That part of the cost is **the same whether the topic is new or augmented** — §16.1.2
+does not remove it.
+
+What §16.1.2 *does* remove is the other line item: a **written ground-truth reference article**
+(the grader's target) per topic — verified to be the real human/LLM-authoring effort, and the
+part hardest to automate or estimate. For a **net-new topic**, both costs apply: GT-authoring +
+the 4-arm pipeline. For an **augmented variant of one of the current 16/40 topics** (§16.1.2's
+force-scrape / golden-removal / golden-enrichment / mixed-depth levers), only the 4-arm pipeline
+cost applies — the ground truth is reused byte-for-byte, verified against `06_tools`'s three
+variants. Practically: augmented variants are roughly half-to-a-third the effort of a genuinely
+new topic, which is why the recommended mix (§16.4) leans on augmentation for most of the
+Priority-1 volume, reserving net-new topics for the diversity/independence insurance §16.1.2's
+caveats call for. For ~20–30 total additions (mixed net-new + augmented) this is still a
+multi-day, real-budget effort overall — which is why Priorities stay ordered: **do the ~16–24 test
+additions first** (they unblock measurement and are where deployment actually operates), then the
+~10–16 targeted train articles only if the expanded test set shows the archetype gaps still bite.
 
 ### 16.4 Recommended sequence
 
 | # | Action | Cost | Why |
 |---|---|---|---|
+| 0 | **Run §16.1.4's `golden_local`-token ablation** on all 8 affected TEST articles: `sed` the `type=` attribute in their existing digests, re-run RL+Grok inference only, compare against the unchanged oracle | ~30 min, zero pipeline rerun | Cheapest possible action in this entire document; could redirect the whole strategy if it shows the failure cluster is partly an OOD-token artifact fixable without any new data |
 | 1 | Fill in §14.3 with the run13-on-new-digests number; if digests shifted `agg_probs`, re-backtest the cost-matrix thresholds (~1 h) | Cheap | Cheapest possible win; confirms production is still optimal on the new digests |
-| 2 | **Author + label ~16–24 new TEST articles**, stratified by oracle arm, incl. golden-local diversity | Expensive (days) | Breaks the n=16 measurement floor — prerequisite for trusting anything else |
-| 3 | Re-run run13 eval on the expanded test set to get the first *statistically meaningful* held-out number | ~30 min | Establishes whether the archetype gap is still material at n≈40 |
-| 4 | Only if step 3 confirms the gap: author + label ~10–16 new TRAIN articles in archetypes (2a) + (2b); THEN retrain (with periodic checkpoints + entropy floor to dodge collapse) | Expensive (days) | Teaches the golden-discount + decouples the demanding→escalate confound; retraining is worth it ONLY once the data actually contains the missing regimes |
-| 5 | (optional) after test backfill, promote a few current standalone test articles into train (near-free — episodes exist) to further balance | Cheap | Rebalance without shrinking the (now-larger) test set |
+| 2 | **Pilot §16.1.2's augmentation levers on 1–2 existing articles** (force-scrape, golden-removal, golden-enrichment) through the full 4-arm pipeline; confirm the oracle moves the expected direction | ~half day | Pre-registered validation before scaling augmentation — cheapest possible source of new TEST arm coverage |
+| 3 | **Fill §16.1.1's grid to ~32–40 TEST articles** — prefer augmenting existing topics (skips GT-authoring) for most of the volume, per the target-composition table, topped up with a handful of genuinely new topics (§16.1.1/§16.2 sourced pools) for diversity/independence insurance | Moderate (augmented) + Expensive (net-new) | Breaks the n=16 measurement floor — prerequisite for trusting anything else |
+| 4 | Re-run run13 eval on the expanded test set to get the first *statistically meaningful* held-out number | ~30 min | Establishes whether the archetype gap is still material at n≈40 |
+| 5 | Only if step 4 confirms the gap: author/augment ~10–16 new TRAIN articles in archetypes (2a) + (2b); THEN retrain (with periodic checkpoints + entropy floor to dodge collapse) | Expensive (days) | Teaches the golden-discount + decouples the demanding→escalate confound; retraining is worth it ONLY once the data actually contains the missing regimes |
+| 6 | (optional) after test backfill, promote a few current standalone test articles into train (near-free — episodes exist) to further balance | Cheap | Rebalance without shrinking the (now-larger) test set |
 
 **Bottom line:** stop retraining on the current 24 articles — it has hit its ceiling and further
-runs only overfit. The lever is data. Expand the **test set first** (to make improvement
-measurable) with arm-balanced, golden-source-diverse articles; then add **train articles in the two
-missing archetypes** (golden-satisfiable→P1, and no-variant genuine P2/P3). The synthesizer +
-briefs infrastructure to do this already exists; the real cost is the 4-arm labeling pipeline and
-ground-truth authoring per new article.
+runs only overfit. The lever is data — but check the free `golden_local`-token ablation (§16.1.4)
+first, since it's cheaper than everything else here and could partly explain the residual gap
+without needing any new data at all. Otherwise, expand the **test set first** (to make
+improvement measurable) with arm-balanced, golden-source-diverse articles — **preferring cheap
+guideline-level augmentation of the current 16/40 topics (§16.1.2) over net-new authoring
+wherever it fills a grid gap**, backstopped by a genuine minority of new topics for diversity —
+then add **train articles in the two missing archetypes** (golden-satisfiable→P1, and no-variant
+genuine P2/P3). The synthesizer + briefs infrastructure to do this already exists; the real
+remaining cost is the 4-arm labeling pipeline, plus ground-truth authoring only for the net-new
+topics.
+
+### 16.5 Step-2 pilot plan — two candidate articles, mixed-depth lever (2026-07-12, not yet executed)
+
+Per §16.4 step 2: pilot §16.1.2's augmentation levers on 1–2 existing articles before scaling.
+Picked **Lever 4 (section-level mixed-depth)** for both pilots, per the repo owner's observation
+that TRAIN's own depth-variant scheme (`var_minimal/standard/demanding`) is empirically the most
+effective augmentation mechanism seen so far — this generalizes that same proven mechanism one
+level finer (per-section instead of whole-article), which is untried anywhere in this dataset.
+
+**Selection criteria:** (a) already a member of the known over-prediction cluster (real,
+addressable failure, not noise), (b) already has an identifiable "weakest section" in its own
+digest gap-profile — i.e. the deepening isn't invented, it amplifies a genuine, already-measured
+gap, (c) between the two picks, cover both `golden_local` and `golden_web` article types so the
+pilot validates the lever independent of golden-source-type, (d) minimal edit footprint — only
+one section's demand text changes, everything else (ground truth, other sections, golden
+sources) stays untouched, reusing §16.1.2's proven ground-truth-reuse mechanism.
+
+#### Candidate 1 — `Distinct_AI_Models` (`golden_local`, oracle P1, RL votes P2 at 82% decisive, regret 0.170)
+
+Current digest gap-profile (verified, `rl_training_data/bases/Distinct_AI_Models/research_digest.md`):
+4 sections, `need_depth` 15/15/15/**17**, `need_breadth` 4/4/5/**7** — **Section 4 ("Find the
+Universals")** is already the article's single weakest section by both metrics, and is fully
+`self_contained="yes"` today via 3 sources including the one golden paper ("The Platonic
+Representation Hypothesis", arXiv 2405.07987, 2024).
+
+**Proposed edit** — new base dir `rl_training_data/bases/Distinct_AI_Models__mixeddepth/` (copy of
+the original), `article_guideline.md` changed **only** in Section 4:
+- `Section length: 450 words` → `900 words`.
+- Add one new bullet: *"Cite specific 2025–2026 follow-up work that empirically tests, extends,
+  or challenges the Platonic Representation Hypothesis with new cross-architecture benchmarks or
+  quantitative representational-alignment measurements — name the papers/authors and their
+  findings."* This explicitly demands content published **after** the sole golden source (2024),
+  which that paper cannot contain by construction.
+- Sections 1–3, the golden-source list, and `article_ground_truth.md` are left byte-identical to
+  the original.
+
+**Pre-registered hypothesis:** the true reward-optimal arm shifts from **P1 → P2**, because one
+section now has a real, unclosable-from-goldens gap while the other three remain
+golden-satisfied at light effort. (Note: if it lands at P2, this article's oracle would newly
+*agree* with the RL model's current 82%-decisive P2 vote — a nice, but secondary, side-check;
+the primary thing being validated is whether the *mechanism* moves the oracle as designed, not
+whether the model happens to look right afterward.)
+
+#### Candidate 2 — `Insects_Consciousness` (`golden_web`, oracle P1, RL votes P2 at 61%, **largest regret in the entire investigation: 0.3192**)
+
+Current digest gap-profile (verified,
+`rl_training_data/bases/Insects_Consciousness/research_digest.md`): 3 sections, `need_depth`
+18/18/**22** — **Section 3 ("Mindful Relations")** is already the weakest section, currently
+`self_contained="yes"` via 3 sources, two of which are the golden position-statement pages (New
+York Declaration + its background page — advocacy documents, not empirical papers).
+
+**Proposed edit** — new base dir `rl_training_data/bases/Insects_Consciousness__mixeddepth/`:
+- `Section length: 450 words` → `800 words`.
+- Add one new bullet: *"Cite specific peer-reviewed neuroscience studies (name the researchers,
+  species studied, and year) measuring nociceptor density, pain-avoidance learning, or analogous
+  quantitative behavioral evidence in named insect species — not merely position-statement
+  summaries."* Declaration pages are advocacy documents; they do not carry this level of primary
+  quantitative citation, so this explicitly demands material the two goldens don't contain.
+- Sections 1–2, golden sources, and `article_ground_truth.md` unchanged.
+
+**Pre-registered hypothesis:** the true reward-optimal arm shifts from **P1 → P2**. This is
+simultaneously the highest-value pilot in the whole plan: `Insects_Consciousness` is the single
+largest regret in every eval run to date, it is `golden_web` (not `golden_local`), so a
+successful shift would be the *first* test article to land in the currently-empty
+`golden_web`-at-P2 cell (§16.1.1's bolded priority gap) — filling a grid gap and validating a
+fix for the worst failure case in one pilot.
+
+#### Execution pipeline (not yet run — full command chain, for reference/confirmation)
+
+Both pilots reuse the exact machinery already used for TRAIN's `__var_X` variants — no new
+tooling required:
+
+1. `cp -r rl_training_data/bases/<Article> rl_training_data/bases/<Article>__mixeddepth`, then
+   hand-edit only the target section of the copy's `article_guideline.md` as specified above.
+2. **Phase 1 (research, all 4 presets):**
+   `cd research_agent_local && uv run --project mcp_server python training/rl_data_generator.py --articles <Article>__mixeddepth`
+3. **Digest generation:** `training/generate_digests.py` for the new base (produces
+   `research_digest.md` + `guideline_features.json` + `digest_section_placeholder.json`).
+4. **Phase 2a (writing, 3 runs/preset):**
+   `cd writing_workflow && uv run python rl_writing_generator.py` (scoped to the new article).
+5. **Phase 2b (grading vs. the reused `article_ground_truth.md`):**
+   `uv run python rl_grading_generator.py` (scoped to the new article) → `reasoning.json`/`scores.json` per episode.
+6. **Oracle computation:** `training/generate_episode_oracles.py --articles <Article>__mixeddepth`
+   (→ `section_oracle.json`) then `training/compute_article_oracle.py` (→ `article_oracle.json`,
+   the number that confirms or refutes each hypothesis above).
+
+**Cost/time honesty:** unlike every experiment run so far in this document (all inference-only or
+read-only), this is the **first full 4-arm pipeline run** of the whole investigation — real
+Tavily/Firecrawl/LLM-grading API cost across 2 codebases, plausibly several hours of wall time
+for 2 articles (research ×4 presets + writing ×3/preset + grading, ×2 articles). Matches §16.4's
+own "~half day" estimate for this step. **Not started — awaiting go-ahead before spending that
+budget.**
+
+**One methodological flag specific to this lever (worth the pilot explicitly confirming, not
+just assuming):** §16.1.2 validated ground-truth reuse for *whole-article* uniform depth changes
+(`06_tools`'s 3 variants). This is the first time it's applied to a *partial, single-section*
+depth change. The load-bearing assumption — that grading judges each section against the
+guideline's own (now section-specific) demands rather than diffing literally against
+`article_ground_truth.md` — has only been proven at the whole-article granularity so far; these
+two pilots are also the first direct test of whether it holds at section granularity.
+
+#### 16.5.1 The two guideline files — created (2026-07-12), deliberately NOT following the naive deep-copy convention
+
+`writing_workflow/generate_guideline_variants.py`'s documented convention for `__var_X` variants
+is to **deep-copy the entire original base directory** (including `.research/` and its
+`_stepN.done` / `_exploit_roundN.done` sentinel files) and overwrite only `article_guideline.md`
+— explicitly "preserves all step-sentinels and research" so the pipeline *skips* re-running
+exploitation. That's correct for the existing uniform variants, because the *set* of
+guideline-anchored demands doesn't change between minimal/standard/demanding — only the
+word-count/depth language does — so reusing prior exploitation research is valid.
+
+**It would be wrong here.** Both mixed-depth edits add a genuinely **new** anchor/demand (2025–26
+follow-up papers; named neuroscience studies) that the *original* exploitation research never
+searched for. Deep-copying the old `.research/` with its `.done` sentinels would cause the
+pipeline to treat exploitation as already-complete and silently skip searching for the new
+demand — defeating the entire point of the augmentation. So the two new base directories were
+created **without** any `.research/`, `research_digest.md`, `guideline_features.json`,
+`article_oracle.json`, or `section_oracle.json` — i.e. in the same minimal state a genuinely new
+article's base would be in — forcing Phase 1 to run every step fresh, including exploitation,
+for the new anchor.
+
+**Created and verified:**
+- `rl_training_data/bases/Distinct_AI_Models__mixeddepth/` — `article_guideline.md` (Section 4:
+  450→900 words + the new 2025–26-follow-up bullet; `Expected Length` updated 2,000→2,450 words
+  for internal consistency) + `"The Platonic Representation Hypothesis.md"` (the raw locally-
+  supplied golden file, copied to the base root — required by the local-file convention so
+  `process_local_files_tool` finds it fresh in each new preset episode).
+- `rl_training_data/bases/Insects_Consciousness__mixeddepth/` — `article_guideline.md` (Section 3:
+  450→800 words + the new named-neuroscience-studies bullet; `Expected Length` updated
+  1,900→2,250 words). No local file needed — both golden sources are plain web URLs.
+
+Ready for Phase 1 (`training/rl_data_generator.py --articles Distinct_AI_Models__mixeddepth` /
+`--articles Insects_Consciousness__mixeddepth`) whenever the repo owner wants to spend the
+research/writing/grading budget described above.
+
+### 16.5.2 Pilot 1 result — `Insects_Consciousness__mixeddepth` (2026-07-12): section-level mechanism confirmed, article-level hypothesis NOT confirmed
+
+The repo owner ran Phase 1 (research ×4 presets) + Phase 2a/2b (writing ×3/preset, grading)
+externally; digest generation (`training/generate_digests.py`), section-oracle computation
+(`training/generate_episode_oracles.py`), and article-oracle computation
+(`training/compute_article_oracle.py`) were run here to read out the result — all local,
+deterministic, zero API cost.
+
+**Section-level: the mechanism worked exactly as designed.**
+
+| Section | Before (original) | After (`__mixeddepth`) |
+|---|---|---|
+| S1 Introduction (untouched) | oracle=**deep**, rewards `[.70,.64,.58,.82]` | oracle=**skip**, rewards `[.55,.49,.43,.37]` |
+| S2 A Growing Awareness (untouched) | oracle=**light**, rewards `[.35,1.14,.58,.82]` | oracle=**light**, rewards `[.50,1.14,.53,.67]` |
+| S3 Mindful Relations (**edited**) | oracle=**light**, rewards `[.70,1.14,.93,.87]` | oracle=**deep**, rewards `[.55,.79,.63,1.02]` |
+
+Section 3 — the one section whose demand was deepened — flipped from `light` (reward 1.14, now
+0.79) to `deep` (reward 0.87→1.02), exactly the direction pre-registered. The augmentation lever
+does what it's designed to do at the granularity it targets.
+
+**Article-level: the oracle did NOT flip (stayed `light`/P1).**
+
+| | oracle_arm | r_w_rewards [skip,light,standard,deep] | margin (light − deep) |
+|---|:--:|---|:--:|
+| Original `Insects_Consciousness` | **light** | `[.543, .982, .663, .832]` | 0.150 |
+| `Insects_Consciousness__mixeddepth` | **light** | `[.531, .842, .539, .714]` | 0.128 |
+
+The hypothesis (P1→P2) is **refuted** — but not uninformatively. The article-level oracle is a
+`target_words`-weighted mean across sections (`compute_article_oracle.py`), and **Section 2
+("A Growing Awareness"), which was left untouched, carries an unusually dominant `light` reward
+(1.14 — the single highest value in either table) and the largest section weight (0.378 of total
+words)**. Its pull toward `light` is strong enough to absorb Section 3's genuine shift toward
+`deep`. The margin did shrink in the right direction (0.150→0.128), confirming the edit moved the
+needle, just not far enough to flip the argmax on its own.
+
+**One honest caveat — S1 (untouched) also changed, calling out real run-to-run noise.** Section 1
+("Introduction"), which was not edited at all, still shows materially different reward *values*
+between the two runs (`deep`→`skip`). Since neither the guideline text for S1 nor the ground truth
+changed, this is attributable to genuine stochasticity in the freshly-rerun exploitation
+research/writing/grading (a different Tavily/LLM sampling draw each time) — expected because,
+per §16.5.1, the pipeline was deliberately run fully fresh (no stale `.research/` reuse). This
+means small oracle-arm margin changes (like the 0.150→0.128 here) should be read with some
+caution — not all of the movement is guaranteed to be attributable to the edit alone, though the
+*qualitative*, large-magnitude flip on the edited section (S3, light→deep, a real ~30% relative
+reward swing) is much more likely a genuine effect of the edit than of noise alone.
+
+**Implication for next steps.** The lever is validated at section granularity but this
+particular article's *other* sections are too strongly `light`-anchored to let one deepened
+section carry the whole article past the P1/P2 boundary. Options if a P2 example is still wanted
+from this topic: (a) deepen a second section as well (e.g. also add an unmet-demand bullet to
+Section 2, whose current 1.14 `light` reward is the dominant force keeping this article at P1),
+or (b) accept this as a validated section-level augmentation useful for training-signal diversity
+even though it doesn't change the article-level arm, or (c) move on to checking
+`Distinct_AI_Models__mixeddepth` (also fully researched/written/graded and awaiting the same
+oracle computation) as the second pre-registered pilot before drawing a combined conclusion.
+
+**Update — after the repo owner's manual grading corrections (2026-07-13):** re-reviewed
+`scores.json`/`reasoning.json` for both articles, corrected some grades, then regenerated the
+digest + both oracles. Result:
+
+| | oracle_arm | r_w_rewards [skip,light,standard,deep] | margin (light − deep) |
+|---|:--:|---|:--:|
+| `Insects_Consciousness` (original, corrected) | **light** (unchanged) | `[.633, .982, .752, .832]` | **0.150 — byte-identical to before the correction** |
+| `Insects_Consciousness__mixeddepth` (corrected) | **light** (unchanged) | `[.607, .842, .614, .790]` | **0.052 (down from 0.128)** |
+
+The original article's decision is completely untouched by the correction — the corrected scores
+only moved S2's `skip`/`standard` values, never its `light`/`deep` values, so the light-vs-deep
+comparison that decides the article-level arm is unaffected (margin identical to 15 decimal
+places). The `__mixeddepth` variant's margin, however, shrank by more than half again (0.128→0.052)
+because the correction raised S2's `deep` reward (0.67→0.87) — working *in favor* of the P2
+hypothesis. Still no flip, but the corrected numbers put this pilot's margin within a factor of
+~2.5 of the `EPS_BAND=0.02` near-tie threshold — genuinely close.
+
+### 16.5.3 Pilot 2 result — `Distinct_AI_Models__mixeddepth` (2026-07-13): section reward moved, section oracle didn't flip, article oracle didn't flip — margin collapsed to the near-tie edge
+
+Fully researched, written, graded, digested, and oracle-computed (by the repo owner + the same
+local oracle-computation commands as Pilot 1).
+
+**Article-level: no flip, but the margin nearly vanished.**
+
+| | oracle_arm | r_w_rewards [skip,light,standard,deep] | margin | runner-up |
+|---|:--:|---|:--:|:--:|
+| Original `Distinct_AI_Models` | **light** | `[.625, .899, .729, .793]` | 0.106 | deep |
+| `Distinct_AI_Models__mixeddepth` | **light** | `[.611, .803, .782, .684]` | **0.021** | **standard** (changed!) |
+
+`decision_path` for the augmented variant reads *"unique reward winner (margin=+0.0212 >
+EPS_BAND=0.02)"* — it clears the near-tie threshold by only **0.0012**, the closest any article
+in this whole investigation has come to a near-tie without actually crossing it. Notably the
+**runner-up arm itself changed** (deep → standard), a second axis of evidence that the augmented
+article's reward landscape is genuinely different, not just quantitatively shifted.
+
+**Section-level: this time the *edited* section didn't flip its own oracle — but its internal
+contest changed a lot.**
+
+| Section | Weight (orig→aug) | Original oracle/rewards | `__mixeddepth` oracle/rewards |
+|---|:--:|---|---|
+| S1 Introduction (untouched) | 0.275→0.224 | **light** `[.55,.94,.63,.72]` | **standard** `[.55,.49,.78,.57]` |
+| S2 Company Being Kept (untouched) | 0.325→0.265 | **light** `[.70,.94,.73,.82]` | **deep** `[.70,.79,.58,.82]` |
+| S3 Convergent Evolution (untouched) | 0.175→0.143 | **standard** `[.70,.64,.88,.82]` | **light** `[.70,.84,.78,.52]` |
+| S4 Find the Universals (**edited**) | 0.225→0.367 | **light** `[.55,.99,.73,.82]` | **light** `[.55,.99,.93,.72]` |
+
+Unlike Pilot 1, **S4 — the section whose demand was deepened — stayed `light` in both runs.** But
+the edit clearly moved *something*: S4's `standard` reward jumped 0.73→0.93 (nearly catching
+`light`'s unchanged 0.99), while `deep` actually *dropped* slightly (0.82→0.72). Read literally,
+the new "cite specific 2025–26 follow-up work" demand seems to be satisfiable with a **moderate**
+(`standard`) research pass rather than requiring genuinely deep multi-round exploration — a
+finding about the *demand's real difficulty*, not a failure of the lever. S4 is also now the
+single heaviest section (36.7% of total words, up from 22.5%, simply because it got longer),
+which is exactly why the article-level margin moved so much even though S4's own oracle held.
+
+**All three untouched sections flipped their own individual oracle between runs** (S1
+light→standard, S2 light→deep, S3 standard→light) — a stronger and more widespread version of
+Pilot 1's single-section noise finding (§16.5.2). This confirms the caveat there was not a
+one-off: **fresh full-pipeline re-runs (no `.done`-sentinel reuse, per §16.5.1) introduce
+real, non-trivial section-level reward noise independent of any deliberate edit** — likely on
+the same order of magnitude as some genuine augmentation effects. The article-level margin
+collapse (0.106→0.021) is therefore **not cleanly attributable to the S4 edit alone**; it's a
+combination of the edit's real (but section-oracle-preserving) effect on S4 plus noise-driven
+churn across S1–S3, which in this instance happened to compound in the same direction.
+
+### 16.5.4 Combined verdict across both pilots
+
+| | Insects_Consciousness | Distinct_AI_Models |
+|---|:--:|:--:|
+| Edited section's own oracle | flipped (light→**deep**) | held (**light**), but `standard` closed most of the gap |
+| Article oracle | held (**light**/P1) | held (**light**/P1) |
+| Article margin, original → augmented | 0.150 → 0.052 (−65%) | 0.106 → 0.021 (−80%, to the near-tie edge) |
+| Untouched sections also changed oracle? | 1 of 2 (S1) | **all 3** (S1, S2, S3) |
+
+**Two pilots, zero article-level flips, but a consistent, real, and now twice-replicated pattern:**
+the section-level mixed-depth edit *always* narrows the article's margin substantially in the
+predicted direction, sometimes flipping the edited section's own oracle (Pilot 1) and sometimes
+just making that section's runner-up arm much more competitive (Pilot 2) — but a single deepened
+section, on these two golden-satisfiable articles, has not been enough by itself to drag the
+whole `target_words`-weighted article past the P1/P2 boundary. Both articles have at least one
+other section with an unusually dominant, resistant `light` reward that absorbs the shift. The
+now-twice-observed noise pattern (untouched sections changing individual oracle between fresh
+pipeline runs) is a genuine methodological finding in its own right: it means **any two runs of
+this pipeline for the "same" article will differ somewhat even with zero guideline changes**, so
+future A/B-style oracle comparisons on this pipeline should expect and budget for that baseline
+noise, not just the deliberate treatment effect.
+
+**Recommendation:** neither pilot needs to be discarded — both are legitimate, useful section-level
+training signal regardless of the article-level outcome — but if the specific goal is manufacturing
+a *new P2/P3 article-level test point* from an existing golden-satisfiable topic, a single-section
+edit is evidently not a reliable enough lever on these two examples. Next escalation, if still
+wanted: deepen **two** sections simultaneously in one guideline (compounding two section-level
+push effects instead of relying on one to overcome the rest of the article's `light` inertia), or
+pair the mixed-depth edit with an explicit golden-removal edit (§16.1.2 lever 2) on the *other*
+dominant-light section, rather than relying on demand-text alone.
+
+---
+---
+
+# Part 4 — Is the noise between "identical" reruns fatal to the whole approach? (2026-07-13)
+
+**Scope:** the two mixed-depth pilots (§16.5) turned up a serious, legitimate worry: sections
+whose guideline text was *never touched* still produced materially different rewards between
+runs — up to a ±0.45 absolute swing on a 0–1-ish scale, enough to flip that section's own oracle
+label. If the reward-generation pipeline is this noisy, are the frozen oracle labels — the entire
+foundation this project trains and evaluates against — meaningful at all? This section traces the
+noise to its actual source in the code (not speculation), reframes the statistical question
+correctly, and lays out proportionate (not "run everything N times") fixes.
+
+## 18. Where the noise actually comes from — traced, not assumed
+
+Three pipeline stages could in principle be the source. Checked each directly:
+
+1. **Grading is deterministic.** `writing_workflow/rl_grading_generator.py`:
+   `_GRADING_CONFIG = ModelConfig(temperature=0.0, ...)`. Given the same article text, the grader
+   scores it the same way every time (modulo the residual non-determinism any LLM API has even at
+   temp=0, which is minor). **Grading is not the noise source.**
+2. **Digest-generation numeric features are already confirmed stable at temp=0** — and this was
+   already investigated once before, on 2026-07-11 (a docstring in `generate_digests.py` records
+   it): *"Per-section numeric features are taken from the first successful call only (lower
+   stakes; already stable under temperature=0, see 2026-07-11 noise study)."* Only one *categorical*
+   field (`external_evidence_policy`) needed a majority-of-3 vote fix, because a single temp=0 draw
+   occasionally flips a genuinely ambiguous categorical judgment — numeric depth/breadth scores did
+   not need this. **Digest generation is a minor contributor at most, and was already
+   noise-tested once.**
+3. **The actual article-writing workflow runs at temperature 0.7 — confirmed directly in
+   `writing_workflow/configs/course.yaml`** (and `debug.yaml`/`decodingai.yaml` — all three
+   profiles agree):
+   ```yaml
+   write_article:
+     model_config: { temperature: 0.7 }
+   integrate_exploration:
+     model_config: { temperature: 0.7 }
+   review_article:
+     model_config: { temperature: 0.0 }
+   edit_article:
+     model_config: { temperature: 0.1 }
+   ```
+   `write_article` (the initial draft) and `integrate_exploration` (the step that folds
+   exploration-round research into the article — i.e. exactly the mechanism that turns "more
+   rounds of exploration" into "more/better content") both run at **0.7**, a genuinely creative,
+   high-variance temperature. Review and edit passes are near-deterministic (0.0/0.1). **This is
+   the primary, verified noise source: the written article's actual content differs meaningfully
+   run to run, and the (deterministic) grader is correctly scoring genuinely different text each
+   time — this is not "flaky grading," it's "flaky content generation."**
+
+**A clean, independent mechanistic confirmation this diagnosis is right:** `integrate_exploration`
+only runs `if context["research"].has_exploration_sources` — true for `light`/`standard`/`deep`
+(≥1 exploration round) but **false for `skip`** (0 rounds). If temperature-0.7 writing is the
+noise driver, `skip`-arm rewards should be visibly *more stable* across reruns than the other
+three arms, since `skip` never passes through the extra 0.7-temperature integration step.
+Checking the actual §16.5 data: in 5 of 6 untouched sections across both pilots, the `skip`
+reward is either byte-identical or nearly so between runs (`.55`→`.55`, `.70`→`.70`, `.70`→`.70`),
+while `light`/`standard`/`deep` swing by 0.10–0.45 in the same sections. **This is exactly the
+predicted pattern** — strong, falsifiable evidence for (not just a plausible story about) where
+the noise originates.
+
+**Config-scope caveat:** `rl_writing_generator.py` uses `configs/course.yaml` by default (no
+`CONFIG_FILE` override found in `.env`/`.env.example`) — the **same** config used for real,
+published course-content writing. Any temperature change here affects both oracle-label
+generation *and* production writing quality; see §19's fix accordingly.
+
+## 19. Reframing the statistical question — and why this doesn't invalidate the project
+
+**The relevant question is not "is there noise" — essentially every RL/LLM pipeline has some —
+it's "does the noise's magnitude threaten the signal enough to change what the label teaches,"
+and, distinctly, "how does that noise interact with how the label gets used."** Two things make
+this pipeline's situation different from the RL folklore that "policy gradient methods are
+robust to noisy rewards":
+
+- **In the RL folklore case, the noisy reward is resampled fresh every time the same
+  state/action is encountered during training** (a stochastic environment), so noise averages
+  out across the many visits a training run makes to similar states — that's *why* PPO/GRPO
+  tolerate it.
+- **Here, the oracle reward for a given (article, section, preset) is computed *once*, frozen
+  into `section_oracle.json`, and then reused as the fixed training target for every subsequent
+  GRPO epoch that touches it.** There is no resampling during training to average the noise away
+  — whatever was captured in that one frozen draw *is* the ground truth the model is trained
+  against, indefinitely. A noisy one-time label is a **fundamentally more serious problem** than
+  noise in a resampled reward signal, and the folklore reassurance does not directly apply.
+
+**This is not a new, independent crisis — it is very likely the mechanistic explanation for a
+failure mode already documented in this very file.** §14–15's run14 post-mortem found: the model
+fits the 24 TRAIN articles almost perfectly (83% strict) while TEST regresses, entropy collapses
+to H≈0.01, and more epochs deepen memorization rather than improve generalization. **A model that
+is asked to fit a small, fixed set of point-labels — some fraction of which are one noisy draw
+rather than a stable estimate — has no way to distinguish "genuine, generalizable signal" from
+"noise it should ignore."** It will do what supervised/RL fitting always does with noisy fixed
+targets on limited data: memorize them, including their noise, which shows up exactly as
+overfitting + entropy collapse. This reframes §15's verdict as *even better supported* than
+already argued, not undermined: the data (and now, specifically, the **label-generation
+noise floor**) is the binding constraint, not the optimizer.
+
+**None of this makes the oracle labels "meaningless."** The *signal* (systematic reward
+differences between genuinely different presets on genuinely different articles) is real and
+large in most cases — most articles in this whole investigation show comfortable, clearly-decided
+margins (`Understanding_Reasoning_LLMs` 0.93 `light`-mass, `Earth_Oceans_Origin`'s clean `deep`
+win, etc.). The noise mainly matters at the **margins that are already thin** — which, not
+coincidentally, is exactly where this whole investigation's hardest, most contested cases already
+live (`Insects_Consciousness`, the two mixed-depth pilots). The labels aren't uniformly
+unreliable; the *confidence you should place in a label* should scale inversely with how close its
+margin sits to the now-measured noise floor — which is a fixable calibration problem, not a
+reason to abandon the approach.
+
+## 20. Proportionate fixes — reject the false binary
+
+The choice is not "replicate the entire expensive pipeline N times" vs. "give up." Four much
+cheaper, targeted options, cheapest first:
+
+| # | Fix | Cost | What it addresses |
+|---|---|---|---|
+| 1 | **Lower `write_article`/`integrate_exploration` temperature for oracle-generation runs specifically** — clone `course.yaml` into a new `rl_generation.yaml` profile (e.g. temperature 0.7→0.2–0.3) and point `rl_writing_generator.py` at it via the existing `CONFIG_FILE` env var, leaving production `course.yaml` (real published content) untouched | **Free** (one config file, one env var) | Attacks the noise at its root, for every future label (existing pipeline change, zero extra LLM calls) |
+| 2 | **Recalibrate `EPS_BAND` in `compute_article_oracle.py`** using the now-measured noise magnitude. It's currently a flat `0.02`; §18's data shows untouched-section swings up to 0.45 and article-level margin swings up to ~0.08 from noise alone. A more honest threshold (informed by a small measured noise distribution, see #3) would correctly reclassify some currently-"confident" labels as near-tie, triggering the existing secondary-signal (S3/S4/S5) tie-breaking logic instead of a possibly-noisy argmax | **Free** (one constant, informed by #3's data) | Makes the *existing* decision rule honestly reflect its own uncertainty, without regenerating anything |
+| 3 | **Targeted, cheap noise measurement: re-run just the write+grade steps (reusing the existing `research.md`) 2–3× for a small sample of articles**, skipping the expensive research/exploitation/exploration phases entirely. This is far cheaper than the user's feared "full pipeline N times" — it reuses the already-completed (and now temperature-fixed, if #1 lands) research, and only repeats the comparatively fast, cheap LLM-only write+grade loop | **Cheap** (a few LLM calls per replicate, no Tavily/scraping) | Gives an actual, quantified noise distribution to calibrate #2 and to know how much to trust any given margin |
+| 4 | **Targeted replication only for near-boundary cases**, using the article's own `margin`/`decision_path` as the trigger: articles with large, comfortable margins (the majority) need no extra work at all; only articles sitting close to the (now-recalibrated) `EPS_BAND` — like both `__mixeddepth` pilots — get 2–3 replicate write+grade passes (per #3) before their label is trusted | Proportionate (few articles, cheap steps only) | Concentrates the only real expense where the signal-to-noise ratio is actually in doubt, instead of paying it everywhere |
+
+**Recommended order:** do #1 and #2 immediately (both are free, same-day changes); do #3 on a
+small sample (~5–8 articles spanning comfortable and thin margins) to get an actual noise
+distribution rather than reasoning from 2 data points; then apply #4 going forward for any new
+or contested label. None of this requires "generate multiple runs of the full workflow for every
+article" — that was never the only alternative to "proceed with unexamined noise."
+
+**Bottom line for the crisis of confidence:** the concern was correct and worth raising — and
+tracing it down turned up a real, previously-unquantified issue *and* a plausible mechanistic
+explanation for part of the run13/14 generalization gap, which is a net gain for the investigation,
+not a reason to distrust it. The fix is cheap (a temperature knob and a recalibrated constant),
+not "unbearably expensive." The existing oracle-label corpus is not meaningless — its *comfortable-
+margin* labels remain trustworthy as-is; its *thin-margin* labels (a minority) need either the
+cheap replication in #3/#4 or, at minimum, honest recalibrated-EPS_BAND treatment as near-ties
+rather than confident answers.
+
+## 21. Will lowering temperature 0.7→0.2–0.3 hurt Gemini 2.5 Pro's article quality?
+
+Short answer: **unlikely to hurt the quality dimension this pipeline actually measures, and the
+fix is scoped so it cannot touch real published content regardless.**
+
+**Why the draft temperature matters less here than it would in a single-shot pipeline.** The
+0.7-temperature steps (`write_article`, `integrate_exploration`) are not the last word — the
+workflow runs `review_article` (temp 0.0) → `edit_article` (temp 0.1) for `num_reviews=2`
+iterations afterward (§18). The final `article.md` is several deterministic-ish refinement passes
+removed from the initial creative draft. Lowering the draft temperature mainly reduces variance
+*earlier* in a pipeline that already dampens variance *later*; it is not equivalent to lowering
+the temperature of a single one-shot generation with no review loop.
+
+**What actually gets graded.** `rl_grading_generator.py` scores against `article_ground_truth.md`
+on dimensions like core-content coverage and flow/fidelity to the guideline's demanded facts —
+not on stylistic variety or creative flourish. Temperature 0.7 is a setting for *creative
+diversity*, which is not the axis this rubric rewards. If anything, a high-variance draft is more
+likely to occasionally underweight, skip, or paraphrase-away a guideline-demanded bullet in favor
+of a more "creative" framing; a lower temperature should make the writer *more* consistent about
+mechanically covering what the guideline (and the folded-in exploration research) actually says.
+That is a plausible **quality improvement for this specific rubric**, not just a neutral risk.
+
+**Why this is safe to try regardless.** The recommended fix (§20, item 1) is a **new**
+`rl_generation.yaml` profile selected via the existing `CONFIG_FILE` env var — `course.yaml` (the
+config that generates real, published course content) is never touched. So even in the
+hypothetical worst case where lower temperature *did* make prose blander, that tradeoff is
+completely inconsequential for this project's purpose: nobody reads these RL-training articles as
+final content, they exist purely to be graded into a reward number. The only thing that matters is
+whether the *graded signal* is better (less noisy) or worse (systematically distorted) — not
+whether the prose reads as engagingly.
+
+**Still, don't just trust the theory — this project's whole methodology has been "verify, don't
+assume."** Recommended before fully committing: generate 1–2 articles at temperature 0.2–0.3 (reuse
+existing `research.md`, i.e. the cheap write+grade-only replication already proposed in §20 item 3
+does double duty here), read them, and compare their `scores.json` against the existing runs for
+the same article/preset. If grading scores hold steady or improve and nothing reads as
+degenerate/repetitive (a real risk at very low temperatures, more relevant below ~0.2 than at
+0.2–0.3), proceed with confidence; if something looks off, the config-profile approach makes it a
+one-line revert.
+
+## 22. Margin-diagnostic tool: which existing labels are actually candidates for replication?
+
+Built `research_agent_local/training/audit_oracle_margins.py` (new, **read-only, zero pipeline
+cost** — it only parses already-computed `article_oracle.json` files, it does not rerun anything)
+to answer this concretely instead of guessing. It scans every `rl_training_data/bases/*/`
+directory, reads `margin`/`oracle_arm`/`runner_up_arm`/`decision_path`/`needs_review`, and buckets
+each into a risk tier:
+
+| Tier | Range | Rationale |
+|---|---|---|
+| CRITICAL | margin < 0.02 (`EPS_BAND`) | Already flagged as near-tie by the pipeline's own existing logic |
+| HIGH | 0.02 – 0.06 | Within the smaller of the two measured pilot swings (`Insects_Consciousness__mixeddepth`: 0.128→0.052, a 0.076 swing from grading corrections alone) |
+| MODERATE | 0.06 – 0.10 | Within the larger measured swing (`Distinct_AI_Models__mixeddepth`: 0.106→0.021, a 0.085 swing, edit+noise combined) |
+| COMFORTABLE | ≥ 0.10 | Outside the measured noise range so far |
+
+**Important correctness fix made while building this, not before.** `compute_article_oracle.py`
+computes `margin = r_w[oracle_arm] − r_w[runner_up_arm]` *unconditionally* after `_decide()`
+returns — but `_decide()` has two hard-rule branches that override the raw reward argmax
+entirely: `external_evidence_policy == "forbidden"` (forces `skip` regardless of R_w) and
+`_MANUAL_OVERRIDES` entries. When either fires, `margin` can come out **negative** (the forced arm
+need not be the top-reward one), and that negative number has *nothing to do with write/grade
+noise* — it's a deterministic rule working as designed. Replicating write+grade for these
+wouldn't change the label. The script detects this via `decision_path[0]` (`"policy=forbidden..."`
+/ `"manual override..."`) and reports these 11 articles separately as excluded, rather than
+polluting the CRITICAL tier with false positives.
+
+**Real output against the current corpus (42 article-oracles: 40 production + 2 `__mixeddepth`
+pilots):**
+
+- **11 excluded** (policy-forced or manual-override — not reward-comparison risk at all): the 8
+  `var_minimal` TRAIN variants + `State_of_LLM_Reasoning` (all `forbidden`-policy), plus
+  `09_RAG__var_demanding` and `11_multimodal__var_demanding` (manual overrides).
+- **31 scored**: 5 CRITICAL, 7 HIGH, 10 MODERATE, 9 COMFORTABLE.
+- **12 articles recommended for replication first** (CRITICAL + HIGH, sorted by margin):
+  `09_RAG__var_standard` (−0.0148), `06_tools__var_standard` (−0.0046),
+  `03_context_engineering__var_standard` (0.0148), `06_tools__var_demanding` (0.0176),
+  `11_multimodal__var_standard` (0.0182), `Distinct_AI_Models__mixeddepth` (0.0212),
+  `Earth_Oceans_Origin` (0.0246), `04_structured_outputs` (0.0267),
+  `Understanding_Reasoning_LLMs` (0.0271), `10_memory_knowledge_access__var_demanding` (0.0295),
+  `Insects_Consciousness__mixeddepth` (0.0522), `03_context_engineering__var_demanding` (0.0564).
+
+Two of these (`09_RAG__var_standard`, `06_tools__var_standard`) have negative margins *without*
+being policy/override cases — genuine near-tie-band decisions where the S3/S4/S5 secondary
+signals picked an arm other than the raw reward leader. These are exactly the low-confidence
+labels this investigation set out to find.
+
+**How to use this going forward:** run `python3 training/audit_oracle_margins.py` any time new
+articles are added or existing ones are corrected; feed the CRITICAL/HIGH list into §20's fix #4
+(targeted write+grade-only replication) instead of guessing which of the 40 labels to double-check
+first. Thresholds are provisional (derived from 2 before/after comparisons that mix a deliberate
+edit's effect with pipeline noise, not a clean noise-only replicate) — §20's fix #3 (a real,
+noise-only replicate-2–3× experiment on a small sample) should be used to recalibrate both these
+tiers and `EPS_BAND` itself with an actual empirical noise distribution.
+
+## 23. Temperature fix landed + noise-measurement experiment designed for the 2 narrowest margins
+
+**Fix #1 from §20 (free, done):** created `writing_workflow/configs/rl_generation.yaml`, an exact
+copy of `course.yaml` with only `write_article` and `integrate_exploration` lowered from
+`temperature: 0.7` to `temperature: 0.25`. `course.yaml` (real published course content) is
+untouched. Selected per-invocation via the existing `CONFIG_FILE` env var — never edited
+`writing_workflow/.env`, so default behavior for any other script/run is unaffected:
+```
+CONFIG_FILE=configs/rl_generation.yaml uv run python rl_writing_generator.py ...
+```
+
+**Experiment target, from §22's audit:** the two narrowest NON-policy-forced margins in the whole
+corpus — `09_RAG__var_standard` (margin=−0.0148, `light` vs `standard`) and `06_tools__var_standard`
+(margin=−0.0046, `deep` vs `standard`) — both genuine near-tie decisions where the S3/S4/S5
+secondary signals, not a clean reward win, picked the recorded arm.
+
+**Design (implements §20 fix #3, "cheap noise measurement," scoped to these 2 articles):**
+reuse each article's existing `research.md`/`.research/` (Phase 1 already done, zero re-scrape
+cost) and re-run *only* write+grade — at the new 0.25 temperature — **3× per arm**, then compare
+the resulting article-level margin/oracle_arm distribution against the original single-draw
+(temperature 0.7) production label already on disk. This simultaneously (a) measures whether 0.25
+reduces noise vs. the already-documented 0.7 swings, and (b) gives each of these 2 flagged articles
+a majority-of-3 label instead of a single noisy draw.
+
+**Mechanics (zero code duplication, zero production-data risk):**
+- Both target articles are TRAIN *variant* articles, so their 4 arms map to presets `{0,1,3,5}`,
+  not `0-3` (presets 2/4 are archived — see `generate_episode_oracles.py::_ARM_PRESETS`). Verified
+  this explicitly before designing the replicate copy step, since naively using `--presets 0 1 2 3`
+  would have silently used the wrong (archived) episodes for `standard`/`deep`.
+- New `training/setup_noise_experiment.py` (read/copy only, no LLM calls) copies each arm's
+  `article_guideline.md` + `research.md` + `.research/` from the real production episode dir into
+  a **separate** root, `rl_training_data/noise_experiment/<article>__replicate{1,2,3}__preset{p}/`
+  — the real `rl_training_data/episodes/` (actual GRPO training data) is never touched, and no
+  pre-existing `article.md` is copied, so the writer runs fresh. Executed (dry-run first, then for
+  real): all 24 replicate directories (2 articles × 3 replicates × 4 arm-presets) are now in place.
+- Added a minimal, backward-compatible `--episodes-dir` CLI override to both
+  `rl_writing_generator.py` and `rl_grading_generator.py` (default unchanged, so all existing
+  invocations behave exactly as before) so the generators can be pointed at
+  `rl_training_data/noise_experiment/` instead of the real episodes root.
+- `rl_grading_generator.py` looks up ground truth via `EVAL_DATA_DIR/<article_name>/...`, which
+  would not resolve for a name like `09_RAG__var_standard__replicate2`. Added
+  `_strip_replicate_suffix()` (regex `__replicate\d+$` strip) so grading transparently resolves
+  the replicate back to its base article's ground truth/guideline — no file duplication needed.
+- New `training/measure_replicate_noise.py` (read-only analysis) imports (does not duplicate)
+  `_section_reward`, `_get_score`, `_load_episode`, `_ARM_PRESETS` from
+  `generate_episode_oracles.py` and `_compute_r_w` from `compute_article_oracle.py`, so the
+  noise measurement uses the exact production reward formula and target-words weighting. For each
+  article it reports: per-replicate article-level margin/oracle_arm, margin mean/std/range across
+  the 3 replicates, an oracle_arm vote tally, per-section per-arm reward std across replicates
+  (flagging any section/arm with std > 0.02), and a comparison against the original temperature-0.7
+  single-draw label.
+
+**Commands to actually run (writing_workflow/, real Gemini 2.5 Pro API cost — NOT yet executed,
+awaiting go-ahead, consistent with this investigation's practice of not spending real budget
+without confirmation):**
+```
+CONFIG_FILE=configs/rl_generation.yaml uv run python rl_writing_generator.py \
+  --articles 09_RAG__var_standard__replicate1 09_RAG__var_standard__replicate2 09_RAG__var_standard__replicate3 \
+             06_tools__var_standard__replicate1 06_tools__var_standard__replicate2 06_tools__var_standard__replicate3 \
+  --presets 0 1 3 5 --episodes-dir ../rl_training_data/noise_experiment
+
+uv run python rl_grading_generator.py \
+  --articles 09_RAG__var_standard__replicate1 09_RAG__var_standard__replicate2 09_RAG__var_standard__replicate3 \
+             06_tools__var_standard__replicate1 06_tools__var_standard__replicate2 06_tools__var_standard__replicate3 \
+  --presets 0 1 3 5 --episodes-dir ../rl_training_data/noise_experiment
+```
+Then, from `research_agent_local/`:
+```
+python3 training/measure_replicate_noise.py --articles 09_RAG__var_standard 06_tools__var_standard
+```
+
+**Decision rule once data is in:** if the 3-replicate margin distribution for either article stays
+consistently on one side of 0 (majority-of-3 agrees with the original oracle_arm), keep the
+existing label as-is (the single draw got it right, or close enough). If replicates disagree with
+each other or with the original (a genuine flip in >=1 of 3), treat the majority vote across all 4
+draws (1 original + 3 replicates) as the corrected label, matching §20 fix #4's proportionate
+philosophy — only these 2 (of 40) labels need this treatment right now.
+
+## 24. Claude Sonnet added as a grading-judge option
+
+**Context:** the user has been manually correcting Gemini grading mistakes with Claude Sonnet
+since the start of this project (the `scores.json`/`reasoning.json` manual corrections referenced
+in §16.5.2's "POST-CORRECTION UPDATE" were done this way) — Gemini occasionally makes blatant
+LLM-as-judge errors. This section makes Claude Sonnet a first-class, selectable grading model
+instead of a manual after-the-fact fix.
+
+**Why this was a small change, not a rearchitecture:** `get_model()` in
+`writing_workflow/src/brown/models/get_model.py` already wraps LangChain's generic
+`init_chat_model("provider:model", ...)`, and both grading metrics (`FollowsGTMetric`,
+`UserIntentMetric`) call `.with_structured_output()` on whatever model comes back — nothing in the
+metric logic is Gemini-specific. Adding a provider is additive.
+
+**Changes made:**
+- `pyproject.toml`: added `langchain-anthropic>=1.0.0` (ran `uv sync` — installed cleanly,
+  pulled in `anthropic==0.116.0` + `langchain-anthropic==1.4.8`).
+- `brown/models/config.py`: added `SupportedModels.ANTHROPIC_CLAUDE_SONNET = "anthropic:claude-sonnet-4-5"`
+  (naming matches the existing `claude-opus-4-5` fallback model already used elsewhere in this repo,
+  in `research_agent_local/training/generate_digests.py`'s Layer-3 digest-generation fallback — a
+  different, unrelated Claude integration via the raw `anthropic` SDK, confirming the naming
+  convention) + a `DEFAULT_MODEL_CONFIGS` entry (`temperature=0.0`).
+- `brown/config.py`: added `ANTHROPIC_API_KEY: SecretStr | None` to `Settings`.
+- `brown/models/get_model.py`: added `SupportedModels.ANTHROPIC_CLAUDE_SONNET: "ANTHROPIC_API_KEY"`
+  to `MODEL_TO_REQUIRED_API_KEY`. Gemini-only params (`thinking_budget`, `top_k`,
+  `response_modalities`) are already stripped generically for any non-`google_genai:` model via
+  `GOOGLE_ONLY_PARAMS`, and the `max_output_tokens`→`max_tokens` rename already applies to any
+  non-Google provider — both needed zero special-casing for Anthropic.
+- `.env.example`: added `ANTHROPIC_API_KEY=...` placeholder. **The user still needs to put a real
+  key in their own `writing_workflow/.env`** — not done here (secret, not committed).
+- `rl_grading_generator.py`: added `--grading-model {gemini,claude}` (default `gemini`, unchanged
+  behavior). Refactored the module-level `_follows_gt_metric`/`_user_intent_metric` singletons into
+  a `_build_metrics(model)` factory + `configure_grading_model(model)` function, called from
+  `main()` right after argument parsing (before the pipeline starts) so both metrics are graded by
+  the selected judge for the whole run.
+
+**Verified (component-level, since this environment has no real `ANTHROPIC_API_KEY` to do a live
+grading call):**
+- `get_model(SupportedModels.ANTHROPIC_CLAUDE_SONNET, ...)` correctly raises
+  `ValueError: Required environment variable 'ANTHROPIC_API_KEY' is not set` when the key is
+  absent — proves the plumbing reaches the right code path instead of silently doing nothing.
+- `uv run python rl_grading_generator.py --grading-model claude --dry-run --articles 09_RAG__var_standard`
+  completed successfully end-to-end (`EXIT_CODE=0`, correct plan output) — confirms the new CLI
+  flag, `configure_grading_model()`, and metric construction all wire together correctly for a
+  real invocation, short of the actual paid API call itself.
+- Noted (not a regression from this change): without `OPIK_API_KEY`/`OPIK_PROJECT_NAME` set,
+  `rl_grading_generator.py` invocations have a real multi-second-to-~1-minute startup delay before
+  the "not set" warning prints — pre-existing opik-client behavior, reproduces identically with the
+  default Gemini judge, unrelated to the Claude addition.
+
+**Usage once `ANTHROPIC_API_KEY` is set:**
+```
+uv run python rl_grading_generator.py --grading-model claude --articles <...> --presets <...>
+```
+Works with the existing `--episodes-dir` override too, so it can also be used to grade the §23
+noise-experiment replicates with Claude instead of (or in addition to) Gemini — which would turn
+that experiment into a way to decompose whether the measured noise is writer-content-driven,
+judge-side, or both (grade the same replicate articles with both judges and compare agreement),
+extending §23's original writer-temperature-only design.
+
+# Part 5 — The enhancement-ceiling bias: a deterministic reward distortion (2026-07-13)
+
+## 25. Finding: section-level binary enhancement scoring caps credit at the first valid instance
+
+**How this surfaced:** while auditing the 09_RAG noise-experiment replicates (§23), the user
+noticed that the higher-exploration presets (3, 5) insert *substantially more* exploration-sourced
+content than preset 1, yet their `depth_enhancement`/`breadth_enhancement` scores are no higher —
+while their `guideline_adherence`/`core_content`/`flow` scores are often *lower*. An Opus 4.8
+recount (attached as `rl_training_data/noise_experiment/09_RAG/enhancement_ceiling_analysis.md`)
+quantified it: across 54 body-sections, every one of the 31 zero-instance sections scores enh=0 and
+every one of the 23 sections with ≥1 instance scores enh=1 — including every 6-instance section.
+No second/third/sixth instance ever bought additional credit.
+
+**Verified directly from the grader's own `reasoning.json` (not just the recount):** I read the
+per-section depth/breadth reasoning for the "Advanced RAG Techniques" section across all 9
+non-skip episodes. The grader itself enumerates multiple qualifying, source-attributed instances
+while still emitting a single binary `1`:
+- `preset3_rep1` depth=1: *"**Multiple** qualifying depth additions are present: (1) the Reciprocal
+  Rank Fusion explanation… (2) the chunking failure-modes paragraph… (3) the GraphRAG computational
+  complexity paragraph…"* — three distinct source-traceable additions across three subsections.
+- `preset5_rep2` depth=1: *"**Multiple** qualifying depth additions are present: (1) the bi-encoder
+  vs. cross-encoder architecture explanation… (2) the query-decomposition 'open challenge'… (3)
+  HyDE's precision limitation…"* — three distinct additions.
+- `preset1_rep1` depth=1: *"A depth addition is present: the GraphRAG subsection includes a
+  paragraph noting that 'advanced GraphRAG systems are also becoming more dynamic…'"* — **one**
+  addition, one source.
+
+`preset5_rep2`'s three differently-sourced technical additions (concrete latency/throughput data,
+an open-research-problem framing, a named algorithmic limitation) are objectively more informative
+to a reader than `preset1_rep1`'s single sentence, and they score identically (`1`). This confirms
+the user's hypothesis exactly.
+
+**The mechanism, traced to exact code:**
+1. **Grader** (`writing_workflow/src/brown/evals/metrics/new_follows_gt/prompts.py`, criteria 4 &
+   5): *"The section scores 1 if at least one instance qualifies; unqualified instances do not lower
+   the score."* The output type (`types.py::FollowsGTCriteriaScores`) is
+   `CriterionScore.score: Annotated[int, Ge(0), Le(1)]` — hard binary. The grader already reasons
+   **per-instance** (the prompt mandates per-instance source-attribution and the reason text
+   enumerates them) — it just discards the count when it collapses to the binary.
+2. **Reward formula** (`generate_episode_oracles.py::_section_reward`, the active "Formula B"):
+   ```python
+   explore = cp * (0.60 * de + 0.40 * be) * 0.50     # de, be ∈ {0, 1}
+   ```
+   With binary `de`/`be`, `explore` is hard-capped at `0.5 * cp` regardless of how many valid
+   instances a section contains. One instance and six instances yield an identical explore term.
+   (`train_grpo.py::_compute_episode_reward` has the same `cp * (0.60*de + 0.40*be) * w` shape, but
+   it is the **legacy** episode-path formula; the active training target is
+   `compute_oracle_reward`, which reads the per-section arm labels that `_section_reward` already
+   baked into `section_oracle.json`. So `_section_reward` is the single source of truth for this
+   bias.)
+3. **The asymmetry that makes it a *bias*, not just a lost opportunity:** extra instances have
+   **zero marginal upside** (capped explore term) but a **real marginal downside** — the attached
+   recount measured instance-count↔word-overage at r≈+0.56, and word overage is exactly what
+   `guideline_adherence` (via `user_intent = (0.50*ga + 0.50*ra) * 0.30`) penalizes, with no
+   corresponding cap protecting it. So the arms that do more exploration (standard/deep) pay a
+   length cost for content they get no enhancement credit for.
+
+**Why this matters well beyond one section:**
+- It is **deterministic**, not stochastic — unlike the Part 4 temperature noise, it biases *every*
+  grading of *every* article the same direction, so it is baked into all 40 existing oracle labels.
+- It is a **plausible structural contributor to the persistent `light`/P1 majority** documented in
+  §13 (TRAIN skip9/light9/std3/deep3, TEST light9/16). If `standard`/`deep` structurally cannot
+  earn credit for the extra exploration they perform beyond the first instance, while paying a real
+  length cost for it, the oracle will systematically under-value them relative to `light` —
+  independent of whether the extra research was genuinely good. This is a much larger concern than
+  any single narrow-margin article, because it would mean the entire action-space's reward
+  landscape is tilted toward under-exploration.
+
+**Honest counter-data-point (keeps the finding calibrated):** `preset5_rep1` — the densest section
+(6 raw instances) — scored `breadth_enhancement = **0**`: *"No clear breadth additions… the
+additions found are primarily depth-oriented."* So the ceiling is not blind "count = waste":
+content *type* still matters, and piling everything into one dimension can forfeit the other
+entirely. The ceiling specifically bites *within* a dimension once ≥1 qualifying instance exists —
+it does not make raw instance count a free proxy for quality.
+
+## 26. Fix options — credit qualifying instances without re-opening the length-stuffing hole
+
+**Decision taken (user, 2026-07-13):** credit qualified, valid enhancement instances in the depth
+and breadth scores rather than capping at the first. The design tension to respect: the binary cap
+was (implicitly) *also* protecting against citation-stuffing — a naive uncapped count would just
+reward length, which the length penalties (`ga`, `core_preservation`) are simultaneously fighting.
+So the fix must credit *additional distinct, qualifying, quality-gated* instances with **diminishing
+returns and a hard cap**, keeping the length counterweight intact.
+
+**Grader change (shared by all options):** `depth_enhancement`/`breadth_enhancement` must emit a
+**count of qualifying instances** (capped, e.g. 0/1/2/3+) instead of a bare 0/1. This is a low-risk
+change because the grader *already* enumerates and per-instance-qualifies additions — we are asking
+it to report a number it already computes internally. Requires: (a) a new/extended structured-output
+field for these two dimensions (the other four stay binary), (b) prompt wording changed from "scores
+1 if at least one instance qualifies" to "report the number of distinct qualifying instances, capped
+at N", (c) the `reasoning.json` writer already serializes `**{score}:**`, so a capped integer flows
+through unchanged. **Cost: every episode must be re-graded** — existing `reasoning.json` files only
+contain binaries, and counts cannot be reliably back-parsed from the free-text reason (the grader
+sometimes stops enumerating once qualification is established). This is the expensive, unavoidable
+part.
+
+**Parsing changes (both must widen from binary to capped-integer):**
+- `generate_episode_oracles.py::_parse_sections_ordered` regex `\*\*([01]):\*\*` → allow a small
+  integer.
+- `train_grpo.py::_parse_reasoning_sections` regex already allows `\*\*(\d):\*\*` (single digit) —
+  fine for a cap ≤ 9, but it is the legacy path.
+
+**Reward-formula options** (all keep `explore = cp * (0.60*de' + 0.40*be') * 0.50`, only changing
+how the count → `de'`/`be'` ∈ [0,1] map is defined):
+
+| Opt | Map from qualifying-instance count `n` → `de'`/`be'` | Effect on today's labels | Anti-stuffing |
+|---|---|---|---|
+| **A — reshape to fixed ceiling (recommended)** | concave saturating, e.g. `de' = 1 − (1−k)^n` (k≈0.55) → 0, 0.55, 0.80, 0.91, … OR explicit tiers {0:0.0, 1:0.6, 2:0.85, 3+:1.0} | 1-instance sections credited **less** than today (0.6 vs 1.0); multi-instance approach today's max. Relabels light-heavy sections downward, standard/deep upward — the intended correction. **Explore cap unchanged at 0.5·cp.** | Strong — ceiling never rises, so stuffing past the cap earns nothing; length penalty still bites |
+| **B — raise ceiling for multi-instance** | linear-to-higher-cap, e.g. `de' = min(n, CAP)/CAP` with the outer multiplier raised so n=1 ≈ today's credit and n=CAP exceeds it | 1-instance sections unchanged (no light regression); multi-instance sections gain new headroom above today's max | Weaker — raises total explore weight, likely needs `cost`/`ga` rebalancing or stuffing re-emerges |
+| **C — count × quality tier** | grader also tags each instance high/low value; `de'` = capped sum of per-instance quality weights | Most faithful to "number *and* quality"; most grader/schema complexity and most re-grading variance | Strong if quality gate is strict |
+
+**Recommendation: Option A (concave, fixed ceiling).** It directly targets the diagnosed bias
+(a single instance currently instantly maxes the dimension, over-crediting `light`) while preserving
+the carefully-tuned overall reward scale and the anti-stuffing cap that took the §"Formula B"
+deconfounding work to calibrate. It reshapes *how credit accrues up to the existing ceiling* rather
+than raising the ceiling, so it does not reignite length-stuffing and does not require re-tuning the
+cost term. The exact curve (tiers vs. `1−(1−k)^n`, the value of `k`/`CAP`) materially changes the
+oracle labels and must be chosen deliberately and recorded — this is a parameter decision to make
+*before* mass re-grading, not after.
+
+**Unavoidable consequences to acknowledge before starting:**
+- **Full corpus re-grade + full oracle regeneration.** All 40 article labels change; the run13/14
+  baselines become non-comparable (a *new* oracle version, not a patch). This should be a versioned
+  cut (`section_oracle.json` version 3), not an in-place edit.
+- **Validate the direction on a cheap pilot first.** The §23 noise-experiment episodes are already
+  written and graded-once; re-grade just those (2 articles × 3 replicates × 4 arms, and ideally with
+  `--grading-model claude` per §24 since Claude is the more reliable judge) under the new
+  count-emitting prompt, run the new `_section_reward` map, and confirm standard/deep oracle rewards
+  rise relative to light *in the predicted direction and magnitude* before committing to a
+  40-article re-grade.
+
+**Recommended sequence:** (1) settle the Option-A curve parameters (tiers or `k`, and the cap N);
+(2) implement the grader schema + prompt change and the two parser widenings; (3) pilot-re-grade the
+§23 episodes with Claude, apply the new formula, inspect the shift; (4) only then commit to the full
+40-article re-grade + `section_oracle.json` v3 + `article_oracle.json` regeneration. Nothing is
+implemented yet — this section is the design to sign off on first, because steps (2)-(4) are a
+one-way, whole-corpus change.
+
+## 27. Locked design (user decisions, 2026-07-13): hybrid count×quality, cap 3, pilot first
+
+User chose: **reshape-to-fixed-ceiling *blended with* count×quality** (Option A refined toward C),
+**cap N = 3**, and **pilot on the §23 noise-experiment episodes first** (re-graded with Claude).
+
+**Key de-risking insight that shapes the whole implementation:** the count→credit map lives in
+`generate_episode_oracles.py::_section_reward` (oracle-computation time), **not** in the grader.
+So the grader only has to reliably emit, per section per enhancement dimension, a small, stable
+signal — **(a) a capped count of qualifying instances (0-3), and (b) a quality tier** — and *all*
+weight/curve tuning happens downstream, cheaply and re-runnably, with **no re-grading**. Re-grading
+(the only expensive step) is therefore needed **once** to produce (count, quality); the reward
+weights can then be re-tuned for free as many times as wanted by just re-running
+`generate_episode_oracles.py` + `compute_article_oracle.py`.
+
+**Grader schema (the part that must be pinned before re-grading, since it is baked into the graded
+output):** for `depth_enhancement` and `breadth_enhancement` only (the other 4 dims stay binary),
+emit:
+- `count`: integer 0-3 = number of *distinct, quality-gated, source-attributed* qualifying
+  instances, capped at 3 (instances beyond 3 are not counted — anti-stuffing at the source).
+- `quality`: `"high" | "standard"` = the dominant value tier across the qualifying instances
+  (meaningful only when `count ≥ 1`). "high" = substantive, differently-sourced, materially
+  informative additions; "standard" = valid-but-modest additions. Two tiers (not three) to keep
+  LLM-judge output stable and reproducible.
+
+**Proposed reward map (freely tunable downstream, defaults shown) in `_section_reward`:**
+```
+_ENH_COUNT_CREDIT = {0: 0.00, 1: 0.55, 2: 0.80, 3: 1.00}   # concave, diminishing, fixed ceiling
+_ENH_QUALITY_MULT = {"high": 1.00, "standard": 0.85}
+def _enh_credit(count, quality):
+    base = _ENH_COUNT_CREDIT[min(count, 3)]
+    return base * (_ENH_QUALITY_MULT[quality] if count >= 1 else 1.0)
+# de' = _enh_credit(depth_count, depth_quality);  be' = _enh_credit(breadth_count, breadth_quality)
+# explore = cp * (0.60*de' + 0.40*be') * 0.50   ← unchanged shape & 0.5·cp ceiling
+```
+Resulting `de'`/`be'` grid: 0→0.00, 1·standard→0.47, 1·high→0.55, 2·standard→0.68, 2·high→0.80,
+3·standard→0.85, 3·high→1.00. A single instance is credited **less** than today's 1.0 (the intended
+correction to `light`'s over-crediting); full credit requires 3 high-quality instances; the explore
+term never exceeds today's `0.5·cp` ceiling (anti-stuffing preserved, cost term untouched).
+
+**Full change set (staged, not yet implemented):**
+1. Grader `types.py`: new field shape for depth/breadth carrying `count` (0-3) + `quality`
+   (`high`/`standard`); other 4 dims unchanged.
+2. Grader `prompts.py`: criteria 4 & 5 reworded from "scores 1 if at least one instance qualifies"
+   to "report the number of distinct qualifying instances (cap 3) and their dominant quality tier";
+   the reasoning-format instruction and the pass-2 core-preservation context builder updated to
+   carry the new signal; the `if not exploration_sources` hard-zero mandate in `metric.py` updated
+   to zero the count (not a binary).
+3. Few-shot examples (~18 sections, ~36 depth/breadth entries): re-annotated with counts + quality
+   consistent with the new schema. **Highest-effort, error-prone piece** — the examples define the
+   output format the judge imitates.
+4. Parsers: `generate_episode_oracles.py::_parse_sections_ordered` (`\*\*([01]):\*\*` → capped int +
+   quality) and `train_grpo.py::_parse_reasoning_sections` (legacy path) widened.
+5. `_section_reward`: the `_enh_credit` map above; `section_oracle.json` bumped to **version 3**.
+6. Pilot: re-grade the 24 §23 noise episodes with `--grading-model claude`, re-run oracle
+   computation, confirm standard/deep rewards rise vs light in the predicted direction/magnitude
+   before the full 40-article re-grade.
+
+**Status: awaiting final go-ahead on the grader schema (count 0-3 + quality high/standard) before
+rewriting the judge**, since that schema is the one piece baked into the (paid) re-grade and
+expensive to change afterward; the reward weights above are deliberately downstream and re-tunable
+without re-grading.
+
+## 28. Implemented: grader + reward-map changes (2026-07-13)
+
+Final design differs slightly from §27's proposal in one respect: the grader's `score` field for
+depth_enhancement/breadth_enhancement **stays exactly binary (0/1)**, not (count, quality) as a new
+Pydantic field. The richer signal instead lives entirely in the free-text `reason` field via a
+mandated tag `[instances=N; quality=tier1,tier2,...]` (N = true, uncapped count; tiers = "strong"/
+"standard" per instance). This is a strictly smaller, lower-risk change than editing `types.py`'s
+schema: `to_score_result()`'s existing [0,1]-aggregation (feeding `scores.json`) needed zero changes,
+and `generate_episode_oracles.py` already parses `reasoning.json` as free text — it now just also
+extracts this tag, exactly matching how the grader was already observed enumerating multiple
+instances in §25's real production examples.
+
+**Grader changes (`writing_workflow/src/brown/evals/metrics/new_follows_gt/`):**
+- `prompts.py`: criteria 4 & 5 now instruct enumerating *every* qualifying instance (not stopping at
+  the first) and classifying each as **strong** (substantive/specific/quantified/named) or
+  **standard** (valid but brief/generic); instruction 10 mandates the `[instances=N; quality=...]`
+  tag immediately after the `**{score}:**` marker, with worked single- and multi-instance examples
+  inline in the prompt text; CoT step 3.5 added to finalize the tag after the existing 3.4
+  traceability check. All 18 few-shot example sections' depth/breadth `reason` strings (28 of 36 —
+  the 2 fully-omitted/empty and 2 References sections were left as-is, not informative for this)
+  were retrofitted with tags consistent with their described content.
+- `metric.py`: the code-level hard-zero mandate (`_NO_EXPLORATION_SOURCES_REASON`, forces
+  depth/breadth to 0 when no exploration sources exist) now embeds `[instances=0]` too, so the tag
+  is present regardless of whether the 0 came from the judge or this override.
+
+**Reward-map changes (`research_agent_local/training/`):**
+- New `enhancement_reward.py` — the *only* place the count→credit curve lives, with 3 tunable
+  constants at the top (`INSTANCE_CAP=3`, `QUALITY_WEIGHT={"strong":1.0,"standard":0.65}`,
+  `CREDIT_AT_WEIGHTED_COUNT={0:0.00,1:0.55,2:0.80,3:1.00}`) and one function,
+  `enhancement_credit(qualities) -> float`, that sums per-instance weights, caps at `INSTANCE_CAP`,
+  and smoothly interpolates between the integer credit tiers. **Retuning weights/curve/cap never
+  requires re-grading** — only re-running `generate_episode_oracles.py` + `compute_article_oracle.py`,
+  since (count, qualities) are parsed fresh from already-graded `reasoning.json` every time.
+  Verified: `[] -> 0.0`, `["standard"] -> 0.3575`, `["strong"] -> 0.55`, `["strong","strong"] -> 0.80`,
+  `["strong"]*3 -> 1.00`.
+- `generate_episode_oracles.py`: `_parse_sections_ordered` now captures the full reason text and
+  extracts the tag via a new `_parse_enhancement_tag`; `_get_score` unchanged in behavior; new
+  `_get_enhancement` mirrors `_get_score`'s exact/substring/ordinal lookup but returns the parsed
+  `(count, qualities)` or `None`. In `process_article_variant`, `de`/`be` are now computed by a
+  `_enh_credit` closure that calls `enhancement_credit(qualities)` **only when the tag is present**;
+  when absent (legacy, un-migrated `reasoning.json`) it falls back to the raw binary score,
+  unchanged. `section_oracle.json` bumped to **version 3**; module docstring documents the schema
+  and the legacy fallback guarantee.
+- **Critical bug caught before it did damage:** the first implementation fabricated a fallback
+  `(count=score, qualities=["standard"]*score)` for untagged data, which then ran through
+  `enhancement_credit` — silently turning every existing article's binary `1.0` into `0.3575`
+  (`enhancement_credit(["standard"]) = 0.3575 ≠ 1.0`), i.e. corrupting all 40 un-migrated oracle
+  labels' rewards on the very next `generate_episode_oracles.py` run, with no error or warning.
+  Caught by directly testing the curve function before trusting the pipeline result. Fixed by making
+  the absent-tag case a real `None` sentinel that bypasses `enhancement_credit` entirely and uses
+  the raw score — verified via a real backup-diff-restore test on `09_RAG`'s 3 variants (all 6
+  sections × 3 variants: **bit-identical rewards** before/after, only `version`/`computed_at`
+  changed) and a synthetic multi-instance parse test (3 instances, 2 strong + 1 standard →
+  `enhancement_credit` = 0.93, correctly below the 1.00 ceiling since not all 3 are "strong").
+- `compute_article_oracle.py`: docstrings updated to acknowledge `section_oracle.json` v2 *or* v3
+  (its own logic reads already-computed reward floats, so it needed no logic change); the version
+  guard (`v < 2`) already accepted v3 without modification. `article_oracle.json`'s own version
+  field stays 2 — its schema is unchanged, only its upstream input's semantics changed.
+
+**Tests added** (`writing_workflow/tests/brown/evals/metrics/follows_gt/test_follows_gt_metric.py`):
+new regression tests asserting the tag format, the strong/standard rubric, the
+enumerate-every-instance instruction, the multi-instance worked example, and CoT step 3.5 are all
+present in `SYSTEM_PROMPT`; that `DEFAULT_FEW_SHOT_EXAMPLES` were actually retrofitted (contains
+`[instances=0]`, `[instances=1; quality=strong]`, `[instances=1; quality=standard]`); that the
+rendered eval prompt carries the tags through; and that the hard-zero mandate's reason (both the
+raw constant and end-to-end through `.score()`) carries `[instances=0]`. Existing fixtures/tests
+were left untouched — they test aggregation logic with generic placeholder reasons unrelated to the
+tag, so they needed no changes and continue to pass by inspection (no `score`/type changes were made
+that they could regress on).
+
+**Could not live-verify the full pytest suite in this environment** — `uv run pytest` produced no
+output across repeated sync and async terminal attempts (worse than the usual slow-opik-start delay;
+not root-caused, see debugging notes). All changes were instead verified individually: `get_errors`
+on every modified file (clean), direct execution of `enhancement_reward.enhancement_credit` against
+hand-computed expected values, a real backup/diff/restore run of `generate_episode_oracles.py`
+against production `09_RAG` data (bit-identical), and a synthetic multi-instance parse test. User
+will run the test suite manually.
+
+**Claude pilot re-grade command** (writing_workflow/, real API cost — the §23 noise-experiment
+episodes already have `article.md` from the writer step; this re-grades them with the new
+tag-emitting prompt so `enhancement_credit` has real data to work with instead of the legacy
+fallback):
+```
+uv run python rl_grading_generator.py --grading-model claude \
+  --articles 09_RAG__var_standard__replicate1 09_RAG__var_standard__replicate2 09_RAG__var_standard__replicate3 \
+             06_tools__var_standard__replicate1 06_tools__var_standard__replicate2 06_tools__var_standard__replicate3 \
+  --presets 0 1 3 5 --episodes-dir ../rl_training_data/noise_experiment
+```
+Note this **re-grades** existing `article.md` files (scores.json for these episodes was already
+written by the earlier Gemini pass per the last turn's noise-measurement results) — grading is
+idempotent-guarded by `scores.json` existing, so **delete the existing `scores.json`/`reasoning.json`
+in each of these 24 episode dirs first** if the intent is to replace the Gemini grades with Claude's
+tag-emitting ones (rather than accumulate both): e.g.
+```
+find ../rl_training_data/noise_experiment -maxdepth 1 -name '09_RAG__var_standard__replicate*' -o -name '06_tools__var_standard__replicate*' \
+  | xargs -I{} rm -f {}/scores.json {}/reasoning.json
+```
+Then, from `research_agent_local/`, re-run oracle computation and inspect the shift:
+```
+python3 training/generate_episode_oracles.py --articles 09_RAG 06_tools
+python3 training/compute_article_oracle.py --article 09_RAG__var_standard
+python3 training/compute_article_oracle.py --article 06_tools__var_standard
+```
+Per §23/§27's pre-registered decision rule, look for standard/deep rewards rising relative to light
+in the sections that had multiple qualifying instances in the earlier §25 analysis — that is the
+signal confirming the fix works before committing to the full 40-article re-grade.
+
+## 29. Bug found and fixed: the cap must select the STRONGEST N instances, not the first N
+
+**User caught this before the pilot re-grade was run.** `enhancement_credit()`'s original
+implementation was `qualities[:INSTANCE_CAP]` — i.e. it took the first `INSTANCE_CAP` (3) entries
+in whatever order they appeared in the list, not the three *strongest*. Demonstrated directly:
+```python
+enhancement_credit(["standard", "standard", "strong", "strong"])  # weak instances listed first
+# -> 0.86  (WRONG: took the first 3 = standard, standard, strong)
+enhancement_credit(["strong", "strong", "standard", "standard"])  # same 4 instances, strong first
+# -> 0.93  (the "correct" value — same underlying instances, different reported order)
+```
+Two identical sets of underlying instances produced different credit purely because of list order —
+exactly the kind of order-dependence the cap is supposed to be immune to.
+
+**Fix (`enhancement_reward.py`):** `enhancement_credit()` now sorts the quality weights descending
+before applying `INSTANCE_CAP`, so the strongest instances are always the ones counted regardless of
+input order:
+```python
+weights = sorted((QUALITY_WEIGHT.get(q, _DEFAULT_QUALITY_WEIGHT) for q in qualities), reverse=True)
+weighted = sum(weights[:INSTANCE_CAP])
+```
+Verified both orderings of the same 4-instance set now produce identical credit (0.93), and a
+6-instance mixed-order case correctly resolves to its 3 strongest instances (all "strong" → 1.00).
+
+**A companion gap at the grader level, fixed too:** the tag-format instruction (instruction 10)
+already caps the *reported* quality list at 5 entries when N > 5, but originally said to list them
+"in the order discussed" — not strongest-first. If a section has, say, 7 qualifying instances and
+the two strongest are discussed 6th and 7th, they would never make it into the reported 5-slot list
+at all, and no amount of sorting downstream can recover a value that was never reported. Fixed:
+instruction 10 (and CoT step 3.5) now mandate the quality list be **strongest-first** (all "strong"
+entries before any "standard" entries), with a new worked example: 7 instances (4 strong, 3
+standard) → `[instances=7; quality=strong,strong,strong,strong,standard]` (the fifth slot filled by
+one standard entry, not by prose-discussion order). `enhancement_credit()`'s own defensive sort
+still applies as a second safeguard, but the grader should not rely on that alone since it can only
+sort what actually got reported.
+
+**Tests added:** `test_system_prompt_requires_strongest_first_quality_ordering` and
+`test_system_prompt_documents_seven_instance_ordering_example` in `test_follows_gt_metric.py`,
+verifying the new instruction text and worked example are present; the existing
+`test_system_prompt_documents_multi_instance_tag_example` (3-instance case) was left unchanged and
+still matches, since that example's text was untouched.
+
+This bug is caught **before** the §28 Claude pilot re-grade command was run, so it does not require
+re-doing any already-spent API cost — the fix lands cleanly before the pilot begins.
+
+## 30. First real Claude + enhancement-credit re-grade: 09_RAG__var_standard
+
+**Methodological fact worth recording:** ground-truth articles (`article_ground_truth.md`, used as
+`expected_output` in `FollowsGTMetric`) were written at **temperature 0.7, with zero exploration
+rounds** — i.e. GT itself corresponds to a "skip"-arm-like writing pass, not an idealized
+deep-research article. This matters for interpreting `core_content`/`flow`/`core_preservation`
+comparisons: GT's own comprehensiveness ceiling (whatever a single temp-0.7 no-exploration draft
+happens to cover) may already be the limiting factor for how much room *any* arm's depth/breadth
+additions have to matter, independent of the reward formula. This plausibly compounds with §30's
+finding below that 4 of 6 sections show zero enhancement signal for every arm — GT's own sections
+may simply not leave room for qualifying additions there, regardless of exploration depth.
+
+**Result:** re-graded `09_RAG__var_standard`'s real production episodes (skip/light/standard/deep,
+same temp-0.7 content, only the grading changed: Claude + the new enhancement-credit formula).
+`r_w = {skip:0.372, light:0.397, standard:0.391, deep:0.392}` — light/standard/deep compressed into
+a **0.006-wide band** (down from the old Gemini/binary formula's 0.036-wide band), oracle=standard,
+margin=-0.0056 (near-tie band = all three). This is the enhancement fix working as designed — light
+no longer gets free full credit for a single instance — but the *consequence* is a harder, not
+easier, decision: this article was arguably never cleanly decided, just artificially separated by
+the old ceiling's over-crediting of light.
+
+**3 noise-experiment replicates (temp=0.25, same new grading) disagreed with each other:**
+replicate 1 → standard (margin +0.014), replicates 2 & 3 → light (margins +0.150, +0.148). Decision
+rule (§23/§27, majority across original + 3 replicates) lands on a **2-2 tie** (standard: orig+rep1;
+light: rep2+rep3) — genuinely unresolved, not a case to force a pick on.
+
+**New finding, separate from the enhancement fix:** `deep`'s reward specifically degrades at
+temperature 0.25 relative to the temp-0.7 original in every section shown (Advanced RAG Techniques
+0.49→0.12, Agentic RAG 0.78→0.29, Conclusion 0.44→0.39), touching negative raw values in multiple
+replicates — a much sharper decline than skip/light/standard show. Since grading (Claude, new
+formula) is now held constant across this comparison, the difference is a genuine content-quality
+effect of writing at 0.25 vs 0.7, not a grading artifact. Working hypothesis: `deep`'s 3-round
+exploration content is the hardest to integrate coherently, and a lower, less-creative temperature
+may specifically hurt that harder integration task — complicating §21's "temperature reduction is
+neutral-to-positive" prediction, which may hold for skip/light but not for deep. Needs a second data
+point (`06_tools__var_standard`, not yet re-graded) before treating this as a general pattern.
+
+**Diagnostic: why the near-tie, exactly (not guessed — read directly from the re-graded
+`reasoning.json`'s `[instances=N; quality=...]` tags for `09_RAG__var_standard`'s real preset0/1/3/5
+episodes):**
+
+| Section | light | standard | deep |
+|---|---|---|---|
+| Advanced RAG Techniques (depth) | 1 strong → credit 0.55 | 3 strong → credit **1.00** | 3 strong + 1 standard → credit **1.00** (4th instance discarded by `INSTANCE_CAP=3`) |
+| Agentic RAG (depth) | 1 strong → credit 0.55 | 1 strong → credit 0.55 | 3 strong → credit **1.00** |
+| *(4 other sections)* | 0 for all arms — GT's own sections leave no room for qualifying additions regardless of arm |
+
+Two distinct effects compound: (1) `INSTANCE_CAP=3` genuinely discards deep's 4th instance in
+"Advanced RAG Techniques," tying it with standard's 3 there even though deep did more; (2) 4 of 6
+sections carry zero enhancement signal for *any* arm, diluting whatever separation the 2 live
+sections produce once target-words-weighted into the article-level R_w.
+
+**Answered: would tuning `enhancement_reward.py`'s parameters produce a clearer signal here?**
+Partially, and the objective matters. Two separable claims:
+- *"Is `INSTANCE_CAP=3` too low in general?"* — Plausibly yes, on principled grounds independent of
+  this article: §25's original recount already found real sections with up to 6 genuine qualifying
+  instances, and this data shows a real 4th instance being discarded. Raising the cap (and extending
+  the credit ladder, e.g. to 4-5) is defensible on its own merits.
+- *"Would that alone resolve 09_RAG's near-tie?"* — Only partially. A higher cap would let deep pull
+  ahead of standard in "Advanced RAG Techniques," but 4 of 6 sections would still contribute zero
+  differentiating signal, so the article-level margin would likely stay thin rather than resolve
+  decisively. **Recommendation: do not tune the curve with "fix this one article's margin" as the
+  goal** — that is reverse-engineering a single data point. Any cap change should be evaluated across
+  multiple re-graded articles (06_tools next, eventually the full corpus), with 09_RAG as one data
+  point among several, not the target of the tuning.
+
+**Status:** `09_RAG__var_standard` treated as a genuine, unresolved near-tie (2-2 replicate split) —
+not forcing a label change on it. Awaiting `06_tools__var_standard`'s re-grade before drawing
+conclusions about the temperature-sensitivity-of-deep finding or the `INSTANCE_CAP` question.
+
+## 31. Second re-grade: 06_tools__var_standard — a contrast case, not a replication
+
+**Result:** `r_w = {skip:0.372, light:0.502, standard:0.581, deep:0.565}`, oracle=`deep`, margin
+=-0.0159 (near-tie band=[standard, deep]) — deep was picked via secondary-signal tie-break even
+though `standard` (0.5813) is the raw R_w leader over `deep` (0.5654). Directionally consistent with
+the old Gemini/binary result (also `deep`, margin -0.0046) — this article's standard-vs-deep
+contest, unlike 09_RAG's light/standard/deep compression, was **not** dramatically reshaped by the
+enhancement fix; light (0.502) stays clearly behind both.
+
+**Replicates: clean 3-1, not a tie.** All 3 temp=0.25 replicates agree with each other (all →
+`standard`) and disagree with the original's tie-break-selected `deep`: replicate margins +0.006,
++0.089, +0.020, all favoring `standard`. Majority across all 4 draws (1 original + 3 replicates):
+**standard 3, deep 1** — unlike 09_RAG's genuine 2-2 deadlock, this resolves cleanly per the §23/§27
+decision rule. **Recommendation: relabel `06_tools__var_standard`'s oracle_arm from `deep` to
+`standard`** — the original's `deep` pick came from a secondary-signal tie-break on an already-thin
+margin (standard was the raw leader even in the original single draw), and 3 independent replicates
+confirm `standard` is the more robust answer, not an artifact of a single noisy draw.
+
+**Hypothesis check #1 — "deep degrades at temperature 0.25" (from §30): does NOT replicate.**
+deep's aggregate reward barely moves (0.565→0.556 mean across replicates, essentially flat), and
+per-section changes are a **mix** of increases and decreases (S3 0.41→0.52 up, S5 0.535→0.57 up, S7
+0.93→0.77 down, others roughly flat) — nothing resembling 09_RAG's uniform, often-negative collapse
+across every section. **Retracting that hypothesis as a general pattern**: it was most likely
+specific to 09_RAG's own exploration content (its "Agentic RAG"/"Advanced RAG Techniques" material
+may simply be harder to integrate coherently at lower temperature), not a general
+temperature×deep-arm interaction. What actually flipped 06_tools's label is far more mundane:
+`standard` modestly improved (0.581→0.598) while `deep` stayed flat — enough to tip an
+already-razor-thin, tie-break-decided margin. This is consistent with (not a new contradiction of)
+Part 4's general finding that meaningful write-content noise persists even at reduced temperature.
+
+**Hypothesis check #2 — is `INSTANCE_CAP=3` generally too low? Mixed evidence, cuts against a quick
+fix.** Diagnostic tags for `06_tools__var_standard` (read directly from `reasoning.json`):
+
+| Section (depth) | light | standard | deep |
+|---|---|---|---|
+| Understanding Why Agents Need Tools | 0 | 2 strong → 0.80 | 0 |
+| Implementing Tool Calls from Scratch | 0 | 0 | 2 strong → 0.80 |
+| Implementing a Tool Calling Framework | 0 | 0 | 3 strong → **1.00** (exactly at cap — nothing discarded) |
+| Production-Level Tool Calls w/ Gemini | 0 | 0 | 1 strong → 0.55 |
+| Pydantic Models as Tools | 0 | 0 | 1 strong → 0.55 |
+| Downsides of Running Tools in a Loop | 3 strong → **1.00** | 2 strong → 0.80 | 3 strong → **1.00** |
+
+Unlike 09_RAG (where deep's real 4th instance in "Advanced RAG Techniques" was discarded by the
+cap), deep never exceeds 3 in any section here — `INSTANCE_CAP` is simply not the limiting factor
+for this article. What separates deep/standard from light instead is **breadth of sections touched**
+(deep qualifies in 5/9 sections, standard in 2/9, light in only 1/9, where it actually ties deep's
+1.00). Two articles, two different limiting mechanisms for their near-ties. This reinforces last
+turn's caution rather than resolving it: `INSTANCE_CAP` is not a universal bottleneck across
+articles, so raising it is not obviously the right lever in general — it would help 09_RAG's specific
+case and do nothing for 06_tools's. Any cap change still needs evaluation across many more
+re-graded articles, not these 2.
+
+**Updated status after both re-grades:**
+- `09_RAG__var_standard`: genuine unresolved near-tie (2-2 split) — leave as `needs_review`, no label
+  change forced.
+- `06_tools__var_standard`: clean correction available — relabel oracle_arm `deep` → `standard` per
+  the 3-1 majority.
+- The "temperature hurts deep" hypothesis from §30 is retracted as a general claim; it does not
+  generalize beyond 09_RAG on this n=2 sample.
+- The `INSTANCE_CAP` question remains genuinely open — the two articles hit different bottlenecks,
+  so no change to `enhancement_reward.py`'s constants is warranted from this data alone.
+
+## 32. `cost` vs. `explore` multiplier: which lever should encode "exploration quality was underrated"?
+
+**Motivating observation (user, reading actual generated articles):** the depth/breadth enhancement
+instances found during grading are qualitatively better than expected — prompting the question of
+whether the `cost` coefficient (`-0.06 * nr` in `_section_reward`) should be reduced to make
+exploration more attractive.
+
+**Verified with a real sensitivity sweep (no re-grading — pure recompute from the already-graded
+09_RAG/06_tools data) that `cost` is the wrong lever for this specific motivation.** `cost` is
+purely mechanical: reducing its magnitude shifts every arm's reward by *exactly*
+`Δcost_coef × nr`, independent of content:
+
+| `cost_coef` | 09_RAG R_w (skip/light/standard/deep) | 06_tools R_w (skip/light/standard/deep) |
+|---|---|---|
+| -0.06 (current) | 0.372 / 0.397 / 0.391 / 0.392 | 0.372 / 0.502 / 0.581 / 0.565 |
+| -0.03 | 0.372 / 0.427 / 0.451 / **0.482** | 0.372 / 0.532 / 0.641 / **0.655** |
+| 0.00 | 0.372 / 0.457 / 0.511 / **0.572** | 0.372 / 0.562 / 0.701 / **0.745** |
+
+`skip` (nr=0) is bit-identical across every value, confirming the shift is pure round-count
+arithmetic, not a response to whether a given episode's exploration was actually well-integrated or
+mediocre. `cost` cannot distinguish "this deep episode found genuinely great content" from "this
+deep episode found forgettable content" — it uniformly favors more rounds regardless.
+
+**The content-sensitive alternative — raising the `explore` multiplier (currently 0.50, i.e.
+`explore = cp*(0.60*de+0.40*be)*explore_mult`)** — was tested the same way:
+
+| `explore_mult` | 09_RAG R_w | 06_tools R_w |
+|---|---|---|
+| 0.50 (current) | 0.372 / 0.397 / 0.391 / **0.392** | 0.372 / 0.502 / 0.581 / **0.565** |
+| 0.65 | 0.372 / 0.434 / 0.437 / **0.446** | 0.372 / 0.515 / 0.629 / **0.629** |
+| 0.80 | 0.372 / 0.471 / 0.482 / **0.501** | 0.372 / 0.528 / 0.676 / **0.693** |
+
+This also shifts standard/deep upward, but the shift is driven by each episode's actual
+`(count, quality)` enhancement tags via `enhancement_credit()` — it responds to genuine content
+differences (as evidenced by it *not* moving `skip` either, since skip has zero enhancement content
+by construction), unlike `cost`'s uniform per-round arithmetic.
+
+**Recommendation: if the underlying belief is "exploration content is better than the formula
+credits," encode that via `enhancement_reward.py`'s curve or the `explore` multiplier — not
+`cost`.** `cost` represents research effort/opportunity cost, a different concept from content
+value, and lowering it risks making the model default toward more rounds uniformly regardless of
+whether a specific article's guideline+goldens actually call for it. Same caution as §26/§31: n=2
+articles is not a sufficient basis to commit to either change yet — this sweep is informative, not a
+decision. Both levers are equally cheap to re-test (no re-grading needed) once more articles are
+re-graded.
+
+## 33. Persistent noise at temperature 0.25 — verified, and an honest gap in the evidence
+
+**Verified the coefficient-of-variation (std/mean of the replicate margin distribution) for both
+re-graded articles:** `09_RAG__var_standard` mean=+0.104, std=0.078 → **CV=75%**;
+`06_tools__var_standard` mean=+0.038, std=0.045 → **CV=116%**. Both genuinely large relative to
+their means, confirming substantial residual stochasticity even at the reduced temperature.
+
+**A gap this exposes: we have never directly measured noise at temperature 0.7 with the same
+controlled methodology (fixed `research.md`, N replicates) to compare against.** The belief that
+0.25 reduces noise relative to 0.7 rests on *indirect* evidence — Part 4's mixed-depth pilots, which
+showed large swings at 0.7 but also used fresh exploitation research each time, confounding
+writer-noise with content-source noise. We assumed a reduction; we never quantified it directly.
+What this experiment's design *does* give cleanly: fixed `research.md`/`.research` across all 3
+replicates plus near-deterministic grading isolates writer-sampling-noise as the only varying
+factor, so the 75%/116% CVs are a real, clean measurement of the residual noise floor **at 0.25**
+specifically — just not a before/after comparison against 0.7.
+
+**Reframed justification for using 0.25 despite the persistent noise:** the plan was never
+"temperature reduction eliminates noise" — it was always **replicate + aggregate** (§20 fix #3/#4),
+the same logic RL/GRPO relies on generally for noisy rewards. Temperature reduction's role is to
+make that replication cheaper/more sample-efficient (if variance is genuinely lower, fewer draws
+are needed for a stable estimate) and to reduce the frequency of pathological single-draw outcomes
+(some 0.25 replicates still hit negative raw section rewards for `deep` in 09_RAG — even 0.25
+doesn't fully prevent this, but a direct comparison would be needed to know whether 0.7 produces it
+more often).
+
+**Decision: the direct 0.7-vs-0.25 controlled replicate comparison is NOT being run.** Cost
+estimated at $100+ (full write + grade + manual grading correction per replicate), and the user has
+decided this isn't worth spending given the other open questions already competing for budget. This
+is a deliberate, cost-based call, not an oversight — recorded here so the gap is documented as a
+**known, accepted limitation** rather than a forgotten TODO: we do not have direct evidence that
+0.25 reduces noise relative to 0.7, only indirect evidence (Part 4) and a plausible general prior
+(lower temperature reduces LLM sampling variance). If a cheaper way to probe this becomes available
+later — e.g. a write-only (no grading) structural-similarity comparison across multiple 0.7 vs 0.25
+drafts, skipping the expensive LLM-judge step entirely — it would be worth revisiting opportunistically,
+but is not being pursued now.
+
+## 34. Reward-formula sweep tool + a counter-intuitive result: naive cap-extension backfires
+
+Built `research_agent_local/training/sweep_reward_formula.py` — a reusable, read-only tool that
+recomputes R_w/margin for named reward-formula variants (cost_coef, explore_mult, quality_weight,
+instance_cap, credit_curve/exp_k) directly from already-graded `reasoning.json`, at **zero
+re-grading cost**. `baseline` reproduces the real production numbers exactly (09_RAG
+0.372/0.397/0.391/0.392, 06_tools 0.372/0.502/0.581/0.565), confirming the reimplementation is
+faithful. Four named candidates were defined to make §32's "which lever" question concrete:
+
+| Candidate | Change | Hypothesis |
+|---|---|---|
+| A `extended_ladder_cap5` | `INSTANCE_CAP` 3→5, ladder `{0:0,1:.55,2:.80,3:.93,4:.98,5:1.00}` | Recover 09_RAG's discarded-4th-instance credit |
+| B `smooth_exp_k055_cap8` | `credit(n)=1-(1-0.55)^n`, cap raised to 8 (computational bound only) | Should returns diminish forever, never hard-cap at exactly 1.0? |
+| C `higher_standard_weight` | `QUALITY_WEIGHT["standard"]` 0.65→0.80 | Is "standard"-tier content underweighted relative to "strong"? |
+| D `explore_065`/`explore_080` | `explore_mult` 0.50→0.65/0.80 | Should exploration count for more overall, regardless of granular count/quality? |
+
+**Result — A and B actively backfire in both re-graded articles, opposite of intent:**
+
+| | 09_RAG `deep` R_w | 06_tools `deep` vs `standard` |
+|---|---|---|
+| baseline | 0.3918 | 0.5654 vs 0.5813 (margin 0.016 to standard) |
+| extended_ladder_cap5 | **0.3860** (↓) | **0.5591** (↓, margin to standard *widens* to 0.022) |
+| smooth_exp_k055_cap8 | **0.3871** (↓) | **0.5585** (↓) |
+
+**Mechanism (worked out from the actual numbers, not assumed):** any monotonic curve bounded at
+1.0 that extends past the old cap must lower the value *at* the old cap to make room above it (e.g.
+tier-3 drops from a flat 1.00 to ~0.93). That only pays off for sections that genuinely *exceed* the
+old cap. But in both real articles, `deep`'s advantage comes mostly from hitting **exactly** 3
+instances in *multiple* sections (09_RAG's "Agentic RAG"; 06_tools's "Tool Calling Framework" and
+"Downsides") — only one section across both articles (09_RAG's "Advanced RAG Techniques") actually
+has a 4th instance to recover. The dilution across the many exactly-capped sections outweighs the
+recovery in the one section that needed it, netting `deep` *lower* overall in both cases tested.
+**Conclusion: do not pursue the cap/ladder-extension family as specified** — it does not do what it
+sounds like it should, based on real data, unless a future article shows *many* sections genuinely
+exceeding 3 (not just one), which would change the balance.
+
+**Candidate C (quality-weight) — modest, does not backfire:** 09_RAG's raw-argmax flips to `deep`
+(barely, margin 0.0007); 06_tools's `standard` lead narrows ~15% (0.0159→0.0134) without reversing.
+Gentler than the cap approach since it only reweights already-counted instances — no
+cap-interaction side effect to worry about.
+
+**Candidate D (explore_mult) — most consistently effective, but coarsest:** confirms §32's earlier
+finding; at 0.65 alone it makes 06_tools a near-exact tie (0.6287 vs 0.6290) and flips 09_RAG's
+raw-argmax to `deep` (margin 0.0098).
+
+**Non-obvious interaction found:** `cap5_plus_explore_065` (A+D combined) gives a *smaller*
+deep-favoring margin than `explore_065` alone in both articles — the cap-extension's harm eats into
+the explore-multiplier's benefit. The two levers are not independent; combinations need testing
+together, not assumed additive.
+
+**Overall recommendation:** based on real (not assumed) sensitivity data, **C and D are the
+levers worth pursuing further** if the goal is crediting exploration content more generously — D is
+the blunter/stronger tool, C the more surgical one, and neither backfires the way A/B do. Still n=2
+articles — this informs which direction is *plausible*, not a decision to commit to any specific
+value yet. `sweep_reward_formula.py` is reusable for testing new candidates as more articles are
+re-graded, with zero additional API cost.
+
+## 35. Full C×D grid (5×4=20 cells) — explore_mult systematically overturns the confirmed-correct label; quality-weight alone does not
+
+Extended `sweep_reward_formula.py` with a programmatic grid crossing `explore_mult ∈
+{0.50,0.60,0.70,0.80,0.90}` × standard-tier `quality_weight ∈ {0.65,0.75,0.85,0.95}` (20 cells), plus
+a summary (winner/margin delta vs baseline) and a cross-article-agreement view. User ran the full
+grid on both re-graded articles and shared the output (`sweep_20260716_130041.txt`).
+
+**Critical asymmetry the analysis must respect:** the two test articles are NOT equally informative.
+`06_tools__var_standard` has a **confirmed-correct label** — §31's real Claude re-grade gave a clean
+3-1 replicate majority for `standard` (that's the whole reason the enhancement-ceiling fix
+downgraded it from `deep`). `09_RAG__var_standard` does **not** — §30 found a genuine, unresolved
+3-way near-tie (2-2 replicate split). This means: **06_tools's label stability under a lever change
+is real evidence; 09_RAG's is not** (a flip there is neither confirmed right nor wrong, since the
+underlying question was never resolved).
+
+**06_tools (ground truth = `standard`): robust to C, fragile to D.**
+
+| Lever change (explore=0.50 fixed) | `standard` R_w | margin vs `deep` |
+|---|---|---|
+| baseline (stdw=0.65) | 0.5813 | +0.0159 |
+| stdw=0.75 | 0.5813 | +0.0142 |
+| stdw=0.85 | 0.5813 | +0.0125 |
+| stdw=0.95 | 0.5813 | +0.0108 |
+
+Quality-weight alone never flips the winner even at its most aggressive tested value — `standard`'s
+own R_w doesn't move at all (0.65→0.95 only reweights *within* an arm's own instances; 06_tools's
+`standard`-arm sections apparently have no "standard"-tier-quality instances mixed in, only
+`deep`'s does, so raising the weight only inflates `deep`'s R_w, narrowing but not closing the gap).
+
+| Lever change (stdw=0.65 fixed) | `standard` R_w | `deep` R_w | margin | winner |
+|---|---|---|---|---|
+| baseline (explore=0.50) | 0.5813 | 0.5654 | +0.0159 | standard |
+| explore=0.60 | 0.6129 | 0.6078 | +0.0051 | standard |
+| explore=0.70 | 0.6445 | 0.6502 | +0.0057 | **deep** |
+| explore=0.90 | 0.7076 | 0.7349 | +0.0274 | **deep** |
+
+`explore_mult` alone flips the confirmed-correct answer as early as 0.70, and the margin *in favor
+of the wrong answer* only grows from there (up to +0.0366 at the grid's most aggressive corner,
+explore=0.90/stdw=0.95). **This directly reverses the enhancement-ceiling fix's own correction** —
+raising `explore_mult` re-inflates `deep` past `standard` via the same mechanical pathway the ceiling
+bug used to inflate it, just from a different angle (blanket multiplier vs. binary cap).
+
+**09_RAG (unconfirmed near-tie): fragile to both, but uninterpretable.** Baseline already picks
+`light` by a similarly razor-thin margin (+0.0051, consistent with §30's near-tie finding). It flips
+to `deep` as early as stdw=0.85 alone, and unconditionally once explore≥0.60. Since the true answer
+here was never established (2-2 replicate split), neither direction can be scored as an improvement
+or a regression from this data alone.
+
+**Why the tool's own "cross-article agreement" heuristic is actively misleading here:** the grid's
+`[AGREE]` zone (explore≥0.60 with stdw=0.95, or explore≥0.70 unconditionally — 13 of 20 cells) is
+exactly the region where 06_tools flips away from its *confirmed-correct* label. Agreement between
+two articles is only meaningful evidence in the *absence* of independent ground truth on either one
+— once one article has a confirmed-correct answer (06_tools does), that article's own label
+stability is the binding constraint, and should be checked directly rather than via the
+cross-article-agreement proxy. Recorded here as a lesson for future use of this tool.
+
+**Mechanism (traced from the formula, not assumed):** `explore_mult` multiplies
+`cp*(0.60*de+0.40*be)` per arm, and each arm's `de`/`be` come from a *different episode* (more
+exploration rounds → structurally larger raw de/be before any capping fix is applied). `deep`'s
+episode has the largest raw de/be in both articles simply because it did the most exploration —
+so scaling `explore_mult` up amplifies whichever arm already leads on that axis, which is `deep` in
+both cases tested. It doesn't reason about whether that arm's *credited* instances are genuinely
+strong (that's what the count/quality-cap fix and candidate C already handle) — it's a blunt,
+per-arm-blind multiplier that happens to structurally favor the highest-effort arm every time.
+
+**Revised recommendation:** do **not** increase `explore_mult` above the current production value
+(0.50) — the grid shows, with real confirmed-ground-truth data, that doing so systematically
+overturns the fix this whole investigation was built to make. Quality-weight (candidate C) is safer
+within the tested range (never flips 06_tools's confirmed answer) but still erodes its margin
+monotonically (32% shrinkage by stdw=0.95), so treat it as a lever to move cautiously/incrementally
+if at all, not as a free win. **Net conclusion: current production defaults (explore_mult=0.50,
+standard-tier quality_weight=0.65) remain the best-supported choice** given the one confirmed
+ground-truth data point available; nothing in this grid provides evidence to change them. This
+should be revisited once more articles are re-graded and confirmed (not just re-graded — confirmed
+via replicate majority, as 06_tools was), since n=1 confirmed article is a thin basis for a
+permanent decision.

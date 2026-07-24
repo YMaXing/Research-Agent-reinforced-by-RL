@@ -1,4 +1,4 @@
-# Methods and Strategies for Building and Refining Reasoning Models
+    # Methods and Strategies for Building and Refining Reasoning Models
 
 Reasoning models are the key LLM specialization trend for 2025. This evolution extends beyond patterns we already know, such as Retrieval-Augmented Generation (RAG) and domain-specific fine-tuning. Instead of just injecting knowledge, reasoning specialization targets the emergence of robust, multi-step logical capabilities, allowing models to *think* rather than just *know*. This focus on the process of deduction enables them to tackle complex tasks like mathematical proofs, logical puzzles, and competitive programming that were previously out of reach.![Figure 1: Stages 1-3 are the common steps to developing LLMs. Stage 4 specializes LLMs for specific use cases.](https://substackcdn.com/image/fetch/$s_!QwUc!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fd6ebc5c9-461f-4d3a-889b-b8ea4e14e5ba_1600x830.png)
 
@@ -71,7 +71,7 @@ Figure 7: Different search-based methods rely on a process-reward-based model to
 
 Interestingly, the DeepSeek-R1 paper categorizes PRMs and MCTS under "unsuccessful attempts," stating that the computational overhead they introduce during large-scale RL outweighs their benefits in their experiments [[5]](https://www.nature.com/articles/s41586-025-09422-z). This does not mean these methods are useless. It suggests that for their specific training setup, the trade-off was not favorable. DeepSeek may still use these techniques at the application layer, even if they were not part of the core training loop.
 
-This brings us to the high cost of some reasoning models. OpenAI's o1 models, for instance, are more expensive than GPT-4o [[13]](https://neoteric.eu/blog/gpt-o1-vs-gpt-4o-comparison). The o1 model costs $60 per million output tokens, compared to $10 for GPT-4o. This price difference is likely due to the heavy inference-time compute o1 uses to "think" longer, a strategy that can lead to "overthinking." This involves expending excessive computation on simple problems [[14]](https://www.vellum.ai/blog/analysis-openai-o1-vs-gpt-4o), [[10]](https://arxiv.org/abs/2408.03314).
+This brings us to the high cost of some reasoning models. OpenAI's o1 models, for instance, are more expensive than GPT-4o [[13]](https://neoteric.eu/blog/gpt-o1-vs-gpt-4o-comparison). The o1 model costs $60 per million output tokens, compared to \$10 for GPT-4o. This price difference is likely due to the heavy inference-time compute o1 uses to "think" longer, a strategy that can lead to "overthinking." This involves expending excessive computation on simple problems [[14]](https://www.vellum.ai/blog/analysis-openai-o1-vs-gpt-4o), [[10]](https://arxiv.org/abs/2408.03314).
 
 ### Pure reinforcement learning (RL)
 

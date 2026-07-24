@@ -9,13 +9,19 @@ from typing import Any, cast
 
 from opik.evaluation.metrics import score_result
 
-from brown.evals.metrics.base import BrownBaseMetric
-from brown.models import ModelConfig, SupportedModels, get_model
+from brown.evals.metrics.base import BrownBaseMetric, CriterionScore
+from brown.models import ModelConfig, SupportedModels, get_model, structured_output_kwargs
 
 from . import prompts
 from .types import (
     CorePreservationArticleScores,
     FollowsGTArticleScores,
+)
+
+_NO_EXPLORATION_SOURCES_REASON = (
+    "[instances=0] No exploration-phase sources were gathered for this episode, so this score is mandated to 0: "
+    "depth_enhancement and breadth_enhancement only credit additions traceable to an exploration-phase "
+    "source, and none exist to trace to."
 )
 
 
@@ -127,7 +133,9 @@ class FollowsGTMetric(BrownBaseMetric):
         # Pass 1: evaluate the five independent criteria. The SYSTEM_PROMPT does not include the
         # CorePreservation criterion definition, so the LLM's core_preservation output here is a
         # placeholder that will be overwritten by pass 2.
-        pass1_client = get_model(self.model, self.model_config).with_structured_output(FollowsGTArticleScores)
+        pass1_client = get_model(self.model, self.model_config).with_structured_output(
+            FollowsGTArticleScores, **structured_output_kwargs(self.model)
+        )
         pass1_query = prompts.get_eval_prompt(
             output=output,
             expected_output=expected_output,
@@ -149,10 +157,25 @@ class FollowsGTMetric(BrownBaseMetric):
         if not pass1_response:
             raise ValueError("Model failed to return a structured response for pass 1.")
 
+        # Hard mandate (code-level, not just prompt-level): depth_enhancement and breadth_enhancement
+        # only credit additions traceable to an exploration-phase source. When no exploration sources
+        # were gathered for this episode, no instance can ever be traceable, so both scores must be 0
+        # regardless of what the judge model returned. This is enforced here rather than relying solely
+        # on prompt instructions, since an LLM judge can still mis-score despite explicit instructions.
+        # Applied BEFORE the core-preservation pass so pass 2 sees the corrected (zeroed) scores as context.
+        if not exploration_sources:
+            for section in pass1_response.sections:
+                if section.scores.depth_enhancement.score != 0:
+                    section.scores.depth_enhancement = CriterionScore(score=0, reason=_NO_EXPLORATION_SOURCES_REASON)
+                if section.scores.breadth_enhancement.score != 0:
+                    section.scores.breadth_enhancement = CriterionScore(score=0, reason=_NO_EXPLORATION_SOURCES_REASON)
+
         # Pass 2: evaluate core_preservation with the finalised depth/breadth scores as context.
         # Sequential execution guarantees the judge builds on the actual pass-1 enhancement scores
         # regardless of whether they are 0 or 1.
-        core_pres_client = get_model(self.model, self.model_config).with_structured_output(CorePreservationArticleScores)
+        core_pres_client = get_model(self.model, self.model_config).with_structured_output(
+            CorePreservationArticleScores, **structured_output_kwargs(self.model)
+        )
         core_pres_query = prompts.get_core_preservation_prompt(
             output=output,
             expected_output=expected_output,

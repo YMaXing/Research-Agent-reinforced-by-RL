@@ -6,6 +6,7 @@ multiple dimensions with structured output.
 """
 
 import abc
+import json
 from typing import Annotated, Any, Generic, TypeVar
 
 import pydantic
@@ -14,7 +15,7 @@ from langchain_core.runnables import Runnable
 from opik.evaluation.metrics import base_metric, score_result
 from pydantic import BaseModel
 
-from brown.models import ModelConfig, SupportedModels, get_model
+from brown.models import ModelConfig, SupportedModels, get_model, structured_output_kwargs
 from brown.utils import a
 
 FewShotExamplesT = TypeVar("FewShotExamplesT", bound=BaseModel)
@@ -22,6 +23,24 @@ MockedResponseT = TypeVar("MockedResponseT", bound=BaseModel)
 
 CriteriaScoresT = TypeVar("CriteriaScoresT", bound="CriteriaScores")
 ExampleT = TypeVar("ExampleT", bound="BaseExample")
+
+
+def _parse_leading_json(text: str) -> Any | None:
+    """Parse a JSON value from the start of `text`, ignoring any trailing content.
+
+    Anthropic Claude's structured output has been observed to return a `sections`
+    string like `'{"sections": [...]} Let me format this properly as JSON.'` --
+    valid JSON followed by stray natural-language commentary that makes a plain
+    `json.loads()` fail. `json.JSONDecoder.raw_decode` parses only the leading
+    JSON value and reports where it ends, ignoring everything after it.
+
+    Returns:
+        The parsed JSON value, or None if no valid JSON could be parsed from the start.
+    """
+    try:
+        return json.JSONDecoder().raw_decode(text.strip())[0]
+    except json.JSONDecodeError:
+        return None
 
 
 class CriterionAggregatedScore(pydantic.BaseModel):
@@ -131,7 +150,51 @@ class SectionCriteriaScores(pydantic.BaseModel, Generic[CriteriaScoresT]):
 """
 
 
-class ArticleScores(pydantic.BaseModel, Generic[CriteriaScoresT]):
+class SectionsCoercionMixin(pydantic.BaseModel):
+    """Mixin providing defensive normalization for any model with a `sections` field.
+
+    Anthropic Claude's tool-calling structured output has been observed to mangle a
+    `sections: list[...]` field in several ways across calls, all of which raise a
+    pydantic `list_type` error:
+      1. Serializing the entire array as a single JSON-encoded string instead of a
+         native nested array.
+      2. Double-wrapping it as `{"sections": {"sections": [...]}}` instead of
+         `{"sections": [...]}`.
+      3. A JSON string with trailing prose appended, e.g.
+         `'{"sections": [...]} Let me format this properly as JSON.'`.
+
+    Any pydantic model with a top-level `sections` field intended for structured-output
+    parsing should inherit from this mixin (in addition to any Generic bases) to get this
+    normalization for free.
+    """
+
+    @pydantic.model_validator(mode="before")
+    @classmethod
+    def _coerce_sections(cls, data: Any) -> Any:
+        """Defensively normalize the `sections` field before validation."""
+        if not isinstance(data, dict):
+            return data
+
+        sections = data.get("sections")
+
+        if isinstance(sections, str):
+            parsed = _parse_leading_json(sections)
+            if parsed is None:
+                return data
+            sections = parsed
+
+        # Unwrap repeated {"sections": ...} wrapping (observed up to one level deep,
+        # but loop defensively in case a future response nests it further).
+        while isinstance(sections, dict) and "sections" in sections:
+            sections = sections["sections"]
+
+        if sections is not data.get("sections"):
+            data = {**data, "sections": sections}
+
+        return data
+
+
+class ArticleScores(SectionsCoercionMixin, Generic[CriteriaScoresT]):
     """Base class for article evaluation containing multiple sections with dimension-wise scoring.
 
     This model represents the evaluation results for an article, where each section is evaluated
@@ -390,7 +453,7 @@ class BrownBaseMetric(base_metric.BaseMetric, Generic[FewShotExamplesT, MockedRe
 
         """
         model_instance = get_model(self.model, self.model_config)
-        model_instance = model_instance.with_structured_output(self.structured_output_type)
+        model_instance = model_instance.with_structured_output(self.structured_output_type, **structured_output_kwargs(self.model))
 
         return model_instance
 

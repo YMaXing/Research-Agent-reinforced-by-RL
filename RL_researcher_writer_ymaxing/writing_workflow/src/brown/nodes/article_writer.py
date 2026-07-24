@@ -73,6 +73,19 @@ class ArticleWriter(Node):
     that bridges into the next section as part of any length-trimming step — section-closing
     transition sentences are protected content.
   - Confirm that every factual claim traceable to a research source carries a citation.
+  - **Golden and exploitation citation completeness** *(applies on every pass, including the core
+    article draft — do not skip this one):* Scan every paragraph that contains a fact, data point,
+    example, or claim drawn from a golden source (`<golden_source>` in Format B, or golden-tagged
+    content in the Format A deduplicated body) or an exploitation-phase source
+    (`<research_source phase="exploitation">` in Format B, or exploitation-tagged content in the
+    Format A deduplicated body). Every such sentence or passage MUST end with an inline citation
+    `[[N]](url)` pointing to that source. A golden- or exploitation-sourced claim without a citation
+    must be either cited immediately (by assigning the next available citation identifier and adding
+    the source to the References section) or rewritten to rely only on already-cited material —
+    uncited golden or exploitation content is indistinguishable from hallucinated content and is
+    never acceptable, exactly like the exploration case below. Golden and exploitation sources are
+    the highest-priority, most heavily-used tiers, so this check typically has the most instances
+    to verify — do not let its volume cause it to be skimmed.
   - **Exploration citation completeness** *(skip this check during the core article draft pass — it
     applies only after exploration sources have been integrated):* Scan every paragraph that contains
     content drawn from an exploration-phase source. Every such sentence or passage MUST end with an
@@ -488,8 +501,14 @@ Your output must satisfy all of the following:
 - **Citations:** Every factual claim drawn from the `<research>` must be cited following the citation
   rules in the `<structure_profile>`. Common-knowledge statements may be left uncited, but any claim
   a reader would want to verify — or that derives directly from a golden, exploitation, or exploration
-  source — must carry a `[[N]](url)` reference. This applies equally to all research tiers. Err on
-  the side of citing rather than omitting when a claim is clearly traceable to a provided source.
+  source — must carry a `[[N]](url)` reference. This applies equally to all research tiers, without
+  exception: golden-source and exploitation-source content is used the most heavily throughout the
+  article, so it must never be assumed "safe to leave uncited" just because it is highest-priority —
+  highest-priority sourcing makes citing it more important, not less. Err on the side of citing rather
+  than omitting when a claim is clearly traceable to a provided source. As you write each section,
+  cite golden and exploitation facts inline in the same sentence or clause where you state them —
+  do not defer citing them to a later cleanup pass, and never let a paragraph built from golden or
+  exploitation material reach the end of the section without its `[[N]](url)` markers already in place.
   **First-person anecdotes are not exempt.** If you adapt a story, scenario, or experience drawn
   from a research source into first-person "we" voice as a narrative hook, you must still cite the
   original source. Rewriting content into the course voice does not make it uncitable; an uncited

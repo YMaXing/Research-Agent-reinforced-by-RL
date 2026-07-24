@@ -190,6 +190,7 @@ async def run_pipeline(
     dry_run: bool = False,
     max_concurrent: int = DEFAULT_CONCURRENCY,
     test_mode: bool = False,
+    episodes_dir_override: Path | None = None,
 ) -> None:
     """Run the writing pipeline across all requested episodes.
 
@@ -198,8 +199,12 @@ async def run_pipeline(
         preset_ids: Preset IDs 0-3 (default: all 4).
         dry_run: Print plan without executing.
         test_mode: Use held-out test articles and TEST_EPISODES_DIR.
+        episodes_dir_override: If set, read/write episodes here instead of the default
+            EPISODES_DIR/TEST_EPISODES_DIR — used for noise-measurement replicate
+            experiments (see training/audit_oracle_margins.py + noise-experiment tooling)
+            without touching real production episode directories.
     """
-    episodes_dir = TEST_EPISODES_DIR if test_mode else EPISODES_DIR
+    episodes_dir = episodes_dir_override or (TEST_EPISODES_DIR if test_mode else EPISODES_DIR)
     default_articles = TEST_ARTICLES if test_mode else TRAIN_ARTICLES
     arts = list(articles or default_articles)
     pids = sorted(set(preset_ids if preset_ids is not None else range(N_PRESETS)))
@@ -292,6 +297,14 @@ def main() -> None:
         help="Use held-out test articles and test_episodes/ output directory",
     )
     parser.add_argument(
+        "--episodes-dir",
+        type=Path,
+        default=None,
+        dest="episodes_dir",
+        help="Override the episodes root directory (default: rl_training_data/episodes or "
+        "test_episodes/ with --test). Used for noise-measurement replicate experiments.",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Show execution plan without running",
@@ -325,6 +338,7 @@ def main() -> None:
             dry_run=args.dry_run,
             max_concurrent=args.concurrency,
             test_mode=args.test,
+            episodes_dir_override=args.episodes_dir,
         )
     )
 

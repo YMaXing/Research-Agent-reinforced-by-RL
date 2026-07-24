@@ -9,6 +9,8 @@ from langchain_core.language_models import BaseChatModel
 from brown.config import get_settings
 
 from .config import (
+    ANTHROPIC_NO_TEMPERATURE_MODELS,
+    ANTHROPIC_UNSUPPORTED_PARAMS,
     DEFAULT_MODEL_CONFIGS,
     GOOGLE_ONLY_PARAMS,
     ModelConfig,
@@ -25,6 +27,7 @@ MODEL_TO_REQUIRED_API_KEY = {
     SupportedModels.XAI_GROK_430: "XAI_API_KEY",
     SupportedModels.XAI_GROK_420: "XAI_API_KEY",
     SupportedModels.XAI_GROK_41_FAST: "XAI_API_KEY",
+    SupportedModels.ANTHROPIC_CLAUDE_SONNET: "ANTHROPIC_API_KEY",
 }
 
 
@@ -106,6 +109,17 @@ def get_model(model: SupportedModels, config: ModelConfig | None = None) -> Base
             return FakeModel(responses=[])
 
     config = config or DEFAULT_MODEL_CONFIGS.get(model) or ModelConfig()
+
+    # If the caller passed an explicit config that doesn't set max_output_tokens, fall back
+    # to the model's registered default rather than leaving it unset. This matters for
+    # Anthropic models: langchain-anthropic derives its own max_tokens default from a local
+    # model-profile table that may not yet know about newer model IDs, silently falling back
+    # to a small 4096-token cap that truncates large structured-output responses.
+    if config.max_output_tokens is None:
+        default_for_model = DEFAULT_MODEL_CONFIGS.get(model)
+        if default_for_model and default_for_model.max_output_tokens is not None:
+            config = config.model_copy(update={"max_output_tokens": default_for_model.max_output_tokens})
+
     model_kwargs = {
         "model": model.value,
         **config.model_dump(),
@@ -119,6 +133,16 @@ def get_model(model: SupportedModels, config: ModelConfig | None = None) -> Base
         max_out = model_kwargs.pop("max_output_tokens", None)
         if max_out is not None:
             model_kwargs["max_tokens"] = max_out
+
+    # Anthropic's Messages API has no equivalent for `n` (multiple completions);
+    # passing it raises `AsyncMessages.create() got an unexpected keyword argument 'n'`.
+    if model.value.startswith("anthropic:"):
+        for key in ANTHROPIC_UNSUPPORTED_PARAMS:
+            model_kwargs.pop(key, None)
+        # Models with adaptive thinking always on manage sampling internally and reject
+        # an explicit `temperature` (400 invalid_request_error: deprecated for this model).
+        if model.value in ANTHROPIC_NO_TEMPERATURE_MODELS:
+            model_kwargs.pop("temperature", None)
 
     required_api_key = MODEL_TO_REQUIRED_API_KEY.get(model)
     if required_api_key:
@@ -136,3 +160,19 @@ def get_model(model: SupportedModels, config: ModelConfig | None = None) -> Base
                 model_kwargs["api_key"] = getattr(settings, required_api_key)
 
     return init_chat_model(**model_kwargs)
+
+
+def structured_output_kwargs(model: SupportedModels) -> dict[str, str]:
+    """Return the extra kwargs `with_structured_output()` should be called with for *model*.
+
+    Anthropic's default `with_structured_output` method ("function_calling") forces a tool
+    call and has been observed to unreliably encode nested `list[...]` fields for schemas
+    like ours (stringified JSON, double-wrapped objects, JSON with trailing prose -- see
+    `SectionsCoercionMixin`). Anthropic's dedicated `"json_schema"` structured-output method
+    uses native constrained decoding instead of tool-call argument encoding and avoids this
+    whole class of bug, so use it for all Anthropic models. Other providers keep their
+    default method.
+    """
+    if model.value.startswith("anthropic:"):
+        return {"method": "json_schema"}
+    return {}

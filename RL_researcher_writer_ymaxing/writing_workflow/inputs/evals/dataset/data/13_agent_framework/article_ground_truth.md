@@ -1,4 +1,4 @@
-# Lesson 13: Agent Frameworks Overview & Comparison
+# Lesson 13: Agen    Frameworks Overview & Comparison
 
 In the previous lesson, we introduced the two capstone projects we will build: an adaptable research agent and a reliable writing agent.
 

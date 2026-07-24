@@ -1,0 +1,144 @@
+====================================================================================================
+ARTICLE: 09_RAG__var_standard
+====================================================================================================
+  baseline                     raw_argmax=light    margin=+0.0051  R_w=[skip:0.3719  light:0.3969  standard:0.3913  deep:0.3918]
+  control_A_extended_ladder_cap5 raw_argmax=light    margin=+0.0110  R_w=[skip:0.3719  light:0.3969  standard:0.3853  deep:0.3860]
+  control_B_smooth_exp_k055_cap8 raw_argmax=light    margin=+0.0099  R_w=[skip:0.3719  light:0.3969  standard:0.3852  deep:0.3871]
+  grid_explore0.50_stdw0.65    raw_argmax=light    margin=+0.0051  R_w=[skip:0.3719  light:0.3969  standard:0.3913  deep:0.3918]
+  grid_explore0.50_stdw0.75    raw_argmax=light    margin=+0.0012  R_w=[skip:0.3719  light:0.3969  standard:0.3933  deep:0.3957]
+  grid_explore0.50_stdw0.85    raw_argmax=deep     margin=+0.0026  R_w=[skip:0.3719  light:0.3969  standard:0.3953  deep:0.3996]
+  grid_explore0.50_stdw0.95    raw_argmax=deep     margin=+0.0063  R_w=[skip:0.3719  light:0.3969  standard:0.3972  deep:0.4035]
+  grid_explore0.60_stdw0.65    raw_argmax=deep     margin=+0.0065  R_w=[skip:0.3719  light:0.4218  standard:0.4215  deep:0.4282]
+  grid_explore0.60_stdw0.75    raw_argmax=deep     margin=+0.0090  R_w=[skip:0.3719  light:0.4218  standard:0.4239  deep:0.4329]
+  grid_explore0.60_stdw0.85    raw_argmax=deep     margin=+0.0113  R_w=[skip:0.3719  light:0.4218  standard:0.4262  deep:0.4376]
+  grid_explore0.60_stdw0.95    raw_argmax=deep     margin=+0.0136  R_w=[skip:0.3719  light:0.4218  standard:0.4286  deep:0.4422]
+  grid_explore0.70_stdw0.65    raw_argmax=deep     margin=+0.0129  R_w=[skip:0.3719  light:0.4466  standard:0.4517  deep:0.4647]
+  grid_explore0.70_stdw0.75    raw_argmax=deep     margin=+0.0156  R_w=[skip:0.3719  light:0.4466  standard:0.4545  deep:0.4701]
+  grid_explore0.70_stdw0.85    raw_argmax=deep     margin=+0.0183  R_w=[skip:0.3719  light:0.4466  standard:0.4572  deep:0.4755]
+  grid_explore0.70_stdw0.95    raw_argmax=deep     margin=+0.0210  R_w=[skip:0.3719  light:0.4466  standard:0.4600  deep:0.4810]
+  grid_explore0.80_stdw0.65    raw_argmax=deep     margin=+0.0191  R_w=[skip:0.3719  light:0.4714  standard:0.4819  deep:0.5011]
+  grid_explore0.80_stdw0.75    raw_argmax=deep     margin=+0.0222  R_w=[skip:0.3719  light:0.4714  standard:0.4851  deep:0.5073]
+  grid_explore0.80_stdw0.85    raw_argmax=deep     margin=+0.0253  R_w=[skip:0.3719  light:0.4714  standard:0.4882  deep:0.5135]
+  grid_explore0.80_stdw0.95    raw_argmax=deep     margin=+0.0284  R_w=[skip:0.3719  light:0.4714  standard:0.4913  deep:0.5197]
+  grid_explore0.90_stdw0.65    raw_argmax=deep     margin=+0.0254  R_w=[skip:0.3719  light:0.4963  standard:0.5121  deep:0.5375]
+  grid_explore0.90_stdw0.75    raw_argmax=deep     margin=+0.0288  R_w=[skip:0.3719  light:0.4963  standard:0.5157  deep:0.5445]
+  grid_explore0.90_stdw0.85    raw_argmax=deep     margin=+0.0323  R_w=[skip:0.3719  light:0.4963  standard:0.5192  deep:0.5515]
+  grid_explore0.90_stdw0.95    raw_argmax=deep     margin=+0.0358  R_w=[skip:0.3719  light:0.4963  standard:0.5227  deep:0.5585]
+  D_only_explore_065           raw_argmax=deep     margin=+0.0098  R_w=[skip:0.3719  light:0.4342  standard:0.4366  deep:0.4464]
+  D_only_explore_080           raw_argmax=deep     margin=+0.0191  R_w=[skip:0.3719  light:0.4714  standard:0.4819  deep:0.5011]
+  C_only_stdw_080              raw_argmax=deep     margin=+0.0007  R_w=[skip:0.3719  light:0.3969  standard:0.3943  deep:0.3977]
+  control_A_plus_explore_065   raw_argmax=deep     margin=+0.0047  R_w=[skip:0.3719  light:0.4342  standard:0.4288  deep:0.4388]
+
+====================================================================================================
+ARTICLE: 06_tools__var_standard
+====================================================================================================
+  baseline                     raw_argmax=standard margin=+0.0159  R_w=[skip:0.3715  light:0.5022  standard:0.5813  deep:0.5654]
+  control_A_extended_ladder_cap5 raw_argmax=standard margin=+0.0222  R_w=[skip:0.3715  light:0.4991  standard:0.5813  deep:0.5591]
+  control_B_smooth_exp_k055_cap8 raw_argmax=standard margin=+0.0226  R_w=[skip:0.3715  light:0.4982  standard:0.5811  deep:0.5585]
+  grid_explore0.50_stdw0.65    raw_argmax=standard margin=+0.0159  R_w=[skip:0.3715  light:0.5022  standard:0.5813  deep:0.5654]
+  grid_explore0.50_stdw0.75    raw_argmax=standard margin=+0.0142  R_w=[skip:0.3715  light:0.5022  standard:0.5813  deep:0.5671]
+  grid_explore0.50_stdw0.85    raw_argmax=standard margin=+0.0125  R_w=[skip:0.3715  light:0.5022  standard:0.5813  deep:0.5688]
+  grid_explore0.50_stdw0.95    raw_argmax=standard margin=+0.0108  R_w=[skip:0.3715  light:0.5022  standard:0.5813  deep:0.5706]
+  grid_explore0.60_stdw0.65    raw_argmax=standard margin=+0.0051  R_w=[skip:0.3715  light:0.5109  standard:0.6129  deep:0.6078]
+  grid_explore0.60_stdw0.75    raw_argmax=standard margin=+0.0031  R_w=[skip:0.3715  light:0.5109  standard:0.6129  deep:0.6098]
+  grid_explore0.60_stdw0.85    raw_argmax=standard margin=+0.0010  R_w=[skip:0.3715  light:0.5109  standard:0.6129  deep:0.6119]
+  grid_explore0.60_stdw0.95    raw_argmax=deep     margin=+0.0011  R_w=[skip:0.3715  light:0.5109  standard:0.6129  deep:0.6140]
+  grid_explore0.70_stdw0.65    raw_argmax=deep     margin=+0.0057  R_w=[skip:0.3715  light:0.5196  standard:0.6445  deep:0.6502]
+  grid_explore0.70_stdw0.75    raw_argmax=deep     margin=+0.0081  R_w=[skip:0.3715  light:0.5196  standard:0.6445  deep:0.6526]
+  grid_explore0.70_stdw0.85    raw_argmax=deep     margin=+0.0105  R_w=[skip:0.3715  light:0.5196  standard:0.6445  deep:0.6550]
+  grid_explore0.70_stdw0.95    raw_argmax=deep     margin=+0.0129  R_w=[skip:0.3715  light:0.5196  standard:0.6445  deep:0.6574]
+  grid_explore0.80_stdw0.65    raw_argmax=deep     margin=+0.0165  R_w=[skip:0.3715  light:0.5283  standard:0.6760  deep:0.6926]
+  grid_explore0.80_stdw0.75    raw_argmax=deep     margin=+0.0193  R_w=[skip:0.3715  light:0.5283  standard:0.6760  deep:0.6953]
+  grid_explore0.80_stdw0.85    raw_argmax=deep     margin=+0.0220  R_w=[skip:0.3715  light:0.5283  standard:0.6760  deep:0.6980]
+  grid_explore0.80_stdw0.95    raw_argmax=deep     margin=+0.0248  R_w=[skip:0.3715  light:0.5283  standard:0.6760  deep:0.7008]
+  grid_explore0.90_stdw0.65    raw_argmax=deep     margin=+0.0274  R_w=[skip:0.3715  light:0.5369  standard:0.7076  deep:0.7349]
+  grid_explore0.90_stdw0.75    raw_argmax=deep     margin=+0.0304  R_w=[skip:0.3715  light:0.5369  standard:0.7076  deep:0.7380]
+  grid_explore0.90_stdw0.85    raw_argmax=deep     margin=+0.0335  R_w=[skip:0.3715  light:0.5369  standard:0.7076  deep:0.7411]
+  grid_explore0.90_stdw0.95    raw_argmax=deep     margin=+0.0366  R_w=[skip:0.3715  light:0.5369  standard:0.7076  deep:0.7442]
+  D_only_explore_065           raw_argmax=deep     margin=+0.0003  R_w=[skip:0.3715  light:0.5152  standard:0.6287  deep:0.6290]
+  D_only_explore_080           raw_argmax=deep     margin=+0.0165  R_w=[skip:0.3715  light:0.5283  standard:0.6760  deep:0.6926]
+  C_only_stdw_080              raw_argmax=standard margin=+0.0134  R_w=[skip:0.3715  light:0.5022  standard:0.5813  deep:0.5680]
+  control_A_plus_explore_065   raw_argmax=standard margin=+0.0079  R_w=[skip:0.3715  light:0.5113  standard:0.6287  deep:0.6208]
+
+====================================================================================================
+SUMMARY: winner/margin change vs baseline
+====================================================================================================
+  09_RAG__var_standard  (baseline: light, margin=+0.0051)
+    control_A_extended_ladder_cap5 light    margin=+0.0110  Delta_margin=+0.0058
+    control_B_smooth_exp_k055_cap8 light    margin=+0.0099  Delta_margin=+0.0047
+    grid_explore0.50_stdw0.65    light    margin=+0.0051  Delta_margin=+0.0000
+    grid_explore0.50_stdw0.75    light    margin=+0.0012  Delta_margin=-0.0039
+    grid_explore0.50_stdw0.85    deep     margin=+0.0026  Delta_margin=-0.0025 <-- WINNER CHANGED
+    grid_explore0.50_stdw0.95    deep     margin=+0.0063  Delta_margin=+0.0011 <-- WINNER CHANGED
+    grid_explore0.60_stdw0.65    deep     margin=+0.0065  Delta_margin=+0.0013 <-- WINNER CHANGED
+    grid_explore0.60_stdw0.75    deep     margin=+0.0090  Delta_margin=+0.0039 <-- WINNER CHANGED
+    grid_explore0.60_stdw0.85    deep     margin=+0.0113  Delta_margin=+0.0062 <-- WINNER CHANGED
+    grid_explore0.60_stdw0.95    deep     margin=+0.0136  Delta_margin=+0.0085 <-- WINNER CHANGED
+    grid_explore0.70_stdw0.65    deep     margin=+0.0129  Delta_margin=+0.0078 <-- WINNER CHANGED
+    grid_explore0.70_stdw0.75    deep     margin=+0.0156  Delta_margin=+0.0105 <-- WINNER CHANGED
+    grid_explore0.70_stdw0.85    deep     margin=+0.0183  Delta_margin=+0.0132 <-- WINNER CHANGED
+    grid_explore0.70_stdw0.95    deep     margin=+0.0210  Delta_margin=+0.0159 <-- WINNER CHANGED
+    grid_explore0.80_stdw0.65    deep     margin=+0.0191  Delta_margin=+0.0140 <-- WINNER CHANGED
+    grid_explore0.80_stdw0.75    deep     margin=+0.0222  Delta_margin=+0.0171 <-- WINNER CHANGED
+    grid_explore0.80_stdw0.85    deep     margin=+0.0253  Delta_margin=+0.0202 <-- WINNER CHANGED
+    grid_explore0.80_stdw0.95    deep     margin=+0.0284  Delta_margin=+0.0233 <-- WINNER CHANGED
+    grid_explore0.90_stdw0.65    deep     margin=+0.0254  Delta_margin=+0.0202 <-- WINNER CHANGED
+    grid_explore0.90_stdw0.75    deep     margin=+0.0288  Delta_margin=+0.0237 <-- WINNER CHANGED
+    grid_explore0.90_stdw0.85    deep     margin=+0.0323  Delta_margin=+0.0272 <-- WINNER CHANGED
+    grid_explore0.90_stdw0.95    deep     margin=+0.0358  Delta_margin=+0.0306 <-- WINNER CHANGED
+    D_only_explore_065           deep     margin=+0.0098  Delta_margin=+0.0047 <-- WINNER CHANGED
+    D_only_explore_080           deep     margin=+0.0191  Delta_margin=+0.0140 <-- WINNER CHANGED
+    C_only_stdw_080              deep     margin=+0.0007  Delta_margin=-0.0044 <-- WINNER CHANGED
+    control_A_plus_explore_065   deep     margin=+0.0047  Delta_margin=-0.0005 <-- WINNER CHANGED
+  06_tools__var_standard  (baseline: standard, margin=+0.0159)
+    control_A_extended_ladder_cap5 standard margin=+0.0222  Delta_margin=+0.0063
+    control_B_smooth_exp_k055_cap8 standard margin=+0.0226  Delta_margin=+0.0067
+    grid_explore0.50_stdw0.65    standard margin=+0.0159  Delta_margin=+0.0000
+    grid_explore0.50_stdw0.75    standard margin=+0.0142  Delta_margin=-0.0017
+    grid_explore0.50_stdw0.85    standard margin=+0.0125  Delta_margin=-0.0034
+    grid_explore0.50_stdw0.95    standard margin=+0.0108  Delta_margin=-0.0051
+    grid_explore0.60_stdw0.65    standard margin=+0.0051  Delta_margin=-0.0108
+    grid_explore0.60_stdw0.75    standard margin=+0.0031  Delta_margin=-0.0129
+    grid_explore0.60_stdw0.85    standard margin=+0.0010  Delta_margin=-0.0149
+    grid_explore0.60_stdw0.95    deep     margin=+0.0011  Delta_margin=-0.0149 <-- WINNER CHANGED
+    grid_explore0.70_stdw0.65    deep     margin=+0.0057  Delta_margin=-0.0102 <-- WINNER CHANGED
+    grid_explore0.70_stdw0.75    deep     margin=+0.0081  Delta_margin=-0.0078 <-- WINNER CHANGED
+    grid_explore0.70_stdw0.85    deep     margin=+0.0105  Delta_margin=-0.0054 <-- WINNER CHANGED
+    grid_explore0.70_stdw0.95    deep     margin=+0.0129  Delta_margin=-0.0030 <-- WINNER CHANGED
+    grid_explore0.80_stdw0.65    deep     margin=+0.0165  Delta_margin=+0.0006 <-- WINNER CHANGED
+    grid_explore0.80_stdw0.75    deep     margin=+0.0193  Delta_margin=+0.0033 <-- WINNER CHANGED
+    grid_explore0.80_stdw0.85    deep     margin=+0.0220  Delta_margin=+0.0061 <-- WINNER CHANGED
+    grid_explore0.80_stdw0.95    deep     margin=+0.0248  Delta_margin=+0.0088 <-- WINNER CHANGED
+    grid_explore0.90_stdw0.65    deep     margin=+0.0274  Delta_margin=+0.0114 <-- WINNER CHANGED
+    grid_explore0.90_stdw0.75    deep     margin=+0.0304  Delta_margin=+0.0145 <-- WINNER CHANGED
+    grid_explore0.90_stdw0.85    deep     margin=+0.0335  Delta_margin=+0.0176 <-- WINNER CHANGED
+    grid_explore0.90_stdw0.95    deep     margin=+0.0366  Delta_margin=+0.0207 <-- WINNER CHANGED
+    D_only_explore_065           deep     margin=+0.0003  Delta_margin=-0.0156 <-- WINNER CHANGED
+    D_only_explore_080           deep     margin=+0.0165  Delta_margin=+0.0006 <-- WINNER CHANGED
+    C_only_stdw_080              standard margin=+0.0134  Delta_margin=-0.0026
+    control_A_plus_explore_065   standard margin=+0.0079  Delta_margin=-0.0080
+
+====================================================================================================
+CROSS-ARTICLE AGREEMENT (grid_* variants only)
+====================================================================================================
+  grid_explore0.50_stdw0.65    [disagree]  09_RAG__var_standard=light  06_tools__var_standard=standard
+  grid_explore0.50_stdw0.75    [disagree]  09_RAG__var_standard=light  06_tools__var_standard=standard
+  grid_explore0.50_stdw0.85    [disagree]  09_RAG__var_standard=deep  06_tools__var_standard=standard
+  grid_explore0.50_stdw0.95    [disagree]  09_RAG__var_standard=deep  06_tools__var_standard=standard
+  grid_explore0.60_stdw0.65    [disagree]  09_RAG__var_standard=deep  06_tools__var_standard=standard
+  grid_explore0.60_stdw0.75    [disagree]  09_RAG__var_standard=deep  06_tools__var_standard=standard
+  grid_explore0.60_stdw0.85    [disagree]  09_RAG__var_standard=deep  06_tools__var_standard=standard
+  grid_explore0.60_stdw0.95    [AGREE]  09_RAG__var_standard=deep  06_tools__var_standard=deep
+  grid_explore0.70_stdw0.65    [AGREE]  09_RAG__var_standard=deep  06_tools__var_standard=deep
+  grid_explore0.70_stdw0.75    [AGREE]  09_RAG__var_standard=deep  06_tools__var_standard=deep
+  grid_explore0.70_stdw0.85    [AGREE]  09_RAG__var_standard=deep  06_tools__var_standard=deep
+  grid_explore0.70_stdw0.95    [AGREE]  09_RAG__var_standard=deep  06_tools__var_standard=deep
+  grid_explore0.80_stdw0.65    [AGREE]  09_RAG__var_standard=deep  06_tools__var_standard=deep
+  grid_explore0.80_stdw0.75    [AGREE]  09_RAG__var_standard=deep  06_tools__var_standard=deep
+  grid_explore0.80_stdw0.85    [AGREE]  09_RAG__var_standard=deep  06_tools__var_standard=deep
+  grid_explore0.80_stdw0.95    [AGREE]  09_RAG__var_standard=deep  06_tools__var_standard=deep
+  grid_explore0.90_stdw0.65    [AGREE]  09_RAG__var_standard=deep  06_tools__var_standard=deep
+  grid_explore0.90_stdw0.75    [AGREE]  09_RAG__var_standard=deep  06_tools__var_standard=deep
+  grid_explore0.90_stdw0.85    [AGREE]  09_RAG__var_standard=deep  06_tools__var_standard=deep
+  grid_explore0.90_stdw0.95    [AGREE]  09_RAG__var_standard=deep  06_tools__var_standard=deep
+

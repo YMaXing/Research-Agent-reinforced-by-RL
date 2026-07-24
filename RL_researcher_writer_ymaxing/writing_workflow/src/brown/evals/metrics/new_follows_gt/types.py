@@ -15,6 +15,7 @@ from brown.evals.metrics.base import (
     BaseFewShotExamples,
     CriteriaScores,
     CriterionScore,
+    SectionsCoercionMixin,
 )
 
 
@@ -38,7 +39,15 @@ class FollowsGTCriteriaScores(CriteriaScores):
     structure: CriterionScore
     depth_enhancement: CriterionScore
     breadth_enhancement: CriterionScore
-    core_preservation: CriterionScore
+    # Optional with a placeholder default: pass-1's SYSTEM_PROMPT deliberately omits the
+    # core_preservation criterion definition (it's graded in a dedicated pass-2 call), so
+    # some providers (e.g. Anthropic tool-calling) may not populate this field at all even
+    # though it's part of the shared FollowsGTArticleScores schema used for structured
+    # output. Making it optional avoids a pydantic ValidationError in that case; the
+    # placeholder is always overwritten with the real pass-2 score in FollowsGTMetric.ascore().
+    core_preservation: CriterionScore = pydantic.Field(
+        default_factory=lambda: CriterionScore(score=0, reason="placeholder -- pending pass 2")
+    )
 
     def to_context(self) -> str:
         """Serialize the five pass-1 criteria only.
@@ -226,7 +235,7 @@ class CorePreservationSectionScore(pydantic.BaseModel):
     core_preservation: CriterionScore = pydantic.Field(description="The core preservation score for this section.")
 
 
-class CorePreservationArticleScores(pydantic.BaseModel):
+class CorePreservationArticleScores(SectionsCoercionMixin):
     """Article-level core preservation scores for all sections.
 
     Used as the structured-output response type for the second LLM call in the

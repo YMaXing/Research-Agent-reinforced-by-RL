@@ -1,0 +1,43 @@
+{
+  "variant": "HNSW",
+  "lesson": "HNSW",
+  "split": "TEST",
+  "policy": "allowed",
+  "rl_preset": 1,
+  "grok_preset": 1,
+  "chosen_preset": 1,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 1,
+  "oracle_name": "light",
+  "r_w_rewards": [
+    0.4839,
+    0.8753,
+    0.6018,
+    0.6643
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 0.996,
+  "confidence": 0.5373,
+  "floor_applied": false,
+  "rl_agg_probs": [
+    0.4627,
+    0.5373,
+    0.0,
+    0.0
+  ],
+  "grok_override": false,
+  "grok_reasoning": "Aggregate RL vote is P1 light (54% light / 46% skip mass, moderate confidence); uncertain but no deep/standard vote mass (both 0% < 30% bar) so no P2->P3 escalation possible and no basis to override downward given S4's 46% budget, must-ev=12, residual=54/2 and 18 orphans despite its skip vote. High-budget brief-flagged sections (S1/S2) already baked into the cost-adjusted P1 pick; dominant gap is depth but raw counts do not trigger escalation per policy.",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "aggregate RL vote mass",
+    "zero standard/deep mass",
+    "S4 must-ev/orphans residual"
+  ],
+  "grok_risk_flags": [
+    "54/46 split near skip/light boundary",
+    "S4 high residual despite skip vote",
+    "multiple brief=yes sections limiting absorption"
+  ]
+}

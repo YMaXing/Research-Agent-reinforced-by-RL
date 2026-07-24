@@ -441,7 +441,7 @@ AI evaluations serve a critical purpose: regression testing [[9]](<https://www.d
 
 Traditional CI lacks an equivalent to Tier 3 evaluations because unit and integration tests are fast enough to run on every commit. For AI agents, semantic quality testing requires real LLM calls, which are slow and expensive.
 
-A modest evaluation dataset of 10 samples could require 50-100 LLM calls. At an average cost of $0.05 per call, a single evaluation run might cost $2.50-$5.00 (Note: Frequent current price check from LLM provider is important as costs changes over time). Running this on every commit for a team of five could cost thousands of dollars per month and slow development to a crawl. This is why we run them selectively.
+A modest evaluation dataset of 10 samples could require 50-100 LLM calls. At an average cost of $0.05 per call, a single evaluation run might cost \$2.50-\$5.00 (Note: Frequent current price check from LLM provider is important as costs changes over time). Running this on every commit for a team of five could cost thousands of dollars per month and slow development to a crawl. This is why we run them selectively.
 
 ### Manual-Trigger CI Workflow for AI Evals
 

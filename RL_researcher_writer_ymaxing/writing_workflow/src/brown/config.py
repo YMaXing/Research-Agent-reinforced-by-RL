@@ -28,6 +28,10 @@ class Settings(BaseSettings):
 
     XAI_API_KEY: SecretStr | None = Field(default=None, alias="XAI_API_KEY", description="The API key for the xAI API.")
 
+    # --- Anthropic ---
+
+    ANTHROPIC_API_KEY: SecretStr | None = Field(default=None, alias="ANTHROPIC_API_KEY", description="The API key for the Anthropic API.")
+
     # --- Opik ---
 
     OPIK_ENABLED: bool = Field(default=False, alias="OPIK_ENABLED", description="Whether to use Opik for monitoring and logging.")

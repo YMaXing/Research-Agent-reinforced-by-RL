@@ -1,0 +1,43 @@
+{
+  "variant": "Understanding_Reasoning_LLMs",
+  "lesson": "Understanding_Reasoning_LLMs",
+  "split": "TEST",
+  "policy": "allowed",
+  "rl_preset": 2,
+  "grok_preset": 2,
+  "chosen_preset": 2,
+  "chosen_by": "Grok4.2",
+  "oracle_preset": 2,
+  "oracle_name": "standard",
+  "r_w_rewards": [
+    0.4603,
+    0.6608,
+    0.6879,
+    0.581
+  ],
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 0.3651,
+  "confidence": 0.9302,
+  "floor_applied": false,
+  "rl_agg_probs": [
+    0.0,
+    0.0698,
+    0.9302,
+    0.0
+  ],
+  "grok_override": false,
+  "grok_reasoning": "Scorer aggregate is P2 standard (93% budget-weighted vote mass, 0% deep, DECISIVE at 93% confidence on top pick). High-budget S5 (45%, standard vote, 42 residual depth, 12 must-ev, 16 orphans) and dominant depth-gap economics align with this; 100% self-contained is already baked into the RL pick. No override conditions met (decisive, deep mass=0%, not uncertain, key sections not well-covered).",
+  "grok_override_reason": null,
+  "grok_decision_drivers": [
+    "scorer_aggregate",
+    "decisiveness",
+    "budget_vote_mass",
+    "S5_residual"
+  ],
+  "grok_risk_flags": [
+    "S5_brief_flag_vs_high_residual",
+    "42_unbacked_anchors"
+  ]
+}

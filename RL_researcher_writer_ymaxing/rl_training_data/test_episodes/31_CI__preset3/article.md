@@ -683,7 +683,7 @@ AI evaluations are essential for catching semantic quality regressions, such as 
 
 ### Why AI Evals Are Unique to AI Systems
 
-AI evaluations are treated as a special, Tier 3 gate because they are expensive. Each run involves real LLM calls, which incur both latency and monetary costs. For example, running an evaluation on a 500-example dataset where each run consumes about 500 tokens would total 250,000 tokens. At a rate of $0.01 per 1,000 tokens, a single full run would cost roughly $2.50. Running this on every commit would quickly become impractical [[13]](https://www.digitalapplied.com/blog/88-percent-ai-agents-never-reach-production-failure-framework). Therefore, we run these evaluations selectively.
+AI evaluations are treated as a special, Tier 3 gate because they are expensive. Each run involves real LLM calls, which incur both latency and monetary costs. For example, running an evaluation on a 500-example dataset where each run consumes about 500 tokens would total 250,000 tokens. At a rate of \$0.01 per 1,000 tokens, a single full run would cost roughly $2.50. Running this on every commit would quickly become impractical [[13]](https://www.digitalapplied.com/blog/88-percent-ai-agents-never-reach-production-failure-framework). Therefore, we run these evaluations selectively.
 
 ### Manual-Trigger CI Workflow for AI Evals
 

@@ -199,6 +199,12 @@ another criterion.
    > criteria: a section can score 1 on depth, breadth, both, or neither. An *addition* is content present in the generated
    > section that goes beyond what the expected section covers. The *core topic* is always the topic of the expected section,
    > regardless of whether the generated section drifts to a different subject.
+   >
+   > **The numeric score stays binary (0/1) as before, but the reason field must ALSO report every distinct qualifying
+   > instance found, not just whether at least one exists.** A single-instance and a six-instance section both still
+   > score 1 — the binary score is a downstream aggregation input, not where instance count is captured — but the reason
+   > text is what preserves the richer signal for later analysis. Do not stop enumerating once one instance qualifies;
+   > continue evaluating every remaining candidate addition in the section and report on all of them.
 
    4. **DepthEnhancement:** Evaluate whether the section contains valuable additions that go deeper into the core topic itself.
       - **Depth additions** (inward — intensify understanding of the core topic itself) include one or more of the following:
@@ -225,6 +231,15 @@ another criterion.
         `<exploration_sources>` contains a list of sources, verify traceability for each instance
         individually — an instance without a matching exploration source does not qualify, but other
         instances in the same section may still do so.
+      - **Count every qualifying instance and classify each one's quality tier — do not stop at the first.**
+        A "distinct instance" is a separate addition (typically its own sentence or paragraph, often under a
+        different subheading) rather than a second sentence elaborating on the same single point. Classify
+        each qualifying instance as:
+        • **strong** — a substantive, specific addition: concrete metrics/data, a named study/algorithm/limitation,
+          a quantified trade-off, or a detailed mechanism explanation that meaningfully deepens understanding
+          beyond a passing mention.
+        • **standard** — a valid, source-attributed addition that clears the quality bar above but is comparatively
+          brief, generic, or a single-sentence mention without much elaboration.
    5. **BreadthEnhancement:** Evaluate whether the section contains valuable additions that expand outward to areas adjacent
       to the core topic.
       - **Breadth additions** (outward — connect to adjacent areas outside the core topic) include one or more of the following:
@@ -249,6 +264,10 @@ another criterion.
         `<exploration_sources>` contains a list of sources, verify traceability for each instance
         individually — an instance without a matching exploration source does not qualify, but other
         instances in the same section may still do so.
+      - **Count every qualifying instance and classify each one's quality tier — do not stop at the first.**
+        Use the same "distinct instance" definition and **strong**/**standard** quality rubric as DepthEnhancement
+        above (a separate addition, not a second sentence on the same point; strong = substantive/specific/
+        quantified/named; standard = valid but brief or generic).
 10. Along with the binary scores, you will provide a brief and concise explanation containing the reasoning behind 
 the score for each criterion. The score will be used to debug and monitor the evaluation process. Therefore, it is
 important to provide thorough reasoning for the score. Since we provide binary scores, the reasoning should always 
@@ -264,6 +283,24 @@ list of sources, evaluate each candidate instance and state whether it qualifies
 e.g. "Instance traces to https://arxiv.org/abs/2310.09298 — empirical JSON error-rate study") or does not
 (stating no matching source was found). If at least one instance qualifies, the score is 1; if none
 qualify, the score is 0.
+   **Mandatory structured tag for depth_enhancement and breadth_enhancement only:** immediately after the
+   `**{{score}}:**` marker and before the prose explanation, insert a bracketed tag reporting every qualifying
+   instance found and its quality tier, in this exact format:
+   `[instances=N; quality=tier1,tier2,...]` — where N is the **true total count** of qualifying instances (do not
+   artificially cap it; report the real number even if it is large), and the quality list gives the **strong**/
+   **standard** tier for up to the first 5 instances, **ordered strongest-first (all "strong" entries before any
+   "standard" entries)**, not in the order they were discussed in the prose. This matters when N > 5: only the
+   first 5 listed tiers are ever used downstream, so if a strong instance is not among the first 5 in the list,
+   its value is lost — always rank strong before standard so no genuinely stronger instance is dropped in favor
+   of a weaker one that merely happened to be discussed earlier. When N = 0, the tag is simply `[instances=0]`
+   with no quality list. This tag is required on every depth_enhancement/breadth_enhancement entry regardless of
+   score, including score-0 entries (which are always `[instances=0]`).
+   *Examples:* a section with one strong depth addition and no others: `**1:** [instances=1; quality=strong] ...`.
+   A section with three qualifying breadth additions — two strong, one standard — found while continuing to
+   evaluate every candidate rather than stopping at the first: `**1:** [instances=3; quality=strong,strong,standard] ...`.
+   A section with seven qualifying depth additions (four strong, three standard): list the four strong tiers
+   first, then only enough standard tiers to fill the 5-slot list: `**1:** [instances=7; quality=strong,strong,strong,strong,standard] ...`.
+   A section with no qualifying depth additions: `**0:** [instances=0] ...`.
 11. Important rules when comparing the content of sections:
       - Focus on substance, not superficial formatting differences
       - When comparing **media**, you only care about the placement of the media, not the content of the media. 
@@ -317,6 +354,12 @@ if sources are listed, evaluate each candidate enhancement instance independentl
 only when its content (facts, metrics, or concepts) is consistent with at least one listed source. Keep
 the score at 1 as long as at least one instance qualifies; revise to 0 only when no instance qualifies.
 Record in the reason field which instances qualify (with URL) and which do not.
+3.5. **[Always mandatory]** For every depth_enhancement and breadth_enhancement entry (score 0 or 1),
+finalize the `[instances=N; quality=...]` tag required by instruction 10: count every instance that
+survived the 3.4 traceability check (not just the first), classify each as strong/standard per the
+rubric in criteria 4/5, order the quality list strongest-first (all "strong" before any "standard",
+per instruction 10), and place the tag immediately after the score marker. A score-0 entry is always
+`[instances=0]`; a score-1 entry always has N ≥ 1 with a matching quality list.
 
 ## WHAT TO AVOID
 
@@ -464,7 +507,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             depth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No depth additions present. The historical evolution paragraph provides "
+                                    "[instances=0] No depth additions present. The historical evolution paragraph provides "
                                     "external narrative context rather than intensifying understanding of "
                                     "structured outputs' inner workings — no theoretical foundations, technical "
                                     "nuances, limitations, or real-world case studies about structured outputs "
@@ -474,8 +517,9 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             breadth_enhancement=CriterionScore(
                                 score=1,
                                 reason=(
-                                    "A breadth addition is present: the generated section includes a paragraph "
-                                    "tracing the evolution of structured data formats from XML in the late 1990s "
+                                    "[instances=1; quality=standard] A breadth addition is present: the generated "
+                                    "section includes a paragraph tracing the evolution of structured data formats "
+                                    "from XML in the late 1990s "
                                     "through JSON and YAML to the current Pydantic era, qualifying as 'historical "
                                     "context or evolution of the topic' and meaningfully integrated into the "
                                     "narrative about why structured outputs matter for LLMs."
@@ -528,7 +572,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             depth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No depth additions present. The GraphRAG paragraph does not go deeper into "
+                                    "[instances=0] No depth additions present. The GraphRAG paragraph does not go deeper into "
                                     "structured outputs — it provides no theoretical foundations, limitations, or "
                                     "implementation challenges related to structured outputs. It is an off-topic "
                                     "addition about a different technology."
@@ -537,7 +581,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             breadth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No breadth additions present. The GraphRAG paragraph does not expand outward "
+                                    "[instances=0] No breadth additions present. The GraphRAG paragraph does not expand outward "
                                     "to adjacent concepts, cross-domain analogies, or historical context related "
                                     "to structured outputs. It is an off-topic addition about a different "
                                     "technology that does not illuminate structured outputs from the outside."
@@ -585,18 +629,19 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             depth_enhancement=CriterionScore(
                                 score=1,
                                 reason=(
-                                    "A depth addition is present: the generated section includes a paragraph "
+                                    "[instances=1; quality=strong] A depth addition is present: the generated section includes a paragraph "
                                     "about failure modes of manual JSON parsing, noting that LLMs frequently "
                                     "produce trailing commas, invalid comments, and unescaped characters, with "
                                     "concrete data showing ~12%% of LLM-generated JSON outputs contain syntax "
                                     "errors. This qualifies as 'limitations, criticisms, or failure modes of "
-                                    "the core topic' and is directly relevant to the section's topic."
+                                    "the core topic' and is directly relevant to the section's topic. Classified as "
+                                    "strong: a concrete, quantified failure-rate statistic, not just a generic mention."
                                 ),
                             ),
                             breadth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No breadth additions present. The failure modes paragraph stays within the "
+                                    "[instances=0] No breadth additions present. The failure modes paragraph stays within the "
                                     "core topic of manual JSON parsing rather than expanding outward — no adjacent "
                                     "concepts, cross-domain analogies, historical context, or applications in "
                                     "other industries are present."
@@ -649,18 +694,19 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             depth_enhancement=CriterionScore(
                                 score=1,
                                 reason=(
-                                    "A depth addition is present: the generated section includes a paragraph "
+                                    "[instances=1; quality=strong] A depth addition is present: the generated section includes a paragraph "
                                     "about Pydantic v2's major architectural overhaul, noting the Rust-based "
                                     "validation core that achieved 5-50x performance improvements. This qualifies "
                                     "as 'latest advancements or recent developments in the core topic itself' and "
                                     "'technical nuances or alternative implementation perspectives', directly "
-                                    "relevant to the Pydantic section."
+                                    "relevant to the Pydantic section. Classified as strong: a specific, quantified "
+                                    "performance-improvement claim, not just a generic mention of a new version."
                                 ),
                             ),
                             breadth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No breadth additions present. The Pydantic v2 paragraph deepens understanding "
+                                    "[instances=0] No breadth additions present. The Pydantic v2 paragraph deepens understanding "
                                     "of Pydantic itself rather than expanding outward — no adjacent concepts, "
                                     "historical context, cross-domain analogies, or applications in other "
                                     "industries are present."
@@ -714,7 +760,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             depth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No depth additions present. The provider comparison paragraph expands outward "
+                                    "[instances=0] No depth additions present. The provider comparison paragraph expands outward "
                                     "to other tools rather than going deeper into Gemini's structured output "
                                     "implementation — no theoretical foundations, limitations, or concrete metrics "
                                     "about Gemini's own implementation specifically are present."
@@ -723,13 +769,15 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             breadth_enhancement=CriterionScore(
                                 score=1,
                                 reason=(
-                                    "A breadth addition is present: the generated section includes an extensive "
-                                    "paragraph comparing how other providers (OpenAI, Anthropic, Cohere, Mistral, "
+                                    "[instances=1; quality=strong] A breadth addition is present: the generated "
+                                    "section includes an extensive paragraph comparing how other providers "
+                                    "(OpenAI, Anthropic, Cohere, Mistral, "
                                     "and open-source tools like Outlines and Instructor) implement structured "
                                     "outputs, including constrained decoding and grammar-based generation with "
                                     "CFGs. This qualifies as 'adjacent or related concepts that expand the scope "
                                     "without straying from the core theme' and 'enabling/disrupting technologies "
-                                    "that intersect with the core topic'."
+                                    "that intersect with the core topic'. Classified as one strong, comprehensive "
+                                    "instance covering several named alternatives rather than a brief mention."
                                 ),
                             ),
                             core_preservation=CriterionScore(
@@ -774,7 +822,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             depth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No depth additions present. The section is a brief conclusion without any "
+                                    "[instances=0] No depth additions present. The section is a brief conclusion without any "
                                     "theoretical foundations, technical nuances, real-world case studies, or "
                                     "other qualifying depth elements."
                                 ),
@@ -782,7 +830,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             breadth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No breadth additions present. The section is a brief conclusion without any "
+                                    "[instances=0] No breadth additions present. The section is a brief conclusion without any "
                                     "adjacent concepts, cross-domain analogies, historical context, or "
                                     "applications in other industries."
                                 ),
@@ -871,7 +919,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             depth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No depth additions present. The historical roots paragraph provides external "
+                                    "[instances=0] No depth additions present. The historical roots paragraph provides external "
                                     "narrative context rather than intensifying understanding of current LLM "
                                     "planning mechanisms — no theoretical foundations, technical nuances, or "
                                     "real-world case studies about planning and reasoning in LLMs are present."
@@ -880,8 +928,9 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             breadth_enhancement=CriterionScore(
                                 score=1,
                                 reason=(
-                                    "A breadth addition is present: the generated section includes a paragraph "
-                                    "about the historical roots of AI planning, tracing it from early symbolic AI "
+                                    "[instances=1; quality=standard] A breadth addition is present: the generated "
+                                    "section includes a paragraph about the historical roots of AI planning, "
+                                    "tracing it from early symbolic AI "
                                     "systems like STRIPS (1971) and SHRDLU (1970) to the current LLM-based neural "
                                     "paradigm. This qualifies as 'historical context or evolution of the topic' "
                                     "and is meaningfully integrated into the introduction's argument about why "
@@ -930,19 +979,20 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             depth_enhancement=CriterionScore(
                                 score=1,
                                 reason=(
-                                    "A depth addition is present: the generated section includes concrete "
+                                    "[instances=1; quality=strong] A depth addition is present: the generated section includes concrete "
                                     "benchmark data showing that non-reasoning models achieve only 23%% success "
                                     "rate on tasks with more than five sequential steps vs 67%% for "
                                     "reasoning-augmented agents, with near-zero recovery rates on error recovery "
                                     "tasks. This qualifies as 'real-world case studies or concrete metrics about "
                                     "the core topic's performance, behavior, or direct application' and is "
-                                    "directly relevant to the section's argument about non-reasoning model failures."
+                                    "directly relevant to the section's argument about non-reasoning model failures. "
+                                    "Classified as strong: specific, quantified benchmark figures, not a vague claim."
                                 ),
                             ),
                             breadth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No breadth additions present. The benchmark data reinforces the core "
+                                    "[instances=0] No breadth additions present. The benchmark data reinforces the core "
                                     "argument about non-reasoning model failures rather than expanding outward — "
                                     "no adjacent concepts, historical context, or cross-domain analogies present."
                                 ),
@@ -998,7 +1048,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             depth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No depth additions present. The RAG paragraphs contain technical detail "
+                                    "[instances=0] No depth additions present. The RAG paragraphs contain technical detail "
                                     "(embedding models, NDCG scores, hallucination rates) but none qualifies as "
                                     "depth enrichment for CoT — the content is about a completely different "
                                     "technology and does not deepen understanding of CoT's workings or limitations."
@@ -1007,7 +1057,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             breadth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No breadth additions present. The RAG content does not expand outward from "
+                                    "[instances=0] No breadth additions present. The RAG content does not expand outward from "
                                     "CoT to adjacent concepts — it is an entirely off-topic diversion rather than "
                                     "a related concept, cross-domain analogy, or historical context connected to "
                                     "CoT prompting."
@@ -1056,7 +1106,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             depth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No depth additions present. The generated section describes benefits of the "
+                                    "[instances=0] No depth additions present. The generated section describes benefits of the "
                                     "separation (control, iterative loops, different handling of outputs) but "
                                     "these are the same points covered in the ground truth, not additional depth "
                                     "enrichment — no theoretical foundations, concrete metrics, or implementation "
@@ -1066,7 +1116,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             breadth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No breadth additions present. No adjacent concepts, historical context, or "
+                                    "[instances=0] No breadth additions present. No adjacent concepts, historical context, or "
                                     "cross-domain analogies are added beyond what is already in the ground truth."
                                 ),
                             ),
@@ -1113,23 +1163,26 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             depth_enhancement=CriterionScore(
                                 score=1,
                                 reason=(
-                                    "A depth addition is present: the generated section includes specific "
+                                    "[instances=1; quality=strong] A depth addition is present: the generated section includes specific "
                                     "benchmark data from the ReAct paper, noting 8-14%% accuracy improvements "
                                     "on HotpotQA and FEVER benchmarks, and that humans rated ReAct's reasoning "
                                     "traces as 1.4x more trustworthy than CoT-only baselines. This qualifies as "
                                     "'real-world case studies or concrete metrics about the core topic's "
-                                    "performance, behavior, or direct application'."
+                                    "performance, behavior, or direct application'. Classified as strong: named "
+                                    "benchmarks with quantified results, not a generic claim."
                                 ),
                             ),
                             breadth_enhancement=CriterionScore(
                                 score=1,
                                 reason=(
-                                    "A breadth addition is present: the generated section draws a cross-domain "
-                                    "analogy between ReAct's Thought-Action-Observation loop and the OODA loop "
+                                    "[instances=1; quality=strong] A breadth addition is present: the generated "
+                                    "section draws a cross-domain analogy between ReAct's Thought-Action-Observation "
+                                    "loop and the OODA loop "
                                     "(Observe-Orient-Decide-Act) from military strategy, developed by John Boyd "
                                     "in the 1970s. This qualifies as 'cross-domain analogies or lessons from "
                                     "other fields' and meaningfully illuminates the ReAct loop from an external "
-                                    "perspective."
+                                    "perspective. Classified as strong: a specific, well-attributed named framework, "
+                                    "not a vague comparison."
                                 ),
                             ),
                             core_preservation=CriterionScore(
@@ -1174,7 +1227,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             depth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No depth additions present. The industry applications paragraph expands "
+                                    "[instances=0] No depth additions present. The industry applications paragraph expands "
                                     "outward to other domains rather than deepening understanding of the "
                                     "Plan-and-Execute pattern itself — no theoretical foundations, concrete "
                                     "metrics, or implementation challenges beyond the ground truth are present."
@@ -1183,12 +1236,13 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             breadth_enhancement=CriterionScore(
                                 score=1,
                                 reason=(
-                                    "A breadth addition is present: the generated section includes a paragraph "
-                                    "about practical applications of Plan-and-Execute in diverse industries: "
+                                    "[instances=1; quality=strong] A breadth addition is present: the generated "
+                                    "section includes a paragraph about practical applications of Plan-and-Execute in diverse industries: "
                                     "healthcare clinical trial management, legal discovery document review, and "
                                     "supply chain optimization. This qualifies as 'practical applications of the "
                                     "core topic in other industries or domains beyond the section's primary scope' "
-                                    "and meaningfully expands the reader's understanding of where this pattern applies."
+                                    "and meaningfully expands the reader's understanding of where this pattern applies. "
+                                    "Classified as strong: three specific, named industry applications in one addition."
                                 ),
                             ),
                             core_preservation=CriterionScore(
@@ -1266,20 +1320,23 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             depth_enhancement=CriterionScore(
                                 score=1,
                                 reason=(
-                                    "A depth addition is present: the generated section includes an extensive "
-                                    "paragraph about financial sector-specific implementation constraints: MiFID II "
+                                    "[instances=1; quality=strong] A depth addition is present: the generated "
+                                    "section includes an extensive paragraph about financial sector-specific "
+                                    "implementation constraints: MiFID II "
                                     "and SEC Rule 17a-4 regulatory requirements, Bloomberg/Reuters data feed "
                                     "integration processing 250,000+ updates/second, T+2 settlement lifecycles via "
                                     "DTCC, and Basel III VaR computations using Monte Carlo simulations. This "
                                     "qualifies as 'implementation challenges, latency/scale trade-offs, or "
                                     "engineering realities' and 'real-world case studies or concrete metrics about "
-                                    "the core topic's performance, behavior, or direct application'."
+                                    "the core topic's performance, behavior, or direct application'. Classified as "
+                                    "strong: multiple named, quantified regulatory/technical facts bundled into one "
+                                    "rich addition."
                                 ),
                             ),
                             breadth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No breadth additions present. The financial implementation details deepen "
+                                    "[instances=0] No breadth additions present. The financial implementation details deepen "
                                     "the core topic rather than expanding outward — they do not introduce adjacent "
                                     "concepts, cross-domain analogies, or historical context beyond the section's "
                                     "subject matter."
@@ -1353,7 +1410,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             depth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No depth additions present. The tangential sentence about 'greatest human "
+                                    "[instances=0] No depth additions present. The tangential sentence about 'greatest human "
                                     "leaders' contains no theoretical foundations, technical nuances, or concrete "
                                     "metrics that would deepen understanding of the core topic."
                                 ),
@@ -1361,7 +1418,7 @@ DEFAULT_FEW_SHOT_EXAMPLES = FollowsGTMetricFewShotExamples(
                             breadth_enhancement=CriterionScore(
                                 score=0,
                                 reason=(
-                                    "No breadth additions present. The tangential sentence superficially resembles "
+                                    "[instances=0] No breadth additions present. The tangential sentence superficially resembles "
                                     "a cross-domain analogy but is too vague and lacking in substance or "
                                     "specificity to qualify as a meaningful breadth addition."
                                 ),
@@ -1447,7 +1504,9 @@ def get_eval_prompt(
         exploration_sources
         if exploration_sources
         else (
-            "Not provided. No source attribution check is required — apply standard criteria for DepthEnhancement and BreadthEnhancement."
+            "Not provided. No exploration-phase sources were gathered for this episode, so the source "
+            "attribution gate can never be satisfied: score depth_enhancement and breadth_enhancement as "
+            "0 for every section regardless of content quality. Do not apply standard (non-gated) criteria."
         )
     )
     return SYSTEM_PROMPT.format(

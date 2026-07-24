@@ -232,6 +232,22 @@ No.1 focus.
     Memory`, `### 2. Episodic Memory`), flag a `structure` review: the list number is a guideline
     position marker only and must not appear in the rendered heading — the heading should read
     `### Semantic Memory`, `### Episodic Memory`, etc.
+  - **Uncited golden/exploitation content (applies regardless of research format):** Scan every
+    paragraph whose content is traceable to a golden source (highest-priority sources explicitly
+    referenced in the guideline — `<golden_source>` tags in Format B, or golden-tagged material in
+    the Format A deduplicated body) or an exploitation-phase source (`<research_source
+    phase="exploitation">` tags in Format B, or exploitation-tagged material in the Format A
+    deduplicated body). Every sentence or passage built from that content — a fact, data point,
+    quantitative claim, or example — MUST carry an inline citation `[[N]](url)` to its source. If
+    golden- or exploitation-derived content appears without a citation, flag a `citation` review
+    specifying the paragraph and, if identifiable from the `<research>`, the missing source. Treat
+    this with the same strictness as uncited exploration content below: an uncited claim is treated
+    as unchecked and indistinguishable from a hallucination regardless of how heavily the article
+    otherwise relies on that source tier — do not assume golden or exploitation content is "obviously
+    sourced" and therefore exempt from this check. Because golden and exploitation sources are used
+    the most throughout the article, expect this check to surface the largest number of citation
+    instances to verify — do not let that volume cause paragraphs to be skimmed instead of checked
+    individually.
   - **Exploration integration (Format B only):** When the research is in Format B, the `## Research
     Context` section above provides the actual `<exploration_sources>` that were available to the writer.
     Use these sources to perform a direct cross-reference between source content and article content.
@@ -379,15 +395,19 @@ or "Implementing GraphRAG - Third paragraph"
       (360–440); a 700-word target → ±70 words (630–770).
    Each section is evaluated independently — a long section does not offset a short one.
 6. Carefully compare the article against the requirements as instructed by the rules above.
-7. If the research is in Format B and exploration sources are provided, perform two passes:
+7. **Golden/exploitation citation check (always performed, regardless of research format):** Walk
+   through the article paragraph by paragraph. For every paragraph whose content is traceable to a
+   golden or exploitation source, confirm it carries an inline `[[N]](url)` citation. Flag every
+   instance that does not, per the "Uncited golden/exploitation content" rule above.
+8. If the research is in Format B and exploration sources are provided, perform two passes:
    a. **Coverage check:** For each exploration source, assess whether it qualifies by the depth/breadth
       criteria. If it qualifies and its content does not appear anywhere in the article, flag the
       specific section(s) where integration would have been appropriate.
    b. **Quality check:** For every section where exploration content does appear, cross-reference against
       the source and verify narrative primacy, placement, self-contained integration, and cumulative
       focus.
-8. For each requirement, create 0 to N reviews.
-9. Return the reviews of the article.
+9. For each requirement, create 0 to N reviews.
+10. Return the reviews of the article.
 """
 
     selected_text_system_prompt_template = """

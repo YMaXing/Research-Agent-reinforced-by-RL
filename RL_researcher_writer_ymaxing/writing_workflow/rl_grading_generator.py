@@ -15,12 +15,16 @@ Resumability:
 Both metrics run concurrently per episode (asyncio.gather) since they are independent.
 Episodes are processed sequentially to respect Gemini rate limits.
 
+Grading judge model defaults to Gemini 2.5 Pro; pass --grading-model claude to use
+Claude Sonnet instead (requires ANTHROPIC_API_KEY + langchain-anthropic installed).
+
 Usage (from writing_workflow/):
   uv run python rl_grading_generator.py                               # all episodes
   uv run python rl_grading_generator.py --dry-run                    # plan only
   uv run python rl_grading_generator.py --articles 02_workflows_vs_agents
   uv run python rl_grading_generator.py --presets 0 1
   uv run python rl_grading_generator.py --test                       # held-out test episodes
+  uv run python rl_grading_generator.py --grading-model claude       # judge with Claude Sonnet
 """
 
 from __future__ import annotations
@@ -94,31 +98,63 @@ DEFAULT_CONCURRENCY = 2  # concurrent episodes; Tier 2: 1K RPM / 5M TPM
 # (4 simultaneous at peak), well within Tier 2 limits.
 INTER_EPISODE_DELAY_SECS: float = 5.0
 
-# Grading model: Gemini 2.5 Pro (LLM-as-judge)
+# Grading model: Gemini 2.5 Pro (LLM-as-judge) by default.
+# Gemini occasionally makes blatant scoring mistakes that have historically
+# needed manual correction (see grok_planner_test_results/run13_rl_grok_pipeline_analysis.md,
+# Part 4); Claude Sonnet is offered as an alternative judge via --grading-model claude.
 GRADING_MODEL = SupportedModels.GOOGLE_GEMINI_25_PRO
+
+# CLI-facing short names -> SupportedModels enum value.
+_MODEL_CHOICES: dict[str, SupportedModels] = {
+    "gemini": SupportedModels.GOOGLE_GEMINI_25_PRO,
+    "claude": SupportedModels.ANTHROPIC_CLAUDE_SONNET,
+}
 
 # Shared model config: lower thinking budget vs the per-metric default (4096)
 # to reduce cost and latency; Pro reasons reliably at 1024 for binary scoring.
+# thinking_budget/include_thoughts are Gemini-only params and are silently
+# stripped for non-Google models by brown.models.get_model (GOOGLE_ONLY_PARAMS).
 _GRADING_CONFIG = ModelConfig(temperature=0.0, thinking_budget=1024, include_thoughts=False, max_retries=3)
 
 # ---------------------------------------------------------------------------
 # Metric instances (shared across episodes; each ascore() creates its own client)
+#
+# Built via _build_metrics() so the judge model can be swapped at runtime
+# (--grading-model) without touching call sites -- _grade_episode() always
+# reads the current _follows_gt_metric/_user_intent_metric module globals.
 # ---------------------------------------------------------------------------
 
-_follows_gt_metric = FollowsGTMetric(
-    model=GRADING_MODEL,
-    name="ground_truth",
-    track=True,
-    project_name="rl-grading",
-    model_config=_GRADING_CONFIG,
-)
-_user_intent_metric = UserIntentMetric(
-    model=GRADING_MODEL,
-    name="user_intent",
-    track=True,
-    project_name="rl-grading",
-    model_config=_GRADING_CONFIG,
-)
+
+def _build_metrics(model: SupportedModels) -> tuple[FollowsGTMetric, UserIntentMetric]:
+    follows_gt_metric = FollowsGTMetric(
+        model=model,
+        name="ground_truth",
+        track=True,
+        project_name="rl-grading",
+        model_config=_GRADING_CONFIG,
+    )
+    user_intent_metric = UserIntentMetric(
+        model=model,
+        name="user_intent",
+        track=True,
+        project_name="rl-grading",
+        model_config=_GRADING_CONFIG,
+    )
+    return follows_gt_metric, user_intent_metric
+
+
+def configure_grading_model(model: SupportedModels) -> None:
+    """Rebuild the module-level grading metrics against *model*.
+
+    Must be called (if at all) before any episode is graded -- e.g. from
+    main() right after parsing --grading-model, before run_pipeline() starts.
+    """
+    global GRADING_MODEL, _follows_gt_metric, _user_intent_metric
+    GRADING_MODEL = model
+    _follows_gt_metric, _user_intent_metric = _build_metrics(model)
+
+
+_follows_gt_metric, _user_intent_metric = _build_metrics(GRADING_MODEL)
 
 
 # ---------------------------------------------------------------------------
@@ -175,9 +211,10 @@ def _build_exploration_sources(research_dir: Path) -> str | None:
 
 async def _grade_episode(episode_dir: Path, article_name: str) -> tuple[dict[str, float], dict[str, str]]:
     """Run FollowsGTMetric and UserIntentMetric concurrently; return merged scores and reasons."""
+    gt_article_name = _strip_replicate_suffix(article_name)
     article_md = (episode_dir / "article.md").read_text(encoding="utf-8")
-    gt_md = (EVAL_DATA_DIR / article_name / "article_ground_truth.md").read_text(encoding="utf-8")
-    guideline_md = (EVAL_DATA_DIR / article_name / "article_guideline.md").read_text(encoding="utf-8")
+    gt_md = (EVAL_DATA_DIR / gt_article_name / "article_ground_truth.md").read_text(encoding="utf-8")
+    guideline_md = (EVAL_DATA_DIR / gt_article_name / "article_guideline.md").read_text(encoding="utf-8")
     research_md = (episode_dir / "research.md").read_text(encoding="utf-8")
     exploration_sources = _build_exploration_sources(episode_dir / ".research")
 
@@ -231,6 +268,12 @@ async def run_episode(episode_dir: Path, article_name: str, episode_name: str) -
 
         except Exception as exc:
             logger.warning(f"[FAIL]  {episode_name} attempt {attempt}: {exc}")
+            # Context-window overflows (e.g. Claude's 200K token limit) are deterministic --
+            # retrying with the exact same prompt will fail identically every time, so don't
+            # waste the backoff windows on it.
+            if "prompt is too long" in str(exc) or "context_length" in str(exc).lower():
+                logger.error(f"[ERROR] {episode_name} -- prompt exceeds model context window, not retrying")
+                break
             if attempt < MAX_RETRIES:
                 wait = attempt * RETRY_BACKOFF_BASE
                 logger.info(f"        retrying in {wait}s ...")
@@ -250,15 +293,26 @@ def _episode_dir_name(article: str, preset_id: int) -> str:
     return f"{article}__preset{preset_id}"
 
 
+def _strip_replicate_suffix(article: str) -> str:
+    """Map a noise-experiment replicate name back to its base article for GT lookup.
+
+    e.g. '09_RAG__var_standard__replicate2' -> '09_RAG__var_standard' (which does
+    have an EVAL_DATA_DIR entry), while the episode dir itself keeps the full
+    replicate name so it never collides with the real production episode dir.
+    """
+    return re.sub(r"__replicate\d+$", "", article)
+
+
 async def run_pipeline(
     articles: Sequence[str],
     presets: Sequence[int],
     dry_run: bool = False,
     max_concurrent: int = DEFAULT_CONCURRENCY,
     test_mode: bool = False,
+    episodes_dir_override: Path | None = None,
 ) -> None:
     """Iterate over all (article, preset) combinations and grade each episode."""
-    episodes_dir = TEST_EPISODES_DIR if test_mode else EPISODES_DIR
+    episodes_dir = episodes_dir_override or (TEST_EPISODES_DIR if test_mode else EPISODES_DIR)
 
     ready: list[tuple[Path, str, str]] = []  # (ep_dir, article_name, ep_name) -- has article.md, no scores.json
     done: list[str] = []  # already have scores.json
@@ -361,6 +415,14 @@ def _parse_args() -> argparse.Namespace:
         help="Use held-out test articles and test_episodes/ output directory",
     )
     parser.add_argument(
+        "--episodes-dir",
+        type=Path,
+        default=None,
+        dest="episodes_dir",
+        help="Override the episodes root directory (default: rl_training_data/episodes or "
+        "test_episodes/ with --test). Used for noise-measurement replicate experiments.",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Show what would be graded without running any LLM calls",
@@ -372,11 +434,20 @@ def _parse_args() -> argparse.Namespace:
         metavar="N",
         help=f"Max concurrent episodes (default: {DEFAULT_CONCURRENCY}; raise carefully — Gemini RPM limits apply)",
     )
+    parser.add_argument(
+        "--grading-model",
+        choices=sorted(_MODEL_CHOICES),
+        default="gemini",
+        dest="grading_model",
+        help="LLM-as-judge model to use for grading (default: gemini = Gemini 2.5 Pro). "
+        "'claude' uses Claude Sonnet (requires ANTHROPIC_API_KEY and langchain-anthropic installed).",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = _parse_args()
+    configure_grading_model(_MODEL_CHOICES[args.grading_model])
     default_articles = TEST_ARTICLES if args.test else TRAIN_ARTICLES
     asyncio.run(
         run_pipeline(
@@ -385,6 +456,7 @@ def main() -> None:
             dry_run=args.dry_run,
             max_concurrent=args.concurrency,
             test_mode=args.test,
+            episodes_dir_override=args.episodes_dir,
         )
     )
 

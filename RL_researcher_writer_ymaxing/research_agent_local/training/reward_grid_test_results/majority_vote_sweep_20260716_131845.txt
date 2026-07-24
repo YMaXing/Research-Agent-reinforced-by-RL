@@ -1,0 +1,20 @@
+====================================================================================================
+MAJORITY-VOTE SWEEP: 09_RAG__var_standard  (original + 3 replicates, per explore_mult)
+====================================================================================================
+  explore_mult=0.50  majority=light     votes=[light=3, standard=1]  draws=[light(+0.005)  standard(+0.015)  light(+0.055)  light(+0.042)]
+  explore_mult=0.60  majority=light     votes=[light=2, deep=1, standard=1]  draws=[deep(+0.006)  standard(+0.019)  light(+0.081)  light(+0.065)]
+  explore_mult=0.65  majority=light     votes=[light=2, deep=1, standard=1]  draws=[deep(+0.010)  standard(+0.021)  light(+0.094)  light(+0.077)]
+  explore_mult=0.70  majority=light     votes=[light=2, deep=1, standard=1]  draws=[deep(+0.013)  standard(+0.022)  light(+0.107)  light(+0.089)]
+  explore_mult=0.80  majority=light     votes=[light=2, deep=1, standard=1]  draws=[deep(+0.019)  standard(+0.026)  light(+0.133)  light(+0.113)]
+  explore_mult=0.90  majority=light     votes=[light=2, deep=1, standard=1]  draws=[deep(+0.025)  standard(+0.029)  light(+0.159)  light(+0.133)]
+
+====================================================================================================
+MAJORITY-VOTE SWEEP: 06_tools__var_standard  (original + 3 replicates, per explore_mult)
+====================================================================================================
+  explore_mult=0.50  majority=standard  votes=[standard=3, deep=1]  draws=[standard(+0.016)  deep(+0.001)  standard(+0.021)  standard(+0.008)]
+  explore_mult=0.60  majority=standard  votes=[standard=3, deep=1]  draws=[standard(+0.005)  deep(+0.016)  standard(+0.044)  standard(+0.002)]
+  explore_mult=0.65  majority=deep      votes=[deep=3, standard=1]  draws=[deep(+0.000)  deep(+0.024)  standard(+0.055)  deep(+0.000)]
+  explore_mult=0.70  majority=deep      votes=[deep=3, standard=1]  draws=[deep(+0.006)  deep(+0.031)  standard(+0.067)  deep(+0.003)]
+  explore_mult=0.80  majority=deep      votes=[deep=3, standard=1]  draws=[deep(+0.017)  deep(+0.047)  standard(+0.078)  deep(+0.009)]
+  explore_mult=0.90  majority=deep      votes=[deep=3, standard=1]  draws=[deep(+0.027)  deep(+0.062)  standard(+0.078)  deep(+0.015)]
+
