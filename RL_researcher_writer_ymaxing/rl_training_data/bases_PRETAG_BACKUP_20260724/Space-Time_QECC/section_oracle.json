@@ -1,0 +1,59 @@
+{
+  "version": 2,
+  "article": "Space-Time_QECC",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-the-quantum-computing-challenge-and-the-discovery-of-a-cosmic-connection": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.49,
+        "standard": 0.43,
+        "deep": 0.37
+      }
+    },
+    "S2::section-2-how-quantum-error-correcting-codes-work": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.49,
+        "standard": 0.43,
+        "deep": 0.37
+      }
+    },
+    "S3::section-3-the-holographic-principle-and-space-time-emerges-as-a-quantum-error-correcting-code": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.79,
+        "standard": 0.73,
+        "deep": 0.87
+      }
+    },
+    "S4::section-4-black-holes-where-correctability-breaks-down": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.79,
+        "standard": 0.43,
+        "deep": 0.67
+      }
+    },
+    "S5::section-5-implications-for-our-universe-and-quantum-computing": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.94,
+        "standard": 0.73,
+        "deep": 0.67
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-the-quantum-computing-challenge-and-the-discovery-of-a-cosmic-connection": "light",
+    "S2::section-2-how-quantum-error-correcting-codes-work": "skip",
+    "S3::section-3-the-holographic-principle-and-space-time-emerges-as-a-quantum-error-correcting-code": "deep",
+    "S4::section-4-black-holes-where-correctability-breaks-down": "light",
+    "S5::section-5-implications-for-our-universe-and-quantum-computing": "light"
+  }
+}

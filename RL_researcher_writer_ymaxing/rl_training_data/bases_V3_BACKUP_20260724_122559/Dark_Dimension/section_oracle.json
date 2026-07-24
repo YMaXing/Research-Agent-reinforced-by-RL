@@ -1,0 +1,39 @@
+{
+  "version": 3,
+  "article": "Dark_Dimension",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.52
+      }
+    },
+    "S2::section-2-dark-interactions": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.49,
+        "standard": 0.43,
+        "deep": 0.535
+      }
+    },
+    "S3::section-3-a-dark-dimension": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.94,
+        "standard": 0.88,
+        "deep": 0.78
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "light",
+    "S2::section-2-dark-interactions": "skip",
+    "S3::section-3-a-dark-dimension": "light"
+  }
+}

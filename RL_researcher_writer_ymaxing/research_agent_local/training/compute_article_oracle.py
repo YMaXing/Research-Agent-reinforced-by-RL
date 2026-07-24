@@ -263,29 +263,70 @@ def _compute_r_w(
 ) -> tuple[dict[str, float], int, int, int]:
     """Return (r_w_per_arm, total_target_words, n_sections, n_with_target).
 
-    oracle_sections  : section_oracle.json["sections"]  {sec_id: {oracle, rewards}}
+    oracle_sections  : section_oracle.json["sections"]  {sec_id: {oracle, rewards, explore?}}
     features_sections: guideline_features.json["sections"]  {sec_id: {target_words, …}}
+
+    As of section_oracle.json version 4, each section may carry an "explore"
+    sub-dict (per-arm) alongside "rewards" (per-arm, unchanged full total).
+    When present, this function aggregates the two pieces DIFFERENTLY:
+      - "rewards - explore" (i.e. gt_base + user_intent + cost) is averaged
+        target-words-weighted, as before -- a section assigned a bigger word
+        budget legitimately deserves more say over the article's overall
+        content-quality/adherence/cost verdict.
+      - "explore" is averaged with a SIMPLE (unweighted) mean across sections
+        -- a genuinely valuable enhancement instance shouldn't count for more
+        or less just because it happened to land in a long vs short section.
+        See run13_rl_grok_pipeline_analysis.md Part 5 for the real-corpus case
+        (13_agent_framework) that motivated this: `deep`'s enhancement
+        instances were spread thin across many sections while `standard`
+        concentrated instances into one heavily-weighted section, letting
+        `standard` win on weight alone.
+    R_w[arm] = weighted_mean(rewards[arm] - explore[arm], weights=target_words)
+               + simple_mean(explore[arm])
+
+    For version 2/3 data (no "explore" field), falls back EXACTLY to the old
+    pure target-words-weighted mean of the combined "rewards" value -- zero
+    behaviour change for un-migrated section_oracle.json files.
     """
-    arm_acc: dict[str, float] = {a: 0.0 for a in ARMS}
+    arm_acc_rest: dict[str, float] = {a: 0.0 for a in ARMS}
+    arm_acc_explore: dict[str, float] = {a: 0.0 for a in ARMS}
     total_w = 0
+    n_sections = 0
     n_with_target = 0
+    has_explore_field = False
 
     for sec_id, info in oracle_sections.items():
         rewards = info["rewards"]                          # {skip, light, standard, deep}
+        explore = info.get("explore")                       # v4+ only; None for v2/v3
         feat = features_sections.get(sec_id, {})
         tw_val = feat.get("target_words")
         tw = int(tw_val) if tw_val is not None else 100   # fallback weight
         if tw_val is not None:
             n_with_target += 1
         total_w += tw
+        n_sections += 1
+
         for arm in ARMS:
-            arm_acc[arm] += tw * float(rewards.get(arm, 0.0))
+            total_reward = float(rewards.get(arm, 0.0))
+            if explore is not None:
+                has_explore_field = True
+                explore_val = float(explore.get(arm, 0.0))
+                arm_acc_rest[arm] += tw * (total_reward - explore_val)
+                arm_acc_explore[arm] += explore_val
+            else:
+                arm_acc_rest[arm] += tw * total_reward
 
     if total_w == 0:
         return {a: 0.0 for a in ARMS}, 0, len(oracle_sections), n_with_target
 
-    r_w = {a: arm_acc[a] / total_w for a in ARMS}
-    return r_w, total_w, len(oracle_sections), n_with_target
+    if has_explore_field:
+        r_w = {
+            a: (arm_acc_rest[a] / total_w) + (arm_acc_explore[a] / n_sections)
+            for a in ARMS
+        }
+    else:
+        r_w = {a: arm_acc_rest[a] / total_w for a in ARMS}
+    return r_w, total_w, n_sections, n_with_target
 
 
 # ---------------------------------------------------------------------------

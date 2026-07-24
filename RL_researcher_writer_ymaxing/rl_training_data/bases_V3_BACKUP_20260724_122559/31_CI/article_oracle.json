@@ -1,0 +1,232 @@
+{
+  "version": 2,
+  "article": "31_CI",
+  "variant": "no_variant",
+  "computed_at": "2026-07-24T19:00:49.363800+00:00",
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "skip",
+  "runner_up_arm_idx": 0,
+  "margin": 0.081858,
+  "reward_spread": 0.156812,
+  "r_w_rewards": {
+    "skip": 0.62844,
+    "light": 0.710298,
+    "standard": 0.599679,
+    "deep": 0.553486
+  },
+  "r_w_rewards_list": [
+    0.62844,
+    0.710298,
+    0.599679,
+    0.553486
+  ],
+  "decision_path": [
+    "unique reward winner (margin=+0.0819 > EPS_BAND=0.02)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 9,
+  "n_sections_with_target": 9,
+  "total_target_words": 4360,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 70,
+      "weight_words": 70,
+      "weight_frac": 0.01606,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.49,
+        "standard": 0.58,
+        "deep": -0.03
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.49,
+        0.58,
+        -0.03
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-what-is-continuous-integration",
+      "title": "what is continuous integration",
+      "target_words": 600,
+      "weight_words": 600,
+      "weight_frac": 0.13761,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.685
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.64,
+        0.58,
+        0.685
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-pre-commit-hooks-automated-local-guardrails",
+      "title": "pre commit hooks automated local guardrails",
+      "target_words": 400,
+      "weight_words": 400,
+      "weight_frac": 0.09174,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.64,
+        0.58,
+        0.52
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-ruff-fast-python-linting-and-formatting",
+      "title": "ruff fast python linting and formatting",
+      "target_words": 530,
+      "weight_words": 530,
+      "weight_frac": 0.12156,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.64,
+        0.58,
+        0.52
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-unit-tests-for-agent-repos",
+      "title": "unit tests for agent repos",
+      "target_words": 750,
+      "weight_words": 750,
+      "weight_frac": 0.17202,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.94,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.94,
+        0.58,
+        0.52
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-ci-workflows-automated-enforcement",
+      "title": "ci workflows automated enforcement",
+      "target_words": 1350,
+      "weight_words": 1350,
+      "weight_frac": 0.30963,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.64,
+        0.58,
+        0.52
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::section-7-ai-evaluations-as-regression-tests",
+      "title": "ai evaluations as regression tests",
+      "target_words": 520,
+      "weight_words": 520,
+      "weight_frac": 0.11927,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.84,
+        "standard": 0.745,
+        "deep": 0.7075
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.84,
+        0.745,
+        0.7075
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 8,
+      "sec_id": "S8::section-8-daily-development-workflow",
+      "title": "daily development workflow",
+      "target_words": 80,
+      "weight_words": 80,
+      "weight_frac": 0.01835,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.49,
+        "standard": 0.58,
+        "deep": 0.37
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.49,
+        0.58,
+        0.37
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 9,
+      "sec_id": "S9::section-9-conclusion",
+      "title": "conclusion",
+      "target_words": 60,
+      "weight_words": 60,
+      "weight_frac": 0.01376,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.64,
+        0.58,
+        0.52
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "presets": {
+    "S1::section-1-introduction": "skip",
+    "S2::section-2-framework-choice-under-uncertainty-and-why-some-selection-strategies-fail-in-production": "skip",
+    "S3::section-3-a-theory-for-choosing-decision-axes-instead-of-brands": "skip",
+    "S4::section-4-the-landscape-today-frameworks-philosophies-adoption-snapshot": "skip",
+    "S5::section-5-framework-deep-dive-langgraph": "skip",
+    "S6::section-6-framework-deep-dive-openai-agents-sdk": "skip",
+    "S7::section-7-framework-deep-dive-agentkit": "skip",
+    "S8::section-8-framework-deep-dive-crewai": "skip",
+    "S9::section-9-framework-deep-dive-pydanticai": "skip",
+    "S10::section-10-framework-deep-dive-autogen": "skip",
+    "S11::section-11-framework-deep-dive-claude-agent-sdk": "skip",
+    "S12::section-12-framework-deep-dive-fastmcp": "skip",
+    "S13::section-13-choosing-for-your-project-decision-matrix-tentative-forecasts": "skip",
+    "S14::section-14-our-capstone-pivots": "skip",
+    "S15::section-15-conclusion": "skip"
+  }
+}

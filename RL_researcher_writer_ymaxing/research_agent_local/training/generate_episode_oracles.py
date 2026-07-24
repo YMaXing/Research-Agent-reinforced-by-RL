@@ -343,6 +343,38 @@ def _section_reward(
     return gt_base + explore + user_intent + cost
 
 
+def _section_reward_components(
+    cc: float, fl: float, de: float, be: float,
+    cp: float, ga: float, ra: float,
+    nr: int,
+    variant: str,
+) -> tuple[float, float]:
+    """Same formula as _section_reward(), but returns (rest, explore) separately
+    instead of their sum -- ``rest + explore == _section_reward(...)`` exactly.
+
+    Exists so callers that need to aggregate the ``explore`` term differently
+    from the rest (see section_oracle.json version 4 / compute_article_oracle.py's
+    _compute_r_w()) don't have to duplicate the formula. ``_section_reward()``
+    itself is UNCHANGED and still returns a single float -- existing callers
+    (measure_replicate_noise.py, sweep_reward_formula.py's inline copy) are
+    unaffected by this addition.
+
+    Motivation: a genuinely valuable enhancement instance shouldn't count for
+    more or less just because the section it landed in happens to have a large
+    or small ``target_words`` budget -- see run13_rl_grok_pipeline_analysis.md
+    Part 5 for the real-corpus case (13_agent_framework) that surfaced this:
+    `deep`'s enhancement instances were spread thin across many sections while
+    `standard` concentrated 3 instances into one heavily-weighted section,
+    letting `standard` win on weight alone despite `deep` touching more content.
+    """
+    gt_base     = 0.20 * cc + 0.20 * fl
+    explore     = cp * (0.60 * de + 0.40 * be) * 0.50
+    user_intent = (0.50 * ga + 0.50 * ra) * 0.30
+    cost        = -0.06 * nr
+    rest = gt_base + user_intent + cost
+    return rest, explore
+
+
 # ---------------------------------------------------------------------------
 # Per-episode loading
 # ---------------------------------------------------------------------------
@@ -483,6 +515,7 @@ def process_article_variant(
     for sec_idx, (sec_id, sec_norm) in enumerate(zip(sec_ids, sec_norms)):
         # Per-active-preset reward
         preset_rewards: dict[int, float] = {}
+        preset_explore: dict[int, float] = {}
         for p in _ACTIVE_PRESETS:
             ep = episode_dims[p]
             nr = _ep_rounds[p]
@@ -501,7 +534,7 @@ def process_article_variant(
                 _count, qualities = enh
                 return enhancement_credit(qualities)
 
-            preset_rewards[p] = _section_reward(
+            rest, explore = _section_reward_components(
                 cc=_score("ground_truth_core_content"),
                 fl=_score("ground_truth_flow"),
                 de=_enh_credit("ground_truth_depth_enhancement"),
@@ -512,17 +545,25 @@ def process_article_variant(
                 nr=nr,
                 variant=variant_short,
             )
+            preset_rewards[p] = rest + explore
+            preset_explore[p] = explore
 
-        # Map active presets → 4 arms (each arm now maps to exactly one preset)
-        arm_rewards: dict[str, float] = {
-            arm: max(preset_rewards[p] for p in preset_ids)
-            for arm, preset_ids in _arm_presets.items()
-        }
+        # Map active presets → 4 arms (each arm now maps to exactly one preset).
+        # Pick the SAME winning preset for both the combined reward and its
+        # explore component, so "explore" always corresponds to the arm's
+        # actual chosen preset, not an independently-maxed value.
+        arm_rewards: dict[str, float] = {}
+        arm_explore: dict[str, float] = {}
+        for arm, preset_ids in _arm_presets.items():
+            best_p = max(preset_ids, key=lambda p: preset_rewards[p])
+            arm_rewards[arm] = preset_rewards[best_p]
+            arm_explore[arm] = preset_explore[best_p]
         oracle = max(_ARM_ORDER, key=arm_rewards.__getitem__)
 
         sections_output[sec_id] = {
             "oracle": oracle,
             "rewards": {k: round(arm_rewards[k], 6) for k in _ARM_ORDER},
+            "explore": {k: round(arm_explore[k], 6) for k in _ARM_ORDER},
         }
 
     # Summary stats for logging
@@ -537,11 +578,18 @@ def process_article_variant(
     if dry_run:
         return True
 
-    # Write section_oracle.json (version 3 format -- de/be now derived from the
-    # count x quality enhancement_credit() curve, see enhancement_reward.py, not
-    # the raw 0/1 grader score; schema shape is otherwise identical to version 2)
+    # Write section_oracle.json (version 4 format -- each section's "rewards"
+    # dict is unchanged (full per-arm reward, gt_base+explore+user_intent+cost),
+    # but a NEW "explore" dict is added alongside it holding just the explore
+    # component per arm. This lets compute_article_oracle.py aggregate
+    # "explore" via a SIMPLE (unweighted) mean across sections while the rest
+    # of the reward stays target-words-weighted -- see _section_reward_components()
+    # docstring and run13_rl_grok_pipeline_analysis.md Part 5 for why. Version 3
+    # (de/be derived from enhancement_credit(), no separate explore field) and
+    # version 2 (raw 0/1 de/be) data remain readable -- compute_article_oracle.py
+    # falls back to the old pure target-words-weighted mean when "explore" is absent.
     output = {
-        "version": 3,
+        "version": 4,
         "article": article,
         "variant": variant if variant is not None else "no_variant",
         "sections": sections_output,

@@ -117,6 +117,25 @@ VARIANTS["D_only_explore_065"] = {"explore_mult": 0.65}
 VARIANTS["D_only_explore_080"] = {"explore_mult": 0.80}
 VARIANTS["C_only_stdw_080"] = {"quality_weight": {"strong": 1.00, "standard": 0.80}}
 
+# --- Scale-compensation candidate: audit_enhancement_tags.py found the new
+# curve reduces mean enhancement_credit ~40% UNIFORMLY across skip/light/
+# standard/deep (since ~90-97% of entries are 0-or-1-instance for EVERY arm,
+# and the 1-instance credit was intentionally cut from the old implicit 1.0
+# to 0.55) rather than selectively cutting light's credit as hypothesized.
+# explore_mult=0.50/0.60 ~= 0.83 is the value that restores the OLD overall
+# scale of the explore differentiator while keeping the new curve's (real,
+# data-confirmed) deep>standard>light ordering intact.
+VARIANTS["D_scale_compensate_083"] = {"explore_mult": 0.83}
+
+# --- Candidate E: simple (unweighted) mean of the explore term across
+# sections, instead of target-words-weighted -- user's proposal (2026-07-24):
+# an enhancement instance shouldn't count for more just because it landed in
+# a long section. See _section_reward_components() in generate_episode_oracles.py
+# and _compute_r_w() in compute_article_oracle.py (both updated to support
+# this) for the real implementation this cfg flag exercises here for testing.
+VARIANTS["E_simple_avg_explore"] = {"simple_avg_explore": True}
+VARIANTS["E_plus_D_explore_083"] = {"simple_avg_explore": True, "explore_mult": 0.83}
+
 # Reference: A (backfiring control) combined with D, already shown in §34 to
 # partially cancel D's benefit -- kept for contrast against the C x D grid
 # above, which does not exhibit this cancellation.
@@ -173,10 +192,12 @@ def _recompute_from_episode_dims(
     """
     cost_coef = cfg.get("cost_coef", _PROD_COST_COEF)
     explore_mult = cfg.get("explore_mult", _PROD_EXPLORE_MULT)
+    simple_avg_explore = cfg.get("simple_avg_explore", False)
 
     sections_output: dict[str, dict] = {}
     for sec_idx, (sec_id, sec_norm) in enumerate(zip(sec_ids, sec_norms)):
         preset_rewards: dict[int, float] = {}
+        preset_explore: dict[int, float] = {}
         for p, nr in geo._EPISODE_ROUNDS.items():
             ep = episode_dims.get(p, {})
 
@@ -202,12 +223,16 @@ def _recompute_from_episode_dims(
             user_intent = (0.50 * ga + 0.50 * ra) * 0.30
             cost = cost_coef * nr
             preset_rewards[p] = gt_base + explore + user_intent + cost
+            preset_explore[p] = explore
 
         arm_rewards = {arm: preset_rewards[geo._ARM_PRESETS[arm][0]] for arm in geo._ARM_ORDER}
+        arm_explore = {arm: preset_explore[geo._ARM_PRESETS[arm][0]] for arm in geo._ARM_ORDER}
         sections_output[sec_id] = {
             "oracle": max(geo._ARM_ORDER, key=arm_rewards.__getitem__),
             "rewards": arm_rewards,
         }
+        if simple_avg_explore:
+            sections_output[sec_id]["explore"] = arm_explore
 
     r_w, _total_w, _n, _n_with_target = cao._compute_r_w(sections_output, features)
     ranked = sorted(cao.ARMS, key=lambda a: r_w[a], reverse=True)
@@ -372,10 +397,12 @@ def _recompute_core(
     """
     cost_coef = cfg.get("cost_coef", _PROD_COST_COEF)
     explore_mult = cfg.get("explore_mult", _PROD_EXPLORE_MULT)
+    simple_avg_explore = cfg.get("simple_avg_explore", False)
 
     sections_output: dict[str, dict] = {}
     for sec_idx, (sec_id, sec_norm) in enumerate(zip(sec_ids, sec_norms)):
         preset_rewards: dict[int, float] = {}
+        preset_explore: dict[int, float] = {}
         for p, nr in ep_rounds.items():
             ep = episode_dims.get(p, {})
 
@@ -401,12 +428,16 @@ def _recompute_core(
             user_intent = (0.50 * ga + 0.50 * ra) * 0.30
             cost = cost_coef * nr
             preset_rewards[p] = gt_base + explore + user_intent + cost
+            preset_explore[p] = explore
 
         arm_rewards = {arm: preset_rewards[preset_ids[0]] for arm, preset_ids in arm_presets.items()}
+        arm_explore = {arm: preset_explore[preset_ids[0]] for arm, preset_ids in arm_presets.items()}
         sections_output[sec_id] = {
             "oracle": max(geo._ARM_ORDER, key=arm_rewards.__getitem__),
             "rewards": arm_rewards,
         }
+        if simple_avg_explore:
+            sections_output[sec_id]["explore"] = arm_explore
 
     r_w, _total_w, _n, _n_with_target = cao._compute_r_w(sections_output, features)
     ranked = sorted(cao.ARMS, key=lambda a: r_w[a], reverse=True)
@@ -466,6 +497,62 @@ def corpus_explore_mult_sweep(explore_mults: list[float], emit) -> None:
             emit(f"      {name:<45} {old_arm:<8} -> {new_arm:<8} (orig_margin={orig_margin:+.4f}, {tag})")
 
 
+def corpus_grid_sweep(variant_names: list[str], emit) -> None:
+    """Corpus-wide C x D (quality_weight x explore_mult) grid sweep across
+    EVERY already-graded article-variant dir under _BASES_DIR.
+
+    Unlike corpus_explore_mult_sweep(), this ALSO exercises quality_weight/
+    instance_cap/credit_curve -- meaningful corpus-wide now that all 40
+    production articles carry the [instances=N; quality=...] tag (see
+    run13_rl_grok_pipeline_analysis.md Part 5 for when/why this became true).
+    Before this, quality_weight sweeps were a no-op on 38/40 articles since
+    untagged reasoning.json bypasses enhancement_credit() entirely.
+
+    Purely DESCRIPTIVE, same caveat as corpus_explore_mult_sweep(): reports
+    flip counts/which articles flip vs baseline, split by original margin
+    tier. Not a correctness judgment -- most of these 40 articles have no
+    independent re-grade/replicate confirmation of their own, so a flip here
+    is evidence the lever is doing something, not evidence it's right.
+    """
+    article_dirs = sorted(
+        d.name for d in _BASES_DIR.iterdir()
+        if d.is_dir() and (d / "article_oracle.json").exists()
+    )
+    baseline_results: dict[str, str] = {}
+    baseline_orig_margin: dict[str, float] = {}
+    for name in article_dirs:
+        result = _recompute_any(name, {})
+        if result is None:
+            continue
+        arm, _margin, _ = result
+        baseline_results[name] = arm
+        try:
+            orig = json.loads((_BASES_DIR / name / "article_oracle.json").read_text(encoding="utf-8"))
+            baseline_orig_margin[name] = orig.get("margin", 0.0)
+        except (OSError, json.JSONDecodeError):
+            baseline_orig_margin[name] = 0.0
+
+    emit(f"  Corpus size (already-graded, recomputable): {len(baseline_results)} article-variant dirs")
+    emit()
+    for variant_name in variant_names:
+        cfg = VARIANTS[variant_name]
+        flips = []
+        for name, base_arm in baseline_results.items():
+            result = _recompute_any(name, cfg)
+            if result is None:
+                continue
+            new_arm, _new_margin, _ = result
+            if new_arm != base_arm:
+                flips.append((name, base_arm, new_arm, baseline_orig_margin[name]))
+        thin = [f for f in flips if abs(f[3]) < 0.06]
+        comfortable = [f for f in flips if abs(f[3]) >= 0.06]
+        emit(f"  {variant_name:<28} flips={len(flips)}/{len(baseline_results)}  "
+             f"(thin-margin<0.06: {len(thin)}, comfortable-margin>=0.06: {len(comfortable)})")
+        for name, old_arm, new_arm, orig_margin in flips:
+            tag = "COMFORTABLE" if abs(orig_margin) >= 0.06 else "thin"
+            emit(f"      {name:<45} {old_arm:<8} -> {new_arm:<8} (orig_margin={orig_margin:+.4f}, {tag})")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--articles", nargs="+", default=_DEFAULT_ARTICLES)
@@ -497,6 +584,21 @@ def main() -> None:
         default=_EXPLORE_MULT_GRID,
         help="explore_mult values to test in --corpus-sweep mode.",
     )
+    parser.add_argument(
+        "--corpus-grid-sweep",
+        action="store_true",
+        help="Corpus-wide C x D grid sweep (quality_weight x explore_mult) across EVERY "
+             "already-graded bases/ dir -- meaningful now that all 40 production articles "
+             "carry the enhancement count/quality tag. Uses the same VARIANTS grid cells "
+             "as the per-article table (--corpus-grid-variants to restrict).",
+    )
+    parser.add_argument(
+        "--corpus-grid-variants",
+        nargs="+",
+        default=[v for v in VARIANTS if v.startswith("grid_")],
+        choices=list(VARIANTS.keys()),
+        help="Which VARIANTS entries to test in --corpus-grid-sweep mode (default: all grid_* cells).",
+    )
     args = parser.parse_args()
 
     lines: list[str] = []
@@ -504,6 +606,20 @@ def main() -> None:
     def emit(line: str = "") -> None:
         print(line)
         lines.append(line)
+
+    if args.corpus_grid_sweep:
+        emit("=" * 100)
+        emit("CORPUS-WIDE C x D GRID SWEEP (all already-graded articles)")
+        emit("=" * 100)
+        corpus_grid_sweep(args.corpus_grid_variants, emit)
+        if not args.no_file:
+            out_dir = Path(args.output_dir)
+            out_dir.mkdir(parents=True, exist_ok=True)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            out_path = out_dir / f"corpus_grid_sweep_{timestamp}.txt"
+            out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+            print(f"\n[written to {out_path}]")
+        return
 
     if args.corpus_sweep:
         emit("=" * 100)
@@ -545,7 +661,11 @@ def main() -> None:
         results: dict[str, tuple[str, float, dict[str, float]]] = {}
         for variant_name in args.variants:
             cfg = VARIANTS[variant_name]
-            arm, margin, r_w = _recompute(article, cfg)
+            result = _recompute_any(article, cfg)
+            if result is None:
+                emit(f"  {variant_name:<28} SKIPPED (bases dir or research_digest.md/guideline_features.json missing)")
+                continue
+            arm, margin, r_w = result
             results[variant_name] = (arm, margin, r_w)
             r_w_str = "  ".join(f"{a}:{r_w[a]:.4f}" for a in cao.ARMS)
             emit(f"  {variant_name:<28} raw_argmax={arm:<8} margin={margin:+.4f}  R_w=[{r_w_str}]")

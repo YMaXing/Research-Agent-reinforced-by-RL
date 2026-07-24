@@ -1,0 +1,49 @@
+{
+  "version": 3,
+  "article": "Bird_Eye_Extreme",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction-the-avascular-retina-paradox": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.29,
+        "standard": 0.595,
+        "deep": 0.17
+      }
+    },
+    "S2::section-2-oxygenated-life-the-great-oxidation-event-and-metabolic-trade-offs": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.64,
+        "standard": 0.43,
+        "deep": 0.595
+      }
+    },
+    "S3::section-3-a-mysterious-structure-the-pecten-oculi-and-chronic-anoxia": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.7115,
+        "standard": 0.38,
+        "deep": 0.485
+      }
+    },
+    "S4::section-4-eyes-like-a-hawk-evolutionary-origins-selective-pressures-and-implications": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.85375,
+        "standard": 0.8125,
+        "deep": 0.37
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction-the-avascular-retina-paradox": "standard",
+    "S2::section-2-oxygenated-life-the-great-oxidation-event-and-metabolic-trade-offs": "light",
+    "S3::section-3-a-mysterious-structure-the-pecten-oculi-and-chronic-anoxia": "light",
+    "S4::section-4-eyes-like-a-hawk-evolutionary-origins-selective-pressures-and-implications": "light"
+  }
+}

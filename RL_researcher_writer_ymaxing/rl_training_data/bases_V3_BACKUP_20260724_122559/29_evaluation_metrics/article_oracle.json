@@ -1,0 +1,188 @@
+{
+  "version": 2,
+  "article": "29_evaluation_metrics",
+  "variant": "no_variant",
+  "computed_at": "2026-07-24T19:00:49.324572+00:00",
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "standard",
+  "runner_up_arm_idx": 2,
+  "margin": 0.159794,
+  "reward_spread": 0.259463,
+  "r_w_rewards": {
+    "skip": 0.511765,
+    "light": 0.771228,
+    "standard": 0.611434,
+    "deep": 0.596632
+  },
+  "r_w_rewards_list": [
+    0.511765,
+    0.771228,
+    0.611434,
+    0.596632
+  ],
+  "decision_path": [
+    "unique reward winner (margin=+0.1598 > EPS_BAND=0.02)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 7,
+  "n_sections_with_target": 7,
+  "total_target_words": 3400,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.08824,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.64,
+        "standard": 0.54,
+        "deep": 0.52
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.64,
+        0.54,
+        0.52
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-using-evals-through-the-optimization-flywheel",
+      "title": "using evals through the optimization flywheel",
+      "target_words": 1200,
+      "weight_words": 1200,
+      "weight_frac": 0.35294,
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.915,
+        "standard": 0.5725,
+        "deep": 0.6065
+      },
+      "rewards_by_preset": [
+        0.35,
+        0.915,
+        0.5725,
+        0.6065
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-exploring-possible-metric-types",
+      "title": "exploring possible metric types",
+      "target_words": 450,
+      "weight_words": 450,
+      "weight_frac": 0.13235,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.3115,
+        "standard": 0.745,
+        "deep": 0.685
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.3115,
+        0.745,
+        0.685
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-why-business-metrics-over-benchmarks",
+      "title": "why business metrics over benchmarks",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.07353,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.75,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.75,
+        0.58,
+        0.52
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-why-custom-business-metrics-over-generic-metrics",
+      "title": "why custom business metrics over generic metrics",
+      "target_words": 600,
+      "weight_words": 600,
+      "weight_frac": 0.17647,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.805,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.805,
+        0.58,
+        0.52
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-choosing-binary-metrics-over-anything-else",
+      "title": "choosing binary metrics over anything else",
+      "target_words": 500,
+      "weight_words": 500,
+      "weight_frac": 0.14706,
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.915,
+        "standard": 0.68725,
+        "deep": 0.685
+      },
+      "rewards_by_preset": [
+        0.35,
+        0.915,
+        0.68725,
+        0.685
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::section-7-conclusion",
+      "title": "conclusion",
+      "target_words": 100,
+      "weight_words": 100,
+      "weight_frac": 0.02941,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.64,
+        0.58,
+        0.52
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    }
+  ]
+}

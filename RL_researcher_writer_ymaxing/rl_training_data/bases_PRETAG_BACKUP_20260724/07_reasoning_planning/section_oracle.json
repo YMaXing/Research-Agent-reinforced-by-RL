@@ -1,0 +1,89 @@
+{
+  "version": 2,
+  "article": "07_reasoning_planning",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-what-a-non-reasoning-model-does-and-why-it-fails-on-complex-tasks": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.44,
+        "standard": 0.38,
+        "deep": 0.32
+      }
+    },
+    "S2::section-2-teaching-models-to-think-chain-of-thought-and-its-limits": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.09,
+        "standard": 0.38,
+        "deep": 0.32
+      }
+    },
+    "S3::section-3-separating-planning-from-answering-foundations-of-react-and-plan-and-execute": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.37
+      }
+    },
+    "S4::section-4-react-in-depth-loop-evolving-example-pros-and-cons": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.09,
+        "standard": 0.18,
+        "deep": -0.03
+      }
+    },
+    "S5::section-5-plan-and-execute-in-depth-plan-execution-pros-and-cons": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.24,
+        "standard": 0.03,
+        "deep": -0.03
+      }
+    },
+    "S6::section-6-where-this-shows-up-in-practice-deep-research-style-systems": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.09,
+        "standard": 0.18,
+        "deep": -0.03
+      }
+    },
+    "S7::section-7-modern-reasoning-models-thinking-vs-answer-streams-and-interleaved-thinking": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.09,
+        "standard": 0.03,
+        "deep": 0.12
+      }
+    },
+    "S8::section-8-advanced-agent-capabilities-enabled-by-planning-goal-decomposition-and-self-correction": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.09,
+        "standard": 0.03,
+        "deep": -0.03
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-what-a-non-reasoning-model-does-and-why-it-fails-on-complex-tasks": "skip",
+    "S2::section-2-teaching-models-to-think-chain-of-thought-and-its-limits": "standard",
+    "S3::section-3-separating-planning-from-answering-foundations-of-react-and-plan-and-execute": "skip",
+    "S4::section-4-react-in-depth-loop-evolving-example-pros-and-cons": "skip",
+    "S5::section-5-plan-and-execute-in-depth-plan-execution-pros-and-cons": "light",
+    "S6::section-6-where-this-shows-up-in-practice-deep-research-style-systems": "standard",
+    "S7::section-7-modern-reasoning-models-thinking-vs-answer-streams-and-interleaved-thinking": "skip",
+    "S8::section-8-advanced-agent-capabilities-enabled-by-planning-goal-decomposition-and-self-correction": "skip"
+  }
+}
