@@ -1,0 +1,909 @@
+{
+  "article": "13_agent_framework",
+  "model": "anthropic:claude-sonnet-5",
+  "sections": {
+    "Introduction": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents are near-identical introductions covering the same core content: recap of Nova/Brown capstones, the framework-selection decision, the risks of poor choices, and the two focal concepts (LangGraph interrupts/checkpoints, MCP). Neither adds any traceable, source-attributed technical detail, statistic, named study, or new sub-topic beyond what the section already covers -- both remain at the level of restating the section's core framing in slightly different wording. No qualifying depth or breadth instances were found in either document, so both dimensions tie."
+      },
+      "light_vs_deep": {
+        "a_arm": "light",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same introductory content: recap of Nova/Brown capstones, the framework-selection stakes, the two core concepts (LangGraph interrupts/checkpoints, MCP), and the resulting architecture. Neither adds any named study, statistic, technical mechanism beyond what's already stated, or a genuinely new sub-topic. Document B has slightly more rhetorical framing ('not academic exercises,' 'no hello world tutorials') but these are stylistic, not substantive source-attributed enhancements. No qualifying depth or breadth instances differentiate the two, so both dimensions tie."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover essentially the same introductory content: the two capstone projects (Nova and Brown), the rationale for framework selection, the risks of poor framework choices, the two core concepts (LangGraph interrupts/checkpoints and MCP), and the reference architecture. Neither adds a named study, statistic, specific technical mechanism, or new adjacent sub-topic beyond what the other covers. Document B has slightly more rhetorical flourish ('not just academic exercises', 'hello world tutorials') and document A includes a bit more explicit framing of the architecture description, but neither introduces concrete, source-attributed enhancement content (e.g., no specific frameworks named, no data points, no additional named technical mechanisms) that the other lacks. Both are essentially paraphrases of the same underlying content with no differentiating depth or breadth instances."
+      }
+    },
+    "Framework Choice Under Uncertainty": {
+      "light_vs_standard": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [
+            "Specific technical mechanism of 'structural divergence' where execution path deviates from the graph, forcing costly 'rerouting' patterns",
+            "Named capstone examples (Nova's research process, Brown's writing process) as concrete illustrations of the workload-type distinction"
+          ],
+          "b_instances": [
+            "Shared memory store poisoning from lack of namespace-level isolation between agents",
+            "Container escape risk when agents share a host kernel",
+            "Runaway agent exhausting host resources without kernel-level limits",
+            "Cascading failures propagating across agents through shared dependencies"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core runtime/protocol/tooling taxonomy and the same capstone anecdote about choosing LangGraph vs. MCP tools for writing vs. research agents, so breadth is tied with no genuinely new adjacent subtopics introduced by either side. For depth, document A adds one specific technical mechanism ('structural divergence' causing 'rerouting') plus named capstone project specifics (Nova, Brown) that deepen the workload-type discussion. Document B, however, elaborates the vague 'lacks reliability primitives' claim with four distinct, named production-reliability failure modes (memory poisoning, container escape, runaway resource exhaustion, cascading failures), giving it a larger and more technically detailed set of depth-enhancing instances, so B is moderately preferred on depth."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [
+            "Specific production reliability requirements added: process isolation and multi-tenant security needed for production environments"
+          ],
+          "b_instances": [
+            "Named technical mechanism 'structural divergence' and 'rerouting' explaining why a rigid LangGraph fails for interactive research tasks (cited to source)",
+            "Additional technical specifics on tooling framework layer: authentication and transport scaffolding"
+          ]
+        },
+        "breadth": {
+          "preference": "a_more",
+          "a_instances": [
+            "ACP (Agent Communication Protocol) described as REST-native messaging standard",
+            "A2A (Agent-to-Agent) protocol described as enabling peer-to-peer task delegation"
+          ],
+          "b_instances": [
+            "OpenAI Agents SDK named as an additional runtime example"
+          ]
+        },
+        "reasoning": "Both documents share the core runtime/protocol/tooling framework distinction and the LangGraph research-vs-writing agent anecdote. On depth, B adds a named technical mechanism ('structural divergence'/'rerouting') explaining why the rigid graph failed, plus minor tooling specifics (auth, transports), giving it a modest edge over A's single addition about production reliability needs (process isolation, multi-tenant security). On breadth, A introduces two genuinely new adjacent protocols (ACP and A2A) with brief functional descriptions and a citation, broadening the protocol landscape beyond MCP, while B only adds a single named alternative runtime (OpenAI Agents SDK) without elaboration -- giving A a moderate edge in breadth."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "shared memory store poisoning from lack of namespace isolation",
+            "container escape risk from shared host kernel",
+            "runaway agent resource exhaustion without kernel-level limits",
+            "cascading failures propagating through shared dependencies"
+          ],
+          "b_instances": [
+            "need for process isolation in production",
+            "need for multi-tenant security in production (cited source)"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "mention of alternative interoperability protocols ACP (REST-native messaging) and A2A (peer-to-peer task delegation) as part of broader protocol landscape, with citation"
+          ]
+        },
+        "reasoning": "Both documents share the same core three-layer framework (runtime/protocol/tooling) and the same origin-story anecdote about LangGraph vs MCP for research vs writing agents. For depth, Document A goes further into the specific technical failure modes that arise without a dedicated runtime layer, naming four distinct, concrete risks (memory store poisoning, container escape, resource exhaustion, cascading failures), whereas Document B only generically cites process isolation and multi-tenant security as production requirements (backed by one citation) without the same specificity or count. For breadth, Document B introduces a genuinely new adjacent sub-topic not covered in A: other interoperability protocols (ACP and A2A) with their distinguishing mechanisms, supported by a citation, broadening the protocol-layer discussion beyond MCP. Document A has no comparable breadth-expanding content. Overall, A leads on depth while B leads on breadth."
+      }
+    },
+    "A Theory for Choosing: Decision Axes": {
+      "light_vs_standard": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "b_much_more",
+          "a_instances": [
+            "Kubernetes vs agent runtime lifecycle mismatch (stateless/scalable vs stateful/singleton/bursty) as depth into reliability primitives, with citation"
+          ],
+          "b_instances": [
+            "Symbolic vs neural design trade-off framing, with hybrid patterns using LLM for decomposition and symbolic constraints on tool execution (cited)",
+            "LangGraph nodes/edges described as functioning like a state machine enforcing valid data flow (cited)",
+            "Reliability primitives explicitly tied to safety-critical systems' isolation and deterministic execution lessons (cited)"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [
+            "Specific evidence of MCP adoption via IDEs (Cursor, VS Code, JetBrains) acting as native MCP clients"
+          ],
+          "b_instances": [
+            "New sub-topic: regulated environments finding LLM non-determinism challenging, motivating explicit control flow (cited)"
+          ]
+        },
+        "reasoning": "Both documents cover the same four axes with largely overlapping core content. On depth, document B adds several new technical mechanisms and citations not in A: the symbolic-vs-neural architecture framing with hybrid decomposition patterns, LangGraph as a state-machine analogy, and an explicit safety-critical-systems justification for reliability primitives. Document A's only comparable depth addition is the Kubernetes stateless-vs-stateful contrast for reliability primitives. This gives B a clear depth advantage (b_much_more). On breadth, each document introduces one distinct new sub-topic: A cites specific IDE adoption of MCP (Cursor, VS Code, JetBrains) as evidence of ecosystem traction, while B introduces the regulatory/compliance angle around LLM non-determinism. These are roughly comparable in substantiveness, yielding a tie on breadth."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [
+            "Risk-based autonomy strategy scaling agent freedom by task risk level"
+          ],
+          "b_instances": [
+            "Kubernetes/orchestrator contrast explaining why stateful, idle-then-bursty agent lifecycles need specialized runtimes"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [
+            "EU AI Act regulatory pressure pushing enterprises toward auditable workflows"
+          ],
+          "b_instances": [
+            "Real-world MCP adoption by IDEs like Cursor, VS Code, and JetBrains as native clients"
+          ]
+        },
+        "reasoning": "Both documents cover the same four axes with largely identical core content. A adds one depth instance (a named 'risk-based autonomy' strategy tied to reliability primitives) and one breadth instance (citing the EU AI Act as an external regulatory driver of control-flow choices). B adds one comparable depth instance (a technical contrast with Kubernetes explaining why stateless orchestrators don't suit agent workloads) and one comparable breadth instance (naming specific IDEs -- Cursor, VS Code, JetBrains -- as evidence of MCP's real-world adoption). Each side's additions are roughly equal in number and substantiveness for both dimensions, yielding ties on depth and breadth."
+      },
+      "standard_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "b_much_more",
+          "a_instances": [
+            "Risk-based autonomy strategy scaling agent freedom with task risk (citation on governance frameworks)"
+          ],
+          "b_instances": [
+            "Symbolic vs. neural design trade-off with hybrid patterns combining LLM decomposition and symbolic tool-execution constraints (arXiv citation)",
+            "LangGraph described as functioning like a state machine enforcing valid data flow (arXiv citation)",
+            "Reliability primitives framed as borrowing from safety-critical systems' isolation and deterministic execution principles (blog citation)",
+            "LLM non-determinism specifically flagged as a challenge for regulated/audit environments (PMC citation)"
+          ]
+        },
+        "breadth": {
+          "preference": "a_more",
+          "a_instances": [
+            "EU AI Act regulation named as a driver pushing enterprises toward auditable workflows over autonomy"
+          ],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same four axes and largely overlapping core claims (LangGraph vs OpenAI Agents SDK, reliability primitives, DX trade-offs, MCP interoperability). On depth, Document B adds several substantive mechanistic elaborations not in A: the symbolic-vs-neural framing with hybrid tool-execution patterns, the state-machine analogy for LangGraph, the safety-critical-systems analogy for reliability primitives, and the non-determinism/regulated-environment challenge, each backed by a distinct citation. Document A's only comparable depth addition is the 'risk-based autonomy' scaling concept. This gives B a clear depth advantage. On breadth, Document A uniquely names the EU AI Act as a concrete regulatory factor influencing the control-flow axis, introducing a new adjacent subtopic (compliance/regulation) that B only gestures at vaguely ('regulated environments') without naming a specific regulation, so it doesn't qualify as a comparable instance. This gives A a modest breadth edge."
+      }
+    },
+    "The Landscape Today: Frameworks, Philosophies & Adoption Snapshot": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [
+            "LangGraph's graph model contrasted with LangChain's 'linear' predecessor model (sourced via Milvus blog)",
+            "PydanticAI's Pydantic-model-to-schema validation mechanism explained (sourced via RealPython)",
+            "Claclaude Agent SDK exposes full Anthropic Messages API enabling custom orchestration logic (sourced via Mindstudio)"
+          ],
+          "b_instances": [
+            "LangGraph checkpoint/interrupt mechanism elaborated as enabling human-in-the-loop pause/inspect/resume, framed as essential for high-stakes, auditable domains",
+            "OpenAI Agents SDK 'Python-first' philosophy detailed as orchestration via native if/else and loop control",
+            "CrewAI Crews vs Flows explained in more mechanistic detail (roles-based teams vs state/execution management) plus a maturity-driven adoption pattern (start flexible, add control)",
+            "AutoGen explicitly positioned as prototyping-only tool with a described Studio-to-code production workflow",
+            "FastMCP download growth quantified as a 5x increase over three months"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "PydanticAI compared to a 'FastAPI-like' developer experience, introducing an adjacent framework analogy",
+            "PydanticAI noted to have built-in graph support as an additional capability"
+          ]
+        },
+        "reasoning": "Both documents cover the same seven frameworks and adoption stats, but they diverge in where they add extra specificity. Document A adds a handful of sourced technical mechanism details not in B: a specific 'linear model' characterization of LangChain vs LangGraph's graph model, a Pydantic schema-validation mechanism explanation, and a Claude Agent SDK detail about exposing the full Messages API for custom orchestration. Document B, however, adds more numerous and often more substantive elaborations: deeper explanation of LangGraph's human-in-the-loop pause/inspect/resume capability and its stakes for high-risk domains, a concrete description of the OpenAI Agents SDK's Python-first if/else control flow, a more detailed breakdown of CrewAI's Crews vs Flows architecture and adoption pattern, and a specific claim that AutoGen is positioned only for prototyping with a described Studio-to-production workflow (plus a minor quantified FastMCP growth stat). This gives B a modest edge in depth (more numerous specific elaborations, though A's are also concrete and sourced). For breadth, A introduces no genuinely new adjacent sub-topics, while B introduces two: a 'FastAPI-like' developer-experience comparison and a built-in graph-support feature for PydanticAI, giving B a modest edge in breadth as well."
+      },
+      "light_vs_deep": {
+        "a_arm": "light",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [
+            "LangGraph elaboration: workflows can be paused, inspected by a human, and resumed, framed as essential for high-stakes/auditable domains"
+          ],
+          "b_instances": [
+            "Claude Agent SDK design philosophy detail: giving agents access to real-world tools like terminal/file system rather than abstract API wrappers"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Nuance that GitHub stars measure curiosity while download/release velocity indicates a committed, active user base, citing a comparative framework star/release-cadence analysis"
+          ]
+        },
+        "reasoning": "Both documents cover the same set of frameworks with largely equivalent adoption stats and philosophy descriptions. On depth, A adds a slightly more elaborated mechanism description for LangGraph's checkpoint/resume capability (human-in-the-loop inspection framing), while B adds a distinct depth point about Claude Agent SDK's design philosophy (real-world tool access vs API wrappers) \u2014 these roughly offset, yielding a tie. On breadth, B introduces a genuinely new sub-topic not present in A: the nuance that GitHub stars and download/release velocity can diverge, citing a comparative analysis of framework star counts vs release cadence, which broadens the adoption-metrics discussion beyond what A covers."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "LangGraph's graph-based architecture explicitly cited as better suited than LangChain's linear model per external comparison (milvus.io)",
+            "PydanticAI mechanism detail: Pydantic models instruct LLM to return schema-matched data ensuring type-safe objects with automatic validation",
+            "Claude Agent SDK technical detail: exposes full Anthropic Messages API letting developers build custom orchestration logic",
+            "OpenAI Agents SDK design philosophy elaboration: minimal API surface makes it faster to understand what an agent is doing"
+          ],
+          "b_instances": [
+            "Claude Agent SDK design philosophy: gives agents access to real-world tools (terminal, file system) rather than abstract API wrappers",
+            "OpenAI Agents SDK download trend detail: slight upward trend noted",
+            "FastMCP growth quantified explicitly as a 5x increase over three months"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Discussion of GitHub stars vs. download counts/release velocity as distinct adoption signals, citing external analysis of frameworks' release cadence"
+          ]
+        },
+        "reasoning": "Both documents cover the same frameworks and largely identical core claims. On depth, A adds a few more substantive technical elaborations (LangGraph-vs-LangChain architectural comparison sourced externally, a mechanism explanation for PydanticAI's schema validation, and a concrete detail on Claude Agent SDK exposing the full Messages API), while B contributes fewer and somewhat lighter depth additions (Claude SDK's real-world-tools design philosophy, a minor download-trend note, and an explicit 5x growth figure for FastMCP) \u2014 giving A a modest edge. On breadth, B introduces a genuinely new sub-topic not present in A: the distinction between GitHub stars and download/release velocity as different maturity signals, backed by an external source, which A does not address at all, giving B a modest edge in breadth."
+      }
+    },
+    "Framework Deep Dive: LangGraph": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [
+            "Checkpointing storage growth issue for long-running agents (cited)",
+            "DeltaChannel incremental state storage optimization (cited)",
+            "Asynchronous persistence modes trading recovery risk for performance (cited)"
+          ],
+          "b_instances": [
+            "Checkpointer saves serialized MessagesState snapshots to PostgreSQL/SQLite",
+            "Functional API offers less granular checkpoints than graph API (trade-off detail)",
+            "Workflow becomes deterministic/auditable despite probabilistic LLM, backed by multiple citations on checkpoint-based replay for non-determinism"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents stay within the same core topics (graph modeling, interrupts, persistence/checkpointing, time-travel, graph vs functional API) with no genuinely new adjacent subtopics, so breadth is a tie with no qualifying instances in either. For depth, A adds three concrete, cited mechanisms addressing checkpointing overhead (storage growth problem, DeltaChannel, async persistence modes), while B adds three comparably specific technical details (MessagesState/DB persistence backend, functional API's reduced checkpoint granularity, and the determinism-despite-probabilistic-LLM point supported by three citations). The two sets are roughly equal in number and substantiveness, so depth is also judged a tie."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "specific mechanism: checkpointer saves serialized MessagesState snapshots to a database like PostgreSQL or SQLite",
+            "functional API trade-off detail: abstracts away underlying state machine and offers less granular checkpoints",
+            "citation to arxiv paper on non-deterministic LLM processes supporting the state-machine transformation claim"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core topics (graph-based modeling, primitives, API styles, use-case trade-offs) with no genuinely new adjacent sub-topics introduced by either side, so breadth ties. For depth, Document B adds more concrete technical specifics not present in A: the checkpointer's use of serialized MessagesState snapshots persisted to PostgreSQL/SQLite, a more granular explanation of what the functional API sacrifices (state machine visibility, checkpoint granularity), and an additional citation (arxiv paper) grounding the determinism claim. Document A's equivalent claims (state replay, tracing failures, node-level inspection) are matched by B's own phrasing, so A contributes no unique depth instances beyond what B already covers, making B moderately ahead on depth."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [
+            "checkpointing latency/storage overhead from per-step snapshots (cited)",
+            "DeltaChannel incremental state storage and async persistence trade-offs for recovery risk (cited)"
+          ],
+          "b_instances": [
+            "mechanism of checkpointing enabling replayable state machine for debugging/failure tracing (cited)",
+            "specific contrast of functional API's reduced boilerplate for prototyping vs graph API's explicit control for complex branching/collaboration (cited)"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core LangGraph topics (graph modeling, primitives, API styles) without introducing genuinely new adjacent subtopics, so breadth ties at zero for both. On depth, each adds distinct technical detail: A goes deeper into checkpointing's operational costs (storage growth, latency) and specific mitigations (DeltaChannel, async persistence), while B goes deeper into the debugging mechanism enabled by checkpointing/time-travel and gives a more granular comparison of when to use the functional vs graph API. Both sets are comparably substantive and similarly sized, yielding a tie on depth as well."
+      }
+    },
+    "Framework Deep Dive: OpenAI Agents SDK": {
+      "light_vs_standard": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Comparison with LangGraph's functional API, noting it still compiles into an explicit stateful graph unlike the OpenAI SDK's direct Python-native loop"
+          ]
+        },
+        "reasoning": "Both documents cover the same core primitives (agents, tools, guardrails, handoffs, sessions) and the same execution-model/reliability trade-off points with essentially identical substance, so neither adds distinct depth beyond the other (depth: tie). Document B, however, introduces a genuinely new adjacent comparison point not present in A: an explicit contrast with LangGraph's functional API and its compiled stateful graph, which broadens the section's scope by relating the OpenAI SDK to another framework's execution model. This is a new sub-topic rather than a deeper elaboration of an existing OpenAI SDK-specific point, so it counts as breadth, giving B a modest edge there."
+      },
+      "light_vs_deep": {
+        "a_arm": "light",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "specific production failure modes: agent crash mid-task causes lost progress",
+            "lack of distributed locking causes concurrent agents to duplicate work"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core primitives (Agents, Tools, Guardrails, Handoffs, Sessions), the same Python-native execution model, and the same reliability trade-off (no built-in durable pause/resume/checkpointing). Document B goes deeper on this trade-off by naming concrete failure mechanisms -- agents losing progress on mid-task crashes and duplicate work arising from missing distributed locking -- which A does not mention, giving B an edge on depth. Neither document introduces a genuinely new adjacent subtopic beyond the SDK's primitives and execution model, so breadth is tied."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [
+            "specific comparison to LangGraph's decorator-based functional API compiling into an explicit stateful graph"
+          ],
+          "b_instances": [
+            "concrete failure mode: agent crash mid-task causes total loss of progress",
+            "concrete failure mode: lack of distributed locking lets concurrent agents duplicate work"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core primitives, execution model, and reliability trade-off of the OpenAI Agents SDK. For depth, Document A adds a more specific technical contrast with LangGraph's decorator-based functional API and its compiled state machine, which is a unique elaboration not present in B (B only vaguely references 'graph systems'). Document B, however, elaborates the reliability trade-off with two concrete, source-cited failure mechanisms (loss of progress on crash, duplicate work from lack of distributed locking) that A does not mention, giving B a modest edge in depth. Neither document introduces a genuinely new adjacent sub-topic beyond the SDK's core primitives and execution trade-offs, so breadth is a tie."
+      }
+    },
+    "Framework Deep Dive: AgentKit": {
+      "light_vs_standard": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents present nearly identical content covering AgentKit's core components (Agent Builder, Connector Registry, ChatKit, Evals/RFT), its relationship to the OpenAI Agents SDK, and the trade-off around OpenAI ecosystem lock-in vs. MCP interoperability. Neither adds any distinct source-attributed depth (e.g., specific mechanisms, statistics, named studies) or breadth (new sub-topics, examples, applications) beyond this shared core content. The differences are purely stylistic/structural (wording, formatting, sentence order) with no substantive new information in either direction, so both dimensions tie with no qualifying instances found."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "b_much_more",
+          "a_instances": [],
+          "b_instances": [
+            "Agent Builder details: guardrails, preview tests, inline evaluation, version control",
+            "ChatKit details: streaming responses, conversation threads, custom theming",
+            "Evals/RFT details: datasets, automated prompt optimization, custom graders"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [
+            "Security risks of third-party MCP integration (data leakage, tool poisoning) per Zenity source"
+          ],
+          "b_instances": [
+            "Specific connector platforms named: Dropbox, Google Drive, SharePoint, Teams"
+          ]
+        },
+        "reasoning": "Both documents cover the same core AgentKit components, but B adds several concrete depth details for each component (guardrails/preview tests/version control for Agent Builder, streaming/threads/theming for ChatKit, datasets/prompt optimization/custom graders for Evals) that A lacks, giving B a clear depth advantage. On breadth, each document introduces one distinct new element not in the other: A cites a security research source noting data leakage and tool poisoning risks from third-party MCP integration, while B names specific connector platforms (Dropbox, Google Drive, SharePoint, Teams) as a new concrete detail. These roughly balance out, making breadth a tie."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Specific security risk of third-party MCP integration causing data leakage or tool poisoning in no-code environments"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core components (Agent Builder, Connector Registry, ChatKit, Evals/RFT) and the same overall framing of AgentKit as a lifecycle toolkit atop the Agents SDK, with no genuinely new adjacent sub-topics introduced by either (breadth tie). For depth, Document B adds a concrete technical limitation not present in A: it notes that integrating third-party MCP servers can introduce security risks like data leakage or tool poisoning, which deepens the point about MCP interoperability with a specific caveat. Document A lacks this or any comparable depth-adding detail, so B is judged more on depth."
+      }
+    },
+    "Framework Deep Dive: CrewAI": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [
+            "Auto-generated hierarchical manager is unreliable, often running tasks sequentially instead of delegating intelligently (cited)"
+          ],
+          "b_instances": [
+            "Flow acts as backbone/manager and can delegate a task to a Crew, receiving the result back to continue the process (cited to CrewAI docs)"
+          ]
+        },
+        "breadth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Parallel to game AI multi-agent coordination and the Critic-Refiner pattern as a common technique in frameworks like CrewAI (cited)"
+          ],
+          "b_instances": []
+        },
+        "reasoning": "Both documents add one distinct, source-attributed depth instance: A details the known unreliability of CrewAI's auto-generated hierarchical manager, while B details the specific delegation mechanism between Flows and Crews. These are comparably specific and each cited, resulting in a tie for depth. For breadth, only A introduces a genuinely new adjacent topic -- the analogy to game AI multi-agent systems and the Critic-Refiner pattern, backed by a citation -- while B's additional content (e.g., 'configuration overhead' trade-off) stays within the existing discussion of CrewAI's opinionated constructs without adding a new sub-topic, giving A the edge on breadth."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [
+            "Lazy-loading dependencies reduce cold-start latency (CLI/dev tooling detail)"
+          ],
+          "b_instances": [
+            "Specific Flow-Crew delegation mechanism: Flow delegates task to Crew and receives result back"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [
+            "Analogy to multi-agent systems (MAS) research in robotics using centralized/decentralized coordination patterns"
+          ],
+          "b_instances": [
+            "Mention of configurable memory and persistence options as a distinct feature area"
+          ]
+        },
+        "reasoning": "Both documents cover the same core Crews/Flows duality, developer experience, and trade-off points with near-identical content. For depth, A adds a specific technical detail about lazy-loading dependencies improving cold-start latency, while B adds a specific mechanistic detail on how Flows delegate to Crews and receive results back -- these are roughly comparable single instances, yielding a tie. For breadth, A introduces an adjacent research analogy to multi-agent systems research in robotics (centralized vs decentralized coordination), a genuinely new topic with citation support, while B introduces a new sub-topic of configurable memory and persistence options, also a distinct feature area not otherwise covered. Both are single, roughly comparable instances, so breadth is also a tie."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [
+            "Hierarchical manager specific failure mode: fails to delegate intelligently and runs tasks sequentially instead (sourced)"
+          ],
+          "b_instances": [
+            "Lazy-loading dependencies reduce cold-start latency (specific performance detail, sourced)"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [
+            "Comparison to game AI multi-agent coordination patterns, citing the Critic-Refiner technique as a concrete example"
+          ],
+          "b_instances": [
+            "Comparison to robotics MAS research, citing centralized-supervisor vs decentralized peer-to-peer coordination patterns"
+          ]
+        },
+        "reasoning": "Both documents cover the same core Crews/Flows duality, dev workflow, and CrewAI's opinionated trade-offs. For depth, A adds a specific technical failure mode of the hierarchical manager (fails to delegate, runs sequentially) while B's parallel point is vaguer ('configuration overhead'); however B offsets this with a distinct specific technical detail (lazy-loading dependencies reducing cold-start latency) not present in A, making depth roughly balanced. For breadth, A brings in a game-AI multi-agent coordination analogy with the concrete Critic-Refiner pattern, while B brings in a robotics MAS analogy with concrete centralized/decentralized communication patterns -- both are comparably substantive new-domain comparisons, so breadth is also a tie."
+      }
+    },
+    "Framework Deep Dive: PydanticAI": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "explains durable execution as making workflows 'fault-oblivious', resuming exactly where they left off after a crash, with citation to source [13]"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core PydanticAI points (FastAPI-like typed contracts, durable execution with Temporal/DBOS/Prefect, graph support, schema generation, and the schema-definition trade-off). Document B adds a specific technical elaboration on the durable execution mechanism, describing it as making workflows 'fault-oblivious' and resuming exactly where they left off after a crash, backed by a cited source\u2014this is a depth-adding detail not present in A. Neither document introduces a genuinely new adjacent subtopic beyond the shared coverage, so breadth is tied."
+      },
+      "light_vs_deep": {
+        "a_arm": "light",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [
+            "'Fault-oblivious' workflow resumption mechanism after crash"
+          ],
+          "b_instances": [
+            "Schema generation from type hints and docstrings"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Draws on data pipeline orchestration principles for durable state management",
+            "Advanced pattern of implementing agent tools as durable workflows (citing Temporal blog) for auditability"
+          ]
+        },
+        "reasoning": "Both documents cover the same core PydanticAI content (type-safety philosophy, durable execution, graph support, schema generation, trade-offs). For depth, A adds the 'fault-oblivious' resumption mechanism while B adds a minor detail about docstring-based schema generation and 'runtime validation' language\u2014roughly comparable, so a tie. For breadth, B introduces two genuinely new adjacent points not in A: an analogy to data pipeline orchestration principles, and a specific advanced pattern of implementing agent tools as durable, auditable workflows (with a Temporal blog citation). A has no comparable breadth additions, giving B a moderate edge on breadth."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Durable execution draws on data pipeline orchestration principles for state management and retries",
+            "Specific pattern of implementing agent tools as durable workflows for auditability/fault-tolerance, citing Temporal blog"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core PydanticAI content (type safety philosophy, durable execution, graph support, schema generation, trade-offs). Document B adds two source-attributed depth enhancements that deepen the existing durable execution point: a connection to data pipeline orchestration principles for state management/retries, and a specific pattern of implementing agent tools as durable, auditable workflows, backed by a citation to a Temporal blog post. Document A contains no comparable extra depth content. Neither document introduces a genuinely new adjacent sub-topic beyond the core coverage, so breadth is a tie."
+      }
+    },
+    "Framework Deep Dive: AutoGen": {
+      "light_vs_standard": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents present essentially identical content describing AutoGen's layered architecture (Studio, AgentChat, Core), the research-prototype disclaimer, and the R&D-lab strength/trade-off framing. Neither adds any new mechanism, statistic, named study, or additional sub-topic beyond what the other covers -- differences are purely stylistic/wording (e.g., 'hardening' vs 'translating', citation number [6] vs [8]). No distinct source-attributed enhancement instances differentiate the two on either depth or breadth."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Supervisor-worker architecture framed as an instance of the centralized coordination pattern from multi-agent systems research (with citation to xue-guang.com MARL post)"
+          ],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core AutoGen content: layered architecture, the three layers (Studio, AgentChat, Core), the exploration-to-production workflow, the Studio-not-for-production disclaimer, and the R&D lab framing with its production trade-off. Document A adds one extra depth instance not present in B: it explicitly connects AutoGen's supervisor-worker architecture to the broader concept of centralized coordination patterns in multi-agent systems research, citing an external source. Document B's citation [6] merely re-sources the same trade-off point already made in both documents, not a new substantive detail. Neither document introduces a genuinely new adjacent sub-topic (breadth), so breadth is a tie."
+      },
+      "standard_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "AutoGen's supervisor-worker architecture described as a classic example of the centralized coordination pattern from multi-agent systems research, with citation to external analysis [78]"
+          ],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core layered-architecture content (Studio, AgentChat, Core) and the same workflow/production trade-off discussion. Document A adds a distinct depth-enhancing detail by framing AutoGen's supervisor-worker pattern as an instance of the 'centralized coordination pattern' in multi-agent systems research, citing an external source. Document B's added phrase about visually composing agents, configuring tools, and testing interactions is a stylistic elaboration of existing Studio functionality rather than a new substantive or source-attributed technical detail, so it does not qualify as a depth instance. Neither document introduces a genuinely new adjacent sub-topic beyond the core AutoGen architecture discussion, so breadth is tied with no qualifying instances on either side."
+      }
+    },
+    "Framework Deep Dive: Claude Agent SDK": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents present essentially the same content about the Claude Agent SDK: tight integration with Claude models, ergonomic tool calling, smaller community/ecosystem trade-offs, and the opportunity-versus-risk framing for early adoption. Neither adds a named study, statistic, specific technical mechanism, or new sub-topic beyond what the other covers. All claims remain generic (context windows, reasoning, tool control, ecosystem maturity) without concrete, source-attributed specifics that would qualify as depth or breadth enhancements. The wording differs slightly but no distinct qualifying instance exists in either document for either dimension."
+      },
+      "light_vs_deep": {
+        "a_arm": "light",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover essentially the same points: tight model integration, ergonomic tool-calling/orchestration, opportunity-vs-risk tradeoffs, smaller community, fewer integrations, evolving API surface. Document B adds two citation links and slightly more explicit framing ('clearest choice for teams already committed to the Anthropic stack') but these are stylistic/attribution additions rather than new concrete facts, mechanisms, or sub-topics not already present in A. No new named studies, statistics, or distinct sub-topics differentiate the two beyond restating the same core claims. Thus both depth and breadth are tied with no qualifying distinct instances on either side."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover identical substantive points: tight model integration philosophy, Claude model strengths (context windows, reasoning, tool use), ergonomic tool calling, ecosystem trade-offs (smaller community, fewer integrations, evolving API), and the same use-case conclusion. Document B adds citation links ([[11]], [[12]]) and slightly more formatting (subheadings), but these do not introduce any new distinct, source-attributed factual content beyond what's in A -- no new named studies, statistics, or mechanisms are added, just attribution of already-shared claims. No new depth (technical mechanisms/quantitative detail) or breadth (new sub-topics) instances appear in either document beyond the shared core content, so both dimensions are a tie."
+      }
+    },
+    "Framework Deep Dive: FastMCP": {
+      "light_vs_standard": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [
+            "Named transport methods (stdio for local, http for networked) as explicit technical detail"
+          ],
+          "b_instances": [
+            "\"Hands vs brain\" analogy distinguishing MCP's standardization role from agent framework orchestration, attributed to source [17]"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core FastMCP content (interoperability, capstone examples Nova/Brown, decorator-based tool creation, code example, tools-as-workflows aside). For depth, A adds a specific technical detail naming stdio/http transport modes, while B adds a specific conceptual framing (hands/brain analogy) sourced to a citation that deepens the interoperability discussion\u2014these are roughly comparable in substantiveness, yielding a tie. Neither document introduces a genuinely new adjacent sub-topic beyond what the other covers (authentication/composition, cloud deployment, and citations about MCP adoption appear in both or are too vague to qualify), so breadth is also a tie."
+      },
+      "light_vs_deep": {
+        "a_arm": "light",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "tool-space interference as a scalability failure mode in MCP tool catalogs (Microsoft Research citation)"
+          ]
+        },
+        "reasoning": "Both documents cover the same core FastMCP explanation, interoperability benefits, capstone examples (Nova/Brown), and identical code snippet/decorator example, so depth is essentially tied with no unique deepening details on either side. For breadth, document B introduces a genuinely new adjacent sub-topic -- 'tool-space interference,' a named scalability failure mode from a Microsoft Research citation describing how large tool catalogs can degrade agent performance -- which is not present in A at all. This gives B a modest edge on breadth, while depth remains a tie."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "MCP as 'hands' vs framework as 'brain' analogy explaining division of labor, with citation [17]"
+          ],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Tool-space interference: named scalability failure mode where many tools degrade agent performance, with Microsoft Research citation"
+          ]
+        },
+        "reasoning": "Both documents cover the same core FastMCP content (interoperability, production extensions, Nova/Brown capstone examples, decorator code sample). Document A adds a depth-oriented elaboration citing a source that frames MCP as the 'hands' versus the orchestration framework as the 'brain,' which deepens the interoperability point but doesn't introduce a new topic. Document B instead introduces a genuinely new sub-topic \u2014 'tool-space interference,' a named scalability failure mode from a cited Microsoft Research blog \u2014 which broadens the section's scope rather than deepening existing points. Each document thus leads modestly in one dimension: A slightly ahead on depth, B ahead on breadth."
+      }
+    },
+    "Choosing for Your Project: Decision Matrix & Tentative Forecasts": {
+      "light_vs_standard": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Mental model framing: 'building a team' vs 'building a graph' vs 'building a conversation' as an alternative selection heuristic, with cited source"
+          ]
+        },
+        "reasoning": "Both documents present the same decision matrix, the same set of forecasts per framework, and the same hybrid-pattern examples, so depth coverage is essentially identical with no additional mechanism or quantitative detail on either side (tie on depth). For breadth, Document B introduces a genuinely new adjacent concept -- categorizing frameworks by the mental model they encourage (team/graph/conversation) -- attributed to an external source, which is not present in Document A. This is a new sub-topic broadening the section's guidance beyond the feature-matrix approach, giving B a moderate edge on breadth."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents present essentially identical content: the same decision matrix table, the same framework forecasts (LangGraph/PydanticAI for reliability, OpenAI SDK for simplicity, AgentKit for visual design, CrewAI for prototyping, AutoGen for R&D, FastMCP as tooling substrate), and the same hybrid pattern examples (FastMCP+LangGraph, AutoGen Studio migration, MCP command exposure). Neither version adds any additional named study, statistic, mechanism, or new sub-topic beyond what the other covers. Differences are purely stylistic/phrasing (e.g., 'contenders' vs 'choices', added phrase 'often provide the most robust solutions' in B, paragraph break placement) without introducing new substantive, source-attributed content. No qualifying depth or breadth instances differentiate the two."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Framing frameworks by mental model (team/graph/conversation) with citation to CrewAI features article"
+          ],
+          "b_instances": []
+        },
+        "reasoning": "Both documents present nearly identical decision matrices, forecasts, and hybrid-pattern examples with no additional depth-level technical detail differentiating them, so depth is a tie. However, Document A includes an additional paragraph introducing a new adjacent framing\u2014choosing frameworks based on the mental model they encourage (team/graph/conversation)\u2014supported by an external citation, which is absent from Document B. This constitutes a genuine breadth addition not present in B, giving A a modest edge on breadth."
+      }
+    },
+    "Our Capstone Pivots": {
+      "light_vs_standard": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Citation to research paper (ref 8) describing 'structural divergence' phenomenon and costly 'rerouting'/'extended execution' as the technical reason rigid graphs fail for exploratory agents"
+          ],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core narrative of pivoting between LangGraph and MCP for Nova and Brown, with nearly identical structure and claims. Document A adds a source-attributed technical mechanism (citing [8]) explaining the specific phenomenon of 'structural divergence' and costly rerouting that justifies why a rigid graph was unsuitable for Nova, which is a depth-adding detail absent in B. Document B's minor addition about tools needing a 'durable, resumable execution environment' is largely a restatement of the already-established durability point rather than a substantive new depth instance. Neither document introduces a genuinely new adjacent sub-topic beyond the core pivot narrative, so breadth is tied with no qualifying instances on either side."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [
+            "Benchmark data showing hybrid MCP/LangGraph systems achieve 400+ req/s with Redis-based checkpointing for fault tolerance"
+          ],
+          "b_instances": [
+            "Cites research on 'structural divergence' and forced 'rerouting'/'extended execution' explaining why rigid graphs fail for exploratory tasks"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents add one distinct depth-level enhancement beyond the core narrative of the capstone pivot decision. Document A cites specific benchmark throughput and Redis checkpointing statistics to substantiate the robustness of the hybrid architecture. Document B instead cites academic research describing the 'structural divergence' and 'rerouting' phenomena that explain why a rigid graph structure struggles with exploratory research tasks. These are comparable in substantiveness and both deepen an existing point (justifying the architecture choice) rather than introducing new topics, so depth is a tie. Neither document introduces a genuinely new sub-topic or example outside the core discussion of the LangGraph vs. MCP tradeoff, so breadth is also a tie."
+      },
+      "standard_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Cited benchmark data showing hybrid MCP/LangGraph systems achieve >400 req/s with Redis checkpointing for fault tolerance, supporting the robustness claim"
+          ],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core narrative of pivoting between LangGraph and MCP tools for Nova and Brown, with nearly identical structure and content. Document A adds a distinct, source-attributed quantitative detail (a cited benchmark showing >400 requests/second and Redis-based checkpointing for fault tolerance) that deepens the claim about the hybrid architecture's robustness, which B lacks. B's addition ('each of these can be long-running and require a durable, resumable execution environment') is a generic restatement rather than a concrete, sourced enhancement, so it doesn't count as a qualifying instance. Neither document introduces a genuinely new adjacent sub-topic beyond the core pivot narrative, so breadth is tied at zero qualifying instances for both."
+      }
+    },
+    "Conclusion": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [
+            "MCP ecosystem evolution citing streaming extensions and security frameworks (sourced)"
+          ],
+          "b_instances": [
+            "Nova capstone specifics: ingestion, Perplexity loops, filtering",
+            "Brown capstone specifics: context-engineered profiles, evaluator-optimizer review cycles, HITL editing capabilities"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core conclusion content (stable concepts over brand names, MCP as high-leverage investment, four decision axes, AutoGen->FastMCP->LangGraph migration path, next lesson preview). For depth, A adds a sourced detail about MCP's evolving ecosystem (streaming extensions, security frameworks) that deepens the MCP discussion. B instead deepens the capstone preview with specific named mechanisms for Nova (ingestion, Perplexity loops, filtering) and Brown (context-engineered profiles, evaluator-optimizer cycles, HITL editing) that go beyond A's vague 'research loops' and 'auditable writing and editing cycles'. B's additions are more numerous and technically specific, giving it a modest edge on depth. Neither document introduces a genuinely new adjacent sub-topic outside the section's core scope, so breadth is tied with no qualifying instances on either side."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Nova build detail: server/client architecture mentioned as a specific technical feature"
+          ],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Mentions Perplexity loops as a named tool/technique used in Nova build, and separate 'filtering' step not mentioned in A"
+          ]
+        },
+        "reasoning": "Both conclusions are largely parallel restatements of the same core content (stable concepts, MCP investment, four-axis selection process, AutoGen->FastMCP->LangGraph migration path, and preview of Nova/Brown capstone builds). The only differentiators are in the capstone preview details: A adds a depth-oriented technical detail about Nova's 'server/client architecture,' while B adds a breadth-oriented detail naming 'Perplexity loops' and 'filtering' as part of Nova's build, which A does not mention. Both differences are minor single instances, giving each document a slight edge on one dimension rather than a dramatic overall lead."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "MCP ecosystem's active research into streaming extensions for real-time workflows and enhanced security frameworks, with citation"
+          ],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "b_much_more",
+          "a_instances": [],
+          "b_instances": [
+            "Nova build detail: server/client architecture and data ingestion (beyond just 'research loops')",
+            "Brown build detail: context engineering for profiles",
+            "Brown build detail: evaluator-optimizer cycles with human-in-the-loop editing (vs. generic 'writing and editing cycles')"
+          ]
+        },
+        "reasoning": "Both conclusions cover the same core recap and preview content. Document A adds one sourced, specific technical detail about MCP's evolving research areas (streaming extensions, security frameworks) that deepens the MCP discussion \u2014 giving it an edge on depth. Document B, however, elaborates the capstone preview with several distinct new named components not present in A: Nova's server/client architecture and data ingestion pipeline, and Brown's context engineering for profiles and evaluator-optimizer cycles, each broadening the scope of what's previewed for the capstone builds beyond A's vaguer 'research loops' and 'auditable writing and editing cycles.' This gives B a clear breadth advantage with multiple qualifying new sub-topics."
+      }
+    }
+  }
+}

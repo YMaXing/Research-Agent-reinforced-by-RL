@@ -1,0 +1,134 @@
+{
+  "article": "08_react_practice__var_demanding",
+  "sections": {
+    "Introduction": {
+      "depth": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "original_preference": "tie",
+        "classification": "strong_disagree",
+        "repeats": [
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Specific LangGraph production-use technical details cited from amitavroy source: stateful graph structure, guaranteed execution paths, compliance logging, human-in-the-loop checkpoints",
+              "decodingai-sourced critique detailing how pre-built LangGraph ReAct agents add abstraction layers that obscure simple if-else logic"
+            ],
+            "b_instances": [
+              "Anthropic engineering blog citation elaborating that top AI labs' most successful customers build with simple composable LLM API patterns rather than complex frameworks that obscure prompts and hinder debugging"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Detailed comparison of when to use LangGraph vs. a from-scratch ReAct loop, citing production-specific advantages (guaranteed execution paths, compliance logging, human-in-the-loop checkpoints) via the amitavroy source"
+            ],
+            "b_instances": []
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific production-oriented criteria for choosing LangGraph (guaranteed execution paths, compliance logging, human-in-loop checkpoints) sourced from the amitavroy comparison article"
+            ],
+            "b_instances": [
+              "Anthropic engineering-blog citation noting that successful customers favor simple, composable API patterns over complex frameworks",
+              "Specific mention that the Thought/Action phases are implemented via function calling",
+              "Testing described as covering both success and failure handling, adding an edge-case dimension to the testing step"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Detailed LangGraph-vs-scratch decision criteria (production workflows, compliance logging, human-in-loop checkpoints) framed via 'strict project manager' vs 'flexible developer' analogy, sourced from amitavroy article"
+            ],
+            "b_instances": []
+          }
+        ]
+      }
+    },
+    "Tests and Traces: Success and Graceful Fallback": {
+      "depth": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "original_preference": "a_more",
+        "classification": "strong_disagree",
+        "repeats": [
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Cites real-world Gemini high-latency infinite 'thinking' loop report as concrete evidence for the need for forced termination logic",
+              "Cites the original ReAct paper's finding that tool grounding reduces hallucination vs. Chain-of-Thought, and notes the failure mode of getting derailed by non-informative search results"
+            ],
+            "b_instances": [
+              "Introduces the Adversarial Environmental Injection (AEI) framework with a cited paper, detailing 'breadth' attacks (poisoning retrieved content) and 'depth' attacks (phantom links causing turn-budget exhaustion) as specific mechanisms deepening the adversarial-testing discussion"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Citation of real-world Gemini latency causing infinite 'thinking' loops as evidence for termination logic necessity",
+              "ReAct paper citation on tool-grounding reducing hallucination vs CoT, plus noted failure mode of derailment by non-informative search results",
+              "Named quantitative benchmarks (GAIA, SWE-Lancer) with citation for measuring agent performance"
+            ],
+            "b_instances": [
+              "Technical detail of force_final=True flag invoked by the control loop to trigger forced termination",
+              "Adversarial Environmental Injection (AEI) framework with citation, detailing 'breadth' (content poisoning) and 'depth' (phantom-link navigational traps) attack subtypes"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Real-world citation of Gemini high-latency causing infinite 'thinking' loops, reinforcing need for forced termination",
+              "ReAct paper's finding that tool grounding reduces hallucination vs. pure CoT, and introduces the 'derailment by non-informative results' failure mode"
+            ],
+            "b_instances": [
+              "Named Adversarial Environmental Injection (AEI) framework with specific 'breadth' (content poisoning) and 'depth' (phantom-link navigational traps) attack taxonomy, with citation",
+              "Technical detail on how forced termination is implemented (force_final=True flag passed to the action generator)"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Real-world Gemini API latency incident causing infinite 'thinking' loops, cited as evidence for termination logic necessity",
+              "ReAct paper's finding that tool grounding reduces hallucination vs. CoT, plus its noted failure mode of derailment by non-informative search results",
+              "Specific edge-case examples for a production test suite: malformed (invalid JSON) or unexpectedly large tool outputs"
+            ],
+            "b_instances": [
+              "Adversarial Environmental Injection (AEI) framework with 'breadth' (content poisoning) and 'depth' (phantom-link navigational traps causing turn-budget exhaustion) attack taxonomy, with citation"
+            ]
+          }
+        ]
+      }
+    },
+    "Conclusion": {
+      "depth": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "original_preference": "tie",
+        "classification": "strong_disagree",
+        "repeats": [
+          {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          }
+        ]
+      }
+    }
+  }
+}

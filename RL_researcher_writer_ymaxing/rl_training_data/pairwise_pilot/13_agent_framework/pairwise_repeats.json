@@ -1,0 +1,183 @@
+{
+  "article": "13_agent_framework",
+  "sections": {
+    "Framework Deep Dive: FastMCP": {
+      "depth": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "original_preference": "a_more",
+        "classification": "strong_disagree",
+        "repeats": [
+          {
+            "preference": "b_more",
+            "a_instances": [
+              "MCP as 'hands' vs agent framework as 'brain' analogy explaining division of labor between protocol and orchestration (cited source 17)"
+            ],
+            "b_instances": [
+              "Named technical limitation 'tool-space interference' where growing tool catalogs degrade agent task performance, cited to Microsoft Research (source 81)"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "MCP as 'hands' vs framework as 'brain' distinction, citing backslash security source, elaborating on interoperability mechanism"
+            ],
+            "b_instances": []
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Explanation that MCP standardizes the 'hands' (tool interaction) while agent frameworks provide the 'brain' (orchestration), cited to Backslash Security"
+            ],
+            "b_instances": []
+          },
+          {
+            "preference": "tie",
+            "a_instances": [
+              "MCP as 'hands' vs agent framework as 'brain' orchestration analogy (cited to backslash security)"
+            ],
+            "b_instances": [
+              "'Tool-space interference' scalability failure mode when tool catalogs grow (cited to Microsoft Research)"
+            ]
+          }
+        ]
+      },
+      "breadth": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "original_preference": "b_more",
+        "classification": "strong_disagree",
+        "repeats": [
+          {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Tool-space interference: a named scalability failure mode where large tool catalogs degrade agent performance, cited to Microsoft Research"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          }
+        ]
+      }
+    },
+    "A Theory for Choosing: Decision Axes": {
+      "depth": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "original_preference": "b_much_more",
+        "classification": "strong_agree",
+        "repeats": [
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "risk-based autonomy strategy scaling agent freedom by task stakes"
+            ],
+            "b_instances": [
+              "symbolic vs. neural architecture framing for control-flow trade-off",
+              "hybrid patterns using LLMs for high-level decomposition with symbolic execution constraints (citation)",
+              "LangGraph described as state machine enforcing valid data flow (citation)",
+              "LLM non-determinism as specific challenge for regulated/reproducible environments (citation)",
+              "reliability primitives justified via analogy to safety-critical systems' isolation/deterministic execution (citation)",
+              "specific naming of OpenAI Agents SDK primitives (Agents, Tools, Guardrails)"
+            ]
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Risk-based autonomy: reliability primitives enabling scaled agent freedom by task stakes"
+            ],
+            "b_instances": [
+              "Symbolic vs. neural design framing and hybrid patterns combining LLM decomposition with symbolic tool-execution constraints",
+              "LangGraph nodes/edges described as functioning like state machines enforcing valid data flow",
+              "Reliability primitives justified via safety-critical systems' isolation and deterministic execution lessons",
+              "Named OpenAI Agents SDK primitives (Agents, Tools, Guardrails) as concrete abstraction-level detail"
+            ]
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Introduces 'risk-based autonomy' concept\u2014scaling agent freedom according to task importance/stakes"
+            ],
+            "b_instances": [
+              "Symbolic vs. neural architecture framing with hybrid patterns (LLM for high-level decomposition, symbolic constraints on tool execution), citing arxiv source",
+              "LangGraph described as functioning like a state machine enforcing valid data flow, with citation",
+              "Claim that LLM non-determinism specifically challenges regulated/compliance environments, with citation",
+              "Reliability primitives justified via analogy to safety-critical systems (isolation, deterministic execution), with citation",
+              "Specific naming of OpenAI Agents SDK's core primitives (Agents, Tools, Guardrails)"
+            ]
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Risk-based autonomy concept scaling agent freedom by task importance"
+            ],
+            "b_instances": [
+              "Symbolic vs. neural design trade-off with hybrid patterns (LLM decomposition + symbolic tool constraints)",
+              "LangGraph framed as a state machine enforcing valid data flow",
+              "Reliability primitives justified via analogy to safety-critical systems requiring isolation/deterministic execution"
+            ]
+          }
+        ]
+      }
+    },
+    "Framework Deep Dive: CrewAI": {
+      "breadth": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "original_preference": "tie",
+        "classification": "strong_agree",
+        "repeats": [
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Analogy to multi-agent coordination patterns long used in game AI"
+            ],
+            "b_instances": [
+              "Analogy to MAS research in robotics using centralized supervisors vs. decentralized peer-to-peer coordination"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Analogy to game AI multi-agent design patterns, specifically the named Critic-Refiner pattern"
+            ],
+            "b_instances": [
+              "Analogy to multi-agent systems (MAS) research in robotics, citing centralized-supervisor vs. decentralized peer-to-peer coordination models"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Analogy to game AI multi-agent coordination patterns as origin of CrewAI's design"
+            ],
+            "b_instances": [
+              "Analogy to MAS research in robotics (centralized supervisor vs decentralized peer-to-peer coordination)"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Game AI multi-agent systems and the Critic-Refiner pattern as an adjacent-domain analogy for CrewAI's collaboration model"
+            ],
+            "b_instances": [
+              "Multi-agent systems (MAS) research in robotics citing centralized-supervisor vs decentralized peer-to-peer coordination patterns as an adjacent-domain analogy"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

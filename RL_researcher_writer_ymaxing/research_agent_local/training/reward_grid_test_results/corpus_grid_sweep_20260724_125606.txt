@@ -1,0 +1,14 @@
+====================================================================================================
+CORPUS-WIDE C x D GRID SWEEP (all already-graded articles)
+====================================================================================================
+  Corpus size (already-graded, recomputable): 42 article-variant dirs
+  Baseline arm distribution: {'skip': 10, 'light': 25, 'standard': 6, 'deep': 1}
+
+  F1_tier1_070                 flips=1/42  (thin-margin<0.06: 1, comfortable-margin>=0.06: 0)  new_dist={'skip': 10, 'light': 25, 'standard': 5, 'deep': 2}
+      06_tools__var_standard                        standard -> deep     (orig_margin=+0.0299, thin)
+  F2_tier1_080                 flips=2/42  (thin-margin<0.06: 1, comfortable-margin>=0.06: 1)  new_dist={'skip': 9, 'light': 25, 'standard': 6, 'deep': 2}
+      06_tools__var_standard                        standard -> deep     (orig_margin=+0.0299, thin)
+      11_multimodal__var_demanding                  skip     -> standard (orig_margin=-0.0648, COMFORTABLE)
+  F3_tier1_065_gentle          flips=0/42  (thin-margin<0.06: 0, comfortable-margin>=0.06: 0)  new_dist={'skip': 10, 'light': 25, 'standard': 6, 'deep': 1}
+  F1_plus_C_stdw080            flips=1/42  (thin-margin<0.06: 1, comfortable-margin>=0.06: 0)  new_dist={'skip': 10, 'light': 25, 'standard': 5, 'deep': 2}
+      06_tools__var_standard                        standard -> deep     (orig_margin=+0.0299, thin)

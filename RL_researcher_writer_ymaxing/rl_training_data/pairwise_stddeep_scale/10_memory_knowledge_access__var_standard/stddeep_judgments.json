@@ -1,0 +1,488 @@
+{
+  "article": "10_memory_knowledge_access__var_standard",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "names the stateless-limitation phenomenon as 'continual learning' problem",
+              "notes a shift toward less compression today, with raw unstructured history valued for preserving emotional subtext/relational dynamics"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "cites hardware evolution (GPU memory capacity, unified memory architectures) as a factor that could reduce long-context penalties",
+              "gives example of early personal AI companion agent builders hitting context limits"
+            ],
+            "b_instances": [
+              "proposes borrowing concepts from biology and cognitive science to understand agent memory design"
+            ]
+          },
+          "reasoning": "Both documents cover the same core intro material (stateless LLMs, context window limits, lost-in-middle, GPT-4's 8k window in 2023, need for external memory). For depth, B adds two source-attributed refinements not in A: naming the limitation as the 'continual learning' problem, and describing a shift toward less compression with raw conversational history valued for emotional/relational nuance; A has no comparable unique depth instances, giving B the edge. For breadth, A introduces two adjacent points B lacks: the specific example of personal AI companion builders hitting context limits, and the forward-looking note on GPU/hardware memory architecture evolution; B contributes one new adjacent angle (borrowing from biology/cognitive science), so A leads breadth by a modest margin."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Names the model limitation as 'continual learning', a specific technical term for the frozen-knowledge problem",
+              "Describes a shift in best practice toward less compression, emphasizing that raw conversational history retains emotional subtext and relational dynamics that summaries discard"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Discusses hardware evolution (GPU memory capacity, unified memory architectures) as a factor that could reduce large-context performance/cost penalties, citing an infrastructure guide"
+            ],
+            "b_instances": [
+              "Introduces borrowing concepts from biology and cognitive science to understand human memory as a design basis for agent memory systems"
+            ]
+          },
+          "reasoning": "Both documents share the core narrative (intern-with-amnesia analogy, context-window-as-working-memory, lost-in-the-middle problem, the 2023 GPT-4 8k-token compression anecdote, and external memory tools providing continuity) so these are not differentiators. For depth, B adds two substantive elaborations beyond A: naming the limitation as 'continual learning' and articulating a specific evolving best-practice trade-off around compression (favoring raw history for emotional/relational nuance), giving B a modest edge. For breadth, each document introduces one distinct new adjacent subtopic not covered by the other -- A brings in hardware/GPU memory evolution as an infrastructure trend, while B brings in biology/cognitive-science analogies for memory design -- making breadth roughly balanced, a tie."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "names the technical term 'continual learning' for the inability to update parameters after deployment",
+              "claims that with cheaper million-token contexts the best practice is now less compression, since raw unstructured history preserves emotional subtext and relational dynamics that summaries discard"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "discusses hardware evolution (GPU memory capacity, unified memory architectures) as a factor that could reduce context-window penalties, with citation"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents share the same core historical example (8k-token GPT-4 context forcing compression, same cited video) so that is not a differentiator. For depth, B goes further by naming the specific technical term 'continual learning' and by adding a specific claim about why less compression is now favored (preserving emotional subtext/relational dynamics in raw history), neither of which A covers, giving B a modest edge. For breadth, A uniquely introduces a new adjacent subtopic\u2014hardware evolution (GPU memory, unified memory architectures) potentially easing context-window constraints, with a citation\u2014while B's mention of 'borrowing concepts from biology and cognitive science' is too vague/unelaborated to qualify as a concrete new subtopic, giving A the edge on breadth."
+        }
+      ]
+    },
+    "The Layers of Memory: Internal, Short-Term, and Long-Term": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "write-manage-read loop framework: memory is actively pruned/consolidated over time, with neglect of management causing noise, contradiction, and bloated context (sourced to Towards Data Science guide)"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "engineering-level categorization of memory by physical residence: token-level (external DB), latent (hidden states/KV cache), and parametric (fine-tuned weights) memory, with note that only token-level is controllable via hosted APIs (sourced to stevekinney.com and Agent-Memory-Paper-List)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core three-layer taxonomy (internal, short-term, long-term memory) with comparable diagrams. Document A adds a distinct depth instance not found in B: the 'write-manage-read loop' concept, which deepens the discussion of long-term memory management by explaining that memory must be actively pruned/consolidated, citing a specific source, and warning about consequences of neglecting this step. Document B, in turn, introduces a genuinely new breadth topic not touched by A: an engineering-oriented categorization of memory into token-level, latent, and parametric types based on where it physically resides, with two citations and a practical implication about API-based models. Each side thus leads on one dimension by a modest, single-instance margin, while the rest of the content (core layer definitions, retrieval pipeline description, mermaid diagrams) is largely equivalent restatement rather than additional enhancement."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "write-manage-read loop framework describing writing, active management (pruning/consolidating), and reading of memory, cited to source [4]"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "engineering-level categorization of memory by physical residence: token-level, latent, and parametric memory, with claim that only token-level memory is controllable via hosted APIs, cited to sources [14] and [15]"
+            ]
+          },
+          "reasoning": "Both documents cover the same core three-layer memory model with nearly identical diagrams. Document A adds a distinct depth enhancement: the 'write-manage-read loop' concept, explicitly noting that neglecting the management step causes noise/bloat, sourced to a specific article. Document B lacks any comparable deeper mechanism beyond the standard retrieval pipeline description. For breadth, Document B introduces a genuinely new adjacent sub-topic not touched by A: an engineering-oriented taxonomy of memory by physical residence (token-level, latent, parametric), including a practical implication about API-based models, backed by two citations. Document A has no equivalent breadth addition. Hence A is favored on depth (modest, one instance vs none) and B is favored strongly on breadth (a substantial new framework with two citations vs none)."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Retrieval pipeline detail: different memory types can be queried in parallel and ranked before being presented to the model"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Write-manage-read loop framing memory lifecycle (write, actively manage via pruning/consolidation, read) with citation to a practical guide on LLM agent memory"
+            ],
+            "b_instances": [
+              "Engineering-oriented categorization of memory by physical location: token-level (external DB text/JSON), latent (hidden states/KV cache), parametric (fine-tuned weights), with two citations",
+              "Practical implication that only token-level memory is fully controllable for engineers using hosted models via APIs"
+            ]
+          },
+          "reasoning": "Both documents cover the same core three-layer memory model with comparable depth on Internal/Short-Term/Long-Term definitions and near-identical diagrams. For depth, A adds a specific mechanistic detail about the retrieval pipeline (parallel querying and ranking of memory types) that B lacks, giving A a modest edge. For breadth, A introduces a distinct 'write-manage-read loop' concept (one new sub-topic, source-attributed) about memory lifecycle management, while B introduces an alternative engineering taxonomy (token-level, latent, parametric memory) with two citations plus a practical claim about controllability for API-based engineers\u2014this is a richer, more multi-faceted new topic than A's single addition, giving B a modest edge on breadth."
+        }
+      ]
+    },
+    "Long-Term Memory: Semantic, Episodic, and Procedural": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "RAG integration with semantic memory for legal/finance domain expertise"
+            ],
+            "b_instances": [
+              "curation critical for semantic memory or it becomes a 'junk drawer' of unsorted information",
+              "episodic memory granularity choices (grouping by conversation, day, or week) as a design decision"
+            ]
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Experiential memory as an expansion of procedural memory capturing lessons learned from success/failure",
+              "Episodic memory's role in robotics for recalling past actions to navigate and learn",
+              "Critique that human-inspired memory categories may not be optimal for AI given perfect recall and lack of emotional salience, suggesting future self-learned memory architectures"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core semantic/episodic/procedural structure with largely overlapping examples (user profile facts, the brother/Mark episodic example, the monthly report procedure). For depth, B adds two specific refinements not in A: the warning that uncurated semantic memory becomes a 'junk drawer' and the discussion of episodic memory time-scale granularity (per-conversation, day, week) as a product design choice; A counters with one specific technical deepening\u2014RAG integration for semantic memory in legal/finance agents\u2014giving B a modest edge. For breadth, A introduces three genuinely new sub-topics absent from B: the concept of 'experiential memory' extending procedural memory, the robotics application of episodic memory, and a broader critique of human-inspired memory taxonomies with speculation about AI-native memory architectures. B does not introduce comparable new sub-topics, making A's breadth advantage substantial."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Procedural memory expanded into 'experiential memory' capturing insights on what worked/failed and why (source 14)"
+            ],
+            "b_instances": [
+              "Episodic memory can be grouped at different temporal granularities (single conversation, day, week) with no one-size-fits-all scale",
+              "Semantic memory requires a curation step or it becomes a 'junk drawer' of unsorted information (source 4)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Episodic memory's role in robotics for recalling past actions to navigate and learn (source 16)",
+              "Semantic memory integrated with RAG systems for specialized fields like law/finance (source 24)",
+              "Meta-level critique that human-inspired memory categories may not be optimal for AI given traits like perfect recall and lack of emotional salience (source 18)"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core semantic/episodic/procedural structure with largely overlapping examples (vegetarian fact, brother Mark episode, monthly report procedure). For depth, B adds two substantive refinements not in A: nuanced discussion of episodic memory's variable temporal grouping (conversation/day/week) and the curation/'junk drawer' point about semantic memory reliability. A only adds one depth instance, the experiential-memory sub-concept for procedural memory, giving B a modest edge. For breadth, A introduces three genuinely new sub-topics absent from B: episodic memory's application in robotics navigation, RAG integration with semantic memory for expert domains like law/finance, and a meta-level critique questioning whether human-inspired memory categories are optimal for AI systems. B lacks any comparably new adjacent topic (its 'budget' example is just a minor variant of existing preference/constraint examples), so A clearly leads on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "RAG integration of semantic memory for specialized domains like law/finance"
+            ],
+            "b_instances": [
+              "explicit warning that uncurated semantic memory becomes a 'junk drawer' of unsorted info",
+              "episodic memory can be grouped at different time granularities (single conversation, day, week) depending on product needs"
+            ]
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "episodic memory framed as essential for robotics navigation and action recall",
+              "introduction of 'experiential memory' as a related concept capturing lessons learned (what worked/failed and why)",
+              "meta-level critique that human-inspired memory categories may not be optimal for AI given different constraints (perfect recall, no emotional salience), suggesting future agents may design their own memory architectures"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same three memory types with largely overlapping core content (definitions, examples like the 'brother Mark' episode, monthly report procedure). For depth, B adds two slightly more substantive elaborations within existing topics: a caution about semantic memory curation ('junk drawer') and a discussion of episodic memory time-scale granularity, while A adds one depth point about RAG integration for domain-specific semantic memory. This gives B a modest edge on depth. For breadth, A introduces three genuinely new adjacent topics not touched by B: robotics as an application domain for episodic memory, the concept of 'experiential memory' as an offshoot of procedural memory, and a broader meta-discussion questioning whether human-inspired memory categories are optimal for AI systems. B does not introduce comparable new sub-topics, making A's breadth coverage substantially larger."
+        }
+      ]
+    },
+    "Storing Memories: Pros and Cons of Different Approaches": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Neuro-symbolic framing of knowledge graphs (graph as stable structure LLM reasons over)",
+              "Mention of steep learning curve for graph query languages like Cypher",
+              "Quantitative latency benchmark comparing graph vs vector approaches (2.59s vs 1.44s p95)",
+              "Note on need for robust curation step to avoid semantic memory becoming a 'junk drawer'"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Introduction of unique demands of agent memory systems (write-heavy, mutable, temporal) as distinct from static document retrieval"
+            ]
+          },
+          "reasoning": "Both documents cover the same three storage approaches (raw strings, JSON entities, knowledge graphs) with very similar pros/cons and the same core examples (brother's job query, CEO succession, cat-liking memory). Document A adds essentially no unique depth or breadth content beyond this shared core -- its table and phrasing largely mirror B's without new specifics. Document B, however, integrates several additional source-attributed details: a discussion of why agent memory is architecturally distinct (write-heavy/mutable/temporal, citing a new source) which broadens scope (breadth), and several depth-adding technical specifics for the graph approach -- a neuro-symbolic framing citation, mention of Cypher's learning curve, a quantitative latency benchmark (2.59s vs 1.44s), and a curation-step caveat for JSON memories to avoid becoming a 'junk drawer'. These give B a clear edge on depth (multiple substantive additions) and a modest edge on breadth (one new sub-topic)."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "explanation that a robust curation step is needed to prevent semantic memory from becoming a disorganized 'junk drawer'",
+              "specific mention that graph query languages like Cypher have a steep learning curve",
+              "quantitative benchmark comparing p95 latency of graph-enhanced (2.59s) vs vector-only (1.44s) retrieval"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "description of agent memory's unique demands (write-heavy, mutable, temporal) requiring more than a static-document retrieval pipeline",
+              "framing of knowledge-graph memory as a neuro-symbolic approach combining structured graph representation with neural LLM reasoning"
+            ]
+          },
+          "reasoning": "Both documents cover the same core three storage approaches (raw strings, entities, knowledge graph) with nearly identical pros/cons and the same brother/CEO examples, so most content is shared. Document B adds several depth-oriented details not present in A: a curation/'junk drawer' caveat for entity memory, a note on the steep learning curve of graph query languages like Cypher, and a specific quantitative latency benchmark (2.59s vs 1.44s p95) comparing graph vs vector retrieval. B also introduces two breadth-expanding ideas absent from A: framing agent memory's unique demands (write-heavy, mutable, temporal) as context for why simple retrieval is insufficient, and characterizing knowledge-graph memory as a 'neuro-symbolic' approach. Document A contains no unique depth or breadth instances beyond what B also covers, so B leads clearly on depth and moderately on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Specific named example (Barry was CEO, Claude is CEO) to illustrate temporal reasoning failure in raw-string storage"
+            ],
+            "b_instances": [
+              "Characterizes agent memory as write-heavy, mutable, and temporal, explaining why static-document retrieval pipelines are insufficient (cites source)",
+              "Notes need for a robust curation step to prevent JSON/entity memory from becoming a disorganized 'junk drawer'",
+              "Mentions steep learning curve of graph query languages like Cypher as a graph-DB drawback",
+              "Notes that converting unstructured text into graph triples adds latency and cost to ingestion pipelines",
+              "Cites specific benchmark data: p95 latency of 2.59s for graph approach vs 1.44s for vector-only approach",
+              "Expanded comparison table with additional evaluative dimensions (Complexity, Precision, Updateability, Nuance, Best For) rather than simple pros/cons"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Introduces neuro-symbolic AI framing for knowledge-graph memory, positioning the graph as a stable structure the neural LLM reasons over (new adjacent concept, cited)"
+            ]
+          },
+          "reasoning": "Both documents cover the same three storage approaches (raw strings, JSON entities, knowledge graphs) with largely overlapping pros/cons and the same illustrative examples (brother/job query, cat message, Mark the software engineer). Document A adds a specific named example (Barry/Claude) for the CEO succession point that B renders more generically, giving A one depth instance. Document B, however, adds several distinct depth-enhancing details not in A: framing agent memory's unique demands (write-heavy/mutable/temporal) with a citation, the need for a curation step to avoid a 'junk drawer' of duplicate entities, the steep learning curve of graph query languages like Cypher, added latency/cost of graph ingestion pipelines, and a concrete quantitative benchmark comparing p95 latencies (2.59s vs 1.44s) for graph vs vector retrieval. B's comparison table also uses more granular evaluative criteria. For breadth, B introduces a genuinely new adjacent concept -- framing knowledge graphs as a neuro-symbolic AI approach -- which A does not mention. Overall B shows substantially more depth enhancement and modestly more breadth enhancement."
+        }
+      ]
+    },
+    "Memory Implementations with Code Examples": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Explicit raw-vs-summarized episodic memory example showing exact stored text for each version",
+              "Detail on episodic retrieval mechanism: re-ranking by recency and semantic matching to sentiment like 'worried'",
+              "Detail on procedural retrieval as intent-matching plus function-calling, cross-referenced to Lesson 6 function-calling content"
+            ],
+            "b_instances": [
+              "Specific technical detail that mem0 supports multiple backends including vector stores and graph databases",
+              "More elaborate procedural-learning prompt instructing the agent to identify core actions and variable parameters (dates, locations, names), with a fuller learn_procedure() call example",
+              "Citation to mem0 documentation specifically on the timestamp/created_at feature supporting temporal retrieval"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Conceptual distinction between RAG as a stateless lookup pipeline versus memory as a dynamic, stateful, evolving system, with citation",
+              "Mention of graph databases as an alternative backend option for mem0, broadening beyond the vector-store-only discussion"
+            ]
+          },
+          "reasoning": "Both documents cover the same four subsections (setup, semantic, episodic, procedural) with nearly identical code. For depth, A adds a concrete raw-vs-summarized episodic example and more mechanistic detail on episodic/procedural retrieval (recency re-ranking, intent-matching tied to function-calling), while B adds technical depth on mem0's multi-backend support (including graph databases), a documentation citation for timestamps, and a more elaborate procedural-learning prompt with parameter identification. These are roughly balanced in number and substantiveness, yielding a tie on depth. For breadth, B introduces a genuinely new adjacent framing\u2014the stateless-RAG-vs-stateful-memory distinction with a supporting citation\u2014and flags graph databases as an alternative memory backend, both of which broaden the section's scope beyond what A covers; A does not introduce comparable new subtopics, giving B the edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Detailed prompt example for episodic memory creation tailored to a coding tutor use case",
+              "Explicit comparison of raw vs. summarized episodic memory formats with concrete examples",
+              "Detailed retrieval example showing sentiment-based semantic search ('worried') combined with recency re-ranking"
+            ],
+            "b_instances": [
+              "Procedural memory prompt elaborated to explicitly extract variable parameters (dates, locations, names) with conditional logic (asking user for a date if unspecified)",
+              "Citation to mem0 docs on automatic created_at timestamp feature"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Citation to a neuroscience-inspired memory system framework when contrasting RAG vs. stateful memory",
+              "Mention that mem0 supports graph database backends in addition to vector stores"
+            ]
+          },
+          "reasoning": "Both documents share the core code and most explanatory text nearly verbatim. Document A adds more depth-oriented elaborations: a distinct episodic-memory prompt example for a coding tutor, an explicit raw-vs-summarized memory comparison, and a more detailed retrieval example involving sentiment-based semantic search with recency re-ranking. Document B adds depth via a more elaborate procedural-memory prompt that explicitly handles variable parameter extraction and conditional logic, plus a citation for the timestamp feature. On breadth, document B introduces two new adjacent references not found in A: a citation to a neuroscience-inspired memory framework when distinguishing RAG from memory, and a mention that mem0 supports graph database backends alongside vector stores. Document A does not introduce any comparable new breadth topics. Overall, A has a modest edge in depth, while B has a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Alternate episodic summarization example using a coding-tutor prompt ('You are a personal coding tutor...')",
+              "Comparison of raw timestamped log vs. summarized log format for episodic memory",
+              "Example of sentiment-based temporal retrieval query ('What was I worried about earlier?') with recency re-ranking"
+            ],
+            "b_instances": [
+              "Elaborated stateless-RAG vs. stateful-memory distinction with specific source citation ([[16]])",
+              "More detailed procedural-learning prompt example that explicitly extracts variable parameters (dates, locations, names) and shows a structured learn_procedure() function call output"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Mention that mem0 supports multiple backend types including graph databases, not just vector stores"
+            ]
+          },
+          "reasoning": "Both documents largely mirror each other's core content (same code, same mem0 setup, same three memory-type walkthroughs), so overlap is high. On depth, Document A adds a few extra illustrative details not in B: an alternate coding-tutor episodic prompt example, an explicit raw-vs-summarized log comparison, and a sentiment-based temporal retrieval example. Document B counters with a more elaborated, source-cited RAG-vs-memory distinction and a richer procedural-learning prompt that explicitly extracts variable parameters and shows a structured function-call output \u2014 giving B a couple of deeper technical touches too, but slightly fewer than A's additions, so depth leans slightly toward A. On breadth, B introduces one genuinely new sub-topic not covered by A: mem0's support for graph-database backends in addition to vector stores, which A does not mention. A has no comparable new-subtopic addition, giving B a modest edge in breadth."
+        }
+      ]
+    },
+    "Real-World Lessons: Challenges and Best Practices": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Historical detail on small 8k/16k token context windows as impetus for compression",
+              "Illustrative example contrasting semantic fact ('dog named George') vs richer episodic log detail"
+            ],
+            "b_instances": [
+              "Named failure mode 'summarization drift' describing how repeated compression erodes memory accuracy over time",
+              "Quantitative benchmark data on full-context vs selective memory trade-offs (17s p95 latency, ~6 percentage point accuracy loss, 91% latency reduction, 90% token reduction)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "New subtopic: autonomous memory consolidation during idle time (review/merge/clean without user input)",
+              "New subtopic: memory staleness as a distinct, unsolved challenge distinguishing it from normal decay",
+              "New subtopic: memory corruption from poisoned/incorrect data persisting across sessions",
+              "New subtopic: hallucination cascades where fabricated facts inform subsequent decisions"
+            ]
+          },
+          "reasoning": "Both documents cover the same three core lessons (compression trade-offs, product-driven design, human cognitive overhead) with largely overlapping content and citations. For depth, A adds a qualitative example (dog/George) and legacy context-window figures, while B adds a named technical failure mode ('summarization drift') and concrete quantitative benchmark data (latency, accuracy, token savings), which are somewhat more rigorous and specific, giving B a modest edge. For breadth, B introduces an entirely new subsection on 'preventing memory staleness' covering three distinct new failure modes (staleness, corruption, hallucination cascades) plus a new mechanism (autonomous memory consolidation), none of which appear in A. A contains no comparable new subtopics beyond the shared core three lessons, making B's breadth advantage substantial."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Gemini million-token context window example with cost claim",
+              "Illustrative contrast of semantic fact vs episodic log detail (dog named George)",
+              "Concrete example of autonomous correction (brother's name Mark not Mike)"
+            ],
+            "b_instances": [
+              "Named failure mode 'summarization drift' explaining how repeated compression erodes memory accuracy",
+              "Quantitative benchmark data: full-context 17s p95 latency vs selective memory's 91% latency reduction, 90% token reduction, ~6pp accuracy trade-off",
+              "Autonomous memory consolidation mechanism using idle time to review, merge, and clean up memories"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Memory staleness as a distinct, unsolved challenge (outdated but highly relevant facts persisting)",
+              "Memory corruption failure mode (poisoned/incorrect data persisting across sessions)",
+              "Hallucination cascades failure mode (fabricated fact triggering chain of errors)"
+            ]
+          },
+          "reasoning": "Both documents cover the same three core lessons (compression trade-offs, product-driven design, human factor/cognitive overhead) with comparable core content. For depth, A adds specific illustrative examples (Gemini's context window/cost claim, the 'dog named George' semantic-vs-episodic contrast, and the brother's-name correction example), while B adds a named failure mode ('summarization drift'), detailed quantitative benchmarks (latency, token, and accuracy trade-offs), and a specific autonomous consolidation mechanism\u2014these are comparable in count but B's are more rigorous/quantitative, giving B a slight edge. For breadth, A introduces no genuinely new subtopics beyond the three core lessons, whereas B adds an entirely new fourth lesson on memory staleness plus two additional failure modes (memory corruption and hallucination cascades), giving B a decisive breadth advantage."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "specific example contrasting semantic fact ('has a dog named George') vs episodic log revealing emotional detail about walking the dog"
+            ],
+            "b_instances": [
+              "names the failure mode 'summarization drift' explaining how repeated compression erodes memory accuracy",
+              "quantitative benchmark comparison: full-context 17s p95 latency vs selective memory trading ~6pp accuracy for 91% latency and 90% token reduction",
+              "autonomous memory consolidation during idle time to review/merge/clean memories"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "memory staleness as a distinct unsolved problem where outdated but relevant facts cause confidently wrong answers",
+              "memory corruption failure mode from poisoned/incorrect data persisting across sessions",
+              "hallucination cascades where fabricated facts chain into further errors"
+            ]
+          },
+          "reasoning": "Both documents cover the same three core lessons (compression trade-offs, product-driven architecture, avoiding user cognitive overhead), but B adds substantially more source-attributed depth (named 'summarization drift' phenomenon, specific quantitative benchmark figures on latency/accuracy/token savings, and autonomous consolidation mechanism) while A only adds one illustrative example (dog anecdote) not found in B. On breadth, B introduces an entirely new subsection on memory staleness plus two additional named failure modes (memory corruption, hallucination cascades) that A does not touch at all, whereas A contributes no new breadth topics beyond the shared core. Overall B contains markedly more distinct, substantive, source-attributed enhancement content on both dimensions."
+        }
+      ]
+    },
+    "Conclusion": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "specific mechanism of 'learning' as extracting causal lessons and updating a world model over time (cited)"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "named open problem: consent architecture (cited)",
+              "named open problem: application-specific evaluation (cited)",
+              "named future topic: multimodal processing (cited)"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Document A anchors its conclusion in specific, cited research points: it names a concrete mechanism for what 'learning' beyond memory would mean (extracting causal lessons and updating a world model, citation [22]), which deepens the section's existing point about LLMs lacking continual learning. It also names concrete, cited open problems and future topics not otherwise covered in the section -- consent architecture, application-specific evaluation, and multimodal processing (citations [17], [23]) -- each a genuinely new adjacent subtopic. Document B's conclusion is generic and uncited: it reiterates memory's importance, mentions 'monitoring and evaluation' as a vague future topic without specificity or sourcing, and offers no comparable concrete mechanism or named subtopic. Hence A leads on both depth (one substantive cited mechanism vs none) and breadth (three named cited subtopics vs none)."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Names specific open research problems (application-specific evaluation and consent architecture) as barriers to more capable agents, citing a source",
+              "Frames the research gap as moving from remembering to learning causal lessons and updating a world model, with citation"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Cites a specific source discussing multimodal processing and advanced evaluation as future topics"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Document A includes more source-attributed, specific content: it cites three distinct sources ([22], [17], [23]) tied to concrete claims about the research gap (moving from remembering to learning causal lessons and updating a world model) and named open problems (application-specific evaluation, consent architecture), which add depth to the discussion of current limitations. It also references a specific future-topic source mentioning multimodal processing, adding a touch of breadth. Document B is largely a generic restatement of the section's core content (memory types, RAG preview, future topics like monitoring/evaluation) without citations or specific named mechanisms/studies, so it contributes no distinct qualifying instances for either dimension."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "specific mechanism for continual learning gap: extracting causal lessons and updating a world model over time [22]"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "consent architecture as an open research problem [17]",
+              "multimodal processing as an upcoming topic [23]"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Document A cites specific sources for concrete claims: a mechanism for moving beyond simple memory to causal learning/world-model updating (depth), and names specific open problems (application-specific evaluation, consent architecture) plus a concrete upcoming topic (multimodal processing) that broaden scope (breadth). Document B's conclusion is largely a generic restatement of the section's core content ('dynamic architecture for compound intelligence', 'monitoring and evaluation') without citations or new concrete specifics, so it contributes no clearly qualifying depth or breadth instances beyond what A already covers."
+        }
+      ]
+    }
+  }
+}

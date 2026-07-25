@@ -1,0 +1,60 @@
+====================================================================================================
+ARTICLE: 13_agent_framework
+====================================================================================================
+  baseline                     raw_argmax=light    margin=+0.0076  R_w=[skip:0.6446  light:0.6522  standard:0.5891  deep:0.5880]
+  F1_tier1_070                 raw_argmax=light    margin=+0.0224  R_w=[skip:0.6446  light:0.6671  standard:0.6038  deep:0.6165]
+  F2_tier1_080                 raw_argmax=light    margin=+0.0325  R_w=[skip:0.6446  light:0.6771  standard:0.6139  deep:0.6355]
+  F3_tier1_065_gentle          raw_argmax=light    margin=+0.0175  R_w=[skip:0.6446  light:0.6621  standard:0.5988  deep:0.6070]
+  F1_plus_C_stdw080            raw_argmax=light    margin=+0.0260  R_w=[skip:0.6446  light:0.6706  standard:0.6096  deep:0.6228]
+
+====================================================================================================
+ARTICLE: Dark_Dimension
+====================================================================================================
+  baseline                     raw_argmax=light    margin=+0.0550  R_w=[skip:0.6700  light:0.7250  standard:0.6650  deep:0.6436]
+  F1_tier1_070                 raw_argmax=light    margin=+0.0522  R_w=[skip:0.6700  light:0.7250  standard:0.6650  deep:0.6728]
+  F2_tier1_080                 raw_argmax=light    margin=+0.0328  R_w=[skip:0.6700  light:0.7250  standard:0.6650  deep:0.6922]
+  F3_tier1_065_gentle          raw_argmax=light    margin=+0.0550  R_w=[skip:0.6700  light:0.7250  standard:0.6650  deep:0.6631]
+  F1_plus_C_stdw080            raw_argmax=light    margin=+0.0522  R_w=[skip:0.6700  light:0.7250  standard:0.6650  deep:0.6728]
+
+====================================================================================================
+ARTICLE: 09_RAG__var_standard
+====================================================================================================
+  baseline                     raw_argmax=light    margin=+0.0263  R_w=[skip:0.3719  light:0.4181  standard:0.3913  deep:0.3918]
+  F1_tier1_070                 raw_argmax=light    margin=+0.0487  R_w=[skip:0.3719  light:0.4577  standard:0.4090  deep:0.4078]
+  F2_tier1_080                 raw_argmax=light    margin=+0.0633  R_w=[skip:0.3719  light:0.4841  standard:0.4208  deep:0.4184]
+  F3_tier1_065_gentle          raw_argmax=light    margin=+0.0414  R_w=[skip:0.3719  light:0.4445  standard:0.4031  deep:0.4025]
+  F1_plus_C_stdw080            raw_argmax=light    margin=+0.0487  R_w=[skip:0.3719  light:0.4639  standard:0.4128  deep:0.4152]
+
+====================================================================================================
+ARTICLE: 06_tools__var_standard
+====================================================================================================
+  baseline                     raw_argmax=standard margin=+0.0069  R_w=[skip:0.3715  light:0.5022  standard:0.5723  deep:0.5654]
+  F1_tier1_070                 raw_argmax=deep     margin=+0.0006  R_w=[skip:0.3715  light:0.5022  standard:0.5849  deep:0.5855]
+  F2_tier1_080                 raw_argmax=deep     margin=+0.0041  R_w=[skip:0.3715  light:0.5022  standard:0.5961  deep:0.6002]
+  F3_tier1_065_gentle          raw_argmax=standard margin=+0.0016  R_w=[skip:0.3715  light:0.5022  standard:0.5801  deep:0.5786]
+  F1_plus_C_stdw080            raw_argmax=deep     margin=+0.0039  R_w=[skip:0.3715  light:0.5022  standard:0.5849  deep:0.5888]
+
+====================================================================================================
+SUMMARY: winner/margin change vs baseline
+====================================================================================================
+  13_agent_framework  (baseline: light, margin=+0.0076)
+    F1_tier1_070                 light    margin=+0.0224  Delta_margin=+0.0148
+    F2_tier1_080                 light    margin=+0.0325  Delta_margin=+0.0249
+    F3_tier1_065_gentle          light    margin=+0.0175  Delta_margin=+0.0098
+    F1_plus_C_stdw080            light    margin=+0.0260  Delta_margin=+0.0184
+  Dark_Dimension  (baseline: light, margin=+0.0550)
+    F1_tier1_070                 light    margin=+0.0522  Delta_margin=-0.0028
+    F2_tier1_080                 light    margin=+0.0328  Delta_margin=-0.0222
+    F3_tier1_065_gentle          light    margin=+0.0550  Delta_margin=+0.0000
+    F1_plus_C_stdw080            light    margin=+0.0522  Delta_margin=-0.0028
+  09_RAG__var_standard  (baseline: light, margin=+0.0263)
+    F1_tier1_070                 light    margin=+0.0487  Delta_margin=+0.0224
+    F2_tier1_080                 light    margin=+0.0633  Delta_margin=+0.0370
+    F3_tier1_065_gentle          light    margin=+0.0414  Delta_margin=+0.0151
+    F1_plus_C_stdw080            light    margin=+0.0487  Delta_margin=+0.0224
+  06_tools__var_standard  (baseline: standard, margin=+0.0069)
+    F1_tier1_070                 deep     margin=+0.0006  Delta_margin=-0.0063 <-- WINNER CHANGED
+    F2_tier1_080                 deep     margin=+0.0041  Delta_margin=-0.0028 <-- WINNER CHANGED
+    F3_tier1_065_gentle          standard margin=+0.0016  Delta_margin=-0.0053
+    F1_plus_C_stdw080            deep     margin=+0.0039  Delta_margin=-0.0030 <-- WINNER CHANGED
+

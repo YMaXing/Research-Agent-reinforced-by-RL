@@ -1,0 +1,167 @@
+[
+  {
+    "article": "08_react_practice__var_demanding",
+    "section_title": "Introduction",
+    "dimension": "depth",
+    "classification": "strong_disagree",
+    "a_arm": "deep",
+    "b_arm": "standard",
+    "original_preference": "tie",
+    "tag_margin": 0.55,
+    "pairwise_margin_single_draw": -0.0831
+  },
+  {
+    "article": "08_react_practice__var_demanding",
+    "section_title": "Tests and Traces: Success and Graceful Fallback",
+    "dimension": "depth",
+    "classification": "strong_disagree",
+    "a_arm": "standard",
+    "b_arm": "deep",
+    "original_preference": "a_more",
+    "tag_margin": -0.25,
+    "pairwise_margin_single_draw": 0.3488
+  },
+  {
+    "article": "08_react_practice__var_demanding",
+    "section_title": "Conclusion",
+    "dimension": "depth",
+    "classification": "strong_disagree",
+    "a_arm": "standard",
+    "b_arm": "deep",
+    "original_preference": "tie",
+    "tag_margin": 0.55,
+    "pairwise_margin_single_draw": -0.0664
+  },
+  {
+    "article": "13_agent_framework",
+    "section_title": "Framework Deep Dive: FastMCP",
+    "dimension": "depth",
+    "classification": "strong_disagree",
+    "a_arm": "standard",
+    "b_arm": "deep",
+    "original_preference": "a_more",
+    "tag_margin": -0.55,
+    "pairwise_margin_single_draw": 0.0664
+  },
+  {
+    "article": "13_agent_framework",
+    "section_title": "Framework Deep Dive: FastMCP",
+    "dimension": "breadth",
+    "classification": "strong_disagree",
+    "a_arm": "standard",
+    "b_arm": "deep",
+    "original_preference": "b_more",
+    "tag_margin": 0.3575,
+    "pairwise_margin_single_draw": -0.1993
+  },
+  {
+    "article": "Dark_Dimension",
+    "section_title": "Dark Interactions",
+    "dimension": "depth",
+    "classification": "strong_disagree",
+    "a_arm": "deep",
+    "b_arm": "standard",
+    "original_preference": "b_more",
+    "tag_margin": -0.55,
+    "pairwise_margin_single_draw": 0.2159
+  },
+  {
+    "article": "Dark_Dimension",
+    "section_title": "A Dark Dimension",
+    "dimension": "breadth",
+    "classification": "strong_disagree",
+    "a_arm": "deep",
+    "b_arm": "standard",
+    "original_preference": "b_much_more",
+    "tag_margin": -0.55,
+    "pairwise_margin_single_draw": 0.3821
+  },
+  {
+    "article": "HNSW",
+    "section_title": "Foundations of HNSW",
+    "dimension": "depth",
+    "classification": "strong_disagree",
+    "a_arm": "deep",
+    "b_arm": "standard",
+    "original_preference": "b_more",
+    "tag_margin": -0.0875,
+    "pairwise_margin_single_draw": 0.1329
+  },
+  {
+    "article": "HNSW",
+    "section_title": "Graph Construction",
+    "dimension": "depth",
+    "classification": "strong_disagree",
+    "a_arm": "standard",
+    "b_arm": "deep",
+    "original_preference": "a_more",
+    "tag_margin": -0.3575,
+    "pairwise_margin_single_draw": 0.1329
+  },
+  {
+    "article": "HNSW",
+    "section_title": "Implementation of HNSW",
+    "dimension": "breadth",
+    "classification": "strong_disagree",
+    "a_arm": "deep",
+    "b_arm": "standard",
+    "original_preference": "b_much_more",
+    "tag_margin": -0.3575,
+    "pairwise_margin_single_draw": 0.3821
+  },
+  {
+    "article": "06_tools__var_standard",
+    "section_title": "Understanding why agents need tools",
+    "dimension": "depth",
+    "classification": "strong_agree",
+    "a_arm": "standard",
+    "b_arm": "deep",
+    "original_preference": "tie",
+    "tag_margin": 0.8,
+    "pairwise_margin_single_draw": 0.0831
+  },
+  {
+    "article": "06_tools__var_standard",
+    "section_title": "Using Pydantic models as tools for on-demand structured outputs",
+    "dimension": "depth",
+    "classification": "strong_agree",
+    "a_arm": "deep",
+    "b_arm": "standard",
+    "original_preference": "a_more",
+    "tag_margin": -0.55,
+    "pairwise_margin_single_draw": -0.1329
+  },
+  {
+    "article": "09_RAG__var_standard",
+    "section_title": "Advanced RAG Techniques",
+    "dimension": "breadth",
+    "classification": "strong_agree",
+    "a_arm": "deep",
+    "b_arm": "standard",
+    "original_preference": "tie",
+    "tag_margin": 0.1925,
+    "pairwise_margin_single_draw": 0.1329
+  },
+  {
+    "article": "13_agent_framework",
+    "section_title": "A Theory for Choosing: Decision Axes",
+    "dimension": "depth",
+    "classification": "strong_agree",
+    "a_arm": "deep",
+    "b_arm": "standard",
+    "original_preference": "b_much_more",
+    "tag_margin": 0.31,
+    "pairwise_margin_single_draw": 0.4485
+  },
+  {
+    "article": "13_agent_framework",
+    "section_title": "Framework Deep Dive: CrewAI",
+    "dimension": "breadth",
+    "classification": "strong_agree",
+    "a_arm": "standard",
+    "b_arm": "deep",
+    "original_preference": "tie",
+    "tag_margin": 0.1925,
+    "pairwise_margin_single_draw": 0.0664
+  }
+]

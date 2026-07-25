@@ -1,0 +1,122 @@
+{
+  "article": "Dark_Dimension",
+  "sections": {
+    "Dark Interactions": {
+      "depth": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "original_preference": "b_more",
+        "classification": "strong_disagree",
+        "repeats": [
+          {
+            "preference": "b_more",
+            "a_instances": [
+              "Claim that confirmed evolving dark energy would definitively rule out \u039bCDM as a paradigm shift (citation 30)",
+              "QCD-analogue model detail: dark axion field mediates density-dependent forces that are screened in solar-system environments but active at galactic scales"
+            ],
+            "b_instances": [
+              "Explicit mechanistic derivation via a quintessence-field-dependent dark matter mass producing an effective equation of state w < -1 (citation 8)",
+              "Hybrid-inflation-inspired January 2025 model described as two interacting scalar fields representing dark matter and dark energy (citation 14)",
+              "Quantitative Hubble tension figures: H0 = 67.4\u00b10.5 km/s/Mpc (CMB) vs 73\u00b11 km/s/Mpc (supernovae), with >5\u03c3 significance (citation 14)"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [
+              "Dark axion field mediates density-dependent forces in the QCD-analogue model, screened in high-density environments (e.g. solar system) but active at galactic scales"
+            ],
+            "b_instances": [
+              "Explicit mechanism for 2005 model: dark matter mass depends on a quintessence field, causing energy density to deviate from a\u207b\u00b3 redshift and appear as phantom dark energy",
+              "Jan 2025 energy-transfer model specified as inspired by hybrid inflation, involving two interacting scalar fields for dark matter and dark energy",
+              "Precise H0 values and tension significance: CMB-based H0=67.4\u00b10.5 km/s/Mpc vs supernova-based H0=73\u00b11 km/s/Mpc, differing by >5\u03c3"
+            ]
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "QCD-analogue model detail: density-dependent forces mediated by a dark axion field, screened in solar-system-scale environments but active at galactic scales"
+            ],
+            "b_instances": [
+              "Explicit quintessence-field-dependent dark matter mass mechanism explaining how deficit grows into apparent phantom equation of state w < -1",
+              "Specific quantitative Hubble tension values (H0=67.4\u00b10.5 km/s/Mpc from CMB vs 73\u00b11 km/s/Mpc from supernovae) and >5\u03c3 significance of the discrepancy",
+              "Additional mechanistic detail on the January 2025 model: inspired by hybrid inflation, involving two interacting scalar fields representing dark matter and dark energy"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [
+              "QCD model detail: density-dependent forces mediated by a dark axion field, screened in solar-system environments but active at galactic scales"
+            ],
+            "b_instances": [
+              "Explicit mechanism: dark matter mass depending on a quintessence field causing energy density to redshift non-standardly, producing effective w < -1 phantom equation of state",
+              "January 2025 model described as inspired by hybrid inflation, involving two interacting scalar fields representing dark matter and dark energy",
+              "Specific numeric H0 values from CMB (67.4\u00b10.5) vs supernovae (73\u00b11) and the >5\u03c3 significance of the tension"
+            ]
+          }
+        ]
+      }
+    },
+    "A Dark Dimension": {
+      "breadth": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "original_preference": "b_much_more",
+        "classification": "strong_disagree",
+        "repeats": [
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Braneworld cosmology models and brane-based modified gravity explanation of acceleration"
+            ],
+            "b_instances": [
+              "Hierarchy problem explanation: gravity's weakness due to dilution across extra dimensions",
+              "Dark graviton decay kick-velocity effect on galaxy formation, tested via KiDS and Euclid",
+              "Skeptics'/critics' view that the underlying conjectures are weakly supported",
+              "Connection to AdS/CFT holographic duality and emergent spacetime",
+              "Gravitational-wave signatures from black hole mergers as an additional test"
+            ]
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Braneworld cosmology framework and modified gravity explaining cosmic acceleration without traditional dark energy"
+            ],
+            "b_instances": [
+              "Gravity's weakness explained via dilution across extra dimensions (hierarchy problem connection)",
+              "Kick velocity effects on galaxy formation tested against Kilo-Degree Survey and future Euclid data",
+              "Gravitational wave signatures from black hole mergers as a potential test",
+              "Skeptics' critique of the swampland conjectures underlying the model",
+              "Connection to AdS/CFT holographic duality and emergent spacetime"
+            ]
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Connection to braneworld cosmology models, where extra dimensions modify gravity to explain cosmic acceleration without traditional dark energy"
+            ],
+            "b_instances": [
+              "Explanation for the weakness of gravity (hierarchy problem) via dilution across the large dark dimension",
+              "Kick-velocity mechanism from dark graviton decay affecting galaxy formation, tested via Kilo-Degree Survey and future Euclid data",
+              "Skeptical viewpoint noting the underlying conjectures are ambitious and evidence remains weak",
+              "Connection to holographic dualities (AdS/CFT correspondence) and emergent spacetime",
+              "Potential tests via gravitational-wave signatures from black hole mergers"
+            ]
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Connection to braneworld cosmology models where extra dimensions modify gravity on large scales to explain cosmic acceleration"
+            ],
+            "b_instances": [
+              "Explanation for the weakness of gravity (hierarchy problem) via dilution across extra dimensions",
+              "New subtopic: effect of graviton kick velocity on galaxy formation, tested against Kilo-Degree Survey and future Euclid data",
+              "New testable avenue: subtle effects on gravitational waves from black hole mergers detectable by future observatories",
+              "Connection to holographic duality/AdS-CFT correspondence and emergent spacetime ideas",
+              "Mention of skeptical physicists who view the underlying conjectures as weakly supported"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

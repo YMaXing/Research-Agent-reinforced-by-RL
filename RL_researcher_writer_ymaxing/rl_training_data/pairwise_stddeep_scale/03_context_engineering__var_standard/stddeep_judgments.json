@@ -1,0 +1,557 @@
+{
+  "article": "03_context_engineering__var_standard",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Lesson 3: Context Engineering": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "adds mechanism detail that 2022 chatbots relied on predefined scripts and basic pattern matching"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Cognizant deploying 1,000 context engineers as evidence of enterprise-scale adoption of context engineering"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Document A introduces a genuinely new adjacent sub-topic -- the Cognizant example showing large-scale enterprise adoption of context engineering as a job function -- which broadens the section's scope (breadth) and has no counterpart in B. Document B, in turn, adds a small mechanistic detail about how early chatbots worked (predefined scripts/pattern matching), which deepens an existing point about chatbot evolution (depth) but doesn't appear in A. Both documents largely mirror each other otherwise, differing mainly in citation counts and minor phrasing rather than substantive new content."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Describes 2022 chatbots as relying on predefined scripts and basic pattern matching (adds mechanistic detail about early chatbot limitations)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Cognizant deploying 1,000 context engineers as a concrete enterprise adoption example, illustrating industry-scale investment in context engineering"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core evolution narrative (chatbots -> RAG -> agents -> memory-enabled agents) and the same definition of context engineering. Document B adds a small depth detail by specifying the technical mechanism behind early chatbots (predefined scripts/pattern matching), which A lacks. Document A adds a breadth instance not found in B: the concrete, named example of Cognizant deploying 1,000 context engineers, which broadens the discussion into real-world enterprise adoption scale, a sub-topic B does not touch. Both differences are modest in scale, not dramatic, so neither dimension shows a 'much_more' gap."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "adds mechanism detail: 2022 chatbots relied on predefined scripts and basic pattern matching",
+              "adds detail: RAG allowed 'more contextual responses'",
+              "adds detail: agents could 'interact with applications', memory agents build 'stateful relationships'"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Cognizant deploying 1,000 context engineers as concrete enterprise adoption example"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core narrative about the evolution from chatbots to RAG to agents to context engineering. Document A adds a concrete, source-attributed enterprise example (Cognizant's 1,000 context engineers) that broadens the section with a new real-world adoption data point, which B lacks entirely. Document B instead adds small technical elaborations to the existing evolution narrative (e.g., describing 2022 chatbots as relying on predefined scripts/pattern matching, RAG enabling more contextual responses, agents interacting with applications, and 'stateful' relationships), which deepen rather than broaden the same points, and also adds a citation for the prompt-engineering limitation claim without adding new substantive content. Net effect: B leads slightly on depth, A leads slightly on breadth, both by modest margins."
+        }
+      ]
+    },
+    "From prompt to context engineering": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "KV cache memory consumption mechanism and memory-bandwidth-bound latency scaling explanation for context length costs"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core narrative (prompt engineering limits, context decay, cost/latency, anecdote, shift to context engineering) with nearly identical wording. Document B adds a technical depth instance not in A: an explanation of the KV cache mechanism and why latency scaling is worse than linear (memory-bandwidth-bound inference), backed by three additional citations. Document A has no comparable depth addition. Neither document introduces a genuinely new adjacent subtopic or example beyond the shared core content, so breadth is tied."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "KV cache mechanism explaining why token cost grows with context length",
+              "explanation that latency scaling is worse than linear due to memory-bandwidth-bound inference rather than compute-bound"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core narrative (prompt engineering limits, context decay, cost/latency tradeoffs, anecdote, shift to context engineering) with no genuinely new sub-topics introduced by either, so breadth is a tie. For depth, document B adds a specific technical mechanism absent from A: it explains that the KV cache grows with context length and drives memory consumption, and that latency scaling is worse-than-linear because inference becomes memory-bandwidth-bound rather than compute-bound, citing three additional sources. This is a genuine rigor-adding detail deepening the existing point about token cost/latency, which A does not include, giving B the edge on depth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "KV cache mechanism explaining memory consumption growth with context length",
+              "technical explanation that latency scaling is worse than linear due to memory-bandwidth-bound inference rather than compute-bound"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core narrative (prompt engineering's limits, context decay, cost/latency tradeoffs, the anecdote about a million-token context window, and the shift to context engineering). For depth, document B adds a specific technical mechanism absent in A: it explains that the KV cache grows with context length and becomes the main memory consumer, and that latency scaling is worse-than-linear because inference becomes memory-bandwidth-bound rather than compute-bound, backed by three additional citations. This is a genuine rigor-adding detail deepening the existing point about cost/latency. Document A contains no comparable additional depth instance beyond what's already shared. Neither document introduces a genuinely new adjacent sub-topic or example beyond the shared coverage (context decay, cost/latency, the anecdote, and the definition of context engineering), so breadth is a tie."
+        }
+      ]
+    },
+    "Understanding context engineering": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Probabilistic search formalization of context optimization (arxiv 2512.04469 model)"
+            ],
+            "b_instances": [
+              "OS/RAM analogy extended with mechanism of paging data from disk and pulling from external sources like vector stores/databases (atlan.com citation)",
+              "Memory integration breaking stateless limitation of single LLM calls to achieve continuity across interactions (arxiv 2504.02441v1 citation)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents share the core definition, cooking agent example, Karpathy OS analogy, prompt-engineering-as-subset framing, comparison table, fine-tuning discussion, flowchart, and Slack example -- none of these differ substantively enough to count as unique enhancement. For depth, A uniquely adds a second formal/mathematical framing of context engineering as a probabilistic search problem (citing a distinct arXiv source), giving it one added rigor instance. B counters with two depth additions: it elaborates the OS/RAM analogy with a concrete mechanism (paging from disk, pulling from vector stores/databases, with an Atlan citation), and it elaborates on the 'stateful' dimension already introduced in the table by explaining how memory integration breaks the stateless limitation of single LLM calls to achieve continuity (citing a specific arXiv paper). This gives B a modest edge on depth (2 vs 1 substantive additions). Neither document introduces genuinely new adjacent sub-topics beyond what the section already covers, so breadth is a tie for both."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Probabilistic search formalization of context optimization (citing arXiv 2512.04469)"
+            ],
+            "b_instances": [
+              "OS/RAM analogy extended with mechanism detail (paging from disk, pulling from vector stores/databases, citing atlan.com)",
+              "Memory integration overcoming statelessness of single LLM calls to achieve continuity across interactions (citing arXiv 2504.02441)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core content (formal optimization definition, cooking agent example, Karpathy's OS/RAM analogy, prompt-vs-context table, fine-tuning comparison, decision flowchart, Slack agent example). For depth, Document A adds a distinct probabilistic-search formalization of the optimization problem (citing a second arXiv source) that B lacks. Document B adds two depth-level elaborations: a more mechanistic description of the OS/RAM analogy (paging from disk, sourcing from vector stores/databases) and a point about memory-based systems breaking the stateless limitation of single LLM calls (with a distinct citation), giving B a modest edge on depth. Neither document introduces a genuinely new adjacent sub-topic beyond the section's core scope, so breadth is tied with no qualifying instances on either side."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Formal probabilistic-search model of context optimization citing arXiv 2512.04469"
+            ],
+            "b_instances": [
+              "Extends OS/RAM analogy with mechanism detail: paging from disk and pulling context from external sources like vector stores or databases (citing Atlan working-memory piece)",
+              "Cites specific paper (arXiv 2504.02441) on memory integration breaking the stateless limitation of single LLM calls to achieve continuity across interactions"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core content on context engineering, the OS/RAM analogy, prompt vs. context engineering, and the fine-tuning comparison. For depth, Document A adds a distinct formal probabilistic-search framing of the optimization problem (citing a specific arXiv source) not found in B. Document B, however, adds two deeper technical details: a more mechanistic elaboration of the OS/RAM analogy (paging from disk, sourcing from vector stores/databases) and a specific citation supporting the claim that memory integration overcomes statelessness to enable continuity across interactions. This gives B a modest edge on depth. Neither document introduces genuinely new adjacent subtopics beyond the core coverage (e.g., no new applications or examples beyond the shared Slack agent example), so breadth is a tie."
+        }
+      ]
+    },
+    "What makes up the context": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Context graphs as a dynamic, business-process-mapping alternative to traditional knowledge graphs"
+            ],
+            "b_instances": [
+              "Explicit expanded definition of context naming distinct components (system instructions, retrieved documents, tool definitions, API responses, workflow state) sourced from [74]",
+              "Enterprise semantic memory often implemented via knowledge graphs providing a structured semantic layer over disparate data sources"
+            ]
+          },
+          "reasoning": "Both documents cover the same core memory taxonomy (short-term working memory and three types of long-term memory) almost identically, with mostly cosmetic differences in citation sources that don't add new substantive content (e.g., swapped citation URLs for the same claims). For depth, neither document adds a mechanism, quantitative detail, or technical nuance that goes deeper into an already-covered point beyond the shared baseline text, so this dimension ties. For breadth, Document A introduces the specific concept of 'context graphs' as a named alternative to knowledge graphs with a concrete mechanistic distinction (mapping lived business processes vs static facts), a genuinely new named framework. Document B counters with two of its own additions: an expanded definitional breadth statement listing named context components (tool definitions, API responses, workflow state) sourced from a citation, and a distinct claim about knowledge graphs serving as an enterprise semantic layer. Since both sides introduce roughly comparable numbers of new, source-attributed adjacent concepts, breadth is judged as a tie overall, though B's items are individually a bit less substantive/mechanistic than A's context-graph explanation, keeping the balance close."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Context graphs described as dynamic alternative to traditional knowledge graphs, mapping actual business processes for semantic memory"
+            ],
+            "b_instances": [
+              "Enterprise semantic memory often implemented as a knowledge graph providing a structured semantic layer over disparate data sources",
+              "Expanded, more granular definition of 'context' itself enumerating system instructions, retrieved documents, tool definitions, API responses, and workflow state"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core memory taxonomy. On depth, A adds one specific mechanism (context graphs vs. knowledge graphs) to deepen the semantic-memory explanation, while B adds two comparable depth enhancements: a competing specific mechanism (enterprise knowledge graphs as a structured semantic layer) and a more granular, source-cited enumeration of what 'context' itself consists of (system instructions, tool definitions, API responses, workflow state) rather than the vaguer 'everything the LLM sees' in A. This gives B a modest edge on depth. On breadth, neither document introduces a genuinely new, well-substantiated adjacent sub-topic; B's passing mention of a future 'multimodal data' lesson is too vague/unelaborated to count as a qualifying breadth instance, so breadth is a tie."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Context graphs described as dynamic, mapping actual business processes vs traditional static knowledge graphs (cited to tekst.com)"
+            ],
+            "b_instances": [
+              "Enterprise semantic memory often implemented as a knowledge graph providing a structured semantic layer over data sources (cited to mphasis)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Context defined as also including system instructions, retrieved documents, tool definitions, API responses, and workflow state (cited to progressiverobot.com), broadening the definition of what makes up context beyond the memory categories"
+            ]
+          },
+          "reasoning": "Both documents cover the same core memory taxonomy (short-term/long-term, procedural/episodic/semantic) almost identically. For depth, each adds one distinct technical elaboration on graph-based semantic memory: A introduces the 'context graph vs knowledge graph' distinction with a source, while B describes enterprise knowledge graphs as a structured semantic layer with a different source; these are comparable in specificity and substantiveness, resulting in a tie. For breadth, B uniquely opens the section with an expanded, source-attributed enumeration of context components (system instructions, tool definitions, API responses, workflow state) that broadens the scope of 'what makes up context' beyond the standard memory framework, which A lacks any equivalent for. This gives B a modest edge in breadth."
+        }
+      ]
+    },
+    "Production implementation challenges": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Quantitative explanation of context window scaling limits: quadratic attention mechanism causing 4x context growth to yield ~16x memory usage",
+              "Named 'context rot' phenomenon backed by a study across 18 frontier models (GPT-4.1, Claude 4) showing performance degradation is architectural",
+              "Explanation of a finite 'attention budget' where every added token reduces model focus",
+              "Gorilla benchmark cited as evidence that models perform worse with more than one tool available"
+            ],
+            "b_instances": [
+              "Explanation of U-shaped attention distribution / 'attention sink' mechanism causing disproportionate attention to first/last tokens"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same four core challenges (context window limits, information overload/lost-in-the-middle, context drift/poisoning, tool confusion) without introducing genuinely new adjacent sub-topics, so breadth is a tie. On depth, Document A provides substantially more technical elaboration: a quantitative claim about quadratic attention scaling (4x context -> 16x memory), a named 'context rot' concept backed by a specific multi-model study, an 'attention budget' explanation, and a cited Gorilla benchmark for tool confusion. Document B adds one comparable depth instance (the U-shaped attention/attention-sink mechanism) but its RAM analogy and generic citations do not add further substantive mechanism detail. Thus A clearly leads on depth while breadth remains tied."
+        },
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Quadratic attention scaling causing 4x context increase to yield 16x memory usage",
+              "Context rot study across 18 frontier models (GPT-4.1, Claude 4) confirming architectural property",
+              "Finite 'attention budget' concept where every added token reduces focus",
+              "Gorilla benchmark showing near-universal performance drop with more than one tool"
+            ],
+            "b_instances": [
+              "U-shaped attention distribution creating an 'attention sink' at the start of context"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same four core challenges (context window limits, information overload/lost-in-the-middle, context drift/poisoning, tool confusion) with no genuinely new adjacent subtopics introduced by either side, so breadth ties. On depth, Document A adds several distinct, source-attributed technical details deepening existing points: the quadratic scaling of attention causing disproportionate memory growth, a specific study across 18 frontier models validating context rot as an architectural property, the 'attention budget' concept, and the Gorilla benchmark showing tool-count effects on model accuracy. Document B only adds one comparable depth instance not found in A: the U-shaped attention distribution/'attention sink' mechanism explaining the lost-in-the-middle effect. B's RAM analogy is illustrative but not source-attributed technical content, and its context-poisoning and pre-limit-degradation points substantially overlap with A's coverage. Given A's four unique substantive depth additions versus B's one, depth clearly favors A (a_much_more)."
+        },
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Quadratic attention scaling stat: 4x context length increase can cause 16x memory increase",
+              "Context rot research across 18 frontier models incl. GPT-4.1 and Claude 4",
+              "Attention budget concept: every added token reduces model's focus capacity",
+              "Gorilla benchmark showing nearly all models perform worse with more than one tool"
+            ],
+            "b_instances": [
+              "U-shaped attention distribution / 'attention sink' mechanism explaining lost-in-the-middle"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same four core challenges (context window limits, information overload/lost-in-the-middle, context drift/poisoning, tool confusion) with no genuinely new adjacent subtopics introduced by either side, so breadth is a tie. On depth, Document A goes considerably further by citing concrete mechanisms and studies: the quadratic attention/memory scaling statistic, the 18-model context-rot study naming GPT-4.1 and Claude 4, the 'attention budget' concept, and the Gorilla benchmark data on tool confusion. Document B adds only one comparable depth instance\u2014the U-shaped attention/attention-sink explanation\u2014while its RAM analogy is illustrative rather than source-attributed technical depth, and its context-poisoning explanation ('initial error contaminates subsequent reasoning') is essentially the same point as A's context-poisoning cascade description, so it does not count as a differentiator. Overall A shows much greater depth enhancement while breadth is tied."
+        }
+      ]
+    },
+    "Key strategies for context optimization": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Summarization drift concept - explains how repeated compression discards details over time, deepening the compression discussion"
+            ],
+            "b_instances": [
+              "RAG applied to tool descriptions improves tool-selection performance (specific mechanism beyond just count)",
+              "Detailed compression pipeline (relevance filtering, semantic deduplication, extractive summarization, sentence pruning) with 50-80% token reduction stat",
+              "Isolation benefits quantified: prevents cross-domain hallucinations and reduces token consumption 60-70% vs monolithic agent"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Query augmentation - rewriting ambiguous queries/breaking into sub-queries",
+              "Semantic chunking along natural document boundaries instead of fixed sizes",
+              "Semantic caching to reuse answers for similar queries",
+              "Model Context Protocol (MCP) as an emerging standardization effort for tool interfaces"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core strategies (selecting context, compression, isolation, format optimization) with largely overlapping citations and mermaid diagrams. On depth, document B adds more quantitative/mechanistic rigor to existing points: a specific mechanism for improving tool selection via RAG on tool descriptions, a detailed multi-step compression pipeline with a concrete token-reduction percentage, and quantified isolation benefits (hallucination prevention, 60-70% token savings). Document A's main depth addition is the 'summarization drift' explanation, which is a solid but singular depth instance. On breadth, document B introduces several genuinely new sub-topics not touched by A: query augmentation/rewriting, semantic chunking strategy, semantic caching, and mention of the Model Context Protocol as a forward-looking standardization effort. Document A does not introduce any comparable new sub-topics beyond the shared core strategies. Overall, B shows moderately more depth enhancement and substantially more breadth enhancement."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Summarization drift risk explained as a technical limitation of repeated compression"
+            ],
+            "b_instances": [
+              "RAG applied to tool descriptions as a mechanism to improve tool selection accuracy",
+              "Detailed compression pipeline steps (relevance filtering, semantic deduplication, extractive summarization, sentence pruning) with 50-80% token reduction stat",
+              "Isolation benefits quantified: prevents cross-domain hallucinations and reduces token consumption 60-70% vs monolithic agent"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Query augmentation/rewriting and sub-query decomposition for retrieval",
+              "Semantic chunking along natural boundaries instead of fixed sizes",
+              "Semantic caching to reuse answers for similar queries and reduce cost",
+              "Model Context Protocol (MCP) as a standardization effort for tool interfaces"
+            ]
+          },
+          "reasoning": "Both documents share the core four strategies (selecting context, compression, isolation, format optimization) and largely overlapping citations (lost-in-the-middle, RAG, tool count stat, YAML/JSON, tracing). Document A adds one unique depth instance (the summarization drift mechanism) but no new breadth topics. Document B adds several new depth-level quantitative/mechanistic details (RAG-for-tool-descriptions, detailed compression pipeline with token-reduction stats, isolation token-reduction/hallucination-prevention stats) and multiple genuinely new breadth topics (query augmentation, semantic chunking, semantic caching, MCP). This makes B clearly richer on both depth and breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Summarization drift risk during repeated compression (loss of fidelity over iterative summarization)"
+            ],
+            "b_instances": [
+              "Detailed compression pipeline stages (relevance filtering, semantic deduplication, extractive summarization, sentence pruning) with 50-80% token reduction figure",
+              "Isolation strategy quantified benefits: prevents cross-domain hallucinations and reduces token consumption 60-70% vs monolithic agent",
+              "Applying RAG specifically to tool descriptions as a mechanism to improve tool-selection performance"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Query augmentation: rewriting ambiguous queries or decomposing into sub-queries to improve retrieval",
+              "Semantic chunking: splitting documents along natural semantic boundaries rather than fixed sizes",
+              "Semantic caching: storing/reusing answers for similar queries to cut redundant computation and cost",
+              "Model Context Protocol (MCP) as an emerging standardization effort for tool interfaces"
+            ]
+          },
+          "reasoning": "Both documents share the core strategies (structured outputs, RAG, tool reduction, temporal ranking, instruction repetition, summarization, isolation, XML/YAML formatting, tracing). Document A adds one depth-oriented detail not in B (the 'summarization drift' failure mode). Document B, however, adds multiple deeper, source-attributed quantitative/mechanistic details not present in A: a granular compression pipeline with specific token-reduction stats, quantified benefits of context isolation (hallucination prevention, 60-70% token savings), and a specific tool-description RAG mechanism for tool reduction. On breadth, A introduces no genuinely new subtopics beyond the shared core strategies, while B introduces several new adjacent sub-topics: query augmentation, semantic chunking, semantic caching, and the Model Context Protocol (MCP) standardization effort. Overall B demonstrates substantially more enhancement content on both depth and breadth dimensions."
+        }
+      ]
+    },
+    "Here is an example": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Rationale for using YAML over JSON for token efficiency in prompt formatting",
+              "Discussion of split-stack vs. unified-stack database architecture tradeoffs (citation [30])"
+            ],
+            "b_instances": [
+              "Detail on updating episodic memory with new preferences revealed during the interaction"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Web Development use-case scenario (AI accessing codebase/architecture for compliant code generation, citation [28])"
+            ],
+            "b_instances": [
+              "Embodied AI and Robotics use-case scenario (citation [83])",
+              "Addition of short-term memory/conversation history as a third memory type feeding the example's context assembly"
+            ]
+          },
+          "reasoning": "Both documents cover the same core example (healthcare headache query, patient history, medical literature, prompt structure, tech stack). A adds two depth-oriented technical details not in B: a rationale for YAML over JSON (token efficiency) and a sourced discussion of split-stack vs. unified-stack database architecture tradeoffs. B's only comparable depth addition is a brief note about episodic memory being updated post-interaction, making A somewhat stronger on depth. For breadth, A introduces a Web Development scenario as a new adjacent use case, while B introduces both an Embodied AI/Robotics scenario (with a distinct citation) and mentions short-term memory/conversation history as an additional context type not previously enumerated, giving B a slight edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Split-stack vs. unified-stack database architecture tradeoff discussion with citation",
+              "YAML over JSON formatting choice for token efficiency",
+              "Concrete medical literature facts embedded in example (rehydration timing of 30min-3hrs, cold-compress vasoconstriction mechanism, caffeine-withdrawal remedy, stress-relief techniques)"
+            ],
+            "b_instances": [
+              "Episodic memory explicitly updated with new preferences revealed during the interaction",
+              "Explanation of vector vs. graph databases mapped to semantic/episodic memory retrieval needs",
+              "LangGraph elaborated as enabling 'complex graphs of operations' for context flow",
+              "Gemini's suitability tied to complex agentic decision-making"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Web Development scenario as an additional application domain (codebase/security context for code generation)"
+            ],
+            "b_instances": [
+              "Embodied AI and Robotics scenario as a new application domain",
+              "Short-term memory/conversation history introduced as a third distinct memory type alongside episodic and semantic memory"
+            ]
+          },
+          "reasoning": "Both documents share the same core scenarios, healthcare walkthrough, prompt-construction example, and tech-stack recommendation, so most content overlaps. On depth, A adds a citation-backed technical tradeoff (split-stack vs unified-stack databases), a token-efficiency formatting rationale (YAML vs JSON), and concrete quantitative/mechanistic medical facts baked into its example data -- these are fairly substantive, specific additions. B counters with several depth touches (explicit episodic-memory update mechanism, database-type-to-memory-type mapping, brief elaborations on LangGraph and Gemini) but these are generally more generic/explanatory rather than as concretely specific as A's additions, giving A a modest edge. On breadth, both introduce one unique new scenario domain (A: Web Development; B: Embodied AI/Robotics), but B also introduces short-term memory/conversation history as a new distinct memory type not present in A's account, giving B the edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Concrete medical-literature dataset with specific quantitative treatment details (e.g., rehydration relief in 30 min\u20133 hrs, cold-compress vasoconstriction mechanism, caffeine-withdrawal effect)",
+              "Rationale for using YAML instead of JSON for token efficiency in prompt construction",
+              "Split-stack vs. unified-stack database architecture tradeoff for stateful multi-agent systems, with citation"
+            ],
+            "b_instances": [
+              "Explanation that episodic memory is updated post-interaction with newly revealed user preferences",
+              "Elaboration on LangGraph's graph-based workflow structure enabling context flow management",
+              "Tying specific databases (Qdrant, Neo4j) explicitly to semantic vs. episodic memory functions"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Web Development use-case scenario (AI generating compliant code from codebase/architecture context)"
+            ],
+            "b_instances": [
+              "Embodied AI and Robotics scenario as a new application domain",
+              "Introduction of short-term memory / conversation history as a third memory type feeding into context assembly"
+            ]
+          },
+          "reasoning": "Both documents cover the same core healthcare example and tech stack, but diverge in added specifics. On depth, Document A offers more concrete, quantitative detail: an actual populated Python data structure with specific medical findings and timings, a token-efficiency rationale for YAML over JSON, and a cited architectural tradeoff between split-stack and unified-stack databases. Document B's depth additions (episodic memory updating, LangGraph's graph structure, database-to-memory mapping) are real but more explanatory/qualitative and less quantitatively specific, so A edges ahead on depth. On breadth, Document B introduces two new sub-topics not covered by A -- an Embodied AI/Robotics use case and the addition of short-term memory/conversation history as a distinct context type -- while A only adds one new scenario (Web Development), giving B the edge on breadth."
+        }
+      ]
+    },
+    "Connecting context engineering to AI engineering": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Detailed stepwise breakdown of retrieving from episodic, semantic, and short-term memory for the headache query example",
+              "Concrete Python code example showing structured system prompt with XML-delimited context fields"
+            ],
+            "b_instances": [
+              "healep steps... none",
+              "provides no additional depth beyond core definition"
+            ]
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Healthcare AI assistant example with cited source",
+              "Financial services AI integrating CRMs/market data example",
+              "Project management AI example (CRMs, Slack, task managers)",
+              "Content creator assistant example",
+              "Embodied AI/robotics example with cited research",
+              "Recommended tech stack: Gemini, LangGraph, PostgreSQL/MongoDB, Qdrant/Neo4j, Opik/LangSmith"
+            ],
+            "b_instances": [
+              "Enterprise Architects analogy comparing context engineering to enterprise architecture practice, with citation"
+            ]
+          },
+          "reasoning": "Document A adds clear depth by walking through a concrete healthcare query end-to-end (memory retrieval steps) and by providing an actual code-level prompt template with XML-structured fields\u2014both deepen the mechanics of context engineering beyond what B offers, since B mostly restates the core claim that context engineering combines AI/software/data engineering and ops (which is the section's core demand rather than an added depth instance). For breadth, A introduces five distinct new application domains (healthcare, financial services, project management, content creation, robotics) each with specific framing/citations, plus an entire new subtopic of a recommended tool stack (Gemini, LangGraph, Qdrant/Neo4j, Opik/LangSmith)\u2014none of which B touches. B's only clearly new breadth instance is the Enterprise Architects analogy, a single sourced comparison. Thus A leads on both depth (moderately) and breadth (substantially)."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Concrete Python code example showing structured XML-tagged prompt assembling patient history, medical knowledge, conversation history, and query",
+              "Detailed step-by-step mechanism of retrieving from episodic memory (patient history/allergies), semantic memory (medical database), and short-term memory (conversation) and assembling them into final context"
+            ],
+            "b_instances": [
+              "Enterprise Architect analogy (citation [2]) framing context engineering as curating business information for AI agents instead of humans"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Financial services scenario: AI integrating CRMs/emails/calendars with market data for tailored advice",
+              "Project management scenario: AI using CRMs/Slack/task managers to update tasks",
+              "Content creator assistant scenario using past content and personality traits",
+              "Embodied AI/robotics scenario for physical context-aware decisions (citation [83])",
+              "Healthcare scenario with citation [41]",
+              "Recommended production tech stack: Gemini LLM, LangGraph orchestration, Postgres/MongoDB plus Qdrant/Neo4j for memory, Opik/LangSmith for observability"
+            ],
+            "b_instances": [
+              "Breakdown of AI engineering into adjacent disciplines: Software Engineering (scalable/maintainable code architecture)",
+              "Data Engineering as a distinct adjacent discipline feeding curated data into memory layer",
+              "Operations/CI-CD as a distinct adjacent discipline for deployment and observability"
+            ]
+          },
+          "reasoning": "Document A goes further in both dimensions: it adds two concrete depth instances (a full XML-structured prompt code example and a stepwise memory-retrieval mechanism) versus B's single Enterprise Architect analogy for depth. For breadth, A introduces five distinct real-world application scenarios (healthcare, finance, project management, content creation, robotics) plus a concrete recommended tech stack (Gemini, LangGraph, vector/graph DBs, observability tools), totaling six new adjacent sub-topics, while B only names three adjacent disciplines (SWE, Data Engineering, Ops) beyond the core AI Engineering connection. Both documents include source-attributed specifics, but A's enhancement content is more numerous and technically concrete in both dimensions, though the margin is moderate rather than overwhelming."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Step-by-step context assembly process for the headache query (episodic/semantic/short-term memory retrieval and formatting)",
+              "Python code sample showing XML-tagged prompt structure for populating context fields"
+            ],
+            "b_instances": [
+              "CI/CD pipeline detail as part of Ops discipline"
+            ]
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Healthcare AI assistant use case (cited)",
+              "Financial services AI integration use case",
+              "Project management AI use case",
+              "Content creator assistant use case",
+              "Embodied AI/robotics use case (cited)",
+              "Recommended tech stack: Gemini, LangGraph, PostgreSQL/MongoDB, Qdrant/Neo4j, Opik/LangSmith"
+            ],
+            "b_instances": [
+              "Enterprise Architects analogy for context curation (cited)",
+              "Four-discipline breakdown connecting context engineering to SWE, Data Engineering, and Ops"
+            ]
+          },
+          "reasoning": "Document A adds depth via a concrete technical walkthrough (memory-type retrieval steps) and an actual code snippet showing prompt structuring, both of which add mechanistic rigor beyond a general description. Document B's depth is thinner, offering only a brief mention of CI/CD under Ops without further elaboration. On breadth, A substantially outpaces B by introducing five distinct, cited real-world application domains (healthcare, finance, project management, content creation, robotics) plus a concrete named tech stack (Gemini, LangGraph, Qdrant/Neo4j, Opik/LangSmith), each a genuinely new sub-topic. B's breadth is limited to the Enterprise Architect analogy and the four-discipline framing (AI/SWE/Data/Ops), which is more directly core to the section's stated purpose and yields fewer distinct new instances. Overall, A shows more depth and much more breadth of source-attributed enhancement content."
+        }
+      ]
+    }
+  }
+}

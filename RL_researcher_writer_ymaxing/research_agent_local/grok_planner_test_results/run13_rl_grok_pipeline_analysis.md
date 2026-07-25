@@ -2767,3 +2767,302 @@ ground-truth data point available; nothing in this grid provides evidence to cha
 should be revisited once more articles are re-graded and confirmed (not just re-graded — confirmed
 via replicate majority, as 06_tools was), since n=1 confirmed article is a thin basis for a
 permanent decision.
+
+## 36. Circularity critique of §35, a real formula-consistency bug found while checking it, and a corrected (non-circular) test
+
+**User's challenge (2026-07-16):** §35's "confirmed-correct" label for `06_tools__var_standard`
+(`standard`, via §31's 3-1 replicate majority) was itself computed **under the baseline formula's
+own parameters** (`explore_mult=0.50`). Using "does raising `explore_mult` disagree with that
+label" as evidence *against* raising `explore_mult` assumes the very parameters in question are
+already correct — textbook circular reasoning. Confirmed as valid: §35's recommendation to avoid
+raising `explore_mult` was not properly justified as stated.
+
+**A more fundamental, purely mechanical bug found while investigating this:**
+`training/measure_replicate_noise.py` (the script that actually produced §30/§31's published
+replicate margins) computed `de`/`be` via the raw binary `_get_score()`, **never routing through
+`_get_enhancement()`/`enhancement_credit()`** — i.e. it silently used the OLD (pre-enhancement-fix)
+formula for all 3 replicates, while the "original" row (read from the real, already-regenerated
+`article_oracle.json`) reflected the NEW formula. The published "3-1 majority" was therefore
+comparing 1 new-formula draw against 3 old-formula draws — apples to oranges, a real inconsistency
+independent of and more basic than the circularity concern. **Fixed**: `_compute_replicate_sections()`
+now mirrors `generate_episode_oracles.py::process_article_variant`'s `_enh_credit` closure exactly.
+Re-ran both articles with the fix: **the qualitative conclusions held up** — `09_RAG` still lands a
+genuine 2-2 tie (votes: standard, light, light — same split as before, margins compressed but same
+pattern), `06_tools` still gives a clean 3-1 majority for `standard` — but the exact margin
+magnitudes previously published were wrong and are now superseded.
+
+**The properly non-circular test:** rather than comparing one draw's raw-argmax against a
+formula-dependent label, added `sweep_reward_formula.py --majority-vote-sweep`: for each
+`explore_mult` value, recompute **all 4 independent draws** (original + 3 replicates) under the
+*same* candidate cfg, and take a majority vote — this uses replicated evidence as the ground truth
+proxy, not a single formula's own label, so it doesn't beg the question.
+
+**Result — genuinely revises the previous (circular) conclusion:**
+- **`09_RAG__var_standard`**: `light` remains the plurality winner across the *entire* tested range
+  (explore_mult 0.50→0.90) — `deep` never takes the majority. §35's claim that raising
+  `explore_mult` "flips 09_RAG to deep" was an artifact of looking at only the single production
+  draw plus its own secondary-signal tiebreak — not supported once all 4 draws are considered.
+- **`06_tools__var_standard`**: the majority genuinely flips from `standard` (3-1) to `deep` (3-1)
+  once `explore_mult` crosses **~0.65** — and critically, this is **3 of 4 independent draws
+  agreeing**, not just the cherry-picked original. This is real, non-circular evidence that raising
+  `explore_mult` reveals something the single-draw comparison couldn't — it directly **reverses**
+  §35's recommendation to avoid raising `explore_mult`, at least for this specific article.
+
+**Honest caveat:** this is still a small-sample replicate vote (4 draws) for 2 articles; genuinely
+informative, but not a final word. The corrected, general lesson for future use of this tool:
+comparing a swept lever against a *single formula-dependent label* is circular; comparing it against
+an *independently-replicated majority vote*, recomputed consistently under the same candidate
+parameters for every draw, is not.
+
+## 37. Full corpus re-grade (all 40 articles) — a counter-intuitive result opposite the original hypothesis
+
+**User re-graded all 40 production articles' `reasoning.json`** (train + test, temperature-0.7
+original episodes) with the `[instances=N; quality=...]` tag — the expensive step (§27-28) is now
+done at full scale, not just the n=2 pilot. This is the actual "production cutover" this
+investigation was building toward.
+
+**Sequence run:** backed up the pre-tag state (`bases_PRETAG_BACKUP_20260724`), regenerated
+`section_oracle.json` for all 40 (`generate_episode_oracles.py`, TRAIN default + TEST explicit
+list — both scripts default `--articles` to only the 8 TRAIN topics; the 16 TEST no-variant
+articles must be passed explicitly or are silently skipped), then `compute_article_oracle.py
+--force` for both groups. Built `training/diff_oracle_regen.py` (new, read-only) to diff
+before/after `article_oracle.json` across the whole corpus — reports per-article flips split by
+whether the *old* margin was thin (<0.06) or comfortable (≥0.06), plus the aggregate arm
+distribution.
+
+**Result — the OPPOSITE of the motivating hypothesis:**
+
+```
+42 article(s); 34 unchanged, 8 flipped
+Arm distribution BEFORE: {skip: 12, light: 19, standard: 6, deep: 5}
+Arm distribution AFTER:  {skip: 12, light: 22, standard: 6, deep: 2}
+```
+
+`light` **grew** (19→22, +3) and `deep` **shrank** (5→2, -3) — precisely reversed from §25's
+original hypothesis that the enhancement-ceiling fix would demote `light`'s over-crediting and
+promote `standard`/`deep`. 8 flips total: 6 thin-margin (expected/lower-risk), 2 comfortable-margin
+(flagged for priority inspection): `13_agent_framework` (`deep`→`skip`, margin +0.076→-0.008) and
+`Dark_Dimension` (`skip`→`light`, margin +0.131→+0.055).
+
+This did not immediately invalidate the fix — it triggered a proper investigation (§38) rather than
+either reverting or rationalizing, consistent with this investigation's practice throughout.
+
+## 38. Root-cause diagnosis: the fix's *ordering* is validated by real data, but its *scale* was mis-calibrated
+
+Built `training/audit_enhancement_tags.py` (new, read-only) to test the fix's core assumption
+directly against the full, now-tagged corpus, rather than continuing to reason from the n=2 pilot.
+
+**The core hypothesis (deep has more/stronger instances than light) is CONFIRMED, corpus-wide:**
+
+| | mean instance count | mean `enhancement_credit()` |
+|---|---|---|
+| skip | 0.000 | 0.000 |
+| light | 0.327 | 0.142 |
+| standard | 0.408 | 0.175 |
+| deep | 0.430 | **0.182** |
+
+Monotonic, exactly as hypothesized — this is not a case of "the whole premise was wrong."
+
+**The real mechanism for the counter-intuitive result:** across **every arm**, 90-97% of entries
+have 0 or 1 qualifying instance (skip 100%/0%, light 75.8%/19.0%, standard 71.1%/20.8%, deep
+70.0%/21.3% — the 1-instance *rate* is nearly identical across arms). Only 5-9% have 2+ instances,
+where deep's real edge lives (deep 8.7% vs light 5.2%). The curve's deliberate design choice — a
+single instance credited at 0.55 instead of the old implicit 1.0 (§27: "intended
+light-overcrediting correction") — hits this dominant 0/1-instance case **roughly equally across
+all arms**, not selectively on light. Since that case is ~90%+ of all entries, `enhancement_credit()`'s
+overall scale shrank by a nearly uniform ~40% for every arm (light 0.242→0.142 [×0.588], standard
+0.289→0.175 [×0.605], deep 0.300→0.182 [×0.606] — using the fraction-with-count≥1 as the
+old-equivalent mean). The rare 2+-instance bonus that's supposed to differentiate `deep` doesn't
+occur often enough to offset that uniform shrinkage — and since `deep`'s reward advantage must
+overcome its own unchanged, bigger cost penalty (`-0.06×3` vs light's `-0.06×1`), shrinking the
+explore term's absolute scale hurts `deep` disproportionately even though its *relative* ranking
+within the curve is correct.
+
+**Two real-data case studies (actual reasoning.json tags), pulled to understand the mechanism
+concretely:**
+- **`13_agent_framework`** (deep→skip): `deep` never exceeds 1 instance in *any single section* —
+  its advantage is spread thin across ~7 sections, each worth only ≤0.55 credit. Meanwhile
+  `standard` hits the **full cap** (3 instances → 1.00) in one heavily-weighted section (S3), and
+  `light` hits 2 instances (→0.80) in another (S5). A single big win in one heavily-weighted section
+  can outweigh many small scattered wins under target-words weighting.
+- **`Dark_Dimension`** (skip→light): `light`, `standard`, and `deep` all hit **exactly 3 strong
+  instances** in the article's one real content section (S3) — tied at the full 1.00 credit
+  ceiling, identical to what old binary scoring would have given all three. `deep`'s only edges
+  (S2-depth, S3-breadth) are single instances. This flip may not even be attributable to the
+  enhancement fix specifically, since the shared tied section's credit is unchanged old-vs-new.
+
+**Tested the natural compensating lever** — the scale factor implies `explore_mult ≈
+0.50/0.60 ≈ 0.83` would restore the old overall scale. Result on the real 42-article corpus: only
+5 flips, and it does **not** cleanly reverse the original 8 (e.g. `06_tools__var_demanding`'s
+deep→standard flip isn't recovered at all; a different, unrelated set of articles flip instead).
+**Conclusion: raising `explore_mult` is not a clean fix here** — it's a genuinely mixed, blunt
+effect (confirmed via `sweep_reward_formula.py --corpus-sweep`), not a scale-restoring one.
+
+## 39. Candidate E — simple (unweighted) mean of the explore term across sections
+
+**User's proposal (2026-07-24):** apply simple averaging to the `explore` component of the
+per-section reward specifically, while the rest (`gt_base + user_intent + cost`) stays
+target-words-weighted — since an enhancement instance's value shouldn't scale with the word budget
+of the section it happened to land in. Directly motivated by the `13_agent_framework` case study
+above (deep's advantage diluted by being spread across many low-weight sections, while standard's
+concentrated in one heavily-weighted section).
+
+**Implemented as a real schema/code change (section_oracle.json v3→v4), tested before touching
+production:**
+- `generate_episode_oracles.py`: added `_section_reward_components(...) -> (rest, explore)`
+  (returns the pieces separately; `rest+explore == _section_reward(...)` exactly). `_section_reward()`
+  itself is unchanged — existing callers (`measure_replicate_noise.py`, the sweep tool's inline
+  copy) are unaffected. `process_article_variant` now stores a new `"explore"` sub-dict per section
+  alongside the existing `"rewards"` dict (version bumped to 4).
+- `compute_article_oracle.py::_compute_r_w()`: when `"explore"` is present, computes
+  `R_w[arm] = weighted_mean(rewards[arm]-explore[arm], weights=target_words) +
+  simple_mean(explore[arm])` — falls back exactly to the old pure-weighted-mean when `"explore"` is
+  absent (v2/v3 data), zero behavior change for anything not yet regenerated.
+- Mirrored into `sweep_reward_formula.py` (`simple_avg_explore` cfg flag) for pre-production
+  testing. **Found and fixed a real bug while testing**: the plain per-article table was calling
+  `_recompute()` (hardcoded to the TRAIN-variant path), silently returning garbage for TEST
+  articles like `13_agent_framework`/`Dark_Dimension` — fixed to use `_recompute_any()`.
+
+**Per-article effect is genuinely mixed, not uniformly "helps deep":**
+- `13_agent_framework`: `deep` recovers modestly (0.5880→0.5927 alone; →0.6648 combined with
+  `explore_mult=0.83`) — matches the story (spread-thin sections benefit from removing the
+  length-weighting).
+- `Dark_Dimension`: `deep` actually **drops further** (0.6436→0.5917) — its edge is partly
+  concentrated in the *same* big tied section as everyone else, so simple-averaging dilutes that
+  shared section's outsized contribution for `deep` too, without enough compensation from its
+  smaller edges elsewhere. **Candidate E is not a "pro-deep" lever — it's a "remove an arbitrary
+  length bias" lever, and those aren't the same thing.**
+
+**Shipped to production and diffed against the full corpus (backed up as `bases_V3_BACKUP_20260724_122559`):**
+
+```
+42 article(s); 41 unchanged, 1 flipped
+Arm distribution BEFORE (v3):   {skip: 12, light: 22, standard: 6, deep: 2}
+Arm distribution AFTER (v4+E):  {skip: 12, light: 22, standard: 7, deep: 1}
+Flip: 06_tools__var_standard   deep -> standard   (old_margin=-0.0069, new_margin=+0.0299, thin)
+```
+
+**Verdict: E is a real, principled fix (removes a genuinely arbitrary bias) but its aggregate
+effect is small** — only 1/42 flips, `light`'s share is completely unchanged (22→22), and `deep`
+shrinks further, not less. **E does not address §38's scale-compression finding** — it changes how
+per-section explore values aggregate across sections, not the per-instance credit values
+themselves. Both backups (`bases_PRETAG_BACKUP_20260724` = pre-tag state, `bases_V3_BACKUP_20260724_122559`
+= v3/tag-based-no-split state) are preserved for rollback. v4 (with E) is now live in production.
+
+## 40. The curve-scale recalibration question, in detail
+
+**What "the curve" is.** `enhancement_reward.py` maps a section's enhancement signal —
+`(count, quality-tiers)` — into a single credit value in `[0,1]` via three pieces:
+```
+QUALITY_WEIGHT = {"strong": 1.00, "standard": 0.65}
+INSTANCE_CAP = 3
+CREDIT_AT_WEIGHTED_COUNT = {0: 0.00, 1: 0.55, 2: 0.80, 3: 1.00}
+```
+That credit value becomes `de`/`be` in `_section_reward`'s `explore` term:
+`explore = cp * (0.60*de + 0.40*be) * 0.50` (`explore_mult = 0.50`).
+
+**What "scale" means, precisely.** The **old** (pre-fix) scoring was a step function: any
+qualifying instance → `1.00`; zero → `0.00`. The new curve's first rung — `1 instance → 0.55` — is
+deliberately **half** of that old value (§27: "intended light-overcrediting correction"). §38
+showed this "1-instance" case is not light-specific — it's the dominant case for *every* arm
+(~19-21% for light/standard/deep alike, vs. only 5-9% for 2+ instances). Halving the credit for the
+dominant non-zero case shrinks the **mean** credit for every arm by roughly the same proportion
+(~×0.59-0.61), not selectively for light. The **ordering is preserved and validated on real data**
+(deep > standard > light, confirmed in §38) — this isn't "the fix was wrong" — but the **absolute
+gaps** between arms shrank in lockstep with the uniform downscaling, because the rare 2+-instance
+bonus (5-9% of sections) that's supposed to differentiate `deep` can't fully offset a reduction
+hitting ~90%+ of sections. That's "the scale problem": the curve's *shape* (relative crediting
+across instance counts and quality tiers) is doing its job; its *overall magnitude* wasn't re-tuned
+to account for how rare multi-instance sections actually turned out to be.
+
+**Why this specifically hurts `deep`.** `deep` pays a cost penalty of `-0.06×3 = -0.18` per section
+(3 exploration rounds) vs. `skip`'s `0` and `light`'s `-0.06`. It needs `explore` to earn that back.
+Rough math on the *average* section: `explore ≈ cp×0.182×0.50 ≈ 0.091` (using deep's mean credit,
+`cp≈1`) — about **half** of the `0.18` cost gap it needs to overcome. So on a typical section,
+exploration credit alone doesn't come close to justifying `deep`'s cost; `deep` only wins overall
+when `cc`/`fl`/`ga`/`ra` also favor it, or it hits one of the rarer multi-instance sections.
+Consistent with the `13_agent_framework`/`Dark_Dimension` case studies in §38.
+
+**Two genuinely different levers — not interchangeable:**
+- **(A) Raise `explore_mult`** (currently 0.50, uniform external multiplier on the whole `explore`
+  term): scales *everything* — every arm, every section with *any* nonzero explore signal — by the
+  same factor. Doesn't touch the curve's internal shape. Already tested (§38): blunt, with side
+  effects unrelated to the enhancement fix (e.g. flipping `skip→light`/`standard` in articles where
+  the change isn't about deep's exploration credit at all, just an amplified tiny residual signal).
+- **(B) Recalibrate the curve itself** (e.g. raise `CREDIT_AT_WEIGHTED_COUNT[1]` from 0.55 toward
+  something higher, possibly reshaping the whole ladder): changes the *relative* value of hitting
+  1 vs. 2 vs. 3 instances. More surgical — only affects sections with actual enhancement signal
+  (never touches `skip`'s all-zero sections) — but risks re-introducing the "single instance
+  over-credited" problem if pushed too far back toward 1.0, and risks flattening the multi-instance
+  differentiation (the reason this investigation started) if the tier-1-to-tier-3 gap narrows too
+  much.
+- A **third, softer option**: raise `QUALITY_WEIGHT["standard"]` (candidate C, already tested —
+  safe, modest effect) — raises the effective weighted count for a given real instance mix without
+  touching the count→credit ladder directly.
+
+**The core tension to be explicit about.** The `0.55` single-instance value was chosen in §27
+*before* the real corpus-wide instance-count distribution was known (informed by one pilot
+article's recount, not all 40). The question is not "should we undo the fix" (a single instance
+genuinely shouldn't auto-max credit) — it's narrower: **was `0.55` specifically well-calibrated**,
+now that ~90%+ of sections never get past 1 instance? A different single-instance value (e.g.
+0.65-0.70) might better balance "don't over-credit a lone instance" against "don't crush the
+average explore signal so hard that `deep`'s cost penalty becomes structurally almost unbeatable."
+
+**A side note worth carrying forward:** `standard` and `deep` have nearly identical instance-count
+profiles (20.8%/8.1% vs 21.3%/8.7%), so any curve recalibration would likely lift **both** roughly
+together relative to `light`/`skip` — matching the original, broader hypothesis, not a
+deep-specific fix.
+
+This is ultimately a **normative calibration decision** informed by data, not fully determined by
+it — like the original `explore_mult=0.50` choice. §41 designs and tests concrete candidate curves
+against this same real, full corpus.
+
+## 41. Candidate curves tested — F3 (gentle) is the only one that doesn't erode the confirmed ground truth
+
+Added 4 candidates to `sweep_reward_formula.py` (kept `INSTANCE_CAP=3` and tier-3 anchored at
+`1.00` throughout — no cap extension, avoiding the A/B dilution mechanism entirely):
+
+| Candidate | `credit_curve` (tiers 0/1/2/3) | Other |
+|---|---|---|
+| F1 `tier1_070` | `{0:.00, 1:.70, 2:.85, 3:1.00}` | — |
+| F2 `tier1_080` | `{0:.00, 1:.80, 2:.90, 3:1.00}` | — |
+| F3 `tier1_065_gentle` | `{0:.00, 1:.65, 2:.83, 3:1.00}` | — |
+| F1+C `tier1_070` + stdw=0.80 | `{0:.00, 1:.70, 2:.85, 3:1.00}` | `quality_weight["standard"]=0.80` |
+
+**Applied the same non-circularity discipline as §36**, since `06_tools__var_standard`'s
+`standard` answer is itself a *confirmed* label (§31's replicate majority) computed under the
+*current* curve — testing "does candidate X disagree with that label" would be circular unless
+checked against the actual replicate-majority vote, not the single baseline draw. Generalized
+`majority_vote_sweep()` into `majority_vote_sweep_named()` to accept any cfg, not just
+`explore_mult`.
+
+**Result — a clear, non-circular signal: F1/F2 erode the confirmed majority; F3 does not.**
+
+| Candidate | `06_tools` majority (orig+3 replicates) | `09_RAG` majority | Corpus-wide raw-argmax flips (of 42) |
+|---|---|---|---|
+| baseline | **standard 3-1** (clean) | light 3-1 (clean) | — |
+| F1 `tier1_070` | **deep 2 - standard 2 (TIE)** | light 3-1 (unchanged) | 1 (`06_tools__var_standard` std→deep, thin) |
+| F2 `tier1_080` | **deep 2 - standard 2 (TIE)** | light 3-1 (unchanged) | 2 (same flip **+** `11_multimodal__var_demanding` skip→standard, **COMFORTABLE margin**) |
+| F3 `tier1_065_gentle` | **standard 3-1 (unchanged)** | light 3-1 (unchanged) | **0** |
+| F1+C stdw=0.80 | **deep 2 - standard 2 (TIE)** | light 3-1 (unchanged) | 1 (same as F1 alone) |
+
+Raising the single-instance credit to 0.70 or 0.80 measurably erodes `06_tools`'s confirmed 3-1
+majority down to a 2-2 tie — **confirmed two independent ways** (the replicate-majority-vote check
+AND the corpus-wide raw-argmax flip), not just a single-draw artifact. F2 additionally introduces a
+new **comfortable-margin** flip elsewhere (`11_multimodal__var_demanding`), a higher-priority
+warning sign per this investigation's own risk tiers. **F3 (0.65) is the only candidate that leaves
+both the confirmed ground truth and the rest of the corpus completely untouched** (zero flips
+corpus-wide) while still doing real, measurable work — per-article inspection shows `deep`'s
+absolute R_w still rises under F3 in cases like `13_agent_framework` (0.5880→0.6070, ~+3.2%),
+just not enough to flip any decision.
+
+**Recommendation:** if pursuing curve-scale recalibration at all, **F3-style gentle values
+(~0.60-0.65 for the single-instance tier) are the defensible choice** — they restore some of the
+scale reduction §38 diagnosed without gambling the one piece of confirmed ground truth this
+investigation has. Values at or above 0.70 should be treated as failing validation, the same way
+candidates A/B failed in §34. As always: n=1 confirmed article + a corpus-wide *stability* check
+(not a correctness check, since most of the 42 articles have no independent confirmation) is
+informative but not final — worth revisiting once more articles get a genuinely confirmed
+(replicate-majority) label.
+
+

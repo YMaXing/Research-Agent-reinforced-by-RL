@@ -1,0 +1,336 @@
+{
+  "article": "HNSW",
+  "model": "anthropic:claude-sonnet-5",
+  "sections": {
+    "Introduction": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "mentions multimodal retrieval as a specific new application domain, citing that HNSW is often the default starting point for corpora under a few million vectors (sourced from soeasie.com)"
+          ]
+        },
+        "reasoning": "Both introductions cover the same core ground (HNSW's performance, comparison to IVF/LSH, article roadmap, image, transition to skip lists/NSW graphs) with no meaningfully deeper technical elaboration in either, so depth ties. For breadth, document B introduces a genuinely new adjacent sub-topic\u2014multimodal retrieval systems\u2014and a specific, source-attributed claim about HNSW being the default choice for corpora under a few million vectors, which document A does not mention. Document A's citation [2] to a VLDB paper merely supports the same speed/accuracy trade-off claim both documents already make, not a new topic, so it doesn't count as a distinct breadth instance."
+      },
+      "light_vs_deep": {
+        "a_arm": "light",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Specific quantitative detail: HNSW is the default choice for corpora under a few million vectors, per cited multimodal retrieval systems article"
+          ],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Mentions large-scale recommendation engines as an application domain, supported by a cited arXiv paper, a new use case not mentioned in A"
+          ]
+        },
+        "reasoning": "Both introductions cover the same core ground (HNSW's performance, black-box nature, IVF/LSH comparison, roadmap to skip lists/NSW graphs). Document A adds a specific quantitative detail (corpus size threshold for HNSW being the default choice) sourced to an external article, giving it a slight edge on depth. Document B adds a genuinely new adjacent application area (large-scale recommendation engines, cited via an arXiv paper) not mentioned in A, giving it a slight edge on breadth. Both differences are modest (single instance each), so neither dimension shows a strong lead."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Cites a specific VLDB paper as evidence for HNSW's superior speed/accuracy trade-off versus IVF/LSH, adding a concrete source-backed comparative claim"
+          ],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Cites specific named application domains (multimodal search, large-scale recommendation engines) backed by two citations, broadening scope beyond generic RAG/semantic search"
+          ]
+        },
+        "reasoning": "Both intros are structurally similar and cover the same core topic. A adds a depth-oriented instance by citing a specific VLDB paper to substantiate the claim that HNSW offers a better speed/accuracy trade-off than IVF/LSH, which B lacks (B's similar claim is uncited and vaguer). B adds a breadth-oriented instance by naming specific adjacent application domains (multimodal search, recommendation engines) with two supporting citations, whereas A only mentions RAG/semantic search generically without extending to new application areas. Both differences are modest (single instance each), so neither dimension shows a 'much more' gap."
+      }
+    },
+    "Foundations of HNSW": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [
+            "Detailed small-world network properties (high clustering coefficient, low avg path length, hub over-abundance) with dedicated citation",
+            "Explicit complexity comparison: HNSW O(log N) vs NSW O(log^k N) due to bounded per-layer work vs growing node degree"
+          ],
+          "b_instances": [
+            "Mechanistic justification for skip list insertion/deletion efficiency vs sorted arrays, and comparison to AVL/red-black trees as alternative balanced structures",
+            "Quantitative skip-list promotion detail: average appearance count 1/(1-p) across layers",
+            "Quantitative complexity derivation for HNSW: O(log_M n) layer growth with bounded per-layer cost",
+            "Additional greedy-search failure mode: degraded performance in highly clustered or low-dimensional data, and reliance on triangle-inequality-satisfying metrics for correct routing"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Opening taxonomy of ANN methods (tree-based, hashing-based, graph-based) situating HNSW among sibling approaches",
+            "Requirement that the distance metric satisfy properties like the triangle inequality, with note that non-metric similarity measures can break routing assumptions"
+          ]
+        },
+        "reasoning": "Both documents cover the same core skip-list, NSW, and HNSW hierarchy material with largely overlapping explanations (skip list layering, NSW greedy search phases, local-minima problem, M trade-offs, hierarchy-necessity/hubness debate citing the same arXiv source). For depth, A adds a more rigorous definition of small-world network properties (clustering coefficient, path length, hub abundance) and an explicit big-O comparison between HNSW's O(log N) and NSW's O(log^k N) complexity that B lacks. B, however, adds more distinct depth-enhancing detail: a mechanistic explanation of why skip lists beat sorted arrays and are simpler than balanced trees like AVL/red-black trees, a quantitative 1/(1-p) promotion formula, a derivation of HNSW's O(log_M n) layer growth, and an additional failure mode (performance degradation in clustered/low-dimensional data plus triangle-inequality dependence). This gives B a modest edge in depth instance count and specificity. For breadth, A introduces no clearly new adjacent subtopic beyond the shared core, while B introduces two: an opening taxonomy situating HNSW among tree-based and hashing-based ANN methods, and the requirement that the search's correctness depends on the distance metric satisfying triangle-inequality-like properties\u2014both genuinely new scope beyond the section's core graph-construction narrative. Overall, B shows a modest but consistent edge on both dimensions."
+      },
+      "light_vs_deep": {
+        "a_arm": "light",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Skip list promotion parameter p and average appearance frequency formula 1/(1-p)",
+            "Comparison of skip lists to deterministically balanced trees like AVL/red-black trees",
+            "Triangle inequality requirement for distance metrics and problems with non-metric similarity measures",
+            "Derivation of logarithmic search complexity via O(log_M n) layer growth and bounded per-layer steps"
+          ],
+          "b_instances": [
+            "Concentration of measure explanation for why distances become less meaningful in high dimensions",
+            "Hubness phenomenon (points appearing in many neighbor lists) as mechanistic basis for Hub Highway Hypothesis",
+            "Contrast of HNSW's single deterministic entry point vs flat NSW's multi-start random-entry-point strategy"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [
+            "Overview taxonomy of ANN methods into tree-based, hashing-based, and graph-based categories"
+          ],
+          "b_instances": [
+            "k-d trees and curse of dimensionality as rationale for why NSW graphs emerged as an alternative to tree-based indexing"
+          ]
+        },
+        "reasoning": "Both documents cover the same core skip-list, NSW, and HNSW hierarchy material with largely overlapping citations and near-identical Hub Highway Hypothesis discussion. On depth, A adds a few more technical specifics not found in B: the skip-list promotion formula 1/(1-p), a comparison to AVL/red-black trees, the triangle-inequality/non-metric caveat, and an explicit O(log_M n) complexity derivation. B counters with its own deeper mechanistic details -- concentration of measure, hubness as the driver of hub highways, and a more explicit contrast of HNSW's single fixed entry point versus NSW's multi-start greedy search -- but has one fewer distinct instance than A, making A's depth coverage modestly greater. On breadth, A only gestures at a generic ANN taxonomy (tree/hash/graph) without much specificity, whereas B introduces a concrete, source-cited new subtopic: k-d trees and the curse of dimensionality as the reason NSW-style graphs replaced tree-based ANN methods. This instance is more specific and better source-grounded than A's brief categorization, giving B a modest edge in breadth."
+      },
+      "standard_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [
+            "Concentration of measure mechanism explaining why distances become less meaningful in high-dimensional NSW search (relative distance differences shrink)",
+            "Named 'Hub Highway Hypothesis' with specific dimensional threshold (d > 32) for hierarchy redundancy"
+          ],
+          "b_instances": [
+            "NSW construction mechanism detail: nodes linked to M nearest neighbors, with early-inserted nodes' links becoming long-range bridges",
+            "Specific skip-list promotion probability values (commonly 1/2 or 1/4)",
+            "Explicit complexity comparison: HNSW achieves O(log N) vs NSW's O(log^k N) due to node degree growth",
+            "Detailed breakdown of M tradeoff costs into three distinct effects: construction time, query latency, and memory footprint"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [
+            "k-d trees and tree-based ANN methods as an alternative approach, with explanation of why the curse of dimensionality defeats tree-based pruning"
+          ],
+          "b_instances": [
+            "Small-world network theory concepts: clustering coefficient and average path length as defining properties, plus over-abundance of hub nodes as a general network phenomenon"
+          ]
+        },
+        "reasoning": "Both documents cover the same core skip-list, NSW, and HNSW material with largely overlapping figures and explanations. On depth, B adds more granular technical detail: the mechanics of NSW graph construction (M-nearest-neighbor linking and bridge formation), specific skip-list probability values, an explicit big-O complexity comparison between HNSW and NSW, and a three-way breakdown of the M tradeoff (construction time, latency, memory) versus A's more general treatment. A contributes two solid depth instances (concentration of measure mechanism, and the quantitative d>32 threshold for the Hub Highway Hypothesis), but B's list is longer and includes a distinctive quantitative/complexity result, giving B a modest edge in depth. On breadth, each document introduces exactly one genuinely new adjacent topic: A brings in k-d trees and tree-based ANN limitations, while B brings in small-world network theory (clustering coefficient, path length, hub abundance as a general network property). These are comparable in substance and count, resulting in a tie for breadth."
+      }
+    },
+    "Graph Construction": {
+      "light_vs_standard": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "diversity heuristic explicitly tied to improved robustness on clustered data",
+            "explanation that richer efConstruction search yields higher-quality graph and improves later search recall"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "incremental construction as advantage for dynamic applications (adding vectors without full rebuild)"
+          ]
+        },
+        "reasoning": "Both documents cover the same core construction steps (layer assignment via exponential decay, m_L formula, two-phase insertion, efConstruction, diversity heuristic, M_max/M_max0 capping) with essentially equivalent specificity, so most content overlaps. B adds a couple of depth-oriented mechanistic elaborations not present in A: it explicitly links the diversity heuristic to improved robustness for clustered data, and explains how a richer efConstruction search produces a better-quality graph that improves downstream search recall. For breadth, B introduces a genuinely new subtopic absent from A: the practical benefit of HNSW's incremental construction for dynamic applications (adding vectors without rebuilding the index). A contains no unique depth or breadth instances beyond what B also covers. The differences are modest (one to two extra instances), so B is judged 'more' rather than 'much more' on both dimensions."
+      },
+      "light_vs_deep": {
+        "a_arm": "light",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [
+            "Diversity-aware neighbor selection heuristic that bridges distinct graph regions to avoid isolated clusters"
+          ],
+          "b_instances": [
+            "Explicit mathematical formula for layer assignment: l = floor(-ln(uniform(0,1)) * mL)",
+            "Explicit mention that selected neighbors are bidirectionally linked to the new vector"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Skip-list analogy for the probabilistic layer-promotion mechanism",
+            "Dynamic insertion as an advantage for streaming/updatable data without full index rebuilds"
+          ]
+        },
+        "reasoning": "Both documents cover the same core HNSW insertion/graph-construction process. On depth, A adds the diversity-based neighbor-selection heuristic (choosing connections that bridge regions rather than just the closest ones), while B adds a concrete mathematical formula for the layer-assignment random variable and an explicit note on bidirectional linking of connections -- giving B slightly more distinct depth detail. On breadth, A introduces no new adjacent subtopics beyond the core construction mechanics, whereas B brings in two genuinely new adjacent points: an analogy to skip-list structures and a discussion of how dynamic insertion benefits streaming/updatable workloads (an application-level consideration not covered in A). This gives B a modest edge on breadth as well."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Describes advanced heuristic for diverse neighbor link selection to avoid dense-cluster traps and improve global connectivity",
+            "Notes that richer construction search (efConstruction>1) yields higher-quality graph and improved later search recall"
+          ],
+          "b_instances": [
+            "Provides explicit mathematical formula for computing the random insertion layer l = floor(-ln(uniform(0,1)) * mL)"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Skip list analogy comparing HNSW's probabilistic layer assignment to skip list promotion mechanism"
+          ]
+        },
+        "reasoning": "Both documents cover the same core construction steps (incremental insertion, layer assignment via exponential decay, mL parameter, two-phase insertion search, M_max/M_max0 caps) almost identically, so most content overlaps. On depth, Document A adds a distinct mechanism-level detail about the diverse-neighbor link-selection heuristic (avoiding same-cluster traps) and a note tying richer construction search to better recall, which B lacks; B instead adds a concrete formula for the layer-assignment probability, a specific quantitative detail A lacks, but this is a single instance versus A's two, giving A a modest edge. On breadth, B introduces a genuinely new adjacent concept -- the skip list analogy for probabilistic layer promotion -- which A does not mention, giving B the edge on breadth while A has no unique breadth instances."
+      }
+    },
+    "Implementation of HNSW": {
+      "light_vs_standard": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Explicit memory formula N*(M_max0 + m_L*M_max)*bytes_per_link quantifying why memory scales linearly with M",
+            "Mechanistic explanation of why PQ compression is harder to apply effectively to HNSW due to random memory access patterns incompatible with vector packing optimizations"
+          ]
+        },
+        "breadth": {
+          "preference": "b_much_more",
+          "a_instances": [
+            "Alternative flat NSW graph (no hierarchy) achieving comparable performance with 18-39% memory savings on large datasets, per recent benchmark"
+          ],
+          "b_instances": [
+            "HNSW recall degradation in very high-dimensional spaces due to the 'curse of dimensionality' trapping greedy search in local minima",
+            "Challenges of parallelizing HNSW's sequential/incremental graph construction on GPUs, limiting scalability of index building",
+            "HNSW memory usage growing over time in production due to tombstone-style deletion handling rather than immediate space reclamation",
+            "Brief example of using high efConstruction to enable low-latency single-query performance in real-time recommendation applications"
+          ]
+        },
+        "reasoning": "Both documents cover the same core Faiss/HNSW implementation walkthrough (index creation, layer probability derivation, parameter sweeps for M/efConstruction/efSearch, memory/PQ/IVF mitigation strategies) with nearly identical code and figures. For depth, B adds two substantive technical elaborations not in A: an explicit memory-footprint formula tying M_max0/M_max to per-vector link cost, and a mechanistic explanation of why PQ compression interacts poorly with HNSW's memory access pattern. A contributes no comparable depth-only additions (its content largely mirrors B's core points). For breadth, B introduces several genuinely new sub-topics: HNSW's known failure mode in high-dimensional spaces via the curse of dimensionality, GPU-parallelization difficulties for HNSW construction, and memory growth from deletion handling in production\u2014plus a minor example about real-time recommendation tuning. A's unique breadth contribution is the mention of a flat NSW alternative to the hierarchical structure with a quantified 18-39% memory savings figure, which is a solid but singular addition. Given B's three or more distinct, well-sourced new sub-topics versus A's one, B shows clearly broader coverage, while also holding a modest edge in depth."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [
+            "Specific memory-usage rule-of-thumb formula (d*4 + 2*M*4 bytes per vector)",
+            "Hub Highway Hypothesis discussion - hierarchy benefits diminish for high-dimensional data",
+            "Skepticism about whether theoretical logarithmic search complexity holds in practice due to real-world bottlenecks"
+          ],
+          "b_instances": [
+            "Concrete recall improvement figures (efConstruction=64, M 8->64, efSearch 16->256 raising recall from ~85% to ~100%)",
+            "Concrete search-latency range tied to recall (1ms at 80% recall vs 50ms near-perfect recall)",
+            "Quantified example of efConstruction's effect on batch search time (50%+ increase at M=64, efConstruction 8->128)",
+            "PQ compression causing slower search specifically due to vector decoding overhead"
+          ]
+        },
+        "breadth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Billion-scale example: a 768-dim index requiring ~4TiB of memory, framed as a production cost driver",
+            "Forward-looking mention of HNSW applications in novel domains like genomics and hardware acceleration research"
+          ],
+          "b_instances": []
+        },
+        "reasoning": "Both documents share the same core Faiss walkthrough, graph-structure derivation, and parameter sweep discussion. For depth, A adds a specific memory-cost formula and two research-based nuances (Hub Highway Hypothesis, doubts about logarithmic complexity in practice), while B adds several concrete quantitative results (specific recall/efSearch/M relationships, latency ranges, a quantified efConstruction impact, and PQ decoding overhead) - a slightly larger and more quantitatively grounded set, giving B a modest edge on depth. For breadth, A uniquely extends scope with a billion-scale memory example and forward-looking mentions of genomics/hardware-acceleration applications, topics B does not touch at all, giving A a clear edge on breadth. The flat-NSW memory-savings claim (38% vs. 18-39%) appears in both and is treated as shared coverage rather than a differentiator."
+      },
+      "standard_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Explicit memory-per-vector formula d*4+2*M*4 bytes with citation",
+            "Billion-scale example: 768-dim index requiring ~4TiB memory",
+            "Hub Highway Hypothesis critique suggesting hierarchy benefits diminish for high-dim data",
+            "Stat that removing hierarchy reduces memory by up to 38% for high-dim data with little performance loss",
+            "Explicit questioning of whether theoretical logarithmic complexity is achieved in practice due to real-world bottlenecks"
+          ],
+          "b_instances": [
+            "Rationale that M_max0=2M gives denser bottom layer for better search refinement",
+            "Alternative memory formula N*(M_max0+m_L*M_max)*bytes_per_link derivation",
+            "Quantitative claim that near-perfect recall can take ~50x longer than 80% recall",
+            "Specific mechanism for why PQ compression is harder with HNSW (random memory access incompatible with vector-packing optimizations)"
+          ]
+        },
+        "breadth": {
+          "preference": "b_much_more",
+          "a_instances": [
+            "Mention of genomics as a future application domain for HNSW"
+          ],
+          "b_instances": [
+            "Curse-of-dimensionality performance degradation in very high-dimensional spaces (>1024 dims) trapping greedy search in local minima",
+            "GPU/hardware incompatibility: HNSW's sequential incremental construction not suited to massive parallelization",
+            "Memory growth over time in production due to deletion handling (marking nodes deleted rather than reclaiming space)",
+            "Real-time recommendation use case leveraging high efConstruction/low efSearch tradeoff for low-latency single queries"
+          ]
+        },
+        "reasoning": "Both documents cover the same core Faiss/HNSW implementation walkthrough (index init, layer structure, parameter sweep, memory formula, PQ/IVF composite indexes) nearly identically, so most content is shared. For depth, A adds several research-grounded refinements (explicit memory formula, a billion-scale memory example, the Hub Highway Hypothesis critique of hierarchy, a specific 38% memory-reduction stat, and skepticism about logarithmic complexity in practice), totaling five distinct deepenings, while B adds four (rationale for M_max0=2M, an alternative memory-formula derivation, a 50x recall/latency stat, and a specific mechanistic explanation for why PQ compression is harder with HNSW). Both sets are substantive, giving A a modest edge in depth. For breadth, B introduces several genuinely new adjacent subtopics not covered in A at all: the curse of dimensionality in high dimensions, GPU/hardware parallelization challenges for index building, memory growth from deletion handling, and a real-time recommendation application scenario for tuning efConstruction. A only adds one new breadth item (a passing mention of genomics as a future domain). This makes B's breadth coverage considerably richer, warranting a 'b_much_more' rating for breadth."
+      }
+    },
+    "Conclusion": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Application of HNSW to computational biology with a cited 560-fold speedup over linear scans (biorxiv source)"
+          ]
+        },
+        "reasoning": "Document A is empty, providing no content at all. Document B recaps the core topic (HNSW theory, construction, Faiss parameters) which is standard conclusion material, not an enhancement. However, B adds one distinct, source-attributed instance: a new application domain (computational biology) with a specific quantitative claim (560-fold speedup over linear scans, cited to a biorxiv paper). This is a genuinely new sub-topic/application not covered by the core recap, so it counts as breadth rather than depth. Since it's a single instance and not multiple substantive additions, the breadth edge for B is modest, not overwhelming. Depth ties since neither document offers a deeper mechanistic or technical elaboration on an existing core point."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Mentions computational biology as an application domain with a specific 560-fold speedup over linear scans, citing a named source"
+          ]
+        },
+        "reasoning": "Document A is empty, so it contains no qualifying enhancement content for either dimension. Document B's conclusion mostly recaps the core topic (HNSW's design, Faiss parameters, recall/latency/memory trade-offs) without adding a new mechanistic or quantitative depth point beyond what the section already covers, so depth ties at zero-vs-zero. However, B introduces one new breadth instance: a concrete application to computational biology with a specific attributed statistic (560-fold acceleration over linear scans), which is a genuinely new adjacent sub-topic not covered elsewhere in the core discussion. This single instance is substantive but not enough for 'much more', so breadth favors B moderately."
+      }
+    }
+  }
+}

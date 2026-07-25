@@ -1,0 +1,312 @@
+{
+  "article": "Earth_Oceans_Origin",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Specific mention that pristine meteorites and sample-return missions showed asteroid water composition matching Earth's"
+            ],
+            "b_instances": [
+              "Specific isotopic detail: heavy-to-normal hydrogen (deuterium) ratio mismatch for cometary water",
+              "Noble gases cited as a specific chemical tracer for asteroid theory inconsistencies",
+              "Mechanistic detail on endogenous water: hydrogen-rich atmosphere reacting with a molten Earth to forge oceans"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core narrative (comet vs asteroid vs endogenous water origin) with the same anecdote and King quote. On depth, Document B adds more specific technical detail\u2014naming the deuterium/hydrogen isotope ratio as the exact chemical mismatch, citing noble gases as a distinct tracer of asteroid-theory inconsistencies, and previewing the endogenous mechanism (hydrogen-rich atmosphere reacting with molten Earth)\u2014giving it three substantive depth instances A lacks, versus A's single added detail about sample-return missions confirming asteroid water composition. This makes B clearly deeper. Neither document introduces a genuinely new adjacent subtopic beyond the core comet/asteroid/self-made-water narrative, so breadth is tied at zero qualifying instances for both."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Specific D/H (heavy-to-normal hydrogen) isotope ratio as the exact mismatch signature for comets",
+              "Noble gases identified as the specific chemical tracer causing inconsistencies in the asteroid theory",
+              "Specific mechanism for endogenous water: hydrogen-rich atmosphere reacting with a molten Earth to forge oceans"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Comet tails made of vaporized ice as an intuitive visual reason comets were the historic favorite"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (Europa poem, comet-vs-asteroid debate, Ashley King quote, pivot to endogenous water), so much of the content overlaps and doesn't differentiate. On depth, Document B adds several specific technical details absent from A: the precise D/H isotope ratio explaining the cometary mismatch, noble gases as the specific tracer complicating the asteroid theory, and a concrete mechanistic preview of endogenous water formation (hydrogen-rich atmosphere reacting with molten Earth), whereas A only gestures vaguely at 'nagging inconsistencies' and 'generated its water internally' without specifics. This gives B a clear, substantial depth advantage. On breadth, B also adds one small new detail\u2014comet tails being made of vaporized ice, explaining their historic appeal\u2014that A lacks, giving B a modest edge, though this is a single minor instance rather than a major topical expansion. A contributes no clearly unique qualifying instances in either dimension relative to B."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific detail that asteroid water evidence came from pristine meteorites and returned asteroid samples",
+              "Nagging inconsistencies described as involving abundances of other elements"
+            ],
+            "b_instances": [
+              "Specific isotopic detail: mismatch is in ratio of heavy to normal hydrogen (deuterium) in cometary water",
+              "Specific chemical tracer named for asteroid inconsistencies: noble gases",
+              "Preview mechanism for endogenous water: hydrogen-rich atmosphere reacting with molten Earth to forge oceans"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core intro narrative (Europa mission/poem, comet theory losing favor, asteroid theory, and the new endogenous-water idea) without introducing genuinely new adjacent subtopics, so breadth is a tie. For depth, A adds a couple of specific but somewhat generic details (returned asteroid samples, unspecified elemental abundance inconsistencies), while B supplies more technically specific depth: the exact isotopic signature (deuterium-to-hydrogen ratio), a named chemical tracer (noble gases) for asteroid problems, and a concrete preview of the endogenous-water mechanism (hydrogen-rich atmosphere reacting with a molten Earth). B's depth instances are both more numerous and more technically substantive, giving it a moderate edge on depth."
+        }
+      ]
+    },
+    "A Showdown Between Comets and Asteroids": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Explanation of Earth's atmospheric Xenon-129 excess as due to radioactive decay of Iodine-129, deepening the noble-gas mismatch point"
+            ],
+            "b_instances": [
+              "Detailed explanation of the Nice model as the mechanism behind the 'late veneer'/bombardment, including debate over whether its timing was truly 'late' or occurred within the solar system's first few million years",
+              "Specific quantitative D/H value for Ryugu's hydrous minerals (\u03b4D = +59 \u00b1 121\u2030) tied to CI chondrites and Earth's oceans",
+              "Mechanistic detail on how comets form tails via gravitational perturbation and ice vaporization as they approach the Sun"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Reference to the Late Heavy Bombardment (3.8 billion years ago) and the idea that ancient asteroids may have held more water than today's dry asteroids"
+            ]
+          },
+          "reasoning": "Both documents cover the same core comet-vs-asteroid D/H narrative (Giotto/Halley, Rosetta/67P, Winchcombe, Hayabusa2/Ryugu, noble gas mismatch, late veneer) with near-identical framing, so most content is shared. For depth, Document A adds one distinct mechanistic detail not in B (the Xenon-129/Iodine-129 decay explanation), while Document B adds several deeper mechanistic/quantitative details absent from A: an explanation of the Nice model and the debate over the timing of the late veneer, a precise numerical D/H value for Ryugu tied to CI chondrites, and a description of the physical mechanism behind cometary tail formation. This gives B a modest edge in depth. For breadth, Document B introduces a genuinely new adjacent subtopic -- the Late Heavy Bombardment and the possibility that ancient asteroids held more water than today's -- which A does not mention, giving B a modest edge in breadth as well, though the difference is not dramatic since it is only one additional subtopic."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Xenon-129 excess explained via radioactive Iodine-129 decay (specific mechanism deepening noble-gas mismatch argument)",
+              "Ryugu hydrous minerals described as forming via liquid water on the parent asteroid"
+            ],
+            "b_instances": [
+              "Giotto described as ESA's first deep-space mission, flying through the gas/dust cloud around Halley's nucleus",
+              "Comet ice vaporization mechanism (gravitational nudges toward the sun causing ice to sublimate) explaining cometary water release",
+              "Nice model introduced as the specific mechanism proposed for the late veneer bombardment (giant-planet migration)",
+              "Debate over timing of the dynamical instability as a 'free parameter,' with newer work suggesting it occurred much earlier than assumed",
+              "Specific quantitative \u03b4D value (+59 \u00b1 121\u2030) reported for Ryugu's hydrous minerals, tying it to CI chondrites"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Late Heavy Bombardment introduced as a distinct named historical event (~3.8 billion years ago) affecting asteroid water content",
+              "Explanation of comet tail formation via ice vaporization as the sun is approached, a tangential cometary-physics detail"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (comets ruled out via D/H mismatch, asteroids implicated via Winchcombe and Ryugu, asteroid-only model challenged by noble-gas mismatches and late-veneer uncertainty), but B adds noticeably more source-attributed depth: specific Giotto mission details, an explanation of cometary ice vaporization, the Nice model as a named mechanism for the late veneer, discussion of the timing of the dynamical instability as a 'free parameter' with newer evidence pushing it earlier, and a precise quantitative D/H value for Ryugu. A's unique depth contributions are more limited: the Iodine-129/Xenon-129 decay mechanism and a brief note on Ryugu's hydrous mineral formation. For breadth, B introduces two genuinely new sub-topics not touched by A -- the Late Heavy Bombardment as a distinct historical episode and the physical mechanism of comet tail formation -- while A contributes no comparable new sub-topics beyond the shared core argument. Overall, B shows clearly stronger depth enhancement and modestly stronger breadth enhancement."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Xenon-129 excess attributed to decay of radioactive Iodine-129, explaining the noble-gas mismatch mechanism",
+              "Specification that ruled-out comets belong to the 'Jupiter-family' type, narrowing the claim"
+            ],
+            "b_instances": [
+              "Giotto described as ESA's first-ever deep-space mission, adding historical/technical context",
+              "Specific quantitative Ryugu D/H value (\u03b4D = +59 \u00b1 121\u2030) aligning with CI chondrites and Earth's oceans",
+              "Nice model timing described as a 'free parameter,' with recent work suggesting the giant-planet instability could have occurred much earlier than assumed, deepening the late-veneer timing debate"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Mechanism of comet tail formation via solar heating/ice vaporization as comets approach the Sun",
+              "Late Heavy Bombardment (3.8 billion years ago) as a period when asteroids may have held more water than today",
+              "Nice model as the specific proposed mechanism (giant planet migration) driving the late veneer bombardment"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (comets, D/H ratio, Giotto/Halley, Rosetta/67P, Winchcombe, Hayabusa2/Ryugu, noble gas mismatch, late veneer, transition to endogenous water). On depth, A adds the specific Xenon-129/Iodine-129 decay mechanism and notes the ruled-out comets are Jupiter-family type; B adds a historical note about Giotto being ESA's first deep-space mission, a precise quantitative Ryugu D/H measurement with error bars, and a deeper dive into the Nice model's timing uncertainty\u2014giving B a modest edge in depth (3 substantive instances vs 2). On breadth, B introduces three genuinely new subtopics absent from A: the physical mechanism behind comet tail formation, the Late Heavy Bombardment concept explaining why ancient asteroids may have been wetter, and the Nice model as a named mechanism for the late veneer bombardment. A contains no comparable new-subtopic material, so B clearly leads on breadth."
+        }
+      ]
+    },
+    "Hydrogen, Meet Magma": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "D/H ratio of mantle water vs surface ocean water matching enstatite chondrites (isotopic detail)",
+              "Pre-experiment thermodynamic models based on low-pressure data predicting minimal water yield",
+              "Hydrogen solubility in silicate melts depends more on temperature than pressure",
+              "Magma ocean dynamics controlling oxide delivery leading to steam atmosphere vs. deep-entrained water scenarios",
+              "Quantitative threshold: planets need at least a quarter of Earth's mass to retain hydrogen envelope",
+              "Mechanism of volatile trapping in solidifying mantle when hydrogen retention is insufficient"
+            ],
+            "b_instances": [
+              "Specific chemical reaction equations (FeO + H2 -> Fe + H2O; Silicates + H2 -> SiH4 + MgO + H2O) shown in diagram",
+              "Quantitative claim that chondrite hydrogen could supply at least 3x Earth's ocean mass in water",
+              "Specific attribution of 2023 Nature magma-ocean model to Carnegie Science and UCLA researchers",
+              "More specific experimental water-yield magnitude of 2,000-3,000x predicted amounts",
+              "Quentin Williams quote emphasizing uncertainty in the magnitude of water generated",
+              "Named skeptic Anders Johansen (vs. A's generic 'some scientists')",
+              "Additional hydrogen carriers identified in chondrites: silicate glasses and sulfur compounds"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Mention of a partial re-evaluation of the cometary water-delivery case as new supporting context"
+            ],
+            "b_instances": [
+              "Future JWST atmospheric observations proposed as a way to test the endogenous water model",
+              "Framing hydrogen-rich and water-rich planets as different evolutionary stages of the same planet type rather than distinct populations, citing APS science highlight"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (dry chondrite paradigm overturned, magma-ocean/hydrogen reaction, diamond-anvil experiments, sub-Neptune vs Earth debate, broader habitability implications), but each adds distinct depth. Document A adds isotopic nuance (D/H ratios), pre-experiment thermodynamic modeling, solubility mechanics tied to temperature, magma-ocean dynamics scenarios, a quantitative mass-retention threshold, and a volatile-trapping mechanism. Document B adds explicit chemical reaction equations (FeO reduction, silicate hydride formation) via its diagram, a specific hydrogen-quantity claim (3x ocean mass), named institutional attribution for the 2023 study, a different (more extreme) experimental yield figure, an additional expert quote (Quentin Williams) highlighting uncertainty, and a named skeptic (Johansen) versus A's vague reference. B's instances are slightly more numerous and include the mechanistic reaction equations, giving it a modest edge in depth. For breadth, A only mentions a brief re-evaluation of cometary delivery, while B introduces two new adjacent angles: future JWST testability and the 'evolutionary stages' framing of hydrogen-rich vs water-rich planets, giving B a modest edge in breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "D/H isotope ratio in mantle water vs. surface ocean water as evidence of common origin",
+              "Low-pressure thermodynamic models originally predicted minimal water yield",
+              "Quantitative mass threshold (~0.25 Earth mass) for retaining a hydrogen envelope",
+              "Hydrogen solubility in silicate melt depends more on temperature than pressure",
+              "Magma ocean dynamics controlling whether water forms steam atmosphere vs. is entrained/stored at depth"
+            ],
+            "b_instances": [
+              "Enstatite chondrites shown to carry enough hydrogen to deliver at least 3x Earth's ocean mass of water",
+              "More granular list of hydrogen hosts in meteorites (organic molecules, silicate glasses, sulfur compounds)",
+              "2023 Nature study specifics: Carnegie Science/UCLA model of FeO reduction driving Earth's oxidized state",
+              "Explicit chemical reaction equations (H2+FeO->Fe+H2O; H2+Silicates->SiH4+MgO+H2O) via diagram",
+              "Quentin Williams quoted on the 'enigmatic' uncertainty of water yield magnitude",
+              "Anders Johansen named as a specific skeptical scientist"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Mention of a partial re-evaluation of the cometary water-delivery case complicating its dismissal"
+            ],
+            "b_instances": [
+              "Future JWST atmospheric observations proposed as a way to test the endogenous water hypothesis",
+              "Reframing hydrogen-rich and water-rich planets as sequential evolutionary stages rather than distinct populations (citing APS science highlight)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (enstatite chondrite reassessment, magma-ocean/hydrogen reaction, diamond-anvil experiments, sub-Neptune caveat, Byrne/Horn quotes, habitability implications). For depth, A adds several unique mechanistic/quantitative details (D/H isotope matching, low-pressure model shortfall, mass-threshold retention figure, temperature-dependence of solubility, magma dynamics scenarios), while B adds a comparable or slightly larger set of more technically granular instances (specific hydrogen-host compounds, named 2023 Nature study institutions and FeO-reduction chemistry, explicit reaction equations in the diagram, an additional expert quote from Quentin Williams, and naming Anders Johansen). B's chemical-equation diagram and study specifics push it modestly ahead on depth. For breadth, A introduces one new adjacent thread (a partial re-evaluation of the cometary delivery case), while B introduces two (proposing JWST follow-up observations as a testable next step, and reframing hydrogen-rich/water-rich planets as evolutionary stages), giving B a modest edge in breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "D/H ratio isotopic match between meteorites and Earth's mantle water differing from surface oceans",
+              "Prior low-pressure thermodynamic models predicted minimal water yield before the breakthrough",
+              "Quantitative mass threshold (quarter of Earth's mass) needed to retain a hydrogen envelope",
+              "Mechanism where volatiles become trapped in solidifying mantle if hydrogen retention is insufficient",
+              "Finding that hydrogen solubility in silicate melts depends more on temperature than pressure",
+              "Magma ocean dynamics controlling oxide delivery, producing either steam atmosphere or deep-entrained water scenarios",
+              "Specific yield estimate of up to 1000x more water than predicted"
+            ],
+            "b_instances": [
+              "Meteorites found to carry enough hydrogen to deliver at least 3x the mass of Earth's oceans",
+              "Additional specific hydrogen-bearing carriers identified: silicate glasses and sulfur compounds",
+              "Explicit reaction mechanisms shown: FeO reduction (H2+FeO->Fe+H2O) and silicate hydride formation (SiH4+MgO+H2O)",
+              "Named skeptic Anders Johansen (University of Copenhagen) doubting Earth-mass retention sufficiency",
+              "Quentin Williams quote noting the produced water quantity is 'pretty enigmatic'",
+              "Specific yield estimate of 2,000-3,000x more water than predicted models"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Partial re-evaluation of the cometary water-delivery case as a new complicating topic"
+            ],
+            "b_instances": [
+              "Conceptual reframing of hydrogen-rich and water-rich planets as evolutionary stages rather than geographically distinct categories",
+              "Future JWST atmospheric observations proposed as a testable way to confirm/challenge the endogenous water model"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (enstatite chondrite hydrogen discovery, magma-ocean/hydrogen reaction, diamond-anvil experiments, sub-Neptune caveat, Byrne/Horn quotes, 'born water-rich' implications). On depth, A adds several unique mechanistic nuances (isotopic mantle-vs-surface water comparison, prior low-pressure model predictions, a quantitative mass-retention threshold, mantle-trapping failure mode, temperature-vs-pressure solubility finding, magma dynamics/steam-vs-entrained scenarios), while B adds a comparable or slightly larger set of concrete technical specifics (named FeO/SiH4 reaction equations, additional hydrogen-carrier minerals, a quantitative 3x-ocean-mass meteorite estimate, two additional named scientists with direct quotes, and a different yield multiplier). B's inclusion of explicit reaction chemistry and extra sourced expert voices gives it a modest edge in depth. On breadth, A introduces one new adjacent topic (re-evaluation of the cometary contribution), whereas B introduces two (reframing hydrogen-rich/water-rich planets as evolutionary stages rather than distinct populations, and the JWST-based testability angle), giving B a modest edge in breadth as well."
+        }
+      ]
+    },
+    "Drowning in a Sea of Possibilities": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Detailed dust-adsorption mechanism: lab experiments show HDO preferentially adsorbs onto dust grains, and sublimation depletes deuterium in released gas, explaining local coma enrichment vs. bulk comet ratio"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Venus comparison: likely started with Earth-like water but lost it via runaway greenhouse effect, evidenced by extremely high atmospheric D/H ratio",
+              "Connection to astrobiology on icy moons (Europa, Enceladus) via water-rock interactions and radiolysis-fueled metabolisms as an analog to prebiotic pathway research"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (Hartley 2, 67P dust-contamination reanalysis, 12P/Pons-Brooks, mixed-source cocktail model, Meech quotes, and the origin-of-life parallel). For depth, Document A goes further into the mechanistic explanation of why dust contamination skewed the original 67P D/H measurements, citing laboratory experiments on HDO adsorption and deuterium depletion during sublimation\u2014detail absent in B's much briefer treatment of the same point. For breadth, Document B introduces two genuinely new adjacent topics not touched by A: a comparison to Venus's water loss via runaway greenhouse effect (with its own D/H evidence), and a link between water-rock/radiolysis chemistry and astrobiology on icy moons like Europa and Enceladus. These give B a clear breadth advantage, while A shows no comparable new topical ground."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Detailed mechanism of heavy water (HDO) preferentially adsorbing onto ice-coated dust grains, confirmed by laboratory experiments, with deuterium depletion in sublimated gas explaining Rosetta's skewed measurements"
+            ],
+            "b_instances": [
+              "Brief statement that ice on the nucleus itself could be more Earth-like, without the adsorption mechanism or lab confirmation detail"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Venus comparison as evidence for water loss via runaway greenhouse effect, evidenced by its extremely high atmospheric D/H ratio",
+              "Connection to astrobiology: water-rock interactions and radiolysis-fueled metabolisms relevant to the search for life on icy moons like Europa and Enceladus"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (Hartley 2 anomaly, Rosetta 67P reanalysis, 12P/Pons-Brooks, mixed-source ocean origin, Meech's 'origin of life' parallel, and the closing quote). For depth, A goes further into the specific physical mechanism behind the Rosetta reanalysis, citing laboratory experiments on HDO adsorption onto dust grains and describing how sublimation depletes the gas phase in deuterium -- a level of mechanistic detail B omits (B just states the ice on the nucleus 'could be more Earth-like'). For breadth, B introduces two genuinely new adjacent sub-topics absent from A: a Venus case study (its water loss via runaway greenhouse effect, evidenced by extreme atmospheric D/H) illustrating how planetary water budgets can be altered, and a link to astrobiology via water-rock interaction/radiolysis metabolisms relevant to icy moons like Europa and Enceladus. A has no comparable breadth-expanding content, making B's breadth contribution substantially larger."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "detailed dust-adsorption mechanism (ice-coated dust grains preferentially adsorb heavy water, confirmed by lab experiments) causing local D/H enrichment, with gas becoming deuterium-depleted as ice sublimates"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Venus as a comparative case study: started with Earth-like water but lost it via runaway greenhouse effect, evidenced by extremely high atmospheric D/H ratio",
+              "link to astrobiology on icy moons (Europa/Enceladus) via water-rock interactions and radiolysis-driven metabolisms"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (Hartley 2, 67P reanalysis, 12P/Pons-Brooks, mixed-source origin, and the origin-of-life analogy). On depth, Document A goes further into the specific dust-contamination mechanism, citing laboratory experiments confirming HDO adsorption onto grains and explaining how sublimated gas becomes deuterium-depleted\u2014detail B only summarizes briefly without the mechanistic/lab-experiment specifics. On breadth, Document B introduces two genuinely new adjacent sub-topics absent from A: a comparison to Venus's catastrophic water loss (with atmospheric D/H evidence) and a connection to astrobiological water-rock/radiolysis processes relevant to icy moons like Europa and Enceladus. These give B a moderate edge in breadth, while A's edge in depth is limited to one substantive mechanistic elaboration."
+        }
+      ]
+    }
+  }
+}

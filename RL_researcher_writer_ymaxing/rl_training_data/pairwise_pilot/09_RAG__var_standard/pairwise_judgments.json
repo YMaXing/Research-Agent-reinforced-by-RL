@@ -1,0 +1,438 @@
+{
+  "article": "09_RAG__var_standard",
+  "model": "anthropic:claude-sonnet-5",
+  "sections": {
+    "Introduction": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Specific example of knowledge cutoff: model trained until Jan 2022 unable to know 2024 NBA MVP winner"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Real-world legal consequence example: lawyer sanctioned for citing ChatGPT-invented court cases in a brief"
+          ]
+        },
+        "reasoning": "Both documents cover the same core narrative (course recap, static knowledge/hallucination problem, RAG as open-book solution, forward-looking mention of RAG's relation to memory). Document A adds little beyond this core\u2014its reference to 'naive RAG' evolving into agentic patterns is essentially a restatement of the lesson's own scope rather than a new sourced fact, and its Lesson 10 memory pointer contains no substantive detail. Document B adds two concrete, source-attributed enhancements: a specific quantitative/temporal example (model trained to Jan 2022 failing on 2024 NBA MVP) that deepens the knowledge-cutoff point, and a genuinely new sub-topic\u2014the widely publicized lawyer/ChatGPT legal-sanctions case\u2014illustrating real-world consequences of hallucination, which broadens the section's scope beyond its core claims. These give B a modest edge on both depth and breadth."
+      },
+      "light_vs_deep": {
+        "a_arm": "light",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [
+            "Concrete example of model trained until Jan 2022 failing on 2024 NBA MVP question",
+            "Lawyer ChatGPT court sanctions case as illustration of hallucination consequences"
+          ],
+          "b_instances": [
+            "Catastrophic forgetting as a technical risk of fine-tuning",
+            "Fine-tuning requires large labeled datasets and significant compute resources",
+            "Fine-tuning only pushes the knowledge cutoff forward rather than solving staleness"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Comparison of RAG to Case-Based Reasoning (CBR), contrasting semantic vs. episodic memory retrieval, sourced from an academic paper"
+          ]
+        },
+        "reasoning": "Both documents add concrete, source-attributed depth to the fine-tuning/static-knowledge problem: A uses vivid real-world examples (the outdated-model NBA MVP scenario and the lawyer's ChatGPT court sanctions case) to deepen the hallucination/staleness point, while B adds technical mechanism detail about fine-tuning's limitations (catastrophic forgetting, dataset/compute costs, and the 'pushes the cutoff' nuance). These are comparable in number and substantiveness, yielding a tie on depth. For breadth, B introduces a genuinely new adjacent subtopic -- comparing RAG to Case-Based Reasoning and contrasting semantic vs. episodic memory retrieval, backed by an academic source -- which A does not touch at all, giving B a moderate edge on breadth."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [
+            "RAG's evolution from naive to a diverse family of advanced/agentic techniques, cited via arionresearch"
+          ],
+          "b_instances": [
+            "Catastrophic forgetting named as a specific technical failure mode of fine-tuning",
+            "Fine-tuning requires large labeled datasets and significant computational resources",
+            "Retraining becomes impractical for frequently changing data"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Comparison of RAG to Case-Based Reasoning (CBR), contrasting semantic vs. episodic memory retrieval, with academic citation"
+          ]
+        },
+        "reasoning": "Both documents cover the same core narrative (static LLM knowledge, fine-tuning limits, RAG as open-book solution, lesson roadmap). For depth, B adds several concrete technical elaborations on fine-tuning's drawbacks (catastrophic forgetting, data/compute requirements, impracticality for dynamic data) that go beyond A's single added detail about RAG's evolution into a 'diverse family of techniques' (citation 82). This gives B a modest edge in depth. For breadth, B introduces a genuinely new adjacent topic\u2014comparing RAG to Case-Based Reasoning (CBR) and distinguishing semantic vs. episodic memory\u2014backed by an academic citation, which A does not touch at all, giving B the edge in breadth as well, though it is a single (if substantive) instance rather than several."
+      }
+    },
+    "The RAG System: Core Components": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Specific similarity metrics named (cosine similarity, Euclidean distance)",
+            "Concrete example pair of semantically similar phrases ('change password' vs 'forgot login details')",
+            "Named embedding model example (BERT transformer)",
+            "Vector database scale detail (millions/billions of vectors)"
+          ],
+          "b_instances": [
+            "Augmentation reframed as a form of prompt engineering with template design guidance",
+            "Specific hallucination-prevention mechanism: LLM instructed to state when answer isn't in context"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Keyword-based search (BM25) introduced as a complementary retrieval method alongside semantic search"
+          ]
+        },
+        "reasoning": "Both documents cover the same three core components (Retrieval, Augmentation, Generation) but diverge in their extra material. Document A adds a substantial technical aside on vector embeddings, naming similarity metrics (cosine/Euclidean), giving a concrete example of semantically similar phrases, citing BERT as an embedding model, and noting vector database scale -- all of which deepen the existing retrieval/embedding discussion rather than introducing new subtopics, giving A the edge on depth. Document B adds depth of its own: framing augmentation as prompt engineering with template design, and detailing a specific hallucination-prevention instruction for generation. However, B's most distinguishing feature is introducing BM25 keyword-based search as a second, complementary retrieval method -- a genuinely new adjacent subtopic (hybrid search) that A does not mention at all, giving B a clear breadth advantage."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [
+            "Chunk order/relevance in augmentation affects answer quality",
+            "Citations back to source documents build trust and enable verification",
+            "RAG allows LLM to provide info beyond its training cutoff date"
+          ],
+          "b_instances": [
+            "Keyword search specifically excels at IDs/acronyms that semantic search misses",
+            "Augmentation framed as prompt engineering with templates instructing prioritization of retrieved facts over internal knowledge",
+            "Explicit mechanism where LLM is instructed to state when an answer isn't found in context, as hallucination prevention"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same three RAG pillars without introducing genuinely new adjacent subtopics, so breadth ties with no qualifying instances on either side. For depth, both add a comparable number of specific, source-attributed refinements: A adds points about chunk ordering affecting quality, citation-based trust/verification, and knowledge beyond the training cutoff, while B adds specifics about keyword search handling IDs/acronyms, framing augmentation as prompt engineering with prioritization templates, and an explicit abstention mechanism for hallucination prevention. The two sets are roughly equal in number and substantiveness, resulting in a tie for depth as well."
+      },
+      "standard_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [
+            "Generated answers can include citations pointing back to source documents to build trust/enable verification",
+            "LLM can provide information beyond its training cutoff date"
+          ],
+          "b_instances": [
+            "Concrete example of semantically similar phrases (e.g., 'how to change my password' vs 'I forgot my login details') mapping to similar vectors",
+            "Named example embedding model (BERT, a transformer) used to generate embeddings",
+            "Specific similarity metrics named (cosine similarity, Euclidean distance) used in vector search",
+            "Vector databases described as scaling to millions or billions of vectors"
+          ]
+        },
+        "breadth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Keyword-based search (BM25 algorithm) as an alternative retrieval method to semantic/vector search, ranking by term frequency and rarity"
+          ],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same three-pillar RAG structure. On depth, Document B adds more concrete technical texture around the embedding/vector-search mechanism already discussed by both (a named model example, a similarity-example, specific distance metrics, and a scale claim), while Document A only adds two narrower depth details (citation feature and beyond-cutoff-date benefit), giving B a modest edge. On breadth, Document A introduces BM25 keyword-based search as a genuinely separate retrieval technique alongside semantic search, a sub-topic Document B does not mention at all, giving A the edge on breadth."
+      }
+    },
+    "The RAG Pipeline: Ingestion and Retrieval": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "b_much_more",
+          "a_instances": [],
+          "b_instances": [
+            "content cleaning (removing HTML tags, headers, footers) and metadata enrichment during load step",
+            "chunk overlap percentage (10-20%) technique for preserving context across chunk boundaries",
+            "specific embedding dimensionality figures (text-embedding-3-large 3072 dims, all-MiniLM-L6-v2 384 dims)",
+            "trade-off analysis of retrieval parameter k (smaller vs larger k affecting speed, cost, latency, completeness)"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Elasticsearch as a vector-enabled search/index platform alongside dedicated vector DBs",
+            "LangChain Runnables and LlamaIndex QueryEngines as abstractions for managing query pre-processing"
+          ]
+        },
+        "reasoning": "Both documents cover the same four-step ingestion and four-step retrieval structure with largely overlapping tool/model examples (LangChain/LlamaIndex loaders, RecursiveCharacterTextSplitter, OpenAI/Google/HF embedding models, FAISS/Milvus/Qdrant/Pinecone). Document A adds little beyond this shared core -- its mentions of semantic chunkers and model/DB examples largely mirror or are subsumed by B's more detailed treatment. Document B adds several concrete depth-enhancing details not present in A: explicit document cleaning and metadata enrichment steps, a specific chunk-overlap percentage recommendation, precise embedding dimensionality numbers, and a explicit cost/latency trade-off discussion for the retrieval parameter k. For breadth, B also introduces two adjacent sub-topics absent from A: Elasticsearch as a hybrid/vector-enabled search platform, and named query-orchestration abstractions (LangChain Runnables, LlamaIndex QueryEngines). A contributes no unique depth or breadth instances beyond B's coverage."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [
+            "Detailed explanation of cosine similarity mechanism (smaller angle = higher score = more semantic closeness)",
+            "Explanation of LlamaIndex's SemanticSplitter grouping related sentences to preserve topical integrity"
+          ],
+          "b_instances": [
+            "Metadata enrichment/cleaning during Load step (removing HTML tags, headers, footers; adding source, author, creation date metadata)",
+            "Specific chunk overlap guidance (10\u201320% of chunk size) to preserve context across boundaries",
+            "Quantitative embedding dimension details (text-embedding-3-large at 3072 dims, all-MiniLM-L6-v2 at 384 dims)",
+            "Discussion of the k trade-off in retrieval (smaller k faster but may miss info; larger k more context but higher cost/latency)"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [
+            "Mention that traditional search systems like Elasticsearch/OpenSearch offer kNN search capabilities enabling them to act as vector stores"
+          ],
+          "b_instances": [
+            "Query pre-processing/expansion step and framework abstractions (LangChain Runnables, LlamaIndex QueryEngines) for managing queries",
+            "Mention of enterprise data sources like SharePoint and Confluence as document sources during ingestion"
+          ]
+        },
+        "reasoning": "Both documents cover the same core ingestion/retrieval pipeline steps, but B integrates more granular, source-attributed technical details that deepen existing points: metadata cleaning/enrichment, specific chunk overlap percentages, embedding dimensionality figures, and the k-value cost/latency trade-off. A counters with a slightly more detailed explanation of the cosine similarity geometry and an explanation of the SemanticSplitter's function in the prose (B only names it in the diagram). For breadth, B introduces two new adjacent sub-topics (query pre-processing/abstractions like Runnables and QueryEngines, and enterprise data sources such as SharePoint/Confluence) versus A's single new sub-topic (Elasticsearch/OpenSearch kNN as vector stores). Overall B shows a moderate edge in both depth and breadth due to a greater number of distinct, substantive additions."
+      },
+      "standard_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Cosine similarity explained via vector angle mechanism (higher score = smaller angle)",
+            "Unstructured tool specifically named for parsing complex file types",
+            "LlamaIndex SemanticSplitter named as example of semantic chunker"
+          ],
+          "b_instances": [
+            "Storing metadata alongside embeddings and text chunks in the vector DB"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [
+            "Elasticsearch/OpenSearch kNN search capability as an alternative vector store mechanism"
+          ],
+          "b_instances": [
+            "Specific enterprise data source connectors named (Confluence, Slack, local file system)",
+            "Mention of query pre-processing via normalization or expansion as a distinct step"
+          ]
+        },
+        "reasoning": "Both documents cover the same core Load-Split-Embed-Store / Query-Embed-Search-Generate structure. Document A adds slightly more depth by naming specific tools (Unstructured for loading, LlamaIndex's SemanticSplitter) and by explaining the cosine similarity mechanism (angle-based similarity) in more technical detail than B's brief mention. Document B counters with one depth addition (storing metadata alongside embeddings) but this is a single instance versus A's three, giving A the edge on depth. For breadth, B introduces two genuinely new sub-topics not covered by A: specific enterprise connector examples (Confluence, Slack, local file system) and the mention of query pre-processing (normalization/expansion) as an upcoming technique. A's one breadth addition is the mention of Elasticsearch/OpenSearch kNN capabilities as alternative vector stores. This gives B a modest edge on breadth."
+      }
+    },
+    "Advanced RAG Techniques": {
+      "light_vs_standard": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [
+            "GraphRAG historical lineage citing DBpedia/YAGO and semantic web evolution",
+            "GraphRAG trade-off note that hybrid graph+vector systems are often used in production alongside upfront schema/entity-extraction cost"
+          ],
+          "b_instances": [
+            "RRF mechanism detail: aggregates rank positions rather than raw scores, avoiding score-normalization issues between keyword and vector search",
+            "Context-enriched chunking with concrete example (SEC filing revenue sentence + prepended metadata)",
+            "GraphRAG limitation: computational expense and growing latency as the graph scales"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "New subtopic on chunking failure modes in messy enterprise data (scanned PDFs, OCR errors) causing silent retrieval failures"
+          ]
+        },
+        "reasoning": "Both documents cover the same five core techniques (hybrid search, re-ranking, query transformation, chunking, GraphRAG) with largely overlapping examples (rollover billing, account-connection re-ranking, travel policy decomposition, reimbursement/pricing-table chunking, retail/IT GraphRAG multi-hop examples). For depth, A adds a distinct historical grounding for GraphRAG (DBpedia/YAGO/semantic web lineage) and a practical trade-off note about hybrid graph+vector production systems, while B adds a more technical explanation of why RRF avoids score normalization, a concrete SEC-filing example for context-enriched chunking, and a distinct GraphRAG limitation around computational cost/latency at scale. B's instances are slightly more numerous and technically specific, giving it a modest edge. For breadth, B introduces a genuinely new subtopic -- chunking failure modes caused by OCR errors and scanned PDFs leading to silent retrieval failures in enterprise settings -- which A does not address at all, giving B the edge on breadth as well, though the gap is not dramatic."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "BM25/hybrid search historical roots in pre-LLM search engine pipelines balancing recall and precision",
+            "detailed cross-encoder mechanism (token-level attention between query and document tokens)",
+            "domain-dependent optimal number of decomposition sub-queries (2 for fact-verification vs 8+ for biomedical)",
+            "HyDE precision limitation - hypothetical answer may reflect relevance patterns but be factually inaccurate",
+            "GraphRAG 'contextual fragmentation' concept explaining why standard RAG fails on hierarchical documents"
+          ],
+          "b_instances": [
+            "GraphRAG deployment trade-offs: upfront schema/entity-extraction investment vs standard RAG's quick deployment, and hybrid graph+vector approaches",
+            "specific re-ranker tool example named (Cohere Rerank) in diagram",
+            "note that HyDE-generated answers often use language more similar to source documents"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "GraphRAG's lineage from semantic web technologies (DBpedia, YAGO) and evolution into modern large-scale knowledge graph systems"
+          ]
+        },
+        "reasoning": "Both documents cover the same five subtopics (hybrid search, re-ranking, query transformation, chunking, GraphRAG) with very similar core explanations and examples, but they differ in the source-attributed extras layered on top. On depth, Document A adds several more rigor-adding details: the historical lineage of hybrid/BM25 search in pre-LLM engines, a more granular explanation of cross-encoder token-level attention, a quantitative claim about domain-dependent decomposition granularity, and an explicit limitation of HyDE's factual accuracy, plus the 'contextual fragmentation' concept for GraphRAG failures. Document B counters with its own depth additions (GraphRAG's practical trade-offs around schema investment and hybrid graph+vector deployment, a named re-ranking tool, and a note on HyDE's linguistic similarity to source text), but has fewer distinct instances overall, giving A a modest edge on depth. On breadth, Document B introduces a genuinely new adjacent subtopic -- GraphRAG's historical connection to the semantic web and knowledge graph systems like DBpedia/YAGO -- which A does not touch, while A introduces no comparable new subtopic beyond the shared core topics, giving B a modest edge on breadth."
+      },
+      "standard_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [
+            "Historical roots of hybrid search in pre-LLM search pipelines balancing recall/precision (citation 15)",
+            "Decomposition depth varies by domain\u2014fact-verification needs ~2 sub-queries, biomedical questions need 8+ (citation 20)",
+            "HyDE limitation: hypothetical answer may reflect relevance patterns but not be factually accurate (citation 22)",
+            "GraphRAG rationale: standard RAG fails on hierarchical/interconnected docs due to 'contextual fragmentation' (citation 27)"
+          ],
+          "b_instances": [
+            "RRF mechanism detail: aggregates rank positions rather than raw scores, avoiding score-normalization problems across systems (citation 61)",
+            "Chunking failure mode: OCR errors and scanned PDFs cause silent retrieval failures with sentence-based splitters (citation 64)",
+            "GraphRAG limitation: computational cost and latency increase as graph scales for industrial use (citation 66)",
+            "GraphRAG technical framing: aligns with semantic web principles, offering structured deterministic retrieval paths vs. similarity-based (citation 65)"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same five subsections (Hybrid Search, Re-ranking, Query Transformations, Advanced Chunking, GraphRAG) with no genuinely new adjacent subtopics introduced by either side, so breadth is a tie with no qualifying instances found in either. For depth, each document adds roughly four distinct, source-attributed deeper details not present in the other: A adds historical context for hybrid search, domain-dependent decomposition granularity, a HyDE accuracy caveat, and the 'contextual fragmentation' rationale for GraphRAG; B adds a more technical explanation of RRF's rank-based aggregation, a chunking failure mode from OCR/scanned documents, GraphRAG's latency/cost scaling limitation, and its alignment with semantic web principles. The two sets are comparable in number and substantiveness, so depth is also judged a tie."
+      }
+    },
+    "Agentic RAG": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "a_more",
+          "a_instances": [
+            "Explains why treating a vector DB as read-write memory fails ('context pollution'), citing RAG's read-only, semantic-similarity-based retrieval",
+            "Concrete example of iterative retrieval narrowing 'EU data policy' to 'EU customer data retention rules 2024'"
+          ],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Notes ReAct/agentic reasoning loops are inspired by cognitive architectures from psychology",
+            "Discusses engineering trade-offs of agentic RAG: added latency and computational cost vs. accuracy, requiring balance for simple queries"
+          ]
+        },
+        "reasoning": "Document A adds more depth: it explains a specific technical limitation (why RAG's read-only, similarity-based retrieval causes 'context pollution' when agents try to update knowledge bases) and gives a concrete example of iterative query refinement, both absent or less elaborated in B. Document B, however, introduces two genuinely new adjacent sub-topics not covered in A: the psychological/cognitive-architecture inspiration for ReAct-style reasoning, and a discussion of engineering trade-offs (latency, cost, accuracy balance) introduced by agentic retrieval. These are distinct breadth additions A lacks. Both documents otherwise cover the same core capabilities (iterative retrieval, tool selection, information fusion, knowledge base updates) with equivalent examples and diagrams, so those are not counted as differentiators."
+      },
+      "light_vs_deep": {
+        "a_arm": "light",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "b_much_more",
+          "a_instances": [
+            "ReAct loop's inspiration traced to cognitive architectures from psychology (IBM citation)"
+          ],
+          "b_instances": [
+            "Named failure mode 'retrieval thrash' where agent loops without progress (citation)",
+            "Temporal staleness of retrieved documents as a specific failure mode (citation)",
+            "Cross-document contradictions the agent cannot resolve as a specific failure mode (citation)"
+          ]
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "Agent orchestrating between semantic search (unstructured) and SQL queries (structured databases) via Azure SQL example/citation"
+          ]
+        },
+        "reasoning": "Both documents cover the same core ground: ReAct-style reasoning loop applied to retrieval, the standard-vs-agentic RAG distinction, the four agentic capabilities (iterate, choose, fuse, update memory), and an identical worked example about EU data retention rules. For depth, A adds one unique grounding detail -- tracing the reasoning loop to cognitive architectures from psychology -- while B adds three distinct, source-cited failure modes (retrieval thrash, temporal staleness, cross-document contradictions) that go deeper into the risks/limitations topic A only touches via a generic latency/cost trade-off statement (which itself overlaps with B's own latency citation, so not counted as differentiating). This gives B a clear edge in depth. For breadth, B introduces a genuinely new sub-topic -- an agent orchestrating between semantic search and structured SQL queries, backed by an Azure SQL citation -- which A does not cover at all; A has no comparable unique breadth instance, giving B a modest edge in breadth as well."
+      },
+      "standard_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "depth": {
+          "preference": "a_much_more",
+          "a_instances": [
+            "retrieval thrash failure mode (agent stuck repeatedly retrieving similar docs) with citation",
+            "temporal staleness and cross-document contradiction failure modes with citation",
+            "latency issues at scale making system too slow for real-time use, with citation"
+          ],
+          "b_instances": [
+            "explanation of why treating vector DB as read-write memory fails - RAG is read-only, retrieves by semantic similarity not truth, causing 'context pollution' (cited)"
+          ]
+        },
+        "breadth": {
+          "preference": "a_more",
+          "a_instances": [
+            "agent orchestrating between semantic search (unstructured) and SQL queries (structured databases), with Azure SQL citation"
+          ],
+          "b_instances": []
+        },
+        "reasoning": "Both documents cover the same core Agentic RAG capabilities (iterative retrieval, tool selection, information fusion, knowledge base updates, example thought trace, diagram) nearly identically. For depth, Document A adds three distinct, citation-backed failure modes/limitations of agentic RAG (retrieval thrash, temporal staleness/cross-document contradictions, and latency at scale) that go deeper into risks not covered in B. Document B instead deepens only the knowledge-base-update point with a citation-backed explanation of why RAG is unsuitable as read-write memory (context pollution), which is a single but substantive depth addition. Since A offers three specific depth instances against B's one, A has much more depth content. For breadth, A introduces a genuinely new sub-topic -- orchestrating semantic search with structured SQL queries via a cited Azure SQL example -- which B does not mention (B only generically lists 'database queries' as a tool without elaboration or citation). This gives A a modest breadth edge as well."
+      }
+    },
+    "Conclusion": {
+      "light_vs_standard": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "b_more",
+          "a_instances": [
+            "Open research challenge on designing adaptable memory systems balancing responsiveness and ethical considerations, cited to a specific IEEE paper [68]"
+          ],
+          "b_instances": [
+            "New subtopic: agentic system evaluation as an underdeveloped field, question of whether agent took correct reasoning steps vs just final answer correctness",
+            "Specific evaluation techniques named: LLM-as-Judge patterns and trajectory-based scoring, each with distinct source citations [24][25]"
+          ]
+        },
+        "reasoning": "Neither document adds much genuine depth beyond the core conclusion recap (both mostly restate points already made in the lesson); depth is a tie. For breadth, A introduces one new, source-attributed point about the open research challenge of adaptable memory systems balancing responsiveness and ethics. B introduces a richer new subtopic -- evaluation of agentic systems -- noting that traditional metrics fail to capture multi-step reasoning quality and naming specific new approaches (LLM-as-Judge, trajectory-based scoring), backed by two distinct citations. B's breadth content is more substantive and better sourced, giving it a modest edge over A's single memory-system instance."
+      },
+      "light_vs_deep": {
+        "a_arm": "deep",
+        "b_arm": "light",
+        "depth": {
+          "preference": "b_more",
+          "a_instances": [],
+          "b_instances": [
+            "specific evaluation techniques for agentic systems: LLM-as-Judge patterns and trajectory-based scoring",
+            "framing of evaluation challenge as distinguishing correct final answer vs correct reasoning steps, per cited source"
+          ]
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [
+            "mention of upcoming multimodal RAG extending principles to images/charts, cited source"
+          ],
+          "b_instances": [
+            "identification of agentic system evaluation as an underdeveloped field, cited source"
+          ]
+        },
+        "reasoning": "Both documents cover the same core conclusion content (summary of RAG techniques, benefits, and next lesson on Memory for Agents). For breadth, A introduces multimodal RAG as a new adjacent subtopic with a citation, while B introduces the challenge of evaluating agentic systems as a new subtopic with citations -- roughly comparable single new-topic mentions, so breadth is a tie. For depth, B goes further by naming specific technical mechanisms (LLM-as-Judge patterns, trajectory-based scoring) and articulating a specific conceptual distinction (final answer correctness vs. reasoning trajectory correctness), both source-attributed, whereas A's evaluation/monitoring mention remains vague and unelaborated, giving B a modest edge in depth."
+      },
+      "standard_vs_deep": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "depth": {
+          "preference": "tie",
+          "a_instances": [],
+          "b_instances": []
+        },
+        "breadth": {
+          "preference": "tie",
+          "a_instances": [
+            "Preview of open research challenge in adaptive/ethical memory system design, cited to IEEE paper"
+          ],
+          "b_instances": [
+            "Preview of multimodal RAG extending to charts/images/non-text data, cited to external article"
+          ]
+        },
+        "reasoning": "Both conclusions largely recap core lesson content (RAG benefits, foundational role, next lesson on Memory for Agents) without adding deeper technical mechanisms, so depth is a tie with no qualifying instances on either side. For breadth, each document adds exactly one distinct, source-attributed forward-looking topic: A cites a specific IEEE paper on the challenge of designing adaptive memory systems balancing responsiveness and ethics, while B cites an article on multimodal RAG extending to charts and images. Both are comparably substantive single new-topic mentions, so breadth is also a tie."
+      }
+    }
+  }
+}

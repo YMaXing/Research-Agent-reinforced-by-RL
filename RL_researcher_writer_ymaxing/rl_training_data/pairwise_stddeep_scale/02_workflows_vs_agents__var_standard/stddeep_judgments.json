@@ -1,0 +1,465 @@
+{
+  "article": "02_workflows_vs_agents__var_standard",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "MIT report citing 95% of generative AI pilots fail to deliver measurable impact",
+              "statistic that multi-agent systems can consume 15x more tokens than simple chat interfaces, elaborating on cost risks"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core introduction content nearly identically, but Document B adds two concrete, source-attributed statistics (a cited MIT failure-rate statistic and a cited 15x token-consumption figure) that deepen the existing points about stakes and costs of choosing the wrong architecture. Document A contains no comparable specific data or citations. Neither document introduces genuinely new sub-topics beyond the core architectural-choice discussion, so breadth is tied."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "MIT report citing 95% of generative AI pilots fail to deliver measurable impact",
+              "multi-agent systems consuming 15x more tokens than simple chat interfaces, citing token cost data"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core introduction content framing the workflow-vs-agent architectural decision. Document B adds two source-attributed statistics (an MIT report on 95% AI pilot failure rates, and a claim about multi-agent systems using 15x more tokens) that deepen the existing points about risk and cost without introducing a genuinely new sub-topic, so depth favors B modestly. Neither document introduces a new adjacent sub-topic beyond the core architectural framing, so breadth is tied with no qualifying instances in either."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "MIT report citing 95% of generative AI pilots fail to deliver measurable impact, tied to architecture choice",
+              "Statistic that multi-agent systems can consume 15x more tokens than simple chat interfaces, quantifying hidden costs"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core introduction content about the workflow-vs-agent architectural decision. Document B adds two concrete, source-attributed statistics (the MIT 95% pilot failure rate and the 15x token consumption figure) that deepen existing points about risk and cost with quantitative rigor, while Document A offers no comparable sourced statistics. Neither document introduces genuinely new adjacent sub-topics beyond the core architectural decision framing, so breadth is tied."
+        }
+      ]
+    },
+    "Understanding the Spectrum: From Workflows to Agents": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Agent diagram provides specific tool examples (vector search engine, web search, calculator, email provider, messaging app) and memory types (short-term/long-term) elaborating on tools/memory components"
+            ],
+            "b_instances": [
+              "Elaborates on workflow production benefits: testability, cost predictability, explicit error handling and fallbacks for each step (citing source [4])",
+              "Details specific agent capabilities: dynamic tool selection, adaptive reasoning based on new info, self-correction when an approach fails",
+              "Notes agent's added unpredictability and new failure modes as a technical limitation"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Historical context: 'expert systems' predecessors relying on hand-coded rules, succeeding in narrow domains like medical diagnosis but failing outside them (citing [2])"
+            ],
+            "b_instances": [
+              "Names ReAct as a specific agentic pattern to be covered, introducing a new named framework not otherwise mentioned",
+              "Cites RAG pipelines and prompt chains as concrete production-system examples of workflows, broadening applied scope"
+            ]
+          },
+          "reasoning": "Both documents cover the same core workflow-vs-agent definitions, diagrams, and orchestration-layer comparison, but B integrates more source-attributed elaboration. On depth, B adds specific, citation-backed claims about why workflows are favored in production (testability, cost predictability, explicit error handling) and expands on agent capabilities (dynamic tool selection, self-correction) plus a named limitation (new failure modes/unpredictability), while A's only comparable depth addition is the diagram's more granular tool/memory examples. On breadth, A uniquely introduces the historical 'expert systems' lineage (hand-coded rules, medical diagnosis example) as new adjacent content, but B counters with two new items: naming the ReAct pattern and citing RAG pipelines/prompt chains as concrete workflow examples in production. Given B's slightly larger and more substantive instance count in both dimensions, B is judged moderately ahead on both depth and breadth, though not overwhelmingly so."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Detailed agent architecture diagram elaborating specific components (short-term/long-term memory, planning with reflection/self-critics, and specific tools like vector search engine, web search, calculator, email, messaging app)"
+            ],
+            "b_instances": [
+              "Elaboration of workflow benefits: easier debugging/testing/maintenance, explicit error handling and fallbacks, predictable costs and testability",
+              "Claim that most advanced AI applications today are built on workflows (cited)",
+              "Specific agent capabilities: dynamic tool selection, adaptive reasoning based on new information, self-correction when an approach fails",
+              "New failure modes/unpredictability introduced by agent autonomy"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Historical context: expert systems as precursors to workflows, hand-coded rules, narrow domains like medical diagnosis"
+            ],
+            "b_instances": [
+              "Mention of ReAct as a named core agentic pattern to be covered later"
+            ]
+          },
+          "reasoning": "Both documents cover the same core workflow-vs-agent distinction with similar analogies and orchestration comparisons, so much of the content is shared. For depth, Document B adds several distinct elaborations not present in A: benefits of workflow determinism (debugging, error handling, cost predictability), a claim about workflow prevalence in production systems, specific agent capabilities (dynamic tool selection, self-correction), and a note on new failure modes/unpredictability in agents. Document A's main depth addition is the detailed agent architecture diagram naming specific tools and memory/planning components, which is a single substantive instance versus B's several, making depth clearly favor B. For breadth, A introduces a genuinely new sub-topic (the history of expert systems as precursors to modern workflows), while B introduces a different new sub-topic (naming ReAct as a specific agentic pattern). Both are single, comparably substantive additions, resulting in a tie for breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Detailed agent architecture diagram showing specific tool examples (vector search engine, web search, calculator, email provider, messaging app) elaborating on agent's tool/memory mechanism",
+              "Explicit labeling of planning sub-components (Reflection, Self-critics) within agent core"
+            ],
+            "b_instances": [
+              "Elaboration on why workflows are advantageous: debuggability, testability, maintainability, explicit error handling/fallbacks, and predictable costs at scale",
+              "Elaboration on agent capabilities: dynamic tool selection, adaptive reasoning, self-correction, and resulting unpredictability/new failure modes"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Historical context on expert systems: hand-coded rules, rigid knowledge bases, success in narrow domains like medical diagnosis, failure outside them"
+            ],
+            "b_instances": [
+              "Mention of ReAct as a named agentic pattern to be covered later",
+              "Mention of RAG pipelines as a concrete example of workflow-based production systems"
+            ]
+          },
+          "reasoning": "Both documents cover the same core workflow/agent definitions with similar sourcing. For depth, B adds more substantive elaboration on why workflows are practically advantageous (testability, error handling, cost predictability) and on agent capabilities/failure modes (dynamic tool selection, self-correction, unpredictability), while A's depth additions are more visual/structural (a detailed tool diagram and named planning sub-components). This gives B a modest edge in depth. For breadth, A introduces a fairly developed historical tangent about expert systems as agent predecessors, while B offers two brief, underdeveloped breadth mentions (ReAct, RAG pipelines) that are named but not elaborated; the two sides roughly balance out, resulting in a tie for breadth."
+        }
+      ]
+    },
+    "Choosing Your Path": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific Cursor keyboard-shortcut breakdown (Cmd+K for block edits, Cmd+L for file refactor, Cmd+I for full-repo agentic control)"
+            ],
+            "b_instances": [
+              "Mechanism explaining lower workflow costs via smaller, specialized models per step",
+              "Specific detail that Perplexity's 'deep research' mode takes minutes to generate a comprehensive report"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Healthcare robotics workflow example (rigid two-phase task planning + command generation process)",
+              "Logistics/supply-chain workflow example with 40% inventory cost reduction statistic"
+            ],
+            "b_instances": [
+              "New sub-topic: workflows suited for high-frequency scenarios where cost-per-request outweighs sophisticated reasoning"
+            ]
+          },
+          "reasoning": "Both documents cover the same core comparison of workflows vs. agents, hybrid autonomy slider, Cursor and Perplexity examples, and the human verification loop. For depth, B adds two concrete mechanistic/quantitative details (smaller specialized models lowering workflow costs, and the specific timing of Perplexity's deep research mode) while A adds one granular detail (the specific Cursor keyboard shortcuts for each autonomy level), giving B a modest edge. For breadth, A introduces two genuinely new domain examples not present in B -- a healthcare robotics workflow example with its two-phase process and a logistics/supply-chain example backed by a 40% inventory-cost-reduction statistic -- while B only introduces one new sub-topic (high-frequency, cost-sensitive workflow scenarios), giving A a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Specific 40% inventory cost reduction statistic for workflow-driven logistics efficiency",
+              "Granular Cursor autonomy levels (Cmd+K, Cmd+L, Cmd+I) beyond simple tab-completion",
+              "Named three-tier Perplexity autonomy modes (search, research, deep research)"
+            ],
+            "b_instances": [
+              "Mechanism explaining workflow cost savings via smaller, specialized per-step models",
+              "Quantitative detail on Perplexity's deep-research mode taking minutes to produce a comprehensive report"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Healthcare robotics workflow example (task planning + command generation phases)",
+              "Logistics domain example covering shipment tracking, exception handling, and invoice auditing"
+            ],
+            "b_instances": [
+              "World War II research as a concrete example of open-ended agent research tasks",
+              "High-frequency, cost-per-request scenario as a new criterion favoring workflows over agents"
+            ]
+          },
+          "reasoning": "Both documents share the same core structure (workflow vs. agent strengths/weaknesses, Karpathy's autonomy slider, Cursor and Perplexity examples, human-verification loop, the deleted-code joke). Beyond this shared base, A adds more depth-oriented specifics: a quantified inventory-cost statistic, granular Cursor command details, and named Perplexity tiers, giving it a modest edge in depth. B counters with its own depth additions (the mechanism behind workflow cost savings via smaller models, and a time-based detail on Perplexity's deep research mode), but has fewer overall. For breadth, each document introduces two comparably substantive new sub-topics/examples not covered by the other: A brings in healthcare robotics and logistics as new domains, while B introduces a World War II research example and a new cost-per-request/high-frequency use case consideration, making breadth a tie."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Quantitative stat: reported 40% reduction in inventory costs from workflow-based logistics automation",
+              "Specific Cursor autonomy granularity: Cmd+K (edit block), Cmd+L (refactor file), Cmd+I (full repo agentic control)"
+            ],
+            "b_instances": [
+              "Mechanism for workflow cost efficiency: use of smaller, specialized models per step",
+              "Perplexity deep research mode takes 'minutes' to generate a comprehensive report"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Robotics example: healthcare robot workflow with rigid two-phase task planning and command generation process",
+              "Logistics example: workflows automate shipment tracking, exception handling, and invoice auditing"
+            ],
+            "b_instances": [
+              "High-frequency scenario use case where cost-per-request outweighs need for sophisticated reasoning"
+            ]
+          },
+          "reasoning": "Both documents cover the same core workflow-vs-agent comparison, strengths/weaknesses, hybrid autonomy slider, Cursor, and Perplexity examples. For depth, A adds a concrete quantitative metric (40% inventory cost reduction) and a more granular breakdown of Cursor's autonomy levels (specific keyboard shortcuts for three distinct autonomy tiers), while B adds a mechanistic explanation for why workflows are cheaper (smaller specialized models) and a minor detail about Perplexity's deep research taking minutes -- giving A a modest edge. For breadth, A introduces two genuinely new domain examples (healthcare robotics workflow architecture and logistics automation with invoice auditing/shipment tracking) that B lacks entirely, while B only adds one new adjacent scenario (high-frequency, cost-sensitive use cases for workflows), giving A a modest edge in breadth as well."
+        }
+      ]
+    },
+    "Exploring Common Patterns": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Reflexion framework specifics (structured memory + verbal reinforcement improving agent decision-making over time)",
+              "Orchestrator-worker operational metrics (targeting >95% handoff success rate, maintaining context across long interactions)"
+            ],
+            "b_instances": [
+              "Chaining's specific downside: fixed sequence reduces flexibility",
+              "Quantitative benchmark for orchestrator-worker parallelization (5-20x speed improvement over sequential processing)",
+              "Evaluator-optimizer loop explained via control theory/feedback-loop mechanism (system monitors output and adjusts to reach desired state)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Historical evolution of workflow orchestration from cron schedulers and proprietary enterprise tools to modern DAG-based data orchestrators"
+            ],
+            "b_instances": [
+              "Mention of optimal control theory and dynamic programming as related mathematical subfields underlying the evaluator-optimizer pattern"
+            ]
+          },
+          "reasoning": "Both documents cover the same core patterns (chaining/routing, orchestrator-worker, evaluator-optimizer, ReAct) with similar diagrams and largely overlapping citations. For depth, B adds slightly more rigor: an explicit flexibility limitation for chaining, a concrete quantitative speedup figure (5-20x) for orchestrator-worker, and a control-theory-based mechanistic explanation for the evaluator-optimizer loop. A counters with the Reflexion framework's mechanism (structured memory + verbal reinforcement) and specific operational metrics (>95% handoff success, context retention) for orchestrator-worker, but B's list is marginally larger, yielding a modest 'b_more' edge. For breadth, A introduces a genuinely new adjacent subtopic -- the historical lineage of workflow orchestration (cron, proprietary tools, DAGs from data engineering) -- which is a substantive standalone tangent with two citations. B's comparable breadth move is a brief, single-sentence pointer to control theory/optimal control/dynamic programming as adjacent mathematical fields. Both qualify as new-topic excursions, but A's is more developed, giving A a modest edge on breadth. Neither side shows an overwhelming disparity in either dimension, so both are scored as modest ('more') rather than 'much more' preferences."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Reflexion framework detail (structured memory and verbal reinforcement) deepening the self-reflection/evaluator-optimizer discussion",
+              "Production metric for orchestrator-worker: handoff success rate target >95% and context maintenance across long interactions"
+            ],
+            "b_instances": [
+              "Explicit downside of chaining: fixed sequence reduces flexibility",
+              "Quantified speedup for orchestrator-worker parallelization: 5-20x over sequential processing"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Historical origin of workflow orchestration in data engineering (cron schedulers, proprietary enterprise tools, DAG-based orchestrators)"
+            ],
+            "b_instances": [
+              "Connection of evaluator-optimizer loop to control theory/systems engineering feedback loops, citing optimal control theory and dynamic programming"
+            ]
+          },
+          "reasoning": "Both documents cover the same core patterns (chaining/routing, orchestrator-worker, evaluator-optimizer, ReAct) with similar examples and citations, but each adds a small, roughly equivalent amount of extra depth and breadth. For depth, A adds the Reflexion framework's specific mechanism and a quantitative production metric (handoff success rate), while B adds a specific limitation of chaining (fixed sequence) and a concrete speedup figure (5-20x) for orchestrator-worker parallelization -- comparable in number and substantiveness, so depth is a tie. For breadth, A introduces the historical lineage of workflow orchestration from data engineering (cron, DAGs), a genuinely new adjacent subtopic, while B introduces a new adjacent subtopic linking evaluator-optimizer loops to control theory and optimal control/dynamic programming. Each side contributes one comparably substantive new subtopic, making breadth a tie as well."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Explanation that orchestrator-worker parallelism works because LLM calls are I/O-bound, enabling many workers to run concurrently",
+              "Quantitative operational metrics for orchestrator-worker systems in production: >95% handoff success rate and maintaining context across long interactions",
+              "Named Reflexion framework with specifics: structured memory and verbal reinforcement to improve agent decision-making"
+            ],
+            "b_instances": [
+              "Explicit downside of chaining: lack of flexibility since sequence is fixed in advance",
+              "Quantified speedup benefit for orchestrator-worker: 5 to 20x faster than sequential processing"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Historical lineage of workflow orchestration from cron schedulers through proprietary enterprise tools to modern open-source DAG-based data orchestrators (two citations)",
+              "Concrete orchestrator-worker example: analyzing a company's product launch via market analysis, competitor research, and financial forecasting workers"
+            ],
+            "b_instances": [
+              "Concrete orchestrator-worker example: trip-planning delegated to flight-booking, hotel-finding, and restaurant-recommendation workers",
+              "Analogy grounding evaluator-optimizer in control theory/systems engineering feedback loops, referencing optimal control theory and dynamic programming as related mathematical subfields"
+            ]
+          },
+          "reasoning": "Both documents cover the same core patterns (chaining/routing, orchestrator-worker, evaluator-optimizer, ReAct) with similar shared points (e.g., the unit-test-based objective feedback claim, which appears in both and is excluded as shared). For depth, A adds three distinct rigor-enhancing details not in B: the I/O-bound rationale for orchestrator-worker parallelism, specific production metrics (>95% handoff success, context maintenance), and named Reflexion framework mechanics (structured memory, verbal reinforcement). B adds two: the explicit flexibility downside of chaining and a quantified 5-20x speedup figure for orchestrator-worker. This gives A a modest edge in depth. For breadth, A introduces the historical evolution of workflow orchestration (cron to DAGs) and a distinct product-launch example, while B introduces a distinct trip-planning example and a control-theory/optimal-control analogy for evaluator-optimizer. These are comparable in number and substantiveness, resulting in a tie for breadth."
+        }
+      ]
+    },
+    "Zooming In on Our Favorite Examples": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Gemini CLI 'context rot' phenomenon degrading performance with large context windows",
+              "Reported latency increases in Gemini CLI and mitigation via automatic context compression",
+              "Perplexity's SOTA performance on DeepSearchQA benchmark",
+              "Perplexity's own DRACO benchmark showing leadership in factual accuracy, depth of analysis, citation quality, and lowest latency"
+            ],
+            "b_instances": [
+              "Detailed map-reduce mechanism for document summarization (chunking documents, parallel chunk summarization, final summary-of-summaries)",
+              "Perplexity's proprietary search, browsing, and code execution tools underlying its purpose-built agentic system",
+              "Orchestrator routing sub-tasks to specialized models such as Google Gemini for deep research queries"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Gemini CLI extensibility via Model Context Protocol (MCP) and project-specific GEMINI.md customization files",
+              "Business value framing citing 20-35% engineer productivity boosts and operational cost reduction from similar agentic systems"
+            ]
+          },
+          "reasoning": "Both documents cover the same three examples (Gemini Workspace summarization, Gemini CLI, Perplexity Deep Research) with comparable core content and diagrams. On depth, A adds more rigor to the Gemini CLI's engineering limitations (context rot, latency issues and compression mitigation) and backs Perplexity's effectiveness with two named benchmarks (DeepSearchQA, DRACO) with specific comparative results. B instead deepens the summarization workflow with a concrete map-reduce mechanism and adds architectural detail about Perplexity's proprietary tools and model routing to Gemini. Both sets are comparably substantive, with A having a slightly larger number of concrete, source-attributed depth instances, giving it a modest edge. On breadth, A introduces no genuinely new adjacent subtopics, whereas B clearly broadens scope twice: describing Gemini CLI's extensibility ecosystem (MCP, GEMINI.md) and connecting agentic systems to quantified business value (20-35% productivity gains), both of which are new topics not covered by A. This gives B a clear, though not overwhelming, breadth advantage."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Context rot phenomenon degrading Gemini CLI performance with large contexts",
+              "Reported latency increases and context-compression mitigation strategies for Gemini CLI",
+              "Specific mention of DeepSearchQA benchmark for Perplexity's SOTA performance",
+              "DRACO benchmark results detailing factual accuracy, depth of analysis, citation quality, and lowest latency for Perplexity"
+            ],
+            "b_instances": [
+              "Map-reduce approach: chunking documents, parallel per-chunk summarization, then summary-of-summaries",
+              "Perplexity's proprietary search, browsing, and code execution tools underlying its agentic system",
+              "Orchestrator routing sub-tasks to specialized models such as Google Gemini for deep research queries"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Gemini CLI extensibility via Model Context Protocol (MCP) and project-specific GEMINI.md customization files",
+              "Business-value framing: agentic systems boosting engineer productivity 20-35% and reducing operational costs"
+            ]
+          },
+          "reasoning": "Both documents cover the same three examples (Gemini Workspace summarization, Gemini CLI, Perplexity Deep Research) with similar core workflows and diagrams. For depth, A adds distinct technical rigor not found in B: the 'context rot' failure mode and latency/compression mitigation for Gemini CLI, plus specific benchmark citations (DeepSearchQA and DRACO with detailed metrics) for Perplexity. B counters with its own depth additions absent from A: the map-reduce/chunking mechanism for document summarization, mention of Perplexity's proprietary search/browsing/code-execution tools, and routing to specialized models like Gemini. A's set is slightly larger and more technically pointed, giving it a modest edge. For breadth, B introduces two genuinely new sub-topics absent from A: Gemini CLI's extensibility ecosystem (MCP, GEMINI.md) and a business-value angle (quantified productivity/cost impact of agentic systems), while A contributes no comparable new sub-topics, giving B the clear breadth advantage."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Gemini CLI 'context rot' limitation with latency issues and context-compression mitigation",
+              "DeepSearchQA benchmark result showing state-of-the-art performance",
+              "DRACO benchmark results detailing factual accuracy, depth of analysis, citation quality, and lowest latency"
+            ],
+            "b_instances": [
+              "Map-reduce mechanism for document summarization (chunking, parallel summarization, final aggregation)",
+              "Perplexity's proprietary search/browsing/code-execution tools as basis for performance",
+              "Orchestrator routing sub-tasks to specialized models such as Google Gemini for deep research queries"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Gemini CLI extensibility via Model Context Protocol (MCP) and project-specific GEMINI.md files",
+              "Business-value statistic: agentic systems boosting engineer productivity 20-35% and reducing operational costs"
+            ]
+          },
+          "reasoning": "Both documents cover the same three examples with comparable structure. On depth, A adds specific technical detail about Gemini CLI's 'context rot' limitation and mitigation, plus two distinct benchmark results (DeepSearchQA and DRACO) quantifying Perplexity's performance; B adds the map-reduce mechanism for summarization, mention of Perplexity's proprietary tool stack, and detail on routing to specialized sub-models like Gemini. These are roughly comparable in number and substantiveness, yielding a tie on depth. On breadth, B introduces two genuinely new sub-topics not touched by A: Gemini CLI's extensibility via MCP/GEMINI.md files, and a business-value/ROI statistic tying agentic systems to productivity gains\u2014neither of which A covers, giving B a moderate edge on breadth."
+        }
+      ]
+    },
+    "The Challenges of Every AI Engineer": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Specific quantitative stat: 99% per-step reliability yields ~20% failure over a 20-step task",
+              "70-95% failure rate range in production with performance collapse beyond a step threshold",
+              "Mechanism detail: slow accumulation of small plausible-looking errors causing goal drift",
+              "Context rot mechanism: signal-to-noise degradation and lost-in-the-middle effect",
+              "Context poisoning mechanism: early mistake cascading into further errors",
+              "Shadow AI agents as a specific elaboration of security risk"
+            ],
+            "b_instances": [
+              "Orchestration control singled out as an additional specific challenge from the cited study",
+              "Knowledge graph grounding as a specific mechanism to reduce hallucinations/improve reliability"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Brief mention of emerging multimodal systems (text/image/audio) as a future topic"
+            ],
+            "b_instances": [
+              "New 'Governance and Compliance' challenge category citing Singapore's Model AI Governance Framework for Agentic AI",
+              "LLM-based graders and specialized observability platforms as a new evaluation-focused solution approach"
+            ]
+          },
+          "reasoning": "On depth, Document A packs in far more specific, quantitative and mechanistic detail on the existing challenges: precise failure-rate statistics, an explanation of error-drift dynamics, and two named context-degradation phenomena (context rot, context poisoning), plus a concrete security elaboration (Shadow AI agents). Document B's depth additions are comparatively thin -- it adds 'orchestration control' as a nuance within the same cited study and introduces knowledge-graph grounding as a reliability-fix mechanism, but lacks A's granular failure statistics and context-specific mechanisms. This makes A clearly deeper. On breadth, B edges ahead: it introduces an entirely new challenge category (Governance and Compliance, with a named regulatory framework) and briefly touches a new evaluation-solution subtopic (LLM-based graders/observability platforms), whereas A's only genuinely new-topic addition is a passing mention of multimodal systems as a future lesson topic. B's two breadth additions are more substantive (a named framework and a named solution class), giving it a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Specific compounding-failure statistic: 99% per-step reliability leads to ~20% failure over a 20-step task",
+              "Specific production failure-rate range (70%-95%) with performance collapse beyond a step threshold",
+              "Mechanistic detail on 'context rot' (signal-to-noise degradation, mid-context information loss)",
+              "Mechanistic detail on 'context poisoning' (single early error cascading into further mistakes)",
+              "Named phenomenon 'Shadow AI agents' as a specific security risk elaboration"
+            ],
+            "b_instances": [
+              "Orchestration control singled out as a specific, named persistent challenge from the empirical study",
+              "Specific solution mechanism: grounding agents with knowledge graphs to reduce hallucinations",
+              "Specific solution mechanism: LLM-based graders and observability platforms for debugging agent reasoning in evaluation"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Brief forward-looking mention of emerging multimodal systems (text, image, audio) as a new topic area"
+            ],
+            "b_instances": [
+              "New 'Governance and Compliance' subtopic covering regulatory scrutiny of agentic AI, citing Singapore's Model AI Governance Framework for Agentic AI and risks like unauthorized actions/cascading multi-agent failures"
+            ]
+          },
+          "reasoning": "Both documents cover the same core challenges (reliability, context, data integration, cost, security) but diverge in enhancement content. On depth, Document A adds more numerous and specific quantitative/mechanistic details (compounding failure math, 70-95% failure stat, context rot/poisoning mechanisms, Shadow AI agents), giving it a modest edge over B's three solid but fewer depth additions (orchestration control as a named challenge, knowledge-graph grounding, LLM-based graders/observability). On breadth, Document B introduces a genuinely new subtopic -- governance and regulatory compliance, complete with a named framework (Singapore's Model AI Governance Framework) and specific risks like cascading multi-agent failures -- which is more developed than Document A's brief, single-sentence nod to multimodal systems as a future topic, giving B the edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Specific stat: 99% per-step reliability yields ~20% failure over a 20-step task",
+              "Stat: 70-95% failure rate on complex tasks with performance collapse beyond a step threshold",
+              "Mechanism: failures are a slow accumulation of small, plausible-looking errors causing goal drift",
+              "Context rot mechanism: signal-to-noise ratio drop, instructions lost in middle of context window",
+              "Context poisoning mechanism: a single early mistake cascades into further incorrect actions"
+            ],
+            "b_instances": [
+              "Added facet 'orchestration control' as a specific persistent challenge from the cited study",
+              "Knowledge-graph grounding technique to reduce hallucinations as a reliability solution",
+              "LLM-based graders and observability platforms for debugging agent reasoning in evaluation"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Mention of upcoming multimodal systems (text, images, audio) as an emerging engineering topic"
+            ],
+            "b_instances": [
+              "New Governance and Compliance subtopic, citing Singapore's Model AI Governance Framework for Agentic AI and risks like unauthorized actions/cascading multi-agent failures"
+            ]
+          },
+          "reasoning": "Document A provides substantially more depth on the existing challenge points, especially reliability (concrete failure-rate statistics and step-count thresholds) and context limits (named mechanisms 'context rot' and 'context poisoning' with clear causal explanations), giving it 5 distinct depth instances versus B's 3 (orchestration control, knowledge-graph grounding, LLM-based graders/observability), which are real but comparatively minor additions. For breadth, both documents add one new adjacent subtopic each -- A mentions upcoming multimodal systems in passing, while B introduces a more developed new subtopic (AI governance/compliance frameworks, naming a specific regulatory framework and multi-agent risks), making B's breadth addition slightly more substantive and giving B a modest edge on breadth."
+        }
+      ]
+    }
+  }
+}

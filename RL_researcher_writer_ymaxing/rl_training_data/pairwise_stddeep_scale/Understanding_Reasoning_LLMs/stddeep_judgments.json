@@ -1,0 +1,520 @@
+{
+  "article": "Understanding_Reasoning_LLMs",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Specific quantitative comparison of o1 vs GPT-4o cost/speed (up to 6x more expensive, slower due to longer 'thinking')",
+              "Named study on overthinking showing an inverted U-shaped curve relating reasoning amount to answer quality, especially on easier problems"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core introduction content (reasoning model trend, RAG/fine-tuning contrast, four-stage diagram, trade-offs of reasoning models, overthinking risk, and the same roadmap list). For depth, Document B adds two concrete, source-attributed enhancements that deepen existing points already raised in both: a specific quantitative comparison of OpenAI o1 vs GPT-4o cost/speed, and a cited study describing an inverted U-shaped relationship between reasoning length and answer quality on easier problems. Document A does not add comparable depth-enhancing specifics beyond the shared content. Neither document introduces genuinely new adjacent sub-topics or applications beyond the shared scope, so breadth is tied (no qualifying new-topic instances in either)."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "specific quantitative comparison: OpenAI o1 up to six times more expensive than GPT-4o for same tokens, cited to two sources",
+              "specific research finding on overthinking showing inverted U-shaped performance curve, cited to arXiv paper"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core introduction content (reasoning models, RAG comparison, roadmap, etc.) with document A citing Sebastian Raschka's blog for the figure and document B citing DeepSeek R1's Interconnects article for the figure -- these are just source attribution differences, not enhancement content. On depth, document B adds two concrete, source-attributed details that deepen existing points already introduced in both texts: a specific quantitative cost comparison (o1 being up to 6x more expensive than GPT-4o, with two citations) deepening the 'increased cost' claim, and a specific research finding about an inverted U-shaped performance curve for overthinking (with an arXiv citation) deepening the 'overthinking' claim. Document A does not add any comparable depth instances beyond restating the same points in more general terms. Neither document introduces genuinely new adjacent subtopics beyond the core introduction scope, so breadth is tied at zero qualifying instances for both."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Specific quantitative comparison: OpenAI o1 models up to six times more expensive and slower than GPT-4o, with citations",
+              "Reference to research showing an inverted U-shaped curve where excessive reasoning hurts performance on easier problems, with citation"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core introduction content (reasoning models as 2025 trend, RAG/fine-tuning comparison, trade-offs, overthinking risk, roadmap list). For depth, Document B adds two source-attributed specifics that deepen the existing cost/latency and overthinking points: a concrete cost multiplier for o1 vs GPT-4o with two citations, and a cited research finding describing an inverted U-shaped performance curve for reasoning depth. Document A contains no comparable deepening detail, relying on general statements without citations. For breadth, neither document introduces a genuinely new sub-topic beyond the shared core content, so breadth is a tie."
+        }
+      ]
+    },
+    "How do we define \"reasoning model\"?": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Describes CoT as the LLM acting like a 'flexible symbolic reasoner' generating steps that mimic a logical proof or calculation"
+            ],
+            "b_instances": [
+              "Cites a specific quantitative threshold (~100B parameters) at which CoT benefits emerge, tied to a Google research source",
+              "Elaborates the hidden-reasoning mechanism as an automated, self-directed internalization of CoT, citing an NVIDIA glossary source"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Traces CoT's roots to classic symbolic AI and rule-based logical deduction systems as a historical precursor"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core definition and largely overlapping examples/figures. On depth, A adds one mechanistic elaboration (CoT as a symbolic reasoner analogy) while B adds two more specific, sourced depth points: a quantitative parameter threshold for emergent CoT benefits and a more detailed, sourced explanation of how hidden reasoning is an automated internalization of CoT, giving B a modest edge. On breadth, A introduces a genuinely new adjacent sub-topic -- the historical connection to symbolic AI and rule-based systems -- which B does not touch (B's train example is just a restated illustration, not a new sourced sub-topic), giving A the edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Specific ~100B parameter threshold for CoT benefits to emerge (citing Google research)",
+              "Detailed mechanism describing how hidden/internal reasoning represents automation/internalization of the explicit CoT process, enabling self-directed reasoning"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Connection of CoT-style reasoning to classic symbolic AI's rule-based logical deduction systems, framing LLM as a flexible symbolic reasoner"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents define reasoning models similarly and cover the same core distinctions (visible vs. hidden reasoning, CoT, o1). Document A adds a unique breadth instance by linking CoT to the history of symbolic AI and rule-based logical systems, a new adjacent topic not touched by B. Document B, however, adds two distinct depth instances: a specific quantitative claim about the ~100 billion parameter threshold needed for CoT benefits to emerge (with citation to Google research), and a more mechanistic explanation of how hidden reasoning represents an internalization/automation of the explicit CoT process. These deepen existing points about CoT and hidden reasoning rather than introducing new topics. Overall, B leads on depth while A leads on breadth, with neither dimension showing an overwhelming gap."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "CoT framed as evolution of classic symbolic AI, with LLM acting as a flexible symbolic reasoner mimicking logical proof (citations to arxiv and MDPi)"
+            ],
+            "b_instances": [
+              "CoT benefits only emerge with sufficient model scale (~100B parameters), citing Google research blog on emergent reasoning",
+              "Hidden/internal reasoning described as automation and internalization of the CoT process, enabling self-directed reasoning without explicit prompting, citing NVIDIA glossary"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core definition of a reasoning model, the CoT distinction, and the visible/invisible reasoning dichotomy with nearly identical structure. For depth, Document A adds one substantive elaboration\u2014linking CoT to symbolic AI roots and framing the LLM as a symbolic reasoner (with two citations). Document B adds two substantive elaborations\u2014a quantitative claim about the parameter threshold needed for CoT benefits to emerge (citing a Google research blog) and a mechanistic explanation of how hidden reasoning represents an internalized, self-directed evolution of CoT (citing NVIDIA). This gives B a modest edge in depth instances. Neither document introduces a genuinely new adjacent subtopic beyond the core definition (the varied train examples are just elaborations of the same illustrative point, not new topics), so breadth is tied with no qualifying instances on either side."
+        }
+      ]
+    },
+    "When should we use reasoning models?": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "specific phenomenon of reasoning models abandoning a correct initial answer, documented in recent studies [16]"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core guidance on when to use reasoning models (complex multi-step tasks vs. simple tasks) and both discuss the overthinking/latency trade-off with a citation. B adds one additional depth-level detail not present in A: a specific documented phenomenon where reasoning models abandon a correct initial answer, backed by a separate citation ([16]). This deepens the existing overthinking point with a more specific mechanism. Neither document introduces genuinely new adjacent subtopics beyond the core scope (deployment cost, latency, task-complexity framing appear in both), so breadth is tied."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "specific finding that overthinking can cause models to abandon a correct initial answer, per cited study on reasoning model behavior"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core content: when reasoning models excel (decomposition, self-correction, puzzles, math, coding) vs. when general models suffice, plus the downsides of latency, cost, and overthinking (both citing an overthinking paper). For depth, B adds one additional substantive claim not found in A: that overthinking can cause a model to abandon a correct initial answer, attributed to a cited study, which is a more specific mechanistic detail than A provides. A has no unique depth instances beyond what B also covers. For breadth, neither document introduces a genuinely new subtopic; B's added 'trade-off framed by task complexity' sentence is a rephrasing of the same decision criterion already covered, not a new adjacent topic, so breadth is tied."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "cites phenomenon where model abandons correct initial answer due to overthinking, per recent study [[16]]"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core guidance: reasoning models excel at decomposition/self-correction tasks (puzzles, math, coding) versus general models for simple tasks, and both discuss the latency/cost/overthinking trade-off with a citation. Document B adds one additional depth instance not in A: a specific documented phenomenon where reasoning models abandon a correct initial answer due to overthinking, backed by a distinct citation [[16]], which deepens the overthinking discussion beyond what A provides. Neither document introduces genuinely new adjacent subtopics beyond the shared core content, so breadth is tied."
+        }
+      ]
+    },
+    "A brief look at the DeepSeek training pipeline": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "specific figure of 800,000 reasoning traces used for distillation SFT dataset"
+            ],
+            "b_instances": [
+              "GRPO algorithm mechanism explained (group-wise reward comparison, no critic model, PPO-like update, reduced compute/memory cost)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same three DeepSeek-R1 variants (R1-Zero, R1, Distill) with very similar core descriptions, so there is little breadth differentiation - neither introduces a genuinely new subtopic beyond the pipeline itself, resulting in a tie for breadth. For depth, A includes a specific quantitative detail (800,000 reasoning traces used for the distillation SFT dataset) that B omits, while B provides a deeper technical explanation of the GRPO algorithm underlying R1-Zero's RL training (its group-wise reward comparison, avoidance of a critic model, and resulting compute/memory savings), which A does not mention at all. Since B's GRPO explanation is a richer, more mechanistic elaboration than A's single statistic, B edges ahead on depth, though the gap is not large."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific dataset size of 800,000 reasoning traces used for distillation SFT"
+            ],
+            "b_instances": [
+              "Detailed explanation of GRPO (Group-wise Reward Policy Optimization) algorithm mechanism, avoiding a critic model and reducing computational/memory cost"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same three DeepSeek-R1 variants (R1-Zero, R1, R1-Distill) with essentially identical core content and no new adjacent subtopics, so breadth ties. For depth, A adds a concrete quantitative detail (800,000 reasoning traces used for distillation) that B omits, while B goes further into the RL mechanism by naming and explaining GRPO (Group-wise Reward Policy Optimization), including its avoidance of a critic model and resulting computational savings -- a more substantive mechanistic addition than A's single statistic. This gives B a modest edge on depth, while breadth remains tied."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific dataset size of 800,000 reasoning traces used for distillation SFT"
+            ],
+            "b_instances": [
+              "Detailed explanation of GRPO algorithm (group-wise reward optimization, no critic model, PPO-like update, reduces compute/memory cost)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same three DeepSeek-R1 variants (R1-Zero, R1, R1-Distill) with essentially identical core explanations. For depth, A adds a specific quantitative detail (800k reasoning traces used for SFT distillation) that B omits, while B adds a more substantial technical mechanism explanation of GRPO (naming the algorithm, describing its critic-free approach, and its computational benefits) that A entirely lacks. B's GRPO explanation is more technically substantive than A's single statistic, giving B a modest edge on depth. Neither document introduces genuinely new adjacent sub-topics beyond the three-variant pipeline, so breadth is a tie with no qualifying instances on either side."
+        }
+      ]
+    },
+    "The 4 main ways to build and improve reasoning models": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Overthinking inverted-U curve where extra computation causes flipping of correct to incorrect answers",
+              "GRPO mechanism detail (no critic/value network) plus the Dr. GRPO fix for length-bias overhead",
+              "PRM real-time feedback claim that it lets smaller models outperform larger ones (AAAI citation)",
+              "o1 pricing framed as 6x cost multiplier attributed partly to specialized STEM training",
+              "Detailed distillation limitations: loss of nuanced multi-step logic, architectural mismatches, hallucination tendency"
+            ],
+            "b_instances": [
+              "Explicit PRM vs ORM comparison (coarse outcome signal vs fine-grained step-level credit assignment, cost tradeoffs)",
+              "Exact o1 pricing figures ($60 vs $10 per million tokens)",
+              "Specific pretraining self-reflection study showing base model already exhibits self-reflection less frequently than fine-tuned model (~100% vs lower)",
+              "Framing of undisclosed pretraining data mixture as critical factor for cold-start RL stability",
+              "Quantitative detail of distillation dataset size (800,000 reasoning traces)",
+              "Quantitative detail of R1 model size (671B parameters) as motivation for distillation"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Distinct second rationale for distillation: providing an efficient path for smaller models that struggle to learn reasoning via pure RL alone"
+            ],
+            "b_instances": [
+              "Introduction of Outcome Reward Models (ORMs) as a contrasting adjacent concept to PRMs",
+              "Distinct second rationale for distillation: distilled models serve as a research resource for studying long-CoT reasoning mechanisms"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core techniques with largely overlapping core content (CoT, search/PRM, accuracy/format rewards, Aha moment, cold-start SFT, language consistency reward, rejection sampling, distillation mechanics, 32B RL-vs-distillation comparison). On depth, A adds unique technical detail via the GRPO/Dr. GRPO discussion, the overthinking inverted-U mechanism, PRM enabling smaller models to beat larger ones, a specific o1 pricing multiplier tied to STEM training, and enumerated distillation limitations. B counters with its own unique deepening instances: an explicit PRM-vs-ORM taxonomy, exact o1 token pricing figures, a specific study quantifying self-reflection frequency in base vs fine-tuned models, the pretraining data mixture as a stability factor, and quantitative specifics (800K training traces, 671B parameter count). B's list is slightly longer and more evenly distributed across sections, giving it a modest edge on depth. On breadth, both introduce one alternate, non-overlapping rationale for distillation (A: efficiency for RL-struggling models; B: research utility for studying long-CoT), but B additionally introduces the genuinely new adjacent concept of Outcome Reward Models, giving it a slight edge in breadth as well. Overall both documents are close, but B shows marginally more source-attributed enhancement content in both dimensions."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "overthinking inverted-U performance curve with 'flipping' correct answers to incorrect",
+              "GRPO algorithm mechanism (no separate critic/value network)",
+              "Dr. GRPO fix for GRPO's length-bias optimization issue",
+              "specific distillation limitations: loss of nuanced logic, architectural mismatch, hallucination tendency"
+            ],
+            "b_instances": [
+              "PRM providing dense, step-by-step rewards specifically within the SFT+RL training stage to stabilize training and improve credit assignment",
+              "quantitative 'aha moment' study finding fine-tuned model self-reflects ~100% of time vs. base model less frequently",
+              "pre-training data mixture identified as a critical, undisclosed factor in cold-start RL stability",
+              "specific 800,000-example dataset size used for distillation",
+              "breadth"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "introduction of Outcome Reward Models (ORMs) as a distinct, named concept contrasted with PRMs (coarse vs. fine-grained credit assignment)",
+              "second motivation for distillation: enabling the research community to study long-CoT reasoning mechanisms without needing the full-size model"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core techniques with comparable core content. On depth, A adds specific technical elaborations not in B (the overthinking inverted-U curve with answer-flipping, a detailed GRPO mechanism explanation plus the Dr. GRPO bias fix, and specific distillation failure modes like architectural mismatch/hallucination), while B adds its own depth-only content not in A (PRM's dense-reward role specifically within RL training, a quantitative aha-moment study, the pre-training-data-mixture stability factor, and the 800k-trace dataset size). These are roughly balanced in count and substantiveness, yielding a tie on depth. On breadth, B introduces two genuinely new adjacent concepts absent from A: the ORM-vs-PRM framework as a new named concept, and a second distillation motivation (enabling research community study of long-CoT mechanisms) that broadens scope beyond A's efficiency/accessibility framing. A does not introduce any comparable new adjacent sub-topics, giving B a modest edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Overthinking framed as inverted U-shaped curve where model flips correct answers to incorrect ones",
+              "GRPO algorithm mechanism explained (no critic/value network, group-wise reward normalization)",
+              "Dr. GRPO fix removing GRPO's length-bias optimization flaw",
+              "o1 pricing framed as 6x more expensive, attributed to specialized STEM training",
+              "Distillation's specific technical limitations detailed (loss of nuanced multi-step logic, architectural mismatch, hallucination tendency)",
+              "PRM feedback described as letting smaller models outperform larger ones during inference"
+            ],
+            "b_instances": [
+              "Explicit ORM vs PRM distinction (coarse final-answer signal vs fine-grained step-level signal)",
+              "PRM's role reframed within the RL training stage as providing dense, step-wise reward for credit assignment",
+              "o1 exact pricing figures ($60 vs $10 per million tokens)",
+              "Quantitative self-reflection study comparing fine-tuned (~100%) vs base model spontaneous self-reflection frequency",
+              "Pre-training data mixture identified as an undisclosed factor affecting cold-start RL stability",
+              "Distillation training set specified as 800,000 reasoning traces",
+              "Distilled models reported to outperform original instruction-tuned counterparts and even GPT-4o on benchmarks"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Distillation framed as valuable resource for research community to study long-CoT reasoning mechanisms independent of the large model"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core techniques with largely overlapping content (CoT, search/PRM, DeepSeek-R1 pipeline, Aha moment, distillation, benchmarks). On depth, A adds unique technical detail via the GRPO/Dr. GRPO algorithmic mechanism, distillation's specific failure modes, and an STEM-training rationale for o1 pricing, while B adds unique depth via the ORM/PRM taxonomy, PRM's role inside the RL stage, precise o1 pricing figures, a quantitative self-reflection study, the pre-training data mixture factor, and specific distillation dataset size/benchmark claims -- giving B a modest edge in number and quantitative specificity of depth instances. On breadth, neither document introduces much genuinely new subtopic material, but B uniquely frames distillation as a research-community resource for studying long-CoT mechanisms, a subtopic A does not raise, giving B a slight edge there as well."
+        }
+      ]
+    },
+    "Thoughts about DeepSeek R1": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "specific $294,000 total R1 training cost figure from Reuters"
+            ],
+            "b_instances": [
+              "specific 30x lower API price for R1 vs o1 (interconnects.ai)",
+              "detail that disclosed training costs exclude experimentation, data curation, and human annotation (Nature-sourced)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core topics (transparency, RL cold-start reasoning, comparison to o1, training cost ambiguity, milestone status) with no genuinely new adjacent sub-topics in either, so breadth is a tie. On depth, A adds a distinct sourced quantitative detail (the $294,000 total training cost figure from Reuters), while B adds two distinct sourced quantitative/mechanistic details (the ~30x lower API pricing figure, and the specific claim that disclosed cost figures exclude experimentation, data curation, and human annotation, sourced to Nature). B's two unique depth instances slightly outweigh A's one, giving B a modest edge on depth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific $294,000 total training cost figure for R1 pipeline (Reuters)"
+            ],
+            "b_instances": [
+              "API pricing ~30x lower than o1 as quantitative inference-efficiency detail",
+              "Detailed breakdown of undisclosed cost components (GPU hours, experimentation, data curation, human annotation) sourced from Nature and Epoch AI"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core points: MIT license/transparency, comparison to o1, benchmark parity, MoE/architecture opacity, and the $6M vs true training cost distinction. On depth, A adds a unique concrete figure ($294,000 total training cost per Reuters) not found in B, while B adds two distinct quantitative/depth details not in A: the ~30x lower API pricing figure and a more granular discussion of which cost components (GPU hours, experimentation, data curation, annotation) remain undisclosed, backed by additional sources (Epoch AI, Nature). This gives B a modest edge in depth. Neither document introduces a genuinely new sub-topic or adjacent example beyond the core discussion of licensing, benchmarking, architecture opacity, and cost accounting, so breadth is tied with no qualifying instances in either."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "specific $294,000 total training cost figure sourced from Reuters"
+            ],
+            "b_instances": [
+              "API price ~30x lower than o1, sourced from Interconnects",
+              "specific breakdown of cost components excluded (GPU hours, data curation, human annotation) with Nature citation"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core points (transparency, RL cold-start, comparison to o1, training cost ambiguity, milestone status) without introducing genuinely new sub-topics, so breadth is tied. For depth, A adds a specific $294K cost figure with source, while B adds a quantitative 30x API price efficiency claim and more granular detail on what cost components (GPU hours, curation, annotation) remain undisclosed, citing Nature and Interconnects. B's two distinct depth-adding details slightly outweigh A's single unique cost figure, giving B a modest edge on depth."
+        }
+      ]
+    },
+    "Developing reasoning models on a limited budget": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Journey learning failure modes: model can persistently generate wrong answers or get stuck in unstable convergence loops if incorrect-path ratio is too high, requiring balance between golden and error paths (citing two papers)"
+            ],
+            "b_instances": [
+              "Sky-T1 technical process detail: data refactored via GPT-4o-mini and training took ~19 hours on a rack of 8 NVIDIA H100 GPUs",
+              "TinyZero built on the veRL RL framework",
+              "Mechanistic explanation for emergent reasoning behaviors: pre-training loss (not just parameter count) predicts emergence, with a sharp transition after a critical loss threshold, citing a scaling-laws analysis"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same three core techniques (Sky-T1 distillation, TinyZero pure RL, journey learning) and both close with the same hybrid-pipeline framing, so breadth is a tie with no genuinely new adjacent subtopics introduced by either side. For depth, A adds a distinct, well-cited discussion of journey learning's failure modes (risk of reinforcing wrong answers, need to balance error/golden path ratios) that B lacks. B, however, adds three separate depth enhancements: concrete Sky-T1 training logistics (GPT-4o-mini data refactoring, 19-hour training on 8 H100s), the specific veRL framework underlying TinyZero, and a mechanistic/scaling-law explanation (via a cited analysis) for why emergent reasoning behaviors appear at certain pre-training loss thresholds. Since B offers more numerous distinct depth instances while A contributes one substantial one, depth leans toward B (b_more) rather than a tie or much_more given A's still-solid single contribution."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Discussion of journey learning failure modes: too many incorrect paths cause persistent wrong-answer generation or unstable convergence loops, requiring balance between error paths and golden paths (with citations)"
+            ],
+            "b_instances": [
+              "Additional Sky-T1 training process details: data refactored via GPT-4o-mini, ~19 hours training on 8 NVIDIA H100 GPUs",
+              "TinyZero built on the veRL framework (specific tool name)",
+              "Explanation that emergent reasoning abilities follow predictable scaling laws tied to pre-training loss crossing a critical threshold, rather than parameter count alone"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same three core methods (Sky-T1 distillation, TinyZero RL, journey learning) and largely stay within that scope, so breadth is a tie with no genuinely new adjacent subtopics introduced by either side beyond the shared hybrid-pipeline conclusion. For depth, document A uniquely adds a substantive discussion of journey learning's failure modes and the need to balance error-path ratios, sourced to two additional citations. Document B counters with several deeper technical details: specifics of the Sky-T1 training pipeline (GPT-4o-mini refactoring, 19-hour run on 8 H100s), the veRL framework underlying TinyZero, and a mechanistic explanation of emergent abilities via pre-training-loss scaling laws. B's set of depth additions is more numerous, giving it a modest edge on the depth dimension."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "journey learning failure modes: dominance of incorrect paths causes persistent wrong answers or unstable convergence loops, requiring balanced error-to-golden path ratio (cited sources)"
+            ],
+            "b_instances": [
+              "Sky-T1 training process detail: data refactored via GPT-4o-mini, ~19 hours on 8 NVIDIA H100 GPUs",
+              "TinyZero built on the veRL framework"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "scaling-law explanation for emergent reasoning abilities: pre-training loss (not just parameter count) predicts sharp capability transitions, with dedicated citation"
+            ]
+          },
+          "reasoning": "Both documents cover the same three core methods (Sky-T1 distillation, TinyZero RL, journey learning) and both propose a hybrid pipeline conclusion, so most content overlaps. For depth, A adds a substantive discussion of journey learning's failure modes (excessive wrong-path data causing instability, need to balance ratios) backed by two citations, while B adds two smaller but specific technical details\u2014the Sky-T1 training pipeline specifics (GPT-4o-mini refactoring, 19 hours on 8 H100s) and the veRL framework underlying TinyZero. Since B has two distinct added specifics versus A's one (albeit substantive) addition, B is modestly ahead on depth. For breadth, B introduces a genuinely new adjacent subtopic\u2014scaling laws linking pre-training loss to emergent reasoning abilities\u2014supported by an external citation, which A does not touch at all, giving B a modest edge on breadth as well."
+        }
+      ]
+    },
+    "Conclusion": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Quantum-classical hybrid architectures as accelerators for attention/feature mapping in LLM reasoning",
+              "Financial algorithmic trading agents application",
+              "Robotics Embodied Chain-of-Thought (ECoT) for autonomous systems"
+            ],
+            "b_instances": [
+              "Multi-agent systems where reasoning models act as cognitive engines with structured critique and Theory of Mind",
+              "Scientific discovery use cases: screening molecular datasets, generating hypotheses, analyzing experimental data",
+              "Evolution of reasoning models into autonomous scientific partners via agentic workflows and external tools",
+              "Parallels between LLM reasoning patterns/biases and human cognition"
+            ]
+          },
+          "reasoning": "Both documents restate the same four core approaches without adding new technical depth to any of them (no new mechanisms, statistics, or limitations beyond what's already covered), so depth is a tie. For breadth, both add forward-looking, source-cited application domains beyond the core four techniques: A introduces quantum-classical hybrid computing, financial trading agents, and robotics (ECoT), each with citations. B introduces multi-agent/Theory-of-Mind systems, scientific discovery applications (molecular screening, hypothesis generation), the evolution toward autonomous scientific partners, and parallels to human cognition, each also cited. B's list is slightly longer and covers a marginally wider set of distinct new domains, giving it a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Quantum-classical hybrid architectures as accelerators for attention/feature mapping in reasoning models",
+              "Reasoning models as algorithmic trading agents in finance",
+              "Embodied Chain-of-Thought (ECoT) for robotics reasoning"
+            ],
+            "b_instances": [
+              "Reasoning models as cognitive engines in multi-agent systems with Theory of Mind and structured critique",
+              "Reasoning models accelerating scientific discovery (molecular screening, hypothesis generation, experimental data analysis)",
+              "LLM reasoning patterns showing similarities to human cognitive biases"
+            ]
+          },
+          "reasoning": "Both conclusions cover the same four core approaches and offer similar forward-looking synthesis without adding new depth (mechanistic detail) to existing points\u2014so depth is a tie with no qualifying instances on either side. For breadth, both documents introduce roughly three distinct, source-attributed adjacent topics not covered in the section's core discussion: Document A adds quantum-classical hybrid computing for reasoning, financial trading agents, and robotic embodied reasoning (ECoT), each with citations. Document B adds multi-agent collaborative reasoning (with Theory of Mind), scientific discovery applications, and parallels to human cognition, also each with citations. The number and substantiveness of these breadth instances are comparable between the two documents, resulting in a tie for breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Quantum-classical hybrid architectures as accelerators for attention/feature mapping in reasoning models",
+              "Reasoning models as algorithmic trading agents in finance",
+              "Embodied Chain-of-Thought (ECoT) technique guiding robotic autonomous systems"
+            ],
+            "b_instances": [
+              "Multi-agent systems where reasoning models act as cognitive engines enabling collaboration via structured critique and Theory of Mind",
+              "Reasoning models accelerating scientific discovery via molecular dataset screening and hypothesis generation",
+              "Evolution of reasoning models into autonomous scientific partners integrated with agentic workflows and tools",
+              "Parallel between LLM reasoning patterns/biases and human cognition (per Brown University research)"
+            ]
+          },
+          "reasoning": "Both conclusions recap the same four core techniques and give similar strategic advice, with no meaningful new technical depth added beyond the section's existing coverage (depth ties, both empty). For breadth, A introduces three new adjacent domains: quantum-classical hybrid computing for reasoning acceleration, financial trading agents, and robotic embodied reasoning (ECoT). B introduces four new adjacent domains: multi-agent collaborative systems with Theory-of-Mind reasoning, scientific discovery applications (molecular screening/hypothesis generation), the evolution toward autonomous scientific partners, and a novel angle comparing LLM reasoning to human cognition. Both sets are well-sourced and substantive, but B covers slightly more distinct new ground, giving it a modest edge in breadth."
+        }
+      ]
+    }
+  }
+}

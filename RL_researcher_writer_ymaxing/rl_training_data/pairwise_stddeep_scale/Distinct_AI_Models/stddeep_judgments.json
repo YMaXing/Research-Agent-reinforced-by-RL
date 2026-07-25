@@ -1,0 +1,330 @@
+{
+  "article": "Distinct_AI_Models",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Putnam's 'convergent realism' theory linking scientific theory convergence to representation convergence",
+              "specific technical claim that representation learning algorithms recover statistical models of latent causes behind observations",
+              "elaboration that AI models' data streams can be skewed by dominant cultural narratives, distorting their worldview"
+            ],
+            "b_instances": [
+              "specific methodological critique naming Christopher Wolfram and detailing exact choices (layers, similarity metrics, datasets) plus the point about generalization across datasets"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "the 'Anna Karenina scenario' concept about well-performing models converging"
+            ],
+            "b_instances": [
+              "Leibniz's 17th-century 'alphabet of human thought' project as a historical precursor to symbolic AI",
+              "the 'echo chamber' phenomenon on social media as a modern analog to Plato's cave"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (dog analogy, Platonic representation hypothesis, cave allegory, Isola quotes, critique of methodology). For depth, A adds three specific elaborations to existing points: Putnam's convergent realism theory, a technical claim about representation learning recovering latent-cause statistical models, and a note on cultural-narrative bias distorting AI worldviews. B's depth addition is narrower, mainly the Wolfram-attributed critique specifying exact methodological choices (layers, metrics, datasets) and the generalization concern\u2014substantive but fewer distinct instances than A, giving A a modest edge. For breadth, B introduces two genuinely new adjacent sub-topics not touched by A: Leibniz's historical 'alphabet of human thought' project foreshadowing symbolic AI, and the 'echo chamber' social-media phenomenon as a real-world analog to the cave allegory. A only introduces one new adjacent concept, the 'Anna Karenina scenario.' This gives B a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Hilary Putnam's 'convergent realism' theory as historical parallel",
+              "reference to representation-learning algorithms recovering statistical models of latent causes (citation [9])"
+            ],
+            "b_instances": [
+              "Christopher Wolfram's specific critique that results from one dataset may not generalize, questioning true convergence vs structural constraints",
+              "specific methodological choices researchers must make (which layers, which similarity metrics, which datasets)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Anna Karenina scenario as an adjacent framework (well-performing models converge, Platonic hypothesis goes further)"
+            ],
+            "b_instances": [
+              "Leibniz's 17th-century 'alphabet of human thought' project as historical precursor to symbolic AI",
+              "the 'echo chamber' social media phenomenon as a concrete modern manifestation of the cave allegory"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (dog analogy, Platonic Representation Hypothesis, cave allegory, Isola quotes, critique of methodology). For depth, A adds Putnam's convergent realism and the latent-causes statistical framing, while B adds a named critic (Christopher Wolfram) and more specific methodological detail (layers/metrics/datasets) \u2014 roughly comparable in number and specificity, yielding a tie. For breadth, A only introduces the 'Anna Karenina scenario' as a new adjacent framework, whereas B introduces two genuinely new sub-topics: Leibniz's historical quest for a universal symbolic language (a precursor to AI) and the concrete 'echo chamber' social-media phenomenon as a modern instantiation of the cave allegory. B's echo-chamber point is also more concrete and named than A's vaguer mention of 'dominant cultural narratives,' so it counts as a distinct qualifying instance while A's parallel remark does not clearly qualify. This gives B a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Statistical models recovering latent causes behind observations (link to representation learning theory)"
+            ],
+            "b_instances": [
+              "Christopher Wolfram's critique that results from one dataset may not generalize, raising true-convergence vs structural-constraint question",
+              "Specific methodological choices cited as sources of contention (which layers, which similarity metrics, which datasets to test on)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Hilary Putnam's 'convergent realism' theory linking to philosophy of science",
+              "The 'Anna Karenina scenario' concept of well-performing models converging"
+            ],
+            "b_instances": [
+              "Leibniz's 17th-century 'alphabet of human thought' project foreshadowing symbolic AI",
+              "The 'echo chamber' phenomenon on social media as a modern manifestation of the cave allegory"
+            ]
+          },
+          "reasoning": "Both documents cover the same core Platonic Representation Hypothesis narrative, Plato's cave allegory, Isola's quote, and the basic methodological critique. Beyond that, A adds two philosophy-adjacent breadth points (Putnam's convergent realism, the Anna Karenina scenario) and one depth point (statistical recovery of latent causes). B adds two different breadth points (Leibniz's alphabet of human thought, the echo chamber social-media analogy) and two depth points (Wolfram's dataset-generalization critique and more specific methodological considerations like layer/metric/dataset choices). Breadth is roughly balanced between the two, yielding a tie, while B provides more substantive additional depth on the methodological contention, giving B a modest edge on depth. B's mermaid diagram is a visual aid rather than a distinct source-attributed content instance, so it was not counted."
+        }
+      ]
+    },
+    "The Company Being Kept": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Formal definitions of representation/kernel/kernel-alignment metric with named methods CKA and SVCCA",
+              "Graph-based methods that explicitly align higher-order relational geometries (edges) between concepts",
+              "Detail on 'stitchability' of successful models with minimal performance loss",
+              "Explicit 'snowflakes' scenario as contrast to Anna Karenina convergence"
+            ],
+            "b_instances": [
+              "Geometric model of similarity as a named theoretical framework (metric distance in coordinate space)",
+              "Contrast model (Tversky-style) describing similarity as common vs. distinctive features",
+              "Simplicity bias / Occam's razor mechanism proposed to explain why convergence increases with scale",
+              "Model stitching technique (Lenc & Vedaldi) showing early vision-model layers are interchangeable/edge detectors",
+              "Explanation of the paired image-caption dataset bottleneck that limited early cross-modal similarity research"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Analogy to biological systems (DNA) reusing information as a principle of good representation"
+            ]
+          },
+          "reasoning": "Both documents share core content (vector representations, kernel/company-keeping idea, Firth quote, Sucholutsky quote, Anna Karenina scenario, mid-2010s history, shift from vision to language models). Beyond this shared core, A adds depth via formal kernel/CKA/SVCCA terminology, graph-based edge-alignment methods, a 'stitchability' detail, and an explicit 'snowflakes' contrast scenario. B adds depth via naming the geometric model of similarity and Tversky's contrast model, proposing a simplicity-bias/Occam's-razor mechanism for convergence, detailing the historical model-stitching technique (Lenc & Vedaldi) with edge-detector interchangeability, and explaining the paired-dataset bottleneck that hindered vision-language comparisons. B's set of depth instances is slightly larger and more mechanistically specific, giving it a modest edge. On breadth, A introduces no genuinely new adjacent topic, whereas B briefly extends into biological systems (DNA) as an analogous case of representational reuse, giving B a modest edge there as well, though this is a single, relatively light instance."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Formal definitions of representation, kernel, and kernel-alignment metric with named examples CKA and SVCCA",
+              "Graph-based methods that align higher-order relational geometries (edges) across modalities",
+              "'Snowflakes' scenario contrasted with Anna Karenina scenario",
+              "Concept of representational 'stitchability' with minimal performance loss"
+            ],
+            "b_instances": [
+              "Contrast model (Tversky) describing similarity as combination of common/distinctive features, as alternative to geometric similarity model",
+              "Simplicity bias/Occam's razor mechanism proposed as driver of representational convergence as models scale",
+              "Model stitching technique by Lenc & Vedaldi showing early vision-model layers are interchangeable (edge detectors)",
+              "Historical detail that early representational similarity work compared CNN architectures trained on ImageNet",
+              "Explanation of the paired-dataset bottleneck limiting extension of similarity methods from vision to vision-language comparison"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Analogy to biological systems (DNA) as an example of representation reuse outside neural networks"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (vectors, Firth's quote, similarity-of-similarities, Anna Karenina scenario), but each adds distinct sourced material. On depth, A adds the formal kernel/kernel-alignment vocabulary (CKA, SVCCA), a graph-based alignment technique, and elaborates the Anna Karenina scenario with the 'snowflakes' contrast and stitchability implication. B adds a comparable or slightly larger set of deeper technical points: Tversky's contrast model as an alternative to geometric similarity, a mechanistic explanation (simplicity bias/Occam's razor) for why convergence occurs, the specific Lenc & Vedaldi model-stitching result, CNN/ImageNet historical specifics, and an explanation of the paired-dataset bottleneck that stalled vision-language comparisons. B's set is slightly larger and includes more mechanistic/causal detail, giving it a modest edge on depth. On breadth, A introduces no clearly new adjacent sub-topic beyond the core representational-comparison narrative, while B briefly broadens scope with a biological-systems (DNA) analogy for representation reuse, giving B a modest edge on breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Formal definitions of representation/kernel/kernel-alignment metric with named examples CKA and SVCCA",
+              "'Snowflakes' scenario contrasted with Anna Karenina scenario"
+            ],
+            "b_instances": [
+              "Naming the 'geometric model of similarity' as the formal framework underlying vector-distance comparisons",
+              "Simplicity bias/Occam's razor as a specific mechanism driving convergence as models scale",
+              "Model stitching technique attributed to Lenc & Vedaldi on CNN/ImageNet architectures as concrete evidence of early-layer interchangeability",
+              "Paired-dataset bottleneck explaining why vision-language representational comparison was historically difficult"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Graph-based methods for aligning higher-order relational geometries (edges) across modalities"
+            ],
+            "b_instances": [
+              "Contrast models (Tversky-style) as an alternative theory of similarity based on common/distinctive features",
+              "Biological/DNA representation-reuse analogy as an adjacent domain example"
+            ]
+          },
+          "reasoning": "Both documents share the core narrative (vectors, Firth's quote, similarity-of-similarities, Anna Karenina scenario, shift from vision to language models). For depth, A adds a formal taxonomy of representation/kernel/kernel-alignment metrics with named techniques (CKA, SVCCA) and elaborates the Anna Karenina idea with a contrasting 'snowflakes' scenario. B goes deeper in more places: it names the 'geometric model of similarity' as a formal framework, introduces a specific mechanistic explanation (simplicity bias/Occam's razor) for why convergence increases with scale, attributes model stitching to specific researchers (Lenc & Vedaldi) with a concrete historical finding, and explains a specific technical bottleneck (lack of paired datasets) limiting early cross-modal comparisons. This gives B a modest edge in depth instances (4 vs 2). For breadth, A introduces graph-based structural alignment methods as one new adjacent technique, while B introduces two new adjacent subtopics: Tversky-style contrast models as an alternative theory of similarity, and a biological/DNA analogy for representational reuse. This gives B a modest edge in breadth as well (2 vs 1)."
+        }
+      ]
+    },
+    "Convergent Evolution": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Contravariance Principle as a specific mechanism driving representational convergence (shrinking space of viable representations as models solve more tasks)"
+            ],
+            "b_instances": [
+              "Lottery Ticket Hypothesis as an alternative explanation for why larger models perform better (useful subnetworks)",
+              "Explicit definition of scaling laws as predicting performance from size, dataset, and computation, with supporting citation"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Convergence between artificial neural network representations and biological brain representations, attributed to both facing the same problem of efficiently understanding the world from sensory data"
+            ]
+          },
+          "reasoning": "Both documents share the core narrative (Huh/Isola origin story, hierarchy of evidence, Huh's five-vision/eleven-language-model experiment). For depth, A adds one concrete mechanism (the 'Contravariance Principle') explaining why convergence occurs, while B adds two concrete deepening elements: the Lottery Ticket Hypothesis as an alternative account of why scaling improves performance, and an explicit technical definition of scaling laws with a supporting citation -- giving B a modest edge. For breadth, A's mention of 'new scaling laws specifically for multimodal systems' is vague and lacks any named study or mechanism, so it does not clearly qualify as a substantive instance, whereas B introduces a genuinely new, well-specified adjacent topic -- convergence between artificial neural networks and biological brains, tied to a specific arxiv source and a stated shared mechanism (efficient sensory world-modeling). This gives B a clear edge on breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Contravariance Principle as mechanism causing representational convergence"
+            ],
+            "b_instances": [
+              "Lottery Ticket Hypothesis as explanation for why larger models perform better",
+              "Explicit definition of scaling laws (function of size, dataset, computation)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Mention of new scaling laws research specifically for multimodal systems"
+            ],
+            "b_instances": [
+              "Convergence between artificial neural network representations and biological brain representations"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative about the Platonic representation hypothesis's origin, the evidence hierarchy, and Huh's experiment. For depth, document B adds two distinct explanatory mechanisms (Lottery Ticket Hypothesis and an explicit definition of scaling laws) that deepen the explanation of why scaling improves performance, whereas A offers only one such mechanism (the Contravariance Principle), giving B a modest edge. For breadth, each document introduces exactly one genuinely new adjacent sub-topic: A mentions emerging multimodal scaling-law research, while B introduces convergence between artificial and biological neural representations; these are roughly comparable in novelty and specificity, resulting in a tie for breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Contravariance Principle as explanation for why scaling forces representational convergence"
+            ],
+            "b_instances": [
+              "Lottery Ticket Hypothesis as alternative explanation for why larger models perform better",
+              "Explicit definition/citation of scaling laws predicting performance from size, data, and compute"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Mention of new scaling laws research specifically for multimodal systems [[13]]"
+            ],
+            "b_instances": [
+              "Convergence extends beyond AI models to alignment between artificial neural networks and biological brains [[4]]"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (Huh/Isola origin story, hierarchy of evidence, Huh's five-vision/eleven-language-model experiment). For depth, B adds two mechanistic explanations (Lottery Ticket Hypothesis and an explicit scaling-laws definition with citation) versus A's single Contravariance Principle explanation, giving B a modest edge. For breadth, each document introduces exactly one new adjacent topic not covered by the other: A cites emerging multimodal scaling-law research, while B extends the convergence phenomenon to biological brains. These are comparably substantive single instances, so breadth is a tie. Neither document's added mermaid diagram or minor rephrasing constitutes a qualifying new instance."
+        }
+      ]
+    },
+    "Find the Universals": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Specific limits on convergence: many-to-many concept relationships, scalability issues, and modality-specific information failing to generalize",
+              "Fractured Entangled Representation (FER) hypothesis: high-performing models can have messy, 'spaghetti code' internals with redundant, entangled concepts"
+            ],
+            "b_instances": [
+              "Topological representation alignment metric that preserves local neighborhood geometry, as a new solution to the metric-choice problem",
+              "Naming and specifying the 'vec2vec' method for translating representations between language models without paired data",
+              "Specific 'escaping Plato's Cave' method: aligning independently trained vision/language models post-hoc to surface shared structure",
+              "Named open questions about ensuring alignment is robust, scalable, and explainable enough for production agentic systems",
+              "Specific technique of using unpaired data to strengthen unimodal models for more efficient training"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Robot grounding a language command to a 3D point-cloud to manipulate a novel object (specific agentic application)"
+            ],
+            "b_instances": [
+              "Cross-modal search example naming specific models CLIP and BLIP",
+              "Sensor fusion in robotics as a distinct application of partial alignment"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (measurement challenges, Wolfram, Isola vs. Efros debate, partial-alignment payoffs, Clune's skepticism, Platonic hypothesis), but B integrates more concrete, source-attributed technical specifics that deepen existing points: a named new alignment metric (topological alignment), a named translation method (vec2vec), a specific post-hoc alignment method ('escaping Plato's Cave'), a concrete unpaired-data training technique, and specific caveats about production-readiness of agentic alignment. A's unique depth contribution is comparatively smaller: the many-to-many/scalability/modality limits point and the FER 'spaghetti code' hypothesis (which B omits entirely) -- both substantive but fewer in number than B's five distinct depth instances, giving B a clear edge on depth. For breadth, each document introduces roughly one to two new application examples beyond the core discussion: A cites a robot grounding language to a 3D point-cloud, while B cites cross-modal search (CLIP, BLIP) and sensor fusion in robotics -- slightly more discrete examples for B, yielding a modest breadth edge for B as well. The 'bimodal basis' (A) and 'non-overlapping channel fusion challenge' (B) points were judged as roughly equivalent elaborations on the same idea and thus excluded from both lists."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "distinguishing arbitrary vs fundamental properties of representations",
+              "convergence limited by many-to-many relationships, scalability, and modality-specific information [20]",
+              "isolating a 'bimodal basis' from unimodal features unique to one data type [21]",
+              "Fractured Entangled Representation (FER) hypothesis / 'spaghetti code' analogy for messy model internals"
+            ],
+            "b_instances": [
+              "topological representation alignment metric preserving local neighborhood geometry [33]",
+              "multimodal fusion difficulty with non-overlapping/complementary channels [34]",
+              "open questions on robustness, scalability, and explainability of alignment for production agentic systems [35]",
+              "named post-hoc alignment technique 'escaping Plato's Cave' for independently trained vision/language models [1]"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "agentic robotics example: grounding a language command to a 3D point-cloud to manipulate a novel object"
+            ],
+            "b_instances": [
+              "cross-modal search applications exemplified by CLIP and BLIP",
+              "sensor fusion in robotics as an application of representational alignment",
+              "using unpaired data to strengthen unimodal models as a training efficiency technique"
+            ]
+          },
+          "reasoning": "For depth, both documents add roughly comparable numbers of distinct technical elaborations: A adds the arbitrary-vs-fundamental distinction, specific convergence limitations (many-to-many, scalability, modality-specific info), the 'bimodal basis' concept, and the FER/'spaghetti code' hypothesis; B adds a named new metric (topological representation alignment), a multimodal fusion limitation, open questions about production-readiness of agentic alignment, and a named technique ('escaping Plato's Cave') for post-hoc model alignment. The counts and substantiveness are similar enough to call it a tie. For breadth, B clearly introduces more genuinely new adjacent applications and techniques not covered by A: CLIP/BLIP-based cross-modal search, sensor fusion in robotics, and using unpaired data to strengthen unimodal models, whereas A's unique breadth contribution is limited to one robotics grounding/manipulation example. This asymmetry (three new B instances vs one new A instance) supports a clear B advantage on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Distinguishing arbitrary vs. fundamental properties of representations",
+              "Convergence limited by many-to-many concept relationships, scalability issues, modality-specific info",
+              "Bimodal basis vs. unimodal features research isolating shared structure",
+              "FER hypothesis: models can have messy 'spaghetti code' internals with entangled concepts"
+            ],
+            "b_instances": [
+              "Topological representation alignment metric preserving local neighborhood geometry",
+              "Multimodal fusion challenge with non-overlapping/complementary channels",
+              "vec2vec as the specific named method for representation translation",
+              "Isola's 'escaping Plato's Cave' method aligning independently trained vision/language models post-hoc",
+              "Open questions on robustness, scalability, explainability for production agentic systems"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Robot grounding language command to 3D point-cloud for object manipulation"
+            ],
+            "b_instances": [
+              "Cross-modal search applications via CLIP and BLIP, and sensor fusion in robotics",
+              "Using unpaired data to strengthen unimodal models as a training approach"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (measurement challenges, Wolfram's critique, Isola vs. Efros debate, partial alignment payoffs, Clune's skepticism, FER hypothesis is only in A). For depth, A adds specifics like the arbitrary-vs-fundamental distinction, convergence limits, bimodal basis research, and the FER/spaghetti-code mechanism, while B adds a named topological alignment metric, a specific multimodal fusion challenge, the named vec2vec method, Isola's 'escaping Plato's Cave' framing, and open questions about production robustness\u2014giving B a slightly larger and more technically specific set of depth instances. For breadth, A offers one new adjacent example (robot grounding to point-cloud manipulation), whereas B offers two: named cross-modal search systems (CLIP/BLIP) plus sensor fusion, and the application of unpaired data to strengthen unimodal models\u2014giving B a modest edge in breadth as well."
+        }
+      ]
+    }
+  }
+}

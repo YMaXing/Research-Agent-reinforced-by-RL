@@ -145,6 +145,36 @@ VARIANTS["control_A_plus_explore_065"] = {
     "explore_mult": 0.65,
 }
 
+# ---------------------------------------------------------------------------
+# Candidate F: curve-SCALE recalibration (run13_rl_grok_pipeline_analysis.md
+# §40) -- distinct from D (explore_mult, a blunt external multiplier touching
+# every arm/section uniformly) and distinct from the backfiring A/B cap-
+# extension family. These only raise the credit for the DOMINANT 0/1-instance
+# case (INSTANCE_CAP stays at 3, tier-3 stays anchored at 1.00 -- no cap
+# extension, no re-introduction of the A/B dilution mechanism), since §38
+# found the fix's ORDERING is real/data-confirmed but its SCALE (specifically
+# the 1-instance credit, cut from the old implicit 1.0 to 0.55) was tuned
+# against an n=1-pilot recount, not the real ~90%-of-entries-are-0-or-1
+# corpus-wide distribution.
+# ---------------------------------------------------------------------------
+VARIANTS["F1_tier1_070"] = {
+    "credit_curve": {0: 0.00, 1: 0.70, 2: 0.85, 3: 1.00},
+}
+VARIANTS["F2_tier1_080"] = {
+    "credit_curve": {0: 0.00, 1: 0.80, 2: 0.90, 3: 1.00},
+}
+VARIANTS["F3_tier1_065_gentle"] = {
+    "credit_curve": {0: 0.00, 1: 0.65, 2: 0.83, 3: 1.00},
+}
+# F + C combined: raise both the count-ladder's tier-1 floor AND the
+# standard-quality weight together -- tests whether the two "safe" (non
+# cap-extending) levers compound usefully or interact non-additively, the
+# same kind of check §34 did for A+D.
+VARIANTS["F1_plus_C_stdw080"] = {
+    "credit_curve": {0: 0.00, 1: 0.70, 2: 0.85, 3: 1.00},
+    "quality_weight": {"strong": 1.00, "standard": 0.80},
+}
+
 
 def _credit(qualities: list[str], cfg: dict) -> float:
     """Compute enhancement credit for one section under a variant config.
@@ -289,25 +319,15 @@ _MAJORITY_VOTE_ARTICLES = ["09_RAG__var_standard", "06_tools__var_standard"]
 _MAJORITY_VOTE_EXPLORE_GRID = [0.50, 0.60, 0.65, 0.70, 0.80, 0.90]
 
 
-def majority_vote_sweep(article_var: str, explore_mults: list[float], emit) -> None:
-    """For each explore_mult value, recompute the ORIGINAL production episode
-    AND all 3 temp=0.25 replicates under the IDENTICAL cfg, then take a
-    majority vote across the 4 independent draws.
-
-    This is the non-circular way to test whether raising explore_mult
-    overturns a replicate-confirmed label: instead of asking "does grid cell X
-    disagree with the single baseline-formula label" (which begs the question
-    of whether the baseline formula's own label is correct), this asks "does
-    the MAJORITY of independent draws (different temp=0.25 writing samples)
-    still support the same arm once every draw is recomputed under the SAME
-    candidate cfg". If the majority stays stable across the explore_mult
-    range, that's real evidence the label is robust to this lever. If the
-    majority itself shifts, that's evidence the lever reveals something the
-    single-draw comparison couldn't -- not just an artifact of trusting one
-    formula's label as ground truth for judging changes to that formula.
+def majority_vote_sweep_named(article_var: str, named_cfgs: list[tuple[str, dict]], emit) -> None:
+    """Generalized version of majority_vote_sweep(): takes arbitrary named cfgs
+    (not just explore_mult values), so ANY candidate -- curve-scale (F-series),
+    quality_weight (C), or explore_mult (D) -- can be checked the same
+    non-circular way: recompute the ORIGINAL + all 3 replicates under the
+    IDENTICAL cfg, then take a majority vote across the 4 independent draws,
+    instead of comparing a swept cfg against a single formula-dependent label.
     """
-    for explore_mult in explore_mults:
-        cfg = {} if explore_mult == _PROD_EXPLORE_MULT else {"explore_mult": explore_mult}
+    for name, cfg in named_cfgs:
         draws: list[tuple[str, float]] = []
         orig_arm, orig_margin, _ = _recompute(article_var, cfg)
         draws.append((orig_arm, orig_margin))
@@ -325,7 +345,31 @@ def majority_vote_sweep(article_var: str, explore_mults: list[float], emit) -> N
         votes_str = ", ".join(f"{a}={n}" for a, n in sorted(votes.items(), key=lambda kv: -kv[1]))
         draws_str = "  ".join(f"{a}({m:+.3f})" for a, m in draws)
         tie_flag = " [TIE]" if tie else ""
-        emit(f"  explore_mult={explore_mult:.2f}  majority={majority_arm:<8}{tie_flag}  votes=[{votes_str}]  draws=[{draws_str}]")
+        emit(f"  {name:<28}  majority={majority_arm:<8}{tie_flag}  votes=[{votes_str}]  draws=[{draws_str}]")
+
+
+def majority_vote_sweep(article_var: str, explore_mults: list[float], emit) -> None:
+    """For each explore_mult value, recompute the ORIGINAL production episode
+    AND all 3 temp=0.25 replicates under the IDENTICAL cfg, then take a
+    majority vote across the 4 independent draws.
+
+    This is the non-circular way to test whether raising explore_mult
+    overturns a replicate-confirmed label: instead of asking "does grid cell X
+    disagree with the single baseline-formula label" (which begs the question
+    of whether the baseline formula's own label is correct), this asks "does
+    the MAJORITY of independent draws (different temp=0.25 writing samples)
+    still support the same arm once every draw is recomputed under the SAME
+    candidate cfg". If the majority stays stable across the explore_mult
+    range, that's real evidence the label is robust to this lever. If the
+    majority itself shifts, that's evidence the lever reveals something the
+    single-draw comparison couldn't -- not just an artifact of trusting one
+    formula's label as ground truth for judging changes to that formula.
+    """
+    named_cfgs = [
+        (f"explore_mult={em:.2f}", {} if em == _PROD_EXPLORE_MULT else {"explore_mult": em})
+        for em in explore_mults
+    ]
+    majority_vote_sweep_named(article_var, named_cfgs, emit)
 
 
 def _recompute_any(article_dir_name: str, cfg: dict) -> tuple[str, float, dict[str, float]] | None:
@@ -533,21 +577,26 @@ def corpus_grid_sweep(variant_names: list[str], emit) -> None:
             baseline_orig_margin[name] = 0.0
 
     emit(f"  Corpus size (already-graded, recomputable): {len(baseline_results)} article-variant dirs")
+    base_dist = {a: sum(1 for arm in baseline_results.values() if arm == a) for a in geo._ARM_ORDER}
+    emit(f"  Baseline arm distribution: {base_dist}")
     emit()
     for variant_name in variant_names:
         cfg = VARIANTS[variant_name]
         flips = []
+        new_dist = {a: 0 for a in geo._ARM_ORDER}
         for name, base_arm in baseline_results.items():
             result = _recompute_any(name, cfg)
             if result is None:
                 continue
             new_arm, _new_margin, _ = result
+            new_dist[new_arm] = new_dist.get(new_arm, 0) + 1
             if new_arm != base_arm:
                 flips.append((name, base_arm, new_arm, baseline_orig_margin[name]))
         thin = [f for f in flips if abs(f[3]) < 0.06]
         comfortable = [f for f in flips if abs(f[3]) >= 0.06]
         emit(f"  {variant_name:<28} flips={len(flips)}/{len(baseline_results)}  "
-             f"(thin-margin<0.06: {len(thin)}, comfortable-margin>=0.06: {len(comfortable)})")
+             f"(thin-margin<0.06: {len(thin)}, comfortable-margin>=0.06: {len(comfortable)})  "
+             f"new_dist={new_dist}")
         for name, old_arm, new_arm, orig_margin in flips:
             tag = "COMFORTABLE" if abs(orig_margin) >= 0.06 else "thin"
             emit(f"      {name:<45} {old_arm:<8} -> {new_arm:<8} (orig_margin={orig_margin:+.4f}, {tag})")
