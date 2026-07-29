@@ -4,39 +4,32 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
-    0.5909,
-    0.4598,
-    0.6285,
-    0.6239
+    0.3715,
+    0.5321,
+    0.5687,
+    0.6051
   ],
   "verdict": "MISS",
-  "regret": 0.1641,
-  "regret_counted": 0.1641,
-  "entropy_bits": 1.3375,
-  "confidence": 0.0,
-  "floor_applied": true,
+  "regret": 0.0731,
+  "regret_counted": 0.0731,
+  "entropy_bits": 1.5353,
+  "confidence": 0.3021,
+  "floor_applied": false,
   "rl_agg_probs": [
-    0.4666,
     0.0,
-    0.0864,
-    0.4471
+    0.3021,
+    0.4541,
+    0.2438
   ],
-  "grok_override": false,
-  "grok_reasoning": "RL aggregate votes P1 (cost-adjusted upstream); uncertain split (47% skip/45% deep) triggers depth-or-nothing guard and forbids any P1-to-P2+ escalation per hard policy. Downward to P0 disallowed (S3 26% budget + S4 16% retain high 53/6 and 32/6 residuals; deep mass >30%). Self-contained flags + notebook/goldens already factored in.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "RL aggregate pick",
-    "depth-or-nothing guard",
-    "residuals on high-budget sections"
-  ],
-  "grok_risk_flags": [
-    "split vote may undervalue S3/S4 depth gaps",
-    "self-contained flag over-optimism if notebook insufficient"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

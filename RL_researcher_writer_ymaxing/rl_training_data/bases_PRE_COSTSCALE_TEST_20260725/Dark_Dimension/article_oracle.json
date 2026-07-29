@@ -1,0 +1,101 @@
+{
+  "version": 2,
+  "article": "Dark_Dimension",
+  "variant": "no_variant",
+  "computed_at": "2026-07-25T20:32:23.967786+00:00",
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "skip",
+  "runner_up_arm_idx": 0,
+  "margin": 0.018333,
+  "reward_spread": 0.0886,
+  "r_w_rewards": {
+    "skip": 0.67,
+    "light": 0.688333,
+    "standard": 0.635533,
+    "deep": 0.599733
+  },
+  "r_w_rewards_list": [
+    0.67,
+    0.688333,
+    0.635533,
+    0.599733
+  ],
+  "decision_path": [
+    "near-tie band=['skip', 'light'] R_w=[skip:0.6700, light:0.6883]",
+    "active signals: [S4(\u0394\u22650.05), S3(\u0394\u22650.1), S5(\u0394\u22650.05)]  winner=light  S4={skip:0.245, light:0.430}  S5={skip:0.724, light:0.844}"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 3,
+  "n_sections_with_target": 3,
+  "total_target_words": 1800,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 360,
+      "weight_words": 360,
+      "weight_frac": 0.2,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.64,
+        "standard": 0.5872,
+        "deep": 0.5614
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.64,
+        0.5872,
+        0.5614
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-dark-interactions",
+      "title": "dark interactions",
+      "target_words": 620,
+      "weight_words": 620,
+      "weight_frac": 0.34444,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.49,
+        "standard": 0.4372,
+        "deep": 0.5164
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.49,
+        0.4372,
+        0.5164
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-a-dark-dimension",
+      "title": "a dark dimension",
+      "target_words": 820,
+      "weight_words": 820,
+      "weight_frac": 0.45556,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.94,
+        "standard": 0.8872,
+        "deep": 0.7814
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.94,
+        0.8872,
+        0.7814
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "version": 4,
+  "article": "31_CI",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.49,
+        "standard": 0.58,
+        "deep": -0.03
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-what-is-continuous-integration": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.685
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.165
+      }
+    },
+    "S3::section-3-pre-commit-hooks-automated-local-guardrails": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S4::section-4-ruff-fast-python-linting-and-formatting": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S5::section-5-unit-tests-for-agent-repos": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.94,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.3,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S6::section-6-ci-workflows-automated-enforcement": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S7::section-7-ai-evaluations-as-regression-tests": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.84,
+        "standard": 0.745,
+        "deep": 0.7075
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.2,
+        "standard": 0.165,
+        "deep": 0.1875
+      }
+    },
+    "S8::section-8-daily-development-workflow": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.49,
+        "standard": 0.58,
+        "deep": 0.37
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S9::section-9-conclusion": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "standard",
+    "S2::section-2-what-is-continuous-integration": "skip",
+    "S3::section-3-pre-commit-hooks-automated-local-guardrails": "skip",
+    "S4::section-4-ruff-fast-python-linting-and-formatting": "skip",
+    "S5::section-5-unit-tests-for-agent-repos": "light",
+    "S6::section-6-ci-workflows-automated-enforcement": "light",
+    "S7::section-7-ai-evaluations-as-regression-tests": "light",
+    "S8::section-8-daily-development-workflow": "standard",
+    "S9::section-9-conclusion": "light"
+  }
+}

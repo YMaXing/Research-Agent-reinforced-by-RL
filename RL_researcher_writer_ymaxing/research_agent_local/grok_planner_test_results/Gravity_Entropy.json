@@ -4,39 +4,32 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
-  "oracle_preset": 1,
-  "oracle_name": "light",
+  "chosen_by": "RL",
+  "oracle_preset": 2,
+  "oracle_name": "standard",
   "r_w_rewards": [
     0.646,
-    0.8247,
-    0.7382,
-    0.5747
+    0.6617,
+    0.6662,
+    0.6429
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
+  "verdict": "NEAR",
+  "regret": 0.0044,
+  "regret_counted": 0.0044,
   "entropy_bits": 0.7509,
   "confidence": 0.785,
   "floor_applied": true,
   "rl_agg_probs": [
     0.0,
     0.785,
-    0.215,
-    0.0
+    0.0,
+    0.215
   ],
-  "grok_override": false,
-  "grok_reasoning": "Decisive 78% budget-weighted vote for P1 light (0% deep mass, 22% standard) is the primary reward-trained signal. All sections self-contained with dominant depth gaps already partially covered (cov d·b around 4·1-4·3); no sanctioned override applies per policy as vote is not uncertain and residuals do not trigger downward from a decisive P1. Existing golden sources (Carney 2025, Jacobson 1995) cover must-ev anchors sufficiently for a light touch-up.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "decisive scorer vote for P1",
-    "self-contained flags across 100% budget",
-    "low deep/standard mass below 30%"
-  ],
-  "grok_risk_flags": [
-    "high residuals in S3/S5 could leave some qubit-model quotes thin",
-    "must-ev count of 10 total might need one extra source if existing coverage misses a quote"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

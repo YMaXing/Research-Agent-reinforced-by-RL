@@ -217,11 +217,18 @@ or wider contexts.
 
 ## RULES
 
+• **Mandatory-anchor override (highest priority — check this first):** Scan `<article_guidelines>` for any bullet
+  point explicitly flagged as a required exploration target, e.g. one that begins with a bolded tag such as
+  `**Exploration-required ...:**` or otherwise explicitly demands citing a specific named example, case study,
+  or benchmark result. If such a bullet exists AND no query in `<full_queries>` already satisfies it, you MUST
+  generate at least one query in this batch that directly fulfills that exact requirement — even if it means
+  displacing a less important candidate query below the requested {n_queries} count, and regardless of the
+  requested Depth/Breadth distribution (this override takes precedence over that ratio for this one query only).
 • **Strictly avoid semantic duplication**: each query must target a truly distinct depth or breadth bullet. Do not
   generate near-equivalents (e.g. "limitations of X" and "failure modes of X").
 • Never repeat or closely paraphrase any query that already appears in `<full_queries>`, including the exploitation
   queries from step 3.
-• Strictly follow the requested Depth/Breadth distribution.
+• Strictly follow the requested Depth/Breadth distribution (except where the mandatory-anchor override above applies).
 • Make questions natural, specific, and optimized for high-quality search results.
 • **Each query must be ≤ 20 words and address a single, focused concept.** Do NOT combine multiple
   sub-questions into one query — long, multi-part essay questions produce poor web-search results.
@@ -245,9 +252,13 @@ Example 4 (Breadth):
 Query: How is the rise of long-context language models and memory-augmented agents changing the role and architecture of traditional RAG systems?
 Reason: Category: Breadth—emerging trends in adjacent fields. Anchor: "## RAG architectures" (H2 in guideline). Explores an emerging adjacent trend (long-context + agentic systems) that intersects with and potentially disrupts the core RAG approach; not coverable by step 3.
 
-Now generate exactly {n_queries} new queries following the same style, the exact Depth/Breadth distribution, and
-the rules above. Every reason must begin with `Category: Depth—...` or `Category: Breadth—...` followed by
-`Anchor: "..."`.
+Example 5 (Mandatory-anchor override):
+Query: What is a specific named company or a published 2025-2026 benchmark demonstrating a real production deployment of the core topic, including quantified performance, cost, or accuracy results?
+Reason: Category: Depth—real-world case studies or concrete metrics. Anchor: "**Exploration-required real-world evidence:** Cite a specific named production deployment or a published benchmark result..." (bullet explicitly flagged as a required exploration target). No query in `<full_queries>` yet satisfies this explicit anchor, so it is generated here even though it may unbalance the requested Depth/Breadth ratio for this one query.
+
+Now generate exactly {n_queries} new queries following the same style, the exact Depth/Breadth distribution
+(subject to the mandatory-anchor override rule), and the rules above. Every reason must begin with
+`Category: Depth—...` or `Category: Breadth—...` followed by `Anchor: "..."`.
 
 """.strip()
 

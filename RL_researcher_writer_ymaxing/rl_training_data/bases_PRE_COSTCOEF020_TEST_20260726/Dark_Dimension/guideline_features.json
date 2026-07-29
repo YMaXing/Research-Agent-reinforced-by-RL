@@ -1,0 +1,23 @@
+{
+  "external_evidence_policy": "allowed",
+  "sections": {
+    "S1::section-1-introduction": {
+      "target_words": 360,
+      "mandatory_bullets": 6,
+      "must_cover_depth": 5,
+      "must_stay_brief": 1
+    },
+    "S2::section-2-dark-interactions": {
+      "target_words": 620,
+      "mandatory_bullets": 7,
+      "must_cover_depth": 6,
+      "must_stay_brief": 0
+    },
+    "S3::section-3-a-dark-dimension": {
+      "target_words": 820,
+      "mandatory_bullets": 9,
+      "must_cover_depth": 8,
+      "must_stay_brief": 1
+    }
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "version": 2,
+  "article": "02_workflows_vs_agents__var_standard",
+  "variant": "var_standard",
+  "computed_at": "2026-07-25T21:20:51.457475+00:00",
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "standard",
+  "runner_up_arm_idx": 2,
+  "margin": -0.0076,
+  "reward_spread": 0.159863,
+  "r_w_rewards": {
+    "skip": 0.629221,
+    "light": 0.69708,
+    "standard": 0.704679,
+    "deep": 0.544816
+  },
+  "r_w_rewards_list": [
+    0.629221,
+    0.69708,
+    0.704679,
+    0.544816
+  ],
+  "decision_path": [
+    "near-tie band=['light', 'standard'] R_w=[light:0.6971, standard:0.7047]",
+    "no signal cleared its threshold \u2192 needs_review=True  fallback=cheapest arm in band (light)"
+  ],
+  "manual_override": false,
+  "needs_review": true,
+  "n_sections": 6,
+  "n_sections_with_target": 6,
+  "total_target_words": 3850,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces",
+      "title": "introduction the critical decision every ai engineer faces",
+      "target_words": 400,
+      "weight_words": 400,
+      "weight_frac": 0.1039,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.655,
+        "standard": 0.7204,
+        "deep": 0.44605
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.655,
+        0.7204,
+        0.44605
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-understanding-the-spectrum-from-workflows-to-agents",
+      "title": "understanding the spectrum from workflows to agents",
+      "target_words": 500,
+      "weight_words": 500,
+      "weight_frac": 0.12987,
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.305,
+        "standard": 0.2654,
+        "deep": 0.51605
+      },
+      "rewards_by_preset": [
+        0.35,
+        0.305,
+        0.2654,
+        0.51605
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-choosing-your-path",
+      "title": "choosing your path",
+      "target_words": 650,
+      "weight_words": 650,
+      "weight_frac": 0.16883,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.48,
+        "standard": 0.5754,
+        "deep": 0.24605
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.48,
+        0.5754,
+        0.24605
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-exploring-common-patterns",
+      "title": "exploring common patterns",
+      "target_words": 700,
+      "weight_words": 700,
+      "weight_frac": 0.18182,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.83,
+        "standard": 0.9254,
+        "deep": 0.51605
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.83,
+        0.9254,
+        0.51605
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-zooming-in-on-our-favorite-examples",
+      "title": "zooming in on our favorite examples",
+      "target_words": 1150,
+      "weight_words": 1150,
+      "weight_frac": 0.2987,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.895,
+        "standard": 0.7659,
+        "deep": 0.68605
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.895,
+        0.7659,
+        0.68605
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-conclusion-the-challenges-of-every-ai-engineer",
+      "title": "conclusion the challenges of every ai engineer",
+      "target_words": 450,
+      "weight_words": 450,
+      "weight_frac": 0.11688,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.94475,
+        "standard": 0.9009,
+        "deep": 0.90605
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.94475,
+        0.9009,
+        0.90605
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

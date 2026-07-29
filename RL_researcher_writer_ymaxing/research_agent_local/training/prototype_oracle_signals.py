@@ -77,7 +77,7 @@ _TEST_ARM_EPISODE = {"skip": 0, "light": 1, "standard": 2, "deep": 3}
 # ---------------------------------------------------------------------------
 # Decision constants  (documented, tunable)
 # ---------------------------------------------------------------------------
-EPS_BAND = 0.02          # arms within EPS of max R_w form the near-tie band
+EPS_BAND = 0.03          # arms within EPS of max R_w form the near-tie band (recalibrated 2026-07-25, matches compute_article_oracle.py)
 KNEE_TAU_TFIDF = 0.08    # marginal novelty below this => extra round "not worth it"
 KNEE_TAU_HF = 0.04       # semantic embeddings: deltas are smaller, lower threshold
 REDUNDANT_SIM = 0.85     # paragraph cosine above this => near-duplicate (semantic)
@@ -89,7 +89,9 @@ S4_DEPTH_W = 0.4
 # If the best and worst band-member differ by less than this on a signal,
 # that signal is too noisy to decide — fall through to the next.
 MIN_DELTA_S4 = 0.05      # S4 structural-compliance gap must be >= this to prefer
-MIN_DELTA_S3 = 0.10      # S3 bloat ratio gap must be >= this to prefer
+MIN_DELTA_S3 = 0.15      # S3 bloat ratio gap must be >= this to prefer
+# (recalibrated 0.10->0.15 on 2026-07-26, see compute_article_oracle.py's
+# MIN_DELTA_S3 comment for the corpus-wide bloat-gap-distribution rationale)
 MIN_DELTA_S2 = 0.10      # S2 redundancy fraction gap >= this to prefer
 MIN_DELTA_S5 = 0.05      # S5 stability gap >= this to prefer
 

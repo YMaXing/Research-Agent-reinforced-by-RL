@@ -18,6 +18,7 @@ import json
 import logging
 import math
 import re
+import shutil
 import sys
 import time
 from dataclasses import dataclass, field
@@ -971,6 +972,38 @@ def _load_resume_state(state_path: Path) -> dict[str, Any]:
     return torch.load(state_path, map_location="cpu", weights_only=False)
 
 
+def _save_metric_checkpoint(
+    epochs_dir: Path,
+    flat_dir: Path,
+    epoch: int,
+    model,
+    *,
+    is_new_best: bool,
+) -> None:
+    """Save a checkpoint for one best-tracked metric, preserving ties.
+
+    ``epochs_dir`` accumulates one subdirectory (``epoch_NNNN/``) per epoch
+    that currently ties — or newly sets — the best score for this metric.
+    When ``is_new_best`` is True (a strictly better score than any epoch
+    seen so far), all previously saved epoch subdirectories are deleted
+    first so only the new best epoch remains. When False (a tie with the
+    existing best score), the new epoch is added alongside the existing
+    ones without deleting anything.
+
+    ``flat_dir`` always mirrors the most recently saved epoch for this
+    metric in a plain (non-epoch-namespaced) directory — kept for
+    backward compatibility with tools that load a checkpoint from a fixed
+    path (e.g. ``best/``, ``best_strict/``).
+    """
+    if is_new_best and epochs_dir.exists():
+        shutil.rmtree(epochs_dir)
+    epoch_dir = epochs_dir / f"epoch_{epoch:04d}"
+    epoch_dir.mkdir(parents=True, exist_ok=True)
+    model.save_pretrained(str(epoch_dir))
+    flat_dir.mkdir(parents=True, exist_ok=True)
+    model.save_pretrained(str(flat_dir))
+
+
 # ---------------------------------------------------------------------------
 # Training loop
 # ---------------------------------------------------------------------------
@@ -1082,6 +1115,13 @@ def train(
             epoch_loss_total = 0.0
             epoch_metrics: dict[str, dict] = {}
 
+            # Per-group step-by-step timing is only useful once: the time
+            # each step takes is essentially invariant across epochs, so we
+            # log it in full only for the very first epoch of this run (to
+            # let the user time an epoch) and suppress it afterwards to keep
+            # the console log readable.
+            show_step_details = epoch == start_epoch
+
             t_epoch_start = time.time()
             for g_idx, group in enumerate(groups, 1):
                 t_group_start = time.time()
@@ -1138,14 +1178,15 @@ def train(
                         "kl": round(loss_kl.item(), 6),
                         "group_time_s": round(time.time() - t_group_start, 2),
                     }
-                    log.info(
-                        f"  [ep {epoch + 1}] group {g_idx}/{num_groups} "
-                        f"({group.name}): "
-                        f"E[R]={expected_reward:.4f} "
-                        f"top1={'OK' if top1 in group.acceptable_idxs else '--'} "
-                        f"kl={loss_kl.item():.4f} "
-                        f"({epoch_metrics[group.name]['group_time_s']}s)"
-                    )
+                    if show_step_details:
+                        log.info(
+                            f"  [ep {epoch + 1}] group {g_idx}/{num_groups} "
+                            f"({group.name}): "
+                            f"E[R]={expected_reward:.4f} "
+                            f"top1={'OK' if top1 in group.acceptable_idxs else '--'} "
+                            f"kl={loss_kl.item():.4f} "
+                            f"({epoch_metrics[group.name]['group_time_s']}s)"
+                        )
 
             # Gradient clipping
             grad_norm = torch.nn.utils.clip_grad_norm_(
@@ -1241,31 +1282,60 @@ def train(
                 )
 
             # ---------- checkpointing ----------
-            # Track three independent best checkpoints:
-            #   best/        — best strict top-1 accuracy (primary, used for early stopping)
-            #   best_strict/ — alias for best/ (same criterion, kept for compatibility)
-            #   best_neartie/— best near-tie top-1 accuracy
-            if strict_top1_acc > best_strict_top1:
+            # Track four independently-tracked best checkpoints. For each
+            # metric, every epoch that ties the current best score is kept
+            # (not just the first one to reach it) under
+            # best_<metric>_epochs/epoch_NNNN/; a strictly better epoch wipes
+            # that set and starts a fresh one. best_<metric>/ (and best/, the
+            # legacy alias for strict) always mirrors the most recently saved
+            # epoch for that metric — a flat, backward-compatible directory
+            # for tools that load a checkpoint from a fixed path.
+            #   best/ + best_strict/ — best strict top-1 accuracy (primary, used for early stopping)
+            #   best_neartie/        — best near-tie top-1 accuracy
+            #   best_er/             — best mean expected reward
+            if strict_top1_acc >= best_strict_top1:
+                is_new_best_strict = strict_top1_acc > best_strict_top1
                 best_strict_top1 = strict_top1_acc
-                patience_counter = 0
-                for _ckpt_dir in (task_dir / "best", task_dir / "best_strict"):
-                    _ckpt_dir.mkdir(parents=True, exist_ok=True)
-                    model.save_pretrained(str(_ckpt_dir))
+                patience_counter = 0 if is_new_best_strict else patience_counter + 1
+                _save_metric_checkpoint(
+                    task_dir / "best_strict_epochs", task_dir / "best_strict",
+                    epoch, model, is_new_best=is_new_best_strict,
+                )
+                # "best/" is the legacy alias of "best_strict/".
+                (task_dir / "best").mkdir(parents=True, exist_ok=True)
+                model.save_pretrained(str(task_dir / "best"))
                 log.info(
-                    f"  ★ New best strict={best_strict_top1:.4f} ({n_strict}/{num_groups}) — saved to best/ and best_strict/"
+                    f"  ★ {'New best' if is_new_best_strict else 'Tied best'} strict="
+                    f"{best_strict_top1:.4f} ({n_strict}/{num_groups}) — saved to "
+                    f"best/, best_strict/, best_strict_epochs/epoch_{epoch:04d}/"
                 )
             else:
                 patience_counter += 1
-            if mean_er > best_expected_reward:
-                best_expected_reward = mean_er
 
-            if top1_acc > best_neartie_top1:
-                best_neartie_top1 = top1_acc
-                best_neartie_dir = task_dir / "best_neartie"
-                best_neartie_dir.mkdir(parents=True, exist_ok=True)
-                model.save_pretrained(str(best_neartie_dir))
+            if mean_er >= best_expected_reward:
+                is_new_best_er = mean_er > best_expected_reward
+                best_expected_reward = mean_er
+                _save_metric_checkpoint(
+                    task_dir / "best_er_epochs", task_dir / "best_er",
+                    epoch, model, is_new_best=is_new_best_er,
+                )
                 log.info(
-                    f"  ★ New best near-tie top1={best_neartie_top1:.4f} — saved to {best_neartie_dir}"
+                    f"  ★ {'New best' if is_new_best_er else 'Tied best'} E[R]="
+                    f"{best_expected_reward:.4f} — saved to best_er/, "
+                    f"best_er_epochs/epoch_{epoch:04d}/"
+                )
+
+            if top1_acc >= best_neartie_top1:
+                is_new_best_neartie = top1_acc > best_neartie_top1
+                best_neartie_top1 = top1_acc
+                _save_metric_checkpoint(
+                    task_dir / "best_neartie_epochs", task_dir / "best_neartie",
+                    epoch, model, is_new_best=is_new_best_neartie,
+                )
+                log.info(
+                    f"  ★ {'New best' if is_new_best_neartie else 'Tied best'} near-tie top1="
+                    f"{best_neartie_top1:.4f} — saved to best_neartie/, "
+                    f"best_neartie_epochs/epoch_{epoch:04d}/"
                 )
 
             # Overwrite latest/ every epoch so there is always a recoverable
@@ -1307,6 +1377,7 @@ def train(
         f"Checkpoints: best={task_dir / 'best'}, "
         f"best_strict={task_dir / 'best_strict'}, "
         f"best_neartie={task_dir / 'best_neartie'}, "
+        f"best_er={task_dir / 'best_er'}, "
         f"latest={task_dir / 'latest'}"
     )
 

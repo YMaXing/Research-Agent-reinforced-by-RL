@@ -4,38 +4,32 @@
   "split": "TRAIN",
   "policy": "forbidden",
   "rl_preset": 1,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
     0.5549,
-    0.5449,
-    0.4286,
-    0.4353
+    0.5605,
+    0.4809,
+    0.5532
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "NEAR",
+  "regret": -0.0056,
   "regret_counted": null,
-  "entropy_bits": 0.6167,
-  "confidence": 0.1528,
+  "entropy_bits": 1.8852,
+  "confidence": 0.3484,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.8472,
-    0.1528,
-    0.0,
-    0.0
+    0.3483,
+    0.3484,
+    0.1501,
+    0.1532
   ],
-  "grok_override": true,
-  "grok_reasoning": "Hard constraint: external-evidence policy explicitly FORBIDDEN, so exploration output cannot be used and P0 is mandatory. Scorer aggregate was P1 (85% skip / 15% light mass, UNCERTAIN) but this is overridden by the policy and by every section being self-contained + brief-flagged with surface-level treatment required per guideline.",
-  "grok_override_reason": "external-evidence policy = forbidden mandates P0 regardless of scorer vote",
-  "grok_decision_drivers": [
-    "external-evidence-forbidden",
-    "all-sections-self-contained-and-brief"
-  ],
-  "grok_risk_flags": [
-    "scorer picked light despite policy",
-    "high residual need numbers but irrelevant under forbid"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

@@ -4,39 +4,32 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 2,
-  "grok_preset": 3,
-  "chosen_preset": 3,
-  "chosen_by": "Grok4.2",
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.462,
-    0.652,
-    0.526,
-    0.568
+    0.605,
+    0.5583,
+    0.5759
   ],
-  "verdict": "MISS",
-  "regret": 0.084,
-  "regret_counted": 0.084,
-  "entropy_bits": 0.9908,
-  "confidence": 0.6277,
+  "verdict": "NEAR",
+  "regret": 0.0467,
+  "regret_counted": 0.0467,
+  "entropy_bits": 1.0583,
+  "confidence": 0.74,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.0022,
-    0.0022,
-    0.6277,
-    0.368
+    0.0,
+    0.18,
+    0.74,
+    0.08
   ],
-  "grok_override": true,
-  "grok_reasoning": "Scorer aggregate is P2 (moderate 63% confidence, uncertain); deep-vote mass 34% (>=30%) from S1 (34% budget, RL deep, resid 10/8, 7 must-ev) plus S4 resid 11/4 meets sanctioned P2->P3 override. Dominant gap=depth; 100% self-contained but residuals justify escalation.",
-  "grok_override_reason": "sanctioned P2->P3 escalation on uncertain vote + >=30% deep mass from high-budget technical sections",
-  "grok_decision_drivers": [
-    "budget-weighted deep mass >=30%",
-    "S1/S4 residual needs",
-    "uncertain moderate confidence"
-  ],
-  "grok_risk_flags": [
-    "over-escalation past reward peak if residuals overestimate true gaps",
-    "all sections self-contained may limit new-source yield"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

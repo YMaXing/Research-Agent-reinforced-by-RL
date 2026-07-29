@@ -4,39 +4,32 @@
   "split": "TRAIN",
   "policy": "forbidden",
   "rl_preset": 1,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
     0.494,
-    0.409,
-    0.2886,
-    0.3028
+    0.3316,
+    0.371,
+    0.3305
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "NEAR",
+  "regret": 0.1624,
   "regret_counted": null,
-  "entropy_bits": 1.4232,
-  "confidence": 0.1724,
-  "floor_applied": true,
+  "entropy_bits": 1.5543,
+  "confidence": 0.2934,
+  "floor_applied": false,
   "rl_agg_probs": [
-    0.5517,
-    0.1724,
+    0.4318,
+    0.2934,
     0.0,
-    0.2759
+    0.2748
   ],
-  "grok_override": true,
-  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN (hard constraint overriding all else); exploration output cannot be used. Guideline repeatedly demands brevity, prohibits external libs/case studies/benchmarks, and labels most sections 'must stay brief' + self-contained with high residual but no sanctioned escalation from P0/P1.",
-  "grok_override_reason": "Hard constraint for forbidden external-evidence policy mandates P0 regardless of P1 aggregate vote",
-  "grok_decision_drivers": [
-    "external-evidence-forbidden",
-    "brevity-flags",
-    "self-contained"
-  ],
-  "grok_risk_flags": [
-    "scorer uncertainty with 28% deep mass",
-    "large residual needs in S5/S3"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

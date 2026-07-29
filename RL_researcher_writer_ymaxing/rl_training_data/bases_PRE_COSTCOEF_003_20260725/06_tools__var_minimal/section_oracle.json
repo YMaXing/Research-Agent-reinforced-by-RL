@@ -1,0 +1,153 @@
+{
+  "version": 4,
+  "article": "06_tools",
+  "variant": "var_minimal",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.655,
+        "standard": 0.4154,
+        "deep": 0.19605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-understanding-why-agents-need-tools": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.305,
+        "standard": 0.4154,
+        "deep": 0.24605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S3::section-3-implementing-tool-calls-from-scratch": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.52325,
+        "standard": 0.48365,
+        "deep": 0.3143
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.06825,
+        "standard": 0.06825,
+        "deep": 0.06825
+      }
+    },
+    "S4::section-4-implementing-a-tool-calling-framework-from-scratch": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.455,
+        "standard": -0.0846,
+        "deep": 0.39605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S5::section-5-implementing-production-level-tool-calls-with-gemini": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.105,
+        "standard": 0.0654,
+        "deep": 0.04605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.655,
+        "standard": 0.6154,
+        "deep": 0.44605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S7::section-7-the-downsides-of-running-tools-in-a-loop": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.455,
+        "standard": 0.4154,
+        "deep": 0.4643
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.06825
+      }
+    },
+    "S8::section-8-popular-tools-used-within-the-industry": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.455,
+        "standard": 0.4154,
+        "deep": 0.39605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S9::section-9-conclusion": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.655,
+        "standard": 0.2154,
+        "deep": 0.04605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "light",
+    "S2::section-2-understanding-why-agents-need-tools": "standard",
+    "S3::section-3-implementing-tool-calls-from-scratch": "light",
+    "S4::section-4-implementing-a-tool-calling-framework-from-scratch": "skip",
+    "S5::section-5-implementing-production-level-tool-calls-with-gemini": "skip",
+    "S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs": "light",
+    "S7::section-7-the-downsides-of-running-tools-in-a-loop": "skip",
+    "S8::section-8-popular-tools-used-within-the-industry": "skip",
+    "S9::section-9-conclusion": "skip"
+  }
+}

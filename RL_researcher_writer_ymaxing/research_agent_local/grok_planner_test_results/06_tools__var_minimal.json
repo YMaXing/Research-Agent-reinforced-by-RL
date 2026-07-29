@@ -4,39 +4,32 @@
   "split": "TRAIN",
   "policy": "forbidden",
   "rl_preset": 1,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
     0.4836,
-    0.4987,
-    0.3558,
-    0.3378
+    0.4678,
+    0.3673,
+    0.3659
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "NEAR",
+  "regret": 0.0158,
   "regret_counted": null,
-  "entropy_bits": 1.0701,
-  "confidence": 0.7381,
+  "entropy_bits": 1.4739,
+  "confidence": 0.6502,
   "floor_applied": true,
   "rl_agg_probs": [
-    0.1746,
-    0.7381,
-    0.0,
-    0.0873
+    0.0873,
+    0.6502,
+    0.1079,
+    0.1545
   ],
-  "grok_override": true,
-  "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN explicitly mandates P0 (exploration output cannot be used). Scorer aggregate is decisive P1 (74% light) but is overridden by this policy; all sections are self-contained, most are brief-flagged, and guideline demands surface-level conceptual overview with no external libs/cases.",
-  "grok_override_reason": "External-evidence policy = forbidden requires P0 regardless of scorer vote",
-  "grok_decision_drivers": [
-    "external-evidence-forbidden",
-    "self-contained sections",
-    "brevity flags"
-  ],
-  "grok_risk_flags": [
-    "scorer wanted light touch-up",
-    "high residual depth in S3/S4"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

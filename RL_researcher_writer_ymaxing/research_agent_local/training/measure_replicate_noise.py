@@ -70,6 +70,10 @@ def _compute_replicate_sections(article: str, replicate_dir_prefix: Path, sec_id
     """
     variant_short = _variant_short(article)
     sec_norms = [geo._sec_id_to_norm(sid) for sid in sec_ids]
+    # preset id -> arm name, so cost uses geo._ARM_COST_UNITS (empirical, H0,
+    # shipped 2026-07-25) instead of the stale ordinal _EPISODE_ROUNDS_FLAT --
+    # keeps this replicate computation in sync with real production.
+    preset_to_arm = {pid: arm for arm, ids in _ARM_PRESETS.items() for pid in ids}
 
     episode_dims: dict[int, dict] = {}
     for p in _ARM_PRESETS_FLAT:
@@ -81,7 +85,7 @@ def _compute_replicate_sections(article: str, replicate_dir_prefix: Path, sec_id
         preset_rewards: dict[int, float] = {}
         for p in _ARM_PRESETS_FLAT:
             ep = episode_dims[p]
-            nr = _EPISODE_ROUNDS_FLAT[p]
+            nr = geo._ARM_COST_UNITS[preset_to_arm[p]]
 
             def _score(dim: str, _ep=ep, _sn=sec_norm, _si=sec_idx) -> float:
                 return geo._get_score(_ep.get(dim, []), _sn, _si)

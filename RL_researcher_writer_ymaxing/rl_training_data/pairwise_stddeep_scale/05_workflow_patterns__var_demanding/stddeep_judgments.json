@@ -1,0 +1,632 @@
+{
+  "article": "05_workflow_patterns__var_demanding",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "concrete anecdote describing a real failed attempt to generate an FAQ page in one massive prompt, detailing specific failure modes (missing sources, repetitive questions)",
+              "brief mechanistic explanation of what each pattern does (e.g., parallelization for concurrent execution, routing via conditional logic, orchestrator-worker for dynamic decomposition)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "recap of previous lesson topics: agent landscape and rule-based vs autonomous agent distinction",
+              "planned customer-service routing workflow as a specific application example",
+              "mention of Google Gemini library as the specific implementation tool"
+            ],
+            "b_instances": [
+              "reference to previous lesson's specific technique of structured outputs"
+            ]
+          },
+          "reasoning": "Document B provides a concrete anecdote (a failed monolithic-prompt attempt with specific failure symptoms) and brief functional definitions for each workflow pattern, giving it more depth than A's plain listing of pattern names. Document A, however, names more distinct adjacent topics/tools (prior lesson's agent landscape and rule-based/autonomous distinction, a customer-service routing example, and the specific Google Gemini library), giving it a modest edge in breadth over B's single mention of structured outputs from the prior lesson."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "concrete anecdote about a failed all-in-one FAQ generation prompt, detailing specific failure modes (missing sources, repetitive questions) that illustrate why decomposition is needed"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both intros mostly cover the same core ground (recap of prior lesson, motivation for multi-step patterns, listing chaining/parallelization/routing/orchestrator-worker). Document B adds a concrete, source-attributed anecdote about a failed monolithic-prompt FAQ generation attempt with specific failure symptoms, which deepens the existing point about why single large prompts are unreliable\u2014an instance A lacks (A only asserts the point generically). Document A's mention of the Google Gemini library and its recap of prior lesson topics (agent landscape, rule-based vs autonomous agents, context engineering) are largely contextual/recap statements rather than concrete new sub-topics or mechanisms, so they don't meet the bar for breadth enhancement. No genuinely new adjacent sub-topics appear in either document, so breadth is tied, while depth favors B due to its illustrative failure-mode example."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "concrete anecdote detailing specific failure modes of a monolithic-prompt approach (inconsistent output, missing sources, repetitive questions)",
+              "brief mechanistic definitions for each pattern (chaining = decompose into steps, parallelization = concurrent execution for speed, routing = conditional logic to specialized handlers, orchestrator-worker = dynamic decomposition of complex queries)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "specific mention of building the workflows with the Google Gemini library (named tool/stack detail)",
+              "concrete customer-service routing workflow as a distinct application example"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core intro content (recap prior lesson, motivate multi-step workflows, list the four patterns). For depth, B adds more rigor by giving brief mechanism-level definitions for each pattern and by illustrating the motivating problem with concrete failure modes from a described real project (inconsistent output, missing sources, repetitive questions), which A lacks entirely\u2014A simply names the patterns and states the lesson's goal. For breadth, A introduces two distinct new specifics not found in B: the named tool/library to be used (Google Gemini) and a customer-service routing example as a separate application beyond the shared FAQ example; B's anecdote, while illustrative, stays within the same FAQ-generation topic already mentioned by A and doesn't add a new sub-topic. Both sides' recap of prior-lesson topics (agent landscape/context engineering vs. structured outputs) is treated as structural narrative rather than research-derived enhancement, so it is not counted."
+        }
+      ]
+    },
+    "The Challenge with Complex Single LLM Calls": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific mitigation strategies for lost-in-the-middle: reorder context to front/back, reduce to top 3-5 relevant documents, use a preliminary LLM call to compress/extract essential facts"
+            ],
+            "b_instances": [
+              "Specific statistic: prompt sensitivity study found accuracy discrepancies as high as 76 percentage points from minimal wording changes, persisting across model sizes",
+              "Mechanism explaining token inefficiency of monolithic prompts: model must re-process the entire context for every subtask, raising cost/latency",
+              "Research finding that prompts with lower syntactic complexity allow more consistent information retrieval, reducing misinterpretation risk"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "New subtopic: hard context window limits forcing truncation of critical data, distinct from the soft 'lost-in-the-middle' attention degradation issue"
+            ]
+          },
+          "reasoning": "Both documents cover the same core ground (observability/debugging difficulty, the lost-in-the-middle phenomenon with Stanford/UC Berkeley research and its architectural causes, prompt sensitivity/reproducibility issues, rising token costs, and error rates with more requirements), and both include an identical code walkthrough. For depth, A uniquely deepens the lost-in-the-middle discussion with three concrete mitigation tactics (reordering, reducing document count, compression via a pre-call). B uniquely adds several more specific, source-attributed depth details: a quantitative 76-percentage-point accuracy swing statistic, a specific mechanism for why monolithic prompts are less token-efficient (context re-processing), and a research finding linking syntactic complexity to retrieval consistency. B's three depth instances outweigh A's single (if multi-part) instance, giving a modest edge to B. For breadth, B introduces a genuinely new subtopic -- hard context window limits causing truncation -- which is distinct from the attention-based lost-in-the-middle issue and not addressed in A, while A introduces no comparable new subtopic, giving B a modest edge on breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific mitigation strategies for lost-in-the-middle (reorder context, limit to top 3-5 docs, use a preliminary LLM call to compress context)"
+            ],
+            "b_instances": [
+              "Cites specific statistic: accuracy discrepancies as high as 76 percentage points from minor prompt adjustments (MDPI study)",
+              "Cites finding that prompts with lower syntactic complexity yield more consistent retrieval (same MDPI study)",
+              "Explains token-inefficiency mechanism: model must re-process the entire context for every subtask, raising cost/latency"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Introduces context window size limits as a distinct practical issue, where overstuffing forces truncation of critical data"
+            ]
+          },
+          "reasoning": "Both documents share the core lost-in-the-middle explanation (Stanford/UC Berkeley study, causal attention masking, positional encoding decay) and the same FAQ code example, so these are not differentiators. On depth, A adds concrete mitigation techniques for the lost-in-the-middle problem (reordering, limiting document count, compression calls), while B adds three separate deeper quantitative/mechanistic details: a specific 76-percentage-point accuracy swing statistic, a finding linking syntactic complexity to retrieval consistency, and an explanation of why monolithic prompts are token-inefficient (context re-processing). B's depth additions are more numerous and specific, giving it a modest edge. On breadth, B introduces a genuinely new subtopic\u2014hard context window limits causing truncation of data\u2014that A does not address at all, giving B a breadth advantage as well, though it is a single additional instance."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Specific mitigation strategies for lost-in-the-middle (reordering context, reducing to top 3-5 documents, using a preliminary compression call)"
+            ],
+            "b_instances": [
+              "Specific statistic: accuracy discrepancies as high as 76 percentage points from minimal prompt adjustments",
+              "Finding that prompt sensitivity persists across model sizes and training levels",
+              "Research finding that lower syntactic complexity improves consistent information retrieval",
+              "Mechanism explaining token inefficiency: model must re-process entire context for every part of a monolithic task",
+              "Specific mention of parsing failures as an error mode from complexity"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Context window size limits forcing truncation of critical data as a distinct practical problem"
+            ]
+          },
+          "reasoning": "Both documents share the same core content (lost-in-the-middle research, attention mechanisms, sensitivity to rephrasing, increasing error rates with complexity, and the identical FAQ code example). For depth, A adds unique mitigation tactics for the lost-in-the-middle problem (reordering, trimming documents, compression calls), but B goes deeper on the reliability/complexity issues with several additional specific findings from its cited study (a quantified 76pp accuracy swing, persistence across model sizes, and a syntactic-complexity finding) plus a distinct token-reprocessing efficiency mechanism, giving B substantially more depth instances. For breadth, B introduces a genuinely new sub-topic not covered in A: finite context window limits forcing truncation, a practical constraint distinct from the lost-in-the-middle attention issue. A does not introduce any comparable new sub-topic, giving B a modest breadth edge."
+        }
+      ]
+    },
+    "The Power of Modularity: Why Chain LLM Calls?": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Quantitative 2024-2025 study stat: chained pipelines 15.6% more accurate than monolithic prompts",
+              "Specific FAQ-generator debugging walkthrough isolating the 'Find Sources' step",
+              "Acxiom case study on debugging multi-agent workflows via observability tools",
+              "Concrete LangGraph mechanism explanation (nodes as steps, edges as data flow)"
+            ],
+            "b_instances": [
+              "Specific marketing-slogan generation/translation debugging walkthrough",
+              "AppFolio case study showing LangGraph modularity boosting text-to-data accuracy from 40% to 80%",
+              "Quantitative compounding-error calculation: (0.85)^5 \u2248 44% accuracy for a 5-step chain",
+              "Specific mitigation strategies list: keep chains short, validate with a separate simpler model, use structured state objects"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Token-efficiency trade-off: single prompt can be 30-82% more token-efficient than separate chained calls",
+              "New failure mode: instructions losing meaning/context when isolated into sub-tasks (distinct from cross-step information loss)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core claims (modularity, debugging ease, model-swapping flexibility, error propagation, LangGraph, latency/cost trade-offs) with comparable depth: A adds a distinct accuracy stat, a FAQ-generator debugging example, the Acxiom case study, and a concrete LangGraph node/edge explanation; B adds a distinct debugging example (slogan translation), the AppFolio case study with quantified results, a compounding-error math calculation, and a specific list of mitigation tactics. These are roughly balanced in number and substantiveness, yielding a tie on depth. On breadth, A introduces no genuinely new sub-topics beyond what B also covers (the least-to-most prompting link is shared), whereas B introduces two new adjacent topics not touched by A: a token-efficiency trade-off statistic and a distinct failure mode about instructions losing meaning when isolated from context. This gives B a modest edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific 15.6% accuracy improvement stat from a named 2024-2025 study",
+              "Detailed FAQ-generator debugging walkthrough (isolating 'Find Sources' step)",
+              "Concrete info-loss example: summary losing nuance needed for downstream translation",
+              "Naming 'error propagation' as the formal failure mechanism",
+              "Technical explanation of LangGraph's graph/node/edge execution model"
+            ],
+            "b_instances": [
+              "Token-efficiency trade-off stat: single prompt 30-82% more token-efficient than separate calls",
+              "Quantitative compounding-error math example: (0.85)^5 \u2248 44% accuracy in a 5-step chain",
+              "Context decay: instructions losing meaning when isolated from larger prompt context",
+              "Specific mitigation tactics: short chains, validation via a separate simpler model, structured state objects",
+              "Marketing-slogan generate-then-translate debugging example"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Acxiom case study on debugging multi-agent workflows via observability tools"
+            ],
+            "b_instances": [
+              "AppFolio case study using LangGraph to boost text-to-data accuracy from 40% to 80%"
+            ]
+          },
+          "reasoning": "Both documents cover the same core chaining advantages/trade-offs with largely overlapping conceptual content (least-to-most analogy, model-routing example, error propagation/compounding error, LangGraph for glue code). For depth, B supplies more numerous and more rigorous quantitative specifics (token-efficiency %, the (0.85)^5 math illustration, explicit context-decay mechanism, concrete mitigation tactics) beyond what A offers, while A contributes its own distinct depth elements (accuracy stat, detailed FAQ debugging walkthrough, LangGraph technical mechanics, explicit info-loss example), giving B a modest edge in depth. For breadth, each document introduces exactly one new real-world case study (A: Acxiom; B: AppFolio) illustrating the same underlying point (observability/production use), so breadth is essentially tied."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific 15.6% accuracy statistic for chained reasoning pipelines from a cited 2024-2025 study",
+              "Acxiom case study illustrating debugging failure solved via observability tooling",
+              "Detailed explanation of LangGraph's graph structure (nodes as steps, edges as data flow) for state management"
+            ],
+            "b_instances": [
+              "AppFolio case study with LangGraph showing text-to-data accuracy improvement from 40% to 80%",
+              "Specific token-efficiency statistic (30-82% more efficient) quantifying the cost trade-off of chaining vs single prompts",
+              "Concrete compounding-error math example: (0.85)^5 \u2248 44% accuracy for a 5-step chain",
+              "Explanation of 'context decay'/loss of instruction meaning when isolated from a larger prompt",
+              "Specific mitigation techniques: keeping chains short, validating outputs with a simpler checker model, using structured state objects"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core benefits (modularity, accuracy, debugging, flexibility) and trade-offs (latency, cost, error propagation) with largely equivalent supporting elements (e.g., both cite a least-to-most prompting analogy, both use a different-model-per-step example, both give a concrete debugging example, both mention LangGraph as an orchestration tool) \u2014 these overlaps cancel out. On depth, document B adds more numerous and more rigorous quantitative/mechanistic elaborations: a token-efficiency percentage, a worked compounding-error probability calculation, a named context-decay mechanism, a distinct AppFolio production case study with metrics, and specific mitigation tactics. Document A contributes fewer differentiating depth instances: a chained-accuracy statistic, the Acxiom case study, and extra detail on LangGraph's graph mechanics. This gives B a moderate edge in depth. Neither document meaningfully broadens scope into genuinely new adjacent subtopics beyond what the other already covers, so breadth is a tie."
+        }
+      ]
+    },
+    "Building a Sequential Workflow: FAQ Generation Pipeline": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "cites decomposition as a named prompt engineering technique with external source link",
+              "frames source-finding step as a 'self-correction/validation' LLM pattern for increasing reliability"
+            ]
+          },
+          "reasoning": "Both documents cover the same core three-step sequential FAQ pipeline with identical code and outputs, and neither adds meaningful quantitative or mechanistic depth beyond the shared content (e.g., neither elaborates on latency causes, token costs, or failure modes in more technical detail than the other). For breadth, Document B introduces two source-attributed adjacent concepts not present in A: it explicitly names and cites 'decomposition' as a prompt engineering technique (with an external link), and it frames the source-verification step as an instance of the broader 'self-correction/validation' pattern common in LLM pipelines. Document A does not introduce any comparable new adjacent concepts, sticking to plain description of the assembly-line approach. This gives B a modest edge on breadth while depth remains tied."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Cites external source (footnote 42, scrum.org) naming 'decomposition' as a formal prompt engineering technique, linking the pipeline to a broader named concept",
+              "Frames the source-finding step as an instance of 'self-correction or validation, where one LLM call checks the output of another,' introducing this as a common, more broadly applicable LLM pipeline pattern"
+            ]
+          },
+          "reasoning": "Both documents are near-identical in code and core explanation of the three-step sequential FAQ pipeline (generate questions, answer, find sources) and share the same outputs and timing data, so neither adds meaningful depth beyond the other -- no additional mechanisms, quantitative details, or technical limitations distinguish them. On breadth, document B adds two source-attributed adjacent concepts not present in A: an external citation framing the approach as 'decomposition,' a named prompt engineering technique, and a description of the source-finding step as a 'self-correction or validation' pattern common across LLM pipelines. These are modest but genuine breadth additions, giving B a slight edge on breadth while depth remains tied."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "frames the find_sources step as a self-correction/validation pattern where one LLM call checks another's output, a named reliability technique"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "cites decomposition as a specific prompt engineering technique with an external source link (scrum.org article)"
+            ]
+          },
+          "reasoning": "Both documents share identical code, outputs, and core narrative about the three-step sequential FAQ pipeline. Document A adds no distinct source-attributed depth or breadth content beyond the shared core explanation. Document B adds two small enhancements: it names and cites an external source for 'decomposition' as a prompt engineering technique (a breadth instance, introducing an adjacent conceptual framing with citation), and it explicitly frames the source-finding step as a 'self-correction/validation' pattern common in reliability engineering, adding a bit of mechanistic depth to why that step matters. Neither addition is extensive, so B leads modestly on both dimensions rather than dramatically."
+        }
+      ]
+    },
+    "Optimizing Sequential Workflows With Parallel Processing": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "asyncio vs threading efficiency citing GIL/OS thread overhead as reason for preferring asyncio",
+              "specific free-tier rate limit stat (5-20 RPM)"
+            ],
+            "b_instances": [
+              "specific implementation detail for client-side queueing using Redis or Kafka worker pools",
+              "explicit backpressure mechanism explained as upstream/downstream signaling",
+              "error propagation mechanism explained (single step failure cascades through sequential chain)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "use-case examples: batch document summarization / analyzing different aspects of an input"
+            ],
+            "b_instances": [
+              "dynamic concurrency adjustment based on monitoring API response headers/error rates",
+              "framing the pattern as a Map-Reduce style workflow",
+              "straggler effect concept with citation explaining batch job latency bottleneck"
+            ]
+          },
+          "reasoning": "Both documents share the core token-bucket, exponential-backoff-with-jitter, and asyncio code walkthrough content, so these are not differentiators. For depth, A adds a concrete RPM rate-limit statistic and a GIL/threading-overhead justification for asyncio, while B adds more concrete queueing infrastructure detail (Redis/Kafka), a more elaborated backpressure explanation, and an explicit mechanism for error propagation in sequential chains \u2014 giving B a modest edge. For breadth, A only introduces one adjacent use-case example (batch summarization), whereas B introduces three genuinely new adjacent concepts: dynamic concurrency adjustment as a rate-limiting strategy, the Map-Reduce framing of the pattern, and the straggler-effect concept (with citation) \u2014 a clearly larger and more substantive breadth expansion."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific free-tier rate limit numbers (5-20 RPM) cited",
+              "asyncio vs threading efficiency comparison (GIL, OS thread overhead)"
+            ],
+            "b_instances": [
+              "Client-side queueing specified with concrete tools (Redis, Kafka) and worker pool",
+              "Backpressure explicitly defined as upstream/downstream signaling concept",
+              "More precise quantitative timing comparison (22.20s vs 8.98s) vs A's rounded figures"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Use-case examples beyond FAQ generation: batch document summarization, analyzing different aspects of a single input"
+            ],
+            "b_instances": [
+              "Dynamic concurrency adjustment based on monitoring API response headers/error rates",
+              "Map-Reduce style pattern analogy for the workflow",
+              "Straggler effect concept (batch latency bound by slowest task) with citation",
+              "Error propagation risk in sequential chains vs parallel execution as distinct architectural consideration"
+            ]
+          },
+          "reasoning": "Both documents share core content (token bucket algorithm, exponential backoff/jitter, asyncio code). For depth, A adds specific RPM numbers and an asyncio-vs-threading GIL explanation, while B adds more precise timing figures, explicit Redis/Kafka implementation detail for queueing, and a clearer backpressure definition, giving B a modest edge. For breadth, A only adds one new subtopic (use-case examples for parallelization), whereas B introduces several genuinely new subtopics not touched by A: dynamic concurrency adjustment, the Map-Reduce analogy, the straggler effect (with citation), and error-propagation risk in sequential vs parallel chains\u2014giving B a much stronger breadth advantage."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Specific rate-limit numbers (5-20 RPM on free-tier plans) with supporting citations"
+            ],
+            "b_instances": [
+              "Dynamic concurrency adjustment based on monitoring API response headers and error rates",
+              "Backpressure explained as a distinct upstream/downstream signaling concept",
+              "Client-side queueing detailed with concrete implementation tools (Redis/Kafka) and worker pool",
+              "Mention of TPM (tokens-per-minute) limits alongside RPM"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Example use cases for parallelization: summarizing batches of documents, analyzing different aspects of a single input"
+            ],
+            "b_instances": [
+              "Framing the pattern as a 'Map-Reduce' style pattern",
+              "Introduction of the 'straggler effect' concept with citation",
+              "Discussion of error propagation risk in sequential chains vs. parallel isolation"
+            ]
+          },
+          "reasoning": "Both documents share the core mechanics (asyncio implementation, token bucket, exponential backoff/jitter, GIL vs threading). For depth, Document A adds one concrete quantitative detail (specific RPM limits for free-tier APIs), while Document B goes deeper on rate-limiting/resilience topics with four additional mechanisms: dynamic concurrency adjustment, an explicit backpressure explanation, concrete queueing infrastructure (Redis/Kafka), and TPM limits alongside RPM. For breadth, Document A adds one adjacent example (batch summarization/multi-aspect analysis use cases), while Document B introduces three new adjacent concepts: Map-Reduce framing, the straggler effect (with citation), and error propagation risks in sequential vs. parallel chains. In both dimensions B contributes substantially more distinct, source-attributed enhancement content than A."
+        }
+      ]
+    },
+    "Introducing Dynamic Behavior: Routing and Conditional Logic": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific modality/document-type examples elaborating fixed-workflow failure cases (text/image/video moderation, invoice/contract/report extraction)"
+            ],
+            "b_instances": [
+              "Cognitive Load Theory and Coherence Principle used to explain why specialized prompts outperform monolithic ones",
+              "Discussion of classifier failure modes (misclassification from ambiguous intent) and mitigation techniques (taxonomy, few-shot examples, negative examples for decision boundaries)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Analogy to event-driven microservices architecture with producer/consumer pattern and example event name",
+              "LiteLLM open-source routing library details (cost budgets, fallbacks, retry mechanisms)"
+            ],
+            "b_instances": [
+              "Analogy to routing patterns in data ETL pipelines based on cost/performance"
+            ]
+          },
+          "reasoning": "Both documents cover the same core routing concept and share the Amazon Bedrock example, content moderation/data extraction use cases, and the classification-based routing pattern, so these are not differentiators. On depth, B goes further by grounding the routing rationale in Cognitive Load Theory/Coherence Principle and by adding a substantive discussion of classifier failure modes and mitigation techniques (taxonomy, few-shot, negative examples), while A only adds modest specificity to its example list, giving B the edge. On breadth, A introduces two new adjacent domains (event-driven microservices architecture with producer/consumer terminology, and the LiteLLM routing library with cost/fallback/retry features) versus B's single new adjacent analogy (ETL pipelines), giving A the edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Cognitive Load Theory/Coherence Principle explaining why specialized prompts reduce extraneous context",
+              "Failure modes of LLM-as-classifier: ambiguous intent leading to misclassification",
+              "Use of few-shot and negative examples to improve classifier robustness and decision boundaries"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Event-driven microservices architecture analogy (producer/consumer decoupling pattern)",
+              "LiteLLM open-source routing library with cost/model-availability based routing, fallbacks and retries"
+            ],
+            "b_instances": [
+              "Analogy to routing patterns in modern data ETL pipelines based on cost and performance"
+            ]
+          },
+          "reasoning": "Both documents cover the same core routing/classification concept and both cite Amazon Bedrock and mention content moderation/data extraction as example domains, so these are shared and not differentiators. For depth, B goes noticeably further by grounding the routing rationale in Cognitive Load Theory/Coherence Principle, and by adding concrete rigor about classifier failure modes (ambiguous intent misclassification) and mitigation techniques (few-shot and negative examples) -- three substantive depth additions versus none in A, making depth clearly B's advantage. For breadth, A introduces two new adjacent analogies not found in B: the event-driven microservices producer/consumer pattern and the LiteLLM open-source routing library with cost-based fallback/retry mechanisms, while B offers one new adjacent analogy (ETL pipeline routing). This gives A a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Cognitive Load Theory / Coherence Principle explains why specialized prompts outperform monolithic ones",
+              "Discussion of classifier failure modes (ambiguous intent, misclassification) and mitigation via clear taxonomy, few-shot examples, and negative examples"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Analogy to event-driven microservices architecture with producer/consumer pattern (e.g., BillingInquiryCreated event) and decoupling benefits",
+              "Mention of LiteLLM as an open-source routing library with cost-budget, fallback, and retry mechanisms"
+            ],
+            "b_instances": [
+              "Analogy to LLM routing patterns in ETL/data pipelines that route tasks based on cost and performance"
+            ]
+          },
+          "reasoning": "Both documents cover the same core routing concept, LLM-as-router pattern, and cite Amazon Bedrock plus content moderation/data extraction examples, so these are shared and excluded. For depth, Document B adds two genuinely deepening elements not in A: a cognitive-science grounding (Cognitive Load Theory/Coherence Principle) explaining why specialized prompts work, and a substantive discussion of classifier failure modes with concrete mitigation techniques (taxonomy, few-shot examples, negative examples). Document A offers no comparable deepening content, giving B a clear advantage on depth. For breadth, Document A introduces two new adjacent topics not covered in B: an event-driven microservices architecture analogy with a concrete event example, and the LiteLLM open-source routing library with its cost/fallback/retry features. Document B contributes one new adjacent topic, the ETL pipeline routing analogy. This gives A a modest edge on breadth."
+        }
+      ]
+    },
+    "Building a Basic Routing Workflow": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Vellum AI-specific recommendations for prompt design (few-shot examples, function calling, handler logic per intent)",
+              "Emphasis on high-quality, edge-case examples being crucial for classifier accuracy"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Advanced two-stage cascade classification architecture: lightweight model/embedding search narrows candidates, then a stronger LLM makes final pick, with cost-tiered model selection (Claude Haiku vs Sonnet) for cost-sensitive routing"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Document A introduces a genuinely new sub-topic not covered elsewhere: an advanced 'cascade' classification architecture that combines a lightweight retrieval step with a stronger LLM for final classification, plus a concrete cost-optimization strategy using different model tiers (Claude Haiku vs Sonnet), citing a specific source. This is breadth\u2014new scope beyond the basic single-step classifier the section builds. Document B does not include this expanded architecture discussion. Conversely, Document B adds more depth to the existing classification/handler design topic by citing Vellum AI's specific recommendations (few-shot prompts, function calling, handler logic) and by stressing the importance of high-quality, edge-case-rich training examples for the classifier\u2014details that sharpen the same core topic rather than broadening it. Document A's citation of the same Vellum source is used only to support the general 'classify-then-handle' pattern claim, without the added specificity found in B. Overall, A leads on breadth due to the cascade/cost-tiering discussion, while B leads on depth due to its more detailed source-attributed classifier design guidance."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Vellum AI-sourced recommendations for specialized prompt design (few-shot prompts, function calling, handler logic per intent) [12]",
+              "Emphasis on providing high-quality, representative examples especially for ambiguous/edge cases to train the classifier accurately"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Advanced two-stage 'cascade' classification architecture using a lightweight model/embedding-based semantic search to shortlist candidates before a stronger LLM makes the final call, with cost-tiered model example (Claude Haiku vs Claude Sonnet) [24]"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents share the same core build-out (Enum/Pydantic classifier, three specialized prompts, if/elif router). Document A adds a distinct breadth instance not found in B: a full description of an advanced 'cascade' classification architecture (lightweight retrieval model + LLM re-ranking) with a concrete cost-sensitive model-tiering example (Haiku vs Sonnet) and citation [24], which is a genuinely new sub-topic beyond the basic classify-then-route pattern. Document B lacks this expansion. Conversely, Document B adds two depth instances that A lacks: source-attributed guidance from Vellum AI's blog on how to design specialized handler prompts (few-shot examples, function calling, handler logic) [12], and an added technical point about needing high-quality, representative examples for ambiguous/edge-case intents to train the classifier. These deepen existing points (prompt design, classifier training) without introducing new topics. Overall, A leads modestly on breadth while B leads modestly on depth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Vellum-guide-sourced specific classifier design techniques (few-shot prompts, function calling) plus emphasis on curating high-quality edge-case examples for training the classifier"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Advanced two-stage cascade classification architecture (lightweight/embedding-based candidate retrieval followed by a stronger LLM final selection), including cost-sensitive model tiering example using cheaper vs. more capable models (e.g., Claude Haiku vs. Sonnet)"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core walkthrough (Enum/Pydantic classification, per-intent prompts, if/elif router) with no substantive differences there. For breadth, Document A uniquely introduces a genuinely new adjacent sub-topic: a cascade/hybrid classification architecture with cost-tiered model selection, sourced to a routing-techniques article, which B entirely lacks. For depth, Document B adds a more specific, source-attributed elaboration on how to design the classification prompt itself (few-shot examples, function calling, citing Vellum's specific recommendations), going deeper into the classifier-design point than A's more generic treatment. Neither document shows a dramatic (3+) lead in either dimension, so both differences are modest rather than large."
+        }
+      ]
+    },
+    "Orchestrator-Worker Pattern: Dynamic Task Decomposition": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "79% of multi-agent failures are structural, per analysis of 1,600 production traces",
+              "Conflict-resolution strategies for synthesizer: voting, LLM-as-judge, human review flagging",
+              "Microservices-derived reliability patterns: timeouts, retries with exponential backoff, circuit breakers",
+              "Saga pattern with compensating actions for workers with real side effects"
+            ],
+            "b_instances": [
+              "5-20x speedup quantitative claim for parallel delegation vs sequential processing",
+              "LangGraph-specific failure modes: 'routing failures' and 'decision ambiguity' (arXiv citation)",
+              "Socure's 'Answer Evaluation' node scoring on accuracy, relevance, and confidence",
+              "Specific example of worker output conflict (JSON vs YAML format mismatch)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "MapReduce architecture analogy for scalability/efficiency"
+            ],
+            "b_instances": [
+              "Manufacturing assembly-line/project-manager analogy for the pattern",
+              "Named real-world adopters: Wells Fargo (banker procedure access) and Salesforce Atlas Reasoning Engine",
+              "Hierarchical orchestration with sub-orchestrators and async task delegation as bottleneck mitigation strategies"
+            ]
+          },
+          "reasoning": "Both documents share the same core code implementation and largely overlapping reliability-challenge discussion. On depth, each adds distinct quantitative/mechanistic details deepening the reliability and synthesis-conflict discussion: A contributes the 79% structural-failure statistic, conflict-resolution strategies (voting/LLM-judge/human review), microservices resilience patterns, and the Saga compensating-action mechanism; B contributes a speedup statistic, LangGraph-specific failure taxonomy, Socure's specific evaluation criteria, and a concrete JSON/YAML conflict example. These are roughly comparable in number and substantiveness, yielding a tie. On breadth, B introduces three genuinely new adjacent elements A lacks entirely: a different real-world analogy, named enterprise adopters (Wells Fargo, Salesforce), and hierarchical/async orchestration as a new architectural strategy, while A offers only one breadth item (the MapReduce analogy), making B's breadth coverage substantially larger."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Specific stat: 79% of multi-agent failures are structural, from analysis of 1,600+ production traces",
+              "Microservices-derived mitigation patterns: timeouts, retries with exponential backoff, circuit breakers",
+              "Saga pattern with compensating actions for handling worker side-effects (e.g., charging cards)"
+            ],
+            "b_instances": [
+              "Hierarchical orchestration (sub-orchestrators) as a mitigation for orchestrator bottleneck",
+              "LangGraph-based research identifying 'routing failures' and 'decision ambiguity' as failure modes",
+              "Concrete synthesis edge case: workers returning conflicting formats (JSON vs YAML)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Comparison to MapReduce architecture for scalability/efficiency"
+            ],
+            "b_instances": [
+              "Quantified speed improvement of 5-20x from parallel delegation vs sequential processing",
+              "Real-world enterprise adoption examples: Wells Fargo (banker procedure lookup) and Salesforce Atlas Reasoning Engine",
+              "Manufacturing assembly-line analogy for orchestrator/worker delegation"
+            ]
+          },
+          "reasoning": "Both documents share the same core narrative and nearly identical code implementation, but each adds distinct source-attributed enhancements. On depth, A elaborates reliability topics with a specific failure-rate statistic, named microservices resilience patterns (timeouts/retries/circuit breakers), and the Saga pattern for compensating transactions, while B elaborates with hierarchical sub-orchestration, a LangGraph-based failure taxonomy, and a concrete JSON/YAML synthesis conflict example. Both sets are comparably specific and numerous (3 vs 3), yielding a tie on depth. On breadth, A only introduces one adjacent concept (the MapReduce analogy), whereas B introduces three: a quantified performance benefit (5-20x speedup), two named real-world enterprise deployments (Wells Fargo, Salesforce Atlas), and a manufacturing assembly-line analogy\u2014giving B a clear and substantial breadth advantage."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Statistic: 79% of multi-agent failures are structural per 1,600-trace analysis",
+              "Conflict-resolution strategies for synthesizer (voting, LLM-as-judge, human review)",
+              "Saga pattern with compensating actions for side-effect failures",
+              "Microservices resilience patterns (timeouts, retries with backoff, circuit breakers)"
+            ],
+            "b_instances": [
+              "Quantitative speed improvement of 5-20x from parallel delegation",
+              "LangGraph-based research identifying 'routing failures' and 'decision ambiguity' as architecture-specific failure modes",
+              "Socure's specific 'Answer Evaluation' node comparing outputs on accuracy, relevance, and confidence scores",
+              "Specific decomposition failure modes: subtasks too broad or not serializable",
+              "Concrete example of worker output format conflicts (JSON vs YAML) motivating synthesizer robustness"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Comparison of orchestrator-worker to MapReduce architecture"
+            ],
+            "b_instances": [
+              "Real-world deployment examples: Wells Fargo internal procedure access and Salesforce Atlas Reasoning Engine",
+              "Assembly-line/project-manager analogy for the pattern",
+              "Hierarchical orchestration with sub-orchestrators and asynchronous delegation as bottleneck mitigation strategies"
+            ]
+          },
+          "reasoning": "Both documents share the same core code and pattern explanation, so differentiation comes from surrounding prose. On depth, A adds a specific failure-rate statistic, conflict-resolution strategies, the Saga pattern, and microservices resilience techniques (4 instances), while B adds a speed-improvement statistic, specific LangGraph failure-mode research, a detailed Socure evaluation mechanism, specific decomposition failure types, and a JSON/YAML conflict example (5 instances) \u2014 comparable in count and specificity, giving B a modest edge. On breadth, A only introduces one new adjacent concept (the MapReduce analogy), whereas B introduces three genuinely new sub-topics entirely absent from A: named real-world deployments (Wells Fargo, Salesforce Atlas), an assembly-line analogy, and hierarchical orchestration with sub-orchestrators as an architectural variant. This makes B's breadth advantage substantial."
+        }
+      ]
+    },
+    "Conclusion": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both conclusions are generic summaries of the lesson's core content (chaining, parallelization, routing, orchestrator-worker) and a teaser for the next lesson (tools/function calling). Neither document introduces any new source-attributed technical mechanism, statistic, named framework, or adjacent sub-topic beyond restating what the section already covered. No qualifying depth or breadth instances were found in either document, so both dimensions are ties."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both conclusions are summary/recap passages that restate the section's core topics (chaining, parallelization, routing, orchestrator-worker pattern) and preview the next lesson (tools and function calling). Neither document introduces any new named study, statistic, technical mechanism, or concrete adjacent sub-topic beyond what was already covered in the lesson. Document B adds a slightly more elaborated framing ('control over LLM behavior', 'solve the vast majority of problems') but these are generic claims, not source-attributed or concrete enhancements. No qualifying depth or breadth instances were found in either document, resulting in a tie on both dimensions."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both conclusions are pure summaries of the lesson's own content (chaining, parallelization, routing, orchestrator-worker) and a teaser for the next lesson on tools/function calling. Neither document introduces a specific named study, statistic, technical mechanism, or new adjacent sub-topic beyond restating the core material already covered in the lesson. No qualifying depth or breadth instances were found in either document, resulting in ties for both dimensions."
+        }
+      ]
+    }
+  }
+}

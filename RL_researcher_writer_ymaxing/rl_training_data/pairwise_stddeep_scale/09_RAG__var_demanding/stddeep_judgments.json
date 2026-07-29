@@ -1,0 +1,468 @@
+{
+  "article": "09_RAG__var_demanding",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Citation of specific studies (ACL 2024, arXiv 2312.05934) showing LLMs struggle to learn new facts via fine-tuning"
+            ],
+            "b_instances": [
+              "Specific cost figures for fine-tuning a base model (hundreds of thousands to millions of dollars)",
+              "LoRA (low-rank adaptation) as a technique that makes fine-tuning cheaper",
+              "Explanation that fine-tuning only pushes the knowledge cutoff forward and the model can't distinguish source of its answers",
+              "Stanford/Meta AI 2023 study describing a U-shaped performance curve for the lost-in-the-middle problem"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Historical trajectory of RAG-like systems: 1970s QA systems, Ask Jeeves in the 1990s, IBM Watson's 2011 Jeopardy! win, and Meta AI's 2020 formalization of RAG",
+              "Analogy to the 'serial-position effect' from human psychology"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (static LLM knowledge, hallucination, fine-tuning drawbacks, context-window limits, RAG as the solution), but Document B adds considerably more source-attributed specificity. For depth, B cites concrete fine-tuning cost figures, introduces LoRA as a specific mitigation technique, explains the knowledge-cutoff/source-ambiguity mechanism in more detail, and cites a named Stanford/Meta 2023 study quantifying the lost-in-the-middle effect via a U-shaped curve; A only offers a citation to generic 'studies' on fine-tuning inefficacy without comparable specificity. For breadth, B introduces an entirely new sub-topic absent from A: the historical lineage of retrieval/QA systems (1970s systems, Ask Jeeves, IBM Watson's Jeopardy! win, and Meta's 2020 RAG paper), plus a psychology-based analogy (serial-position effect). A contains no comparable breadth-expanding content beyond the core narrative. Thus B clearly leads on both dimensions."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Citations to specific academic studies (ACL, arXiv) empirically showing LLMs struggle to learn new facts via fine-tuning"
+            ],
+            "b_instances": [
+              "Specific fine-tuning cost figures (hundreds of thousands to millions of dollars) and mention of LoRA as a cheaper alternative",
+              "Point that fine-tuning only pushes the knowledge cutoff forward and doesn't let model distinguish source of an answer",
+              "Named 2023 Stanford/Meta AI study describing a U-shaped performance curve for context window recall",
+              "Analogy to the human psychology 'serial-position effect' explaining the lost-in-the-middle phenomenon"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Historical origin narrative of RAG-like systems: 1970s QA systems, Ask Jeeves, IBM Watson's Jeopardy! win, and formalization by Meta AI in 2020"
+            ]
+          },
+          "reasoning": "Both documents cover the same core intro material (static knowledge, hallucination, fine-tuning limits, lost-in-the-middle, RAG as open-book solution), but B integrates noticeably more specific, source-attributed detail. On depth, B adds concrete fine-tuning cost figures, LoRA, the knowledge-cutoff/source-ambiguity nuance, and a named Stanford/Meta study with a described U-shaped curve and psychological analogy, while A's only distinguishing depth addition is its citation of empirical fine-tuning studies. On breadth, B alone introduces an entirely new adjacent subtopic\u2014the historical lineage of RAG-like systems (1970s QA, Ask Jeeves, Watson, Meta AI's 2020 formalization)\u2014which A does not touch at all."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "citations to specific studies showing LLMs struggle to learn new facts via fine-tuning (aclanthology/arxiv papers)"
+            ],
+            "b_instances": [
+              "specific fine-tuning cost figures (hundreds of thousands to millions of dollars)",
+              "point that fine-tuning doesn't solve knowledge cutoff, only pushes the date forward, with model unable to distinguish source of knowledge",
+              "specific Stanford/Meta 2023 'lost-in-the-middle' study describing U-shaped performance curve",
+              "], ",
+              "]}, ",
+              "breadth",
+              "b_instances",
+              "a_instances",
+              "reasoning"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "mention of LoRA as a technique making fine-tuning cheaper",
+              "historical narrative of RAG's origins (1970s QA systems, Ask Jeeves, IBM Watson Jeopardy) and Meta AI's 2020 formalization",
+              "analogy to the human psychology 'serial-position effect'",
+              "mention of ReAct framework used in prior lesson recap"
+            ]
+          },
+          "reasoning": "Both documents cover the same core introduction content (static LLM knowledge, fine-tuning limitations, context window limits, RAG as solution, lesson roadmap). Document B adds more depth via specific quantitative and mechanistic detail: concrete fine-tuning cost figures, the nuance that fine-tuning doesn't solve the knowledge-cutoff problem, and a named Stanford/Meta 2023 study describing the U-shaped 'lost-in-the-middle' performance curve. Document A's only comparable depth addition is its citation-backed claim that studies show LLMs struggle to learn new facts via fine-tuning. On breadth, B introduces several genuinely new adjacent topics absent from A: LoRA as a fine-tuning cost-reduction technique, a historical narrative of RAG's lineage (1970s QA systems, Ask Jeeves, IBM Watson, Meta AI's 2020 formalization), and an analogy to the psychological 'serial-position effect', plus a passing mention of the ReAct framework. A contains no comparable breadth-expanding content. Overall B substantially outpaces A on both dimensions."
+        }
+      ]
+    },
+    "The RAG System: Core Components": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Vector database optimized for fast similarity search across millions or billions of vectors (scale detail)"
+            ],
+            "b_instances": [
+              "Names BERT as a concrete embedding model example",
+              "Explains vector search mechanism via nearest-neighbor search using cosine similarity and the angle between vectors",
+              "Prompt template refined to instruct the model to say when context lacks the answer, addressing an edge case"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "NVIDIA reference architecture example naming NeMo Retriever and NVIDIA AI Enterprise as a real production implementation of the three pillars"
+            ]
+          },
+          "reasoning": "Both documents cover the same three-pillar structure with comparable core explanations. On depth, B adds more concrete technical specificity: naming BERT as an embedding model, explaining the cosine-similarity/nearest-neighbor mechanism underlying vector search, and refining the prompt template to handle the case where context lacks an answer. A's differentiators are thinner -- mainly a scale detail about vector databases handling millions/billions of vectors. On breadth, B introduces a genuinely new sub-topic not covered in A: a real-world production example (NVIDIA's NeMo Retriever and AI Enterprise platform), which broadens the section's scope beyond the conceptual explanation. A has no comparable breadth-expanding content (its diagram is a visual restatement, not new textual content). Overall B shows modestly more depth and breadth enhancement."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Vector database explicitly noted to scale to millions/billions of vectors",
+              "LLM described as a 'reasoning engine' synthesizing context (nuance on generation mechanism)"
+            ],
+            "b_instances": [
+              "Names BERT as a concrete example embedding model",
+              "Explains nearest-neighbor retrieval via cosine similarity and the angle-based similarity metric",
+              "Refined prompt template instructing model to explicitly say when context lacks the answer"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "NVIDIA reference architecture example using NeMo Retriever models and NVIDIA AI Enterprise platform for production RAG deployment"
+            ]
+          },
+          "reasoning": "Both documents cover the same three-pillar RAG structure with largely overlapping content (semantic search, vector embeddings, augmented prompt template, citation-based grounding). For depth, A adds a note on vector database scale and frames the LLM as a synthesizing reasoning engine, while B adds a named embedding model (BERT), a more technical explanation of cosine similarity/nearest-neighbor search, and a slightly refined prompt instruction\u2014giving B marginally more technical depth. For breadth, B introduces a genuinely new sub-topic: NVIDIA's production reference architecture (NeMo Retriever, NVIDIA AI Enterprise), which broadens the section into real-world enterprise deployment\u2014something A does not address at all, making B moderately stronger on breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "notes vector databases handle millions/billions of vectors (scale detail)"
+            ],
+            "b_instances": [
+              "names BERT as example embedding model",
+              "explains cosine similarity/nearest-neighbor mechanism with angle description"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "NVIDIA reference RAG architecture example (NeMo Retriever, NVIDIA AI Enterprise) as production case study"
+            ]
+          },
+          "reasoning": "Both documents cover the same three-pillar RAG structure with similar core explanations (semantic search, embeddings, augmented prompt template, hallucination reduction, citations). For depth, A adds a minor quantitative detail about vector database scale, while B goes deeper with a named embedding model (BERT) and a concrete explanation of the similarity metric (cosine similarity/angle), giving B a modest edge. For breadth, B introduces a genuinely new sub-topic\u2014a real-world production architecture (NVIDIA NeMo Retriever/AI Enterprise)\u2014which A does not address at all, giving B a moderate advantage in breadth as well."
+        }
+      ]
+    },
+    "The RAG Pipeline: Ingestion and Retrieval": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "'Chunking paradox' concept explaining trade-off between too-small (context loss) and too-large (noisy embeddings) chunks",
+              "Domain-specific embedding models outperforming general-purpose ones as a cost/performance/domain trade-off"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Concrete code walkthrough using LlamaIndex (SimpleDirectoryReader, VectorStoreIndex, query_engine) as an implementation example",
+              "Comparison of LangChain (prototyping) vs LlamaIndex (production) as frameworks",
+              "Real-world production example citing Azure AI Search + GPT-4 pipeline",
+              "Query preprocessing step (normalization/expansion) before embedding, a new sub-step not covered in A"
+            ]
+          },
+          "reasoning": "Both documents cover the same core ingestion/retrieval steps (load, split, embed, store, query, search, generate) with largely equivalent depth on chunking strategies, embedding model choices, and vector database options, so most depth content overlaps. B adds two additional depth-level refinements not in A: the named 'chunking paradox' trade-off and the domain-specific vs general-purpose embedding model trade-off, giving B a modest edge on depth. On breadth, B introduces several genuinely new sub-topics absent from A: a concrete LlamaIndex code example, a LangChain-vs-LlamaIndex framework comparison, a real-world Azure AI Search/GPT-4 production case study, and a query preprocessing (normalization/expansion) step. A contains no comparable breadth-expanding content beyond the shared core steps, so B has a much stronger breadth advantage."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Elasticsearch/Azure AI Search offering kNN similarity search capability"
+            ],
+            "b_instances": [
+              "Naming the 'chunking paradox' tradeoff (small chunks lose context vs large chunks add noise)",
+              "Domain-specific embedding models outperforming general-purpose ones (performance/cost/domain trade-off)",
+              "PDF parsing complexity detail (tables, images, complex layouts missed by simple extraction)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Query preprocessing step (normalization/expansion) before embedding",
+              "Concrete naive RAG code walkthrough using LlamaIndex (VectorStoreIndex, query engine)",
+              "LangChain vs LlamaIndex comparison for prototyping vs production use",
+              "Azure production deployment example (Azure AI Search + GPT-4 managed pipeline)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core ingestion/retrieval steps (load, split, embed, store, query, search, generate) with largely overlapping tool names (LangChain, LlamaIndex, FAISS, Qdrant, Pinecone, etc.), so most content is shared. On depth, A adds a small specific detail about Elasticsearch/Azure AI Search's kNN capability, while B adds three more substantive depth elements: the named 'chunking paradox' tradeoff, the claim that domain-specific embedding models outperform general ones, and a concrete description of PDF parsing complexity (tables/images/layouts) -- giving B a modest edge. On breadth, B introduces several genuinely new sub-topics absent from A: query preprocessing (normalization/expansion), a full code example implementing a naive RAG pipeline with LlamaIndex, an explicit LangChain-vs-LlamaIndex production tooling comparison, and a real-world Azure production deployment example. A has no comparable breadth-expanding content, making B's advantage substantial here."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "SemanticSplitter mechanism explained (embedding model groups related sentences into chunks)",
+              "Cosine similarity specified as the similarity metric used in search",
+              "Elasticsearch/Azure AI Search kNN capabilities noted as alternative to dedicated vector DBs",
+              "Ingestion described as running as batch or streaming process"
+            ],
+            "b_instances": [
+              "'Chunking paradox' tradeoff explained: too-small chunks lose context, too-large chunks produce noisy embeddings",
+              "PDF extraction challenges detailed (tables, images, complex layouts missed by simple text extraction)",
+              "Domain-specific embedding models outperforming general-purpose ones, trade-off of performance/cost/domain",
+              "Unstructured tool named for document parsing/extraction"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Conceptual code walkthrough of a naive RAG implementation using LlamaIndex (index building and query engine)",
+              "Comparison of LangChain vs LlamaIndex suitability for prototyping vs production",
+              "Real-world production example: Azure AI Search + GPT-4 pipeline in a managed cloud environment",
+              "Query preprocessing step (normalization/expansion) introduced before retrieval"
+            ]
+          },
+          "reasoning": "Both documents cover the same four-step ingestion and generation pipeline with similar tool lists (LangChain, LlamaIndex, various vector DBs, embedding models), so much of that content overlaps and doesn't differentiate. On depth, A adds a few specific technical details (SemanticSplitter's embedding-based grouping mechanism, cosine similarity, Elasticsearch/Azure kNN capability, batch/streaming ingestion cadence), while B adds a few more conceptually rich elaborations (the 'chunking paradox' tradeoff, PDF-specific extraction difficulties, domain-specific vs general embedding model trade-offs, and the Unstructured tool) \u2014 giving B a modest edge in depth due to richer explanatory substance. On breadth, B introduces several genuinely new adjacent sub-topics absent from A: a full code example demonstrating a naive RAG implementation with LlamaIndex, a LangChain-vs-LlamaIndex production suitability comparison, a real-world Azure/GPT-4 production deployment example, and a new query preprocessing (normalization/expansion) step \u2014 none of which A includes, making B's breadth advantage substantial."
+        }
+      ]
+    },
+    "Advanced RAG Techniques": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Hybrid search failure mode in enterprise settings with ambiguous/duplicate data creating a low-signal environment",
+              "HyDE's latency trade-off vs semantic depth explicitly called out",
+              "GraphRAG trade-off of balancing graph depth against LLM token limits and compute cost",
+              "Quantitative Parent Document Retrieval case study (61% to 89% accuracy) from 47Billion",
+              "Graphiti framework's specific bitemporal mechanism (t_valid vs t_ingested)",
+              "HyDE conceptual code example using LangChain's HypotheticalDocumentEmbedder"
+            ],
+            "b_instances": [
+              "Two-stage bi-encoder + cross-encoder re-ranking code implementation using sentence-transformers",
+              "Cohere Rerank API code example as a managed alternative to self-hosted cross-encoders",
+              "Mastercard GraphRAG case study on text-to-SQL failure from a split transaction table",
+              "Knowledge drift example illustrating stale retrieval with interest rate change (4% to 5.5%)",
+              "Dynamic metadata filtering JSON template/code example for runtime personalization"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Parent Document Retrieval as a distinct chunking sub-strategy (small child chunks + larger parent chunk for LLM context)"
+            ],
+            "b_instances": [
+              "Context-Enriched Chunking (contextual retrieval) as a new chunking sub-technique",
+              "Dynamic/personalized metadata filtering as a new application (travel website runtime filter use case)",
+              "Knowledge drift as a framing concept motivating metadata filtering, distinct from bitemporal logic"
+            ]
+          },
+          "reasoning": "Both documents cover the same six sub-techniques (hybrid search, re-ranking, query transformation, chunking, GraphRAG, metadata filtering) with comparable depth: A adds narrative trade-off details (enterprise ambiguity failure, HyDE latency cost, GraphRAG token-limit trade-off, a specific 61%->89% case study, and Graphiti's bitemporal fields) plus a HyDE code snippet, while B adds its own depth via concrete code (bi-encoder/cross-encoder pipeline and Cohere Rerank API) and vivid real-world failure examples (Mastercard text-to-SQL schema split, interest-rate knowledge drift) plus a dynamic filtering code example -- roughly matching in quantity and substantiveness, so depth is a tie. For breadth, A introduces one genuinely new sub-topic (Parent Document Retrieval as a distinct chunking strategy) not mentioned in B, whereas B introduces three new sub-topics not in A: Context-Enriched/contextual-retrieval chunking, dynamic/personalized metadata filtering as an application, and the 'knowledge drift' framing for metadata staleness. This gives B a moderate edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Hybrid search failure mode in ambiguous enterprise data settings",
+              "HyDE latency/performance trade-off discussion",
+              "GraphRAG trade-off between graph depth and LLM token limits/compute cost",
+              "Bitemporal logic specifics via the Graphiti framework (t_valid vs t_ingested)",
+              "47Billion case study quantifying accuracy jump (61%\u219289%) from parent-child chunking",
+              "Conceptual HyDE implementation code (LangChain HypotheticalDocumentEmbedder)"
+            ],
+            "b_instances": [
+              "Detailed two-stage code example combining bi-encoder retrieval and cross-encoder re-ranking",
+              "Cohere Rerank API code plus explicit self-hosted vs. managed-service trade-off discussion",
+              "Knowledge drift example (interest rate 4%\u21925.5%) illustrating why metadata filtering matters",
+              "Mastercard text-to-SQL case study showing GraphRAG preventing schema-drift failures"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Parent Document Retrieval as a distinct chunking strategy (small child chunks + larger parent context)"
+            ],
+            "b_instances": [
+              "Context-Enriched (contextual retrieval) chunking as a new chunking subtype",
+              "Dynamic runtime metadata filtering for personalization use case (travel website JSON filter template)"
+            ]
+          },
+          "reasoning": "Both documents cover the same six core subtopics (hybrid search, re-ranking, query transformation, chunking, GraphRAG, metadata filtering) with largely overlapping core examples (rollover/bill query, connect-account query, travel policy decomposition, epithelioid/weekend-deploy GraphRAG examples). For depth, A adds several distinct rigor-enhancing details not in B: the enterprise ambiguous-data failure mode for hybrid search, HyDE's latency trade-off, GraphRAG's token-limit/compute trade-off, the Graphiti bitemporal specifics, the quantified 47Billion case study, and a HyDE code snippet \u2014 six items, more than B's four unique depth items (bi-encoder/cross-encoder code, Cohere API code with trade-off discussion, the knowledge-drift interest-rate example, and the Mastercard case study). For breadth, B edges ahead with two genuinely new subtopics \u2014 context-enriched (contextual retrieval) chunking and a personalization-oriented dynamic metadata filtering use case \u2014 versus A's single new subtopic, Parent Document Retrieval. Overall, A leads modestly on depth while B leads modestly on breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Hybrid search failure mode in enterprise settings with ambiguous/multi-version data",
+              "HyDE latency/performance tradeoff at scale",
+              "GraphRAG tradeoff between graph depth and LLM token limits",
+              "Graphiti framework specifics for bitemporal logic (t_valid/t_ingested)",
+              "HyDE implementation code (LangChain HypotheticalDocumentEmbedder)"
+            ],
+            "b_instances": [
+              "Two-stage bi-encoder+cross-encoder re-ranking code implementation with sentence-transformers",
+              "Cohere Rerank API code example plus self-hosting vs managed-service tradeoff discussion",
+              "Specific semantic chunking example (20-page handbook, reimbursements section)",
+              "Knowledge drift example illustrating metadata filtering need (interest rate 4% to 5.5%)",
+              "Specific bitemporal query example (filtering by effective_date for March-June 2025 change query)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Parent Document Retrieval as a distinct chunking/retrieval strategy with case study"
+            ],
+            "b_instances": [
+              "Context-Enriched Chunking (contextual retrieval) as a new chunking subtype",
+              "Mastercard text-to-SQL GraphRAG case study on schema drift",
+              "Dynamic metadata filtering for personalization (travel website JSON filter template example)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core subsections (hybrid search, re-ranking, query transformation, chunking, GraphRAG, metadata filtering) with largely equivalent core explanations and examples. On depth, each adds a comparable number of distinct technical enhancements: A contributes failure-mode/tradeoff discussions (hybrid search in ambiguous enterprise data, HyDE latency, GraphRAG token limits) plus a named bitemporal framework (Graphiti) and HyDE code; B contributes a more elaborate two-stage re-ranking code implementation, a Cohere API code example with infra tradeoff discussion, a concrete semantic chunking illustration, and a knowledge-drift example with interest-rate specifics. These are roughly balanced in count and substance, yielding a tie on depth. On breadth, B introduces more genuinely new subtopics beyond A's coverage: Context-Enriched Chunking (contextual retrieval) as an added chunking technique, a distinct Mastercard GraphRAG case study, and a dynamic metadata filtering personalization example with runtime filter construction. A only adds one comparable new subtopic (Parent Document Retrieval with its case study). This gives B a moderate edge on breadth."
+        }
+      ]
+    },
+    "Agentic RAG": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "\"retrieval thrash\" failure mode where agent loops fruitlessly on retrieval"
+            ],
+            "b_instances": [
+              "quantitative stat: agentic systems can make 10-15 LLM calls per query, one team's system cost dollars per query and took 8+ seconds",
+              "quantitative trade-off stat: hierarchical agentic system achieved 21.7% higher accuracy but latency increased from 0.8s to 2.1s"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "reflection/self-critique step where agent evaluates its own outputs to reduce hallucinations",
+              "LlamaIndex LlamaParseCompositeRetriever as concrete production example of auto-routed retrieval across sub-indexes"
+            ],
+            "b_instances": [
+              "adaptive strategy selection: single vector search for simple queries vs multi-step workflow for complex analytical queries",
+              "agent updating the RAG knowledge base with new learned information, tying into agent memory research challenges (episodic vs individual interaction storage)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core agentic RAG concepts (iterative retrieval, dynamic tool selection, information fusion, the EU policy thought/action/observation example) so these are shared and not differentiators. For depth, B adds two distinct, concrete quantitative details (LLM call counts/cost/latency failure case, and a specific accuracy-vs-latency trade-off study) that add rigor to the 'operational cost' point, whereas A only offers one specific technical limitation (retrieval thrash), giving B a modest edge. For breadth, both sides introduce two new sub-topics: A adds a reflection/self-critique mechanism and a concrete named tool example (LlamaIndex's composite retriever), while B introduces adaptive strategy switching and the idea of agents updating their knowledge base (tied to memory research challenges). These are roughly comparable in number and specificity, resulting in a tie for breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "'Retrieval thrash' failure mode where agent loops fruitlessly on retrieval attempts"
+            ],
+            "b_instances": [
+              "Quantitative operational cost data: agentic systems making 10-15 LLM calls per query, one team's system costing dollars per query and taking 8+ seconds latency",
+              "Specific study showing hierarchical agentic RAG achieved 21.7% higher accuracy than standard RAG but with latency increasing from 0.8 to 2.1 seconds"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "LlamaIndex's LlamaParseCompositeRetriever as a concrete production example of auto-routing across specialized sub-indexes (financial reports vs meeting slides)"
+            ],
+            "b_instances": [
+              "Adaptive strategy selection based on query complexity (single vector search for simple queries vs multi-step workflow for complex ones), balancing cost and accuracy",
+              "Agent's ability to update the RAG knowledge base with new learned information, touching on agent memory and episodic vs individual interaction consolidation"
+            ]
+          },
+          "reasoning": "Both documents cover the same core agentic RAG concepts (ReAct loop, iterative retrieval, tool selection, information fusion, reflection) almost identically, including the same illustrative example and diagram. On depth, B adds two concrete, source-cited quantitative details about production costs/latency (10-15 calls per query, 8-second latency example) and a specific accuracy-vs-latency tradeoff study (21.7% accuracy gain, 0.8\u21922.1s latency), while A only adds the 'retrieval thrash' failure mode concept -- giving B a modest edge. On breadth, A contributes a concrete named tool example (LlamaIndex's LlamaParseCompositeRetriever) while B introduces two new sub-topics: complexity-based adaptive strategy selection and the notion of agents updating their knowledge base, tying into agent memory -- giving B a slight edge in breadth as well, though A's instance is comparably substantive."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "retrieval thrash failure mode where agent loops fruitlessly"
+            ],
+            "b_instances": [
+              "quantified call-volume increase: 10-15 LLM calls per agentic query vs 1-2 for simple RAG",
+              "specific production failure case: system cost dollars per query and took over 8 seconds, deemed unusable",
+              "named study result: hierarchical agentic system 21.7% higher accuracy but latency increased from 0.8s to 2.1s"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "LlamaIndex LlamaParseCompositeRetriever as concrete production example of auto-routing across sub-indexes"
+            ],
+            "b_instances": [
+              "adaptive strategy selection based on query complexity (single vector search vs multi-step workflow)",
+              "agent's ability to update the RAG knowledge base, tied to future lesson on agent memory and open research questions on episodic consolidation"
+            ]
+          },
+          "reasoning": "Both documents cover the same core ReAct-to-agentic-RAG framing, standard-vs-agentic distinction, iterative retrieval, tool selection, information fusion, reflection, and the same worked thought/action/observation example, so these are shared and don't differentiate. For depth, document B adds three concrete, source-cited quantitative details (call-volume increase, a specific production failure case with cost/latency numbers, and a named study's accuracy/latency trade-off), which substantially deepens the discussion of agentic RAG's operational costs beyond A's single mention of 'retrieval thrash' and vague 'tail latency'. For breadth, A contributes one distinct new topic (a concrete named library feature, LlamaIndex's composite retriever), while B contributes two (adaptive strategy selection by query complexity, and the ability to update the knowledge base tied to agent memory research) -- giving B a modest edge in breadth as well."
+        }
+      ]
+    },
+    "Conclusion": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Specific mention of HIPAA compliance and liability requirements in legal/healthcare RAG applications",
+              "Named RAGAS framework with specific metrics (Faithfulness, Answer Relevancy) for evaluation"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both conclusions cover the same core recap (RAG fundamentals to agentic future, benefits like reduced hallucination, foundational competency, preview of Memory lesson). Neither adds much technical depth beyond restating existing points. On breadth, Document A introduces two source-attributed adjacent subtopics not present in B: the regulatory/compliance angle (HIPAA, liability) in legal/healthcare domains, and the specific RAGAS evaluation framework with named metrics (Faithfulness, Answer Relevancy). Document B's mention of 'evaluating retrieval quality and monitoring' is vague and lacks the same level of specificity or new named framework/tool, so it does not add an equivalent breadth instance. Thus A leads on breadth while depth is tied."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Names RAGAS framework with specific metrics Faithfulness and Answer Relevancy for evaluation pipelines, with citation"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Highlights HIPAA compliance and liability concerns in legal/healthcare domains as high-stakes RAG use cases, with citation"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both conclusions cover the same core points (RAG as solution to LLM limitations, foundational competency, Context Engineering, upcoming Memory lesson). Document A adds two concrete, source-attributed specifics not found in B: (1) a breadth instance naming HIPAA and legal/healthcare compliance as a specific high-stakes domain application, and (2) a depth instance naming the RAGAS framework with specific metrics (Faithfulness, Answer Relevancy) when discussing evaluation pipelines. Document B's elaboration on memory systems and evaluation/monitoring is more generic paraphrasing without new named frameworks, statistics, or specific mechanisms, so it does not contribute distinct qualifying instances beyond what A already covers. This gives A a modest edge on both depth and breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Specific RAGAS framework metrics named (Faithfulness, Answer Relevancy) with citation for evaluation pipelines"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "High-stakes domain application (legal/healthcare) with HIPAA compliance and liability considerations, cited"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both conclusions cover the same core recap and forward-pointer to Memory for Agents, but Document A includes two source-attributed enhancements absent from B: (1) a breadth addition citing HIPAA compliance and liability concerns in legal/healthcare RAG applications, and (2) a depth addition naming the RAGAS framework and specific metrics (Faithfulness, Answer Relevancy) for evaluation, both with citations. Document B's text is a more generic paraphrase without comparable concrete, source-attributed details, so it contributes no distinct qualifying instances for either dimension."
+        }
+      ]
+    }
+  }
+}

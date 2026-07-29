@@ -4,39 +4,32 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 2,
-  "grok_preset": 2,
+  "grok_preset": null,
   "chosen_preset": 2,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
     0.5167,
-    0.6519,
-    0.4467,
-    0.6438
+    0.5316,
+    0.5291,
+    0.4983
   ],
   "verdict": "NEAR",
-  "regret": 0.1971,
-  "regret_counted": 0.1971,
-  "entropy_bits": 1.4992,
-  "confidence": 0.5,
+  "regret": -0.0308,
+  "regret_counted": -0.0308,
+  "entropy_bits": 1.4858,
+  "confidence": 0.5119,
   "floor_applied": false,
   "rl_agg_probs": [
     0.0,
-    0.2381,
-    0.5,
+    0.2262,
+    0.5119,
     0.2619
   ],
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P2 (moderate 50% confidence, uncertain); budget-weighted votes show standard mass dominant at 50% while deep mass is only 26% (below 30% gate for sanctioned P2->P3). High-residual sections (S3 resid 54/2, must-ev 6) and no broad well-covered/brief pattern block downward override despite 100% self-containment. Dominant gap is depth but raw counts do not override the calibrated vote mass.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "budget-weighted standard vote mass 50%",
-    "deep mass <30% blocks P3",
-    "RL pick already cost-adjusted"
-  ],
-  "grok_risk_flags": [
-    "moderate confidence on technical sections (S4 deep vote, S3 high orphans)",
-    "42 unbacked anchors could still surface post-P2"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

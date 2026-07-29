@@ -185,12 +185,28 @@ def _tag_credits_all_arms(article: str) -> dict[str, dict[str, dict[str, float]]
     return {arm: _tag_credits_for_arm(article, arm) for arm in _ARMS}
 
 
-def _lookup_tag_credit(tag_credits_for_arm: dict[str, dict[str, float]], norm_title: str, dim: str) -> float:
+def _lookup_tag_credit(tag_credits_for_arm: dict[str, dict[str, float]], norm_title: str, dim: str, idx: int | None = None) -> float:
+    """Look up a section's tag credit by normalized title (exact, then substring
+    fuzzy match), falling back to ORDINAL POSITION when neither matches -- same
+    3-tier strategy as geo._get_score()/_get_enhancement(). Needed because a
+    grader's own reasoning.json section title can paraphrase away a word (e.g.
+    article.md's "Implementing a SMALL tool calling framework..." vs reasoning.
+    json's "Implementing a tool calling framework..."), which breaks substring
+    containment in EITHER direction and previously silently returned 0.0 for
+    both compared arms -- found via a real anomaly in the tier-2 pairwise
+    analysis (06_tools__var_demanding showed tag_margin=+0.000 for a case that
+    should have been -1.000). Section order is reliably consistent between the
+    two data sources even when exact title text isn't, so idx is a safe fallback.
+    """
     if norm_title in tag_credits_for_arm:
         return tag_credits_for_arm[norm_title][dim]
     for k, v in tag_credits_for_arm.items():
         if norm_title in k or k in norm_title:
             return v[dim]
+    if idx is not None:
+        values = list(tag_credits_for_arm.values())
+        if idx < len(values):
+            return values[idx][dim]
     return 0.0
 
 
@@ -207,11 +223,11 @@ def reconcile_article(article: str) -> dict:
     tag_credits = _tag_credits_all_arms(article)
 
     sections_out = {}
-    for title, pair_judgments in data.get("sections", {}).items():
+    for idx, (title, pair_judgments) in enumerate(data.get("sections", {}).items()):
         norm_title = geo._normalize(title)
-        light_anchor = {dim: _lookup_tag_credit(tag_credits["light"], norm_title, dim) for dim in _DIMENSIONS}
+        light_anchor = {dim: _lookup_tag_credit(tag_credits["light"], norm_title, dim, idx) for dim in _DIMENSIONS}
         tag_side = {
-            arm: {dim: _lookup_tag_credit(tag_credits[arm], norm_title, dim) for dim in _DIMENSIONS}
+            arm: {dim: _lookup_tag_credit(tag_credits[arm], norm_title, dim, idx) for dim in _DIMENSIONS}
             for arm in _ARMS
         }
         pairwise_side = {dim: solve_section_credits(pair_judgments, dim, light_anchor[dim]) for dim in _DIMENSIONS}

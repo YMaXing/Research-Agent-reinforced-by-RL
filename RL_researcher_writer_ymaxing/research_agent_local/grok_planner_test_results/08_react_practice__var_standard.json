@@ -4,40 +4,32 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.3892,
-    0.6148,
-    0.239,
-    0.3682
+    0.5513,
+    0.3622,
+    0.3829
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 0.9159,
-  "confidence": 0.3309,
-  "floor_applied": false,
+  "entropy_bits": 1.3057,
+  "confidence": 0.6339,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.6691,
-    0.3309,
-    0.0,
+    0.1512,
+    0.6339,
+    0.2149,
     0.0
   ],
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL vote is P1 light (already cost-adjusted); UNCERTAIN (67% skip / 33% light, 0% standard+deep). No P2→P3 escalation (deep-mass=0%, not from P2). Downward override to P0 disallowed: high-budget S4 (20%, resid 41/4, 12 must-ev) and S2 not brief/well-covered; only S5 (29%) is brief. 100% self-contained + dominant depth gaps already factored into the P1 pick.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "RL-aggregate-P1",
-    "zero-higher-vote-mass",
-    "self-contained-budget",
-    "brief-on-S5"
-  ],
-  "grok_risk_flags": [
-    "S4/S2 must-ev orphans may stay thin",
-    "uncertain vote could undervalue targeted depth"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

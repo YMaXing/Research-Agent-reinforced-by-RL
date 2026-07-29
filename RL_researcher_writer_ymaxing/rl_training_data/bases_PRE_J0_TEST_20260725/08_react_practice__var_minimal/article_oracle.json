@@ -1,0 +1,166 @@
+{
+  "version": 2,
+  "article": "08_react_practice__var_minimal",
+  "variant": "var_minimal",
+  "computed_at": "2026-07-25T21:22:15.680189+00:00",
+  "oracle_arm": "skip",
+  "oracle_arm_idx": 0,
+  "runner_up_arm": "standard",
+  "runner_up_arm_idx": 2,
+  "margin": 0.141745,
+  "reward_spread": 0.172385,
+  "r_w_rewards": {
+    "skip": 0.493966,
+    "light": 0.32158,
+    "standard": 0.352221,
+    "deep": 0.324924
+  },
+  "r_w_rewards_list": [
+    0.493966,
+    0.32158,
+    0.352221,
+    0.324924
+  ],
+  "decision_path": [
+    "policy=forbidden \u2192 skip (hard constraint)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 6,
+  "n_sections_with_target": 6,
+  "total_target_words": 1450,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-setup-and-environment",
+      "title": "setup and environment",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.10345,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.32,
+        "standard": 0.4936,
+        "deep": 0.6307
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.32,
+        0.4936,
+        0.6307
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-tool-layer-mock-search-implementation",
+      "title": "tool layer mock search implementation",
+      "target_words": 175,
+      "weight_words": 175,
+      "weight_frac": 0.12069,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.32,
+        "standard": 0.2936,
+        "deep": 0.3357
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.32,
+        0.2936,
+        0.3357
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-thought-phase-prompt-construction-and-generation",
+      "title": "thought phase prompt construction and generation",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.13793,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.12,
+        "standard": 0.4936,
+        "deep": 0.1857
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.12,
+        0.4936,
+        0.1857
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-action-phase-function-calling-and-parsing",
+      "title": "action phase function calling and parsing",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.17241,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.32,
+        "standard": 0.4936,
+        "deep": 0.4707
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.32,
+        0.4936,
+        0.4707
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-control-loop-messages-scratchpad-orchestration",
+      "title": "control loop messages scratchpad orchestration",
+      "target_words": 425,
+      "weight_words": 425,
+      "weight_frac": 0.2931,
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.495,
+        "standard": 0.0936,
+        "deep": -0.0693
+      },
+      "rewards_by_preset": [
+        0.15,
+        0.495,
+        0.0936,
+        -0.0693
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-tests-and-traces-success-and-graceful-fallback",
+      "title": "tests and traces success and graceful fallback",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.17241,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.32,
+        "standard": 0.4936,
+        "deep": 0.7357
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.32,
+        0.4936,
+        0.7357
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    }
+  ]
+}

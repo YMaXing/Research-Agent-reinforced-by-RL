@@ -3,39 +3,33 @@
   "lesson": "11_multimodal",
   "split": "TRAIN",
   "policy": "allowed",
-  "rl_preset": 1,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
     0.6767,
-    0.7854,
-    0.8025,
-    0.7883
+    0.6735,
+    0.6571,
+    0.6862
   ],
-  "verdict": "NEAR",
-  "regret": 0.0171,
-  "regret_counted": 0.0171,
-  "entropy_bits": 1.7169,
-  "confidence": 0.4167,
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.4422,
+  "confidence": 0.3917,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.1167,
-    0.4167,
-    0.3833,
-    0.0833
+    0.0,
+    0.1417,
+    0.3917,
+    0.4667
   ],
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL pick is P1 light on uncertain vote (light 42%, standard 38%, deep 8%); no P2→P3 escalation (not a P2 pick and deep mass=8%<30%), no general downward override (standard mass>30% and multiple high-budget sections show large residual depth/must-ev), self-contained flags already baked into the cost-adjusted pick.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "RL aggregate pick",
-    "vote-mass gates",
-    "residual need in S3/S5"
-  ],
-  "grok_risk_flags": [
-    "close light/standard split may undervalue depth in S3 (23%)"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

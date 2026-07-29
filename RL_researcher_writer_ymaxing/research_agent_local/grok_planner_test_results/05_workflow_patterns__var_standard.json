@@ -3,40 +3,33 @@
   "lesson": "05_workflow_patterns",
   "split": "TRAIN",
   "policy": "allowed",
-  "rl_preset": 1,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
-    0.6333,
-    0.9041,
-    0.7621,
-    0.8021
+    0.5872,
+    0.7646,
+    0.7238,
+    0.7595
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 0.6194,
-  "confidence": 0.8462,
-  "floor_applied": true,
+  "verdict": "NEAR",
+  "regret": 0.0408,
+  "regret_counted": 0.0408,
+  "entropy_bits": 1.3446,
+  "confidence": 0.6154,
+  "floor_applied": false,
   "rl_agg_probs": [
     0.0,
-    0.8462,
-    0.0,
-    0.1538
+    0.1795,
+    0.6154,
+    0.2051
   ],
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is decisively P1 light (85% light vote mass, 0% standard, 15% deep from only S1); all 100% of budget is self-contained with moderate residuals (e.g. S3 9/6, S4 16/6) and cov already 4-6 on depth. DECISIVE confidence triggers 'trust it and do not escalate' rule; no sanctioned override (not uncertain, no P2 base for P3, no near-zero residuals or brief flags for downward to P0).",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "decisive P1 vote mass",
-    "self-contained sections",
-    "moderate residuals"
-  ],
-  "grok_risk_flags": [
-    "S1 deep vote + high orphans (11) could leave theory gaps",
-    "dominant depth gaps may need more than light"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

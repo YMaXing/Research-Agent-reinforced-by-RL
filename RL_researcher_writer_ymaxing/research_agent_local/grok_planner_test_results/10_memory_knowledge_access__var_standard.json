@@ -4,39 +4,32 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.4776,
-    0.5736,
-    0.5062,
-    0.4924
+    0.5679,
+    0.513,
+    0.5134
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.4043,
-  "confidence": 0.5514,
+  "entropy_bits": 1.4262,
+  "confidence": 0.5233,
   "floor_applied": true,
   "rl_agg_probs": [
     0.0,
-    0.5514,
-    0.2991,
+    0.5233,
+    0.3271,
     0.1495
   ],
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P1 light (55% light, 30% standard, 15% deep; moderate confidence = uncertain). No sanctioned P2→P3 escalation (pick is P1 not P2; deep-vote mass=15%<30%). No general downward override to P0 (high-budget sections S1/S3/S4 carry 45% budget with large residual depth 17/19/32 and RL votes standard/deep; dominant gap type is depth). Self-contained flags and brief on S5 already baked into the cost-adjusted RL pick; stay at P1.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer_aggregate_P1",
-    "no_sanctioned_escalation",
-    "high_residual_depth_in_key_sections"
-  ],
-  "grok_risk_flags": [
-    "moderate scorer confidence",
-    "depth-dominant gaps in S3/S4 may still limit evidence"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

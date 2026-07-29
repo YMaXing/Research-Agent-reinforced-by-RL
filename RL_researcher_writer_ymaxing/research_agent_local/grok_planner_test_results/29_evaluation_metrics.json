@@ -4,39 +4,32 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 3,
-  "grok_preset": 3,
+  "grok_preset": null,
   "chosen_preset": 3,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.5118,
-    0.9047,
-    0.8138,
-    0.7803
+    0.7086,
+    0.6428,
+    0.6524
   ],
   "verdict": "MISS",
-  "regret": 0.1244,
-  "regret_counted": 0.1244,
-  "entropy_bits": 1.6498,
-  "confidence": 0.575,
+  "regret": 0.0562,
+  "regret_counted": 0.0562,
+  "entropy_bits": 1.2609,
+  "confidence": 0.6618,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.1118,
-    0.1498,
-    0.1635,
-    0.575
+    0.0,
+    0.1765,
+    0.1618,
+    0.6618
   ],
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P3 (already cost-adjusted) with 53% budget-weighted deep mass (dominant >30%) led by S2 (35%, deep·1.00, resid 17/6) and S5 (18%, deep·1.00, resid 17/6); entropy 1.65 makes it uncertain so votes control, but no sanctioned downward trigger applies (deep mass dominant, residuals not near-zero, 47 unbacked anchors, depth-dominant gaps). Self-contained flags are universal context only and do not override the RL pick per policy.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer P3 aggregate + 53% deep mass",
-    "high-residual large sections S2/S5",
-    "no downward conditions met"
-  ],
-  "grok_risk_flags": [
-    "potential diminishing returns past depth peak",
-    "all sections self-contained may limit new-source yield"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

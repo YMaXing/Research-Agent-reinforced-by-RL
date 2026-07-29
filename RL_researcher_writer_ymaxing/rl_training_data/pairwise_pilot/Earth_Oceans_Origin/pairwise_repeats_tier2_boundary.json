@@ -1,0 +1,53 @@
+{
+  "article": "Earth_Oceans_Origin",
+  "sections": {
+    "Drowning in a Sea of Possibilities": {
+      "breadth": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "original_preference": "a_more",
+        "classification": "tier2_boundary_0v2",
+        "repeats": [
+          {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Venus as a comparative case study: its Earth-like starting water lost via runaway greenhouse effect, evidenced by extremely high atmospheric D/H ratio",
+              "Link to astrobiology: water-rock interactions and radiolysis-fueled metabolisms as relevant to the search for life on icy moons like Europa and Enceladus"
+            ],
+            "b_instances": []
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Radiolysis-driven water-rock interaction metabolisms as a parallel line of astrobiological research relevant to icy moons like Europa and Enceladus"
+            ],
+            "b_instances": []
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Venus comparison: likely started with Earth-like water but lost it via runaway greenhouse effect, evidenced by extremely high D/H ratio in its atmosphere",
+              "Astrobiology connection: water-rock interactions and radiolysis-fueled metabolisms relevant to search for life on icy moons like Europa and Enceladus"
+            ],
+            "b_instances": []
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Connection to astrobiology: water-rock interactions and radiolysis-fueled metabolisms relevant to searching for life on icy moons like Europa and Enceladus"
+            ],
+            "b_instances": []
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Venus as an analog for lost Earth-like water via runaway greenhouse effect, evidenced by its atmosphere's high D/H ratio",
+              "link to water-rock interactions and radiolysis-fueled metabolisms relevant to search for life on icy moons like Europa and Enceladus"
+            ],
+            "b_instances": []
+          }
+        ]
+      }
+    }
+  }
+}

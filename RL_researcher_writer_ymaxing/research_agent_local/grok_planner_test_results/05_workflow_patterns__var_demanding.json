@@ -3,40 +3,33 @@
   "lesson": "05_workflow_patterns",
   "split": "TRAIN",
   "policy": "allowed",
-  "rl_preset": 1,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
-    0.7174,
-    0.8981,
-    0.773,
-    0.6479
+    0.5535,
+    0.7854,
+    0.7653,
+    0.7492
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 1.3983,
-  "confidence": 0.4769,
-  "floor_applied": true,
+  "verdict": "NEAR",
+  "regret": 0.0201,
+  "regret_counted": 0.0201,
+  "entropy_bits": 0.8542,
+  "confidence": 0.7209,
+  "floor_applied": false,
   "rl_agg_probs": [
-    0.1163,
-    0.4769,
-    0.4068,
+    0.0,
+    0.2791,
+    0.7209,
     0.0
   ],
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P1 light (48% light / 41% standard mass, 0% deep); UNCERTAIN but no sanctioned override applies (not a P2 pick so cannot escalate, standard mass >30% blocks general downward, residuals in S1/S2 already baked into cost-adjusted RL pick, all sections self-contained).",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer_aggregate_P1",
-    "vote_mass_no_deep",
-    "self_contained_all_sections"
-  ],
-  "grok_risk_flags": [
-    "S1/S2 high residual+must-ev could need more depth than light delivers",
-    "bimodal light/standard vote may sit near reward slope"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

@@ -1,0 +1,59 @@
+{
+  "external_evidence_policy": "allowed",
+  "sections": {
+    "S1::section-1-introduction": {
+      "target_words": 70,
+      "mandatory_bullets": 0,
+      "must_cover_depth": 0,
+      "must_stay_brief": 0
+    },
+    "S2::section-2-what-is-continuous-integration": {
+      "target_words": 600,
+      "mandatory_bullets": 5,
+      "must_cover_depth": 5,
+      "must_stay_brief": 0
+    },
+    "S3::section-3-pre-commit-hooks-automated-local-guardrails": {
+      "target_words": 400,
+      "mandatory_bullets": 3,
+      "must_cover_depth": 3,
+      "must_stay_brief": 0
+    },
+    "S4::section-4-ruff-fast-python-linting-and-formatting": {
+      "target_words": 530,
+      "mandatory_bullets": 4,
+      "must_cover_depth": 4,
+      "must_stay_brief": 0
+    },
+    "S5::section-5-unit-tests-for-agent-repos": {
+      "target_words": 750,
+      "mandatory_bullets": 3,
+      "must_cover_depth": 3,
+      "must_stay_brief": 0
+    },
+    "S6::section-6-ci-workflows-automated-enforcement": {
+      "target_words": 1350,
+      "mandatory_bullets": 2,
+      "must_cover_depth": 2,
+      "must_stay_brief": 0
+    },
+    "S7::section-7-ai-evaluations-as-regression-tests": {
+      "target_words": 520,
+      "mandatory_bullets": 3,
+      "must_cover_depth": 0,
+      "must_stay_brief": 0
+    },
+    "S8::section-8-daily-development-workflow": {
+      "target_words": 80,
+      "mandatory_bullets": 0,
+      "must_cover_depth": 0,
+      "must_stay_brief": 0
+    },
+    "S9::section-9-conclusion": {
+      "target_words": 60,
+      "mandatory_bullets": 0,
+      "must_cover_depth": 0,
+      "must_stay_brief": 0
+    }
+  }
+}

@@ -1,0 +1,210 @@
+{
+  "version": 2,
+  "article": "07_reasoning_planning",
+  "variant": "no_variant",
+  "computed_at": "2026-07-27T00:38:45.167535+00:00",
+  "oracle_arm": "skip",
+  "oracle_arm_idx": 0,
+  "runner_up_arm": "deep",
+  "runner_up_arm_idx": 3,
+  "margin": 0.042361,
+  "reward_spread": 0.067795,
+  "r_w_rewards": {
+    "skip": 0.288583,
+    "light": 0.220787,
+    "standard": 0.240583,
+    "deep": 0.246222
+  },
+  "r_w_rewards_list": [
+    0.288583,
+    0.220787,
+    0.240583,
+    0.246222
+  ],
+  "decision_path": [
+    "unique reward winner (margin=+0.0424 > EPS_BAND=0.03)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 8,
+  "n_sections_with_target": 8,
+  "total_target_words": 3175,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-what-a-non-reasoning-model-does-and-why-it-fails-on-complex-tasks",
+      "title": "what a non reasoning model does and why it fails on complex tasks",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.09449,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.47,
+        "standard": 0.4436,
+        "deep": 0.4307
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.47,
+        0.4436,
+        0.4307
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-teaching-models-to-think-chain-of-thought-and-its-limits",
+      "title": "teaching models to think chain of thought and its limits",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.09449,
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.12,
+        "standard": 0.4436,
+        "deep": 0.4307
+      },
+      "rewards_by_preset": [
+        0.3,
+        0.12,
+        0.4436,
+        0.4307
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-separating-planning-from-answering-foundations-of-react-and-plan-and-execute",
+      "title": "separating planning from answering foundations of react and plan and execute",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.06299,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.6436,
+        "deep": 0.5857
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.67,
+        0.6436,
+        0.5857
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-react-in-depth-loop-evolving-example-pros-and-cons",
+      "title": "react in depth loop evolving example pros and cons",
+      "target_words": 450,
+      "weight_words": 450,
+      "weight_frac": 0.14173,
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.12,
+        "standard": 0.2436,
+        "deep": 0.0807
+      },
+      "rewards_by_preset": [
+        0.3,
+        0.12,
+        0.2436,
+        0.0807
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-plan-and-execute-in-depth-plan-execution-pros-and-cons",
+      "title": "plan and execute in depth plan execution pros and cons",
+      "target_words": 700,
+      "weight_words": 700,
+      "weight_frac": 0.22047,
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.27,
+        "standard": 0.0936,
+        "deep": 0.0807
+      },
+      "rewards_by_preset": [
+        0.15,
+        0.27,
+        0.0936,
+        0.0807
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-where-this-shows-up-in-practice-deep-research-style-systems",
+      "title": "where this shows up in practice deep research style systems",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.07874,
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.12,
+        "standard": 0.2436,
+        "deep": 0.1507
+      },
+      "rewards_by_preset": [
+        0.15,
+        0.12,
+        0.2436,
+        0.1507
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::section-7-modern-reasoning-models-thinking-vs-answer-streams-and-interleaved-thinking",
+      "title": "modern reasoning models thinking vs answer streams and interleaved thinking",
+      "target_words": 750,
+      "weight_words": 750,
+      "weight_frac": 0.23622,
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.12,
+        "standard": 0.0936,
+        "deep": 0.2307
+      },
+      "rewards_by_preset": [
+        0.3,
+        0.12,
+        0.0936,
+        0.2307
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 8,
+      "sec_id": "S8::section-8-advanced-agent-capabilities-enabled-by-planning-goal-decomposition-and-self-correction",
+      "title": "advanced agent capabilities enabled by planning goal decomposition and self correction",
+      "target_words": 225,
+      "weight_words": 225,
+      "weight_frac": 0.07087,
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.12,
+        "standard": 0.1986,
+        "deep": 0.2157
+      },
+      "rewards_by_preset": [
+        0.15,
+        0.12,
+        0.1986,
+        0.2157
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    }
+  ]
+}

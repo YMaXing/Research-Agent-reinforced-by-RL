@@ -1,0 +1,95 @@
+{
+  "article": "13_agent_framework",
+  "sections": {
+    "Framework Choice Under Uncertainty": {
+      "depth": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "original_preference": "b_more",
+        "classification": "strong_disagree",
+        "repeats": [
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Introduces the specific technical concept of 'structural divergence' and resulting costly 'rerouting' patterns as the mechanism explaining why the static graph failed for the research agent, with a citation"
+            ],
+            "b_instances": [
+              "Slightly more granular description of needing to 'add tools, pivot strategy, and replan on the fly' (mostly restates the same point, less mechanistic than A's)"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Explains 'structural divergence' as a named failure mode where execution deviates from the predefined graph",
+              "Describes costly 'rerouting' patterns as the mechanism forcing systems to handle unexpected states, with arxiv citation"
+            ],
+            "b_instances": []
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "'Structural divergence' concept describing execution path deviating from predefined graph",
+              "'Rerouting' as a costly failure pattern when handling unexpected states, with arxiv citation"
+            ],
+            "b_instances": [
+              "Shared memory store poisoning risk from lack of namespace isolation",
+              "Container escape risk from shared host kernel",
+              "Runaway agent resource exhaustion without kernel-level limits",
+              "Cascading failures propagating across agents via shared dependencies"
+            ]
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Structural divergence/rerouting mechanism explaining why rigid graphs fail for interactive research workflows"
+            ],
+            "b_instances": [
+              "Shared memory store poisoning risk from lack of namespace isolation",
+              "Container escape risk from shared host kernel",
+              "Runaway agent resource exhaustion without kernel-level limits",
+              "Cascading failures propagating across agents via shared dependencies"
+            ]
+          }
+        ]
+      }
+    },
+    "Framework Deep Dive: CrewAI": {
+      "breadth": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "original_preference": "a_more",
+        "classification": "strong_agree",
+        "repeats": [
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Comparison to multi-agent patterns in game AI, e.g., Critic-Refiner pattern, cited via truefoundry blog [25]"
+            ],
+            "b_instances": []
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Comparison to game AI multi-agent coordination patterns, specifically the Critic-Refiner pattern where one agent produces output and another critiques it (sourced to truefoundry blog)"
+            ],
+            "b_instances": []
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Comparison of CrewAI's multi-agent coordination to patterns from game AI, specifically the Critic-Refiner pattern where one agent produces output and another critiques it (cited)"
+            ],
+            "b_instances": []
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Comparison to game AI's Critic-Refiner multi-agent pattern as an analogous technique, with feedback-loop explanation (sourced from truefoundry blog)"
+            ],
+            "b_instances": []
+          }
+        ]
+      }
+    }
+  }
+}

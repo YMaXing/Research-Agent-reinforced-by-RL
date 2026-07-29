@@ -3,41 +3,33 @@
   "lesson": "02_workflows_vs_agents",
   "split": "TRAIN",
   "policy": "allowed",
-  "rl_preset": 1,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
-  "oracle_preset": 1,
-  "oracle_name": "light",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
+  "oracle_preset": 2,
+  "oracle_name": "standard",
   "r_w_rewards": [
-    0.7034,
-    0.7756,
-    0.7145,
-    0.5436
+    0.6172,
+    0.7056,
+    0.6916,
+    0.4664
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.3649,
-  "confidence": 0.4402,
-  "floor_applied": true,
+  "entropy_bits": 0.7575,
+  "confidence": 0.7815,
+  "floor_applied": false,
   "rl_agg_probs": [
-    0.4615,
-    0.4402,
-    0.0983,
+    0.0,
+    0.2185,
+    0.7815,
     0.0
   ],
-  "grok_override": false,
-  "grok_reasoning": "Section-scorer aggregate is P1 light (moderate confidence, 44% light / 46% skip vote split, standard 10%, deep 0%). This is already cost-adjusted upstream; residuals are zero in the two largest sections (S5 29%, S4 18%) with all sections self-contained, but S2/S3 gaps and 45 unbacked anchors were factored into the RL votes. No qualitative red flags (e.g. evidence policy=ALLOWED, examples section already strong) or sanctioned override conditions justify moving off the primary signal.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer_aggregate_P1",
-    "budget_vote_mass",
-    "self-contained_residuals",
-    "no_escalation_signal"
-  ],
-  "grok_risk_flags": [
-    "close skip/light split could tilt P0 if residuals over-weighted",
-    "demanding guideline with many must-ev could surface minor gaps"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

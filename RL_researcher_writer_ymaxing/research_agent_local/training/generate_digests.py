@@ -196,6 +196,23 @@ def _normalize_text(text: str) -> str:
     )
 
 
+_BOLD_MARKER_RE = re.compile(r"\*\*([^*]+)\*\*")
+
+
+def _strip_bold_markers(text: str) -> str:
+    """Remove markdown bold markers (**...**), keeping the inner text.
+
+    Anchors extracted by _extract_all_anchors() have bold markers stripped
+    before being stored, so any guideline text used to validate those anchors
+    (substring containment check) MUST go through this same stripping first —
+    otherwise a "**Label:** rest of bullet" bullet becomes "Label: rest of
+    bullet" in the anchor but stays "**Label:** rest of bullet" in the raw
+    guideline, and the "**" sitting right after the colon breaks the substring
+    match (false-positive "orphan anchor not in guideline" validation errors).
+    """
+    return _BOLD_MARKER_RE.sub(r"\1", text)
+
+
 # ---------------------------------------------------------------------------
 # Helpers: section ID + slug
 # ---------------------------------------------------------------------------
@@ -252,7 +269,7 @@ def _extract_all_anchors(guideline: str) -> list[dict[str, str]]:
         stripped = line.strip()
         if stripped.startswith("- ") or stripped.startswith("* "):
             text = stripped[2:].strip()
-            text = re.sub(r"\*\*([^*]+)\*\*", r"\1", text)
+            text = _strip_bold_markers(text)
             text = _normalize_text(text)
             text = text[:120].strip()
             if len(text) >= 10 and not _STRUCTURAL_ANCHOR_RE.match(text):
@@ -1806,7 +1823,11 @@ def validate_and_postprocess(
 
     modified = digest
     known_artefact_ids = {e["id"] for e in artefact_registry}
-    norm_guideline = _normalize_text(guideline)
+    # Strip bold markers (**...**) the same way _extract_all_anchors() does before
+    # storing anchor text — otherwise "**Label:** rest" bullets in the raw guideline
+    # never substring-match their bold-stripped anchor form (see _strip_bold_markers
+    # docstring), producing spurious "orphan anchor not in guideline" failures.
+    norm_guideline = _normalize_text(_strip_bold_markers(guideline))
 
     for m in _SECTION_BLOCK_RE.finditer(digest):
         sec_id = m.group(1)
@@ -1833,7 +1854,14 @@ def validate_and_postprocess(
                         )
 
         for orphan_m in _ORPHAN_RE.finditer(body):
-            anchor_text = _normalize_text(orphan_m.group(2))
+            # Orphan anchors can come from two sources: (1) verbatim copies of the
+            # pre-computed orphan_anchors_raw list, which already had bold markers
+            # stripped by _extract_all_anchors(); or (2) anchors the LLM invents
+            # itself by reading the guideline directly, which retain the raw
+            # "**Label**" markdown exactly as written. Strip bold markers from the
+            # anchor text too (mirroring norm_guideline) so both sources compare
+            # consistently against the bold-stripped guideline.
+            anchor_text = _normalize_text(_strip_bold_markers(orphan_m.group(2)))
             route = orphan_m.group(1)
             if route in ("depth", "breadth"):
                 if anchor_text.lower() not in norm_guideline.lower():

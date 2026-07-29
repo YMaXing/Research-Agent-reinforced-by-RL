@@ -1,0 +1,727 @@
+{
+  "article": "05_workflow_patterns__var_minimal",
+  "variant_level": "minimal",
+  "computed_at": "2026-05-05T00:43:34.737206+00:00",
+  "oracle_preset": 0,
+  "oracle_preset_name": "P0_baseline",
+  "runner_up_preset": 2,
+  "runner_up_preset_name": "P2_balanced_depth",
+  "margin": 0.023259,
+  "reward_spread": 0.179048,
+  "article_rewards": [
+    0.95558,
+    0.816533,
+    0.932321,
+    0.91558,
+    0.88628,
+    0.776533
+  ],
+  "oracle_ranking": [
+    0,
+    2,
+    3,
+    4,
+    1,
+    5
+  ],
+  "aggregation_scheme": "mixed_6_of_7_from_guideline",
+  "n_sections": 7,
+  "n_sections_with_target": 6,
+  "total_target_words": 1344,
+  "sections": [
+    {
+      "index": 1,
+      "title": "The Challenge with Complex Single LLM Calls",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.14881,
+      "digest_words": 183,
+      "rewards_by_preset": [
+        0.95,
+        0.93,
+        0.91,
+        0.91,
+        0.89,
+        0.89
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 0,
+      "section_runner_up": 1,
+      "section_margin": 0.02,
+      "mu": 0.1236,
+      "prior_by_preset": [
+        -8.5e-05,
+        -0.004267,
+        -0.019561,
+        -0.019561,
+        -0.045966,
+        -0.045966
+      ],
+      "rewards_by_preset_modified": [
+        0.949915,
+        0.925733,
+        0.890439,
+        0.890439,
+        0.844034,
+        0.844034
+      ],
+      "section_oracle_new": 0,
+      "section_runner_up_new": 1,
+      "section_margin_new": 0.024183,
+      "oracle_changed": false
+    },
+    {
+      "index": 2,
+      "title": "The Power of Modularity: Why Chain LLM Calls?",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.11161,
+      "digest_words": 134,
+      "rewards_by_preset": [
+        1.0,
+        0.98,
+        0.96,
+        0.96,
+        0.94,
+        0.94
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 0,
+      "section_runner_up": 1,
+      "section_margin": 0.02,
+      "mu": 0.2576,
+      "prior_by_preset": [
+        -0.000369,
+        -0.003062,
+        -0.016867,
+        -0.016867,
+        -0.041783,
+        -0.041783
+      ],
+      "rewards_by_preset_modified": [
+        0.999631,
+        0.976938,
+        0.943133,
+        0.943133,
+        0.898217,
+        0.898217
+      ],
+      "section_oracle_new": 0,
+      "section_runner_up_new": 1,
+      "section_margin_new": 0.022694,
+      "oracle_changed": false
+    },
+    {
+      "index": 3,
+      "title": "Building a Sequential Workflow: FAQ Generation Pipeline",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.18601,
+      "digest_words": 106,
+      "rewards_by_preset": [
+        0.95,
+        0.93,
+        0.96,
+        0.91,
+        0.89,
+        0.89
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 2,
+      "section_runner_up": 0,
+      "section_margin": 0.01,
+      "mu": 0.8523,
+      "prior_by_preset": [
+        -0.004036,
+        -0.000121,
+        -0.007318,
+        -0.007318,
+        -0.025625,
+        -0.025625
+      ],
+      "rewards_by_preset_modified": [
+        0.945964,
+        0.929879,
+        0.952682,
+        0.902682,
+        0.864375,
+        0.864375
+      ],
+      "section_oracle_new": 2,
+      "section_runner_up_new": 0,
+      "section_margin_new": 0.006718,
+      "oracle_changed": false
+    },
+    {
+      "index": 4,
+      "title": "Optimizing Sequential Workflows With Parallel Processing",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.14881,
+      "digest_words": 123,
+      "rewards_by_preset": [
+        0.95,
+        0.93,
+        0.91,
+        0.91,
+        0.89,
+        0.89
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 0,
+      "section_runner_up": 1,
+      "section_margin": 0.02,
+      "mu": 0.7236,
+      "prior_by_preset": [
+        -0.002909,
+        -0.000425,
+        -0.009052,
+        -0.009052,
+        -0.02879,
+        -0.02879
+      ],
+      "rewards_by_preset_modified": [
+        0.947091,
+        0.929575,
+        0.900948,
+        0.900948,
+        0.86121,
+        0.86121
+      ],
+      "section_oracle_new": 0,
+      "section_runner_up_new": 1,
+      "section_margin_new": 0.017516,
+      "oracle_changed": false
+    },
+    {
+      "index": 5,
+      "title": "Introducing Dynamic Behavior: Routing and Conditional Logic",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.18601,
+      "digest_words": 92,
+      "rewards_by_preset": [
+        0.95,
+        0.93,
+        0.91,
+        0.91,
+        0.84,
+        0.89
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 0.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 0,
+      "section_runner_up": 1,
+      "section_margin": 0.02,
+      "mu": 0.8523,
+      "prior_by_preset": [
+        -0.004036,
+        -0.000121,
+        -0.007318,
+        -0.007318,
+        -0.025625,
+        -0.025625
+      ],
+      "rewards_by_preset_modified": [
+        0.945964,
+        0.929879,
+        0.902682,
+        0.902682,
+        0.814375,
+        0.864375
+      ],
+      "section_oracle_new": 0,
+      "section_runner_up_new": 1,
+      "section_margin_new": 0.016085,
+      "oracle_changed": false
+    },
+    {
+      "index": 6,
+      "title": "Building a Basic Routing Workflow",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.14881,
+      "digest_words": 74,
+      "rewards_by_preset": [
+        0.95,
+        0.13,
+        0.96,
+        0.91,
+        0.89,
+        0.09
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 2,
+      "section_runner_up": 0,
+      "section_margin": 0.01,
+      "mu": 0.4236,
+      "prior_by_preset": [
+        -0.000997,
+        -0.001846,
+        -0.013806,
+        -0.013806,
+        -0.036878,
+        -0.036878
+      ],
+      "rewards_by_preset_modified": [
+        0.949003,
+        0.128154,
+        0.946194,
+        0.896194,
+        0.853122,
+        0.053122
+      ],
+      "section_oracle_new": 0,
+      "section_runner_up_new": 2,
+      "section_margin_new": 0.00281,
+      "oracle_changed": true
+    },
+    {
+      "index": 7,
+      "title": "Orchestrator-Worker Pattern: Dynamic Task Decomposition",
+      "target_words": null,
+      "weight_words": 94,
+      "weight_frac": 0.06994,
+      "digest_words": 94,
+      "rewards_by_preset": [
+        0.95,
+        0.93,
+        0.91,
+        0.91,
+        0.89,
+        0.89
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 0,
+      "section_runner_up": 1,
+      "section_margin": 0.02,
+      "mu": 0.0,
+      "prior_by_preset": [
+        -0.0,
+        -0.005556,
+        -0.022222,
+        -0.022222,
+        -0.05,
+        -0.05
+      ],
+      "rewards_by_preset_modified": [
+        0.95,
+        0.924444,
+        0.887778,
+        0.887778,
+        0.84,
+        0.84
+      ],
+      "section_oracle_new": 0,
+      "section_runner_up_new": 1,
+      "section_margin_new": 0.025556,
+      "oracle_changed": false
+    }
+  ],
+  "article_rewards_modified": [
+    0.953444,
+    0.814784,
+    0.91985,
+    0.903109,
+    0.851974,
+    0.742227
+  ],
+  "oracle_preset_new": 0,
+  "runner_up_preset_new": 2,
+  "margin_new": 0.033594,
+  "prior_config": {
+    "lambda": 0.05,
+    "a_w": 0.4,
+    "a_p": 1.0,
+    "a_d": 1.0,
+    "mu_base": {
+      "minimal": 0.7,
+      "standard": 1.7,
+      "demanding": 2.0
+    }
+  }
+}

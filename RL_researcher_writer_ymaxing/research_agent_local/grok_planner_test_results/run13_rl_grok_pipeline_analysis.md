@@ -3065,4 +3065,782 @@ candidates A/B failed in §34. As always: n=1 confirmed article + a corpus-wide 
 informative but not final — worth revisiting once more articles get a genuinely confirmed
 (replicate-majority) label.
 
+---
+---
+
+# Part 6 — Pairwise LLM Comparison Grading (2026-07-24)
+
+**Scope:** after five different section-level signal candidates (raw citations, marginal
+citations, numeric claims, connector density, embedding-distance novelty) all failed to
+meaningfully separate the standard↔deep boundary specifically (each ruled out at proper
+statistical rigor, not just assumed), this Part documents the pivot to a categorically different
+lever — **direct pairwise LLM comparison** of two arms' renderings of the same section, instead
+of grading each arm in isolation against a fixed rubric. This targets judge-side/absolute-scale
+imprecision specifically, rather than searching for yet another content-derived proxy signal.
+
+## 42. Motivation: why pairwise, and why now
+
+The tag-based `enhancement_credit()` pipeline (Parts 5, §25-41) grades depth/breadth enhancement
+per arm, per section, **in isolation** — the judge sees one document and a rubric, never a
+second document to compare against. This has an inherent resolution limit: distinguishing "this
+section's exploration content is worth roughly 0.55" from "worth roughly 0.80" requires the judge
+to hit an *absolute* scale consistently across thousands of independent single-document
+judgments, with no anchor. A **relative** judgment — "is document B's exploration content more
+extensive/valuable than document A's, for the same section?" — is a categorically easier
+judgment for an LLM to make reliably, and directly targets the specific failure mode this
+investigation kept re-encountering: the standard↔deep boundary, where absolute-scale judgments on
+two content-rich, effort-differentiated documents are hardest to calibrate consistently.
+
+This is explicitly **not** another search for a new content-derived proxy feature (the five that
+failed in §*(pre-Part-6 investigation, not written up as its own numbered section but referenced
+throughout this Part's design rationale)* were all attempts to find some *new measurable property
+of the text* that correlates with true quality). Pairwise comparison instead changes *how the
+existing judgment is elicited*, keeping the underlying question (does this arm have more
+depth/breadth enhancement content?) the same.
+
+## 43. Design: metric module, driver script, reconciliation
+
+**New metric module** — `writing_workflow/src/brown/evals/metrics/pairwise_enhancement/`
+(mirrors the `new_follows_gt/` sibling-module pattern): `PairwiseEnhancementJudgment` (Pydantic)
+carries nested `depth`/`breadth` judgments, each with a 5-point `preference` scale
+(`a_much_more`/`a_more`/`tie`/`b_more`/`b_much_more`) plus `a_instances`/`b_instances` (brief
+phrases of distinct qualifying enhancement instances found in each document that the *other*
+document lacks). Both dimensions graded in **one** structured-output call (keeps costs at
+~1 call/section/pair, not 2). `grade_pairwise()` is a lightweight standalone async function
+(deliberately **not** a full `BrownBaseMetric`/`ArticleScores` subclass — this is a
+single-comparison-per-call design, architecturally different from the existing whole-article
+multi-section metrics) reusing `get_model`/`structured_output_kwargs` exactly like
+`FollowsGTMetric`.
+
+**Driver** — `writing_workflow/rl_pairwise_grading_generator.py`: loads light/standard/deep
+`article.md` per article (auto-detects TRAIN-variant vs TEST preset convention via `"__var_" in
+name`, never relying on any file's own possibly-stale `TRAIN_ARTICLES`/`TEST_ARTICLES` lists),
+splits into sections (by `## ` header, including the pre-first-header text as an "Introduction"
+section, stopping before `## References`), does the 3-way round robin per section
+(`light_vs_standard`, `light_vs_deep`, `standard_vs_deep`) with **randomized A/B position** (not
+both orders, to keep cost proportional — position bias washes out in aggregate across many
+sections/articles rather than being eliminated per-call). Writes raw judgments to
+`rl_training_data/pairwise_pilot/<article>/pairwise_judgments.json`.
+
+**Reconciliation** — `research_agent_local/training/pairwise_reward.py`: converts the 5-point
+ordinal preference scale to a signed numeric delta (`PREFERENCE_TO_DELTA`, calibrated to
+`enhancement_credit()`'s own ~0.20-0.25 tier spacing — an early miscalibration attempt using
+larger magnitudes saturated the [0,1] scale on the very first non-tie judgment and was caught via
+a synthetic unit test before any real grading ran). `light`'s credit is anchored at its existing
+tag-based `enhancement_credit()` value; `standard`/`deep` are solved via a ridge-regularized
+least-squares fit from the 3 pairwise deltas (always well-posed regardless of how many of the 3
+pairs succeeded). Zero LLM calls — pure post-hoc numeric reconciliation, same spirit as
+`sweep_reward_formula.py`.
+
+**A real bug caught before trusting any output:** the first implementation of the delta-sign
+conversion looked for `a_arm`/`b_arm` *inside* the depth/breadth sub-dict — but they live at the
+judgment-entry level (one A/B assignment shared by both dimensions). Caught via a synthetic
+unit test (`solve_section_credits` on hand-constructed judgments) before spending any real API
+budget.
+
+## 44. Pilot result (6 articles, 137 calls): a real but weak relationship, with a genuine directional pattern
+
+Piloted on 6 diverse articles chosen via `audit_oracle_margins.py`'s real margin data:
+`09_RAG__var_standard` (unresolved near-tie), `06_tools__var_standard` (confirmed-correct via
+§31's replicate majority), `13_agent_framework` and `Dark_Dimension` (TEST, thin margins), `HNSW`
+(TEST, comfortable margin — sanity check), `08_react_practice__var_demanding` (TRAIN, comfortable
+margin, topic diversity). 137/138 calls succeeded (1 section both-arms-empty, correctly skipped),
+0 errors.
+
+**Headline result across all 92 (section, dimension) observations:** Pearson
+`r=+0.223` between tag-based and pairwise-reconciled standard-vs-deep margins — a real but weak
+relationship. Stratified: 25 trivial (both methods say ~no signal), 40 weak/ambiguous, 17
+strong-agree (both confident, same direction), **10 strong-disagree** (both confident, opposite
+direction) — raw argmax agreement on non-trivial cases only 57% (38/67), barely above chance.
+
+**A suggestive (not yet significant, n=10, binomial p≈0.34) directional pattern:** of the 10
+disagreements, 7 have tag-based grading favoring `deep` while pairwise favors `standard` — direction
+consistent with tag-based grading over-crediting `deep` from raw content volume, while direct
+comparison better detects when `standard`'s specific draw had comparably distinct content.
+
+**An important caveat surfaced immediately:** pairwise grading has its *own* internal
+inconsistency, not a clean fix. `13_agent_framework`'s "Framework Deep Dive: LangGraph" section
+showed a non-transitive triangle: the direct `light_vs_deep` call judged `light > deep`, but
+`light_vs_standard` and `standard_vs_deep` were both judged ties — the judge disagreeing with
+itself across the 3 pairwise calls for one section. Pairwise comparison is a different lens on
+judge noise, not an elimination of it.
+
+**A positive counter-example, for balance:** "A Theory for Choosing: Decision Axes"
+(`13_agent_framework`) — both methods agree `standard >> deep`, and pairwise identified a concrete
+mechanism (`standard` has 4 distinct cited instances vs. `deep`'s 1 in this specific section, a
+genuine content-quality finding, not an artifact).
+
+## 45. Repeat-draws noise-floor check (60 calls): the disagreement is real, not single-draw noise
+
+Two competing explanations for §44's 10 disagreements: (1) real, repeatable judge disagreement
+with tag-based grading, or (2) each disagreement is itself just one noisy draw that would flip on
+a second look. Re-ran the exact same 10 disagreement cases + 5 agreement controls, same `doc_a`/
+`doc_b`/section, **same A/B slot** (not re-randomized — isolates judge-call noise from
+position-bias noise), 4 additional draws each (5 total per target).
+
+**Result: 9 of 10 disagreements persisted after denoising** (only 1/10 resolved, and only to a
+near-zero "weak" tie, not to actual agreement). **Within-case consistency** (fraction of the 5
+draws agreeing with the majority direction) averaged 80% for disagreement cases and ~84% for
+agreement controls — pairwise grading is reasonably repeatable *in general*, it just consistently
+gives a different verdict than tag-based grading on these particular sections. Direction among
+the 9 persisting disagreements: 7 "tag=deep/pairwise=standard" vs. 2 reverse — the same ratio as
+§44, now backed by 4-5 consistent draws per case instead of one noisy call. 2/5 agreement controls
+regressed to "weak" (shrunk toward zero, did not reverse sign) — expected regression-to-mean for
+borderline cases under averaging, not a red flag.
+
+## 46. Scaled standard-vs-deep check (243 calls): independent replication crosses statistical significance
+
+A lean, dedicated driver (`writing_workflow/rl_pairwise_stddeep_scale.py`) graded **only**
+`standard_vs_deep` (skipping `light` entirely) with **N=3 draws per section from the start**
+(majority-vote-by-design, not a repeat pass) across **12 new, disjoint articles** covering every
+remaining TRAIN base topic (`02_workflows_vs_agents`, `03_context_engineering`,
+`05_workflow_patterns`, `10_memory_knowledge_access`, `11_multimodal`, all `__var_standard`) plus
+7 diverse TEST articles (`04_structured_outputs`, `07_reasoning_planning`, `29_evaluation_metrics`,
+`Earth_Oceans_Origin`, `Understanding_Reasoning_LLMs`, `Distinct_AI_Models`,
+`Insects_Consciousness`). 81 sections × 3 draws = 243 calls, 0 errors.
+
+**Result: N=162 observations, Pearson `r=+0.375`** — meaningfully *stronger* than the original
+single-draw pilot's r=0.223, consistent with majority-voting reducing pairwise's own noise.
+Breakdown: 28 trivial, 84 weak, 41 strong-agree, **9 strong-disagree**. Direction split among the
+9: **7 "tag=deep/pairwise=standard" vs. 2 reverse — the identical 7:2 ratio found independently in
+§45**, from a completely disjoint set of 12 articles. Concrete pattern: most of the 7 cases have
+`tag_margin` near the curve's maximum magnitude (-0.55 — tag gave `deep` full credit, `standard`
+zero), while pairwise's own margin is far more modest (+0.067 to +0.367) — tag-based grading
+saturates at its ceiling disproportionately in the "deep wins" direction.
+
+**Combined significance test (legitimate pooling — the two 9-disagreement sets are from entirely
+disjoint articles, no double-counting):** 18 total disagreement sections across 16 distinct
+topics, 14 in the "tag=deep/pairwise=standard" direction vs. 4 reversed. Binomial two-tailed
+`p=0.031` (n=18, k=14) — **crosses the conventional significance threshold**, where either sample
+alone (p≈0.18 each) did not. This is the single strongest, most rigorously validated empirical
+result in this whole pairwise-grading investigation: **tag-based/binary-capped grading
+systematically over-credits `deep` relative to `standard` on a meaningful, statistically
+significant subset of sections.**
+
+## 47. Correction designed (G0/G1): mechanism confirmed with real data, but a real spillover complication
+
+**Mechanism, verified with real tag data (not inferred):** pulled the raw `[instances=N;
+quality=...]` tags behind the 7 clearest "-0.55" disagreement cases. 5 of them are exactly:
+`standard`=0 instances (credit 0.00), `deep`=1 strong instance (credit 0.55) — the disagreement
+concentrates precisely at `enhancement_reward.py`'s `CREDIT_AT_WEIGHTED_COUNT` **tier-1 step**
+(the 0→1 instance transition, a +0.55 jump). The interpolation formula was verified to exactly
+reproduce 2 non-integer disagreement cases too (`Earth_Oceans_Origin` -0.147,
+`Understanding_Reasoning_LLMs` -0.25) via manual calculation before trusting the mechanism.
+
+**Calibration:** majority-voted pairwise margin on these same 5 sections averaged **+0.207**
+(range +0.067 to +0.367) vs. the curve's assumed +0.55 — tier-1 is empirically ~2.5x too steep.
+Added two candidates to `sweep_reward_formula.py`: `G0_tier1_035` (conservative,
+`{0:.00,1:.35,2:.80,3:1.00}`) and `G1_tier1_020` (aggressive, directly calibrated,
+`{0:.00,1:.20,2:.80,3:1.00}`) — both leave tier-2/tier-3 unchanged (weaker evidence there).
+
+**Non-circular replicate-majority-vote result (the strongest available ground truth):**
+`06_tools__var_standard` (confirmed-correct label `standard`, baseline 3-1 majority) → **G0 gives
+standard=4/4 unanimous** (real, positive evidence — the correction makes the confirmed-correct
+answer *more* decisive). G1 gives 3-1, same as baseline (neutral).
+
+**Corpus-wide sweep (42 articles):** G0 causes 5/42 flips, G1 causes 8/42 — but most are **not**
+what the correction set out to fix. `enhancement_credit()`'s tier-1 value is shared by all 4 arms,
+not just standard/deep — lowering it also reduces `light`'s credit whenever `light` itself has
+~1 instance (common, per §38's audit: ~19-21% of article-arm pairs). Most flips are
+`light→skip`/`standard→light` — spillover onto boundaries the pairwise investigation, at this
+point, had never tested (it deliberately compared only `standard_vs_deep`).
+
+## 48. Light-boundary investigation: does not replicate directionally
+
+**Free first look (zero new API calls):** the original 6-article pilot (§44) already graded
+`light_vs_standard`/`light_vs_deep` — data sitting unused for a "light" bias check. Analysis
+(`analyze_light_boundary.py`, generalizes the tag-vs-pairwise comparator to any arm pair):
+`light_vs_standard` N=92, r=+0.329, 4 disagreements (3:1 skew, "tag=light/pairwise=standard" —
+2 of the 4 show the identical -0.550 tier-1 signature, just mirrored). `light_vs_deep` N=92,
+r=+0.313, 7 disagreements, 4:3 split — no clear direction, consistent with noise.
+
+**Phase 1 — repeat-draws (32 calls) on the 4 disagreements + 4 agreement controls, same 6
+articles:** all 4 disagreements persisted after denoising (0/4 flipped — even more decisive than
+standard-vs-deep's 9/10), all 4 controls held (0/4 weakened). Direction: 3 of 4 match the
+original "tag=light/pairwise=standard" pattern. Confirms these 4 disagreements are real,
+repeatable — not noise.
+
+**Phase 2 — scaled, independent (129 calls, 6 new disjoint articles):** N=86 observations,
+r=+0.337 (healthy). 9 disagreements, but **6 show "tag=standard/pairwise=light" — the opposite
+majority direction from Phase 1.**
+
+**Pooled significance test (Phase 1's 4 + Phase 2's 9 = 13 disagreements, disjoint articles,
+legitimate to pool):** direction split 6:7 — essentially a coin flip. Binomial two-tailed
+`p=1.00` — **zero evidence of a systematic directional bias** when properly combined across
+independent samples.
+
+**Verdict:** unlike standard-vs-deep (same direction across 2 independent samples, p=0.031),
+light-vs-standard's apparent bias **did not survive independent replication at scale** — the
+third time in this whole investigation a promising small-sample signal failed to hold up (after
+marginal-citations and embedding-novelty), an established, expected risk pattern here, not a
+surprise. Individual sections do show real, repeatable disagreements (Phase 1 confirmed that) —
+they just aren't systematically biased in one direction. This meaningfully **de-risks** (does not
+fully validate) the §47 spillover concern: since light-vs-standard shows no confirmed bias either
+way, there is no known "correct direction" for light's calibration that G0/G1 could be violating —
+the corpus-wide light-related flips are best characterized as an unbiased perturbation, not a
+confirmed error.
+
+## 49. F3 vs. G0 tension reconciled: F3 retracted, G0 preferred
+
+§41's `F3_tier1_065_gentle` **raises** tier-1 (0.55→0.65); §47's `G0_tier1_035` **lowers** it
+(0.55→0.35) — the same parameter, opposite directions, motivated by genuinely different concerns.
+
+**F3's actual motivation (re-read from §40, not assumed):** a cost-balance concern — `deep` pays
+`-0.18` cost (3 rounds) but §38 found average explore credit only earns back ~0.091 (half the
+gap), so `deep` "structurally can barely win." F1(0.70)/F2(0.80) were tested and **broke**
+`06_tools`'s confirmed 3-1 majority (eroded to a 2-2 tie). F3(0.65) was the highest value that
+didn't visibly break anything — never independently validated as *correct*, only as
+*not-yet-broken*. §40 itself notes `standard`/`deep` have nearly identical instance-count
+profiles — raising tier-1 was always meant to lift both together against `light`/`skip`, not to
+specifically favor `deep` over `standard`.
+
+**Direct re-test (today's baseline, same non-circular replicate-majority-vote):**
+
+| | 06_tools draws (margins) |
+|---|---|
+| baseline | standard(+.007) deep(+.001) standard(+.021) standard(+.008) |
+| **F3** | standard(+.002) **deep(+.003)** standard(+.024) standard(+.011) |
+| **G0** | **standard(+.023) standard(+.005)** standard(+.021) standard(+.003) |
+
+F3 shrinks standard's winning margins and grows the one deep-winning draw — nudging the same
+direction F1/F2 pushed too far, just short of the threshold. G0 does the opposite: it makes the
+confirmed-correct answer *more* decisive (unanimous 4/4).
+
+**But F3's underlying concern is real, and G0 makes it worse.** `13_agent_framework` (F3's own
+worked example):
+
+| | skip | light | standard | deep |
+|---|---|---|---|---|
+| baseline | .6446 | .6522 | .5891 | .5880 |
+| F3 | .6446 | .6621 | .5988 | **.6070** (+.019) |
+| G0 | .6446 | .6332 | .5709 | **.5500** (−.038) |
+
+F3 genuinely helps `deep`'s absolute cost-vs-credit balance; G0 genuinely worsens it — two
+different, non-substitutable objectives fighting over one shared parameter.
+
+**Reconciliation and recommendation: retract F3, prefer G0.**
+1. G0 is backed by direct, `p=0.031`, twice-independently-replicated pairwise-comparison
+   evidence about tier-1's true calibration — the single strongest empirical signal in this
+   whole pairwise investigation. F3 was validated only by a coarser test (corpus-flip-count + one
+   replicate label) that happened not to detect a problem at 0.65, while quantitatively sitting on
+   the same failure axis F1/F2 broke harder on.
+2. F3's premise is itself now questionable: if `standard`'s pairwise-validated content quality is
+   frequently comparable to `deep`'s (exactly what the tier-1 finding shows), `deep` genuinely,
+   *correctly* should not always win — "fixing" this via tier-1 inflation would be curve-fitting
+   toward a desired outcome (deep wins more often), not correcting a real measurement bug.
+3. The cost-vs-credit imbalance is real but **tier-1 is the wrong lever for it** — every arm
+   shares that curve. If pursued, the honest place to look is whether `deep`'s cost coefficient
+   itself is well-calibrated, as a separate, explicitly-scoped question — not yet designed or
+   tested.
+
+**Status:** recommend `G0_tier1_035` as the corrected `credit_curve` candidate;
+`F3_tier1_065_gentle`'s recommendation is **withdrawn** in light of this newer, more direct
+evidence. Neither has been shipped — both remain `sweep_reward_formula.py` VARIANTS entries only,
+pending an explicit decision to regenerate `section_oracle.json`/`article_oracle.json`.
+
+## 50. Recommendations and next steps
+
+1. **Ship `G0_tier1_035`** (or hold, per the user's risk tolerance) — it is the best-supported
+   correction available: statistically significant, twice-replicated pairwise evidence on its
+   core motivation, a genuine improvement (not just neutrality) on the one confirmed
+   ground-truth article, and the light-boundary spillover concern is now substantially de-risked.
+   A full `section_oracle.json`/`article_oracle.json` regen + corpus-wide diff (mirroring §37-39's
+   process) would be the concrete next action if proceeding. **DONE — see §51.**
+2. **Treat the cost-vs-credit imbalance (F3's original motivation) as a separate, still-open
+   question** — if it's worth pursuing, investigate `deep`'s cost coefficient specifically
+   (currently `-0.06`/round, `-0.18` total for 3 rounds) rather than the shared enhancement curve.
+   Not yet designed.
+3. **The pairwise-grading infrastructure built this Part is fully reusable** for any future
+   arm-pair or dimension question at near-zero marginal engineering cost (`select_repeat_targets.py`/
+   `select_light_repeat_targets.py`, the repeat-check driver's generic `--targets`/`--output-name`
+   design, `rl_pairwise_stddeep_scale.py`/`rl_pairwise_lightstd_scale.py`'s parametrized pattern) —
+   worth reusing directly rather than rebuilding if a similar question arises later (e.g. does the
+   `INSTANCE_CAP=3` question from §30-31 warrant its own pairwise validation).
+4. **Do not extend pairwise validation to `light_vs_deep`** without new motivation — both looks at
+   it (§44, §48) showed no systematic bias, consistent with noise; further spend there has low
+   expected value based on current evidence.
+5. **General methodological note for future work on this project:** three separate small-sample
+   signals have now failed to replicate at scale in this investigation (marginal-citations,
+   embedding-novelty, light-vs-standard bias) against one that did replicate cleanly
+   (standard-vs-deep bias, p=0.031 across two disjoint 12+6-article samples). The discriminating
+   factor each time was **actually running the independent, disjoint-sample replication** before
+   trusting a promising first look — continue treating that as mandatory, not optional, before any
+   further reward-formula changes ship to production.
+
+## 51. G0 shipped to production (2026-07-25)
+
+**Backup taken first** (established practice): `rl_training_data/bases_PRE_G0_BACKUP_20260725/`
+— full copy of all 42 article dirs, verified 42/42 `article_oracle.json` present before proceeding
+(`bases/` is gitignored, so this manual backup is the only rollback path — do not delete it).
+
+**Change made:** `enhancement_reward.py`'s `CREDIT_AT_WEIGHTED_COUNT[1]` changed from `0.55` to
+`0.35` (production code, not just the sweep-tool `VARIANTS` entry). Docstrings updated to match
+the new worked examples (1 strong instance → 0.35, 1 standard → ~0.23, 2 standard → ~0.49, 3
+standard → ~0.78; tier-2/tier-3 unchanged at 0.80/1.00). Verified via direct function calls
+before regenerating anything — `enhancement_credit([]) = 0.0`, `(["standard"]) = 0.2275`,
+`(["strong"]) = 0.35`, `(["strong","strong"]) = 0.8`, `(["standard"]*3) = 0.7775`,
+`(["strong"]*3) = 1.0` — all matching hand-computed expected values exactly.
+
+**Regenerated for real** (writes, not dry-run): `section_oracle.json` for all 42 (`generate_episode_oracles.py`
+default = 24 TRAIN + `--articles` for the 16 TEST + 2 mixeddepth pilots — 24 OK/0 failed, then
+18 OK/0 failed), then `article_oracle.json` for the same 42 (`compute_article_oracle.py --force`,
+same split — 24 written + 18 written).
+
+**Diff result (`diff_oracle_regen.py --before bases_PRE_G0_BACKUP_20260725`): 37 unchanged, 5
+flipped, ALL thin-margin (<0.06), ZERO comfortable-margin flips** — better than the sweep-tool's
+pre-registered prediction (§47), which had flagged `09_RAG__var_demanding` as a comfortable-margin
+flip. Root-caused the discrepancy directly: `09_RAG__var_demanding` is a **manual-override**
+article (forced to `deep` regardless of R_w — verified its raw R_w actually favors `skip` at
+0.517, but the override forces `deep` anyway) and `13_agent_framework` is a **policy-forbidden**
+article (forced to `skip` regardless of R_w) — both confirmed completely untouched by G0 in the
+real pipeline. The sweep tool's simplified `_recompute_any()` doesn't fully replicate these
+hard-constraint rules, so its flip predictions for override/forbidden articles were unreliable;
+this is a useful caveat for any future use of that tool on articles in the excluded/override set.
+
+**The 5 real flips (all thin-margin, all `light`-originating):**
+
+| Article | Old → new arm | Old margin → new margin |
+|---|---|---|
+| `09_RAG__var_standard` | light → skip | +0.0379 → +0.0119 |
+| `Distinct_AI_Models` | light → deep | +0.0300 → +0.0150 |
+| `Distinct_AI_Models__mixeddepth` | light → standard | +0.0212 → -0.0115 |
+| `Gravity_Entropy` | light → skip | +0.0198 → +0.0243 |
+| `Insects_Consciousness__mixeddepth` | light → deep | +0.0522 → +0.1500 |
+
+**Corpus arm distribution:** `{skip:12, light:22, standard:7, deep:1}` →
+`{skip:14, light:17, standard:8, deep:3}`. `06_tools__var_standard` (the one article with
+confirmed replicate-majority ground truth) stays `standard` and becomes *more* decisive
+(margin +0.0370) — consistent with the unanimous 4/4 replicate-vote result that validated G0
+before shipping.
+
+**G0 is now live in production as of 2026-07-25.** Rollback path if ever needed: restore
+`rl_training_data/bases/<article>/{section_oracle.json,article_oracle.json}` from
+`bases_PRE_G0_BACKUP_20260725/` for the 5 affected articles (or all 42, to be safe), and/or
+revert `enhancement_reward.py`'s `CREDIT_AT_WEIGHTED_COUNT[1]` to `0.55` and re-run the same
+regen commands.
+
+**Not yet done:** an actual downstream retrain+eval to confirm this label correction translates
+into better real RL/eval performance (per §50 item 5's own caution against assuming a
+better-calibrated label automatically yields a better-trained policy) — this is a natural
+candidate for a future session, not undertaken here. **Next immediate step (per the user's
+explicit direction): investigate `deep`'s cost coefficient as a separate question from the
+enhancement curve** — see Part 7 below.
+
+---
+
+# Part 7 — Reward-signal diagnostics: which metrics actually differentiate the arms? (2026-07-28)
+
+## 52. Motivation: the cost-coefficient arc dead-ends, and a structural question surfaces
+
+### 52.1 How we got here
+
+Part 7's originally-planned scope (the cost-coefficient investigation) was carried out and is
+summarised here only insofar as it motivates this section. The short version:
+
+- `analyze_cost_imbalance.py` found `cost` explained **~93%** of `deep`'s average reward shortfall
+  vs. the winning arm, while the *content* terms (`gt_base` + `explore`) mildly **favoured** deep.
+  I.e. deep was losing on the cost penalty, not on content quality.
+- `analyze_empirical_cost.py` measured each arm's **real** exploration effort (actual query +
+  scrape counts from each arm's own `.research/full_queries.md` / `url_phases.json`, n=42) and
+  found the assumed ordinal units `{0,1,2,3}` overcharged deep: real effort ratios are
+  `{skip:0, light:1.00, standard:1.88, deep:2.31}`. Shipped as **H0**.
+- Even after H0, cost still explained ~85% of the gap, so `cost_coef` magnitude itself was staged
+  down: `-0.06 → -0.045 → -0.03` (2026-07-25) `→ -0.02` (2026-07-26), each step validated by
+  full-corpus regen + replicate-majority-vote on the two confirmed-ground-truth articles.
+
+**This overcorrected.** Runs 17/18/19 (all trained on `cost_coef = -0.02`) swept
+`--inv-freq-temp` across `1.0 / 0.75 / 0.5` and produced a *monotonically worsening* TEST result
+in every metric, with `deep` over-predicted in 9, 10, and 11 of 16 TEST articles respectively:
+
+| run | inv-freq-temp | cost_coef | TEST exact | TEST miss | TEST MAE | regret_mean | hi-conf misses | deep predicted |
+|---|---|---|---|---|---|---|---|---|
+| run15 | 0.5 | **-0.03** | 33% | 27% (4) | **0.933** | 0.0165 | **1** | 6/16 |
+| run17 | 1.0 | -0.02 | 40% | 33% (5) | 1.000 | 0.0128 | 4 | 9/16 |
+| run18 | 0.75 | -0.02 | 27% | 33% (5) | 1.133 | 0.0289 | 4 | 10/16 |
+| run19 | 0.5 | -0.02 | 13% | 40% (6) | 1.333 | 0.0486 | 4 | 11/16 |
+
+*(all TEST figures exclude `policy=forbidden` articles, whose labels are set by a deterministic
+guard the RL-only harness deliberately doesn't apply)*
+
+Since `run19` used the script's own default `inv-freq-temp = 0.5` — i.e. **zero** deep-scarcity
+escalation — and still over-predicted deep the most, `inv-freq-temp` is exonerated as the cause;
+`cost_coef = -0.02` is implicated.
+
+### 52.2 The second, more serious symptom: the training signal itself got weaker
+
+Replicating `train_grpo.py`'s own `sigma_floor` / advantage-normalisation logic over all 171 TRAIN
+sections, comparing the `cost_coef = -0.06` snapshot (`bases_PRE_COSTCOEF_SHIP_20260725`) against
+current production (`-0.02`):
+
+| | `cost_coef = -0.06` | `cost_coef = -0.02` |
+|---|---|---|
+| Dropped as flat (`max-min < sigma_floor=0.04`) | 2 (1.2%) | 0 (0%) |
+| **Hit `sigma_floor` (`raw_std < 0.04`)** | **9 (5.3%)** | **44 (25.7%)** |
+| Mean margin (top1 − top2) | 0.098 | 0.082 |
+| **Median margin (top1 − top2)** | **0.060** | **0.038** |
+
+The 25.7% figure matches the `sigma_floor_fraction: 0.2573` logged identically in runs 17/18/19,
+confirming the mechanism rather than a coincidental correlation. **Reducing `cost_coef` nearly
+quintupled the share of sections whose reward spread is below the noise floor**, and pushed the
+*median* top-1-vs-top-2 margin (0.038) *below* `sigma_floor` itself. That explains the otherwise
+puzzling training profile — `mean_expected_reward` looks near-optimal while `strict_top1_accuracy`
+stalls near 50%: when arms are nearly tied, capturing most of the available reward is easy, but
+identifying *which* arm is best is close to a coin flip.
+
+### 52.3 The structural question this raises
+
+`cost` was doing a large share of the work of *separating the arms at all*. Shrinking it exposed
+how little of the remaining formula actually varies with the arm choice. That motivates a
+redesign hypothesis (user's, 2026-07-28):
+
+> Keep only genuinely **differentiating** metrics in the additive reward; demote the
+> non-differentiating ones to **satisficing safety gates** outside the reward.
+
+§53 tests that hypothesis against the corpus.
+
+## 53. Metric-differentiation analysis across all 40 articles
+
+### 53.1 Tool and method
+
+New read-only diagnostic: **`research_agent_local/training/analyze_metric_differentiation.py`**.
+Zero LLM calls, zero writes.
+
+- **Scope:** all 40 production articles (24 TRAIN variants + 16 TEST no-variant) × 4 arms.
+  282 (article, section) rows — 171 TRAIN, 111 TEST.
+- **Section list** is read from each article's already-reconciled `section_oracle.json`, so the
+  section set is identical to the one the real oracle used (no re-derivation from digests).
+- **Score extraction reuses production code** — `geo._parse_sections_ordered`,
+  `geo._get_score`, `geo._get_enhancement`, `enhancement_reward.enhancement_credit` — so every
+  number is exactly what `_section_reward()` would have seen. `de`/`be` are reported as
+  **post-`enhancement_credit()` values** (the saturating count×quality curve), not raw binaries.
+- **One deliberate deviation:** `geo._load_episode()` filters to `_REWARD_DIMS`, which silently
+  excludes `ground_truth_structure` and `user_intent_golden_source_priority`. The tool uses its
+  own unfiltered loader so those two can be measured too. *(A first version of this analysis
+  inherited the filter and reported `st` and `gsp` as identically 0.000 across the whole corpus —
+  a tooling artifact, not a finding. Corrected before the numbers below were produced.)*
+
+### 53.2 Index definitions
+
+All indices are computed per metric. Let $v_{s,a}$ be the metric's value in section $s$ under
+arm $a \in \{\text{skip}, \text{light}, \text{standard}, \text{deep}\}$, over $N$ sections.
+
+| index | definition | reads as |
+|---|---|---|
+| **`w`** | the metric's *effective additive weight* in the current reward formula | how much the formula currently listens to it |
+| **`mean`** | $\frac{1}{4N}\sum_{s,a} v_{s,a}$ | overall level (near 1.0 ⇒ the grader almost always passes it) |
+| **arm means** | $\bar v_a = \frac{1}{N}\sum_s v_{s,a}$, reported per arm | does the metric *systematically* move with exploration depth? |
+| **`armSprd`** | $\max_a \bar v_a - \min_a \bar v_a$ | **systematic signal.** How much the metric separates arms *on average*, after per-section noise cancels out |
+| **`%const`** | share of sections with $\max_a v_{s,a} - \min_a v_{s,a} = 0$ | share of sections where the metric contributes **exactly zero** to distinguishing arms |
+| **`meanRng`** | $\frac{1}{N}\sum_s (\max_a v_{s,a} - \min_a v_{s,a})$ | **total variation** across arms, signal *and* noise together |
+| **`monoUp`** | of the sections that vary, share with $v_{skip} \le v_{light} \le v_{std} \le v_{deep}$ | does it behave like a monotone "more exploration ⇒ more of this"? (25% ≈ chance) |
+| **`SNR`** | `armSprd / meanRng` | **the key ratio.** What fraction of a metric's variation actually tracks the arm choice, rather than being section-level noise |
+| **`w*Rng`** | `w × meanRng` | total variation the metric *injects into the reward* (its noise footprint) |
+| **`w*Sprd`** | `w × armSprd` | systematic arm-separating signal the metric *contributes to the reward* |
+
+The critical distinction is **`armSprd` vs `meanRng`**. A metric can swing wildly section-to-section
+(large `meanRng`) while its four arm means stay identical (tiny `armSprd`). Such a metric injects
+variance into the reward without helping decide *which arm is better* — it is, in the arm dimension,
+pure noise. `SNR` makes this explicit.
+
+**Caveat on `SNR`:** it is only interpretable when `meanRng` is non-trivial. For near-constant
+metrics (`cp`, `ra`, `gsp`, where both numerator and denominator are ~0.02 or less) the ratio is
+numerically unstable and should be ignored — `%const` and `mean` are the meaningful indices there.
+
+### 53.3 Results — full corpus (n = 282 sections)
+
+| metric | w | mean | skip | light | std | deep | armSprd | %const | meanRng | monoUp | SNR | w\*Rng | w\*Sprd |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| **de** | 0.30 | 0.122 | 0.000 | 0.139 | 0.155 | **0.195** | **0.1955** | 41.8% | 0.2754 | 50.6% | **0.71** | 0.0826 | **0.0586** |
+| **be** | 0.20 | 0.051 | 0.000 | 0.068 | **0.075** | 0.060 | 0.0753 | 59.6% | 0.1415 | 29.8% | **0.53** | 0.0283 | 0.0151 |
+| fl | 0.20 | 0.702 | 0.652 | 0.716 | 0.720 | 0.720 | 0.0674 | 67.7% | 0.3227 | 40.7% | 0.21 | 0.0645 | 0.0135 |
+| cc | 0.20 | 0.889 | **0.901** | 0.894 | 0.883 | **0.879** | 0.0213 | 85.5% | 0.1454 | 22.0% | 0.15 | 0.0291 | 0.0043 |
+| **ga** | 0.15 | 0.698 | 0.702 | 0.702 | 0.688 | 0.699 | **0.0142** | 51.1% | **0.4894** | 23.9% | **0.03** | **0.0734** | 0.0021 |
+| ra | 0.15 | 0.986 | 0.986 | 0.993 | 0.979 | 0.986 | 0.0142 | **96.8%** | 0.0319 | 11.1% | — | 0.0048 | 0.0021 |
+| cp | (gate) | 0.996 | 0.996 | 0.996 | 0.993 | 0.996 | 0.0035 | **99.6%** | 0.0035 | 0.0% | — | 0.0000 | 0.0000 |
+| gsp | 0.00 | 0.988 | 0.982 | 0.989 | 0.989 | 0.989 | 0.0071 | **97.9%** | 0.0213 | 33.3% | — | 0.0000 | 0.0000 |
+| st | 0.00 | 0.405 | 0.394 | 0.394 | 0.436 | 0.397 | 0.0426 | 58.5% | 0.4149 | 26.5% | 0.10 | 0.0000 | 0.0000 |
+
+`cp` is shown with `w = (gate)` because it enters multiplicatively (`explore = cp * (...)`), not
+additively; `de`/`be`'s effective weights (0.30 / 0.20) already fold in `cp ≈ 1`.
+
+### 53.4 Results — split by TRAIN / TEST
+
+TRAIN (n = 171):
+
+| metric | mean | skip | light | std | deep | armSprd | %const | meanRng | monoUp |
+|---|---|---|---|---|---|---|---|---|---|
+| de | 0.121 | 0.000 | 0.149 | 0.141 | 0.194 | 0.1943 | 43.9% | 0.2807 | 46.9% |
+| be | 0.054 | 0.000 | 0.072 | 0.081 | 0.064 | 0.0812 | 57.3% | 0.1463 | 30.1% |
+| fl | 0.605 | 0.538 | 0.614 | 0.626 | 0.643 | 0.1053 | 56.7% | 0.4327 | 43.2% |
+| cc | 0.883 | 0.906 | 0.906 | 0.865 | 0.854 | 0.0526 | 80.7% | 0.1930 | 15.2% |
+| ga | 0.740 | 0.737 | 0.749 | 0.749 | 0.725 | 0.0234 | 53.8% | 0.4620 | 22.8% |
+| ra | 0.990 | 0.994 | 0.994 | 0.982 | 0.988 | 0.0117 | 95.9% | 0.0409 | 14.3% |
+| cp | 0.999 | 1.000 | 1.000 | 0.994 | 1.000 | 0.0058 | 99.4% | 0.0058 | 0.0% |
+| gsp | 0.990 | 0.982 | 0.994 | 0.994 | 0.988 | 0.0117 | 97.7% | 0.0234 | 25.0% |
+| st | 0.399 | 0.427 | 0.398 | 0.392 | 0.380 | 0.0468 | 56.7% | 0.4327 | 18.9% |
+
+TEST (n = 111):
+
+| metric | mean | skip | light | std | deep | armSprd | %const | meanRng | monoUp |
+|---|---|---|---|---|---|---|---|---|---|
+| de | 0.124 | 0.000 | 0.123 | 0.176 | 0.197 | 0.1974 | 38.7% | 0.2672 | 55.9% |
+| be | 0.045 | 0.000 | 0.062 | 0.066 | 0.054 | 0.0662 | 63.1% | 0.1342 | 29.3% |
+| fl | 0.851 | 0.829 | 0.874 | 0.865 | 0.838 | 0.0450 | 84.7% | 0.1532 | 29.4% |
+| cc | 0.899 | 0.892 | 0.874 | 0.910 | 0.919 | 0.0450 | 92.8% | 0.0721 | 50.0% |
+| ga | 0.633 | 0.649 | 0.631 | 0.595 | 0.658 | 0.0631 | 46.8% | 0.5315 | 25.4% |
+| ra | 0.980 | 0.973 | 0.991 | 0.973 | 0.982 | 0.0180 | 98.2% | 0.0180 | 0.0% |
+| cp | 0.991 | 0.991 | 0.991 | 0.991 | 0.991 | 0.0000 | **100.0%** | 0.0000 | 0.0% |
+| gsp | 0.984 | 0.982 | 0.982 | 0.982 | 0.991 | 0.0090 | 98.2% | 0.0180 | 50.0% |
+| st | 0.414 | 0.342 | 0.387 | 0.505 | 0.423 | 0.1622 | 61.3% | 0.3874 | 39.5% |
+
+### 53.5 Where the reward's signal and noise actually come from
+
+Summing the weighted columns over the metrics that carry non-zero weight (full corpus):
+
+**Systematic arm-separating signal** (`Σ w*Sprd = 0.0957`):
+
+| metric | w\*Sprd | share of total signal |
+|---|---|---|
+| **de** | 0.0586 | **61.2%** |
+| **be** | 0.0151 | **15.8%** |
+| fl | 0.0135 | 14.1% |
+| cc | 0.0043 | 4.5% |
+| ga | 0.0021 | 2.2% |
+| ra | 0.0021 | 2.2% |
+
+**Total variation injected into the reward** (`Σ w*Rng = 0.2827`):
+
+| metric | w\*Rng | share of total variation |
+|---|---|---|
+| de | 0.0826 | 29.2% |
+| **ga** | **0.0734** | **26.0%** |
+| fl | 0.0645 | 22.8% |
+| cc | 0.0291 | 10.3% |
+| be | 0.0283 | 10.0% |
+| ra | 0.0048 | 1.7% |
+
+### 53.6 Findings
+
+**F1 — `cp`, `ra`, `gsp` are already satisficing metrics in everything but name.**
+`%const` = 99.6% / 96.8% / 97.9%; means pinned at 0.996 / 0.986 / 0.988. `cp` is **100.0%
+constant across all 111 TEST sections** — it literally never differs between arms there. `ra`
+nonetheless carries a **0.15 weight** while supplying 2.2% of the systematic signal. These three
+are pure quality floors: they detect "something went badly wrong," which is a real and useful
+thing to detect, but it is a *gate* function, not a *ranking* function.
+
+**F2 — `ga` is the single worst term in the formula: maximum noise, near-zero signal.**
+It has the **largest per-section variation of any metric** (`meanRng = 0.489`) and yet the arm
+means are effectively flat (0.702 / 0.702 / 0.688 / 0.699 ⇒ `armSprd = 0.014`, `SNR = 0.03`,
+`monoUp = 23.9%` ≈ chance). Consequently **`ga` injects 26.0% of all reward variation while
+supplying 2.2% of the systematic signal** — the clearest single contributor to the
+thin-margin / near-tie problem in §52.2.
+
+This is mechanistically consistent with an earlier (2026-07-25) decomposition of the
+`user_intent` term via `analyze_user_intent_gap.py` — not previously written up in this document.
+That analysis classified the grader's own stated reasons across n=257 `ga = 0` disagreement cases
+(sections where some arm passed `ga` while `standard`/`deep` failed) and found only **24.5%**
+were length-tolerance violations, while **40.5%** explicitly *passed* the length check and failed
+for another reason and **35.0%** never mentioned length. Qualitative sampling of the non-length
+75% found the dominant failure mode to be **missing mandated visual elements** (images, mermaid
+diagrams, figures the guideline explicitly requires) — a *writing-workflow* defect with no reason
+to correlate with exploration depth. `ga` is measuring something real; it is simply not measuring
+anything about *how much research the article needed*.
+
+**F3 — the exploration metrics carry the overwhelming majority of the real signal.**
+`de` + `be` together supply **77.0% of all systematic arm separation** from only 39.2% of the
+variation. `de` alone is 61.2% of the signal, with the cleanest behaviour of any metric: a
+monotone ladder 0.000 → 0.139 → 0.155 → 0.195, the top `SNR` (0.71), the lowest `%const`
+(41.8%), and the highest `monoUp` (50.6%, double chance). `be` is second-best by `SNR` (0.53) but
+**non-monotone** — it peaks at `standard` (0.075) and *falls* at `deep` (0.060), consistently in
+both splits. This is a real property worth remembering: a third exploration round tends to add
+*depth*, not *breadth*.
+
+**F4 — `cc` trends the wrong way and is mostly constant.**
+Full corpus: skip 0.901 → deep 0.879, i.e. **more exploration mildly degrades core-content
+fidelity** (most visible in TRAIN: 0.906 → 0.854). It is 85.5% constant, `monoUp` only 22.0%. At
+`w = 0.20` it is a meaningful weight spent on a term that both fails to differentiate and mildly
+penalises deep. *(Note the TRAIN/TEST sign disagreement — TEST shows 0.892 → 0.919, the opposite
+direction. The pooled effect is small and split-unstable; treat "cc is non-differentiating" as
+the robust claim and "cc penalises deep" as TRAIN-specific and tentative.)*
+
+**F5 — `st` (structure) would have been a poor addition, confirming its exclusion.**
+`SNR = 0.10`, `armSprd = 0.043` against `meanRng = 0.415`, and its arm ordering disagrees between
+splits. Excluded from the reward today; this data supports keeping it excluded.
+
+### 53.7 Implication
+
+The current formula spends **0.30 of additive weight** (`ga` 0.15 + `ra` 0.15) on two metrics
+that jointly contribute **4.4% of the systematic arm signal**, while one of them is the largest
+single noise source in the whole reward. Meanwhile `de`+`be` carry 77% of the signal at 0.50
+weight. Reallocating weight toward the exploration terms — and demoting `cp`/`ra`/`gsp` (and
+possibly `ga`) to gates — should raise effective margins and reduce noise-driven label churn
+simultaneously, addressing both symptoms in §52.2.
+
+**What this analysis does *not* settle:** whether a demoted `ga` should be a **hard gate**
+(fail ⇒ section reward zeroed/floored) or **dropped entirely**. `ga` still varies in 51% of
+sections, so a hard gate would remain active in about half the corpus and could re-admit the same
+noise through a different mechanism. §54 models both.
+
+### 53.8 Caveats
+
+1. **`armSprd` is a mean-of-means.** It measures *systematic* differentiation and deliberately
+   cancels section-level idiosyncrasy. A metric with genuinely section-specific but
+   arm-informative behaviour (different arms win in different sections, netting to zero on
+   average) would be understated. `%const` partially guards against this — a metric that is
+   constant within sections cannot have hidden per-section signal — but `ga` (51% varying,
+   flat means) is precisely the shape where this caveat bites hardest, and it deserves the
+   per-section modelling in §54 rather than dismissal on `armSprd` alone.
+2. **Grades are binary per section** (except post-curve `de`/`be`), so `meanRng` is dominated by
+   0↔1 flips; a `meanRng` of 0.49 for `ga` means roughly half of sections have at least one arm
+   disagreeing with another.
+3. **Single-draw labels.** Every value is one grading draw of one written article; Part 4
+   established real run-to-run content noise. These aggregates are over 282 sections so they are
+   far more stable than any individual cell, but per-metric noise floors were not separately
+   re-measured here.
+4. **`de`/`be` are post-`enhancement_credit()`**, so their `%const` and `meanRng` reflect the
+   shipped G0/J0 curve, not raw grader output. Re-tuning that curve would move these numbers.
+
+## 54. Modelling the redesign: hard vs. soft satisficing gates
+
+### 54.1 Tool and method
+
+New read-only diagnostic: **`research_agent_local/training/model_gate_candidates.py`**.
+Zero LLM calls, zero writes, no production constant touched. It recomputes section-level rewards
+for the whole 40-article corpus under each candidate formula and then replicates, exactly:
+
+- `train_grpo.load_section_groups`'s flat-drop rule (`spread < sigma_floor = 0.04`),
+  `hit_sigma_floor` test (`raw_std < 0.04`), and normalized advantage
+  (`regret / max(std, sigma_floor)`);
+- `compute_article_oracle._compute_r_w`'s **candidate-E** split aggregation — `rewards − explore`
+  target-words-weighted, `explore` simple-mean — and the `EPS_BAND = 0.03` thin-margin test.
+
+**Gate semantics modelled:**
+- **hard gate** — any gated metric failing (`< 0.5`) ⇒ the section forfeits *all* content and
+  explore credit, retaining only the cost debit.
+- **soft gate** — failing subtracts a flat penalty from `rest`; the arm keeps its explore credit.
+
+In every candidate, weight freed by demoting a metric is reallocated to `de`/`be` (the
+77%-of-signal terms per §53.5). All candidates B–F use `cost_coef = -0.03`, so **`A1` is the
+correct baseline for comparison** (`A0` is shown only to locate current production).
+
+### 54.2 Results
+
+TRAIN block (n = 171 sections / 24 articles); ALL block (n = 282 sections / 40 articles):
+
+| candidate | floor% | nearTie | advNorm | medMargin | TRAIN sec sk/li/st/dp | TRAIN art sk/li/st/dp | ALL floor% | ALL nearTie-proxy (thin art) | ALL art sk/li/st/dp |
+|---|---|---|---|---|---|---|---|---|---|
+| `A0` current, cost −0.02 | 24.6% | 64.3% | 1.108 | 0.0421 | 44/55/39/33 | 5/10/3/6 | 25.6% | 20 | 5/18/5/12 |
+| **`A1` baseline, cost −0.03** | 22.9% | 61.2% | 1.144 | 0.0392 | 51/56/34/30 | 7/10/3/4 | 24.6% | 21 | 11/18/4/7 |
+| `B` drop `ra` only | **19.3%** | 57.9% | 1.175 | 0.0424 | 44/56/38/33 | 5/11/3/5 | **19.5%** | 21 | 6/20/4/10 |
+| `C1` soft `ga`, pen 0.05 | 23.1% | 56.8% | 1.200 | 0.0393 | 45/56/35/35 | 3/12/3/6 | 26.0% | 17 | 4/19/8/9 |
+| **`C2` soft `ga`, pen 0.10** | 20.5% | **55.6%** | **1.206** | **0.0436** | 43/56/38/34 | 3/11/4/6 | 23.4% | 16 | 4/18/7/11 |
+| `D` **hard** `ga` | 23.4% | 56.1% | 1.172 | 0.0393 | 54/48/39/**30** | 5/11/6/**2** | 25.2% | **13** | 8/19/7/**6** |
+| `E` hard trio, drop `ga` | 22.2% | 59.6% | 1.178 | 0.0383 | 46/52/39/34 | 4/11/5/4 | 25.2% | 18 | 4/17/10/9 |
+| `F` hard trio, drop `ga`+`cc` | 24.0% | **55.0%** | **1.210** | 0.0445 | 48/47/39/**37** | 4/12/2/6 | 25.9% | 15 | 4/18/7/11 |
+
+*`floor%` = of kept sections, share with `raw_std < sigma_floor` (gradient artificially floored —
+the §52.2 symptom). `nearTie` = share of kept sections with 2+ arms within 0.06 of the best.
+`advNorm` = mean normalized GRPO advantage. `thin art` = articles needing an `EPS_BAND` tie-break.*
+
+### 54.3 The decisive finding: a hard `ga` gate structurally suppresses `deep`
+
+Candidate `D` (hard gate) posts respectable aggregate numbers — it has the *lowest* thin-article
+count (13) — but it **collapses `deep` representation**: TRAIN article-level `deep` falls from 4
+(baseline) to **2**, and corpus-wide from 7 to 6, while `skip`/`standard` rise. That is the exact
+label-imbalance failure this whole investigation has been fighting, reintroduced by the gate.
+
+The mechanism is an **asymmetry in what each arm has to lose**, and it is measurable directly:
+
+| arm | `ga`-fail rate | mean explore credit | explore forfeited to a hard gate | **% of its explore destroyed** |
+|---|---|---|---|---|
+| skip | 29.8% | 0.0000 | 0.0000 | **0.0%** |
+| light | 29.8% | 0.0828 | 0.0173 | **20.9%** |
+| standard | 31.2% | 0.0902 | 0.0350 | **38.8%** |
+| deep | 30.1% | 0.1060 | 0.0359 | **33.9%** |
+
+**All four arms fail `ga` at essentially the same rate (~30%)** — `ga` is arm-neutral, exactly as
+§53.6/F2 established. But a hard gate's *consequence* is radically unequal: `skip` has zero explore
+credit and therefore loses nothing, while `standard`/`deep` forfeit ~34–39% of the single term
+that carries 77% of the real arm signal. A hard gate thus converts an arm-**neutral** noise source
+into a strongly arm-**biased** penalty on exactly the arms we are least able to afford losing.
+
+This confirms the user's prior intuition against hard gates, and supplies the mechanism: it is not
+that hard gates are too strict in general — it is that gating *multiplicatively destroys the
+discriminative term*, and only the expensive arms have such a term to destroy.
+
+### 54.4 What the soft gates buy
+
+Comparing against the correct baseline `A1`:
+
+- **`C2` (soft `ga`, penalty 0.10)** is the strongest all-round candidate:
+  `floor%` 22.9% → **20.5%**, `nearTie` 61.2% → **55.6%**, `advNorm` 1.144 → **1.206** (+5.4%),
+  median margin 0.0392 → **0.0436** (+11%), thin articles 21 → **16**, and the arm distribution
+  stays healthy (TRAIN articles 3/11/4/6; corpus 4/18/7/11 — `deep` *improves* from 7 to 11).
+  Every headline signal-quality index moves the right way with no class collapse.
+- **`B` (drop `ra` only)** is the most conservative option and posts the **best `floor%` of any
+  candidate** (19.3% / 19.5%) — a 3.6pp / 5.1pp absolute reduction — for a one-line change with
+  minimal label disruption. It does less for `nearTie` and `advNorm` than `C2`.
+- **`F`** edges `C2` on `advNorm` (1.210) and `nearTie` (55.0%) and yields the most balanced
+  *section-level* distribution (48/47/39/37), but it also drops `cc` entirely — a bigger
+  semantic change resting on the split-unstable `cc` finding (§53.6/F4), so its apparent edge
+  over `C2` is within the uncertainty of that caveat.
+
+### 54.5 Recommendation (not yet shipped)
+
+1. **Reject hard gates** for `ga` — mechanism-level evidence in §54.3, not just an aggregate
+   preference.
+2. **`cp` / `ra` / `gsp` can be demoted safely** — they are ≥96.8% constant, so *any* gate
+   treatment barely moves the corpus (`B` disrupts almost nothing while measurably improving
+   `floor%`). If a hard gate is wanted anywhere, it belongs here, where it cannot bite
+   asymmetrically because it essentially never fires.
+3. **`C2` (soft `ga`, penalty ≈0.10) is the recommended primary candidate**, with `B` as the
+   low-risk fallback if minimal label churn is preferred over maximal signal gain.
+4. **Still to do before any ship** — this section is a *model*, not a validation. Per the
+   discipline established throughout this document, a real ship requires: backup → edit
+   production constants → full 42-article `generate_episode_oracles.py` + `compute_article_oracle.py`
+   regen → diff (flip count, comfortable-vs-thin) → replicate-majority-vote re-check on
+   `06_tools__var_standard` / `09_RAG__var_standard` → and updating every `_PROD_*` mirror
+   constant (`sweep_reward_formula.py` et al., per the thrice-recurring staleness bug).
+5. **Open question not settled here:** whether `ga` should be a soft gate *at all* versus simply
+   dropped (weight 0). `C1`/`C2` differ only in penalty size and both beat baseline; a
+   penalty-0.0 variant (pure drop) was not separately modelled and is the obvious third point to
+   add before deciding. **Resolved in §54.6 below.**
+
+## 54.6 Follow-up: pure drop vs. soft penalty, and how far to push the penalty
+
+Two more candidates added to `model_gate_candidates.py`, holding `cc`/`fl`/`de`/`be` weights and
+the (inert, near-never-firing) `cp`/`ra`/`gsp` treatment identical across all four, so the *only*
+thing varying is `ga`'s treatment — isolating exactly the question in §54.5 item 5:
+
+- **`G_pure_drop_ga`** — `ga` carries zero weight and is not gated at all (no penalty of any
+  kind; equivalent to simply deleting it from the formula).
+- **`C3_soft_ga_pen015`** — same soft-gate mechanism as `C1`/`C2`, penalty raised to `0.15`.
+
+| candidate | penalty | floor% (TRAIN / ALL) | nearTie | advNorm (TRAIN / ALL) | thin art (TRAIN / ALL) | corpus `deep` |
+|---|---|---|---|---|---|---|
+| `G` pure drop | — | 22.8% / 26.2% | 59.6% | 1.187 / 1.189 | 10 / 16 | 9 |
+| `C1` soft | 0.05 | 23.1% / 26.0% | 56.8% | 1.200 / 1.198 | 9 / 17 | 9 |
+| **`C2` soft** | **0.10** | 20.5% / 23.4% | 55.6% | **1.206** / 1.197 | 9 / **16** | **11** |
+| `C3` soft | 0.15 | **17.5%** / **19.1%** | **52.6%** | 1.203 / **1.205** | 9 / 19 | 10 |
+
+**Finding 1 — a pure drop is strictly dominated.** `G` underperforms *every* penalized variant on
+`floor%`, `nearTie`, and `advNorm`, and has worse `deep` representation than `C2`. This is
+informative given §54.3 established `ga`'s *failure rate* is arm-neutral: even though *which arm*
+fails isn't informative, *which specific sections* fail still carries some real content signal,
+and a flat penalty recovers part of it, a bare drop discards it entirely.
+
+**Finding 2 — returns past `0.10` trade section-level gains for article-level cost.**
+`floor%`/`nearTie` keep improving monotonically as the penalty rises (`C3` is best on both), but
+the article-level **thin-margin count gets *worse* at `0.15`** (19 — worse than even the pure-drop
+control's 16) and corpus `deep` dips from 11 to 10. Since GRPO trains on *section-level* rewards
+while the article-level oracle is what downstream eval and labelling trust, `C3` is improving the
+training signal at a real cost to label decisiveness — the two objectives diverge past `~0.10`.
+
+**Conclusion: `C2` (soft `ga` gate, penalty ≈0.10) is confirmed as the best all-round candidate.**
+It is the only variant that improves signal quality, article-level decisiveness, *and* `deep`
+representation simultaneously rather than trading one for another — superseding the tentative
+recommendation in §54.5.
+
+
+
 

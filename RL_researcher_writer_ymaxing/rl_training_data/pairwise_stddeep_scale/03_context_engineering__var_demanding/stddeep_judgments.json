@@ -1,0 +1,584 @@
+{
+  "article": "03_context_engineering__var_demanding",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction: When prompt engineering breaks": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "AI application evolution timeline (2022 chatbots, 2023 RAG, 2024 tool-using agents, 2025 memory-enabled agents) with multiple citations"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Document B consists solely of a title with no body content, so it contains no source-attributed enhancement material at all. Document A provides a sourced historical narrative of AI application evolution (chatbots \u2192 RAG \u2192 agents \u2192 memory-enabled agents, citations 26/27/30) that is a genuinely adjacent subtopic not strictly required by the 'when prompt engineering breaks' framing, giving it an edge on breadth. Neither document offers additional technical depth beyond the core explanation of why prompt engineering fails (which is expected core content, not enhancement), so depth is tied at zero qualifying instances for both."
+        },
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "explanation of specific technical limitation: prompt engineering optimizes single LLM calls but fails to manage systems with memory, actions, and long interaction histories",
+              "quantitative point about exponential growth in information volume needed by agents"
+            ],
+            "b_instances": [
+              "__dumm"
+            ]
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "timeline of AI application evolution: 2022 simple chatbots, 2023 RAG systems, 2024 tool-using agents, 2025 memory-enabled agents (with distinct source citations for each stage)",
+              "framing of context engineering as a distinct discipline foundational to production-grade AI systems, cited to Glean blog"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Document A contains substantive, source-attributed content: a cited historical timeline of AI application evolution (2022 chatbots, 2023 RAG, 2024 agents, 2025 memory-enabled agents) which is new breadth beyond the core topic, plus depth on the specific technical limitation of prompt engineering failing with memory/actions/long histories and the exponential growth of context volume, also with a citation on context engineering as foundational. Document B consists solely of a title with no body content, so it contains zero qualifying instances for either dimension. Thus A clearly dominates both depth and breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Timeline of AI application evolution 2022\u21922025 (simple Q&A chatbots \u2192 RAG systems \u2192 tool-using agents \u2192 memory-enabled agents) each cited to industry sources"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Document B consists solely of a title with no body content, so it contains zero qualifying enhancement instances for either dimension. Document A includes a full introduction paragraph that adds a historical/industry timeline of AI application evolution (2022 chatbots, 2023 RAG, 2024 agents, 2025 memory-enabled agents), each backed by distinct citations\u2014this is new adjacent scope (breadth) beyond the core 'prompt engineering breaks' narrative. Document A's discussion of why prompt engineering fails and the definition of context engineering is largely core content restating the section's purpose rather than adding technical depth (specific mechanisms, stats, or edge cases), so depth is tied at zero substantive instances for both documents."
+        }
+      ]
+    },
+    "From prompt to context engineering": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Microsoft Research/Salesforce study: 15 LLMs tested across 200,000+ simulated conversations, 39% average performance drop from single- to multi-turn interactions, and models rarely recovering from early errors"
+            ],
+            "b_instances": [
+              "Specific quantification of the lost-in-the-middle effect as an accuracy drop of over 30%",
+              "First-hand anecdote: a project using a 2-million-token context window that stuffed in all data, resulting in a 30-minute runtime and low-quality outputs"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core topics (context decay, lost-in-the-middle, quadratic attention cost, token cost/latency) with no genuinely new sub-topics introduced by either side, so breadth is a tie. For depth, Document A adds one rich, specific instance (the Microsoft/Salesforce multi-turn study with detailed stats), while Document B adds two distinct depth-enhancing details: a numeric quantification of the lost-in-the-middle effect (30% accuracy drop) and a concrete first-hand anecdote illustrating the cost/latency problem of over-stuffing context (2M-token window, 30-minute runtime, poor output). Since B contributes two separate substantive depth instances versus A's one (even though A's single instance is more rigorously sourced), B has a modest edge on depth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Microsoft Research/Salesforce study: 15 LLMs, 200,000+ simulated conversations, 39% average performance drop from single- to multi-turn, models rarely recover from early errors"
+            ],
+            "b_instances": [
+              "Quantified lost-in-the-middle claim with >30% accuracy drop statistic",
+              "First-person anecdote: 2-million-token context window project that took 30 minutes to run and produced low-quality output after stuffing all data in"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core narrative (prompt engineering's limits, context decay, lost-in-the-middle, quadratic attention cost, shift to context engineering) and both reference upcoming Lesson 9/10 material as sign-posting rather than new breadth. For depth, A adds a detailed, source-attributed research study (Microsoft/Salesforce, 15 LLMs, 200k conversations, 39% drop, no recovery from early errors) that is quite rich and specific. B counters with two smaller additions: a quantified lost-in-the-middle stat (>30% accuracy drop) and a concrete first-person anecdote about a 2-million-token context experiment that took 30 minutes and yielded poor results. B's two additions, while individually less rigorous than A's formal study, give it a slight edge in count and illustrative concreteness, so depth leans slightly toward B. Neither document introduces a genuinely new adjacent sub-topic (e.g., specific memory architectures, RAG techniques, or other applications) beyond what the section already discusses, so breadth is tied with no qualifying instances on either side."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Named Microsoft Research/Salesforce study: 15 LLMs tested across 200,000+ simulated conversations, average 39% performance drop from single- to multi-turn, and finding that models rarely recover from early errors"
+            ],
+            "b_instances": [
+              "Specific quantitative claim that lost-in-the-middle causes accuracy drops of over 30%",
+              "Concrete first-person anecdote about a 2-million-token context window project that took 30 minutes to run and produced low-quality outputs due to stuffing in research, guidelines, examples, and user history"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core narrative (prompt engineering's limits, context decay, lost-in-the-middle, quadratic attention cost, token cost/latency) with no genuinely new adjacent subtopics introduced by either side, so breadth is a tie. For depth, Document A adds a detailed, named empirical study (Microsoft Research/Salesforce, 15 LLMs, 200k+ conversations, 39% drop, no error recovery) that gives strong quantitative rigor to the context-decay point. Document B counters with two depth-adding instances of its own: a specific 30%+ accuracy-drop statistic tied to the lost-in-the-middle phenomenon, and a vivid concrete anecdote about a real 2-million-token context project that ran 30 minutes and yielded poor output, illustrating the cost/latency and context-overload problem with tangible numbers. Since B contributes two distinct substantive depth instances against A's one (albeit A's is highly detailed), B is judged to have somewhat more depth content overall, while breadth is a tie for both."
+        }
+      ]
+    },
+    "Understanding context engineering": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Cognitive psychology critique: LLMs lack human-like executive-function-driven working memory management (citing psychology source)"
+            ],
+            "b_instances": [
+              "Reframing context engineering as 'systems programming' for the LLM-as-OS paradigm (citing a distinct source)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "HR assistant example illustrating context-engineered policy retrieval vs. fine-tuning"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core ground (definition, cooking-agent example, Karpathy OS/RAM/ROM analogy, prompt-vs-context table, fine-tuning comparison, Slack example). For depth, A adds a distinct, source-attributed critique of the OS analogy grounded in cognitive psychology (executive functions), while B adds a distinct reframing of context engineering as 'systems programming' with its own citation\u2014these are comparably substantive single additions, yielding a tie. For breadth, A introduces a genuinely new example (HR assistant policy retrieval) that broadens the section's illustrative scope beyond the shared examples, whereas B offers no comparable new sub-topic or example, giving A a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Cognitive psychology critique that LLMs lack human-like executive functions for filtering/inhibiting context (citing medium.com source)"
+            ],
+            "b_instances": [
+              "Reframing context engineering as a form of systems programming for the new LLM-as-OS paradigm (citing roychowdhury source)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core topics (definition as optimization problem, cooking agent example, Karpathy's OS analogy, prompt-engineering-as-subset framing, fine-tuning comparison, decision flowchart, Slack example) with no genuinely new adjacent sub-topics in either, so breadth is a tie. For depth, Document A adds a distinct, well-elaborated critique of the OS/RAM analogy grounded in cognitive psychology (executive functions, inhibition of distracting patterns) that B lacks entirely. Document B instead adds a brief 'systems programming' reframing of the analogy with a citation, which is a smaller, less elaborated depth addition. A's instance is more substantive, giving it a modest edge on depth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Cognitive psychology critique: LLMs lack human-like executive functions to filter/inhibit distracting context information, limiting the OS/RAM analogy (citing a cognitive psychology source)"
+            ],
+            "b_instances": [
+              "Reframes context engineering as 'systems programming for a new computational paradigm', extending the OS analogy conceptually (citing a LinkedIn source)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core content: context engineering as an optimization/retrieval problem, the Karpathy OS/CPU/RAM/ROM/disk analogy, the prompt-vs-context engineering table, the 'context engineering is the new fine-tuning' argument, the decision flowchart, and the Slack example. For depth, A adds a substantive critique of the OS analogy grounded in cognitive psychology (executive functions, inhibition of distracting patterns), providing a concrete mechanistic caveat not found in B. B instead adds a more abstract reframing of context engineering as 'systems programming', which is a distinct but less mechanistically rigorous elaboration. Both are single instances of roughly comparable citation-backed elaboration, but A's is more concrete/technical, giving it a modest edge. Neither document introduces genuinely new adjacent sub-topics or examples beyond the shared core (e.g., no new use cases, tools, or domains), so breadth is tied with no qualifying instances on either side."
+        }
+      ]
+    },
+    "What makes up the context": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "message history described as implemented via a 'conversation buffer' (added technical implementation detail)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "privacy/security risks of persistent long-term/episodic memory, including behavioral profiling and aggregation risk (arxiv source)",
+              "comparison of memory breach risk profile to traditional data breaches, noting years of cross-context activity exposure",
+              "named 'Echoleak' attack vector example where a malicious prompt exploited lack of session isolation to leak private data",
+              "diagram caption naming specific architecture components like MCP Servers, SQL/Vector/Graph databases, and specific action tools (Execute Python, Render Diagram, Analyze X-Ray)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core structure (context definition, workflow diagram, short-term vs long-term memory breakdown with procedural/episodic/semantic subtypes) with essentially equivalent depth on the core points. Document A adds no clearly distinct depth or breadth instances beyond this core coverage. Document B adds a minor depth detail (calling message history a 'conversation buffer') and several substantive breadth additions: privacy/security risks of persistent episodic memory (behavioral profiling, aggregation risk), a comparison of breach risk profiles, a named real-world attack example ('Echoleak'), and a more detailed diagram description naming specific architectural components (MCP servers, multiple database types, specific action tools). These give B a clear edge on breadth and a slight edge on depth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Semantic memory explicitly tied to being 'the core of RAG systems'"
+            ],
+            "b_instances": [
+              "Message history implementation detail via 'conversation buffer' concept"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "New subtopic: privacy/security risks of persistent episodic memory, including behavioral profiling and aggregation risk, and a different (more severe) breach risk profile than traditional data breaches (citations 16,17)",
+              "Concrete named attack example 'Echoleak' where lack of session isolation let a malicious prompt leak private data from past conversations (citation 18)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core taxonomy of short-term/long-term memory components with nearly identical structure and citations. Document A adds only a minor depth touch by explicitly linking semantic memory to RAG systems, which B omits. Document B, however, introduces a genuinely new adjacent subtopic not covered by A at all: the privacy and security risks of persistent episodic memory, backed by three distinct citations covering behavioral profiling/aggregation risk, a comparison to traditional data breach risk severity, and a concrete named attack vector ('Echoleak'). This constitutes substantial breadth expansion beyond the core descriptive content, while depth-level differentiation between the two documents is minimal and roughly balanced."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Semantic memory explicitly framed as 'the core of RAG systems'"
+            ],
+            "b_instances": [
+              "Message history implemented via a 'conversation buffer' mechanism detail"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Privacy/security risks of persistent episodic memory (behavioral profiling, aggregation across sessions)",
+              "Comparison of memory-breach risk profile to traditional data breaches",
+              "Named 'Echoleak' attack vector exploiting lack of session isolation",
+              "More detailed architecture diagram naming specific tools (Execute Python, Render Diagram, Analyze X-Ray, MCP Servers, SQL/Vector/Graph databases, RAG Tools)",
+              "Mention of upcoming Lesson 11 on multimodal data"
+            ]
+          },
+          "reasoning": "Both documents cover the same core memory taxonomy (short-term working memory and long-term procedural/episodic/semantic memory) almost identically, so depth-adding detail is minimal and roughly balanced: A adds a small connective note tying semantic memory to RAG, while B adds a small implementation detail ('conversation buffer') for message history\u2014neither is substantially more rigorous, so depth ties. For breadth, B introduces an entirely new sub-topic absent from A: the privacy and security risks of persistent episodic memory, including specific claims about behavioral profiling, a comparison to traditional data breach risk, and a named real-world-style attack ('Echoleak') tied to session isolation failures. B's image description is also far more specific, naming concrete tools and architectural elements (MCP Servers, RAG Tools, Execute Python, X-Ray analysis) not mentioned in A's generic diagram caption, and B references an additional future lesson on multimodal data. A contributes no comparable new sub-topics. This makes B's breadth coverage substantially larger, warranting a b_much_more verdict on breadth while depth remains a tie."
+        }
+      ]
+    },
+    "Production implementation challenges": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Silent truncation causes no error messages leading to confidently incorrect outputs (specific production-failure mechanism for context window limits)",
+              "Primacy/recency effects in human psychology as an analogy explaining lost-in-the-middle degradation",
+              "Tool confusion becomes noticeable specifically when tool count exceeds 100",
+              "Gorilla benchmark showing nearly all models perform worse with more than one tool"
+            ],
+            "b_instances": [
+              "Gemini 1.5-flash vs 1.5-pro benchmark showing 25% latency increase from model upgrade before considering context size",
+              "Information-theory framing: mutual information between retrieved context and target answer decays as retrieval breadth increases",
+              "Tool confusion can begin with as few as two tools (contrasting quantitative threshold)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Comprehension-generation asymmetry: models can ingest large context but struggle to generate equally sophisticated output, described as a distinct research gap"
+            ],
+            "b_instances": [
+              "Context poisoning: a severe, named failure mode where compromised/irrelevant info propagates causing cascading errors and goal fixation, distinct from simple factual conflict"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core challenges. For depth, Document A adds more granular mechanistic/quantitative detail overall: silent truncation consequences, a human-psychology analogy for lost-in-the-middle, a specific tool-count threshold (100), and the Gorilla benchmark finding. Document B counters with its own distinct depth additions (Gemini latency benchmark, an information-theory explanation of context decay, and a lower tool-count threshold), but has one fewer distinct instance than A, giving A a modest edge. For breadth, each document introduces exactly one genuinely new adjacent subtopic not covered by the other: A introduces the 'comprehension-generation asymmetry' research gap, while B introduces the related but distinct concept of 'context poisoning' as a severe drift variant. These are roughly comparable in substantiveness and citation support, resulting in a tie for breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Silent truncation produces no error messages, leading to confidently wrong outputs",
+              "Primacy/recency effect analogy to human psychology for lost-in-the-middle",
+              "Tool confusion becomes noticeable when tool count exceeds 100",
+              "Gorilla benchmark showing models perform worse with more than one tool"
+            ],
+            "b_instances": [
+              "Gemini 1.5 flash vs pro benchmark showing 25% latency increase with larger model",
+              "Information-theoretic explanation: mutual information between retrieved context and answer decays as retrieval breadth increases",
+              "Tool confusion can start with as few as two tools",
+              "depdifferent, more granular claim"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Comprehension-generation asymmetry research gap: models ingest vast context but struggle to generate equally sophisticated output",
+              "Context drift can amplify ethical biases via outdated worldviews"
+            ],
+            "b_instances": [
+              "Context poisoning: compromised/irrelevant info propagates causing cascading errors and agent fixation on impossible goals"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core challenges (context window, information overload, context drift, tool confusion) with comparable base explanations. For depth, A adds several elaborations: the 'no error messages' mechanism behind silent truncation, a primacy/recency psychological analogy, a specific >100-tool confusion threshold, and the Gorilla benchmark finding. B adds a specific Gemini 1.5 flash-vs-pro latency benchmark, an information-theoretic explanation of context decay, and a contrasting '2-tool' confusion threshold. A has slightly more distinct depth instances (4 vs 3), giving it a modest edge. For breadth, A introduces two new subtopics -- the comprehension-generation asymmetry research gap and ethical bias amplification from context drift -- while B introduces one new subtopic, context poisoning, which is elaborated richly with cascading-error and goal-fixation details across two sources. Since A has two distinct breadth instances versus B's one (even though B's single instance is well-developed), A holds a modest edge in breadth as well. Neither difference is dramatic enough to warrant 'much more' on either dimension."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "silent truncation causing no error messages / confident-but-wrong outputs framing",
+              "primacy/recency human psychology analogy for lost-in-the-middle",
+              "ethical bias amplification from outdated info in context drift",
+              "Gorilla benchmark showing degraded performance with more than one tool",
+              "tool confusion threshold noted at ~100 tools"
+            ],
+            "b_instances": [
+              "specific benchmark: gemini-1.5-flash vs gemini-1.5-pro showing 25% latency increase",
+              "note that performance can drop before the physical context limit is reached",
+              "information-theoretic explanation: mutual information between retrieved context and answer decays as retrieval breadth increases",
+              "tool confusion threshold noted starting at as few as two tools"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "comprehension-generation asymmetry as a distinct research gap (models ingest but struggle to generate sophisticated output)"
+            ],
+            "b_instances": [
+              "context poisoning as a distinct failure mode causing cascading errors and fixation on impossible goals"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core challenges (context window limits, information overload, context drift, tool confusion) with comparable depth: A adds silent-truncation danger, a psychology analogy, bias-amplification consequences, and two numeric benchmarks (Gorilla, 100-tool threshold); B adds a concrete Gemini latency benchmark, a note on performance degrading before the hard limit, an information-theoretic mutual-information decay argument, and a two-tool threshold. The counts and substantiveness are roughly comparable, so depth is a tie. For breadth, each document introduces exactly one genuinely new adjacent sub-topic not covered by the other: A introduces the 'comprehension-generation asymmetry' research gap, while B introduces 'context poisoning' as a distinct escalation of context drift. Both are similarly substantive and singular, yielding a tie on breadth as well."
+        }
+      ]
+    },
+    "Key strategies for context optimization": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific claim that limiting tool selection to under 30 tools triples agent selection accuracy",
+              "Analogy linking instruction repetition to primacy/recency effects in human cognition",
+              "Named MinHash technique for deduplication"
+            ],
+            "b_instances": [
+              "Specific claim that applying RAG to tool descriptions improves tool-selection accuracy threefold",
+              "Detail that rolling summaries are combined with verbatim history of the last N turns",
+              "Deduplication process detail (similarity computation, clustering, representative selection) with 50-80% token reduction statistic",
+              "Orchestrator-worker adoption/efficiency statistics (70% of production deployments, 60-70% token reduction)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Just-in-time context retrieval as a distinct strategy (agents fetching context on demand)",
+              "Emerging State-Space Model architectures as a structural solution to context growth",
+              "Cache-aware context design / KV-cache prefix ordering as a new format optimization technique"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core strategies (context selection, compression, isolation, format optimization) with largely overlapping sub-points (structured outputs, RAG, tool reduction, temporal ranking, instruction repetition, summarization, preference offloading, deduplication, orchestrator-worker pattern, XML tags, YAML). For depth, each side adds distinct quantitative/technical specifics: A cites a 'under 30 tools' accuracy claim, a cognitive-science analogy for instruction repetition, and MinHash for deduplication; B cites a different tool-selection accuracy statistic (RAG on tool descriptions), a specific summarization mechanism (rolling summary + verbatim last N turns), a more detailed deduplication process with a 50-80% token reduction figure, and quantified orchestrator-worker adoption/efficiency stats. B's depth additions are slightly more numerous and quantitatively rich, giving it a modest edge. For breadth, B introduces three genuinely new sub-topics not touched by A at all: just-in-time context retrieval as a distinct selection strategy, State-Space Models as an emerging architectural solution to context growth, and cache-aware context design (KV-cache prefix ordering) as a new format optimization technique. A has no comparable new sub-topics, making B's breadth advantage substantial."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "MinHash technique specifically named for deduplication",
+              "Primacy/recency human-cognition analogy for repeating instructions at prompt edges",
+              "Tool reduction threshold stat: limiting to <30 tools triples accuracy"
+            ],
+            "b_instances": [
+              "Mechanism detail: RAG applied specifically to tool descriptions to improve selection accuracy threefold",
+              "Deduplication process detail (computing similarities, clustering, choosing a representative) plus 50-80% token reduction stat",
+              "Orchestrator-worker quantitative stats: used in 70% of production deployments, 60-70% token reduction vs monolithic agent"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Just-in-time context retrieval as a distinct new strategy (agents fetching context on demand)",
+              "State-Space Models (SSMs) as an emerging architecture for context compression",
+              "Cache-aware context design / KV cache prefix structuring as a new format optimization technique"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core strategies (selecting context, compression, isolation, format optimization) with largely overlapping sub-points (structured outputs, RAG, tool reduction, temporal ranking, instruction repetition, summarization, preference offloading, deduplication, orchestrator-worker pattern, XML tags, YAML vs JSON, trace monitoring). For depth, A adds specific technical color (MinHash naming, a primacy/recency cognitive-science analogy, a numeric tool-count threshold), while B adds slightly more and more quantitative depth (RAG-based tool-selection mechanism, a detailed deduplication process with a 50-80% token-reduction stat, and orchestrator-worker adoption/token-savings statistics), giving B a modest edge. For breadth, B introduces three genuinely new sub-topics not touched by A at all: just-in-time context retrieval as a distinct strategy, State-Space Models as an emerging architectural solution, and cache-aware (KV cache) context design\u2014none of which A mentions, while A introduces no comparable new sub-topics. This gives B a decisive breadth advantage."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific tool-count threshold (<30 tools) for tripling selection accuracy",
+              "Primacy/recency cognitive-science analogy for repeated instructions",
+              "Summary approach that extracts key entities and relationships"
+            ],
+            "b_instances": [
+              "Deduplication process detail (similarity computation, clustering, representative selection) with 50-80% token reduction stat",
+              "Orchestrator-worker quantitative stats (70% of production deployments, 60-70% token reduction)",
+              "Rolling summary combined with verbatim history of last N turns"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Just-in-time context retrieval as a distinct new context-selection strategy",
+              "Emerging State-Space Model architectures as alternative to compression",
+              "Cache-aware context design / KV-cache prefix structuring as a new format optimization technique"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core strategies with comparable depth in most areas, but each adds distinct quantitative/technical details not found in the other (A: tool-count threshold, primacy/recency analogy, entity-extraction summarization; B: deduplication clustering mechanics with 50-80% reduction stat, orchestrator-worker adoption/token-savings stats, verbatim-turn retention), making depth roughly comparable with a slight edge to B due to more numerous quantified specifics. For breadth, B introduces three genuinely new sub-topics absent from A entirely: just-in-time context retrieval as a selection strategy, State-Space Models as an emerging compression architecture, and cache-aware (KV-cache) context structuring as a format optimization technique. A contains no comparable new sub-topics beyond the four core strategies, giving B a clear breadth advantage."
+        }
+      ]
+    },
+    "Here is an example": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "JSON as specific structured format for healthcare prompt design"
+            ],
+            "b_instances": [
+              "EHR integration & sensitive-data management detail added to healthcare example",
+              "Real-time market data & compliance/governance detail added to financial services example",
+              "Layered architecture (persistent/time-sensitive/transient context) detail for project management example",
+              "Long-term style memory detail for content-creator example",
+              "Concrete quantified medical literature entries in the code example (dehydration relief in 30min-3hrs, cold-compress vasoconstriction, caffeine-withdrawal mechanism, stress-relief techniques)",
+              "Specification that Qdrant/Neo4j serve as vector/graph-based long-term memory stores"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Mention of broader context-engineering tool ecosystem: LlamaIndex, Zep, Atlan as retrieval/memory/governance tools"
+            ],
+            "b_instances": [
+              "New multimodal video-understanding application domain with public safety, education, and legal use cases",
+              "Claude mentioned as an alternative reasoning engine"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core domain examples and the same headache-query walkthrough, but B adds substantially more depth: it enriches each domain example with a concrete technical mechanism (EHR/privacy handling, real-time market data and compliance, layered context architecture, long-term style memory) and replaces A's placeholder code example with a fully fleshed-out, quantified dataset (specific medical findings and treatment timeframes) plus clarifies the technical role of Qdrant/Neo4j as vector/graph memory stores. A's only comparable depth addition is the JSON-format detail for healthcare prompts. For breadth, A uniquely broadens the tooling ecosystem (LlamaIndex, Zep, Atlan) while B introduces an entirely new adjacent application area (multimodal video understanding with public safety/education/legal use cases) plus a minor alternative-model mention (Claude), giving B a slight edge in breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "LangGraph specifically cited as enabling cyclical computation graphs, a structural mechanism detail"
+            ],
+            "b_instances": [
+              "EHR integration and sensitive data management requirement for healthcare use case",
+              "Financial services detail on real-time market data/client portfolio pulling and compliance/governance rules",
+              "Project management layered architecture for persistent, time-sensitive, and transient context",
+              "Content creator long-term memory of style/knowledge base for consistency",
+              "Detailed structured patient history example with specific conditions, preferences, habits (e.g., caffeine intake, stress level)",
+              "Detailed medical literature entries with specific mechanisms/quantitative findings (dehydration rehydration timing, cold compress vasoconstriction, caffeine withdrawal, stress-relief techniques)",
+              "Tech stack specifics: Claude as alternative reasoning engine, explicit division of Postgres for structured data vs Qdrant/Neo4j for vector/graph memory"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Mention of broader context engineering tool ecosystem: LlamaIndex (retrieval), Zep (memory service), Atlan (governance layer)"
+            ],
+            "b_instances": [
+              "New multimodal video understanding application domain with named use cases (public safety footage scanning, personalized educational video lessons, legal deposition search)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core example (four domain use cases, healthcare walkthrough, Python prompt assembly, tech stack). B adds substantially more depth: concrete mechanism-level details for each domain (EHR integration, compliance/governance, layered context architecture, long-term style memory), a far more elaborate and quantitatively specific code example (detailed patient profile fields and four medical literature entries with specific findings/treatments), and more granular tech-stack differentiation (Claude alternative, Postgres vs. vector/graph DB split). A's only comparable depth addition is a specific citation about LangGraph's cyclical-computation capability. For breadth, A uniquely introduces the broader tool ecosystem (LlamaIndex, Zep, Atlan) as a brief aside, while B introduces an entirely new adjacent application domain (multimodal video understanding with public safety, education, and legal use cases) that is more elaborated and sourced, giving B a modest edge in breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "JSON structured format for patient info in healthcare prompts",
+              "LangGraph's graph-based structure enabling cyclical computation for agent runtimes"
+            ],
+            "b_instances": [
+              "EHR integration and sensitive data handling requirements for healthcare context",
+              "Real-time market data pull and compliance/governance rules for financial services",
+              "Layered architecture (persistent/time-sensitive/transient context) for project management orchestration",
+              "Concrete medical literature findings in worked example (dehydration cause, rehydration relief in 30min-3hrs)",
+              "Cold compress vasoconstriction mechanism for migraine relief",
+              "Caffeine withdrawal headache mechanism and remedy",
+              "Database rationale specifying Qdrant/Neo4j for vector vs graph-based long-term memory"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Broader context-engineering tool ecosystem: retrieval frameworks (LlamaIndex), memory services (Zep), governance layers (Atlan)"
+            ],
+            "b_instances": [
+              "Multimodal video understanding applications: public safety footage scanning, personalized educational video lessons, legal deposition search (Twelve Labs)"
+            ]
+          },
+          "reasoning": "Both sections cover the same core use-case list and healthcare walkthrough, but B adds substantially more depth: it elaborates each industry example with a specific mechanism (EHR/compliance handling, real-time market data with governance, layered context architecture cited to a source) and its Python example includes concrete, sourced medical findings (dehydration/rehydration timing, cold-compress vasoconstriction, caffeine withdrawal, stress-relief techniques) plus a more specific database rationale (Qdrant/Neo4j for vector vs. graph memory). A only deepens with a brief JSON-formatting note and a LangGraph mechanism citation, so B is much deeper. For breadth, A introduces a tool-ecosystem aside (LlamaIndex, Zep, Atlan) while B introduces an entirely new adjacent domain (multimodal video understanding with public safety, education, and legal applications, citation to Twelve Labs); both are single distinct breadth instances but B's is a genuinely new domain with several named applications, giving it a modest edge."
+        }
+      ]
+    },
+    "Connecting context engineering to AI engineering": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "ContextOps: named DevOps-inspired lifecycle framework for context governance with CI/CD automation"
+            ],
+            "b_instances": [
+              "Comprehension-generation asymmetry: LLMs understand more context than they can generate output for",
+              "Software engineering specifics: modularity, version control, automated testing applied to context pipelines",
+              "MLOps specifics: monitoring for context drift and performance degradation in production"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Emerging AI accelerator hardware (SambaNova, Positron) built for massive context windows"
+            ],
+            "b_instances": [
+              "Multimodal orchestration trend blending text, audio, and video context"
+            ]
+          },
+          "reasoning": "Both documents cover the same core disciplinary breakdown (AI, software, data, ops engineering). For depth, B adds three distinct technical specifics not in A: the comprehension-generation asymmetry research finding, concrete software-engineering practices (modularity, version control, testing) for context pipelines, and MLOps-specific monitoring concerns (context drift, performance degradation). A only adds one comparable depth instance, the ContextOps CI/CD framing, so B clearly leads on depth. For breadth, each document introduces exactly one genuinely new adjacent subtopic with concrete backing: A cites specific AI accelerator hardware makers (SambaNova, Positron) enabling larger context windows, while B cites a multimodal orchestration trend blending text/audio/video context. These are comparably specific and substantive, yielding a tie on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "comprehension-generation asymmetry limitation of LLMs (citing research)",
+              "MLOps detail on monitoring for context drift and performance degradation"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "ContextOps framework applying DevOps lifecycle (creation, validation, distribution, governance) to AI context",
+              "hardware-level detail on AI accelerators (SambaNova, Positron) with custom silicon for large context windows"
+            ],
+            "b_instances": [
+              "trend toward multimodal orchestration blending text, audio, and video context"
+            ]
+          },
+          "reasoning": "Document B adds two source-attributed depth instances not in A: the comprehension-generation asymmetry limitation of LLMs and the MLOps detail about monitoring context drift/performance degradation, giving B a depth edge. Document A adds two breadth instances not in B: the named ContextOps framework with its DevOps-style lifecycle, and the hardware-level discussion of AI accelerator companies (SambaNova, Positron) enabling larger context windows; B only offers one comparable breadth instance (multimodal orchestration trend), giving A a modest breadth edge. Both documents share core coverage of AI/Software/Data Engineering and Ops roles, which does not count as differentiating content."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Hardware-level detail: AI accelerator companies (SambaNova, Positron) designing custom silicon for massive context windows",
+              "Layered architecture concept treating context as a managed backend resource"
+            ],
+            "b_instances": [
+              "Comprehension-generation asymmetry: LLMs understand more than they can generate, per cited research",
+              "MLOps detail: monitoring for context drift and performance degradation in production",
+              "Specific software engineering practices for context pipelines: modularity, version control, automated testing"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "ContextOps as an emerging DevOps-inspired discipline governing AI context lifecycle (creation, validation, distribution, governance)"
+            ],
+            "b_instances": [
+              "Multimodal orchestration trend blending text, audio, and video contexts"
+            ]
+          },
+          "reasoning": "Both documents cover the same core framing (AI/Software/Data Engineering + Ops) but each adds distinct source-attributed material. On depth, B integrates more substantive research-backed detail: the comprehension-generation asymmetry limitation, specific MLOps monitoring concerns (context drift/performance degradation), and concrete software engineering practices (modularity, version control, testing), giving it a modest edge over A's hardware accelerator specifics and layered-architecture framing. On breadth, both introduce one genuinely new adjacent subtopic each -- A introduces ContextOps as a DevOps-inspired discipline, while B introduces multimodal orchestration trends -- making breadth a tie."
+        }
+      ]
+    }
+  }
+}

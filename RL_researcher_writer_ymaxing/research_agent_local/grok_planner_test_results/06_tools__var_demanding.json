@@ -4,40 +4,32 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 2,
-  "grok_preset": 2,
+  "grok_preset": null,
   "chosen_preset": 2,
-  "chosen_by": "Grok4.2",
-  "oracle_preset": 3,
-  "oracle_name": "deep",
+  "chosen_by": "RL",
+  "oracle_preset": 2,
+  "oracle_name": "standard",
   "r_w_rewards": [
-    0.5694,
-    0.5915,
-    0.5635,
-    0.609
+    0.3224,
+    0.4955,
+    0.5377,
+    0.4971
   ],
-  "verdict": "NEAR",
-  "regret": 0.0455,
-  "regret_counted": 0.0455,
-  "entropy_bits": 0.7544,
-  "confidence": 0.8415,
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.1149,
+  "confidence": 0.6388,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.0366,
     0.0,
-    0.8415,
-    0.122
+    0.0367,
+    0.6388,
+    0.3245
   ],
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL recommendation is decisive P2 standard (84% budget-weighted vote mass on standard, only 12% deep). High must-ev (63 total) and depth residuals in largest sections (S3/S4) align with this without triggering any sanctioned override (no P2->P3 path, no broad well-covered pattern for downward nudge).",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer_aggregate",
-    "decisiveness",
-    "vote_mass_gates",
-    "high_budget_residuals"
-  ],
-  "grok_risk_flags": [
-    "depth gaps in S3/S4 could need more than 2 rounds",
-    "must-ev density in code-heavy sections"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

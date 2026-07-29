@@ -4,40 +4,32 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.6854,
-    0.7036,
-    0.4276,
-    0.6151
+    0.6837,
+    0.4483,
+    0.6821
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.5759,
-  "confidence": 0.4177,
-  "floor_applied": false,
+  "entropy_bits": 1.4792,
+  "confidence": 0.6049,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.0291,
-    0.4177,
-    0.4269,
-    0.1262
+    0.061,
+    0.6049,
+    0.2537,
+    0.0804
   ],
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P1 light (already cost-adjusted); vote is uncertain (entropy 1.58) with near-tie light 42% vs standard 43% but deep mass only 13% <30%. All sections self-contained, no sanctioned upward from P1 (hard guard), standard mass >30% blocks general downward to P0, and raw residuals (e.g. S3 46/2) cannot trigger escalation per policy. Dominant gap is depth but budget-weighted vote mass locates peak at light touch-up.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer_aggregate_P1",
-    "vote_split_42L_43S",
-    "deep_mass_13pct",
-    "all_self_contained"
-  ],
-  "grok_risk_flags": [
-    "near-tie_light_standard_may_miss_S3_depth",
-    "high_orphans_must_ev_in_foundations"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

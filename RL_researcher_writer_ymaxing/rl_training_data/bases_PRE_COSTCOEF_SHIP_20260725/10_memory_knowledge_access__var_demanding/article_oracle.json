@@ -1,0 +1,189 @@
+{
+  "version": 2,
+  "article": "10_memory_knowledge_access__var_demanding",
+  "variant": "var_demanding",
+  "computed_at": "2026-07-25T20:32:23.448409+00:00",
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "deep",
+  "runner_up_arm_idx": 3,
+  "margin": 0.011856,
+  "reward_spread": 0.06314,
+  "r_w_rewards": {
+    "skip": 0.512209,
+    "light": 0.575349,
+    "standard": 0.534642,
+    "deep": 0.563493
+  },
+  "r_w_rewards_list": [
+    0.512209,
+    0.575349,
+    0.534642,
+    0.563493
+  ],
+  "decision_path": [
+    "near-tie band=['light', 'deep'] R_w=[light:0.5753, deep:0.5635]",
+    "no signal cleared its threshold \u2192 needs_review=True  fallback=cheapest arm in band (light)"
+  ],
+  "manual_override": false,
+  "needs_review": true,
+  "n_sections": 7,
+  "n_sections_with_target": 7,
+  "total_target_words": 4300,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place",
+      "title": "introduction why agents need a memory in the first place",
+      "target_words": 650,
+      "weight_words": 650,
+      "weight_frac": 0.15116,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.615,
+        "standard": 0.7622,
+        "deep": 0.6664
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.615,
+        0.7622,
+        0.6664
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-the-layers-of-memory-internal-short-term-and-long-term",
+      "title": "the layers of memory internal short term and long term",
+      "target_words": 450,
+      "weight_words": 450,
+      "weight_frac": 0.10465,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.6922,
+        "deep": 0.6314
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.64,
+        0.6922,
+        0.6314
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-long-term-memory-semantic-episodic-and-procedural",
+      "title": "long term memory semantic episodic and procedural",
+      "target_words": 650,
+      "weight_words": 650,
+      "weight_frac": 0.15116,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.6572,
+        "deep": 0.4114
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.64,
+        0.6572,
+        0.4114
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-storing-memories-pros-and-cons-of-different-approaches",
+      "title": "storing memories pros and cons of different approaches",
+      "target_words": 650,
+      "weight_words": 650,
+      "weight_frac": 0.15116,
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.24,
+        "standard": 0.4922,
+        "deep": 0.3614
+      },
+      "rewards_by_preset": [
+        0.15,
+        0.24,
+        0.4922,
+        0.3614
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-memory-implementations-with-code-examples",
+      "title": "memory implementations with code examples",
+      "target_words": 800,
+      "weight_words": 800,
+      "weight_frac": 0.18605,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.5872,
+        "deep": 0.5614
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.64,
+        0.5872,
+        0.5614
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-real-world-lessons-challenges-and-best-practices",
+      "title": "real world lessons challenges and best practices",
+      "target_words": 800,
+      "weight_words": 800,
+      "weight_frac": 0.18605,
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.745,
+        "standard": 0.0372,
+        "deep": 0.6664
+      },
+      "rewards_by_preset": [
+        0.3,
+        0.745,
+        0.0372,
+        0.6664
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::section-7-conclusion",
+      "title": "conclusion",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.06977,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.44,
+        "standard": 0.6922,
+        "deep": 0.6664
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.44,
+        0.6922,
+        0.6664
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    }
+  ]
+}

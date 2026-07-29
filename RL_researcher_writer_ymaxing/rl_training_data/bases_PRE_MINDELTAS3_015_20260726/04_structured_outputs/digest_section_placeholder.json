@@ -1,0 +1,11 @@
+{
+  "presets": {
+    "S1::section-1-introduction": "deep",
+    "S2::section-2-understanding-why-structured-outputs-are-critical": "deep",
+    "S3::section-3-implementing-structured-outputs-from-scratch-using-json": "deep",
+    "S4::section-4-implementing-structured-outputs-from-scratch-using-pydantic": "deep",
+    "S5::section-5-implementing-structured-outputs-using-gemini-and-pydantic": "deep",
+    "S6::section-6-conclusion-structured-outputs-are-everywhere": "deep",
+    "S7::lesson-code": "deep"
+  }
+}

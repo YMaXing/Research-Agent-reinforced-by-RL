@@ -3,40 +3,33 @@
   "lesson": "02_workflows_vs_agents",
   "split": "TRAIN",
   "policy": "allowed",
-  "rl_preset": 1,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.6292,
-    0.9497,
-    0.8553,
-    0.5642
+    0.6897,
+    0.705,
+    0.5676
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 1.3645,
-  "confidence": 0.5714,
-  "floor_applied": true,
+  "verdict": "NEAR",
+  "regret": -0.0153,
+  "regret_counted": -0.0153,
+  "entropy_bits": 0.5573,
+  "confidence": 0.8701,
+  "floor_applied": false,
   "rl_agg_probs": [
-    0.1299,
-    0.5714,
-    0.2987,
-    0.0
+    0.0,
+    0.0,
+    0.8701,
+    0.1299
   ],
-  "grok_override": false,
-  "grok_reasoning": "Section-scorer aggregate is P1 light (57% light, 30% standard, 0% deep mass); moderate confidence makes it UNCERTAIN but no sanctioned override applies. High-budget S5 (30%, standard pick, must-ev 4, residual near-zero on depth) and S4 already show strong coverage; 100% self-contained sections plus universal brief flags on large portions argue against escalation. Dominant gap type is depth but RL votes already baked in the cost-adjusted P1 recommendation; P2+ is prohibited from a P1 pick.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "budget-weighted vote mass",
-    "self-contained + residual context",
-    "brief flags on high-budget sections"
-  ],
-  "grok_risk_flags": [
-    "S3 residual 46/4 + must-ev 3 could leave comparison gaps",
-    "42 unbacked anchors may need more sourcing than light round supplies"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

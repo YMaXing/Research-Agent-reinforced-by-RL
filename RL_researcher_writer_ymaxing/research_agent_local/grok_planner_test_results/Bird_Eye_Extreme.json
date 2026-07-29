@@ -4,40 +4,32 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.4915,
-    0.8132,
-    0.6324,
-    0.4993
+    0.6542,
+    0.5785,
+    0.5104
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 0.8722,
-  "confidence": 0.7073,
-  "floor_applied": true,
+  "entropy_bits": 1.5783,
+  "confidence": 0.3777,
+  "floor_applied": false,
   "rl_agg_probs": [
     0.0,
-    0.7073,
-    0.0,
-    0.2927
+    0.3777,
+    0.3015,
+    0.3207
   ],
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P1 light at 71% (DECISIVE), with 0% standard and 29% deep mass (below 30% gate). All sections self-contained, residuals high but already factored into the cost-adjusted RL pick; no sanctioned upward override from P1, no brief flags, external-evidence only ALLOWED. General downward to P0 not triggered as vote is decisive and residuals not near-zero.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer_aggregate",
-    "decisiveness",
-    "vote_mass_below_threshold",
-    "self-contained_context"
-  ],
-  "grok_risk_flags": [
-    "S3 29% deep vote + high must-ev/orphans",
-    "dominant depth gaps may leave some anchors thin"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

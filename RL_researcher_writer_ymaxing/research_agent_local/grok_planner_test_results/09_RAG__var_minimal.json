@@ -4,36 +4,32 @@
   "split": "TRAIN",
   "policy": "forbidden",
   "rl_preset": 3,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "grok_preset": null,
+  "chosen_preset": 3,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
-    0.475,
-    0.4067,
-    0.4267,
-    0.42
+    0.4417,
+    0.4142,
+    0.4365,
+    0.4313
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "MISS",
+  "regret": 0.0104,
   "regret_counted": null,
-  "entropy_bits": 1.2669,
-  "confidence": 0.6589,
+  "entropy_bits": 1.8392,
+  "confidence": 0.4667,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.1727,
-    0.0,
-    0.1684,
-    0.6589
+    0.1667,
+    0.2,
+    0.1667,
+    0.4667
   ],
-  "grok_override": true,
-  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN, so exploration output cannot be used; hard constraint mandates P0 skip. This overrides the section-scorer's P3 recommendation (66% deep vote mass) and all per-section residual gaps.",
-  "grok_override_reason": "Hard constraint from external-evidence policy = forbidden requires P0",
-  "grok_decision_drivers": [
-    "external-evidence policy"
-  ],
-  "grok_risk_flags": [
-    "Scorer voted deep but policy forbids any exploration"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

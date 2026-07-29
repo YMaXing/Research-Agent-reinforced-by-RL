@@ -51,12 +51,22 @@ def _delta_in_std_deep_frame(preference: str, a_arm: str, b_arm: str) -> float |
     raise ValueError(f"Unexpected arm pair: {a_arm}/{b_arm}")
 
 
-def _lookup_tag_credit(tag_credits_for_arm: dict[str, dict[str, float]], norm_title: str, dim: str) -> float:
+def _lookup_tag_credit(tag_credits_for_arm: dict[str, dict[str, float]], norm_title: str, dim: str, idx: int | None = None) -> float:
+    """Same 3-tier lookup as pairwise_reward.py's copy: exact -> substring ->
+    ordinal-position fallback (needed since a grader's reasoning.json title can
+    paraphrase away a word relative to the article.md heading, breaking
+    substring containment in both directions -- see pairwise_reward.py's
+    docstring for the real anomaly that surfaced this).
+    """
     if norm_title in tag_credits_for_arm:
         return tag_credits_for_arm[norm_title][dim]
     for k, v in tag_credits_for_arm.items():
         if norm_title in k or k in norm_title:
             return v[dim]
+    if idx is not None:
+        values = list(tag_credits_for_arm.values())
+        if idx < len(values):
+            return values[idx][dim]
     return 0.0
 
 
@@ -71,7 +81,7 @@ def analyze(articles: list[str]) -> None:
         tag_standard = _tag_credits_for_arm(article, "standard")
         tag_deep = _tag_credits_for_arm(article, "deep")
 
-        for title, entry in data["sections"].items():
+        for idx, (title, entry) in enumerate(data["sections"].items()):
             a_arm, b_arm = entry["a_arm"], entry["b_arm"]
             norm_title = geo._normalize(title)
             for dim in ("depth", "breadth"):
@@ -80,7 +90,7 @@ def analyze(articles: list[str]) -> None:
                 if not deltas:
                     continue
                 pw_margin = sum(deltas) / len(deltas)
-                tag_margin = _lookup_tag_credit(tag_standard, norm_title, dim) - _lookup_tag_credit(tag_deep, norm_title, dim)
+                tag_margin = _lookup_tag_credit(tag_standard, norm_title, dim, idx) - _lookup_tag_credit(tag_deep, norm_title, dim, idx)
                 kind = _classify(tag_margin, pw_margin)
                 rows.append(
                     {

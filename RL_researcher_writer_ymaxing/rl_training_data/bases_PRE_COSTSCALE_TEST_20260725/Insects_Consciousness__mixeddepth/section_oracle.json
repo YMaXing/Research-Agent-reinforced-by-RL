@@ -1,0 +1,57 @@
+{
+  "version": 4,
+  "article": "Insects_Consciousness__mixeddepth",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.55,
+        "light": -0.06,
+        "standard": 0.4372,
+        "deep": 0.4114
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-a-growing-awareness": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.7,
+        "light": -0.06,
+        "standard": 0.7372,
+        "deep": 0.9114
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.3,
+        "deep": 0.5
+      }
+    },
+    "S3::section-3-mindful-relations": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.55,
+        "light": -0.06,
+        "standard": 0.6372,
+        "deep": 1.0614
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.2,
+        "deep": 0.5
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "skip",
+    "S2::section-2-a-growing-awareness": "deep",
+    "S3::section-3-mindful-relations": "deep"
+  }
+}

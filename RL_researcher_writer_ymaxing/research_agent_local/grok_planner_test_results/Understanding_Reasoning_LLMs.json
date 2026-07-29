@@ -4,39 +4,32 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 2,
-  "grok_preset": 2,
+  "grok_preset": null,
   "chosen_preset": 2,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
     0.4603,
-    0.6608,
-    0.6879,
-    0.581
+    0.5519,
+    0.6049,
+    0.5724
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 0.3651,
-  "confidence": 0.9302,
+  "entropy_bits": 0.3389,
+  "confidence": 0.9371,
   "floor_applied": false,
   "rl_agg_probs": [
     0.0,
-    0.0698,
-    0.9302,
+    0.0629,
+    0.9371,
     0.0
   ],
-  "grok_override": false,
-  "grok_reasoning": "Section-scorer aggregate is decisive P2 (93% standard vote mass, 0% deep) on a 4300-word theory article whose dominant gap is depth; largest section (S5, 45% budget) carries 42 residual depth need + 12 must-ev items while S4 adds further must-ev pressure, exactly matching the RL pick already cost-adjusted upstream. All sections self-contained yet residual gaps in high-budget technical cores preclude downward override; decisive vote bars any P3 escalation per policy.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "decisive 93% standard vote mass",
-    "S5 45% budget + 42 resid depth/12 must-ev",
-    "dominant depth gaps"
-  ],
-  "grok_risk_flags": [
-    "S5 brief flag vs 1950-word allocation may limit absorption",
-    "all sections self-contained could imply light suffices in hindsight"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

@@ -64,10 +64,44 @@ _DEFAULT_QUALITY_WEIGHT = QUALITY_WEIGHT["standard"]
 #: it -- this reshaping (not raising the ceiling) is the actual fix for the
 #: "enhancement ceiling" bias while preserving the existing anti-stuffing cap on
 #: the `explore` term in _section_reward (still capped at 0.5 * core_preservation).
+#:
+#: tier-1 (0.35) is CALIBRATED FROM DIRECT EVIDENCE, not chosen a priori: pairwise
+#: LLM comparison grading (run13_rl_grok_pipeline_analysis.md Part 6, sections
+#: 44-49) found the previous tier-1=0.55 systematically over-credited `deep`
+#: relative to `standard` specifically at the 0-vs-1-instance boundary -- a
+#: statistically significant (binomial two-tailed p=0.031), twice-independently-
+#: replicated finding across 18 disjoint sections spanning 16 topics. Majority-
+#: voted (3-draw) direct pairwise comparison on the 5 cleanest cases put the true
+#: standard-vs-deep gap at a mean of +0.207 (range +0.067 to +0.367), not +0.55.
+#: This is the "G0" candidate from that investigation -- a conservative correction
+#: toward that target (0.35, not the more aggressive directly-calibrated 0.20),
+#: chosen because it showed a genuine positive result (06_tools__var_standard's
+#: confirmed-correct replicate-majority label went from a 3-1 to a unanimous 4-0
+#: vote) with less corpus-wide disruption than the more aggressive value.
+#:
+#: tier-2 (0.45) is ALSO calibrated from direct evidence (run13_rl_grok_pipeline_
+#: analysis.md Part 7, "J0"): scaled standard-vs-deep pairwise grading (16
+#: articles, N=218 section/dim observations) plus a dedicated repeat-draws check
+#: on 7 clean tier0-vs-tier2 boundary cases (pooled N=8 draws/target, 56 total,
+#: barely moved from the N=3 estimate: +0.169 -> +0.165) found the real
+#: pairwise-judged magnitude of a full 0-to-2-instance jump is only ~+0.165 vs
+#: the old flat +0.80 -- a robust, twice-measured ~4.8x overstatement. The raw
+#: point estimate is actually BELOW tier-1's own +0.207 estimate, which would
+#: violate the curve's required monotonicity (tier2 must stay >= tier1) if taken
+#: literally -- interpreted as the marginal value of a 2nd instance beyond the
+#: 1st being genuinely small. 0.45 is the SAME kind of conservative compromise
+#: as G0 (roughly the midpoint of 0.80 and the ~0.17 point estimate), keeping
+#: clear headroom above tier1. Validated: only 2/42 corpus flips (both thin,
+#: zero comfortable) and 06_tools__var_standard's confirmed replicate-majority
+#: label unaffected (stays deep, margin improves 0.001->0.032).
+#:
+#: tier-3 (1.00) remains UNCHANGED -- the one tier0-vs-tier3 pairwise data point
+#: collected was found unreliable (a title-matching bug in the cross-referencing
+#: script), so there is no trustworthy evidence yet to recalibrate it.
 CREDIT_AT_WEIGHTED_COUNT: dict[int, float] = {
     0: 0.00,
-    1: 0.55,
-    2: 0.80,
+    1: 0.35,
+    2: 0.45,
     3: 1.00,
 }
 
@@ -92,11 +126,11 @@ def enhancement_credit(qualities: list[str]) -> float:
     The curve is a smooth interpolation of CREDIT_AT_WEIGHTED_COUNT driven by the
     quality-weighted instance count, capped at INSTANCE_CAP:
         0 instances            -> 0.00
-        1 standard instance    -> ~0.36  (0.65 weighted, interpolated 0.00->0.55)
-        1 strong instance      -> 0.55
-        2 standard instances   -> ~0.63  (1.30 weighted, interpolated 0.55->0.80)
+        1 standard instance    -> ~0.23  (0.65 weighted, interpolated 0.00->0.35)
+        1 strong instance      -> 0.35
+        2 standard instances   -> ~0.49  (1.30 weighted, interpolated 0.35->0.80)
         2 strong instances     -> 0.80
-        3 standard instances   -> ~0.79  (1.95 weighted, interpolated 0.55->0.80)
+        3 standard instances   -> ~0.78  (1.95 weighted, interpolated 0.35->0.80)
         3+ strong instances    -> 1.00
     """
     if not qualities:

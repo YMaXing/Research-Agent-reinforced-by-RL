@@ -4,38 +4,32 @@
   "split": "TRAIN",
   "policy": "forbidden",
   "rl_preset": 1,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
-    0.425,
-    0.4739,
-    0.3371,
-    0.2914
+    0.4571,
+    0.4765,
+    0.4195,
+    0.4252
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "NEAR",
+  "regret": -0.0194,
   "regret_counted": null,
-  "entropy_bits": 1.5832,
-  "confidence": 0.3218,
-  "floor_applied": false,
+  "entropy_bits": 1.3381,
+  "confidence": 0.6071,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.3216,
-    0.3218,
-    0.3567,
+    0.25,
+    0.6071,
+    0.1429,
     0.0
   ],
-  "grok_override": true,
-  "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN requires P0; exploration output cannot be used. Scorer aggregate was P1 (uncertain, 36% standard mass) but policy overrides all votes, residual needs, and section budgets. Article guideline reinforces conceptual overview with strict brevity and no external libraries/case studies.",
-  "grok_override_reason": "External-evidence policy explicitly forbids exploration, forcing P0 despite scorer's P1 pick",
-  "grok_decision_drivers": [
-    "external-evidence-forbidden",
-    "hard-constraint-override"
-  ],
-  "grok_risk_flags": [
-    "policy misread could allow light touch-up",
-    "self-contained sections might still hide depth gaps"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

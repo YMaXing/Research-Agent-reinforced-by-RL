@@ -3,40 +3,33 @@
   "lesson": "31_CI",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 1,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 3,
+  "grok_preset": null,
+  "chosen_preset": 3,
+  "chosen_by": "RL",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
     0.6284,
-    0.7103,
-    0.5883,
-    0.6199
+    0.7304,
+    0.6741,
+    0.6666
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 1.5597,
-  "confidence": 0.4197,
+  "verdict": "MISS",
+  "regret": 0.0638,
+  "regret_counted": 0.0638,
+  "entropy_bits": 1.1503,
+  "confidence": 0.5817,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.2706,
-    0.4197,
+    0.0339,
+    0.3844,
     0.0,
-    0.3096
+    0.5817
   ],
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL pick is P1 light (42% light mass highest; UNCERTAIN at 1.56 bits entropy). Deep mass=31% from S6 (31% budget, resid 2/6) triggers no sanctioned override from a P1 (hard guard forbids any P1→P2+ escalation; depth-or-nothing pattern with 0% standard mass confirms P2 valley). No general downward to P0 (multiple high-budget sections retain residual need; no brief flags; deep mass ≥30%). Self-contained flags and ALLOWED policy already baked into RL pick.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "RL aggregate P1",
-    "vote mass distribution",
-    "no sanctioned override from P1"
-  ],
-  "grok_risk_flags": [
-    "S6 deep vote + residual may under-serve Tier-3 CI depth",
-    "high self-contained % could mask subtle evidence gaps"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

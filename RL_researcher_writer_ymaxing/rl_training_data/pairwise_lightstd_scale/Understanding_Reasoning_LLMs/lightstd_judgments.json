@@ -1,0 +1,526 @@
+{
+  "article": "Understanding_Reasoning_LLMs",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Specific quantitative claim that OpenAI's o1 is up to six times more expensive/slower than GPT-4o for same token count, with two citations",
+              "Citation of research finding an inverted U-shaped curve where excessive reasoning hurts performance especially on easy problems"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Mention that reasoning specialization can cause models to lose fluency in other (non-reasoning) areas, a new trade-off not covered in A"
+            ]
+          },
+          "reasoning": "Both intros cover the same core framing of reasoning models as a 2025 specialization trend, with the same 4-stage diagram and roadmap list. Document A goes deeper into the cost/latency trade-off with a concrete stat (o1 up to 6x more expensive than GPT-4o) and cites specific research on an inverted U-shaped overthinking curve, giving it clear depth advantage. Document B instead adds a distinct new drawback -- loss of general fluency as models specialize -- which is a new sub-topic not explored in A, giving it a modest breadth edge, though it is stated briefly without elaboration."
+        },
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "specific stat that OpenAI o1 is up to six times more expensive than GPT-4o for same token count, sourced to two articles",
+              "cites specific research study documenting an inverted U-shaped curve where excessive reasoning degrades performance on easier problems"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "mentions reasoning models can lose fluency in other (non-reasoning) areas as they specialize, a new trade-off dimension beyond cost/latency/overthinking"
+            ]
+          },
+          "reasoning": "Document A provides two concrete, source-attributed depth enhancements: a specific quantitative comparison (o1 up to 6x costlier than GPT-4o) and a citation to research on an inverted-U relationship between reasoning length and accuracy. Document B lacks any comparable depth-adding specifics, instead offering only a generic statement about latency/cost and overthinking without quantification or study citation. For breadth, both documents cover the same core topics (RAG/fine-tuning contrast, task types, roadmap items), but Document B adds one new sub-topic not present in A: the risk of reasoning models losing general fluency as they specialize, a distinct trade-off dimension. This is a modest addition, giving B a slight edge on breadth, while A holds a clear advantage on depth due to concrete statistics and cited research."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "specific 6x cost/latency comparison between o1 and GPT-4o with two sourced citations",
+              "citation of a specific study finding an inverted U-shaped curve where excess reasoning hurts performance on easy problems"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "mentions reasoning specialization can cause loss of fluency in other (non-reasoning) areas, a new trade-off not covered in A"
+            ]
+          },
+          "reasoning": "Both introductions cover the same core topics (definition of reasoning models, RAG/fine-tuning contrast, roadmap). For depth, Document A adds concrete quantitative substantiation of the cost/latency trade-off (o1 being up to 6x more expensive than GPT-4o, cited) and references a specific study documenting an inverted-U curve for overthinking on easy tasks, both of which meaningfully deepen the existing cost/overthinking discussion beyond B's more generic treatment. For breadth, Document B introduces one new adjacent point -- that specialization can cause reasoning models to lose fluency in other domains -- which A does not mention, giving B a modest edge on breadth. Neither document introduces substantial additional distinct new topics beyond these, so both differences are modest rather than dramatic."
+        }
+      ]
+    },
+    "How do we define \"reasoning model\"?": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Claim that CoT benefits emerge only at ~100B+ parameters (citing Google research blog)",
+              "Explanation that internalized reasoning is the automation of the CoT structure into the model itself (citing NVIDIA glossary)"
+            ],
+            "b_instances": [
+              "Specific mechanism/example of CoT as adding the phrase 'Let's think step by step' (citing arxiv 2205.11916)",
+              "Technical detail that visible traces are often enclosed in <think>...</think> tags",
+              "Noting the accuracy/latency tradeoff: hidden reasoning leads to longer response times but higher accuracy"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Neuroscience analogy: LLM modular reasoning (e.g., Mixture-of-Experts) compared to specialized brain circuits and hemispheric asymmetry (citing arxiv 2506.13331)"
+            ]
+          },
+          "reasoning": "Both documents give the same core definition and CoT/hidden-iteration explanation. For depth, B adds a few more concrete technical specifics (the 'let's think step by step' trick with its own citation, the <think> tag convention, and the speed/accuracy tradeoff for hidden reasoning) while A contributes the emergent-scale parameter threshold and the internalization/automation explanation\u2014giving B a modest edge with more distinct grounded details. For breadth, B introduces an entirely new adjacent topic\u2014a neuroscience comparison linking LLM modular reasoning (MoE experts, hemispheric asymmetry) to brain circuitry, backed by a specific citation\u2014which A has no counterpart for, making B's breadth advantage substantial."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Emergent reasoning tied to model scale (~100B parameters threshold for CoT benefits, citing Google research)",
+              "Framing of hidden reasoning as automation/internalization of explicit CoT process (mechanistic evolution)"
+            ],
+            "b_instances": [
+              "Specific mechanism of CoT: adding 'Let's think step by step' to a prompt, with citation",
+              "Technical detail of visible traces using special tags like <think>...</think>",
+              "Explicit tradeoff noted: internal iteration models like o1 yield longer response times but higher accuracy on complex tasks"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Neuroscience parallel: modular reasoning in LLMs likened to specialized brain circuits, Mixture-of-Experts 'experts' compared to cognitive networks, and hemispheric asymmetry parallels, citing a specific study"
+            ]
+          },
+          "reasoning": "Both documents share the same core definitional content (multi-step reasoning, visible vs hidden traces, math example, contrast with fact recall). For depth, A adds a specific scale threshold (~100B parameters for CoT benefits) and frames hidden reasoning as an internalized/automated evolution of CoT, while B adds the concrete CoT prompt phrasing, technical detail about <think> tags, and an explicit speed/accuracy tradeoff for internal-iteration models\u2014giving B slightly more distinct depth instances. For breadth, A stays entirely within the core definitional scope with no new adjacent topic, whereas B introduces a genuinely new sub-topic: a neuroscience-based analogy comparing LLM reasoning modularity (e.g., Mixture-of-Experts, hemispheric asymmetry) to brain circuitry, backed by a specific citation, making B moderately stronger on breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Quantitative threshold: CoT benefits emerge only with ~100 billion parameter models (cited)"
+            ],
+            "b_instances": [
+              "Specific CoT technique detail: prompt phrase 'Let's think step by step' with citation",
+              "Mechanistic detail: visible reasoning often marked with <think>...</think> tags",
+              "o1 tradeoff detail: longer response times but higher accuracy on complex tasks"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Neuroscience parallel: LLM modular reasoning (MoE experts, hemispheric asymmetry) compared to brain circuits, with citation"
+            ]
+          },
+          "reasoning": "Both documents share the same core definition, visible/hidden reasoning dichotomy, and basic examples. For depth, document B adds several concrete elaborations not in A: the specific 'Let's think step by step' CoT prompt technique with its own citation, the <think> tag convention for visible traces, and a specific accuracy/latency tradeoff for o1-style models. Document A's unique depth contribution is the quantitative claim that CoT benefits emerge around 100B parameters. This gives B a modest edge in depth (more distinct sourced details). For breadth, document A introduces no genuinely new adjacent topic beyond the core reasoning-model definition, while document B adds a substantive new subtopic connecting LLM modular reasoning (Mixture-of-Experts) to neuroscience findings on brain hemispheric specialization, backed by a citation\u2014clearly broadening scope beyond A's coverage."
+        }
+      ]
+    },
+    "When should we use reasoning models?": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "specific documented phenomenon of reasoning models abandoning a correct initial answer, cited to a separate study [16]"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core content: when reasoning models excel (multi-step, decomposition tasks) vs when general models suffice, plus the downsides (latency, cost, user frustration, overthinking). For depth, Document A adds a distinct, separately-cited detail beyond the general overthinking point -- a documented phenomenon where models abandon a correct initial answer, attributed to a separate arxiv source [16] -- which gives more rigor to the overthinking discussion. Document B's parallel claim about incorrect answers on straightforward tasks is vaguer and not separately sourced, essentially restating the overthinking point. No new breadth-level subtopics appear in either document; both stick to the same scope (task-type suitability and downsides) without introducing genuinely new adjacent topics, so breadth is a tie."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "specific citation to a study documenting the phenomenon of reasoning models abandoning a correct initial answer (arxiv 2604.10739)"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core content: when reasoning models are useful, their downsides (latency, cost, user frustration, overthinking), and cite the same overthinking study. Document A adds a distinct source-attributed detail on the depth dimension -- a specific documented phenomenon where reasoning models abandon a correct initial answer, backed by a separate citation ([[16]]) -- which document B lacks (B's parallel claim about 'incorrect answers' is uncited and less specific). Document B's extra citation ([[1]], Sebastian Raschka's article) is just an attribution for the same core claims rather than a new depth or breadth instance. Neither document introduces a genuinely new subtopic beyond the shared coverage, so breadth is tied."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "specific phenomenon of models abandoning a correct initial answer due to overthinking, cited to a distinct study [16]"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core content (when to use vs. avoid reasoning models, cost/latency downsides, overthinking risk) with no new sub-topics introduced by either side, so breadth ties. On depth, Document A adds a distinct, source-attributed detail: a documented phenomenon where reasoning models abandon a correct initial answer during overthinking, cited to a separate arXiv reference [16]. Document B's parallel sentence is a vaguer restatement ('can even lead to incorrect answers') without a distinct supporting citation, so it does not match this depth instance. No other differentiating depth or breadth instances were found in either document."
+        }
+      ]
+    },
+    "A brief look at the DeepSeek training pipeline": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "GRPO mechanism detail (group evaluation, PPO-like update, reduces compute/memory)",
+              "Specific mention of Qwen and Llama as target models for distillation"
+            ],
+            "b_instances": [
+              "R1-Zero suffered from poor readability and language mixing",
+              "Distillation dataset size specified as 800,000 reasoning traces",
+              "Explanation that verifiable reward signals (e.g., math answer checking) are required for RL to work"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core R1-Zero/R1/Distill pipeline without introducing genuinely new adjacent subtopics, so breadth is tied with no qualifying new-topic instances on either side. For depth, A adds a concrete algorithmic explanation of GRPO and names the specific open-source models (Qwen, Llama) used for distillation, while B adds three distinct technical/quantitative details: the reported readability/language-mixing failure mode of R1-Zero, the specific 800k-example distillation dataset size, and the requirement for automatically verifiable reward signals with a concrete math-answer example. B's set of depth-enhancing details is slightly larger and more varied, giving it a modest edge over A."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Detailed GRPO mechanism (group-wise reward comparison, PPO-like update, reduced computational/memory cost) cited to Berkeley lecture slides"
+            ],
+            "b_instances": [
+              "R1-Zero suffered from poor readability and language mixing (specific limitation, cited to arXiv paper)",
+              "R1-Distill fine-tuned on a specific dataset of 800,000 high-quality reasoning outputs (quantitative detail)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same three DeepSeek-R1 variants with no genuinely new adjacent subtopics introduced (breadth ties at zero for both). For depth, A adds a distinct technical detail about how GRPO works internally (group evaluation, PPO-like update, computational savings), sourced to a lecture. B adds two distinct depth-enhancing details not in A: the specific failure modes of R1-Zero (poor readability, language mixing) and the concrete dataset size (800,000 reasoning traces) used for distillation. Since B has two unique substantive depth instances against A's one, B is judged as having somewhat more depth content, while breadth remains tied at zero for both."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Detailed GRPO mechanism: group-wise output comparison, PPO-like update, avoiding a critic model to reduce compute/memory"
+            ],
+            "b_instances": [
+              "Specific limitation of R1-Zero: poor readability and language mixing",
+              "Quantitative detail: R1-Distill trained on 800,000 high-quality reasoning traces"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core R1-Zero/R1/R1-Distill pipeline with no genuinely new adjacent sub-topics, so breadth is tied. For depth, Document A adds a more mechanistic explanation of GRPO (group evaluation, PPO-like update, critic-free design) that B lacks. Document B counters with two distinct depth-adding details not in A: the specific failure modes of R1-Zero (poor readability, language mixing) and the concrete dataset size (800,000 reasoning traces) used for distillation. Since B contributes two substantive, source-attributed depth instances versus A's one, B edges ahead on depth, while breadth remains a tie."
+        }
+      ]
+    },
+    "The 4 main ways to build and improve reasoning models": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Overthinking research showing inverted U-shaped performance curve where extra compute causes correct answers to be 'flipped' to incorrect",
+              "Distillation limitations detailed: architectural mismatches between teacher/student and loss of nuanced multi-step logic causing hallucination"
+            ],
+            "b_instances": [
+              "GenPRM example: a 1B parameter model with proper inference-scaling strategy surpassing a 405B model lacking it",
+              "Self-correction/'Aha moment' behaviors shown to emerge progressively during pre-training, before RL is even applied, suggesting RL amplifies rather than creates the capability",
+              "Cold-start SFT data details: R1-Zero outputs refined by human annotators plus few-shot prompted examples",
+              "Language consistency reward defined precisely as the proportion of target-language words in the CoT",
+              "Specific breakdown of the 800,000-example SFT dataset (600k reasoning + 200k non-reasoning samples from writing/QA/translation)",
+              "'Small Model Learnability Gap' finding that models \u22643B parameters cannot benefit from long complex reasoning chains",
+              "Claim that CoT reasoning is an emergent property specific to models over 100B parameters, explaining transfer failure to small models"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Distilled models serving as a research resource for the community to study mechanisms of long CoT reasoning (a distinct rationale beyond accessibility)"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core approaches, but Document B integrates substantially more source-attributed technical detail that deepens existing points: a concrete GenPRM benchmark example, research on self-correction emerging during pre-training (complicating the 'Aha moment' narrative further than A does), granular cold-start/SFT dataset statistics, an explicit formula for the language-consistency reward, and new findings on the 'Small Model Learnability Gap' and CoT's emergence threshold (>100B params) explaining distillation limits. Document A's unique depth contributions are more modest: the overthinking/inverted-U-curve discussion and a general list of distillation challenges (architectural mismatch, hallucination). For breadth, both stay tightly within the four-method framework, but B adds one clearly new sub-topic (distillation as a research tool for studying reasoning mechanisms) that A lacks, giving B a slight edge; A introduces no clearly new adjacent sub-topic beyond B's coverage."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Overthinking research showing inverted U-shaped curve where extra inference-time compute can make the model flip a correct answer to incorrect",
+              "Specific distillation limitations: architectural mismatches between teacher/student and loss of nuanced multi-step logic"
+            ],
+            "b_instances": [
+              "GenPRM example: a 1B parameter model with the right inference-scaling strategy can surpass a 405B model lacking it",
+              "Additional research showing self-correction behaviors emerge progressively during pre-training (before RL), suggesting RL amplifies rather than creates the 'Aha moment'",
+              "Specific quantitative breakdown of the SFT dataset: 800,000 total examples (600,000 reasoning via rejection sampling, 200,000 non-reasoning)",
+              "Mechanistic detail on the language consistency reward: calculated as proportion of target-language words in the CoT",
+              "Named 'Small Model Learnability Gap' (models \u22643B parameters) and the finding that CoT reasoning is an emergent property of >100B parameter models, limiting transfer to small models"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Second purpose of distillation as providing a resource for the research community to study mechanisms of long CoT reasoning (distinct from A's efficiency-focused rationale)"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core techniques with largely overlapping content (GRPO, cold-start SFT, rejection sampling, benchmark comparisons, etc.), so much of the material is shared and not differentiating. For depth, Document A adds the 'overthinking'/inverted-U-curve nuance to inference-time scaling and briefly mentions architectural mismatch as a distillation limitation. Document B, however, adds several more concrete, source-attributed deepening details: the GenPRM 1B-vs-405B example, further research on self-correction emerging during pre-training rather than RL, precise SFT dataset quantities (800k/600k/200k), a mechanistic explanation of the language consistency reward calculation, and the named 'Small Model Learnability Gap' with the >100B-parameter CoT emergence claim. This gives B a clear depth advantage (5 distinct instances vs. A's 2), justifying 'b_much_more'. For breadth, neither document introduces much genuinely new topical ground, but B does add one adjacent point\u2014framing distilled models as a research resource for studying CoT mechanisms, which is a different rationale than A's purely efficiency-based justification\u2014giving B a slight, modest edge ('b_more')."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Overthinking research: inverted-U performance curve, diminishing/negative returns from extra inference compute, models 'flipping' correct answers to incorrect ones (arXiv 2604.10739)",
+              "Specific distillation limitations: loss of nuanced multi-step logic, architectural mismatches between teacher/student models, hallucination from lacking factual knowledge (sourced to knowledge-distillation article)",
+              "Specific quantitative claim: 1.5B parameter distilled Qwen model surpasses non-reasoning baselines on math benchmarks"
+            ],
+            "b_instances": [
+              "GenPRM case study: a 1B parameter model with proper inference-scaling can surpass a 405B model lacking it",
+              "Additional research showing self-correction/aha-moment behaviors emerge progressively during pre-training (before RL) and that RL merely amplifies rather than creates them",
+              "Specific mechanism for language consistency reward: calculated as proportion of target-language words in the CoT",
+              "Cold-start SFT data details: R1-Zero outputs refined by human annotators plus few-shot-prompted examples",
+              "Detailed breakdown of the 800,000-example general-purpose SFT dataset (600k reasoning + 200k non-reasoning covering writing, QA, translation)",
+              "Named finding: 'Small Model Learnability Gap' (~3B parameter threshold) limiting benefit from long reasoning chains",
+              "Claim that CoT reasoning is an emergent property of models over 100B parameters, explaining poor transfer to small models"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": [
+              "Second rationale for distillation as a resource for the research community to study mechanisms of long CoT reasoning"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core approaches with largely overlapping citations (GRPO/Dr. GRPO, PRM, aha-moment base-model keyword issue, o1 pricing, DeepSeek's 'unsuccessful attempts' framing, distillation vs RL 32B comparison). On depth, Document B integrates substantially more granular, source-attributed detail: the GenPRM 1B-vs-405B example, additional research on self-correction emerging during pre-training rather than RL, the specific language-consistency-reward calculation, detailed cold-start data provenance, precise SFT dataset composition (800k/600k/200k), and a named 'Small Model Learnability Gap' finding with an emergent-capability explanation tied to model scale. Document A contributes fewer but still valid deepening details: the overthinking/inverted-U research, specific distillation failure modes (architectural mismatch, hallucination), and a concrete 1.5B Qwen benchmark stat. The volume and specificity clearly favor B for depth (b_much_more). For breadth, neither document introduces a genuinely new fifth approach or clearly separate sub-topic beyond the four core techniques; most 'extra' content in both deepens existing points rather than broadening scope. B's minor addition of a distinct rationale (research-community resource for studying CoT mechanisms) is a small, isolated differentiator, not enough to move off tie given the overall symmetry in scope coverage."
+        }
+      ]
+    },
+    "Thoughts about DeepSeek R1": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "specific claim that the publicized $6M figure for models in this class likely refers to V3 base-model pretraining rather than R1 RL"
+            ],
+            "b_instances": [
+              "specific parameter count (671B) for the DeepSeek-V3 base model underlying the cost discussion"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover essentially the same core narrative (license/transparency, o1 comparison, training-cost caveats, milestone framing) with almost identical content and citations. On depth, each adds one distinct quantitative detail not found in the other: A specifies that the often-cited $6M figure likely corresponds to V3 pretraining costs, while B specifies the 671B parameter count of the V3 base model to contextualize its cost. These are comparably specific and substantive, yielding a tie. Neither document introduces a genuinely new sub-topic or adjacent example beyond the shared comparison points (license, benchmarks, o1 opacity, training costs, milestone significance), so breadth is a tie with no qualifying instances in either."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Specific attribution that the widely-cited $6M figure refers to V3 base model pre-training, not R1 RL process"
+            ],
+            "b_instances": [
+              "Specific parameter count (671B) for the DeepSeek-V3 base model used to estimate pre-training cost"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core topics (open license/transparency, comparison with o1, training cost caveats, and closing milestone framing) with near-identical structure and citations. On depth, each adds one distinct quantitative detail not present in the other: A clarifies that the commonly cited $6M figure likely refers to V3 pre-training rather than R1 RL, while B specifies the 671B parameter count of the V3 base model to justify its high cost. These are roughly comparable in substantiveness, yielding a tie. Neither document introduces genuinely new sub-topics or adjacent examples beyond the shared core coverage (license, benchmark comparison, transparency limits, cost, and general significance), so breadth is a tie with no qualifying instances on either side."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Clarifies that the widely-cited $6M figure likely refers to V3 base-model pretraining rather than the full R1 RL pipeline"
+            ],
+            "b_instances": [
+              "Specifies DeepSeek-V3 base model has 671B parameters, giving concrete scale to the undisclosed pretraining cost",
+              "Notes DeepSeek has never disclosed exact GPU hours or development cost for R1 alone"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both sections cover the same core points: MIT license/transparency, RL-from-cold-start finding, comparison to o1, opacity of o1 preventing fair comparison, and training cost caveats. Neither introduces genuinely new adjacent subtopics beyond this shared scope, so breadth ties. On depth, both add slightly different quantitative/technical specifics around the training-cost discussion: A adds an interpretive clarification that the $6M figure likely corresponds to V3 pretraining rather than R1's RL stage, while B adds two distinct concrete details (671B parameter count for V3, and the explicit note that GPU hours/dev cost were never disclosed), giving B a modest edge in depth."
+        }
+      ]
+    },
+    "Developing reasoning models on a limited budget": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Sky-T1 training specifics: 17,000 samples, GPT-4o-mini used to refactor data format, ~19 hours on 8 H100 GPUs, 32B parameter model size",
+              "TinyZero built on the veRL framework (specific tool named)",
+              "Scaling-law explanation for emergent reasoning: pre-training loss (not just parameter count) predicts sharp capability transitions"
+            ],
+            "b_instances": [
+              "Sky-T1 specific benchmark breakdown: outperformed early o1 on MATH500 and LiveCodeBench but underperformed on GPQA-Diamond",
+              "TinyZero base model specified as from the Qwen2.5 family"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Cross-disciplinary parallel to cognitive science concept of 'Productive Failure' explaining why journey learning aids deeper learning"
+            ]
+          },
+          "reasoning": "Both documents cover the same three core examples (Sky-T1 distillation, TinyZero RL, journey learning) and share the 8%-on-MATH-with-327-samples statistic. For depth, A adds more granular technical detail: Sky-T1's exact sample count/tooling/hardware/time, TinyZero's veRL framework, and a scaling-law mechanism (pre-training loss as predictor of emergent behavior) that deepens the discussion of emergent RL behavior. B adds depth via more specific Sky-T1 benchmark results (MATH500/LiveCodeBench vs GPQA-Diamond) and naming TinyZero's Qwen2.5 base model. A's three instances slightly edge out B's two in both count and technical specificity, giving A a modest edge on depth. For breadth, B introduces a genuinely new adjacent subtopic -- the cognitive science theory of 'Productive Failure' -- linking journey learning to an established educational framework, which A does not mention at all. A has no comparable breadth-only addition (its scaling-law content deepens an existing point rather than introducing a new domain), so B leads on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Specific Sky-T1 training details: 17,000 samples, GPT-4o-mini data refactoring, ~19 hours on 8x H100 GPUs",
+              "TinyZero built on the veRL framework",
+              "Scaling-law explanation: pre-training loss (not just parameter count) predicts emergent abilities via a critical loss threshold"
+            ],
+            "b_instances": [
+              "Sky-T1 benchmark breakdown: beat o1-preview on MATH500 and LiveCodeBench but fell short on GPQA-Diamond",
+              "TinyZero base model specified as Qwen2.5 family"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Cognitive science 'Productive Failure' theory as an educational parallel to journey learning"
+            ]
+          },
+          "reasoning": "Both documents cover the same three case studies (Sky-T1, TinyZero, journey learning) with the shared 8% MATH improvement stat. For depth, A adds more granular training-process details (sample count, refactoring tool, GPU-hours, veRL framework name, and a scaling-law mechanism explaining emergent behavior), while B adds a benchmark-level breakdown of Sky-T1's performance and names TinyZero's base model family (Qwen2.5) \u2014 a slightly smaller but still substantive set, giving A a modest edge. For breadth, B introduces a genuinely new adjacent topic \u2014 the cognitive-science concept of 'Productive Failure' as an analog to journey learning \u2014 which A entirely lacks, giving B a clear edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Sky-T1 specific training recipe: 17,000 curated samples, GPT-4o-mini used to reformat data, ~19 hours training on 8x NVIDIA H100 GPUs",
+              "TinyZero built on the veRL framework (named technical implementation detail)"
+            ],
+            "b_instances": [
+              "Sky-T1 benchmark breakdown: outperformed early o1 on MATH500 and LiveCodeBench but fell short on GPQA-Diamond",
+              "TinyZero's 3B model specifically based on the Qwen2.5 model family"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Discussion of scaling laws/pre-training loss as predictor of emergent reasoning abilities with a critical loss threshold, citing separate research"
+            ],
+            "b_instances": [
+              "Cognitive science parallel to 'Productive Failure' educational theory explaining why journey learning works, citing a specific study"
+            ]
+          },
+          "reasoning": "Both documents cover the same core projects (Sky-T1, TinyZero, journey learning) with largely overlapping content (e.g., the 8% MATH improvement with 327 samples appears in both, so it's shared). For depth, A adds more granular quantitative/technical detail on Sky-T1's training pipeline (sample count, GPT-4o-mini refactoring, training time, hardware) and names the veRL framework for TinyZero, giving it a modest edge. B counters with its own depth additions: a benchmark-level breakdown of Sky-T1's performance across MATH500/LiveCodeBench/GPQA-Diamond and TinyZero's specific Qwen2.5 base model family. These are comparable in number but A's Sky-T1 detail is somewhat richer, giving A a modest edge on depth. For breadth, each document introduces exactly one genuinely new adjacent subtopic: A brings in general scaling-law research on emergent abilities (pre-training loss threshold), while B brings in the 'Productive Failure' cognitive science parallel to justify journey learning. Both are comparably substantive and source-attributed, resulting in a tie for breadth."
+        }
+      ]
+    },
+    "Conclusion": {
+      "a_arm": "light",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "reasoning models as cognitive engines enabling multi-agent collaboration/coordination (citation 22)",
+              "application of reasoning models to scientific discovery: molecular screening, hypothesis generation, experimental data analysis (citation 23)",
+              "evolution of reasoning models into autonomous scientific partners via agentic workflows (citation 24)",
+              "parallels between LLM reasoning patterns/biases and human cognition (citation 25)"
+            ]
+          },
+          "reasoning": "Both conclusions cover the same core recap of the four approaches and hybrid-future thesis with comparable specificity, so neither adds genuinely deeper mechanistic detail beyond what the section already covers -- depth is a tie. For breadth, Document B introduces several new, source-attributed adjacent applications not touched by A: reasoning models powering multi-agent collaboration (with citation), their use in accelerating scientific discovery (molecule screening, hypothesis generation), their evolution into autonomous scientific research partners, and a comparison to human cognitive biases -- each backed by a distinct citation. Document A's conclusion stays entirely within the core recap and engineering-guidance framing without introducing new topical ground, so B clearly has much greater breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "multi-agent systems application where reasoning models act as cognitive engines for collaboration/planning [22]",
+              "use in scientific discovery: screening molecular datasets, generating hypotheses, analyzing experimental data [23]",
+              "evolution of models into autonomous scientific partners via agentic workflows and tools [24]",
+              "parallel between LLM reasoning patterns/biases and human cognition [25]"
+            ]
+          },
+          "reasoning": "Both conclusions cover the same four core approaches and hybrid-future narrative without adding new technical depth to existing points, so depth is a tie. On breadth, document B introduces several genuinely new, source-attributed adjacent topics not touched by A: multi-agent collaboration enabled by reasoning models, applications in scientific discovery (molecular screening, hypothesis generation), evolution toward autonomous scientific partners, and a comparison to human cognitive biases, each backed by a citation. Document A's conclusion stays tightly within the core comparison of the four methods and offers no comparable new-topic content, so B is judged much stronger on breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "application to multi-agent systems where reasoning models act as cognitive engines for collaboration/planning (cited)",
+              "use of Theory of Mind and structured critique for agent coordination (cited)",
+              "application to scientific discovery: screening molecular datasets, generating hypotheses, analyzing experimental data (cited)",
+              "evolution into autonomous scientific partners via agentic workflows and external tools (cited)",
+              "parallel to human cognition research showing LLM reasoning patterns/biases resemble human ones (cited)"
+            ]
+          },
+          "reasoning": "Both conclusions cover the same core synthesis of the four reasoning-model approaches and offer similar engineer-facing guidance, with no notable additional depth (mechanistic or quantitative elaboration) beyond what's already established in the section, so depth is a tie. For breadth, Document B introduces several genuinely new, source-cited adjacent topics not touched by Document A: multi-agent systems using reasoning models as cognitive engines with Theory-of-Mind-based coordination, applications to scientific discovery (molecular screening, hypothesis generation), evolution toward autonomous scientific partners via agentic workflows, and a parallel to human cognition research. Document A contains no comparable new-topic material, making B's breadth coverage much stronger."
+        }
+      ]
+    }
+  }
+}

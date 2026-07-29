@@ -1,0 +1,166 @@
+{
+  "version": 2,
+  "article": "02_workflows_vs_agents__var_minimal",
+  "variant": "var_minimal",
+  "computed_at": "2026-07-24T19:34:33.719826+00:00",
+  "oracle_arm": "skip",
+  "oracle_arm_idx": 0,
+  "runner_up_arm": "light",
+  "runner_up_arm_idx": 1,
+  "margin": -0.147051,
+  "reward_spread": 0.239551,
+  "r_w_rewards": {
+    "skip": 0.523077,
+    "light": 0.670128,
+    "standard": 0.430577,
+    "deep": 0.49141
+  },
+  "r_w_rewards_list": [
+    0.523077,
+    0.670128,
+    0.430577,
+    0.49141
+  ],
+  "decision_path": [
+    "policy=forbidden \u2192 skip (hard constraint)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 6,
+  "n_sections_with_target": 6,
+  "total_target_words": 1300,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces",
+      "title": "introduction the critical decision every ai engineer faces",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.11538,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.64,
+        0.58,
+        0.52
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-understanding-the-spectrum-from-workflows-to-agents",
+      "title": "understanding the spectrum from workflows to agents",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.15385,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.23,
+        "deep": 0.685
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.64,
+        0.23,
+        0.685
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-choosing-your-path",
+      "title": "choosing your path",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.19231,
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.24,
+        "standard": 0.195,
+        "deep": 0.28
+      },
+      "rewards_by_preset": [
+        0.35,
+        0.24,
+        0.195,
+        0.28
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-exploring-common-patterns",
+      "title": "exploring common patterns",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.19231,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.915,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.915,
+        0.58,
+        0.52
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-zooming-in-on-our-favorite-examples",
+      "title": "zooming in on our favorite examples",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.23077,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.765,
+        "standard": 0.58,
+        "deep": 0.535
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.765,
+        0.58,
+        0.535
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-conclusion-the-challenges-of-every-ai-engineer",
+      "title": "conclusion the challenges of every ai engineer",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.11538,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.94,
+        "standard": 0.43,
+        "deep": 0.52
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.94,
+        0.43,
+        0.52
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

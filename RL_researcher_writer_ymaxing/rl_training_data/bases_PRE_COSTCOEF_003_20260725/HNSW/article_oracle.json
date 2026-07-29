@@ -1,0 +1,122 @@
+{
+  "version": 2,
+  "article": "HNSW",
+  "variant": "no_variant",
+  "computed_at": "2026-07-25T21:20:53.963947+00:00",
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "deep",
+  "runner_up_arm_idx": 3,
+  "margin": 0.122803,
+  "reward_spread": 0.196891,
+  "r_w_rewards": {
+    "skip": 0.483922,
+    "light": 0.680812,
+    "standard": 0.510396,
+    "deep": 0.55801
+  },
+  "r_w_rewards_list": [
+    0.483922,
+    0.680812,
+    0.510396,
+    0.55801
+  ],
+  "decision_path": [
+    "unique reward winner (margin=+0.1228 > EPS_BAND=0.03)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 4,
+  "n_sections_with_target": 4,
+  "total_target_words": 2550,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 120,
+      "weight_words": 120,
+      "weight_frac": 0.04706,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.5505,
+        "standard": 0.4154,
+        "deep": 0.44155
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.5505,
+        0.4154,
+        0.44155
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-foundations-of-hnsw",
+      "title": "foundations of hnsw",
+      "target_words": 900,
+      "weight_words": 900,
+      "weight_frac": 0.35294,
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.69775,
+        "standard": 0.45815,
+        "deep": 0.48605
+      },
+      "rewards_by_preset": [
+        0.35,
+        0.69775,
+        0.45815,
+        0.48605
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-graph-construction",
+      "title": "graph construction",
+      "target_words": 350,
+      "weight_words": 350,
+      "weight_frac": 0.13725,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.655,
+        "standard": 0.4654,
+        "deep": 0.6643
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.655,
+        0.4654,
+        0.6643
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-implementation-of-hnsw",
+      "title": "implementation of hnsw",
+      "target_words": 1180,
+      "weight_words": 1180,
+      "weight_frac": 0.46275,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.76,
+        "standard": 0.7444,
+        "deep": 0.74955
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.76,
+        0.7444,
+        0.74955
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

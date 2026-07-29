@@ -4,37 +4,32 @@
   "split": "TRAIN",
   "policy": "forbidden",
   "rl_preset": 1,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
     0.4034,
-    0.4124,
-    0.3507,
-    0.3355
+    0.4524,
+    0.3391,
+    0.3348
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "NEAR",
+  "regret": -0.049,
   "regret_counted": null,
-  "entropy_bits": 1.5399,
-  "confidence": 0.4479,
-  "floor_applied": false,
+  "entropy_bits": 1.3416,
+  "confidence": 0.5517,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.3104,
-    0.4479,
-    0.0002,
-    0.2415
+    0.3448,
+    0.5517,
+    0.0,
+    0.1034
   ],
-  "grok_override": true,
-  "grok_reasoning": "Hard constraint: external-evidence policy = forbidden requires P0 skip. Scorer aggregate is P1 (UNCERTAIN, 45% light / 24% deep mass) but policy overrides all votes, residual gaps, and self-contained flags. Article is explicitly a surface-level conceptual overview with repeated 'must stay brief' mandates.",
-  "grok_override_reason": "external-evidence policy = FORBIDDEN mandates P0 regardless of scorer or gaps",
-  "grok_decision_drivers": [
-    "external-evidence-forbidden",
-    "policy-hard-constraint"
-  ],
-  "grok_risk_flags": [
-    "scorer uncertainty could indicate missed internal coverage gaps"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

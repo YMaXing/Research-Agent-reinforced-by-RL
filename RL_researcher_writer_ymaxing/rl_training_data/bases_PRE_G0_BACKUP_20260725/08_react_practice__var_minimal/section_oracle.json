@@ -1,0 +1,105 @@
+{
+  "version": 4,
+  "article": "08_react_practice",
+  "variant": "var_minimal",
+  "sections": {
+    "S1::section-1-setup-and-environment": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.29,
+        "standard": 0.43,
+        "deep": 0.52
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-tool-layer-mock-search-implementation": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.29,
+        "standard": 0.23,
+        "deep": 0.285
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.165
+      }
+    },
+    "S3::section-3-thought-phase-prompt-construction-and-generation": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.09,
+        "standard": 0.43,
+        "deep": 0.135
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.165
+      }
+    },
+    "S4::section-4-action-phase-function-calling-and-parsing": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.29,
+        "standard": 0.43,
+        "deep": 0.36
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.24
+      }
+    },
+    "S5::section-5-control-loop-messages-scratchpad-orchestration": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.565,
+        "standard": 0.03,
+        "deep": -0.18
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.275,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S6::section-6-tests-and-traces-success-and-graceful-fallback": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.29,
+        "standard": 0.43,
+        "deep": 0.685
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.165
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-setup-and-environment": "deep",
+    "S2::section-2-tool-layer-mock-search-implementation": "skip",
+    "S3::section-3-thought-phase-prompt-construction-and-generation": "skip",
+    "S4::section-4-action-phase-function-calling-and-parsing": "skip",
+    "S5::section-5-control-loop-messages-scratchpad-orchestration": "light",
+    "S6::section-6-tests-and-traces-success-and-graceful-fallback": "skip"
+  }
+}

@@ -1,0 +1,823 @@
+{
+  "article": "11_multimodal__var_standard",
+  "variant_level": "standard",
+  "computed_at": "2026-05-05T00:43:35.075222+00:00",
+  "oracle_preset": 5,
+  "oracle_preset_name": "P5_depth_breadth_depth",
+  "runner_up_preset": 2,
+  "runner_up_preset_name": "P2_balanced_depth",
+  "margin": 0.052822,
+  "reward_spread": 0.331922,
+  "article_rewards": [
+    0.654519,
+    0.549387,
+    0.699264,
+    0.420164,
+    0.520603,
+    0.752086
+  ],
+  "oracle_ranking": [
+    5,
+    2,
+    0,
+    1,
+    4,
+    3
+  ],
+  "aggregation_scheme": "mixed_1_of_8_from_guideline",
+  "n_sections": 8,
+  "n_sections_with_target": 1,
+  "total_target_words": 978,
+  "sections": [
+    {
+      "index": 1,
+      "title": "Introduction: The need for multimodal AI",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.30675,
+      "digest_words": 170,
+      "rewards_by_preset": [
+        0.7,
+        0.33,
+        0.66,
+        0.31,
+        0.64,
+        0.82
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 5,
+      "section_runner_up": 0,
+      "section_margin": 0.12,
+      "mu": 1.6181,
+      "prior_by_preset": [
+        -0.014545,
+        -0.002122,
+        -0.00081,
+        -0.00081,
+        -0.01061,
+        -0.01061
+      ],
+      "rewards_by_preset_modified": [
+        0.685455,
+        0.327878,
+        0.65919,
+        0.30919,
+        0.62939,
+        0.80939
+      ],
+      "section_oracle_new": 5,
+      "section_runner_up_new": 0,
+      "section_margin_new": 0.123935,
+      "oracle_changed": false
+    },
+    {
+      "index": 2,
+      "title": "Limitations of traditional document processing",
+      "target_words": null,
+      "weight_words": 135,
+      "weight_frac": 0.13804,
+      "digest_words": 135,
+      "rewards_by_preset": [
+        0.73,
+        0.68,
+        0.84,
+        0.84,
+        0.36,
+        0.82
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 2,
+      "section_runner_up": 3,
+      "section_margin": 0.0,
+      "mu": 1.4573,
+      "prior_by_preset": [
+        -0.011798,
+        -0.001162,
+        -0.001636,
+        -0.001636,
+        -0.013222,
+        -0.013222
+      ],
+      "rewards_by_preset_modified": [
+        0.718202,
+        0.678838,
+        0.838364,
+        0.838364,
+        0.346778,
+        0.806778
+      ],
+      "section_oracle_new": 2,
+      "section_runner_up_new": 3,
+      "section_margin_new": 0.0,
+      "oracle_changed": false
+    },
+    {
+      "index": 3,
+      "title": "Foundations of multimodal LLMs",
+      "target_words": null,
+      "weight_words": 132,
+      "weight_frac": 0.13497,
+      "digest_words": 132,
+      "rewards_by_preset": [
+        0.73,
+        0.68,
+        0.84,
+        0.66,
+        0.79,
+        0.79
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 2,
+      "section_runner_up": 4,
+      "section_margin": 0.05,
+      "mu": 1.7443,
+      "prior_by_preset": [
+        -0.016903,
+        -0.003078,
+        -0.000363,
+        -0.000363,
+        -0.00876,
+        -0.00876
+      ],
+      "rewards_by_preset_modified": [
+        0.713097,
+        0.676922,
+        0.839637,
+        0.659637,
+        0.78124,
+        0.78124
+      ],
+      "section_oracle_new": 2,
+      "section_runner_up_new": 4,
+      "section_margin_new": 0.058397,
+      "oracle_changed": false
+    },
+    {
+      "index": 4,
+      "title": "Applying multimodal LLMs to images and PDFs",
+      "target_words": null,
+      "weight_words": 102,
+      "weight_frac": 0.10429,
+      "digest_words": 102,
+      "rewards_by_preset": [
+        0.55,
+        0.33,
+        0.26,
+        -0.04,
+        0.09,
+        0.49
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 0.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 0.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 0,
+      "section_runner_up": 5,
+      "section_margin": 0.06,
+      "mu": 1.5955,
+      "prior_by_preset": [
+        -0.014142,
+        -0.00197,
+        -0.000909,
+        -0.000909,
+        -0.010959,
+        -0.010959
+      ],
+      "rewards_by_preset_modified": [
+        0.535858,
+        0.32803,
+        0.259091,
+        -0.040909,
+        0.079041,
+        0.479041
+      ],
+      "section_oracle_new": 0,
+      "section_runner_up_new": 5,
+      "section_margin_new": 0.056818,
+      "oracle_changed": false
+    },
+    {
+      "index": 5,
+      "title": "Foundations of multimodal RAG",
+      "target_words": null,
+      "weight_words": 97,
+      "weight_frac": 0.09918,
+      "digest_words": 97,
+      "rewards_by_preset": [
+        0.73,
+        0.98,
+        0.84,
+        0.64,
+        0.47,
+        0.94
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 1,
+      "section_runner_up": 5,
+      "section_margin": 0.04,
+      "mu": 1.5665,
+      "prior_by_preset": [
+        -0.013633,
+        -0.001783,
+        -0.001044,
+        -0.001044,
+        -0.011417,
+        -0.011417
+      ],
+      "rewards_by_preset_modified": [
+        0.716367,
+        0.978217,
+        0.838956,
+        0.638956,
+        0.458583,
+        0.928583
+      ],
+      "section_oracle_new": 1,
+      "section_runner_up_new": 5,
+      "section_margin_new": 0.049634,
+      "oracle_changed": false
+    },
+    {
+      "index": 6,
+      "title": "Implementing multimodal RAG for images, PDFs and text",
+      "target_words": null,
+      "weight_words": 82,
+      "weight_frac": 0.08384,
+      "digest_words": 82,
+      "rewards_by_preset": [
+        0.35,
+        0.65,
+        0.66,
+        0.26,
+        0.44,
+        0.64
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 0.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 2,
+      "section_runner_up": 1,
+      "section_margin": 0.01,
+      "mu": 1.4695,
+      "prior_by_preset": [
+        -0.011997,
+        -0.001225,
+        -0.001563,
+        -0.001563,
+        -0.013013,
+        -0.013013
+      ],
+      "rewards_by_preset_modified": [
+        0.338003,
+        0.648775,
+        0.658437,
+        0.258437,
+        0.426987,
+        0.626987
+      ],
+      "section_oracle_new": 2,
+      "section_runner_up_new": 1,
+      "section_margin_new": 0.009661,
+      "oracle_changed": false
+    },
+    {
+      "index": 7,
+      "title": "Building multimodal AI agents",
+      "target_words": null,
+      "weight_words": 76,
+      "weight_frac": 0.07771,
+      "digest_words": 76,
+      "rewards_by_preset": [
+        0.55,
+        0.5,
+        0.84,
+        0.16,
+        0.49,
+        0.61
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 0.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 0.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 2,
+      "section_runner_up": 5,
+      "section_margin": 0.23,
+      "mu": 1.1257,
+      "prior_by_preset": [
+        -0.00704,
+        -8.8e-05,
+        -0.004247,
+        -0.004247,
+        -0.019517,
+        -0.019517
+      ],
+      "rewards_by_preset_modified": [
+        0.54296,
+        0.499912,
+        0.835753,
+        0.155753,
+        0.470483,
+        0.590483
+      ],
+      "section_oracle_new": 2,
+      "section_runner_up_new": 5,
+      "section_margin_new": 0.24527,
+      "oracle_changed": false
+    },
+    {
+      "index": 8,
+      "title": "Conclusion",
+      "target_words": null,
+      "weight_words": 54,
+      "weight_frac": 0.05521,
+      "digest_words": 54,
+      "rewards_by_preset": [
+        0.7,
+        0.68,
+        0.66,
+        0.48,
+        0.67,
+        0.64
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 0.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 0,
+      "section_runner_up": 1,
+      "section_margin": 0.02,
+      "mu": 0.6284,
+      "prior_by_preset": [
+        -0.002194,
+        -0.000767,
+        -0.010451,
+        -0.010451,
+        -0.031246,
+        -0.031246
+      ],
+      "rewards_by_preset_modified": [
+        0.697806,
+        0.679233,
+        0.649549,
+        0.469549,
+        0.638754,
+        0.608754
+      ],
+      "section_oracle_new": 0,
+      "section_runner_up_new": 1,
+      "section_margin_new": 0.018573,
+      "oracle_changed": false
+    }
+  ],
+  "article_rewards_modified": [
+    0.641642,
+    0.547619,
+    0.6975,
+    0.418403,
+    0.507729,
+    0.73921
+  ],
+  "oracle_preset_new": 5,
+  "runner_up_preset_new": 2,
+  "margin_new": 0.041711,
+  "prior_config": {
+    "lambda": 0.05,
+    "a_w": 0.4,
+    "a_p": 1.0,
+    "a_d": 1.0,
+    "mu_base": {
+      "minimal": 0.7,
+      "standard": 1.7,
+      "demanding": 2.0
+    }
+  }
+}

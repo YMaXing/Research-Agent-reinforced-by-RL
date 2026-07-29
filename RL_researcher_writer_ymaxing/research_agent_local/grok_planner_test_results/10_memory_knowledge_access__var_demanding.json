@@ -4,39 +4,32 @@
   "split": "TRAIN",
   "policy": "allowed",
   "rl_preset": 2,
-  "grok_preset": 2,
+  "grok_preset": null,
   "chosen_preset": 2,
-  "chosen_by": "Grok4.2",
-  "oracle_preset": 2,
-  "oracle_name": "standard",
+  "chosen_by": "RL",
+  "oracle_preset": 3,
+  "oracle_name": "deep",
   "r_w_rewards": [
     0.5122,
-    0.7226,
-    0.7521,
-    0.7113
+    0.6153,
+    0.6098,
+    0.6559
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 1.4726,
-  "confidence": 0.6396,
+  "verdict": "NEAR",
+  "regret": 0.0461,
+  "regret_counted": 0.0461,
+  "entropy_bits": 1.7549,
+  "confidence": 0.4535,
   "floor_applied": false,
   "rl_agg_probs": [
     0.0698,
-    0.1046,
-    0.6396,
-    0.1861
+    0.186,
+    0.4535,
+    0.2907
   ],
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P2 standard (64% mass, moderate but dominant arm); deep mass only 19% <30% so no sanctioned P2->P3 escalation. High residuals in S1/S2/S3/S4/S5 (core budget) already baked into the cost-adjusted RL pick; self-contained flags do not trigger downward override given dominant standard vote and depth-dominant gaps.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "scorer P2 aggregate + 64% standard mass",
-    "deep mass below escalation gate",
-    "residual context already reflected in RL pick"
-  ],
-  "grok_risk_flags": [
-    "moderate (not decisive) scorer confidence",
-    "S6 deep vote on 19% budget may need targeted depth round"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

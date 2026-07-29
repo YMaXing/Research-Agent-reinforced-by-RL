@@ -1,0 +1,372 @@
+{
+  "article": "State_of_LLM_Reasoning",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "specific count of 14 papers surveyed"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "mentions spectrum from simple token controls to dynamic latent-space strategies as distinct technique types"
+            ]
+          },
+          "reasoning": "Both intros are short and largely restate the same framing (agentic reasoning demand, DeepSeek-R1 surge, inference-time scaling without weight changes, four categories). Document A adds no further concrete detail beyond this. Document B adds a specific quantitative claim (surveying 14 papers) which is a minor depth enhancement, and briefly names a spectrum of technique types ('token controls' to 'latent-space strategies') that introduces a bit of new scope not present in A's version. These are modest, low-substantiveness additions, so B has a slight edge on both depth and breadth rather than a dramatic one."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "specific mention of 14 papers surveyed",
+              "mention of concrete method types like token controls and latent-space strategies"
+            ]
+          },
+          "reasoning": "Both introductions cover the same core setup (2025 reasoning priority, DeepSeek-R1 surge, inference-time scaling focus, four categories teaser) with no added technical depth beyond restating the core topic. Document B adds a bit more breadth by naming a concrete count (14 papers) and gesturing at specific technique types ('simple token controls' vs 'dynamic, latent-space strategies') that hint at new sub-topics not mentioned in A's more generic framing. This is a modest, not dramatic, differentiator, so breadth favors B slightly while depth is tied."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "More granular breakdown of RL/SFT approaches into pure RL, hybrid RL+SFT, and SFT+distillation as distinct sub-categories"
+            ],
+            "b_instances": [
+              "Specific quantitative detail: survey covers 14 recent papers",
+              "Named specific technique examples: 'simple token controls' to 'dynamic, latent-space strategies' as concrete inference-time scaling methods"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both intros follow the same template (motivation, scope statement, image preview of four categories). Neither introduces a genuinely new adjacent sub-topic outside the reasoning-model taxonomy already implied by the shared image, so breadth ties at zero qualifying instances for both. On depth, A slightly deepens the categorization by explicitly separating 'pure RL', 'hybrid RL and SFT', and 'SFT with distillation' as distinct sub-approaches, while B adds two small but concrete specifics: a quantitative claim (surveying 14 papers) and named example techniques (token controls, latent-space strategies) that add texture to the inference-time-scaling description. B's two modest additions slightly outweigh A's single addition, giving B a modest edge on depth."
+        }
+      ]
+    },
+    "Implementing and improving reasoning in LLMs: The four main categories": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "specific reward mechanisms for Pure RL: LeetCode compiler for coding and deterministic system for math verification",
+              "named specific failed inference-time techniques: Process Reward Model-based search and MCTS"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same four categories with largely overlapping source-attributed claims (cold-start RL, R1-Zero's 'Aha!' moment, distillation from 671B DeepSeek-R1 into Qwen/Llama, language-mixing consistency reward, teacher-model ceiling limiting distillation). For depth, Document B adds two concrete technical details not present in A: the specific reward mechanisms used in pure RL (LeetCode compiler for code, deterministic checker for math) and the specific named techniques (Process Reward Model-based search, MCTS) that DeepSeek R1 tried and found unsuccessful for inference-time scaling, giving more mechanistic rigor to an existing point. Document A's extra CoT paper citation and phrasing about 'research curiosity' don't add distinct factual depth beyond what's already stated in both. Neither document introduces genuinely new adjacent subtopics or examples beyond the four categories already covered, so breadth is tied at zero qualifying instances for both."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Pure RL outputs can be difficult for humans to interpret or mix languages (specific limitation of pure RL)"
+            ],
+            "b_instances": [
+              "Specific reward mechanisms for pure RL: LeetCode compiler for code and deterministic system for math",
+              "Named specific failed inference-time methods: Process Reward Model-based search and MCTS"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same four categories and training/inference compute distinction with essentially identical core content and shared details (reward hacking, cold-start SFT, language-mixing consistency reward, distillation vs RL effectiveness for smaller models). For depth, B adds two concrete technical specifics not in A: the exact reward mechanisms used in DeepSeek-R1-Zero (LeetCode compiler, deterministic math checker) and the named failed inference-time techniques (Process Reward Model search, MCTS), giving more rigor to the inference-time and pure-RL discussions. A's unique depth contribution is the note that pure-RL outputs can be hard to interpret or mix languages, which is a single additional detail. This gives B a modest edge on depth. Neither document introduces genuinely new adjacent sub-topics beyond the four categories and compute-scaling framing (the exam analogy in B is illustrative rather than substantive), so breadth is tied with no qualifying instances on either side."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific finding that SFT/distillation outperforms pure RL for smaller models (comparative experimental claim)"
+            ],
+            "b_instances": [
+              "Specific reward mechanism for pure RL: LeetCode compiler for coding answers and deterministic system for math",
+              "Named specific failed inference-time methods: Process Reward Model-based search and MCTS"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": [
+              "Speculation that OpenAI's o1 likely uses the RL+SFT hybrid approach"
+            ]
+          },
+          "reasoning": "Both documents cover the same four categories with largely overlapping detail (cold-start SFT, language-mixing consistency reward, R1-Zero 'Aha!' moment, distillation from 671B DeepSeek-R1 into Qwen/Llama, etc.), so most content is shared and not differentiating. For depth, B adds two concrete technical specifics not in A: the exact reward mechanisms used in pure RL (LeetCode compiler, deterministic math checker) and the named failed inference-time search techniques (PRM-based search, MCTS), giving it a modest edge. A's unique depth contribution is the specific claim that SFT/distillation beats pure RL for smaller models, which is comparable in specificity but fewer in number. For breadth, neither document introduces genuinely new adjacent subtopics beyond the four categories; B's brief speculation that o1 may use the RL+SFT hybrid is a minor addition but not substantial enough to break the tie meaningfully alone, so breadth is essentially tied."
+        }
+      ]
+    },
+    "Inference-time compute scaling methods": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "PRM contrast with outcome-only reward models (granular step-level feedback)"
+            ],
+            "b_instances": [
+              "parallel vs. sequential taxonomy for search/voting methods"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "AlphaGo/game AI historical parallel using inference-time search"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core content (CoT prompting, ensemble methods, majority voting, beam search with PRM, and the s1 paper transition). For depth, A adds a specific contrast between PRMs (step-level feedback) and outcome-only reward models, while B adds a distinct taxonomy distinguishing parallel (e.g., majority voting) from sequential (e.g., beam search) compute allocation strategies\u2014both are comparable single depth enhancements, resulting in a tie. For breadth, A uniquely introduces the AlphaGo/game-AI historical analogy as an adjacent example of inference-time search driving superhuman performance, a genuinely new sub-topic not present in B, giving A a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "PRM evaluates each reasoning step, providing more granular feedback than outcome-only reward models"
+            ],
+            "b_instances": [
+              "Beam search uses PRM to score and prune less promising reasoning paths at each step"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Historical parallel to AlphaGo's inference-time search for superhuman game performance"
+            ],
+            "b_instances": [
+              "Explicit categorization of methods as parallel (majority voting) vs sequential (beam search)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (CoT prompting -> search/voting -> PRM -> s1 paper) with near-identical source citations. For depth, A adds a specific contrast noting PRMs give step-level feedback versus outcome-only scoring, while B adds a specific mechanism noting PRM is used to prune paths during beam search; these are distinct but comparably substantive mechanistic details, yielding a tie. For breadth, A introduces the AlphaGo historical analogy as a genuinely new adjacent example not in B, while B introduces an explicit parallel-vs-sequential taxonomy of scaling methods not in A; both are single, roughly equally substantive new sub-topics, resulting in a tie."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Explicit categorization of search techniques as parallel (majority voting) vs. sequential (beam search)",
+              "Specific illustrative CoT prompt phrase ('Let's think step by step') exemplifying the mechanism"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "AlphaGo's use of extensive inference-time search as a historical precedent for superhuman performance in game AI"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core narrative (thinking longer, ensemble precedent, CoT, search/voting with PRM, and the s1 paper teaser), so most content overlaps. For depth, B adds two extra specific details not clearly present in A: an explicit parallel/sequential taxonomy of search methods and a concrete CoT prompt example ('Let's think step by step'), giving it a modest edge. For breadth, A uniquely introduces the AlphaGo game-AI historical parallel, a genuinely new adjacent example of inference-time search achieving superhuman performance, which B lacks, giving A the edge on breadth. Both differences are modest in scale, not dramatic."
+        }
+      ]
+    },
+    "s1: Simple test-time scaling": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "s1K dataset curation based on quality, difficulty, diversity principles with distillation from Gemini Thinking Experimental",
+              "Ablation study showing random selection or single-criterion selection (length or diversity alone) yields significantly worse performance"
+            ],
+            "b_instances": [
+              "Specific failure modes of budget forcing: reduced effectiveness for Llama/Mistral model families, degraded performance when zero-shot accuracy is already high, and poor fit for abstract domains like creative writing"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Inverse scaling phenomenon where extra thinking time actively harms performance due to distraction or memorized-solution misapplication"
+            ]
+          },
+          "reasoning": "Both documents cover the same core: s1 hybrid SFT+budget-forcing approach, the wait-token mechanism, length-accuracy correlation, the wait-vs-hmm comparison, the DeepSeek-R1 'aha moment' analogy, and calls for future comparison to beam/lookahead/compute-optimal search. On depth, A adds specific detail about the s1K dataset's curation principles (quality/difficulty/diversity, Gemini Thinking Experimental distillation) and the ablation results showing random/single-criterion selection underperforms, giving it two distinct deepening instances versus B's one (bundled but specific) elaboration on failure modes tied to particular model families and task types. On breadth, B introduces a genuinely new adjacent concept -- inverse scaling, where additional test-time compute actively degrades performance via distraction or memorized-solution reuse -- which A does not mention at all, giving B the edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "s1K dataset curation ablation: quality/difficulty/diversity criteria vs random selection, distillation from Gemini Thinking Experimental"
+            ],
+            "b_instances": [
+              "Inverse scaling phenomenon where more thinking time actively harms performance (distraction by irrelevant details, misapplied memorized solutions)",
+              "Specific technical limitations: budget forcing less effective for Llama/Mistral model families and degrades performance when zero-shot accuracy is already high"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Applicability limitation in abstract domains like creative writing where reasoning paths are less defined"
+            ]
+          },
+          "reasoning": "Document A adds one clear depth instance not in B: details on s1K dataset curation ablations (quality/difficulty/diversity vs random selection, Gemini Thinking Experimental distillation). Document B adds two depth instances A lacks: the inverse-scaling phenomenon with its causal mechanisms, and specific failure-mode details tied to particular model families (Llama/Mistral) and high zero-shot-accuracy tasks. For breadth, B introduces a genuinely new application domain (creative writing/abstract reasoning) where budget forcing is less suited, which A does not mention; A has no breadth instances beyond the shared core content. Overall B provides somewhat more and more varied enhancement content on both dimensions, though the margin is modest rather than dramatic."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Ablation study showing random selection or single-criterion (length/diversity) sampling for s1K performed significantly worse than the quality+difficulty+diversity approach"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Practitioner-identified failure modes: budget forcing less effective for certain model families (Llama, Mistral) and degrades performance when zero-shot accuracy is already high",
+              "Budget forcing less suited to abstract domains like creative writing where reasoning paths aren't well-defined",
+              "Inverse scaling phenomenon: additional thinking time can actively harm performance, e.g. due to distraction by irrelevant prompt details or misapplication of memorized solutions"
+            ]
+          },
+          "reasoning": "Both documents cover the same core s1 material (budget forcing mechanism, Wait vs Hmm token comparison, length-accuracy correlation, DeepSeek-R1 'Aha moment' analogy, call for future baseline comparisons). Document A adds one depth instance not in B: the specific ablation result showing that random or single-criterion (length-only or diversity-only) data selection for s1K performed much worse than the quality+difficulty+diversity curation, which deepens the dataset-construction point. Document B does not include this ablation detail. Conversely, Document B introduces two substantive new breadth topics absent from A: practitioner-reported failure modes (budget forcing being less effective for specific model families like Llama/Mistral, degrading when zero-shot accuracy is already high, and being poorly suited to abstract domains like creative writing), and the concept of 'inverse scaling' where extra test-time compute actively harms performance due to distraction or reliance on memorized solutions. These are genuinely new sub-topics broadening the section beyond what A covers. Overall, A has a modest edge in depth via the ablation detail, while B has a much larger edge in breadth via the failure-mode and inverse-scaling content."
+        }
+      ]
+    },
+    "Other noteworthy research papers on inference-time compute scaling": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Names DeepSeek-R1 and OpenAI's o1 as the specific models that sparked the research wave, with 'thinking-on-demand' framing"
+            ]
+          },
+          "reasoning": "Both documents are largely generic framing/intro paragraphs describing the same pattern (training + inference-time compute control vs. SFT/distillation) without any named studies, mechanisms, or quantitative details, so neither adds depth beyond the other -- tie on depth. For breadth, document B adds a concrete, source-attributed reference to DeepSeek-R1 and OpenAI's o1 as the specific catalysts for this research wave, a small but distinct piece of context not present in A, giving B a modest edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Names DeepSeek-R1 and OpenAI's o1 as specific models that sparked the inference-time compute research wave"
+            ]
+          },
+          "reasoning": "Neither document actually lists any specific 'noteworthy papers' with named methods or mechanisms, so both lack depth-qualifying content (tie, both empty). For breadth, document B adds a concrete, source-attributed reference to specific named models (DeepSeek-R1, OpenAI's o1) as the catalyst for this research area, which is a distinct concrete detail absent from A's more generic framing. This is a modest but real breadth advantage for B; otherwise the two documents are near-paraphrases of the same generic intro content."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Names DeepSeek-R1 and OpenAI's o1 as the specific catalyzing models/papers driving this research area"
+            ]
+          },
+          "reasoning": "Both documents are generic introductory paragraphs without actual paper summaries, so neither adds depth (specific mechanisms, quantitative details, or named techniques) beyond the shared general claim that these methods blend training with inference-time compute control. For breadth, document B introduces one concrete, named reference point (DeepSeek-R1 and OpenAI's o1) that document A lacks entirely, giving B a modest edge on breadth, though this is a single instance rather than multiple new sub-topics."
+        }
+      ]
+    },
+    "Conclusion": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Inverse scaling mechanism detail: models get distracted by irrelevant info, prematurely commit to flawed reasoning, or misapply memorized solutions"
+            ],
+            "b_instances": [
+              "Inverse scaling law tied specifically to exposed reasoning steps creating a larger attack surface, undermining safety benefits"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Hardware co-design trend: specialized accelerators, next-gen GPUs/CPUs, Processing-in-Memory (PIM) architectures for efficient inference-time compute",
+              "Healthcare application example: using extra compute to analyze medical data, predict disease progression, suggest clinical trials",
+              "Reference to Feedback and Edit Models paper/image for open-ended task scaling"
+            ]
+          },
+          "reasoning": "Both documents cover the same core conclusion points (inference-time scaling trend, small-model-rivals-large-model finding, latency/cost trade-offs, Sys2Bench 'no universal best technique', thinking-on-demand toggles, and a forward-looking prediction about reasoning becoming default). On depth, each adds a distinct specific mechanism for 'inverse scaling'\u2014A details cognitive failure modes (distraction, premature commitment, memorized-solution misuse) while B cites a safety-specific mechanism (exposed reasoning creating an attack surface)\u2014these are comparably substantive, yielding a tie. On breadth, B introduces multiple genuinely new sub-topics absent from A: the hardware/accelerator co-design trend (GPUs, CPUs, PIM), a concrete healthcare application example, and a supplementary reference to feedback/edit-model research illustrated with an image. A contains no comparable breadth additions beyond the shared discussion, so B clearly leads on breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Inverse scaling explained via specific failure mechanisms: distraction by irrelevant info, premature commitment to flawed reasoning, misapplied memorized solutions"
+            ],
+            "b_instances": [
+              "Inverse scaling law tied to exposed reasoning steps creating a larger attack surface, undermining safety benefits (cited study)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Discussion of hardware co-design/specialized accelerators (next-gen GPUs, optimized CPUs, Processing-in-Memory) enabling efficient inference-time scaling",
+              "Healthcare application example: using compute to analyze medical data for disease progression/clinical trial suggestions with reasoning transparency",
+              "Reference to Feedback and Edit Models paper enabling inference-time scaling across dimensions (with image/citation)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core conclusion points (smaller models rivaling larger ones, latency/cost trade-offs, Sys2Bench's no-universal-technique finding, thinking-on-demand toggles, and the prediction that explicit reasoning becomes default). For depth, each adds a distinct specific elaboration on inverse scaling not found in the other: A details concrete failure mechanisms (distraction, premature commitment, misapplied memorization), while B introduces a different specific angle\u2014an inverse scaling law tied to exposed reasoning steps creating a security attack surface, with a citation. These are roughly comparable in specificity, yielding a tie on depth. For breadth, B substantially expands scope beyond A by introducing an entirely new sub-topic (hardware/accelerator co-design for inference-time compute, including PIM systems with citations), a new domain application example (healthcare diagnosis/clinical trials), and an additional referenced figure/paper on feedback and edit models. A contains no comparable new breadth content, making B much stronger on breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "specific failure modes of inverse scaling (distraction, premature commitment to flawed paths, misapplied memorized solutions)"
+            ],
+            "b_instances": [
+              "inverse scaling tied to exposed reasoning steps creating a larger attack surface, reducing robustness"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "hardware ecosystem evolution for inference-time compute (specialized accelerators, GPUs, CPUs, Processing-in-Memory)",
+              "healthcare application example using inference-time compute for disease progression prediction and clinical trial suggestions"
+            ]
+          },
+          "reasoning": "Both documents cover the same core conclusion points (inference-time scaling trend, smaller-models-rival-larger, cost/latency trade-offs, Sys2Bench, thinking-on-demand toggles, forward-looking prediction). On depth, each adds a distinct elaboration of the inverse-scaling phenomenon: A lists several failure modes (distraction, premature commitment, memorized solutions) while B cites a different, source-attributed mechanism involving exposed reasoning steps reducing robustness/safety. These are roughly comparable in specificity and substantiveness, yielding a tie on depth. On breadth, B introduces two genuinely new sub-topics absent from A: the hardware co-design/accelerator ecosystem (GPUs, CPUs, PIM) and a healthcare use-case example for adaptive compute allocation, both backed by citations. A offers no comparable new-topic content beyond the core discussion, so B leads on breadth."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "version": 2,
+  "article": "Gravity_Entropy",
+  "variant": "no_variant",
+  "computed_at": "2026-07-25T20:32:24.624563+00:00",
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "skip",
+  "runner_up_arm_idx": 0,
+  "margin": -0.02425,
+  "reward_spread": 0.08925,
+  "r_w_rewards": {
+    "skip": 0.646,
+    "light": 0.62175,
+    "standard": 0.6046,
+    "deep": 0.55675
+  },
+  "r_w_rewards_list": [
+    0.646,
+    0.62175,
+    0.6046,
+    0.55675
+  ],
+  "decision_path": [
+    "near-tie band=['skip', 'light'] R_w=[skip:0.6460, light:0.6217]",
+    "active signals: [S4(\u0394\u22650.05), S5(\u0394\u22650.05)]  winner=light  S4={skip:0.296, light:0.455}  S5={skip:0.813, light:0.936}"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 5,
+  "n_sections_with_target": 5,
+  "total_target_words": 2000,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 420,
+      "weight_words": 420,
+      "weight_frac": 0.21,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.49,
+        "standard": 0.4827,
+        "deep": 0.5614
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.49,
+        0.4827,
+        0.5614
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-a-force-emerges",
+      "title": "a force emerges",
+      "target_words": 420,
+      "weight_words": 420,
+      "weight_frac": 0.21,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.595,
+        "standard": 0.6922,
+        "deep": 0.5614
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.595,
+        0.6922,
+        0.5614
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-apparent-attraction",
+      "title": "apparent attraction",
+      "target_words": 430,
+      "weight_words": 430,
+      "weight_frac": 0.215,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.5872,
+        "deep": 0.5614
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.64,
+        0.5872,
+        0.5614
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-strengths-and-weaknesses",
+      "title": "strengths and weaknesses",
+      "target_words": 430,
+      "weight_words": 430,
+      "weight_frac": 0.215,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.665,
+        "standard": 0.5422,
+        "deep": 0.5164
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.665,
+        0.5422,
+        0.5164
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-testing-entropic-gravity",
+      "title": "testing entropic gravity",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.15,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.745,
+        "standard": 0.69995,
+        "deep": 0.5569
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.745,
+        0.69995,
+        0.5569
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

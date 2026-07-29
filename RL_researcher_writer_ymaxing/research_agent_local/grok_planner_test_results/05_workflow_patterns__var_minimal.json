@@ -4,38 +4,32 @@
   "split": "TRAIN",
   "policy": "forbidden",
   "rl_preset": 1,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
     0.588,
-    0.644,
-    0.588,
-    0.52
+    0.5508,
+    0.5919,
+    0.5953
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "NEAR",
+  "regret": 0.0372,
   "regret_counted": null,
-  "entropy_bits": 1.5685,
-  "confidence": 0.2806,
-  "floor_applied": false,
+  "entropy_bits": 1.4619,
+  "confidence": 0.36,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.4019,
-    0.2806,
+    0.48,
+    0.36,
     0.0,
-    0.3175
+    0.16
   ],
-  "grok_override": true,
-  "grok_reasoning": "Hard constraint: external-evidence policy=FORBIDDEN mandates P0 skip (exploration output cannot be used). Scorer aggregate is uncertain P1 (40% skip / 28% light / 32% deep) but this is overridden; 100% self-contained + every section brief-flagged + guideline explicitly demands surface-level conceptual overview with no external libs/cases.",
-  "grok_override_reason": "external-evidence policy explicitly forbids exploration, forcing P0 regardless of scorer vote",
-  "grok_decision_drivers": [
-    "external-evidence-forbidden",
-    "all-sections-brief-self-contained",
-    "guideline-surface-level"
-  ],
-  "grok_risk_flags": [
-    "scorer deep mass 32% near escalation gate but hard guard blocks any P0->P2"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

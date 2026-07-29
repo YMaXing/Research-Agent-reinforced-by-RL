@@ -1,0 +1,73 @@
+{
+  "version": 4,
+  "article": "Earth_Oceans_Origin",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.655,
+        "standard": 0.6154,
+        "deep": 0.44605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-a-showdown-between-comets-and-asteroids": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.41,
+        "standard": 0.45815,
+        "deep": 0.35105
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.105,
+        "standard": 0.19275,
+        "deep": 0.105
+      }
+    },
+    "S3::section-3-hydrogen-meet-magma": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.505,
+        "standard": 0.65815,
+        "deep": 0.85405
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.19275,
+        "deep": 0.258
+      }
+    },
+    "S4::section-4-drowning-in-a-sea-of-possibilities": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.575,
+        "standard": 0.6254,
+        "deep": 0.59605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.07,
+        "standard": 0.16,
+        "deep": 0.0
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "skip",
+    "S2::section-2-a-showdown-between-comets-and-asteroids": "standard",
+    "S3::section-3-hydrogen-meet-magma": "deep",
+    "S4::section-4-drowning-in-a-sea-of-possibilities": "standard"
+  }
+}

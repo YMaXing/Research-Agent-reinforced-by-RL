@@ -1,0 +1,63 @@
+{
+  "article": "05_workflow_patterns__var_standard",
+  "sections": {
+    "Introducing Dynamic Behavior: Routing and Conditional Logic": {
+      "depth": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "original_preference": "a_much_more",
+        "classification": "tier2_boundary_0v2",
+        "repeats": [
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Recommendation to include a default/catch-all route for queries that don't fit predefined categories, citing sources [[12],[51]]"
+            ]
+          },
+          {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Semantic routing via embeddings mapping queries to intents",
+              "Intent-based routing using classifier for domain/complexity",
+              "Cascading routing starting cheap and escalating on quality-check failure for cost optimization"
+            ],
+            "b_instances": [
+              "Best practice of including a default/catch-all route for queries that don't fit categories"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Semantic routing mechanism using embeddings to map queries to intents",
+              "Cascading routing mechanism that escalates from cheaper to more powerful models based on quality checks"
+            ],
+            "b_instances": [
+              "Best practice of including a default/\"catch-all\" route to handle unclassified queries"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Cascading routing's cost-optimization mechanism (start cheap, escalate to costlier models on quality-check failure)"
+            ],
+            "b_instances": [
+              "Best practice of including a default/'catch-all' route for queries that don't fit predefined categories"
+            ]
+          },
+          {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Semantic routing using embeddings to match query to predefined intent",
+              "Intent-based routing using classifier for domain/complexity",
+              "Cascading routing starting cheap and escalating to costlier models for cost optimization"
+            ],
+            "b_instances": [
+              "Best practice of including a default/'catch-all' route for queries that don't fit predefined categories"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

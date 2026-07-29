@@ -1,0 +1,11 @@
+{
+  "presets": {
+    "S1::section-1-the-challenge-with-complex-single-llm-calls": "deep",
+    "S2::section-2-the-power-of-modularity-why-chain-llm-calls": "deep",
+    "S3::section-3-building-a-sequential-workflow-faq-generation-pipeline": "deep",
+    "S4::section-4-optimizing-sequential-workflows-with-parallel-processing": "deep",
+    "S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic": "deep",
+    "S6::section-6-building-a-basic-routing-workflow": "deep",
+    "S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition": "deep"
+  }
+}

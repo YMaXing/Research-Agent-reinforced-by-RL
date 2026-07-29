@@ -1,0 +1,211 @@
+{
+  "version": 2,
+  "article": "Understanding_Reasoning_LLMs",
+  "variant": "no_variant",
+  "computed_at": "2026-07-25T19:02:13.728030+00:00",
+  "oracle_arm": "standard",
+  "oracle_arm_idx": 2,
+  "runner_up_arm": "light",
+  "runner_up_arm_idx": 1,
+  "margin": 0.010562,
+  "reward_spread": 0.088222,
+  "r_w_rewards": {
+    "skip": 0.460349,
+    "light": 0.525019,
+    "standard": 0.535581,
+    "deep": 0.447359
+  },
+  "r_w_rewards_list": [
+    0.460349,
+    0.525019,
+    0.535581,
+    0.447359
+  ],
+  "decision_path": [
+    "near-tie band=['light', 'standard'] R_w=[light:0.5250, standard:0.5356]",
+    "active signals: [S4(\u0394\u22650.05)]  winner=standard  S4={light:0.426, standard:0.577}  S5={light:0.955, standard:0.925}"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 8,
+  "n_sections_with_target": 8,
+  "total_target_words": 4300,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-methods-and-strategies-for-building-and-refining-reasoning-models",
+      "title": "methods and strategies for building and refining reasoning models",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.05814,
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.09,
+        "standard": 0.03,
+        "deep": -0.03
+      },
+      "rewards_by_preset": [
+        0.15,
+        0.09,
+        0.03,
+        -0.03
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-how-do-we-define-reasoning-model",
+      "title": "how do we define reasoning model",
+      "target_words": 350,
+      "weight_words": 350,
+      "weight_frac": 0.0814,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.6855,
+        "standard": 0.77275,
+        "deep": 0.5655
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.6855,
+        0.77275,
+        0.5655
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-when-should-we-use-reasoning-models",
+      "title": "when should we use reasoning models",
+      "target_words": 160,
+      "weight_words": 160,
+      "weight_frac": 0.03721,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.49825,
+        "deep": 0.52
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.64,
+        0.49825,
+        0.52
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-a-brief-look-at-the-deepseek-training-pipeline",
+      "title": "a brief look at the deepseek training pipeline",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.06977,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.49,
+        "standard": 0.64825,
+        "deep": 0.52
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.49,
+        0.64825,
+        0.52
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-the-4-main-ways-to-build-and-improve-reasoning-models",
+      "title": "the 4 main ways to build and improve reasoning models",
+      "target_words": 1950,
+      "weight_words": 1950,
+      "weight_frac": 0.45349,
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.73,
+        "standard": 0.709,
+        "deep": 0.67
+      },
+      "rewards_by_preset": [
+        0.35,
+        0.73,
+        0.709,
+        0.67
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-thoughts-about-deepseek-r1",
+      "title": "thoughts about deepseek r1",
+      "target_words": 350,
+      "weight_words": 350,
+      "weight_frac": 0.0814,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.49,
+        "standard": 0.58,
+        "deep": 0.37
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.49,
+        0.58,
+        0.37
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::section-7-developing-reasoning-models-on-a-limited-budget",
+      "title": "developing reasoning models on a limited budget",
+      "target_words": 600,
+      "weight_words": 600,
+      "weight_frac": 0.13953,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.56,
+        "standard": 0.535,
+        "deep": 0.475
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.56,
+        0.535,
+        0.475
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 8,
+      "sec_id": "S8::section-8-conclusion",
+      "title": "conclusion",
+      "target_words": 340,
+      "weight_words": 340,
+      "weight_frac": 0.07907,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.44,
+        "standard": 0.45,
+        "deep": 0.48
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.44,
+        0.45,
+        0.48
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    }
+  ]
+}

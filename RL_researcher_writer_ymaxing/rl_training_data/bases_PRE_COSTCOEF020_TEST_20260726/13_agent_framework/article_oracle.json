@@ -1,0 +1,365 @@
+{
+  "version": 2,
+  "article": "13_agent_framework",
+  "variant": "no_variant",
+  "computed_at": "2026-07-27T00:38:45.339927+00:00",
+  "oracle_arm": "deep",
+  "oracle_arm_idx": 3,
+  "runner_up_arm": "light",
+  "runner_up_arm_idx": 1,
+  "margin": 0.007048,
+  "reward_spread": 0.03836,
+  "r_w_rewards": {
+    "skip": 0.644629,
+    "light": 0.65664,
+    "standard": 0.625329,
+    "deep": 0.663688
+  },
+  "r_w_rewards_list": [
+    0.644629,
+    0.65664,
+    0.625329,
+    0.663688
+  ],
+  "decision_path": [
+    "near-tie band=['skip', 'light', 'deep'] R_w=[skip:0.6446, light:0.6566, deep:0.6637]",
+    "active signals: [S4(\u0394\u22650.05), S5(\u0394\u22650.05)]  winner=deep  S4={skip:0.268, light:0.300, deep:0.663}  S5={skip:0.847, light:0.950, deep:0.869}"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 15,
+  "n_sections_with_target": 15,
+  "total_target_words": 4515,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 260,
+      "weight_words": 260,
+      "weight_frac": 0.05759,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.6436,
+        "deep": 0.6307
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.67,
+        0.6436,
+        0.6307
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-framework-choice-under-uncertainty-and-why-some-selection-strategies-fail-in-production",
+      "title": "framework choice under uncertainty and why some selection strategies fail in production",
+      "target_words": 350,
+      "weight_words": 350,
+      "weight_frac": 0.07752,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.775,
+        "standard": 0.6436,
+        "deep": 0.7007
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.775,
+        0.6436,
+        0.7007
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-a-theory-for-choosing-decision-axes-instead-of-brands",
+      "title": "a theory for choosing decision axes instead of brands",
+      "target_words": 425,
+      "weight_words": 425,
+      "weight_frac": 0.09413,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.8205,
+        "standard": 0.8736,
+        "deep": 0.8057
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.8205,
+        0.8736,
+        0.8057
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-the-landscape-today-frameworks-philosophies-adoption-snapshot",
+      "title": "the landscape today frameworks philosophies adoption snapshot",
+      "target_words": 800,
+      "weight_words": 800,
+      "weight_frac": 0.17719,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.47,
+        "standard": 0.4436,
+        "deep": 0.4807
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.47,
+        0.4436,
+        0.4807
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-framework-deep-dive-langgraph",
+      "title": "framework deep dive langgraph",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.05537,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.7945,
+        "standard": 0.7486,
+        "deep": 0.7357
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.7945,
+        0.7486,
+        0.7357
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-framework-deep-dive-openai-agents-sdk",
+      "title": "framework deep dive openai agents sdk",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.06645,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.47,
+        "standard": 0.3436,
+        "deep": 0.5857
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.47,
+        0.3436,
+        0.5857
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::section-7-framework-deep-dive-agentkit",
+      "title": "framework deep dive agentkit",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.05537,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.6436,
+        "deep": 0.7357
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.67,
+        0.6436,
+        0.7357
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 8,
+      "sec_id": "S8::section-8-framework-deep-dive-crewai",
+      "title": "framework deep dive crewai",
+      "target_words": 275,
+      "weight_words": 275,
+      "weight_frac": 0.06091,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.8186,
+        "deep": 0.74445
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.67,
+        0.8186,
+        0.74445
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 9,
+      "sec_id": "S9::section-9-framework-deep-dive-pydanticai",
+      "title": "framework deep dive pydanticai",
+      "target_words": 180,
+      "weight_words": 180,
+      "weight_frac": 0.03987,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.6436,
+        "deep": 0.74445
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.67,
+        0.6436,
+        0.74445
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 10,
+      "sec_id": "S10::section-10-framework-deep-dive-autogen",
+      "title": "framework deep dive autogen",
+      "target_words": 220,
+      "weight_words": 220,
+      "weight_frac": 0.04873,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.6436,
+        "deep": 0.6762
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.67,
+        0.6436,
+        0.6762
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 11,
+      "sec_id": "S11::section-11-framework-deep-dive-claude-agent-sdk",
+      "title": "framework deep dive claude agent sdk",
+      "target_words": 135,
+      "weight_words": 135,
+      "weight_frac": 0.0299,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.6436,
+        "deep": 0.6307
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.67,
+        0.6436,
+        0.6307
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 12,
+      "sec_id": "S12::section-12-framework-deep-dive-fastmcp",
+      "title": "framework deep dive fastmcp",
+      "target_words": 255,
+      "weight_words": 255,
+      "weight_frac": 0.05648,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.7155,
+        "standard": 0.6891,
+        "deep": 0.7357
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.7155,
+        0.6891,
+        0.7357
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 13,
+      "sec_id": "S13::section-13-choosing-for-your-project-decision-matrix-tentative-forecasts",
+      "title": "choosing for your project decision matrix tentative forecasts",
+      "target_words": 240,
+      "weight_words": 240,
+      "weight_frac": 0.05316,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.7486,
+        "deep": 0.6307
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.67,
+        0.7486,
+        0.6307
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 14,
+      "sec_id": "S14::section-14-our-capstone-pivots",
+      "title": "our capstone pivots",
+      "target_words": 275,
+      "weight_words": 275,
+      "weight_frac": 0.06091,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.775,
+        "standard": 0.6436,
+        "deep": 0.7357
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.775,
+        0.6436,
+        0.7357
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 15,
+      "sec_id": "S15::section-15-conclusion",
+      "title": "conclusion",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.06645,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.5391,
+        "deep": 0.6307
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.67,
+        0.5391,
+        0.6307
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    }
+  ]
+}

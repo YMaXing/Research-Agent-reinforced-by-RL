@@ -3,41 +3,33 @@
   "lesson": "03_context_engineering",
   "split": "TRAIN",
   "policy": "allowed",
-  "rl_preset": 1,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
-  "oracle_preset": 0,
-  "oracle_name": "skip",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
+  "oracle_preset": 2,
+  "oracle_name": "standard",
   "r_w_rewards": [
-    0.6893,
-    0.6745,
-    0.6342,
-    0.567
+    0.5696,
+    0.6105,
+    0.6738,
+    0.5679
   ],
-  "verdict": "NEAR",
-  "regret": 0.0148,
-  "regret_counted": 0.0148,
-  "entropy_bits": 0.7553,
-  "confidence": 0.8509,
-  "floor_applied": true,
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 1.1358,
+  "confidence": 0.7003,
+  "floor_applied": false,
   "rl_agg_probs": [
     0.0,
-    0.8509,
-    0.0663,
-    0.0828
+    0.0828,
+    0.7003,
+    0.2169
   ],
-  "grok_override": false,
-  "grok_reasoning": "Decisive P1 light aggregate (85% vote mass) with standard/deep masses at 7%/8% (below 30% escalation gate). 100% self-contained budget and zero residuals in S5–S8 (47% of article) already meet coverage; high-residual sections are low-budget only. No override conditions met per policy.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "decisive scorer vote",
-    "residual distribution",
-    "self-contained flags",
-    "vote-mass gates"
-  ],
-  "grok_risk_flags": [
-    "under-depth in S4 theory if residuals mislead",
-    "policy allows only downward here but gaps may still surface"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

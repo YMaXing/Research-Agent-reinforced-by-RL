@@ -3,38 +3,33 @@
   "lesson": "State_of_LLM_Reasoning",
   "split": "TEST",
   "policy": "forbidden",
-  "rl_preset": 1,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 3,
+  "grok_preset": null,
+  "chosen_preset": 3,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
     0.449,
-    0.4004,
-    0.4483,
-    0.3533
+    0.4387,
+    0.4508,
+    0.4621
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "MISS",
+  "regret": -0.013,
   "regret_counted": null,
-  "entropy_bits": 1.8382,
-  "confidence": 0.1237,
+  "entropy_bits": 1.3803,
+  "confidence": 0.4887,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.371,
-    0.1237,
-    0.3603,
-    0.145
+    0.0,
+    0.1082,
+    0.4031,
+    0.4887
   ],
-  "grok_override": true,
-  "grok_reasoning": "External-evidence policy is explicitly FORBIDDEN (hard constraint overrides everything, including the uncertain P1 aggregate vote and 36% standard-vote mass). All sections are already self-contained with residual needs met by the existing exploitation pass and listed sources.",
-  "grok_override_reason": "Hard constraint from external-evidence policy mandating P0 regardless of scorer pick",
-  "grok_decision_drivers": [
-    "external-evidence policy",
-    "self-contained flags across 100% budget"
-  ],
-  "grok_risk_flags": [
-    "Scorer uncertainty with split votes; large residual in S2/S19 could leave depth gaps"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

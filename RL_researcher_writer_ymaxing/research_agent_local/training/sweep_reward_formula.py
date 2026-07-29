@@ -17,6 +17,13 @@ Each variant overrides zero or more of:
   credit_curve   dict   -- {int: float} tiered ladder OR
   exp_k          float  -- if set, use smooth credit(n)=1-(1-exp_k)**n instead
                            of credit_curve (mutually exclusive with credit_curve)
+  cost_units     dict   -- {arm_name: float} overrides the per-arm unit count
+                           the cost term multiplies cost_coef by (production
+                           uses the ordinal round count nr=0/1/2/3). When set,
+                           cost = cost_coef * cost_units[arm] instead of
+                           cost_coef * nr, for every preset mapped to that arm.
+                           See analyze_empirical_cost.py / H0_empirical_cost_units
+                           below for the data-derived motivation.
 
 Usage (from research_agent_local/):
   python3 training/sweep_reward_formula.py
@@ -52,11 +59,42 @@ _DEFAULT_ARTICLES = ["09_RAG__var_standard", "06_tools__var_standard"]
 
 # Current production defaults (must mirror enhancement_reward.py / generate_episode_oracles.py
 # exactly, so "baseline" reproduces the real pipeline's numbers as a sanity check).
-_PROD_COST_COEF = -0.06
+# tier1 updated 0.55->0.35 on 2026-07-25 (G0 shipped to production, see
+# run13_rl_grok_pipeline_analysis.md Part 6 §47/§51) -- keep this in sync with
+# enhancement_reward.py's CREDIT_AT_WEIGHTED_COUNT whenever that changes again.
+# cost_coef staged recalibration: -0.06 -> -0.045 -> -0.03 (2026-07-25, Part 7,
+# I-series candidates I0-I4) -> -0.02 (2026-07-26, I6_cost_coef_020). All stages
+# fully validated via the real pipeline (full 43-article regen incl. near-tie
+# tie-break, plus replicate-majority-vote on 06_tools__var_standard staying
+# deep=2/standard=1 at every value tested) before shipping -- keep this in sync
+# with generate_episode_oracles.py's hardcoded `cost = -0.02 * nr` whenever
+# that changes again.
+_PROD_COST_COEF = -0.02
 _PROD_EXPLORE_MULT = 0.50
 _PROD_QUALITY_WEIGHT = {"strong": 1.00, "standard": 0.65}
 _PROD_INSTANCE_CAP = 3
-_PROD_CREDIT_CURVE = {0: 0.00, 1: 0.55, 2: 0.80, 3: 1.00}
+# tier2 updated 0.80->0.45 on 2026-07-25 (J0 shipped to production, see
+# run13_rl_grok_pipeline_analysis.md Part 7) -- keep this in sync with
+# enhancement_reward.py's CREDIT_AT_WEIGHTED_COUNT whenever that changes again.
+_PROD_CREDIT_CURVE = {0: 0.00, 1: 0.35, 2: 0.45, 3: 1.00}
+# Candidate E (simple, unweighted mean of the explore term across sections,
+# instead of target-words-weighted) was shipped to production earlier (§39) --
+# compute_article_oracle.py._compute_r_w auto-detects this via the "explore"
+# field's presence in section_oracle.json v4+, unconditionally, not via a
+# toggle. "baseline" here must default to True too, or it silently
+# reproduces PRE-candidate-E behavior and disagrees with real production
+# (caught 2026-07-25: 06_tools__var_standard's baseline margin was off by
+# 0.014 -- 0.0227 vs the real 0.0370 -- until this default was fixed).
+_PROD_SIMPLE_AVG_EXPLORE = True
+
+# Candidate H0 (empirical cost-unit recalibration) was shipped to production on
+# 2026-07-25, see run13_rl_grok_pipeline_analysis.md Part 7 -- cost is now
+# cost_coef * _PROD_ARM_COST_UNITS[arm] instead of cost_coef * nr (ordinal round
+# count). "baseline" here must default to the empirical units too, or it
+# silently reproduces PRE-H0 behavior (same staleness class of bug as
+# _PROD_SIMPLE_AVG_EXPLORE above -- keep this in sync with
+# generate_episode_oracles.py's _ARM_COST_UNITS whenever that changes again).
+_PROD_ARM_COST_UNITS: dict[str, float] = {"skip": 0.0, "light": 1.00, "standard": 1.88, "deep": 2.31}
 
 # ---------------------------------------------------------------------------
 # Named candidate variants -- edit/add freely, nothing here requires re-grading
@@ -175,6 +213,160 @@ VARIANTS["F1_plus_C_stdw080"] = {
     "quality_weight": {"strong": 1.00, "standard": 0.80},
 }
 
+# G-series: LOWER (not raise) tier-1, the OPPOSITE direction from F1/F2/F3.
+# Motivated by the pairwise-LLM-comparison investigation (see
+# run13_rl_grok_pipeline_analysis.md Part 5, pairwise grading sections): a
+# statistically significant (binomial two-tailed p=0.031, pooled across 18
+# disjoint disagreement sections spanning 16 topics), independently-replicated
+# finding that tag-based grading systematically OVER-credits `deep` relative
+# to `standard` specifically when deep has found exactly 1 more qualifying
+# instance than standard (the clearest cases: standard=0 instances/credit=0.00,
+# deep=1 strong instance/credit=0.55 under production -- i.e. EXACTLY the
+# tier-1 step). Majority-voted (3-draw) direct pairwise comparison on 5 such
+# sections put the TRUE standard-vs-deep gap at a mean of ~+0.207 (range
+# +0.067 to +0.367), not +0.55 -- i.e. tier-1's current value is roughly
+# 2.5x too steep relative to this direct measurement.
+# NOTE: this directly conflicts with F3's (already-recommended, not yet
+# shipped) tier1=0.65 -- F3 was validated via corpus-flip-count + one
+# replicate-majority label, a coarser test that cannot detect a
+# small-in-aggregate-but-wrong-in-direction per-section miscalibration like
+# this one. Presented as a genuine, unresolved tension for the final
+# ship decision, not silently overridden.
+# G0 = conservative half-measure (splits the gap between current 0.55 and the
+# ~0.20 point estimate); G1 = aggressive, directly calibrated to the point
+# estimate. Both leave tier-2/tier-3 unchanged (weaker, smaller-magnitude
+# evidence there -- Earth_Oceans_Origin/Understanding_Reasoning_LLMs showed
+# disagreement margins of only -0.147/-0.25 at those higher counts, versus
+# the clean -0.55 at tier-1).
+VARIANTS["G0_tier1_035"] = {
+    "credit_curve": {0: 0.00, 1: 0.35, 2: 0.80, 3: 1.00},
+}
+VARIANTS["G1_tier1_020"] = {
+    "credit_curve": {0: 0.00, 1: 0.20, 2: 0.80, 3: 1.00},
+}
+
+# ---------------------------------------------------------------------------
+# Candidate J0: tier-2 recalibration (2026-07-25) -- distinct from G-series
+# (tier-1). Scaled standard-vs-deep pairwise data (16 articles, N=218 section-
+# dim observations) plus a dedicated repeat-draws check on 7 clean tier0-vs-
+# tier2 boundary cases (pooled N=8 draws/target, 56 total) found the real
+# pairwise-judged magnitude of a full 0-to-2-weighted-instance jump is only
+# ~+0.165, vs the current tag's flat +0.800 -- a robust, twice-measured (n=3
+# then n=8 draws/target, barely moved: 0.169->0.165) ~4.8x overstatement.
+# NOTE: this raw point estimate (~0.165) is actually BELOW tier1's own
+# established estimate (~0.207, behind G0) -- taken at face value this would
+# violate the curve's required monotonicity (tier2 must stay >= tier1=0.35).
+# Rather than set tier2 to the raw estimate, J0 uses the SAME "conservative
+# compromise between old assumption and point estimate" logic as G0 itself:
+# roughly the midpoint of (0.80, ~0.17) ~= 0.485, chosen as 0.45 to keep
+# comfortable headroom above tier1. Tier-3 (1.00) is UNCHANGED -- the one
+# tier0-vs-tier3 data point collected was flagged unreliable (title-matching
+# bug in the cross-referencing script), so there is no trustworthy evidence
+# to recalibrate it yet.
+# ---------------------------------------------------------------------------
+VARIANTS["J0_tier2_045"] = {
+    "credit_curve": {0: 0.00, 1: 0.35, 2: 0.45, 3: 1.00},
+}
+
+# ---------------------------------------------------------------------------
+# Candidate K-series: TRAIN-ONLY, SELECTION-BIAS-CORRECTED re-derivation
+# (2026-07-25) -- prompted by the user flagging that G0/H0/J0's evidence
+# mixed TRAIN and TEST articles (train/test leakage risk for any future
+# retrain+eval). Re-scanning restricted to TRAIN-only articles found:
+#   - H0: negligible change (units 1.90/2.35 vs shipped 1.88/2.31) -- NOT
+#     re-shipped, see PRE_H0_ordinal_nr/H0_empirical_cost_units above.
+#   - tier1/tier2: a SEPARATE, more significant issue surfaced while doing
+#     this -- G0's original +0.207 point estimate was computed from only the
+#     "clearest tag-vs-pairwise DISAGREEMENT" cases (sections cherry-picked
+#     because they showed the largest gap from the OLD 0.55 assumption), not
+#     a representative sample of all clean tier0-vs-tier1 cases. That is a
+#     selection-bias/regression-to-the-mean problem, independent of and in
+#     addition to the train/test question. Re-scanning ALL currently-
+#     collected clean 0-vs-1 cases (unfiltered by disagreement), TRAIN-only:
+#     mean=+0.098 (n=38) -- much lower than +0.207. Same fix applied to J0's
+#     tier2 evidence (which was NOT disagreement-pre-filtered to begin with,
+#     so this is a pure TRAIN-only comparison there): mean=+0.210 (n=5),
+#     vs the shipped-from-all-42 +0.165.
+#   - Applying the SAME "conservative compromise between old assumption and
+#     point estimate" convention already used for G0/J0 themselves:
+#       tier1: midpoint(0.55, 0.098) ~= 0.32
+#       tier2: midpoint(0.80, 0.210) ~= 0.50
+#     Both are modest deltas from what's shipped (0.35, 0.45) -- this
+#     corpus-grid-sweep gate checks whether either delta actually flips any
+#     already-graded article's decision before investing in full
+#     re-validation (backup/regen-42/replicate-vote).
+# ---------------------------------------------------------------------------
+VARIANTS["K0_tier1_032_only"] = {
+    "credit_curve": {0: 0.00, 1: 0.32, 2: 0.45, 3: 1.00},
+}
+VARIANTS["K1_tier2_050_only"] = {
+    "credit_curve": {0: 0.00, 1: 0.35, 2: 0.50, 3: 1.00},
+}
+VARIANTS["K2_tier1_032_tier2_050"] = {
+    "credit_curve": {0: 0.00, 1: 0.32, 2: 0.50, 3: 1.00},
+}
+
+# ---------------------------------------------------------------------------
+# Candidate H0: EMPIRICAL cost-unit recalibration (2026-07-25) -- distinct in
+# kind from G-series (which retunes the CONTENT credit curve). This retunes
+# the COST side using measured data instead of a normative cost_coef sweep.
+#
+# analyze_cost_imbalance.py found `cost` is 93% of deep's average shortfall
+# vs the winning arm (deep's content is actually slightly FAVORED on average
+# by gt_base+explore combined). Before treating cost_coef itself as the lever,
+# analyze_empirical_cost.py measured each arm's REAL exploration-phase
+# activity (actual query+scrape counts from each arm's own separately-run
+# episode's .research/full_queries.md + url_phases.json, corpus-wide n=42):
+#   light=4.83, standard=9.07, deep=11.14 (mean explore_effort, skip=0)
+# i.e. deep's real activity is only 2.31x light's, not the 3.00x its flat
+# nr=3 assumption charges it for (standard: 1.88x actual vs 2.00x assumed).
+# Per-round incrementals confirm the mechanism (real diminishing returns, not
+# noise): round1 +3.60 queries/+1.24 scrapes, round2 +3.88q/+0.36 scrapes
+# (scrape saturation), round3(deep) only +1.81q/+0.26 scrapes (both query
+# generation and scraping have saturated by round 3).
+#
+# This variant swaps the per-arm unit count the cost term multiplies
+# cost_coef by -- {0,1,2,3} (assumed) -> {0, 1.00, 1.88, 2.31} (measured) --
+# while leaving cost_coef=-0.06 itself untouched. A data-derived recalibration
+# of what "rounds" means for cost, not an arbitrary new constant.
+# ---------------------------------------------------------------------------
+VARIANTS["H0_empirical_cost_units"] = {
+    "cost_units": {"skip": 0.0, "light": 1.00, "standard": 1.88, "deep": 2.31},
+}
+# Kept for regression/backward comparison now that H0 IS the production
+# baseline (2026-07-25) -- reproduces the OLD (pre-H0) ordinal-round-count
+# cost model exactly, the mirror image of how G0_tier1_035 was kept after G0 shipped.
+VARIANTS["PRE_H0_ordinal_nr"] = {
+    "cost_units": {"skip": 0.0, "light": 1.0, "standard": 2.0, "deep": 3.0},
+}
+
+# ---------------------------------------------------------------------------
+# Candidate I-series: cost_coef ABSOLUTE SCALE (2026-07-25) -- distinct from H0
+# (which only fixed the per-arm UNIT shape, {0,1,2,3}->{0,1.00,1.88,2.31}).
+# Even after H0, analyze_cost_imbalance.py still shows cost = ~85% of deep's
+# average shortfall vs the winning arm (down from ~93% pre-H0, but still
+# overwhelmingly dominant) -- evidence that -0.06 itself, not just the units it
+# multiplies, may be too large. These candidates scale cost_coef down while
+# keeping H0's empirical unit shape ({0,1.00,1.88,2.31}) intact, to isolate the
+# SCALE question from the (already-fixed) shape question. Untested/unshipped --
+# see run13_rl_grok_pipeline_analysis.md Part 7 for validation results.
+# ---------------------------------------------------------------------------
+_H0_UNITS = {"skip": 0.0, "light": 1.00, "standard": 1.88, "deep": 2.31}
+VARIANTS["I0_cost_coef_050"] = {"cost_coef": -0.050, "cost_units": _H0_UNITS}
+VARIANTS["I1_cost_coef_045"] = {"cost_coef": -0.045, "cost_units": _H0_UNITS}
+VARIANTS["I2_cost_coef_040"] = {"cost_coef": -0.040, "cost_units": _H0_UNITS}
+VARIANTS["I3_cost_coef_035"] = {"cost_coef": -0.035, "cost_units": _H0_UNITS}
+VARIANTS["I4_cost_coef_030"] = {"cost_coef": -0.030, "cost_units": _H0_UNITS}
+
+# I-series continued (2026-07-26): -0.03 is current production. Testing
+# further reductions below production to check whether deep's structural
+# cost-disadvantage (highest cost_units=2.31 of any arm) can be eased further
+# without disturbing the corpus, motivated by the goldremoved pilot's
+# razor-thin (+0.0074) article-level margin and the deep-scarcity roadmap.
+VARIANTS["I5_cost_coef_025"] = {"cost_coef": -0.025, "cost_units": _H0_UNITS}
+VARIANTS["I6_cost_coef_020"] = {"cost_coef": -0.020, "cost_units": _H0_UNITS}
+VARIANTS["I7_cost_coef_015"] = {"cost_coef": -0.015, "cost_units": _H0_UNITS}
+
 
 def _credit(qualities: list[str], cfg: dict) -> float:
     """Compute enhancement credit for one section under a variant config.
@@ -222,7 +414,9 @@ def _recompute_from_episode_dims(
     """
     cost_coef = cfg.get("cost_coef", _PROD_COST_COEF)
     explore_mult = cfg.get("explore_mult", _PROD_EXPLORE_MULT)
-    simple_avg_explore = cfg.get("simple_avg_explore", False)
+    simple_avg_explore = cfg.get("simple_avg_explore", _PROD_SIMPLE_AVG_EXPLORE)
+    cost_units = cfg.get("cost_units", _PROD_ARM_COST_UNITS)
+    preset_to_arm = {pid: arm for arm, ids in geo._ARM_PRESETS.items() for pid in ids}
 
     sections_output: dict[str, dict] = {}
     for sec_idx, (sec_id, sec_norm) in enumerate(zip(sec_ids, sec_norms)):
@@ -251,7 +445,8 @@ def _recompute_from_episode_dims(
             gt_base = 0.20 * cc + 0.20 * fl
             explore = cp * (0.60 * de + 0.40 * be) * explore_mult
             user_intent = (0.50 * ga + 0.50 * ra) * 0.30
-            cost = cost_coef * nr
+            units = cost_units[preset_to_arm[p]]
+            cost = cost_coef * units
             preset_rewards[p] = gt_base + explore + user_intent + cost
             preset_explore[p] = explore
 
@@ -375,11 +570,26 @@ def majority_vote_sweep(article_var: str, explore_mults: list[float], emit) -> N
 def _recompute_any(article_dir_name: str, cfg: dict) -> tuple[str, float, dict[str, float]] | None:
     """Same as _recompute(), but works for ANY already-graded bases/ directory,
     not just the 2 hardcoded default (re-graded, tagged) articles -- TRAIN
-    variant articles (dir name contains "__var_", uses episodes/ +
-    _EPISODE_ROUNDS/_ARM_PRESETS) AND TEST/no-variant/augmented articles (no
-    "__var_" in the name, e.g. "13_agent_framework" or "Insects_Consciousness__mixeddepth",
+    variant articles (dir name ends with the canonical "__var_minimal"/
+    "__var_standard"/"__var_demanding" suffix, uses episodes/ +
+    _EPISODE_ROUNDS/_ARM_PRESETS) AND TEST/no-variant/augmented articles (any
+    other name, e.g. "13_agent_framework", "Insects_Consciousness__mixeddepth",
+    or an ablation-pilot name like "<topic>__var_goldremoved" that happens to
+    contain the substring "__var_" without being a real training variant,
     uses test_episodes/ + _TEST_EPISODE_ROUNDS/_TEST_ARM_PRESETS, sequential
     preset ids 0-3, per generate_episode_oracles.py's own no_variant branch).
+
+    IMPORTANT: the no-variant check below matches the exact canonical suffix,
+    NOT a loose ``"__var_" in article_dir_name`` substring check -- the latter
+    previously misrouted ablation-pilot articles (whose name contains "__var_"
+    without being a real training variant) to the wrong preset-ID scheme
+    (ARM_EPISODE/_EPISODE_ROUNDS instead of _TEST_ARM_PRESETS/_TEST_EPISODE_ROUNDS),
+    silently reading a non-existent or unrelated episode directory for
+    "standard"/"deep" (found via 10_memory_knowledge_access__var_goldremoved:
+    this bug made "deep" read a non-existent preset5 dir, returning garbage
+    negative R_w, while "standard" silently read preset3's real content --
+    actually deep's episode -- same bug class as compute_article_oracle.py's
+    _episode_dir(), fixed there on 2026-07-26; fixed here the same day).
 
     NOTE on what this can and cannot test for un-tagged (not-yet-re-graded)
     articles: quality_weight/instance_cap/credit_curve/exp_k have ZERO effect
@@ -403,16 +613,29 @@ def _recompute_any(article_dir_name: str, cfg: dict) -> tuple[str, float, dict[s
     sec_norms = [geo._sec_id_to_norm(s) for s in sec_ids]
     features = json.loads(features_path.read_text(encoding="utf-8"))["sections"]
 
-    no_variant = "__var_" not in article_dir_name
+    no_variant = not any(
+        article_dir_name.endswith(f"__{v}") for v in ("var_minimal", "var_standard", "var_demanding")
+    )
     if no_variant:
         ep_rounds = geo._TEST_EPISODE_ROUNDS
-        episodes_dir = _TEST_EPISODES_DIR
         # no_variant episodes are named "<base_article>__preset<N>" (plain base
         # name, matching generate_episode_oracles.py's own no_variant branch) --
         # article_dir_name itself may already carry a "__mixeddepth"-style
         # augmentation suffix, which IS part of the episode dir name too (the
         # pilots' episodes were generated under that exact augmented name).
         episode_prefix = article_dir_name
+        # Directory ROOT and preset-numbering SCHEME are independent decisions
+        # (mirrors compute_article_oracle.py's _episode_dir() fix): most
+        # no-variant articles live under test_episodes/, but some ablation
+        # pilots (e.g. "<topic>__var_goldremoved") have their episodes placed
+        # under episodes/ instead by rl_data_generator.py. Detect which root
+        # actually holds preset0 rather than assuming test_episodes/.
+        if (_EPISODES_DIR / f"{episode_prefix}__preset0").exists() and not (
+            _TEST_EPISODES_DIR / f"{episode_prefix}__preset0"
+        ).exists():
+            episodes_dir = _EPISODES_DIR
+        else:
+            episodes_dir = _TEST_EPISODES_DIR
     else:
         ep_rounds = geo._EPISODE_ROUNDS
         episodes_dir = _EPISODES_DIR
@@ -441,7 +664,9 @@ def _recompute_core(
     """
     cost_coef = cfg.get("cost_coef", _PROD_COST_COEF)
     explore_mult = cfg.get("explore_mult", _PROD_EXPLORE_MULT)
-    simple_avg_explore = cfg.get("simple_avg_explore", False)
+    simple_avg_explore = cfg.get("simple_avg_explore", _PROD_SIMPLE_AVG_EXPLORE)
+    cost_units = cfg.get("cost_units", _PROD_ARM_COST_UNITS)
+    preset_to_arm = {pid: arm for arm, ids in arm_presets.items() for pid in ids}
 
     sections_output: dict[str, dict] = {}
     for sec_idx, (sec_id, sec_norm) in enumerate(zip(sec_ids, sec_norms)):
@@ -470,7 +695,8 @@ def _recompute_core(
             gt_base = 0.20 * cc + 0.20 * fl
             explore = cp * (0.60 * de + 0.40 * be) * explore_mult
             user_intent = (0.50 * ga + 0.50 * ra) * 0.30
-            cost = cost_coef * nr
+            units = cost_units[preset_to_arm[p]]
+            cost = cost_coef * units
             preset_rewards[p] = gt_base + explore + user_intent + cost
             preset_explore[p] = explore
 

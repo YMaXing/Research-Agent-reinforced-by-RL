@@ -117,6 +117,18 @@ _TEST_ARM_PRESETS: dict[str, list[int]] = {
 _ARM_ROUNDS: dict[str, int] = {"skip": 0, "light": 1, "standard": 2, "deep": 3}
 _ARM_ORDER = ["skip", "light", "standard", "deep"]
 
+# Empirically-measured exploration-effort units per arm (H0, shipped 2026-07-25,
+# see run13_rl_grok_pipeline_analysis.md Part 7). Replaces the ordinal round
+# count (_ARM_ROUNDS, {0,1,2,3}) as the cost term's per-arm multiplier.
+# analyze_empirical_cost.py measured each arm's REAL exploration-phase query+
+# scrape activity (from each arm's own separately-run episode's
+# .research/full_queries.md + url_phases.json, corpus-wide n=42 articles):
+# light=4.83, standard=9.07, deep=11.14 (mean explore_effort) -- i.e. deep's
+# real activity is only 2.31x light's (not the 3.00x its old nr=3 assumption
+# charged it for); standard is 1.88x (not 2.00x). Data-derived recalibration
+# of what "rounds" means for cost -- cost_coef itself (-0.06) is unchanged.
+_ARM_COST_UNITS: dict[str, float] = {"skip": 0.0, "light": 1.00, "standard": 1.88, "deep": 2.31}
+
 # Dimensions used in the reward formula (same as _REWARD_DIMS in train_grpo.py)
 _REWARD_DIMS = [
     "ground_truth_core_content",      # cc
@@ -296,10 +308,17 @@ def _get_enhancement(
 def _section_reward(
     cc: float, fl: float, de: float, be: float,
     cp: float, ga: float, ra: float,
-    nr: int,
+    nr: float,
     variant: str,
 ) -> float:
     """Compute section-level reward with a UNIFIED formula (Formula "B").
+
+    ``nr`` is the arm's cost-term multiplier. As of 2026-07-25 (H0, see
+    run13_rl_grok_pipeline_analysis.md Part 7) callers pass
+    _ARM_COST_UNITS[arm] (empirically-measured exploration effort, e.g.
+    deep=2.31) rather than the raw ordinal round count (0/1/2/3) -- the name
+    ``nr`` ("num rounds") is now a historical misnomer kept for call-site
+    compatibility; it is just "the cost term's per-arm unit count".
 
     Historically this branched on ``variant`` (minimal/standard/demanding)
     with a 5x swing in explore-weight (0.10/0.30/0.50) and a cheaper
@@ -339,14 +358,14 @@ def _section_reward(
     gt_base     = 0.20 * cc + 0.20 * fl
     explore     = cp * (0.60 * de + 0.40 * be) * 0.50
     user_intent = (0.50 * ga + 0.50 * ra) * 0.30
-    cost        = -0.06 * nr
+    cost        = -0.02 * nr  # cost_coef staged recalibration: -0.06 -> -0.045 -> -0.03 (2026-07-25) -> -0.02 (2026-07-26)
     return gt_base + explore + user_intent + cost
 
 
 def _section_reward_components(
     cc: float, fl: float, de: float, be: float,
     cp: float, ga: float, ra: float,
-    nr: int,
+    nr: float,
     variant: str,
 ) -> tuple[float, float]:
     """Same formula as _section_reward(), but returns (rest, explore) separately
@@ -370,7 +389,7 @@ def _section_reward_components(
     gt_base     = 0.20 * cc + 0.20 * fl
     explore     = cp * (0.60 * de + 0.40 * be) * 0.50
     user_intent = (0.50 * ga + 0.50 * ra) * 0.30
-    cost        = -0.06 * nr
+    cost        = -0.02 * nr  # cost_coef staged recalibration: -0.06 -> -0.045 -> -0.03 (2026-07-25) -> -0.02 (2026-07-26)
     rest = gt_base + user_intent + cost
     return rest, explore
 
@@ -448,7 +467,25 @@ def process_article_variant(
     sec_ids = _extract_sec_ids_ordered(digest)
 
     # Check completeness against the episode's reasoning/reasons file
-    _ep_root = _TEST_EPISODES_DIR if no_variant else _EPISODES_DIR
+    if no_variant:
+        # No-variant articles are normally genuine test-set articles living
+        # under test_episodes/ with sequential IDs 0-3. However, one-off
+        # ablation variants (e.g. "..._var_goldremoved") don't match any of
+        # the three named _VARIANTS, so they fall into this same no_variant
+        # branch by construction -- but their episodes actually live under
+        # the main episodes/ dir (same "{article}__presetN" naming, same 0-3
+        # preset numbering as the test-set scheme). Detect which root
+        # actually holds this article's episodes instead of assuming
+        # test_episodes/, otherwise every episode dir "goes missing" and the
+        # oracle silently degrades to an all-skip, cost-only reward.
+        if (_EPISODES_DIR / f"{article}__preset0").exists() and not (
+            _TEST_EPISODES_DIR / f"{article}__preset0"
+        ).exists():
+            _ep_root = _EPISODES_DIR
+        else:
+            _ep_root = _TEST_EPISODES_DIR
+    else:
+        _ep_root = _EPISODES_DIR
     ep0_dir = _ep_root / f"{article}__preset0" if no_variant else _ep_root / f"{art_var}__preset0"
     expected_n = _count_reasoning_sections(ep0_dir) if ep0_dir.exists() else len(sec_ids)
 
@@ -490,12 +527,15 @@ def process_article_variant(
         _ep_rounds = _EPISODE_ROUNDS        # {0:0, 1:1, 3:2, 5:3}
         _arm_presets = _ARM_PRESETS         # skip→0, light→1, standard→3, deep→5
     _ACTIVE_PRESETS = sorted(_ep_rounds.keys())
+    # preset id -> arm name, so the cost term can use _ARM_COST_UNITS (empirical
+    # effort) instead of _ep_rounds (ordinal round count) -- see H0, Part 7.
+    _preset_to_arm = {pid: arm for arm, ids in _arm_presets.items() for pid in ids}
 
     # Load only the active episodes upfront (dict keyed by preset id)
     episode_dims: dict[int, dict[str, list[tuple[str, str, int, tuple[int, list[str]] | None]]]] = {}
     for p in _ACTIVE_PRESETS:
         ep_dir = (
-            _TEST_EPISODES_DIR / f"{article}__preset{p}"
+            _ep_root / f"{article}__preset{p}"
             if no_variant
             else _EPISODES_DIR / f"{art_var}__preset{p}"
         )
@@ -518,7 +558,7 @@ def process_article_variant(
         preset_explore: dict[int, float] = {}
         for p in _ACTIVE_PRESETS:
             ep = episode_dims[p]
-            nr = _ep_rounds[p]
+            nr = _ARM_COST_UNITS[_preset_to_arm[p]]
 
             def _score(dim: str, _ep=ep, _sn=sec_norm, _si=sec_idx) -> float:
                 return _get_score(_ep.get(dim, []), _sn, _si)

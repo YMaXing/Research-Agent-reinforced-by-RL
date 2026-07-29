@@ -3,40 +3,33 @@
   "lesson": "Distinct_AI_Models",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 2,
-  "grok_preset": 2,
-  "chosen_preset": 2,
-  "chosen_by": "Grok4.2",
-  "oracle_preset": 1,
-  "oracle_name": "light",
+  "rl_preset": 1,
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
+  "oracle_preset": 3,
+  "oracle_name": "deep",
   "r_w_rewards": [
     0.625,
-    0.8988,
-    0.7288,
-    0.7925
+    0.7425,
+    0.6767,
+    0.7725
   ],
-  "verdict": "NEAR",
-  "regret": 0.17,
-  "regret_counted": 0.17,
-  "entropy_bits": 0.6726,
-  "confidence": 0.8258,
+  "verdict": "MISS",
+  "regret": 0.03,
+  "regret_counted": 0.03,
+  "entropy_bits": -0.0,
+  "confidence": 1.0,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.0006,
-    0.1736,
-    0.8258,
+    0.0,
+    1.0,
+    0.0,
     0.0
   ],
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is decisive P2 standard (83% vote / 82% budget mass); deep-vote mass=0% and decisive confidence preclude any escalation per override policy. High residuals (e.g. 10/2 in S1, 11/5 in S4) plus must-ev=3-5 across all sections confirm gap-filling value without triggering downward override on self-contained flags. Dominant gap type is depth, matching P2 round composition.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "decisive_scorer_P2",
-    "zero_deep_mass",
-    "residual_must_ev_context"
-  ],
-  "grok_risk_flags": [
-    "S3 brief flag could limit absorption",
-    "possible duplicate coverage on cross-modal experiments"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

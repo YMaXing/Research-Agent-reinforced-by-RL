@@ -107,7 +107,7 @@ async def _repeat_one(target: dict, n_repeats: int, model, semaphore: asyncio.Se
     return out
 
 
-async def _main_async(targets: list[dict], n_repeats: int, model, concurrency: int) -> None:
+async def _main_async(targets: list[dict], n_repeats: int, model, concurrency: int, output_name: str) -> None:
     semaphore = asyncio.Semaphore(concurrency)
     by_article: dict[str, dict] = defaultdict(dict)
 
@@ -138,7 +138,7 @@ async def _main_async(targets: list[dict], n_repeats: int, model, concurrency: i
     for article, sections in by_article.items():
         out_dir = OUTPUT_DIR / article
         out_dir.mkdir(parents=True, exist_ok=True)
-        out_path = out_dir / "pairwise_repeats.json"
+        out_path = out_dir / output_name
         out_path.write_text(json.dumps({"article": article, "sections": sections}, indent=2), encoding="utf-8")
         logger.info("Wrote %s", out_path)
 
@@ -156,13 +156,21 @@ def main() -> None:
         help="Additional draws per target, on top of the original single draw already collected (default 4 -> 5 total per target).",
     )
     parser.add_argument("--concurrency", type=int, default=3)
+    parser.add_argument(
+        "--output-name",
+        default="pairwise_repeats.json",
+        help="Output filename under rl_training_data/pairwise_pilot/<article>/ (default: pairwise_repeats.json). "
+        "IMPORTANT: use a DIFFERENT name (e.g. pairwise_repeats_light_vs_standard.json) when running this for a "
+        "different target set than a prior run, to avoid silently overwriting previously-collected repeat data "
+        "for any overlapping articles.",
+    )
     args = parser.parse_args()
 
     targets = json.loads(args.targets.read_text(encoding="utf-8"))
     model = _MODEL_CHOICES[args.model]
     total_calls = len(targets) * args.n_repeats
     logger.info("Judge model: %s  |  %d targets x %d repeats = %d calls", model.value, len(targets), args.n_repeats, total_calls)
-    asyncio.run(_main_async(targets, args.n_repeats, model, args.concurrency))
+    asyncio.run(_main_async(targets, args.n_repeats, model, args.concurrency, args.output_name))
 
 
 if __name__ == "__main__":

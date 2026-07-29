@@ -1,0 +1,631 @@
+{
+  "article": "02_workflows_vs_agents__var_demanding",
+  "variant_level": "demanding",
+  "computed_at": "2026-05-05T00:43:34.605354+00:00",
+  "oracle_preset": 3,
+  "oracle_preset_name": "P3_depth_breadth",
+  "runner_up_preset": 5,
+  "runner_up_preset_name": "P5_depth_breadth_depth",
+  "margin": 0.004368,
+  "reward_spread": 0.274885,
+  "article_rewards": [
+    0.437529,
+    0.503793,
+    0.495977,
+    0.636782,
+    0.361897,
+    0.632414
+  ],
+  "oracle_ranking": [
+    3,
+    5,
+    1,
+    2,
+    0,
+    4
+  ],
+  "aggregation_scheme": "guideline_target_lengths",
+  "n_sections": 6,
+  "n_sections_with_target": 6,
+  "total_target_words": 4350,
+  "sections": [
+    {
+      "index": 1,
+      "title": "Introduction: The Critical Decision Every AI Engineer Faces",
+      "target_words": 450,
+      "weight_words": 450,
+      "weight_frac": 0.10345,
+      "digest_words": 136,
+      "rewards_by_preset": [
+        0.37,
+        0.64,
+        0.485,
+        0.36,
+        0.355,
+        0.355
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 1,
+      "section_runner_up": 2,
+      "section_margin": 0.155,
+      "mu": 1.1248,
+      "prior_by_preset": [
+        -0.007029,
+        -8.7e-05,
+        -0.004256,
+        -0.004256,
+        -0.019536,
+        -0.019536
+      ],
+      "rewards_by_preset_modified": [
+        0.362971,
+        0.639913,
+        0.480744,
+        0.355744,
+        0.335464,
+        0.335464
+      ],
+      "section_oracle_new": 1,
+      "section_runner_up_new": 2,
+      "section_margin_new": 0.159169,
+      "oracle_changed": false
+    },
+    {
+      "index": 2,
+      "title": "Understanding the Spectrum: From Workflows to Agents",
+      "target_words": 600,
+      "weight_words": 600,
+      "weight_frac": 0.13793,
+      "digest_words": 110,
+      "rewards_by_preset": [
+        0.22,
+        0.49,
+        0.21,
+        0.81,
+        0.355,
+        0.61
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 3,
+      "section_runner_up": 5,
+      "section_margin": 0.2,
+      "mu": 1.9908,
+      "prior_by_preset": [
+        -0.022018,
+        -0.005454,
+        -0.0,
+        -0.0,
+        -0.005658,
+        -0.005658
+      ],
+      "rewards_by_preset_modified": [
+        0.197982,
+        0.484546,
+        0.21,
+        0.81,
+        0.349342,
+        0.604342
+      ],
+      "section_oracle_new": 3,
+      "section_runner_up_new": 5,
+      "section_margin_new": 0.205658,
+      "oracle_changed": false
+    },
+    {
+      "index": 3,
+      "title": "Choosing Your Path",
+      "target_words": 750,
+      "weight_words": 750,
+      "weight_frac": 0.17241,
+      "digest_words": 101,
+      "rewards_by_preset": [
+        0.37,
+        0.365,
+        0.21,
+        0.715,
+        0.205,
+        0.48
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 3,
+      "section_runner_up": 5,
+      "section_margin": 0.235,
+      "mu": 2.4196,
+      "prior_by_preset": [
+        -0.032523,
+        -0.011195,
+        -0.000978,
+        -0.000978,
+        -0.001872,
+        -0.001872
+      ],
+      "rewards_by_preset_modified": [
+        0.337477,
+        0.353805,
+        0.209022,
+        0.714022,
+        0.203128,
+        0.478128
+      ],
+      "section_oracle_new": 3,
+      "section_runner_up_new": 5,
+      "section_margin_new": 0.235894,
+      "oracle_changed": false
+    },
+    {
+      "index": 4,
+      "title": "Exploring Common Patterns",
+      "target_words": 800,
+      "weight_words": 800,
+      "weight_frac": 0.18391,
+      "digest_words": 93,
+      "rewards_by_preset": [
+        0.37,
+        0.54,
+        0.74,
+        0.715,
+        0.53,
+        0.63
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 2,
+      "section_runner_up": 3,
+      "section_margin": 0.025,
+      "mu": 2.4568,
+      "prior_by_preset": [
+        -0.033533,
+        -0.011791,
+        -0.001159,
+        -0.001159,
+        -0.001639,
+        -0.001639
+      ],
+      "rewards_by_preset_modified": [
+        0.336467,
+        0.528209,
+        0.738841,
+        0.713841,
+        0.528361,
+        0.628361
+      ],
+      "section_oracle_new": 2,
+      "section_runner_up_new": 3,
+      "section_margin_new": 0.025,
+      "oracle_changed": false
+    },
+    {
+      "index": 5,
+      "title": "Zooming In on Our Favorite Examples",
+      "target_words": 1250,
+      "weight_words": 1250,
+      "weight_frac": 0.28736,
+      "digest_words": 101,
+      "rewards_by_preset": [
+        0.645,
+        0.365,
+        0.565,
+        0.715,
+        0.205,
+        0.805
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 5,
+      "section_runner_up": 3,
+      "section_margin": 0.09,
+      "mu": 2.4144,
+      "prior_by_preset": [
+        -0.032384,
+        -0.011113,
+        -0.000954,
+        -0.000954,
+        -0.001905,
+        -0.001905
+      ],
+      "rewards_by_preset_modified": [
+        0.612616,
+        0.353887,
+        0.564046,
+        0.714046,
+        0.203095,
+        0.803095
+      ],
+      "section_oracle_new": 5,
+      "section_runner_up_new": 3,
+      "section_margin_new": 0.089048,
+      "oracle_changed": false
+    },
+    {
+      "index": 6,
+      "title": "Conclusion: The Challenges of Every AI Engineer",
+      "target_words": 500,
+      "weight_words": 500,
+      "weight_frac": 0.11494,
+      "digest_words": 94,
+      "rewards_by_preset": [
+        0.45,
+        0.895,
+        0.715,
+        0.24,
+        0.735,
+        0.71
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 0.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 1,
+      "section_runner_up": 4,
+      "section_margin": 0.16,
+      "mu": 1.5856,
+      "prior_by_preset": [
+        -0.013967,
+        -0.001905,
+        -0.000954,
+        -0.000954,
+        -0.011115,
+        -0.011115
+      ],
+      "rewards_by_preset_modified": [
+        0.436033,
+        0.893095,
+        0.714046,
+        0.239046,
+        0.723885,
+        0.698885
+      ],
+      "section_oracle_new": 1,
+      "section_runner_up_new": 4,
+      "section_margin_new": 0.16921,
+      "oracle_changed": false
+    }
+  ],
+  "article_rewards_modified": [
+    0.41108,
+    0.49552,
+    0.494773,
+    0.635576,
+    0.356645,
+    0.627164
+  ],
+  "oracle_preset_new": 3,
+  "runner_up_preset_new": 5,
+  "margin_new": 0.008412,
+  "prior_config": {
+    "lambda": 0.05,
+    "a_w": 0.4,
+    "a_p": 1.0,
+    "a_d": 1.0,
+    "mu_base": {
+      "minimal": 0.7,
+      "standard": 1.7,
+      "demanding": 2.0
+    }
+  }
+}

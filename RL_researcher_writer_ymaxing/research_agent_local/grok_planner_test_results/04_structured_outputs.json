@@ -3,40 +3,33 @@
   "lesson": "04_structured_outputs",
   "split": "TEST",
   "policy": "allowed",
-  "rl_preset": 2,
-  "grok_preset": 2,
-  "chosen_preset": 2,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 3,
+  "grok_preset": null,
+  "chosen_preset": 3,
+  "chosen_by": "RL",
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
     0.6067,
-    0.7467,
-    0.7733,
-    0.7067
+    0.6288,
+    0.6828,
+    0.7042
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 1.4599,
-  "confidence": 0.5327,
+  "verdict": "NEAR",
+  "regret": -0.0214,
+  "regret_counted": -0.0214,
+  "entropy_bits": 1.2779,
+  "confidence": 0.5331,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.2671,
-    0.0002,
-    0.5327,
-    0.2
+    0.0004,
+    0.0666,
+    0.3998,
+    0.5331
   ],
-  "grok_override": false,
-  "grok_reasoning": "Section-scorer aggregate is P2 standard (already cost-adjusted) with 53% budget-weighted standard mass and only 20% deep mass; this is UNCERTAIN (moderate 53% top-pick) but the P2->P3 gate requires deep-mass >=30% so escalation is disallowed. High-budget sections S4 (40%, standard, must-ev=14, resid=16/6) and S3 (20%, deep) drive the dominant depth gap; S2 brief flag and universal self-contained flags do not meet GENERAL DOWNWARD OVERRIDE criteria because standard mass is clearly dominant (>30%) and high-budget sections are neither well-covered nor all brief. Therefore stay at the RL peak of P2.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "budget-weighted standard mass 53%",
-    "deep-mass <30% blocks P3",
-    "high-budget S4/S3 RL picks and residuals"
-  ],
-  "grok_risk_flags": [
-    "moderate scorer confidence",
-    "all sections self-contained could imply lower preset but policy forbids re-deriving from raw residuals"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

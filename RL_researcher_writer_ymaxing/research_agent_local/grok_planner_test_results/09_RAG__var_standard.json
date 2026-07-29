@@ -3,40 +3,33 @@
   "lesson": "09_RAG",
   "split": "TRAIN",
   "policy": "allowed",
-  "rl_preset": 1,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
-  "oracle_preset": 1,
-  "oracle_name": "light",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
+  "oracle_preset": 3,
+  "oracle_name": "deep",
   "r_w_rewards": [
-    0.4057,
-    0.4853,
-    0.5001,
-    0.4643
+    0.3719,
+    0.4,
+    0.4095,
+    0.482
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
-  "regret_counted": 0.0,
-  "entropy_bits": 1.3886,
-  "confidence": 0.5315,
-  "floor_applied": true,
+  "verdict": "NEAR",
+  "regret": 0.0726,
+  "regret_counted": 0.0726,
+  "entropy_bits": 0.9382,
+  "confidence": 0.7868,
+  "floor_applied": false,
   "rl_agg_probs": [
     0.0,
-    0.5315,
-    0.1246,
-    0.3438
+    0.0663,
+    0.7868,
+    0.147
   ],
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL pick is P1 light (53% light mass, 34% deep mass); moderate confidence but UNCERTAIN. Deep mass >=30% and depth-or-nothing pattern (standard only 12%) triggers deep-or-nothing guard; hard policy forbids any P1->P2 escalation. High residuals in top-budget sections (S4 24/5, S3 36/4) plus must-ev counts prevent general downward override to P0.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "aggregate RL pick P1",
-    "deep-mass guard",
-    "high-residual large sections"
-  ],
-  "grok_risk_flags": [
-    "34% deep vote may indicate under-coverage on S3/S4 techniques",
-    "self-contained flags could mask missing specifics"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

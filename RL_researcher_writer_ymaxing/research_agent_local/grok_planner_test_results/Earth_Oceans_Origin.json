@@ -4,40 +4,32 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 3,
-  "grok_preset": 3,
+  "grok_preset": null,
   "chosen_preset": 3,
-  "chosen_by": "Grok4.2",
+  "chosen_by": "RL",
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
     0.4707,
-    0.5389,
-    0.7007,
-    0.7253
+    0.5219,
+    0.5453,
+    0.5764
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.1363,
+  "entropy_bits": 0.8563,
   "confidence": 0.7196,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.1431,
-    0.1373,
+    0.0,
+    0.2803,
     0.0,
     0.7196
   ],
-  "grok_override": false,
-  "grok_reasoning": "Scorer aggregate is P3 deep at 72% (DECISIVE, 0% standard mass). High-budget S2/S3 (72% total) both vote deep·1.00 with residuals 14/3 and 13/0, must-ev totals 13, 27 article-wide unbacked anchors, and dominant depth gap all align with the strong learned signal. Brief flags and self-contained status already factored into the cost-adjusted RL pick; no sanctioned downward override applies on a decisive vote.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "decisive deep vote mass (72%)",
-    "high-budget section RL picks (S2/S3)",
-    "must-ev + residual depth gaps",
-    "unbacked anchors"
-  ],
-  "grok_risk_flags": [
-    "brief flags on large sections may limit absorption",
-    "many paywalled golden sources already locally available"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

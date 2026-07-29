@@ -1,0 +1,11 @@
+{
+  "presets": {
+    "S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place": "skip",
+    "S2::section-2-the-layers-of-memory-internal-short-term-and-long-term": "skip",
+    "S3::section-3-long-term-memory-semantic-episodic-and-procedural": "skip",
+    "S4::section-4-storing-memories-pros-and-cons-of-different-approaches": "skip",
+    "S5::section-5-memory-implementations-with-code-examples": "skip",
+    "S6::section-6-real-world-lessons-challenges-and-best-practices": "skip",
+    "S7::section-7-conclusion": "skip"
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "article": "06_tools__var_standard",
+  "sections": {
+    "The downsides of running tools in a loop": {
+      "depth": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "original_preference": "b_more",
+        "classification": "strong_disagree",
+        "repeats": [
+          {
+            "preference": "b_more",
+            "a_instances": [
+              "Context saturation limitation quantified with specific token window size (128K tokens)"
+            ],
+            "b_instances": [
+              "Compounding error probability example showing a 10-step process with 90% per-step accuracy yields only ~35% success",
+              "Specific 'output misreading' failure mode example (agent misreads a failed test as passed)"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Context window saturation risk quantified even at 128K token windows (cited)",
+              "No recovery mechanism if the first tool call fails, leaving the naive loop stuck"
+            ],
+            "b_instances": [
+              "Compounding error effect quantified: 90% per-step accuracy yields only ~35% success over 10 steps (cited study)",
+              "Named 'output misreading' failure mode with concrete example of misinterpreting a failed test as passed (cited)"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [
+              "Context window saturation causing loss of track of goal, quantified at 128K token windows",
+              "No mechanism for naive loop to recover if first tool call fails"
+            ],
+            "b_instances": [
+              "Compounding error phenomenon quantified with statistic (90% per-step accuracy yields only 35% success over 10 steps)",
+              "Named failure pattern 'output misreading' where agent misinterprets tool result (e.g., test pass/fail) and continues on a broken path"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [
+              "Context window saturation quantified at 128K tokens, causing goal/context loss"
+            ],
+            "b_instances": [
+              "Compounding error statistic: 90% per-step accuracy yields only 35% success over 10 steps",
+              "Specific 'output misreading' failure example (misinterpreting a failed test as passed)"
+            ]
+          }
+        ]
+      }
+    },
+    "Implementing tool calls from scratch": {
+      "depth": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "original_preference": "b_much_more",
+        "classification": "strong_agree",
+        "repeats": [
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Detailed mechanism of how fine-tuning enables structured tool-call generation (training on many examples, updating internal weights, citing neosage.io fine-tuning guide)",
+              "Additional guidance on writing quality tool descriptions - including example usage, edge cases, and clear boundaries between tools, plus the 'junior developer' clarity heuristic"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Detailed explanation of the fine-tuning mechanism (training on thousands of examples, updating internal weights, embedding structural rules into model 'instincts')",
+              "Elaboration that good tool definitions should include example usage, edge cases, and clear boundaries from other tools"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "specific criteria for good tool definitions (example usage, edge cases, clear boundaries) cited to Anthropic's building-effective-agents piece",
+              "mechanistic explanation of why LLMs can produce structured tool calls via instruction fine-tuning on thousands of examples that update model weights, cited to a fine-tuning guide"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Detailed explanation of how instruction fine-tuning mechanically enables structured tool-call generation (training on thousands of examples, updating internal weights, source-cited fine-tuning guide) contrasted with brittleness of prompting alone"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

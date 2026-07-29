@@ -3,39 +3,33 @@
   "lesson": "02_workflows_vs_agents",
   "split": "TRAIN",
   "policy": "forbidden",
-  "rl_preset": 1,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 3,
+  "grok_preset": null,
+  "chosen_preset": 3,
+  "chosen_by": "RL",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
-    0.5808,
-    0.6477,
-    0.4031,
-    0.5719
+    0.5231,
+    0.6768,
+    0.503,
+    0.5985
   ],
-  "verdict": "EXACT",
-  "regret": 0.0,
+  "verdict": "MISS",
+  "regret": -0.0755,
   "regret_counted": null,
-  "entropy_bits": 0.6194,
-  "confidence": 0.8462,
-  "floor_applied": true,
+  "entropy_bits": 1.5262,
+  "confidence": 0.4615,
+  "floor_applied": false,
   "rl_agg_probs": [
     0.0,
-    0.8462,
-    0.0,
-    0.1538
+    0.3077,
+    0.2308,
+    0.4615
   ],
-  "grok_override": true,
-  "grok_reasoning": "External-evidence policy explicitly FORBIDDEN (hard constraint overrides everything, mandating P0). Scorer's decisive P1 (85% light) is ignored per policy; 100% self-contained sections, many with 0 residual depth need and 'brief' flags confirm no exploration is usable.",
-  "grok_override_reason": "Hard constraint from external-evidence policy = forbidden requires P0, overriding RL pick of P1",
-  "grok_decision_drivers": [
-    "external-evidence policy",
-    "hard constraints",
-    "self-contained + residual need"
-  ],
-  "grok_risk_flags": [
-    "Scorer's 85% light vote on conceptual article; policy may be overly strict but is non-negotiable"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

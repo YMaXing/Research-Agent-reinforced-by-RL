@@ -4,38 +4,32 @@
   "split": "TEST",
   "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": 1,
+  "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
-  "oracle_preset": 0,
-  "oracle_name": "skip",
+  "chosen_by": "RL",
+  "oracle_preset": 2,
+  "oracle_name": "standard",
   "r_w_rewards": [
-    0.91,
-    0.725,
-    0.7794,
-    0.7311
+    0.67,
+    0.7283,
+    0.7107,
+    0.6921
   ],
   "verdict": "NEAR",
-  "regret": 0.185,
-  "regret_counted": 0.185,
-  "entropy_bits": 0.722,
-  "confidence": 0.8,
-  "floor_applied": false,
+  "regret": -0.0176,
+  "regret_counted": -0.0176,
+  "entropy_bits": 0.9943,
+  "confidence": 0.5444,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.2,
-    0.8,
     0.0,
-    0.0
+    0.5444,
+    0.0,
+    0.4556
   ],
-  "grok_override": false,
-  "grok_reasoning": "DECISIVE P1 aggregate (80% light vote mass, 0% std/deep) on self-contained sections with existing matched sources; no sanctioned override applies per policy (high-budget S2/S3 both pick light, residuals already cost-adjusted upstream)",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "decisive scorer vote",
-    "self-contained flags",
-    "no escalation signal"
-  ],
-  "grok_risk_flags": [
-    "residual depth in S3 could still limit must-ev coverage"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

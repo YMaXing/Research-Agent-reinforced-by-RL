@@ -1,0 +1,210 @@
+{
+  "version": 2,
+  "article": "03_context_engineering__var_demanding",
+  "variant": "var_demanding",
+  "computed_at": "2026-07-25T20:06:02.033656+00:00",
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "skip",
+  "runner_up_arm_idx": 0,
+  "margin": 0.021768,
+  "reward_spread": 0.094021,
+  "r_w_rewards": {
+    "skip": 0.557227,
+    "light": 0.578996,
+    "standard": 0.50688,
+    "deep": 0.484975
+  },
+  "r_w_rewards_list": [
+    0.557227,
+    0.578996,
+    0.50688,
+    0.484975
+  ],
+  "decision_path": [
+    "unique reward winner (margin=+0.0218 > EPS_BAND=0.02)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 8,
+  "n_sections_with_target": 8,
+  "total_target_words": 4220,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction-when-prompt-engineering-breaks",
+      "title": "introduction when prompt engineering breaks",
+      "target_words": 280,
+      "weight_words": 280,
+      "weight_frac": 0.06635,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.64,
+        "standard": 0.5872,
+        "deep": 0.5614
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.64,
+        0.5872,
+        0.5614
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-from-prompt-to-context-engineering",
+      "title": "from prompt to context engineering",
+      "target_words": 350,
+      "weight_words": 350,
+      "weight_frac": 0.08294,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.4372,
+        "deep": 0.5614
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.64,
+        0.4372,
+        0.5614
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-understanding-context-engineering",
+      "title": "understanding context engineering",
+      "target_words": 635,
+      "weight_words": 635,
+      "weight_frac": 0.15047,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.44,
+        "standard": 0.3872,
+        "deep": 0.4314
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.44,
+        0.3872,
+        0.4314
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-what-makes-up-the-context",
+      "title": "what makes up the context",
+      "target_words": 635,
+      "weight_words": 635,
+      "weight_frac": 0.15047,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.51,
+        "standard": 0.3872,
+        "deep": 0.3164
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.51,
+        0.3872,
+        0.3164
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-production-implementation-challenges",
+      "title": "production implementation challenges",
+      "target_words": 510,
+      "weight_words": 510,
+      "weight_frac": 0.12085,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.745,
+        "standard": 0.6572,
+        "deep": 0.8614
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.745,
+        0.6572,
+        0.8614
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-key-strategies-for-context-optimization",
+      "title": "key strategies for context optimization",
+      "target_words": 825,
+      "weight_words": 825,
+      "weight_frac": 0.1955,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.94,
+        "standard": 0.7622,
+        "deep": 0.6614
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.94,
+        0.7622,
+        0.6614
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::section-7-here-is-an-example",
+      "title": "here is an example",
+      "target_words": 635,
+      "weight_words": 635,
+      "weight_frac": 0.15047,
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.24,
+        "standard": 0.1872,
+        "deep": 0.1614
+      },
+      "rewards_by_preset": [
+        0.3,
+        0.24,
+        0.1872,
+        0.1614
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 8,
+      "sec_id": "S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering",
+      "title": "conclusion wrap up connecting context engineering to ai engineering",
+      "target_words": 350,
+      "weight_words": 350,
+      "weight_frac": 0.08294,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.64,
+        "standard": 0.7622,
+        "deep": 0.6314
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.64,
+        0.7622,
+        0.6314
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    }
+  ]
+}

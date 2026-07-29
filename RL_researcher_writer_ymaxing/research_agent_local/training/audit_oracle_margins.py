@@ -86,7 +86,7 @@ _TEST_ARTICLES = {
 
 _DEFAULT_HIGH = 0.06
 _DEFAULT_MODERATE = 0.10
-_EPS_BAND = 0.02  # matches compute_article_oracle.py's current constant
+_EPS_BAND = 0.03  # matches compute_article_oracle.py's current constant (recalibrated 2026-07-25)
 
 
 def _classify_kind(dir_name: str) -> str:

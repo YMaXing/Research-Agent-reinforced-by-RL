@@ -1,0 +1,313 @@
+{
+  "version": 4,
+  "article": "State_of_LLM_Reasoning",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.6436,
+        "deep": 0.6307
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-implementing-and-improving-reasoning-in-llms-the-four-main-categories": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.32,
+        "standard": 0.2436,
+        "deep": 0.4307
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S3::section-3-inference-time-compute-scaling-methods": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.52,
+        "standard": 0.5906,
+        "deep": 0.5262
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.097,
+        "deep": 0.0455
+      }
+    },
+    "S4::section-4-s1-simple-test-time-scaling": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.12,
+        "standard": 0.2936,
+        "deep": 0.62345
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.19275
+      }
+    },
+    "S5::section-5-other-noteworthy-research-papers-on-inference-time-compute-scaling": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.6436,
+        "deep": 0.6307
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S6::section-6-test-time-preference-optimization": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.52,
+        "standard": 0.7486,
+        "deep": 0.6307
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.105,
+        "deep": 0.0
+      }
+    },
+    "S7::section-7-thoughts-are-all-over-the-place": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.6436,
+        "deep": 0.6307
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S8::section-8-trading-inference-time-compute-for-adversarial-robustness": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.47,
+        "standard": 0.7486,
+        "deep": 0.6307
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.105,
+        "deep": 0.0
+      }
+    },
+    "S9::section-9-chain-of-associated-thoughts": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.74,
+        "standard": 0.6436,
+        "deep": 0.6307
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.07,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S10::section-10-step-back-to-leap-forward": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.52,
+        "standard": 0.6436,
+        "deep": 0.4807
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S11::section-11-scaling-up-test-time-compute-with-latent-reasoning": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.86275,
+        "standard": 0.7486,
+        "deep": 0.6307
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.19275,
+        "standard": 0.105,
+        "deep": 0.0
+      }
+    },
+    "S12::section-12-can-a-1b-llm-surpass-a-405b-llm": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.47,
+        "standard": 0.4436,
+        "deep": 0.6307
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S13::section-13-learning-to-reason-from-feedback-at-test-time": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.52,
+        "standard": 0.4936,
+        "deep": 0.4807
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S14::section-14-inference-time-computations-for-llm-reasoning-and-planning": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.6436,
+        "deep": 0.4807
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S15::section-15-inner-thinking-transformer": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.6436,
+        "deep": 0.7357
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.105
+      }
+    },
+    "S16::section-16-test-time-scaling-for-code-generation": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.32,
+        "standard": 0.2936,
+        "deep": 0.0807
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S17::section-17-chain-of-draft": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.52,
+        "standard": 0.6436,
+        "deep": 0.6307
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S18::section-18-better-feedback-and-edit-models": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.47,
+        "standard": 0.6436,
+        "deep": 0.6307
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S19::section-19-conclusion": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.32,
+        "standard": 0.2956,
+        "deep": 0.1857
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.202,
+        "deep": 0.105
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "skip",
+    "S2::section-2-implementing-and-improving-reasoning-in-llms-the-four-main-categories": "deep",
+    "S3::section-3-inference-time-compute-scaling-methods": "skip",
+    "S4::section-4-s1-simple-test-time-scaling": "deep",
+    "S5::section-5-other-noteworthy-research-papers-on-inference-time-compute-scaling": "skip",
+    "S6::section-6-test-time-preference-optimization": "standard",
+    "S7::section-7-thoughts-are-all-over-the-place": "skip",
+    "S8::section-8-trading-inference-time-compute-for-adversarial-robustness": "standard",
+    "S9::section-9-chain-of-associated-thoughts": "light",
+    "S10::section-10-step-back-to-leap-forward": "skip",
+    "S11::section-11-scaling-up-test-time-compute-with-latent-reasoning": "light",
+    "S12::section-12-can-a-1b-llm-surpass-a-405b-llm": "deep",
+    "S13::section-13-learning-to-reason-from-feedback-at-test-time": "light",
+    "S14::section-14-inference-time-computations-for-llm-reasoning-and-planning": "skip",
+    "S15::section-15-inner-thinking-transformer": "deep",
+    "S16::section-16-test-time-scaling-for-code-generation": "skip",
+    "S17::section-17-chain-of-draft": "skip",
+    "S18::section-18-better-feedback-and-edit-models": "skip",
+    "S19::section-19-conclusion": "light"
+  }
+}

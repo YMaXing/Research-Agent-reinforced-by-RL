@@ -1,0 +1,100 @@
+{
+  "version": 2,
+  "article": "Insects_Consciousness",
+  "variant": "no_variant",
+  "computed_at": "2026-07-24T19:34:47.830818+00:00",
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "deep",
+  "runner_up_arm_idx": 3,
+  "margin": 0.137193,
+  "reward_spread": 0.215439,
+  "r_w_rewards": {
+    "skip": 0.632895,
+    "light": 0.848333,
+    "standard": 0.635263,
+    "deep": 0.71114
+  },
+  "r_w_rewards_list": [
+    0.632895,
+    0.848333,
+    0.635263,
+    0.71114
+  ],
+  "decision_path": [
+    "unique reward winner (margin=+0.1372 > EPS_BAND=0.02)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 3,
+  "n_sections_with_target": 3,
+  "total_target_words": 1900,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 600,
+      "weight_words": 600,
+      "weight_frac": 0.31579,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.685
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.64,
+        0.58,
+        0.685
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-a-growing-awareness",
+      "title": "a growing awareness",
+      "target_words": 850,
+      "weight_words": 850,
+      "weight_frac": 0.44737,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.915,
+        "standard": 0.605,
+        "deep": 0.685
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.915,
+        0.605,
+        0.685
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-mindful-relations",
+      "title": "mindful relations",
+      "target_words": 450,
+      "weight_words": 450,
+      "weight_frac": 0.23684,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.99,
+        "standard": 0.78,
+        "deep": 0.72
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.99,
+        0.78,
+        0.72
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

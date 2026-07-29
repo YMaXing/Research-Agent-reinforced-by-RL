@@ -3,40 +3,33 @@
   "lesson": "08_react_practice",
   "split": "TRAIN",
   "policy": "allowed",
-  "rl_preset": 1,
-  "grok_preset": 1,
-  "chosen_preset": 1,
-  "chosen_by": "Grok4.2",
+  "rl_preset": 2,
+  "grok_preset": null,
+  "chosen_preset": 2,
+  "chosen_by": "RL",
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
-    0.5954,
-    0.5538,
-    0.7375,
-    0.5533
+    0.5023,
+    0.4796,
+    0.6662,
+    0.5487
   ],
-  "verdict": "NEAR",
-  "regret": 0.1837,
-  "regret_counted": 0.1837,
-  "entropy_bits": 1.7651,
-  "confidence": 0.4253,
+  "verdict": "EXACT",
+  "regret": 0.0,
+  "regret_counted": 0.0,
+  "entropy_bits": 0.6754,
+  "confidence": 0.8349,
   "floor_applied": false,
   "rl_agg_probs": [
-    0.092,
-    0.4253,
-    0.3448,
-    0.1379
+    0.1608,
+    0.0044,
+    0.8349,
+    0.0
   ],
-  "grok_override": false,
-  "grok_reasoning": "Aggregate RL vote is P1 light (43% light mass highest; uncertain but standard=34%, deep=14% <30% gates). No sanctioned override conditions met per policy (cannot escalate P1; downward not justified by brief flag on single largest section or vote split). All sections self-contained with ALLOWED evidence policy; residuals already factored upstream.",
+  "grok_override": null,
+  "grok_reasoning": null,
   "grok_override_reason": null,
-  "grok_decision_drivers": [
-    "aggregate RL pick",
-    "vote-mass distribution",
-    "override policy gates"
-  ],
-  "grok_risk_flags": [
-    "close light/standard split could undervalue S5/S6 depth gaps",
-    "high article-wide orphans (58) if self-contained flag misleads"
-  ]
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

@@ -1,0 +1,35 @@
+{
+  "external_evidence_policy": "allowed",
+  "sections": {
+    "S1::section-1-introduction": {
+      "target_words": 420,
+      "mandatory_bullets": 6,
+      "must_cover_depth": 2,
+      "must_stay_brief": 0
+    },
+    "S2::section-2-a-force-emerges": {
+      "target_words": 420,
+      "mandatory_bullets": 7,
+      "must_cover_depth": 1,
+      "must_stay_brief": 1
+    },
+    "S3::section-3-apparent-attraction": {
+      "target_words": 430,
+      "mandatory_bullets": 8,
+      "must_cover_depth": 1,
+      "must_stay_brief": 1
+    },
+    "S4::section-4-strengths-and-weaknesses": {
+      "target_words": 430,
+      "mandatory_bullets": 6,
+      "must_cover_depth": 4,
+      "must_stay_brief": 0
+    },
+    "S5::section-5-testing-entropic-gravity": {
+      "target_words": 300,
+      "mandatory_bullets": 7,
+      "must_cover_depth": 2,
+      "must_stay_brief": 0
+    }
+  }
+}

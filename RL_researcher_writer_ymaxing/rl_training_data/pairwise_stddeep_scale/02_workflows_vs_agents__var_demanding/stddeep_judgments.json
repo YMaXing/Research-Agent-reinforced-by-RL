@@ -1,0 +1,458 @@
+{
+  "article": "02_workflows_vs_agents__var_demanding",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents are near-identical paraphrases of the same introductory content, with no named studies, statistics, specific mechanisms, or genuinely new sub-topics introduced by either side. Document B adds a slightly more nuanced framing ('spectrum' rather than binary choice) but this is a conceptual restatement, not a concrete, source-attributed enhancement, so it does not qualify as a depth or breadth instance. Both documents tie on depth and breadth with no qualifying instances found in either."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "specific mechanism: multiple LLM calls required for agent reasoning driving cost issues"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both introductions are largely paraphrases of the same core content covering the workflow-vs-agent architectural decision, its stakes, and the lesson's framework. Document A adds one concrete technical detail not present in B: the specific mechanism that agents require multiple LLM calls to reason through tasks, driving up costs and economic unfeasibility -- a depth-adding detail. Document B's addition ('finding the right point on a spectrum' rather than a binary choice) is a conceptual reframing rather than a concrete, source-attributed technical detail or new sub-topic, so it doesn't qualify as a strong depth or breadth instance. Neither document introduces a genuinely new adjacent sub-topic, so breadth is tied."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "explains specific mechanism why agents are costly: multiple LLM calls needed for reasoning through tasks"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both intros are largely paraphrases of the same generic content with no named studies, statistics, or new sub-topics introduced. Document A adds one concrete technical detail not in B: it explains that agent costliness stems specifically from the need for multiple LLM calls to reason through tasks, giving a mechanistic reason for the previously mentioned cost concern (depth). Document B's mention of finding 'the right point on a spectrum' is a rephrasing of the already-covered idea of combining workflows and agents rather than a genuinely new sub-topic, so it doesn't qualify as breadth. Neither document introduces a new adjacent topic, example, or application beyond the shared core framing, so breadth is a tie."
+        }
+      ]
+    },
+    "Understanding the Spectrum: From Workflows to Agents": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Historical lineage from rule-based expert systems (if-then logic) as precursor to workflows [21]",
+              "Analogy between agent decision-making and autonomous robots using Reinforcement Learning [22]"
+            ],
+            "b_instances": [
+              "Concrete Google Cloud long-document summarization example using map-reduce with Gemini 1.0 Pro [2]",
+              "Classical AI agent paradigms of reactive control vs. deliberative planning as foundational context [19]"
+            ]
+          },
+          "reasoning": "Both documents stay largely within the core conceptual explanation of workflows vs. agents, with little added technical depth on mechanisms already covered (e.g., B's enumeration of agent components mostly restates what A already says about tools/memory/self-correction, so it doesn't count as a distinct depth instance). For breadth, each document introduces two genuinely new, source-attributed adjacent topics: A brings in the historical lineage from expert systems and an RL/robotics analogy, while B brings in a concrete named product example (Google Cloud's summarization pipeline) and a discussion of classical reactive/deliberative AI paradigms. Both sets are comparably specific and substantive, resulting in a tie on breadth as well as depth."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Concrete workflow example: Google Cloud's map-reduce document summarization solution using Gemini 1.0 Pro, detailing chunking/parallel summarization/combination steps",
+              "Specific breakdown of agent architecture into core LLM, tools/actions, and memory components (citing decodingml source)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Historical origin of the workflow/agent distinction in rule-based expert systems encoding domain knowledge via if-then logic",
+              "Comparison of agent decision-making loop to autonomous robots using Reinforcement Learning for trial-and-error learning"
+            ],
+            "b_instances": [
+              "Classical AI agent taxonomy of reactive control (perception-action loops) vs deliberative planning (internal world models) as historical precursor to modern hybrid architectures"
+            ]
+          },
+          "reasoning": "For depth, Document B adds two substantive, source-attributed technical elaborations that deepen the existing workflow/agent explanations: a concrete named example (Google Cloud's Gemini-based map-reduce summarization pipeline) and a specific structural breakdown of agent components (LLM, tools, memory) from a cited source. Document A offers no comparably deep, source-backed elaboration\u2014its extra content is more historical/analogical rather than deepening the mechanics already discussed, so B is much stronger on depth. For breadth, both documents bring in adjacent historical AI context with citations, but they differ: A cites the expert-systems lineage and draws a robotics/reinforcement-learning analogy for agents (two distinct new sub-topics), while B cites a classical reactive-vs-deliberative agent taxonomy (one distinct new sub-topic). Since A introduces two non-overlapping breadth instances versus B's one, A is modestly ahead on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Reinforcement learning as the mechanism underlying agents' trial-and-error adaptive decision-making, paralleled to autonomous robots"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Historical origin of the workflow/agent distinction in rule-based expert systems with if-then logic"
+            ],
+            "b_instances": [
+              "Concrete Google Cloud long-document summarization workflow example using Gemini 1.0 Pro map-reduce technique",
+              "Classical AI agent paradigms (reactive control vs. deliberative planning) as historical precursors to modern hybrid systems"
+            ]
+          },
+          "reasoning": "Document A adds one clear depth instance not found in B: it explains the mechanism behind agents' adaptive behavior by invoking Reinforcement Learning and trial-and-error learning as used in autonomous robots, giving a technical grounding to the agent's decision loop that B does not match (B's agent-components list largely overlaps with what A already states about tools/memory). On breadth, B pulls ahead with two distinct new sub-topics: a concrete, source-attributed real-world workflow example (Google Cloud's Gemini-based map-reduce document summarization) and a discussion of classical AI control paradigms (reactive vs. deliberative) as historical antecedents to modern agents. A only contributes one breadth instance (the expert-systems historical lineage), which is comparable in kind but fewer in number than B's two. Both documents cover the same core definitions and orchestration comparison without qualifying differentiation there."
+        }
+      ]
+    },
+    "Choosing Your Path": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Specific tool-calling failure rate (3-15%) cited for agentic systems",
+              "Detailed failure mechanisms: context windows overloaded with noisy data, agents stuck repeating failed steps"
+            ],
+            "b_instances": [
+              "Named case studies (OneUnited Bank, Sequoia Financial Group) showing concrete efficiency/conversion gains from workflow automation",
+              "'Tight leash' concept: keeping AI to small incremental changes to speed up human verification",
+              "AI kept on tight leash for easier review"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "High-stakes, low-volume agent use cases: shipping route optimization and legal risk analysis in contracts, framed via cost-of-error tradeoff"
+            ],
+            "b_instances": [
+              "Workflow automation for project management (creating/updating tasks in tools like Notion) as a new application example"
+            ]
+          },
+          "reasoning": "Both documents cover the same core workflows-vs-agents comparison, hybrid/autonomy-slider concept, and Cursor/Perplexity examples almost identically, so most content overlaps and doesn't count as differentiating. For depth, A adds a specific quantitative failure-rate statistic and more granular failure mechanisms (context overload, repeated failed steps), while B adds a concrete named-company case study for workflow ROI and elaborates the human-AI loop with the 'tight leash' incremental-review nuance -- both sides contribute roughly two comparably substantive depth enhancements, yielding a tie. For breadth, A introduces a new example use-case (high-stakes low-volume agent decisions like shipping route optimization and legal risk review) while B introduces a different new use-case (workflow-driven project management task automation in tools like Notion) -- each side contributes one comparably substantive new sub-topic, yielding a tie on breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Specific failure mode: context windows overloaded with irrelevant/noisy data",
+              "Specific failure mode: agents getting stuck repeating the same failed step",
+              "Quantitative tool-calling failure rate stat (3-15%) with citation",
+              "Detail that Perplexity's deep research runs for several minutes to produce report"
+            ],
+            "b_instances": [
+              "Named case study: OneUnited Bank and Sequoia Financial Group achieving conversion/efficiency gains via workflow automation",
+              "Detail that Perplexity deep research performs 'dozens of searches'",
+              "Mechanism detail: keeping AI on a 'tight leash' with small incremental changes for easy human review"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "New example: agents used for high-stakes, low-volume decisions like shipping route optimization and legal risk analysis in contracts"
+            ],
+            "b_instances": [
+              "New sub-topic: workflows automating project management by creating/updating tasks in tools like Notion"
+            ]
+          },
+          "reasoning": "Both documents cover the same core content (workflows vs. agents, autonomy slider, Cursor/Perplexity examples, hybrid human-AI loop). For depth, A adds slightly more numerous and technically specific detail about agent failure modes (context overload, repeated failed steps) plus a concrete quantitative stat (3-15% tool-calling failure rate) and a duration detail for deep research, giving it a modest edge over B's additions (a named but vaguely-quantified case study, a 'dozens of searches' detail, and a 'tight leash' design principle). For breadth, each document introduces exactly one genuinely new adjacent example not found in the other -- A adds shipping-route/legal-risk decision examples for agents, while B adds project-management task automation via Notion for workflows -- making breadth a tie."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific tool-calling failure rate statistic (3-15%) for agents",
+              "Specific failure modes named: context window overload from noisy data sources, agents stuck repeating failed steps"
+            ],
+            "b_instances": [
+              "Named financial institutions (OneUnited Bank, Sequoia Financial Group) with quantified conversion/efficiency gains from workflow automation",
+              "Detailed 'tight leash' mechanism for human-AI verification loop with incremental changes and Cursor's UI as concrete example",
+              "Specific detail that Perplexity's deep research performs 'dozens of searches' to compile report",
+              ",\n"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "High-stakes, low-volume agent use cases: shipping route optimization and legal risk analysis in contracts, framed via cost-of-compute vs cost-of-error tradeoff"
+            ],
+            "b_instances": [
+              "Project management automation example: workflows creating/updating tasks in Notion based on parsed requirements"
+            ]
+          },
+          "reasoning": "Both documents cover the same core workflow-vs-agent decision framework, Karpathy's autonomy slider, and Cursor/Perplexity examples as shared baseline. For depth, A adds a specific quantitative failure-rate statistic and named failure mechanisms (context overload, repeated failure loops), while B adds a named-company case study with quantified business outcomes, a more detailed 'tight leash' mechanism for the human-AI verification loop (with Cursor's UI as a concrete mechanism), and a specific 'dozens of searches' detail for deep research -- giving B slightly more and slightly more varied depth instances, hence 'b_more'. For breadth, A introduces a new adjacent example (high-stakes low-volume decisions like shipping routes and legal risk analysis) while B introduces a different new adjacent example (project management task automation in Notion) -- each side contributes one comparable new sub-topic, resulting in a tie for breadth."
+        }
+      ]
+    },
+    "Exploring Common Patterns": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Orchestrator engineering challenges: bottleneck/single point of failure risk with mitigation via timeouts, retries with exponential backoff, and idempotent worker tasks (sourced)",
+              "Concrete Claude cookbook code implementation (generate/evaluate/loop functions) for evaluator-optimizer pattern"
+            ],
+            "b_instances": [
+              "Chaining/routing noted as brittle when tasks require adaptive sequencing",
+              "Orchestrator-worker parallel execution yields significant speed improvements over sequential processing (sourced)",
+              "Research finding that self-correction works best with external feedback (e.g., unit tests) rather than pure self-reflection (sourced)",
+              "ReAct failure modes: context drift (losing track of goal) and looping (repeating actions without progress)",
+              "Named ReAct variant 'Focused ReAct' that re-prepends the original question each cycle to improve accuracy (sourced)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Diagram introduces specific additional tool examples beyond generic ones (vector search engine, calculator, email provider, messaging app) and separate Planning subgraph (reflection/self-critics) as distinct agent components"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core patterns (chaining/routing, orchestrator-worker, evaluator-optimizer, ReAct) with similar diagrams, so breadth differences are minor. On depth, Document A adds two solid technical enhancements: engineering stability patterns for the orchestrator (timeouts, retries, idempotency) and a concrete code walkthrough of the evaluator-optimizer loop. Document B, however, adds five distinct depth enhancements: a noted limitation of chaining's rigidity, a sourced claim about parallel worker speedups, a sourced research finding on self-correction needing external feedback, specific ReAct failure modes (context drift, looping), and a named improved variant (Focused ReAct) with its mechanism. This gives B a clear edge in depth. For breadth, B's diagram introduces slightly more specific tool/agent-component examples (vector search, calculator, email, messaging, reflection/self-critics as separate nodes) that are not present in A's diagram, giving B a modest edge, though this is a weaker, less textually elaborated enhancement."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "orchestrator bottleneck/single point of failure engineering challenge with citation",
+              "specific stability patterns: timeouts, retries with exponential backoff, idempotent worker tasks",
+              "Claude cookbook concrete code implementation (generate/evaluate/loop functions) for evaluator-optimizer"
+            ],
+            "b_instances": [
+              "chaining pattern's rigidity/brittleness limitation noted",
+              "research finding that self-correction works best with external feedback (e.g., unit tests) vs pure self-reflection",
+              "orchestrator-worker parallel execution yielding significant speed improvements (cited)",
+              "ReAct failure modes: context drift and repetitive looping",
+              "Focused ReAct variant technique of re-prepending the original question each cycle"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "introduction of a distinct 'Planning' subsystem (Reflection + Self-critics) as an agent component beyond the four core ReAct elements",
+              "specific concrete tool examples beyond generic description (Vector Search Engine, Calculator, Email Provider, Messaging App) broadening the tools sub-topic"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core patterns (chaining/routing, orchestrator-worker, evaluator-optimizer, ReAct) with similar diagrams. On depth, A adds specific production-engineering rigor (bottleneck/failure-point discussion, stability patterns like timeouts/retries/idempotency, and a concrete code walkthrough), while B adds a broader set of depth details: a limitation of chaining, a cited research finding on self-correction effectiveness, a speed-improvement claim for orchestration, and two ReAct-specific failure modes plus a named mitigation technique (Focused ReAct). B's list is longer and comparably substantive, giving it a modest edge (b_more) rather than a dominant one, since A's stability-pattern and code-implementation instances are also meaty. On breadth, A stays tightly within the core four patterns with no new adjacent sub-topics, whereas B introduces a distinct planning/reflection component not part of the core ReAct description and expands the tools examples with more concrete types (vector search, calculator, email, messaging), giving B a modest breadth edge as well."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Orchestrator-worker production risks: bottleneck/single point of failure and stability patterns (timeouts, exponential backoff retries, idempotent workers)",
+              "Claude cookbook code walkthrough (generate/evaluate/loop functions) as concrete evaluator-optimizer implementation"
+            ],
+            "b_instances": [
+              "Chaining/routing limitation: rigidity makes it brittle for tasks needing adaptive sequencing",
+              "Orchestrator-worker parallel execution yields significant speed improvements over sequential processing (cited)",
+              "Research finding that self-correction works best with external feedback (e.g., unit tests) rather than pure self-reflection (cited)",
+              "ReAct failure modes: context drift and looping, plus mitigation variants like Focused ReAct (re-prepending original question) and added reflection steps (cited)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Diagram introduces expanded tool taxonomy for ReAct agents (calculator, email provider, messaging app, vector search engine) beyond the generic tool examples given in the text",
+              "Diagram shows distinct 'Self-critics' and 'Reflection' planning sub-components alongside memory as part of agent architecture"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core patterns (chaining/routing, orchestrator-worker, evaluator-optimizer, ReAct) with similar diagrams. On depth, Document A adds two solid enhancements: production-engineering caveats for orchestrator-worker (bottlenecks, retries, idempotency) and a concrete code-based implementation example for the evaluator-optimizer loop via Claude's cookbook. Document B, however, adds a broader set of deeper, source-attributed refinements: a stated brittleness limitation for chaining, a cited claim about parallel-execution speed gains for orchestrator-worker, a research-backed insight that external feedback (e.g., unit tests) outperforms pure self-reflection for evaluator-optimizer loops, and a detailed discussion of ReAct failure modes (context drift, looping) with named mitigation variants (Focused ReAct, reflection steps), all cited. This gives B a clear edge in depth. On breadth, neither document strays far into new topics, but B's ReAct diagram introduces a more elaborate tool taxonomy (calculator, email, messaging app, vector search) and separate 'Reflection'/'Self-critics' planning components not present in A's simpler diagram, giving B a modest edge in breadth as well."
+        }
+      ]
+    },
+    "Zooming In on Our Favorite Examples": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Map-reduce chunking technique for documents exceeding context window (split into chunks, parallel summarization, final merge)",
+              "Specific implementation detail: Gemini CLI built in TypeScript and the 'vibe coding' terminology",
+              "Named specific models used in Perplexity's architecture (Claude Opus as orchestrator, Google Gemini for search agents)",
+              "Technical rationale that parallel agent design mitigates orchestrator becoming a performance bottleneck, referencing sequential-system limitations",
+              "Explicit gap-analysis detail identifying missing data or contradictory findings as the driver for follow-up queries"
+            ],
+            "b_instances": [
+              "Specific UI trigger mechanism: typing '@Summary' in Google Docs invokes the workflow",
+              "Technical rationale of context isolation keeping each search agent's context window clean",
+              "Detail on iterative retrieval where the model performs multiple web searches within a single request"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Contextualizing Perplexity's design within a broader enterprise trend of multi-agent system deployment (citing InfoWorld source)"
+            ],
+            "b_instances": [
+              "Mention of comparable coding-assistant tools (Cursor, Windsurf, Claude Code) as adjacent examples"
+            ]
+          },
+          "reasoning": "Both documents cover the same three core examples (Gemini Workspace summarization, Gemini CLI, Perplexity Deep Research) with largely overlapping structural detail (GEMINI.md hierarchy, ReAct loop steps, orchestrator-worker pattern, gap analysis). On depth, Document A adds more distinct technical specifics beyond the shared coverage: the map-reduce chunking mechanism for long documents, the TypeScript/'vibe coding' detail, named specific models (Claude Opus, Gemini) powering Perplexity's agents, and an explicit rationale about avoiding orchestrator bottlenecks plus more granular gap-analysis description. Document B contributes fewer but still valid depth additions: the '@Summary' UI trigger, the context-isolation rationale for parallel agents, and the iterative multi-search-per-request detail. This gives A a modest edge in depth (more numerous, comparably substantive instances). On breadth, each document introduces exactly one genuinely new adjacent topic not covered by the other: A references the broader enterprise trend of multi-agent system adoption, while B lists comparable coding-assistant tools (Cursor, Windsurf, Claude Code). These are roughly equivalent in scope and substantiveness, resulting in a tie for breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Map-reduce chunking mechanism for documents exceeding context window",
+              "Specific model attribution: Claude Opus as orchestrator, Gemini as worker agents in Perplexity Deep Research",
+              "Parallel design explicitly framed as mitigating orchestrator bottleneck risk seen in sequential systems (cited)"
+            ],
+            "b_instances": [
+              "Specific UI trigger mechanism (@Summary command in Google Docs) for invoking the workflow",
+              "Tool execution outputs explicitly described as fed back into agent's context",
+              "Iterative retrieval capability: model performs multiple web searches within a single request (cited)",
+              "Agent isolation explicitly justified as keeping each agent's context window clean/focused"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Broader enterprise trend of adopting multi-agent systems for complex problem solving (cited industry trend)"
+            ],
+            "b_instances": [
+              "Mention of comparable/competing coding assistant tools: Cursor, Windsurf, Claude Code"
+            ]
+          },
+          "reasoning": "Both documents cover the same three examples (Gemini Workspace summarization, Gemini CLI, Perplexity Deep Research) with very similar structure. For depth, A adds the map-reduce chunking mechanism, specific model attributions for Perplexity's orchestrator/workers, and an explicit rationale for parallel execution avoiding bottlenecks; B adds the @Summary UI trigger detail, explicit mention of tool outputs feeding back into agent context, a cited claim about iterative multi-search-per-request capability, and a rationale for agent context isolation. B has one more distinct sourced technical detail, giving it a modest edge on depth. For breadth, each document introduces exactly one genuinely new adjacent topic: A cites a broader enterprise trend toward multi-agent system adoption, while B names competing coding-assistant tools (Cursor, Windsurf, Claude Code). These are roughly comparable in scope and substantiveness, resulting in a tie for breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Map-reduce technique for long-document summarization (chunking + parallel partial summaries)",
+              "Orchestrator explicitly identified as likely Claude Opus, search agents likely powered by Google Gemini",
+              "Parallel design specifically justified as mitigating orchestrator bottleneck (citing mindstudio.ai)",
+              "Gap analysis specified as targeting missing data or contradictory findings"
+            ],
+            "b_instances": [
+              "Specific '@Summary' slash-command trigger mechanism in Google Docs workflow",
+              "Tool execution outputs explicitly fed back into agent's context window",
+              "Search agent isolation described as keeping each agent's context window clean",
+              "Iterative retrieval described as multiple web searches performed within a single request (cited to digitalapplied.com)",
+              "Human-in-the-loop confirmation specified as triggered before 'potentially destructive actions'"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Broader enterprise trend of multi-agent system deployment (cited to InfoWorld article)"
+            ],
+            "b_instances": [
+              "Comparison to similar coding-assistant tools: Cursor, Windsurf, Claude Code"
+            ]
+          },
+          "reasoning": "Both documents cover the same three examples (Gemini Workspace summarization, Gemini CLI, Perplexity Deep Research) with very similar structure and diagrams. For depth, A adds a few unique mechanistic/technical specifics (map-reduce chunking, named orchestrator/worker models, bottleneck mitigation rationale, gap-analysis specifics), while B adds a comparable or slightly larger set of unique implementation details (the @Summary trigger, context feedback loop, agent isolation rationale, iterative multi-search-per-request capability, and a nuance on when human confirmation is required), giving B a modest edge. For breadth, each document contributes exactly one genuinely new adjacent topic not covered by the other -- A cites the broader enterprise multi-agent deployment trend, while B lists comparable competing coding-assistant tools -- making breadth a tie."
+        }
+      ]
+    },
+    "The Challenges of Every AI Engineer": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Specific hallucination rate statistics (GPT-4: 3% on summarization vs 70%+ on legal queries)",
+              "Detailed LangSmith SSL certificate outage incident (May 1 2025, 95% uptime, 55% failed requests, 30 minutes)",
+              "Named 'agent decay' phenomenon with AWS source",
+              "Quantified token cost claim (multi-agent systems use 15x more tokens) corroborated by Anthropic research"
+            ],
+            "b_instances": [
+              "Named 'lost-in-the-middle' context degradation phenomenon (Arize citation)",
+              "Detailed McKinsey Lilli chatbot SQL-injection hack incident (2026, full DB read/write access, two hours)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Preview of context engineering as a discipline for next lesson",
+              "Mention of RAG and Plan-and-Execute as advanced agentic patterns",
+              "Mention of specific industry frameworks/standards: OpenAI AgentKit, Google Agent Development Kit, and Model Context Protocol (MCP)"
+            ],
+            "b_instances": [
+              "Naming of specific prior patterns to be built upon: chaining, routing, orchestrator-worker model, and ReAct agent components"
+            ]
+          },
+          "reasoning": "Both documents cover the same five core challenge categories, but Document A packs in more concrete, quantified depth detail: specific hallucination-rate statistics, a highly detailed real-world LangSmith outage postmortem, a named 'agent decay' phenomenon, and a token-cost multiplier claim reinforced by an Anthropic source. Document B counters with two solid depth instances of its own (the 'lost-in-the-middle' context phenomenon and a detailed McKinsey chatbot hacking incident), but these are fewer and less varied than A's four distinct additions, giving A a clear (much more) depth edge. For breadth, both sections end with forward-looking previews naming adjacent techniques/frameworks not covered in the core text: A lists context engineering, RAG, Plan-and-Execute, AgentKit, ADK, and MCP, while B lists chaining, routing, orchestrator-worker, and ReAct components. A's list is slightly longer and includes named industry standards/tools with a supporting citation, giving it a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Specific hallucination rate jump for GPT-4 (3% on summarization to over 70% on legal queries)",
+              "Detailed LangSmith SSL certificate outage incident (May 1, 2025, 95% uptime, 55% failed requests, ~30 min)",
+              "\"Agent decay\" concept describing performance degradation without monitoring",
+              "15x token consumption stat for multi-agent vs simple chat, corroborated by Anthropic research",
+              "Prompt injection and chained vulnerabilities across agent networks as security mechanism detail"
+            ],
+            "b_instances": [
+              "\"Lost-in-the-middle\" context degradation mechanism",
+              "McKinsey Lilli chatbot hack incident via SQL injection (2026, 2-hour compromise)",
+              "Cost driver mechanism: multiple LLM calls with larger/more capable models"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Context engineering as an upcoming discipline",
+              "RAG and memory systems mentioned as upcoming topics",
+              "Plan-and-Execute pattern named as advanced agentic pattern",
+              "Named interoperability frameworks/standards: OpenAI AgentKit, Google ADK, MCP (with citation)"
+            ],
+            "b_instances": [
+              "Chaining, routing, and orchestrator-worker patterns referenced as continuing topics",
+              "ReAct agent core components (tools and memory) mentioned"
+            ]
+          },
+          "reasoning": "Both documents cover the same five core challenges (reliability, context limits, data integration, cost, security) but diverge in the specific enhancement content layered on top. On depth, Document A adds more quantitative rigor and a richly detailed incident (the LangSmith SSL outage), plus the hallucination-rate statistic, agent decay concept, and a sourced token-cost multiplier\u2014five distinct deep-dive instances. Document B counters with its own strong specific incident (the McKinsey Lilli hack) and a named technical failure mode (lost-in-the-middle), plus a modest mechanism note on cost drivers\u2014three instances. This gives A a moderate edge in depth. On breadth, A introduces several genuinely new adjacent topics with citation (AgentKit, Google ADK, MCP as interoperability standards) alongside RAG, memory systems, and Plan-and-Execute, while B's breadth additions (chaining, routing, orchestrator-worker, ReAct) mostly reference patterns already introduced elsewhere in the course rather than wholly new ground. This gives A a slight edge in breadth as well, though both remain reasonably comparable overall."
+        },
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Specific hallucination rate escalation (3% general vs. over 70% on legal queries)",
+              "Detailed LangSmith SSL certificate outage incident (May 1 2025, 95% uptime, 55% failed requests, 30 min duration)",
+              "Quantified token cost blowup for multi-agent systems (15x tokens) with Anthropic corroboration",
+              "Named 'agent decay' phenomenon for performance degradation over time",
+              "Specific security mechanisms: prompt injection attacks and chained vulnerabilities across agent networks"
+            ],
+            "b_instances": [
+              "Named 'lost-in-the-middle' context failure mode",
+              "Detailed McKinsey Lilli chatbot SQL-injection hack case study with concrete impact (2 hours, millions of messages)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Mention of emerging agentic frameworks/standards (OpenAI AgentKit, Google ADK, MCP) as a new interoperability trend"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "On depth, Document A adds substantially more concrete, quantified, and source-attributed detail deepening existing points: a specific hallucination-rate statistic, a detailed real-world outage post-mortem (LangSmith SSL certificate incident), a quantified 15x token-cost figure corroborated by Anthropic, a named 'agent decay' concept, and specific security attack mechanisms (prompt injection, chained vulnerabilities). Document B contributes two solid but fewer depth instances: the 'lost-in-the-middle' failure mode and a vivid McKinsey Lilli hacking case study; its cost and reliability points otherwise largely restate the same core ideas as A without added specificity. This makes depth clearly favor A (a_much_more). On breadth, A introduces a genuinely new adjacent subtopic\u2014the emerging ecosystem of agentic frameworks and standards (AgentKit, ADK, MCP)\u2014while B's closing preview mostly recaps patterns (chaining, routing, orchestrator-worker, ReAct) already introduced earlier in the course rather than opening new topic ground, so it doesn't qualify as new breadth. This gives A a modest edge on breadth (a_more)."
+        }
+      ]
+    }
+  }
+}

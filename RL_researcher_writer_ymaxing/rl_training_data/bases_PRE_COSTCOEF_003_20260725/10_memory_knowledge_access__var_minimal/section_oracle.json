@@ -1,0 +1,121 @@
+{
+  "version": 4,
+  "article": "10_memory_knowledge_access",
+  "variant": "var_minimal",
+  "sections": {
+    "S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.105,
+        "standard": 0.4154,
+        "deep": 0.39605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-the-layers-of-memory-internal-short-term-and-long-term": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.725,
+        "standard": 0.4154,
+        "deep": 0.59605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.07,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S3::section-3-long-term-memory-semantic-episodic-and-procedural": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.655,
+        "standard": 0.6154,
+        "deep": 0.59605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S4::section-4-storing-memories-pros-and-cons-of-different-approaches": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.17325,
+        "standard": 0.0654,
+        "deep": 0.04605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.06825,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S5::section-5-memory-implementations-with-code-examples": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.655,
+        "standard": 0.4154,
+        "deep": 0.39605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S6::section-6-real-world-lessons-challenges-and-best-practices": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.255,
+        "standard": 0.2154,
+        "deep": 0.19605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S7::section-7-conclusion": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.655,
+        "standard": 0.6154,
+        "deep": 0.59605
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place": "skip",
+    "S2::section-2-the-layers-of-memory-internal-short-term-and-long-term": "light",
+    "S3::section-3-long-term-memory-semantic-episodic-and-procedural": "skip",
+    "S4::section-4-storing-memories-pros-and-cons-of-different-approaches": "light",
+    "S5::section-5-memory-implementations-with-code-examples": "light",
+    "S6::section-6-real-world-lessons-challenges-and-best-practices": "skip",
+    "S7::section-7-conclusion": "skip"
+  }
+}

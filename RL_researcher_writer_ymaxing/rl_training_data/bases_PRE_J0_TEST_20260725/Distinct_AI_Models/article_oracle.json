@@ -1,0 +1,122 @@
+{
+  "version": 2,
+  "article": "Distinct_AI_Models",
+  "variant": "no_variant",
+  "computed_at": "2026-07-25T21:22:17.336331+00:00",
+  "oracle_arm": "deep",
+  "oracle_arm_idx": 3,
+  "runner_up_arm": "light",
+  "runner_up_arm_idx": 1,
+  "margin": 0.0957,
+  "reward_spread": 0.2032,
+  "r_w_rewards": {
+    "skip": 0.625,
+    "light": 0.7325,
+    "standard": 0.69335,
+    "deep": 0.8282
+  },
+  "r_w_rewards_list": [
+    0.625,
+    0.7325,
+    0.69335,
+    0.8282
+  ],
+  "decision_path": [
+    "unique reward winner (margin=+0.0957 > EPS_BAND=0.03)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 4,
+  "n_sections_with_target": 4,
+  "total_target_words": 2000,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 550,
+      "weight_words": 550,
+      "weight_frac": 0.275,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.775,
+        "standard": 0.5636,
+        "deep": 0.7007
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.775,
+        0.5636,
+        0.7007
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-the-company-being-kept",
+      "title": "the company being kept",
+      "target_words": 650,
+      "weight_words": 650,
+      "weight_frac": 0.325,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.775,
+        "standard": 0.5986,
+        "deep": 0.8707
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.775,
+        0.5986,
+        0.8707
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-convergent-evolution",
+      "title": "convergent evolution",
+      "target_words": 350,
+      "weight_words": 350,
+      "weight_frac": 0.175,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.8836,
+        "deep": 0.8707
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.67,
+        0.8836,
+        0.8707
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-find-the-universals",
+      "title": "find the universals",
+      "target_words": 450,
+      "weight_words": 450,
+      "weight_frac": 0.225,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.695,
+        "standard": 0.7726,
+        "deep": 0.8707
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.695,
+        0.7726,
+        0.8707
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    }
+  ]
+}

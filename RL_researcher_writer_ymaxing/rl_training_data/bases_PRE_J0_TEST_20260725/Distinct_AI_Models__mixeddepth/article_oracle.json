@@ -1,0 +1,123 @@
+{
+  "version": 2,
+  "article": "Distinct_AI_Models__mixeddepth",
+  "variant": "no_variant",
+  "computed_at": "2026-07-25T21:22:17.898853+00:00",
+  "oracle_arm": "standard",
+  "oracle_arm_idx": 2,
+  "runner_up_arm": "light",
+  "runner_up_arm_idx": 1,
+  "margin": 0.022069,
+  "reward_spread": 0.202273,
+  "r_w_rewards": {
+    "skip": 0.611224,
+    "light": 0.791429,
+    "standard": 0.813498,
+    "deep": 0.736822
+  },
+  "r_w_rewards_list": [
+    0.611224,
+    0.791429,
+    0.813498,
+    0.736822
+  ],
+  "decision_path": [
+    "near-tie band=['light', 'standard'] R_w=[light:0.7914, standard:0.8135]",
+    "active signals: [S4(\u0394\u22650.05), S3(\u0394\u22650.1)]  winner=standard  S4={light:0.276, standard:0.600}  S5={light:0.992, standard:0.971}"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 4,
+  "n_sections_with_target": 4,
+  "total_target_words": 2450,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 550,
+      "weight_words": 550,
+      "weight_frac": 0.22449,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.52,
+        "standard": 0.8436,
+        "deep": 0.6807
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.52,
+        0.8436,
+        0.6807
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-the-company-being-kept",
+      "title": "the company being kept",
+      "target_words": 650,
+      "weight_words": 650,
+      "weight_frac": 0.26531,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.82,
+        "standard": 0.6436,
+        "deep": 0.9307
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.82,
+        0.6436,
+        0.9307
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-convergent-evolution",
+      "title": "convergent evolution",
+      "target_words": 350,
+      "weight_words": 350,
+      "weight_frac": 0.14286,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.87,
+        "standard": 0.8436,
+        "deep": 0.6307
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.87,
+        0.8436,
+        0.6307
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-find-the-universals",
+      "title": "find the universals",
+      "target_words": 900,
+      "weight_words": 900,
+      "weight_frac": 0.36735,
+      "rewards": {
+        "skip": 0.55,
+        "light": 1.02,
+        "standard": 0.9936,
+        "deep": 0.8307
+      },
+      "rewards_by_preset": [
+        0.55,
+        1.02,
+        0.9936,
+        0.8307
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

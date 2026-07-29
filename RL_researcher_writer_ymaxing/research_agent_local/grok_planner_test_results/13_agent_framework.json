@@ -2,39 +2,34 @@
   "variant": "13_agent_framework",
   "lesson": "13_agent_framework",
   "split": "TEST",
-  "policy": "forbidden",
+  "policy": "allowed",
   "rl_preset": 1,
-  "grok_preset": 0,
-  "chosen_preset": 0,
-  "chosen_by": "Grok4.2",
+  "grok_preset": null,
+  "chosen_preset": 1,
+  "chosen_by": "RL",
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
     0.6446,
-    0.7084,
-    0.5911,
-    0.7841
+    0.6666,
+    0.6441,
+    0.6868
   ],
   "verdict": "MISS",
-  "regret": 0.1395,
-  "regret_counted": null,
-  "entropy_bits": 1.7681,
-  "confidence": 0.4398,
-  "floor_applied": false,
+  "regret": 0.0201,
+  "regret_counted": 0.0201,
+  "entropy_bits": 1.4681,
+  "confidence": 0.3638,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.0782,
-    0.4398,
-    0.1706,
-    0.3114
+    0.0,
+    0.3638,
+    0.4732,
+    0.163
   ],
-  "grok_override": true,
-  "grok_reasoning": "Hard constraint: external-evidence policy is FORBIDDEN, mandating P0 skip regardless of the uncertain P1-light aggregate vote (44% light, 31% deep) or any per-section residual needs. All sections are already flagged self-contained; exploration output cannot be used.",
-  "grok_override_reason": "External-evidence policy explicitly requires P0; scorer's P1 recommendation is overridden",
-  "grok_decision_drivers": [
-    "external-evidence policy forbidden",
-    "self-contained sections"
-  ],
-  "grok_risk_flags": [
-    "golden sources cited in guideline may have post-scrape updates"
-  ]
+  "grok_override": null,
+  "grok_reasoning": null,
+  "grok_override_reason": null,
+  "grok_decision_drivers": null,
+  "grok_risk_flags": null
 }

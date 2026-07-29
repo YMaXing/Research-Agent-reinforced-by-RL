@@ -140,9 +140,35 @@ ALL_ARTICLES: list[str] = [
 # ---------------------------------------------------------------------------
 # Decision constants  (must match prototype_oracle_signals.py)
 # ---------------------------------------------------------------------------
-EPS_BAND: float = 0.02      # near-tie tolerance: arms within this margin form the band
+# EPS_BAND recalibrated 0.02->0.03 on 2026-07-25 using the measured pure-noise
+# (temp=0.25, no formula/content change) article-margin floor from the
+# 2-article replicate experiment (see run13_rl_grok_pipeline_analysis.md Part
+# 7): 06_tools__var_standard's margin swung up to 0.067 across 3 independent
+# regenerations. 0.03 (not the full measured ceiling) was chosen because
+# simulating wider values (0.05+) showed non-monotonic side effects -- once the
+# near-tie band grows to include 3+ arms, the S3/S4/S5 tie-break winner can
+# flip AGAIN, including 06_tools__var_standard (the one article with the
+# deepest independent replicate validation) flipping AWAY from its
+# replicate-majority-confirmed answer. 0.03 produces only 4 corpus-wide flips
+# and leaves that article unchanged. Keep audit_oracle_margins.py's _EPS_BAND
+# and prototype_oracle_signals.py's EPS_BAND in sync with this value.
+EPS_BAND: float = 0.03      # near-tie tolerance: arms within this margin form the band
 MIN_DELTA_S4: float = 0.05  # min structure signal spread to use S4 as tiebreaker
-MIN_DELTA_S3: float = 0.10  # min bloat signal spread to use S3 as tiebreaker
+# MIN_DELTA_S3 recalibrated 0.10->0.15 on 2026-07-26: a corpus-wide scan of the
+# S3 bloat-ratio (words/target_words) gap between every arm-pair found mean
+# gap=0.182, median=0.144 -- the old 0.10 threshold sat BELOW the median
+# natural gap, so it activated on 62.1% of all arm-pairs corpus-wide (240
+# pairs checked), functioning closer to constant noise than a meaningful
+# discriminator. 0.15 sits near the median instead. Motivated by the
+# 10_memory_knowledge_access__var_goldremoved golden-source-removal pilot,
+# where S3 (not a real content signal) blocked an article whose raw R_w
+# already favored deep, and whose S4/S5 signals also favored deep once S3
+# stopped dominating. Validated: flips ONLY the pilot (light->deep); 0/40
+# corpus-wide flips on the existing 40 production articles; both deeply-
+# validated reference articles (06_tools__var_standard, 09_RAG__var_standard)
+# byte-identical margins before/after. Keep prototype_oracle_signals.py's
+# MIN_DELTA_S3 in sync with this value.
+MIN_DELTA_S3: float = 0.15  # min bloat signal spread to use S3 as tiebreaker
 MIN_DELTA_S5: float = 0.05  # min stability signal spread to use S5 as tiebreaker
 
 # ---------------------------------------------------------------------------
@@ -199,13 +225,36 @@ def _word_count(text: str) -> int:
 def _episode_dir(article: str, arm: str) -> Path:
     """Return the episode directory for *arm* of *article*.
 
-    No-variant test articles (no ``__var_`` suffix) use ``test_episodes/``
-    with sequential preset IDs 0-3; training variants use ``episodes/`` with
-    preset IDs 0, 1, 3, 5.
+    No-variant articles use sequential preset IDs 0-3 (_TEST_ARM_EPISODE);
+    training variants use ``episodes/`` with preset IDs 0, 1, 3, 5 (ARM_EPISODE).
+    These are two INDEPENDENT decisions -- which preset-NUMBERING scheme
+    applies (train vs no-variant) is decided by ``_variant_of()`` using the
+    canonical ``__var_minimal``/``__var_standard``/``__var_demanding`` suffixes;
+    which DIRECTORY ROOT holds the episodes is decided separately by checking
+    where preset0 actually exists, mirroring generate_episode_oracles.py's own
+    dual-check (its process_article_variant() docstring/comment documents this
+    exact scenario: one-off ablation variants like "<topic>__var_goldremoved"
+    are no-variant by suffix but their episodes live under episodes/ not
+    test_episodes/, since rl_data_generator.py places them there).
+
+    IMPORTANT: do NOT use a loose ``"__var_" in article`` substring check for
+    either decision -- that previously caused this function to silently
+    misroute an ablation-pilot article (whose name happens to contain
+    "__var_" without being a real training variant) to the wrong preset-ID
+    scheme, reading an unrelated or non-existent episode directory for
+    "standard"/"deep" and silently corrupting the S3/S4/S5 tie-break signals
+    with empty text (found via 10_memory_knowledge_access__var_goldremoved's
+    pilot: deep's S4 came back as an impossible 0.000 because ARM_EPISODE's
+    deep->preset5 doesn't exist for this no-variant article).
     """
-    if "__var_" not in article:
-        return _TEST_EPISODES_DIR / f"{article}__preset{_TEST_ARM_EPISODE[arm]}"
-    return _EPISODES_DIR / f"{article}__preset{ARM_EPISODE[arm]}"
+    if _variant_of(article) != "no_variant":
+        return _EPISODES_DIR / f"{article}__preset{ARM_EPISODE[arm]}"
+    preset = _TEST_ARM_EPISODE[arm]
+    if (_EPISODES_DIR / f"{article}__preset0").exists() and not (
+        _TEST_EPISODES_DIR / f"{article}__preset0"
+    ).exists():
+        return _EPISODES_DIR / f"{article}__preset{preset}"
+    return _TEST_EPISODES_DIR / f"{article}__preset{preset}"
 
 
 # ---------------------------------------------------------------------------

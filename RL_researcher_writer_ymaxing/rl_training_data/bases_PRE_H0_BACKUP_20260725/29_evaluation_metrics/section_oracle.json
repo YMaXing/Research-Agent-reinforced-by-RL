@@ -1,0 +1,121 @@
+{
+  "version": 4,
+  "article": "29_evaluation_metrics",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.64,
+        "standard": 0.5,
+        "deep": 0.52
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.07,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-using-evals-through-the-optimization-flywheel": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.815,
+        "standard": 0.5585,
+        "deep": 0.5205
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.175,
+        "standard": 0.1285,
+        "deep": 0.1505
+      }
+    },
+    "S3::section-3-exploring-possible-metric-types": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.2855,
+        "standard": 0.685,
+        "deep": 0.625
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0455,
+        "standard": 0.105,
+        "deep": 0.105
+      }
+    },
+    "S4::section-4-why-business-metrics-over-benchmarks": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.71,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.07,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S5::section-5-why-custom-business-metrics-over-generic-metrics": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.745,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.105,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S6::section-6-choosing-binary-metrics-over-anything-else": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.815,
+        "standard": 0.64825,
+        "deep": 0.625
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.175,
+        "standard": 0.06825,
+        "deep": 0.105
+      }
+    },
+    "S7::section-7-conclusion": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.58,
+        "deep": 0.52
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "light",
+    "S2::section-2-using-evals-through-the-optimization-flywheel": "light",
+    "S3::section-3-exploring-possible-metric-types": "skip",
+    "S4::section-4-why-business-metrics-over-benchmarks": "light",
+    "S5::section-5-why-custom-business-metrics-over-generic-metrics": "light",
+    "S6::section-6-choosing-binary-metrics-over-anything-else": "light",
+    "S7::section-7-conclusion": "skip"
+  }
+}

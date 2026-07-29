@@ -1,0 +1,41 @@
+{
+  "external_evidence_policy": "forbidden",
+  "sections": {
+    "S1::section-1-introduction-giving-llms-an-open-book-exam": {
+      "target_words": 250,
+      "mandatory_bullets": 6,
+      "must_cover_depth": 0,
+      "must_stay_brief": 1
+    },
+    "S2::section-2-the-rag-system-core-components": {
+      "target_words": 250,
+      "mandatory_bullets": 4,
+      "must_cover_depth": 2,
+      "must_stay_brief": 1
+    },
+    "S3::section-3-the-rag-pipeline-ingestion-and-retrieval": {
+      "target_words": 300,
+      "mandatory_bullets": 9,
+      "must_cover_depth": 8,
+      "must_stay_brief": 1
+    },
+    "S4::section-4-advanced-rag-techniques": {
+      "target_words": 350,
+      "mandatory_bullets": 6,
+      "must_cover_depth": 3,
+      "must_stay_brief": 1
+    },
+    "S5::section-5-agentic-rag": {
+      "target_words": 250,
+      "mandatory_bullets": 5,
+      "must_cover_depth": 1,
+      "must_stay_brief": 1
+    },
+    "S6::section-6-conclusion": {
+      "target_words": 100,
+      "mandatory_bullets": 4,
+      "must_cover_depth": 0,
+      "must_stay_brief": 0
+    }
+  }
+}

@@ -1,0 +1,371 @@
+{
+  "article": "04_structured_outputs",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Documents A and B are nearly identical in content, differing only in minor phrasing ('bridge between these two worlds, a fundamental technique for' vs 'connect these two worlds by'). Neither introduces any additional source-attributed statistics, named studies, technical mechanisms, or new sub-topics beyond the shared core narrative about Software 1.0/3.0 and structured outputs. There are no qualifying depth or breadth instances in either document, resulting in a tie on both dimensions."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents are nearly identical, differing only in minor phrasing ('the bridge between' vs 'connect'). Neither contains any additional source-attributed depth or breadth content such as named studies, statistics, or technical mechanisms beyond the shared core narrative about Software 1.0/3.0 and structured outputs. No distinct qualifying instances exist in either document for either dimension, resulting in ties."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents are nearly identical, differing only in minor phrasing ('the bridge between these two worlds, a fundamental technique for' vs 'connect these two worlds by'). Neither contains any additional source-attributed depth or breadth content beyond the shared core explanation of Software 1.0/3.0 and structured outputs. No qualifying instances exist in either document for either dimension, resulting in a tie on both."
+        }
+      ]
+    },
+    "Understanding why structured outputs are critical": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "schema drift mechanism (model adds unexpected fields/renames keys/nests differently) sourced from citation 39"
+            ],
+            "b_instances": [
+              "fail-fast validation detail explaining it prevents downstream TypeError/KeyError crashes"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "analogy to evolution of web scraping from CSS selectors to schema-driven LLM extraction, citation 40"
+            ],
+            "b_instances": [
+              "mention of using structured outputs to create natural language filters for querying databases, citation 5"
+            ]
+          },
+          "reasoning": "Both documents add one comparable depth instance: A elaborates on the specific failure mode of 'schema drift' (unexpected fields, renamed keys, nested differently) with a dedicated citation, while B elaborates on the 'fail-fast' validation behavior with concrete exception types (TypeError/KeyError). Neither side clearly outweighs the other in substantiveness, so depth is a tie. For breadth, A introduces an analogy to the evolution of web scraping (imperative CSS selectors vs. declarative schema-driven extraction) as a new adjacent topic, while B introduces a new adjacent use case (natural language filters for database querying) alongside its knowledge-graph example. Both are single, roughly comparable new-topic additions, so breadth is also a tie. Other differences (extra citations for the same claims, diagram restructuring, wording changes) do not add distinct new substantive content beyond what's already covered by both sides."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Schema drift failure mode: model adds unexpected fields, renames keys, or nests data differently than specified (sourced)"
+            ],
+            "b_instances": [
+              "Fail-fast validation behavior contrasted with silent TypeError/KeyError failures downstream"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Analogy to evolution of web scraping from brittle CSS selectors to schema-driven LLM extraction (imperative vs declarative), with dedicated citation"
+            ],
+            "b_instances": [
+              "Mention of natural language filters for querying databases as an additional use case beyond knowledge graphs"
+            ]
+          },
+          "reasoning": "Both documents cover the same core benefits (parsing ease, validation, contract between LLM and app). For depth, A adds the specific 'schema drift' failure mode (unexpected fields/renamed keys/different nesting) while B adds the 'fail-fast' framing with concrete TypeError/KeyError failure modes\u2014these are roughly equivalent in specificity and substantiveness, yielding a tie. For breadth, A introduces a well-developed analogy to the evolution of web scraping (from CSS selectors to schema-driven extraction, imperative vs declarative), a genuinely new adjacent topic with its own citation, whereas B only briefly appends 'natural language filters for querying databases' as an extra use case without elaboration. A's breadth instance is more developed and substantive, so A is judged as having somewhat more breadth content."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Specific schema drift failure modes (field additions, key renames, nested restructuring) cited to source [39]"
+            ],
+            "b_instances": [
+              "Fail-fast validation mechanism specifics: prevents silent TypeError/KeyError crashes downstream, raising explicit validation errors immediately"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Analogy to web scraping evolution from CSS selectors to schema-driven LLM extraction, cited source [40]"
+            ],
+            "b_instances": [
+              "New adjacent use case: natural language filters for querying databases, cited sources [5][6]"
+            ]
+          },
+          "reasoning": "Both documents cover the same core points (parsing fragility, Pydantic validation, formal contract, knowledge graph use case) almost identically. For depth, A adds a distinct mechanism-level detail about 'schema drift' (fields being renamed/nested unexpectedly) with a unique citation, while B adds a distinct mechanism-level detail about fail-fast behavior avoiding specific runtime errors (TypeError/KeyError). These are roughly comparable in specificity and substantiveness, yielding a tie. For breadth, A introduces a genuinely new adjacent topic via the web-scraping evolution analogy (imperative vs declarative extraction), while B introduces a new adjacent use case\u2014natural language filters for database querying\u2014each backed by unique citations. Both are single, comparably substantive breadth additions, so this dimension also ties."
+        }
+      ]
+    },
+    "Implementing structured outputs from scratch using JSON": {
+      "a_arm": "light",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Suggests using regex plus a try/except around json.loads to catch JSONDecodeError as a more robust parsing solution (cited source on Pydantic validation)"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Introduces an additional LLM failure mode where the model adds conversational text like 'Sure, here is the JSON you requested' alongside the JSON, citing a source on structured output parsing"
+            ]
+          },
+          "reasoning": "Both documents are near-identical in code and core narrative. Document A adds a slightly deeper technical suggestion (using try/except to catch JSONDecodeError, with a citation) as an improvement to the parsing function, which B lacks in that specific form. Document B, on the other hand, broadens the discussion by naming a new failure mode (conversational text wrapping the JSON) with its own citation, which A does not mention. Both docs mention JSONDecodeError and the general lack of validation guarantees, so those are shared and excluded. Overall it's a narrow split: A slightly ahead on depth, B slightly ahead on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Suggests a more robust implementation of extract_json_from_response using regex to locate the JSON block plus wrapping json.loads in try/except to catch JSONDecodeError, citing a specific source"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Identifies an additional distinct LLM failure mode beyond markdown wrapping: models prepending conversational text (e.g., 'Sure, here is the JSON you requested'), citing a specific source"
+            ]
+          },
+          "reasoning": "Both documents are nearly identical in structure and core content (same code, same prompt, same output). For depth, A goes slightly further by proposing a concrete, source-cited improvement to the parsing helper (regex-based extraction plus try/except error handling for JSONDecodeError), whereas B only names the JSONDecodeError as the exception type without proposing the regex/error-handling remediation, so A has one clear depth-differentiating instance B lacks. For breadth, B introduces a genuinely new adjacent failure mode -- LLMs adding conversational preamble text around the JSON, not just markdown fences -- backed by a distinct citation, which A does not mention; this is a new sub-topic (types of format-violation behavior) rather than a deeper treatment of markdown wrapping. Both docs share the XML-tag prompting technique and the general 'lacks validation, use Pydantic next' framing, so those are not differentiators. Overall it's a close split: A edges ahead on depth, B edges ahead on breadth, each by one modest instance."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Suggestion to use regex + try/except to catch JSONDecodeError for malformed LLM output (cites Pydantic guide)"
+            ],
+            "b_instances": [
+              "Specific mention that LLMs often add conversational text like 'Sure, here is the JSON you requested' as a failure mode (cites separate source)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents follow the same tutorial structure and largely reuse identical code/text. On depth, A adds a slightly more technical mechanism (recommending regex/try-except handling for JSONDecodeError, citing a Pydantic guide) while B adds a distinct failure-mode detail (LLMs prepending conversational text before the JSON, citing another source) and separately notes the JSONDecodeError outcome. These are roughly comparable single-instance additions on each side, so depth is a tie. Neither document introduces a genuinely new adjacent subtopic beyond the core JSON-extraction walkthrough (e.g., no new named tools, alternative techniques, or use cases), so breadth is a tie as well, despite B's extra framing paragraph about fragility being too vague/general to count as a concrete new breadth instance."
+        }
+      ]
+    },
+    "Implementing structured outputs from scratch using Pydantic": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "field_validator decorator for custom business-rule validation logic beyond type/range checks",
+              "the 'Empty Array Trap' edge case where LLMs hallucinate entries to avoid empty lists, mitigated via default_factory and explicit Field description",
+              "comparison of TypeDict's speed advantage for simple cases vs Pydantic's validation overhead being minimal"
+            ],
+            "b_instances": [
+              "explanation of grammar-based decoding as the mechanism enforcing schema-conformant token generation"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "retry-loop pattern: resubmitting a request to the LLM with the validation error message included to self-correct on failure"
+            ]
+          },
+          "reasoning": "Both documents cover the same core Pydantic walkthrough (model definition, JSON schema generation, prompt injection, validation, dataclass/TypedDict comparison) almost verbatim in places. For depth, A adds three distinct technical refinements not in B: the field_validator custom-validation mechanism, the 'Empty Array Trap' pitfall with its default_factory mitigation, and a nuanced TypedDict-vs-Pydantic performance tradeoff comment. B only adds one comparable depth instance: an explanation of grammar-based decoding as the underlying enforcement mechanism for structured output. This gives A a modest edge on depth. For breadth, B introduces a genuinely new adjacent sub-topic absent from A: a retry-loop pattern where validation errors are fed back to the LLM to prompt self-correction, which is a distinct extension of the validation workflow. A has no comparable new breadth topic. This gives B the edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "field description injection mechanism explanation (descriptions injected into prompt by extraction backend)",
+              "Empty Array Trap pitfall and default_factory/description mitigation",
+              "TypedDict vs Pydantic speed/overhead tradeoff note"
+            ],
+            "b_instances": [
+              "grammar-based decoding mechanism explanation for schema enforcement",
+              "retry loop pattern feeding validation error back into prompt",
+              "more specific failure mode for deeply nested schemas (syntax/structural errors)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "custom validation logic via @field_validator decorator for business-rule checks beyond type/range constraints"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents share the same core walkthrough (schema definition, JSON Schema generation, prompt injection, validation, TypedDict/dataclass comparison). For depth, A adds the field-description-injection mechanism, the Empty Array Trap edge case with its mitigation, and a minor TypedDict speed note, while B adds an explanation of grammar-based decoding underlying schema enforcement, a retry-loop technique for handling validation failures, and a slightly more specific failure mode for nested schemas -- these are roughly comparable in number and substantiveness, yielding a tie. For breadth, A introduces the @field_validator decorator for custom business-rule validation, a genuinely new capability not covered in B, while B does not introduce any comparably new adjacent sub-topic, giving A a modest edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Claim that Field descriptions are mechanically injected into the prompt by underlying extraction tooling (cited)",
+              "Performance/overhead comparison: TypedDict faster but Pydantic overhead minimal for validation benefit"
+            ],
+            "b_instances": [
+              "Explanation that schema enforcement often relies on grammar-based constrained decoding to guarantee syntactic validity (cited)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Custom validation via @field_validator decorator for business-rule checks beyond type/range (cited)",
+              "The 'Empty Array Trap' problem and mitigation via default_factory=list with explicit field description (cited)"
+            ],
+            "b_instances": [
+              "Retry-loop pattern that resends validation error message to the LLM to self-correct output (cited)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core Pydantic walkthrough (model definition, schema generation, prompt injection, validation, and TypedDict/dataclass comparison) with nearly identical code. For depth, A adds two extra technical nuances not in B: a claim about how field descriptions are mechanically injected into prompts by extraction tooling, and a performance/overhead note contrasting TypedDict speed vs Pydantic's validation cost. B contributes one depth addition: an explanation of grammar-based constrained decoding underlying schema enforcement. This gives A a modest edge on depth. For breadth, A introduces two genuinely new sub-topics: the @field_validator mechanism for custom business-rule validation, and the 'Empty Array Trap' failure mode with its default_factory mitigation. B introduces one new sub-topic: a retry-loop pattern that feeds validation errors back to the LLM. Both are substantive, but A has more distinct new-topic coverage, giving it a modest edge on breadth as well. Neither difference is dramatic (2 vs 1 instances each), so both dimensions are scored as 'a_more' rather than 'a_much_more'."
+        }
+      ]
+    },
+    "Implementing structured outputs using Gemini and Pydantic": {
+      "a_arm": "light",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "quantitative reliability improvement from ~36% to nearly 100% with constrained decoding [44]",
+              "mechanism for cost savings: removing JSON schema from prompt reduces input token count",
+              "trade-off of 'schema complexity tax' causing increased latency and possible reduced semantic accuracy [43][45]",
+              "technical limitation: structured output doesn't bypass max_tokens, risk of truncated invalid JSON, recommendation to check finish_reason",
+              "concrete example output JSON showing extracted summary, tags, keywords, quarter, growth_rate"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core process of using GenerateContentConfig with response_schema, and both mention grammar/constrained decoding as the underlying mechanism (shared, so not differentiating). Document B goes noticeably deeper by adding a specific reliability statistic (36% to ~100%), a concrete explanation of how removing the schema from the prompt saves tokens/cost, a discussion of the 'schema complexity tax' trade-off affecting latency/accuracy, a technical caveat about token limits and truncated JSON with a finish_reason check recommendation, and a full example output JSON illustrating the parsed metadata. Document A contains no comparable additional depth beyond the shared decoding explanation. Neither document introduces genuinely new adjacent sub-topics beyond the core implementation walkthrough, so breadth is tied (both essentially empty of qualifying breadth instances)."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "specific reliability statistic showing improvement from ~36% with prompting to ~100% with constrained decoding [44]"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "discussion of trade-offs like 'schema complexity tax' causing latency and possible accuracy reduction with complex schemas",
+              "explanation that structured output doesn't bypass token limits, causing truncated invalid JSON if max_tokens is exceeded, with advice to check finish_reason"
+            ]
+          },
+          "reasoning": "Both documents cover the same core implementation steps (config object, prompt, API call, response.parsed) almost identically. On depth, both explain the underlying mechanism (A: grammar-based decoding; B: constrained decoding) making these equivalent, but B adds a concrete statistic (36% to ~100% reliability improvement) that A lacks, giving B a slight edge. A does not add any depth instance not covered by B. On breadth, B introduces two genuinely new sub-topics beyond the section's core: the limitations/trade-offs of native structured outputs (schema complexity tax, latency, potential accuracy reduction) and the token-limit/truncation issue with max_tokens and finish_reason handling. A contains no comparable breadth-expanding content, making B substantially stronger on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Cites specific reliability statistic showing improvement from ~36% success with prompting to nearly 100% with native structured outputs",
+              "Discusses a 'schema complexity tax' where complex schemas can increase latency and slightly reduce semantic accuracy",
+              "Explains an edge case where structured output does not bypass token limits, causing truncated/invalid JSON if max_tokens is insufficient, and advises checking finish_reason"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core walkthrough (config object, prompt, API call, response.parsed) and both mention the underlying constrained/grammar-based decoding mechanism, so that point is shared and not counted as a differentiator. Document A adds no further depth beyond this mechanism explanation. Document B goes considerably deeper: it cites a concrete reliability statistic (36% to ~100%), and adds a tradeoffs/limitations discussion covering the 'schema complexity tax' (latency and semantic-accuracy costs) and a token-truncation edge case with concrete mitigation advice (check finish_reason). These are substantive, source-attributed depth additions absent from A. Neither document introduces a genuinely new adjacent sub-topic (B's JSON example is illustrative output, not a new topic), so breadth is tied at zero qualifying instances for both."
+        }
+      ]
+    },
+    "Structured Outputs Are Everywhere": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Distinguishes structured outputs from function calling, noting schemas are used for action requests vs. final answer formatting, with citation [22]",
+              "Notes structured outputs underpin multi-agent systems via standardized communication protocols, with citation [46]"
+            ],
+            "b_instances": [
+              "Mentions a coding agent that generates functions as an example application of structured outputs",
+              "Forward reference to Lesson 7 reasoning agents parsing environment information via structured outputs"
+            ]
+          },
+          "reasoning": "Both documents cover the same core recap content with near-identical wording. Document A adds two concrete, citation-backed breadth points: a distinction between structured outputs and function calling (with source [22]) and the role of structured outputs in multi-agent communication protocols (with source [46]). Document B adds a coding-agent example and a vague forward reference to Lesson 7 reasoning agents, but these lack citations or specific technical grounding, making them weaker qualifying instances. Neither document adds meaningful depth (deeper mechanism, statistic, or technical limitation) to the existing topic, so depth ties. On breadth, A's additions are more substantive and source-attributed, giving it a modest edge."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Distinction between structured outputs (final answer formatting) and function calling (requesting actions), cited to Gemini API docs",
+              "Structured outputs as foundation for multi-agent communication via standardized protocols, cited to arXiv paper"
+            ],
+            "b_instances": [
+              "Mention of coding agent that generates functions as an example use case",
+              "Forward reference to Lesson 7 reasoning agents parsing environment information and deciding next steps"
+            ]
+          },
+          "reasoning": "Neither document adds much genuine depth (deepening an existing point with mechanism/quantitative detail) to the core topic of structured outputs being widespread; both mostly restate the section's core message. For breadth, Document A introduces two new adjacent topics with specific external source attribution: the function-calling vs. structured-output distinction (cited to Gemini API docs) and the role of structured outputs in multi-agent communication protocols (cited to an arXiv paper). Document B gestures toward new topics too (a coding agent example, and a Lesson 7 reference to reasoning agents), but these are vaguer, course-internal forward references without external sourcing or concrete mechanism detail. Thus A's breadth content is more substantive and better grounded, giving it a modest edge on breadth while depth remains tied."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "distinguishes structured outputs from function calling with citation to Gemini API docs",
+              "notes structured outputs as foundation for multi-agent communication protocols with arXiv citation"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Neither document adds depth (deeper technical detail) to the core structured-outputs topic beyond the shared framing, so depth is a tie. For breadth, Document A introduces two distinct, source-attributed adjacent subtopics not covered by B: the function-calling vs. structured-outputs distinction (cited to Google's Gemini docs) and the role of structured outputs in enabling multi-agent communication protocols (cited to an arXiv paper). Document B's only additional element ('coding agent to generate functions') is just another example of the same core claim (agents using structured outputs) rather than a genuinely new, source-attributed subtopic, and its mention of Lesson 7 reasoning agents is vague and uncited. Thus A clearly leads on breadth while depth remains tied."
+        }
+      ]
+    }
+  }
+}

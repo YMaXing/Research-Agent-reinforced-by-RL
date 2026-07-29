@@ -1,0 +1,113 @@
+{
+  "article": "09_RAG__var_standard",
+  "sections": {
+    "Introduction": {
+      "breadth": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "original_preference": "b_more",
+        "classification": "strong_disagree",
+        "repeats": [
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Real-world legal case: lawyer used ChatGPT for legal research, cited non-existent court cases, resulting in court sanctions - a new subtopic on real-world consequences of hallucination"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [
+              "Vague citation-backed claim that naive RAG has evolved into a diverse family of techniques [82]"
+            ],
+            "b_instances": [
+              "Real-world case study of a lawyer using ChatGPT for legal research, citing fabricated court cases and receiving court sanctions, illustrating hallucination consequences"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Mention of RAG's evolution from 'naive RAG' to advanced/agentic patterns, citing an external source (arionresearch) describing this historical progression"
+            ],
+            "b_instances": [
+              "Real-world example: lawyer using ChatGPT for legal research, citing non-existent court cases and receiving court sanctions (concrete case illustrating hallucination consequences)"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [
+              "mentions evolution of RAG from naive to advanced/agentic techniques as a historical progression, citing arionresearch source"
+            ],
+            "b_instances": [
+              "real-world case: lawyer used ChatGPT for legal research, cited non-existent cases, was sanctioned by court"
+            ]
+          }
+        ]
+      }
+    },
+    "The RAG Pipeline: Ingestion and Retrieval": {
+      "depth": {
+        "a_arm": "standard",
+        "b_arm": "light",
+        "original_preference": "b_much_more",
+        "classification": "strong_agree",
+        "repeats": [
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Semantic chunking mechanism described as splitting on topic shifts, contrasted with rule-based splitters"
+            ],
+            "b_instances": [
+              "Document cleaning and metadata enrichment during Load step (removing HTML tags/headers/footers, adding source/author/date metadata)",
+              "Chunk overlap technique specified (10-20% overlap) to preserve context across chunk boundaries",
+              "Specific embedding dimensionality figures given (3072-dim text-embedding-3-large, 384-dim all-MiniLM-L6-v2)",
+              "Top-k retrieval trade-off explained (smaller k = faster but may miss info; larger k = more context but higher cost/latency)",
+              "Unstructured tool named specifically for document loading/parsing",
+              "Elasticsearch named as a vector-enabled search platform option",
+              "LangChain Runnables and LlamaIndex QueryEngines named as specific abstractions for query pre-processing"
+            ]
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Semantic chunkers split text based on topic shifts (explained in prose)"
+            ],
+            "b_instances": [
+              "Document cleaning step removes HTML tags, headers, footers during ingestion",
+              "Metadata enrichment with source, author, creation date",
+              "Chunk overlap guidance of 10-20% of chunk size to preserve context",
+              "Specific embedding model dimensionality figures (3072-dim text-embedding-3-large, 384-dim all-MiniLM-L6-v2)",
+              "Trade-off discussion of top-k value (speed/cost vs. context completeness)"
+            ]
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Distinction between rule-based splitters and topic-shift-based semantic chunkers"
+            ],
+            "b_instances": [
+              "Cleaning content (removing HTML tags, headers/footers) and enriching with metadata (source, author, date) during Load step",
+              "Use of small chunk overlap (10-20%) to preserve context across chunk boundaries",
+              "Specific embedding dimensionality figures (text-embedding-3-large 3072 dims, all-MiniLM-L6-v2 384 dims)",
+              "Trade-off analysis of top-k value (smaller k faster but may miss info, larger k more context but higher cost/latency)"
+            ]
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Semantic chunking technique based on topic shifts (alternative chunking strategy)"
+            ],
+            "b_instances": [
+              "Chunk overlap of 10-20% recommended to maintain context across chunk boundaries",
+              "Specific embedding model dimensions cited (text-embedding-3-large at 3072 dims, all-MiniLM-L6-v2 at 384 dims)",
+              "Explicit trade-off discussion for choosing top-k value (smaller k faster but may miss info; larger k more context but higher cost/latency)",
+              "Content cleaning during load step (removing HTML tags, headers, footers) and metadata enrichment (source, author, creation date)",
+              "Named query-processing abstractions (LangChain Runnables, LlamaIndex QueryEngines) for managing query pre-processing",
+              "Unstructured library named as a specific loading tool alongside LangChain/LlamaIndex"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

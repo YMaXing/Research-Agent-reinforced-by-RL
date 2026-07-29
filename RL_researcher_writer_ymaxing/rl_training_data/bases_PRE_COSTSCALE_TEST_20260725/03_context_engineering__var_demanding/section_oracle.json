@@ -1,0 +1,137 @@
+{
+  "version": 4,
+  "article": "03_context_engineering",
+  "variant": "var_demanding",
+  "sections": {
+    "S1::section-1-introduction-when-prompt-engineering-breaks": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.64,
+        "standard": 0.5872,
+        "deep": 0.5614
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-from-prompt-to-context-engineering": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.64,
+        "standard": 0.4372,
+        "deep": 0.5614
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S3::section-3-understanding-context-engineering": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.44,
+        "standard": 0.3872,
+        "deep": 0.4314
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.07
+      }
+    },
+    "S4::section-4-what-makes-up-the-context": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.51,
+        "standard": 0.3872,
+        "deep": 0.3164
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.07,
+        "standard": 0.0,
+        "deep": 0.105
+      }
+    },
+    "S5::section-5-production-implementation-challenges": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.745,
+        "standard": 0.6572,
+        "deep": 0.8614
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.105,
+        "standard": 0.07,
+        "deep": 0.3
+      }
+    },
+    "S6::section-6-key-strategies-for-context-optimization": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.94,
+        "standard": 0.7622,
+        "deep": 0.6614
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.3,
+        "standard": 0.175,
+        "deep": 0.3
+      }
+    },
+    "S7::section-7-here-is-an-example": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.24,
+        "standard": 0.1872,
+        "deep": 0.1614
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.64,
+        "standard": 0.7622,
+        "deep": 0.6314
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.175,
+        "deep": 0.07
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction-when-prompt-engineering-breaks": "light",
+    "S2::section-2-from-prompt-to-context-engineering": "skip",
+    "S3::section-3-understanding-context-engineering": "skip",
+    "S4::section-4-what-makes-up-the-context": "light",
+    "S5::section-5-production-implementation-challenges": "deep",
+    "S6::section-6-key-strategies-for-context-optimization": "light",
+    "S7::section-7-here-is-an-example": "skip",
+    "S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering": "standard"
+  }
+}
