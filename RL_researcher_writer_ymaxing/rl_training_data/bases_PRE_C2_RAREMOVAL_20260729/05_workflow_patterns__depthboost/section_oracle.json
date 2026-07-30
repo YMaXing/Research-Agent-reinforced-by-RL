@@ -1,0 +1,121 @@
+{
+  "version": 4,
+  "article": "05_workflow_patterns__depthboost",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-the-challenge-with-complex-single-llm-calls": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.28,
+        "standard": 0.4624,
+        "deep": 0.4993
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0455
+      }
+    },
+    "S2::section-2-the-power-of-modularity-why-chain-llm-calls": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.785,
+        "standard": 0.7454,
+        "deep": 0.8543
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.105,
+        "standard": 0.083,
+        "deep": 0.2005
+      }
+    },
+    "S3::section-3-building-a-sequential-workflow-faq-generation-pipeline": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.54825,
+        "standard": 0.57615,
+        "deep": 0.5588
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.06825,
+        "standard": 0.11375,
+        "deep": 0.105
+      }
+    },
+    "S4::section-4-optimizing-sequential-workflows-with-parallel-processing": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.48,
+        "standard": 0.53065,
+        "deep": 0.5588
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.06825,
+        "deep": 0.105
+      }
+    },
+    "S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.48,
+        "standard": 0.57615,
+        "deep": 0.4538
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.11375,
+        "deep": 0.0
+      }
+    },
+    "S6::section-building-a-basic-routing-workflow": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.48,
+        "standard": 0.53065,
+        "deep": 0.5588
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.06825,
+        "deep": 0.105
+      }
+    },
+    "S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.585,
+        "standard": 0.60065,
+        "deep": 0.6043
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.105,
+        "standard": 0.13825,
+        "deep": 0.1505
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-the-challenge-with-complex-single-llm-calls": "skip",
+    "S2::section-2-the-power-of-modularity-why-chain-llm-calls": "deep",
+    "S3::section-3-building-a-sequential-workflow-faq-generation-pipeline": "standard",
+    "S4::section-4-optimizing-sequential-workflows-with-parallel-processing": "skip",
+    "S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic": "skip",
+    "S6::section-building-a-basic-routing-workflow": "deep",
+    "S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition": "deep"
+  }
+}

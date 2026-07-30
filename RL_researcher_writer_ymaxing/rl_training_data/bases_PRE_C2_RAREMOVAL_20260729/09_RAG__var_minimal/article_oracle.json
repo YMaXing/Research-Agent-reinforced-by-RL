@@ -1,0 +1,166 @@
+{
+  "version": 2,
+  "article": "09_RAG__var_minimal",
+  "variant": "var_minimal",
+  "computed_at": "2026-07-27T01:06:28.015979+00:00",
+  "oracle_arm": "skip",
+  "oracle_arm_idx": 0,
+  "runner_up_arm": "standard",
+  "runner_up_arm_idx": 2,
+  "margin": 0.005183,
+  "reward_spread": 0.0275,
+  "r_w_rewards": {
+    "skip": 0.441667,
+    "light": 0.414167,
+    "standard": 0.436483,
+    "deep": 0.4313
+  },
+  "r_w_rewards_list": [
+    0.441667,
+    0.414167,
+    0.436483,
+    0.4313
+  ],
+  "decision_path": [
+    "policy=forbidden \u2192 skip (hard constraint)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 6,
+  "n_sections_with_target": 6,
+  "total_target_words": 1500,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction-giving-llms-an-open-book-exam",
+      "title": "introduction giving llms an open book exam",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.16667,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.13,
+        "standard": 0.4624,
+        "deep": 0.3038
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.13,
+        0.4624,
+        0.3038
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-the-rag-system-core-components",
+      "title": "the rag system core components",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.16667,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.48,
+        "standard": 0.4624,
+        "deep": 0.4538
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.48,
+        0.4624,
+        0.4538
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-the-rag-pipeline-ingestion-and-retrieval",
+      "title": "the rag pipeline ingestion and retrieval",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.2,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.48,
+        "standard": 0.4624,
+        "deep": 0.4088
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.48,
+        0.4624,
+        0.4088
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-advanced-rag-techniques",
+      "title": "advanced rag techniques",
+      "target_words": 350,
+      "weight_words": 350,
+      "weight_frac": 0.23333,
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.28,
+        "standard": 0.2369,
+        "deep": 0.3888
+      },
+      "rewards_by_preset": [
+        0.3,
+        0.28,
+        0.2369,
+        0.3888
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-agentic-rag",
+      "title": "agentic rag",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.16667,
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.635,
+        "standard": 0.5824,
+        "deep": 0.6088
+      },
+      "rewards_by_preset": [
+        0.35,
+        0.635,
+        0.5824,
+        0.6088
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-conclusion",
+      "title": "conclusion",
+      "target_words": 100,
+      "weight_words": 100,
+      "weight_frac": 0.06667,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.68,
+        "standard": 0.5824,
+        "deep": 0.6538
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.68,
+        0.5824,
+        0.6538
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    }
+  ]
+}

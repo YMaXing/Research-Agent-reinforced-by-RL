@@ -1,0 +1,232 @@
+{
+  "version": 2,
+  "article": "06_tools__var_minimal",
+  "variant": "var_minimal",
+  "computed_at": "2026-07-27T01:06:27.963420+00:00",
+  "oracle_arm": "skip",
+  "oracle_arm_idx": 0,
+  "runner_up_arm": "light",
+  "runner_up_arm_idx": 1,
+  "margin": 0.015772,
+  "reward_spread": 0.117611,
+  "r_w_rewards": {
+    "skip": 0.483557,
+    "light": 0.467785,
+    "standard": 0.367299,
+    "deep": 0.365947
+  },
+  "r_w_rewards_list": [
+    0.483557,
+    0.467785,
+    0.367299,
+    0.365947
+  ],
+  "decision_path": [
+    "policy=forbidden \u2192 skip (hard constraint)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 9,
+  "n_sections_with_target": 9,
+  "total_target_words": 1490,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 60,
+      "weight_words": 60,
+      "weight_frac": 0.04027,
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.68,
+        "standard": 0.4624,
+        "deep": 0.2538
+      },
+      "rewards_by_preset": [
+        0.15,
+        0.68,
+        0.4624,
+        0.2538
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-understanding-why-agents-need-tools",
+      "title": "understanding why agents need tools",
+      "target_words": 130,
+      "weight_words": 130,
+      "weight_frac": 0.08725,
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.33,
+        "standard": 0.4624,
+        "deep": 0.3038
+      },
+      "rewards_by_preset": [
+        0.35,
+        0.33,
+        0.4624,
+        0.3038
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-implementing-tool-calls-from-scratch",
+      "title": "implementing tool calls from scratch",
+      "target_words": 390,
+      "weight_words": 390,
+      "weight_frac": 0.26174,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.54825,
+        "standard": 0.53065,
+        "deep": 0.37205
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.54825,
+        0.53065,
+        0.37205
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-implementing-a-tool-calling-framework-from-scratch",
+      "title": "implementing a tool calling framework from scratch",
+      "target_words": 230,
+      "weight_words": 230,
+      "weight_frac": 0.15436,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.48,
+        "standard": -0.0376,
+        "deep": 0.4538
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.48,
+        -0.0376,
+        0.4538
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-implementing-production-level-tool-calls-with-gemini",
+      "title": "implementing production level tool calls with gemini",
+      "target_words": 160,
+      "weight_words": 160,
+      "weight_frac": 0.10738,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.13,
+        "standard": 0.1124,
+        "deep": 0.1038
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.13,
+        0.1124,
+        0.1038
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs",
+      "title": "using pydantic models as tools for on demand structured outputs",
+      "target_words": 130,
+      "weight_words": 130,
+      "weight_frac": 0.08725,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.68,
+        "standard": 0.6624,
+        "deep": 0.5038
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.68,
+        0.6624,
+        0.5038
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::section-7-the-downsides-of-running-tools-in-a-loop",
+      "title": "the downsides of running tools in a loop",
+      "target_words": 210,
+      "weight_words": 210,
+      "weight_frac": 0.14094,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.48,
+        "standard": 0.4624,
+        "deep": 0.52205
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.48,
+        0.4624,
+        0.52205
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 8,
+      "sec_id": "S8::section-8-popular-tools-used-within-the-industry",
+      "title": "popular tools used within the industry",
+      "target_words": 140,
+      "weight_words": 140,
+      "weight_frac": 0.09396,
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.48,
+        "standard": 0.4624,
+        "deep": 0.4538
+      },
+      "rewards_by_preset": [
+        0.5,
+        0.48,
+        0.4624,
+        0.4538
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 9,
+      "sec_id": "S9::section-9-conclusion",
+      "title": "conclusion",
+      "target_words": 40,
+      "weight_words": 40,
+      "weight_frac": 0.02685,
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.68,
+        "standard": 0.2624,
+        "deep": 0.1038
+      },
+      "rewards_by_preset": [
+        0.7,
+        0.68,
+        0.2624,
+        0.1038
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    }
+  ]
+}

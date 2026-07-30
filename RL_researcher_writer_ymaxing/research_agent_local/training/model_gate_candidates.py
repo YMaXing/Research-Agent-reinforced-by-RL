@@ -96,6 +96,15 @@ CANDIDATES["A0_current_cost002"] = make_candidate(
 CANDIDATES["A1_current_cost003"] = make_candidate(
     "A1", cost_coef=-0.03, w_cc=0.20, w_fl=0.20, w_de=0.30, w_be=0.20, w_ga=0.15, w_ra=0.15)
 
+# H. C2's formula (soft ga gate, penalty 0.10) swept across the cost_coef range this whole
+# investigation has tested, to see whether the reward redesign changes the "safe" cost_coef
+# choice -- i.e. does fixing the ga-noise problem make a smaller cost_coef safe again?
+for _cc in (-0.06, -0.045, -0.03, -0.02):
+    CANDIDATES[f"H_C2_cost{_cc}"] = make_candidate(
+        f"H_C2_cost{_cc}", cost_coef=_cc, w_cc=0.20, w_fl=0.20, w_de=0.45, w_be=0.30,
+        w_ga=0.0, w_ra=0.0, gate_dims=("cp", "ra", "gsp", "ga"), gate_mode="soft",
+        gate_penalty=0.10)
+
 # B. drop the near-constant gates (ra) only; keep ga additive. weight moved to de/be
 CANDIDATES["B_drop_ra"] = make_candidate(
     "B", cost_coef=-0.03, w_cc=0.20, w_fl=0.20, w_de=0.375, w_be=0.25, w_ga=0.15, w_ra=0.0,

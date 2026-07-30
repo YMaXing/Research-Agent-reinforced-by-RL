@@ -1,0 +1,122 @@
+{
+  "version": 2,
+  "article": "Bird_Eye_Extreme",
+  "variant": "no_variant",
+  "computed_at": "2026-07-27T01:06:29.442016+00:00",
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "standard",
+  "runner_up_arm_idx": 2,
+  "margin": 0.075691,
+  "reward_spread": 0.162744,
+  "r_w_rewards": {
+    "skip": 0.491463,
+    "light": 0.654207,
+    "standard": 0.578516,
+    "deep": 0.510385
+  },
+  "r_w_rewards_list": [
+    0.491463,
+    0.654207,
+    0.578516,
+    0.510385
+  ],
+  "decision_path": [
+    "unique reward winner (margin=+0.0757 > EPS_BAND=0.03)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "n_sections": 4,
+  "n_sections_with_target": 4,
+  "total_target_words": 2050,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction-the-avascular-retina-paradox",
+      "title": "introduction the avascular retina paradox",
+      "target_words": 400,
+      "weight_words": 400,
+      "weight_frac": 0.19512,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.33,
+        "standard": 0.6174,
+        "deep": 0.3038
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.33,
+        0.6174,
+        0.3038
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-oxygenated-life-the-great-oxidation-event-and-metabolic-trade-offs",
+      "title": "oxygenated life the great oxidation event and metabolic trade offs",
+      "target_words": 400,
+      "weight_words": 400,
+      "weight_frac": 0.19512,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.68,
+        "standard": 0.5124,
+        "deep": 0.6288
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.68,
+        0.5124,
+        0.6288
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-a-mysterious-structure-the-pecten-oculi-and-chronic-anoxia",
+      "title": "a mysterious structure the pecten oculi and chronic anoxia",
+      "target_words": 600,
+      "weight_words": 600,
+      "weight_frac": 0.29268,
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.7255,
+        "standard": 0.4624,
+        "deep": 0.5588
+      },
+      "rewards_by_preset": [
+        0.35,
+        0.7255,
+        0.4624,
+        0.5588
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-eyes-like-a-hawk-evolutionary-origins-selective-pressures-and-implications",
+      "title": "eyes like a hawk evolutionary origins selective pressures and implications",
+      "target_words": 650,
+      "weight_words": 650,
+      "weight_frac": 0.31707,
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.8045,
+        "standard": 0.7304,
+        "deep": 0.5038
+      },
+      "rewards_by_preset": [
+        0.55,
+        0.8045,
+        0.7304,
+        0.5038
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

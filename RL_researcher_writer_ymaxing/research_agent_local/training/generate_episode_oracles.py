@@ -305,13 +305,21 @@ def _get_enhancement(
 # Reward formula (mirrors _compute_episode_reward in train_grpo.py)
 # ---------------------------------------------------------------------------
 
+def _ga_gate_penalty(ga: float) -> float:
+    """Soft satisficing gate for guideline_adherence (C2, shipped 2026-07-29):
+    a flat penalty on failure, replacing the old additive (0.50*ga+0.50*ra)*0.30
+    term whose raw signal was ~97% noise -- see run13_rl_grok_pipeline_analysis.md
+    Part 7 S53.6 F2 / S54."""
+    return -0.10 if ga < 0.5 else 0.0
+
+
 def _section_reward(
     cc: float, fl: float, de: float, be: float,
     cp: float, ga: float, ra: float,
     nr: float,
     variant: str,
 ) -> float:
-    """Compute section-level reward with a UNIFIED formula (Formula "B").
+    """Compute section-level reward with a UNIFIED formula (Formula "B", C2-revised).
 
     ``nr`` is the arm's cost-term multiplier. As of 2026-07-25 (H0, see
     run13_rl_grok_pipeline_analysis.md Part 7) callers pass
@@ -354,12 +362,19 @@ def _section_reward(
     credit values in [0, 1] driven by the count and quality of qualifying
     depth/breadth instances (see enhancement_reward.py). The formula's own math
     is unchanged; it is agnostic to whether de/be are binary or fractional.
+
+    C2 UPDATE (2026-07-29, Part 7 S53-57): ``ra`` removed from the reward
+    entirely (96.8% constant corpus-wide, ~2% of arm-separating signal;
+    kept as a parameter only for call-site compatibility). ``ga`` demoted
+    from an additive weight to the soft gate ``_ga_gate_penalty()`` (its raw
+    signal was ~97% noise relative to arm choice, S53.6 F2). Freed weight
+    reallocated to de/be. ``cost_coef`` reverted -0.02 -> -0.03 (deep-scarcity
+    representation only recovers at -0.03 or smaller, S54.7).
     """
-    gt_base     = 0.20 * cc + 0.20 * fl
-    explore     = cp * (0.60 * de + 0.40 * be) * 0.50
-    user_intent = (0.50 * ga + 0.50 * ra) * 0.30
-    cost        = -0.02 * nr  # cost_coef staged recalibration: -0.06 -> -0.045 -> -0.03 (2026-07-25) -> -0.02 (2026-07-26)
-    return gt_base + explore + user_intent + cost
+    gt_base = 0.20 * cc + 0.20 * fl
+    explore = cp * (0.45 * de + 0.30 * be)
+    cost    = -0.03 * nr  # cost_coef: -0.06->-0.045->-0.03->-0.02 (2026-07-26) -> -0.03 (2026-07-29, C2 ship)
+    return gt_base + explore + _ga_gate_penalty(ga) + cost
 
 
 def _section_reward_components(
@@ -385,12 +400,14 @@ def _section_reward_components(
     `deep`'s enhancement instances were spread thin across many sections while
     `standard` concentrated 3 instances into one heavily-weighted section,
     letting `standard` win on weight alone despite `deep` touching more content.
+
+    See _section_reward()'s C2 UPDATE docstring note for the 2026-07-29 formula
+    revision (ra removed, ga soft-gated, cost_coef -0.03) -- identical here.
     """
-    gt_base     = 0.20 * cc + 0.20 * fl
-    explore     = cp * (0.60 * de + 0.40 * be) * 0.50
-    user_intent = (0.50 * ga + 0.50 * ra) * 0.30
-    cost        = -0.02 * nr  # cost_coef staged recalibration: -0.06 -> -0.045 -> -0.03 (2026-07-25) -> -0.02 (2026-07-26)
-    rest = gt_base + user_intent + cost
+    gt_base = 0.20 * cc + 0.20 * fl
+    explore = cp * (0.45 * de + 0.30 * be)
+    cost    = -0.03 * nr  # cost_coef: -0.06->-0.045->-0.03->-0.02 (2026-07-26) -> -0.03 (2026-07-29, C2 ship)
+    rest = gt_base + _ga_gate_penalty(ga) + cost
     return rest, explore
 
 

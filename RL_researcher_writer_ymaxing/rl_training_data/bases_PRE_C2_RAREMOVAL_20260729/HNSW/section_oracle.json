@@ -1,0 +1,73 @@
+{
+  "version": 4,
+  "article": "HNSW",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.5755,
+        "standard": 0.4624,
+        "deep": 0.4993
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0455,
+        "standard": 0.0,
+        "deep": 0.0455
+      }
+    },
+    "S2::section-2-foundations-of-hnsw": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.6545,
+        "standard": 0.4369,
+        "deep": 0.4388
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.1245,
+        "standard": 0.1245,
+        "deep": 0.135
+      }
+    },
+    "S3::section-3-graph-construction": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.68,
+        "standard": 0.5124,
+        "deep": 0.72205
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.06825
+      }
+    },
+    "S4::section-4-implementation-of-hnsw": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.785,
+        "standard": 0.75465,
+        "deep": 0.7338
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.105,
+        "standard": 0.24225,
+        "deep": 0.23
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "skip",
+    "S2::section-2-foundations-of-hnsw": "light",
+    "S3::section-3-graph-construction": "deep",
+    "S4::section-4-implementation-of-hnsw": "light"
+  }
+}

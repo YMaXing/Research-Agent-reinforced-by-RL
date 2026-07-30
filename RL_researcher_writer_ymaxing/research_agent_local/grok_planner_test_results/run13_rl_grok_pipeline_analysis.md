@@ -3841,6 +3841,263 @@ It is the only variant that improves signal quality, article-level decisiveness,
 representation simultaneously rather than trading one for another — superseding the tentative
 recommendation in §54.5.
 
+## 54.7 Does the redesign change the "safe" `cost_coef`?
+
+`C2`'s formula swept across every `cost_coef` value this whole investigation has tested, to see
+whether fixing the `ga`-noise problem also fixes deep-scarcity independent of `cost_coef` (i.e.
+does the redesign let us use a *larger*, safer cost penalty again?).
+
+| `cost_coef` | floor% (TRAIN / ALL) | advNorm | corpus `deep` | thin articles |
+|---|---|---|---|---|
+| -0.06 | **8.2% / 9.6%** | **1.266** | 3 | 10 |
+| -0.045 | 21.1% / 23.8% | 1.258 | 4 | 19 |
+| **-0.03** | 20.5% / 23.4% | 1.206 | **11** | 16 |
+| -0.02 | 20.5% / 22.7% | 1.166 | 13 | 18 |
+
+**Answer: no — `cost_coef` and the `ga`-redesign fix two different problems, and both are needed.**
+`floor%` does not move gradually with `cost_coef`; it jumps sharply between `-0.06` and `-0.045`
+(8.2%→21.1%), and `C2` is better than baseline `A1` at every value tested, so the redesign helps
+regardless of `cost_coef`. But **deep-scarcity is not resolved by the redesign alone**: even with
+`ga`'s noise fixed, `-0.06`/`-0.045` still suppress `deep` to only 3-4 articles corpus-wide — the
+jump to healthy representation (11) only happens once `cost_coef` reaches `-0.03`. **Decision:
+keep `cost_coef = -0.03`** — it is where `deep` representation recovers *and* `C2`'s signal-quality
+gains are fully intact, without paying the extra thin-article cost of pushing to `-0.02`.
+
+## 54.8 Article-level threshold gate on `cp`/`ra`/`gsp` (0.90/0.95) — modelled and rejected
+
+Prompted by the idea of hard-gating `research_anchoring`, `core_preservation`, and
+`golden_source_priority` at a high threshold (0.90 or 0.95). First check:
+**`cp`/`ra`/`gsp` are strictly binary at the section level** (only `{0.0, 1.0}` observed
+corpus-wide, verified directly against every `reasoning.json` grade) — so a fractional threshold
+can only be meaningful as an **article-level aggregate** (mean across an arm's sections), not a
+per-section check. This is a different kind of mechanism than the `ga` soft-gate (which lives in
+the section-level reward `train_grpo` trains on) — it belongs alongside the *existing*
+`policy=forbidden` / `manual_override` layer in `compute_article_oracle.py`.
+
+**Mechanism modelled** (`training/model_article_gate.py`): for each (article, arm), compute
+`mean(cp)`, `mean(ra)`, `mean(gsp)` across that arm's sections (using the `C2` formula for `R_w`);
+exclude any arm below the threshold from the article's argmax.
+
+| threshold | arms gated out | winner changed | **no eligible arm at all** |
+|---|---|---|---|
+| 0.90 | 11/40 articles | 2 | **2** |
+| 0.95 | 12/40 articles | 3 | **2** |
+
+**Rejected — a real, mechanism-level problem, not just an aggregate concern.** Both "no eligible
+arm" cases are **structural, not quality-driven**, verified directly:
+
+```
+06_tools__var_standard:  gsp = 0.889 for ALL 4 arms (identical)
+04_structured_outputs:   cp = ra = gsp = 0.857 for ALL 4 arms (identical, all three metrics)
+```
+
+One specific section fails these dims universally, regardless of exploration depth — the gate
+cannot discriminate *which arm is safer* here, it disqualifies the whole article for reasons
+unrelated to arm choice. Critically, **`06_tools__var_standard` is our one confirmed-ground-truth
+article** (`deep`, validated by 3-1 replicate-majority-vote, §31) — this gate design would
+disqualify the *correct* answer along with every other arm. Resolved in §56.
+
+## 55. Where does `sigma_floor = 0.04` come from — is it justified, and can we do better?
+
+### 55.1 Provenance
+
+Traced directly in code: `sigma_floor` is an `argparse` default in `train_grpo.py`
+(`--sigma-floor`, default `0.04`), used for two jobs — (1) the flat-group filter (drop groups
+whose `max-min` reward spread is "just noise") and (2) the advantage-normalisation floor
+(`std_r = max(raw_std, sigma_floor)`). **It has no documented empirical derivation anywhere in
+this repository.** The only nearby code comment references a *different* value (`0.05`, "raw_std
+just clears sigma_floor in cost-only tie case") inside the variant-conditional formula that
+Formula B has since replaced entirely. **Verdict: not strongly justified — an inherited,
+unexplained constant.**
+
+### 55.2 An empirical estimate exists, and it disagrees with 0.04 by 2.5×
+
+New tool: **`training/estimate_noise_floor.py`**. Uses the exact data this question calls for —
+the noise-experiment replicates (§22-23): 2 articles (`09_RAG__var_standard`,
+`06_tools__var_standard`) × 4 arms × 3 independent write+grade replicates, re-graded with the
+*current* Claude + enhancement-credit pipeline — and measures the real run-to-run reward noise of
+the same `(article, section, arm)` cell, recomputed via the actual production
+`_section_reward_components()`.
+
+| | value |
+|---|---|
+| n cells (section × arm, ≥2 replicates) | 60 |
+| mean per-cell noise sd | **0.0991** |
+| median per-cell noise sd | 0.0866 |
+| p90 per-cell noise sd | 0.2021 |
+| noise on an arm-to-arm **difference** (√2 × cell sd) | **≈ 0.140** |
+| share of cells with replicate-noise sd **below** 0.04 | 21.7% |
+
+**The measured noise is ~2.5× the current `sigma_floor`.** A reward spread of `0.04` between two
+arms is only `0.40×` the *mean single-cell* noise sd — i.e. `sigma_floor` is currently far too
+permissive to be doing the job its help text claims.
+
+### 55.3 Raising the floor doesn't fix it — it just discards data
+
+Swept `sigma_floor` against the whole corpus under `C2`/`cost_coef=-0.03` (`training/sweep_sigma_floor.py`):
+
+| `sigma_floor` | dropped | floored% (of kept) | meanAdv | margin > 1 noise-sd | margin > 2 noise-sd |
+|---|---|---|---|---|---|
+| **0.04** (current) | 0 (0%) | 23.4% | 1.197 | **45 (16%)** | **10 (4%)** |
+| 0.06 | 4 (1%) | 39.6% | 1.099 | 45 (16%) | 10 (4%) |
+| 0.08 | 52 (18%) | 43.5% | 1.097 | 45 (20%) | 10 (4%) |
+| 0.10 | 63 (22%) | 55.3% | 1.031 | 45 (21%) | 10 (5%) |
+| 0.14 | 95 (34%) | 68.4% | 0.935 | 45 (24%) | 10 (5%) |
+
+**The absolute count of statistically-defensible sections never changes — 45 (margin exceeds one
+noise sd) and 10 (exceeds two sd) at every `sigma_floor` value tested.** Raising the floor only
+shrinks the denominator (discards up to 34% of training groups at `0.14`) without buying a single
+additional confidently-labelled section. At `sigma_floor=0.04`, the flat-drop rule fires on
+**zero** groups today — that half of the mechanism is currently inert.
+
+**The uncomfortable headline finding, independent of any threshold choice**: only **16% of
+sections (45/282) have a top-1-vs-top-2 margin exceeding one sd of measured noise, and just 4%
+(10/282) exceed two sd.** For roughly 84% of sections, which arm "wins" is not statistically
+distinguishable from single-draw noise. This is a measurement-floor fact about the labelling
+pipeline, not something any reward-formula reweighting can fix.
+
+### 55.4 `near_tie_margin` is the better-targeted knob — but changing it is deferred
+
+`near_tie_margin` (default `0.06`) is the parameter that actually encodes "these arms are
+indistinguishable" (it governs `acceptable_idxs`, i.e. which arms count as a correct prediction),
+as opposed to `sigma_floor` which only affects the *training* denominator and the flat-drop filter.
+Checked directly: at the current `0.06`, only 57.8% of sections have 2+ "acceptable" arms; at a
+value matching the measured noise (`0.14`), that rises to 84.0% (mean 2.84 acceptable arms) — much
+closer to the true state of measurement precision established in §55.3.
+
+**Per explicit user instruction (2026-07-29): do not raise `near_tie_margin` at this time.** This
+finding is recorded for the future, not acted on. Recommended alternative already noted in §55.3:
+the only real fix for label confidence is **replication** — averaging 3 draws would cut noise sd
+by `√3` (≈0.140 → 0.081 for an arm-difference), which should roughly double the fraction of
+sections with a statistically defensible winner. That remains the honest, if expensive, path;
+Part 4 reached the same conclusion independently.
+
+### 55.5 Recommendation
+
+- **Leave `sigma_floor` at its current `0.04`** (or `0.06` if a small safety margin is wanted) —
+  raising it further costs real training data for zero gain in statistically-defensible sections.
+- **Do not raise `near_tie_margin` right now** (user decision, 2026-07-29) — the finding that
+  `0.14` would better match measured noise is recorded here for a future revisit.
+- **The durable fix, if ever pursued, is replication, not a threshold change.**
+
+## 56. Final recommendation: `ra` / `cp` / `gsp` become diagnostic metadata, not gates
+
+Combining §53 (differentiation), §54.3 (hard-gate asymmetry), and §54.8 (article-level threshold
+gate rejected — structural false positives on the one confirmed-ground-truth article):
+
+- **`ra` (research anchoring) — remove from the additive reward entirely.** 96.8% constant,
+  currently costs `0.15` weight for `2.2%` of the systematic signal (§53.5/53.6 F1). This is
+  already exactly what candidate `B` (drop `ra` only) modelled, and it posted the **best `floor%`
+  of any candidate tested** (19.3%/19.5%) for a one-line change. Weight reallocated to `de`/`be`.
+- **`cp` (core preservation) — unchanged.** It is *already* a multiplicative gate on the explore
+  term (`explore = cp * (...)`) rather than an additive weight — precisely the satisficing design
+  this whole redesign is aiming for elsewhere. 99.6% constant; costs nothing; no change needed.
+- **`gsp` (golden source priority) — already zero weight; stays that way.**
+- **None of the three become threshold-based decision gates.** §54.8 demonstrated why directly:
+  because they are section-binary, a fractional threshold is only meaningful as an article-level
+  aggregate, and at that level it produces **false positives on structural, arm-invariant cases**
+  — including disqualifying every arm of `06_tools__var_standard`, our one confirmed-ground-truth
+  article, for reasons unrelated to which arm was chosen.
+- **Instead, surface `cp`/`ra`/`gsp` as diagnostic metadata** — attach per-arm aggregate values (and
+  a `needs_review`-style flag) to `article_oracle.json` for human/eval-time inspection, without
+  letting them influence `oracle_arm` at all. This preserves their genuine value as safety-signal
+  diagnostics (a low `cp`/`ra`/`gsp` *does* mean something concerning happened) while keeping them
+  out of a ranking decision they have been shown not to be able to inform safely.
+- **Open parameter, explicitly not settled here (user note, 2026-07-29): 0.90 may itself be too
+  high a bar even for a non-blocking diagnostic flag**, given `cp`/`ra`/`gsp`'s corpus-wide means
+  sit at 0.996/0.986/0.988 — a flag threshold that fires only when an article-arm mean drops
+  further, e.g. somewhere in the 0.75-0.85 range, may be more appropriate for "worth a human
+  glance" than for "certainly broken." To be finalised during implementation (§57 Phase 5), not
+  modelled further at this time.
+
+## 57. Implementation roadmap: `ra`-removal + `C2` combination (planned, NOT YET STARTED)
+
+This section is a plan only — **no production files have been touched for this change.** It
+follows the exact discipline established for every prior ship in this document (G0, H0, J0,
+EPS_BAND, the staged `cost_coef` reductions): backup first, edit, full-corpus regen, diff,
+non-circular replicate-majority-vote re-check, then update every `_PROD_*` mirror constant.
+
+**Final combined design** (supersedes `A0`/current production):
+
+```
+gt_base     = 0.20*cc + 0.20*fl                                    (unchanged)
+explore     = cp * (0.45*de + 0.30*be)                              (was cp*(0.60de+0.40be)*0.50;
+                                                                      de/be weight raised, ra's
+                                                                      freed weight folded in)
+ga_penalty  = -0.10 if ga < 0.5 else 0.0                            (NEW: soft gate, replaces
+                                                                      ga's old additive term)
+cost        = -0.03 * nr                                            (reverted from -0.02)
+reward      = gt_base + explore + ga_penalty + cost
+```
+
+`ra` no longer appears anywhere in the additive formula. `cp` keeps its existing multiplicative
+role in `explore`, unchanged. `gsp` remains at zero weight (unchanged).
+
+**Phase 1 — Backup.** Full copy of `rl_training_data/bases/` (all 42 article dirs, including the
+2 mixeddepth/goldremoved pilots) to a timestamped `bases_PRE_C2_RAREMOVAL_<date>/` directory.
+Verify 42/42 `article_oracle.json` present before proceeding — this is the only rollback path
+(`bases/` is gitignored).
+
+**Phase 2 — Code change.** Edit `generate_episode_oracles.py`'s `_section_reward()` and
+`_section_reward_components()` (both must change identically, as with every prior ship):
+implement the formula above. This is more invasive than prior ships (G0/H0/J0/cost_coef were
+constant tweaks; this adds an actual conditional gate) — write it as a small named helper
+(e.g. `_ga_gate_penalty(ga: float) -> float`) rather than inlining the conditional, so it's
+independently unit-testable and greppable for the mirror-constant checklist in Phase 6.
+
+**Phase 3 — Regenerate.** `generate_episode_oracles.py --force` (24 TRAIN default) +
+`--articles <16 TEST + 2 pilots> --force`, then `compute_article_oracle.py --force` on the same
+41/42-article split. Also implement §56's diagnostic metadata addition in
+`compute_article_oracle.py` in this same pass (per-arm `cp`/`ra`/`gsp` aggregates +
+`needs_review`-style flag at whatever threshold is finalised — see §56's open parameter).
+
+**Phase 4 — Diff.** Reuse `diff_oracle_regen.py --before bases_PRE_C2_RAREMOVAL_<date>` (the same
+tool used for every prior ship). Expect and specifically check: flip count, thin-vs-comfortable
+margin classification, and that policy=forbidden / manual-override articles are untouched (both
+mechanisms are independent of `R_w` by construction and should show zero movement).
+
+**Phase 5 — Non-circular replicate-majority-vote re-check.** Recompute `R_w` for the existing
+`noise_experiment/` replicates (both `09_RAG__var_standard` and `06_tools__var_standard`, 3
+replicates × 4 arms each, already on disk — zero new generation) under the new formula. Confirm
+`06_tools__var_standard`'s majority vote is still `deep` (it has held `deep` unanimously or
+near-unanimously across *every* formula variant tested this entire investigation — this is the
+load-bearing check). `09_RAG__var_standard` is expected to remain its known persistent toss-up;
+this is not a red flag on its own, per established precedent.
+
+**Phase 6 — Update every `_PROD_*` mirror constant.** Per the thrice-recurring staleness-bug
+pattern (§ "SWEEP TOOL BUG FOUND+FIXED", 2026-07-25): grep the entire `training/` directory for
+every script that independently recomputes reward components — at minimum
+`sweep_reward_formula.py` (`_PROD_COST_COEF`, `_PROD_CREDIT_CURVE`, and a new mirror for the
+`ga`-gate penalty), `analyze_cost_imbalance.py`, `measure_replicate_noise.py`, and any other
+script identified by the grep. Do not assume the sweep tool's mirror is the only one — verify by
+reproducing a known real `R_w`/margin value exactly (the `06_tools__var_standard` /
+`09_RAG__var_standard` sanity check already used for every prior ship).
+
+**Phase 7 — Explicit sign-off checkpoint.** Present the Phase 4 diff and Phase 5 replicate-vote
+result to the user before proceeding to Phase 8. This is a genuine decision point, not a
+formality — every prior formula change in this document went through this gate before touching
+anything training-facing.
+
+**Phase 8 — Retrain.** New task, fresh (not resumed — training inputs changed materially, same
+rule applied to every prior formula-driven retrain in this document). Recommended hyperparameters
+unchanged from the `run17`-`run19` recipe except `--inv-freq-temp 0.5` (the script default,
+exonerated as a cause in Part 7 §52.1 — do not re-introduce the escalation):
+`--epochs 200 --lr 5e-5 --beta 0.15 --entropy-coef 0.22 --warmup-epochs 10 --patience 50
+--lora-r 16 --lora-alpha 16 --lora-dropout 0.05 --sigma-floor 0.04 --near-tie-margin 0.06`
+(both left at current values per §55.5's decision not to change them now).
+
+**Phase 9 — Evaluate.** `test_grok_planner.py --rl-only --save-json` once a checkpoint is chosen
+(prefer checking `best_er`/`best_strict` both, per established practice, and cross-referencing
+against training-log entropy/plateau behaviour before picking one — do not trust train-only
+metrics, per the `run14_phase0` lesson). **Primary comparison baseline: `run15_recalibrated`**
+(the last checkpoint trained on `cost_coef=-0.03`, confirmed 2026-07-28: TEST exact 33%, MAE
+0.933, only 1 high-confidence miss, `deep` predicted 6/16) — since this new run shares the same
+`cost_coef` and the same (exonerated, unescalated) `inv-freq-temp`, any improvement over `run15`
+is cleanly attributable to the `ga`-gate + `ra`-removal reward redesign, isolating exactly the
+variable this whole Part 7 investigation set out to test.
+
+
+
 
 
 
