@@ -948,6 +948,7 @@ def _save_resume_state(
     best_expected_reward: float,
     best_strict_top1: float,
     best_neartie_top1: float,
+    best_strict_healthy_top1: float,
     patience_counter: int,
 ) -> None:
     """Persist full resumable training state for a specific task id."""
@@ -958,6 +959,7 @@ def _save_resume_state(
         "best_expected_reward": best_expected_reward,
         "best_strict_top1": best_strict_top1,
         "best_neartie_top1": best_neartie_top1,
+        "best_strict_healthy_top1": best_strict_healthy_top1,
         "patience_counter": patience_counter,
         "optimizer": optimizer.state_dict(),
         "scheduler": scheduler.state_dict(),
@@ -1071,6 +1073,7 @@ def train(
     best_expected_reward = -float("inf")
     best_strict_top1 = -float("inf")
     best_neartie_top1 = -float("inf")
+    best_strict_healthy_top1 = -float("inf")
     patience_counter = 0
     if resume_state is not None:
         start_epoch = int(resume_state.get("next_epoch", 0))
@@ -1082,6 +1085,9 @@ def train(
         )
         best_neartie_top1 = float(
             resume_state.get("best_neartie_top1", best_neartie_top1)
+        )
+        best_strict_healthy_top1 = float(
+            resume_state.get("best_strict_healthy_top1", best_strict_healthy_top1)
         )
         patience_counter = int(resume_state.get("patience_counter", 0))
         optimizer.load_state_dict(resume_state["optimizer"])
@@ -1338,6 +1344,24 @@ def train(
                     f"best_neartie_epochs/epoch_{epoch:04d}/"
                 )
 
+            # best_strict_healthy/ -- same strict top-1 tracking as best_strict/,
+            # but ONLY among epochs where mean_entropy hasn't collapsed. Prevents
+            # ever trusting a checkpoint whose train-accuracy climbed only because
+            # the policy went near-deterministic, not because it generalizes
+            # (see run20_c2 post-mortem, analysis md S60).
+            if mean_entropy >= args.entropy_healthy_floor and strict_top1_acc >= best_strict_healthy_top1:
+                is_new_best_healthy = strict_top1_acc > best_strict_healthy_top1
+                best_strict_healthy_top1 = strict_top1_acc
+                _save_metric_checkpoint(
+                    task_dir / "best_strict_healthy_epochs", task_dir / "best_strict_healthy",
+                    epoch, model, is_new_best=is_new_best_healthy,
+                )
+                log.info(
+                    f"  ★ {'New best' if is_new_best_healthy else 'Tied best'} healthy strict="
+                    f"{best_strict_healthy_top1:.4f} (H={mean_entropy:.4f}) — saved to "
+                    f"best_strict_healthy/, best_strict_healthy_epochs/epoch_{epoch:04d}/"
+                )
+
             # Overwrite latest/ every epoch so there is always a recoverable
             # PEFT adapter for the most recently completed epoch.
             latest_dir = task_dir / "latest"
@@ -1355,6 +1379,7 @@ def train(
                 best_expected_reward=best_expected_reward,
                 best_strict_top1=best_strict_top1,
                 best_neartie_top1=best_neartie_top1,
+                best_strict_healthy_top1=best_strict_healthy_top1,
                 patience_counter=patience_counter,
             )
 
@@ -1393,6 +1418,15 @@ def main() -> None:
     parser.add_argument("--lr", type=float, default=5e-5)
     parser.add_argument("--beta", type=float, default=0.1, help="KL penalty coefficient")
     parser.add_argument("--entropy-coef", type=float, default=0.15, help="Entropy bonus coefficient")
+    parser.add_argument(
+        "--entropy-healthy-floor", type=float, default=0.15,
+        help=(
+            "Minimum mean_entropy (bits) for an epoch to be eligible for the "
+            "best_strict_healthy checkpoint -- guards against selecting a checkpoint "
+            "from a collapsed (near-zero-entropy) epoch just because strict_top1_accuracy "
+            "kept climbing through the collapse (see run20_c2 post-mortem, analysis md S60)."
+        ),
+    )
     parser.add_argument(
         "--sigma-floor", type=float, default=0.04,
         help=(
@@ -1454,6 +1488,15 @@ def main() -> None:
     )
     parser.add_argument("--model-dir", type=str, default=str(_MODEL_DIR))
     parser.add_argument(
+        "--bases-dir", type=Path, default=None,
+        help=(
+            "Override the bases/ root used for section_oracle.json/research_digest.md/"
+            "guideline_features.json lookups (default: rl_training_data/bases/, unchanged). "
+            "For diagnostic runs only, e.g. a merged directory combining today's digests "
+            "with an alternate reward-label source (see merge_replicate_oracles.py-style tools)."
+        ),
+    )
+    parser.add_argument(
         "--task-id", type=str, default=None,
         help="Unique task identifier for training artifacts (auto-generated if omitted)",
     )
@@ -1511,6 +1554,10 @@ def main() -> None:
     # ------------------------------------------------------------------
     # Step 1: Load training data
     # ------------------------------------------------------------------
+    if args.bases_dir is not None:
+        global _BASES_DIR
+        _BASES_DIR = args.bases_dir
+        log.info(f"--bases-dir override: reading section_oracle.json/digests from {_BASES_DIR}")
     log.info(f"\n--- Step 1: Load training data (granularity={args.granularity}) ---")
     if args.granularity == "section":
         groups = load_section_groups(args.sigma_floor, section_weight=args.section_weight, inv_freq_temp=args.inv_freq_temp, near_tie_margin=args.near_tie_margin)

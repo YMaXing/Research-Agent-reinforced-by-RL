@@ -49,9 +49,9 @@ decisive is covered by the hard-coded manual overrides below.  If new
 article-variants are added, re-run ``prototype_oracle_signals.py --all``
 to get the full signal breakdown before updating this file.
 
-Output schema  (article_oracle.json, version 2)
+Output schema  (article_oracle.json, version 3)
 -----------------------------------------------
-version               int   2
+version               int   3
 article               str   "10_memory_knowledge_access__var_standard"
 variant               str   "var_minimal" | "var_standard" | "var_demanding"
 computed_at           str   ISO-8601 UTC
@@ -66,6 +66,11 @@ r_w_rewards_list      list  [skip, light, standard, deep]  (indexed 0-3)
 decision_path         list  human-readable trace of the decision
 manual_override       bool
 needs_review          bool
+gate_diagnostics      dict|None {arm: {cp,ra,gsp: float}} mean satisficing
+                      metrics per arm (None if section_oracle.json predates
+                      the "diagnostics" field) -- informational only, does
+                      NOT influence oracle_arm (see Part 7 S56/S57).
+low_signal_flag       bool  True if any gate_diagnostics value < DIAG_LOW_SIGNAL_THRESHOLD
 n_sections            int
 n_sections_with_target int
 total_target_words    int
@@ -170,6 +175,10 @@ MIN_DELTA_S4: float = 0.05  # min structure signal spread to use S4 as tiebreake
 # MIN_DELTA_S3 in sync with this value.
 MIN_DELTA_S3: float = 0.15  # min bloat signal spread to use S3 as tiebreaker
 MIN_DELTA_S5: float = 0.05  # min stability signal spread to use S5 as tiebreaker
+
+# Below this, an arm's mean cp/ra/gsp (see _compute_gate_diagnostics) is
+# reported via low_signal_flag -- informational only, never affects oracle_arm.
+DIAG_LOW_SIGNAL_THRESHOLD: float = 0.85
 
 # ---------------------------------------------------------------------------
 # Manual overrides (all confirmed by 2026-06-05 session analysis)
@@ -376,6 +385,28 @@ def _compute_r_w(
     else:
         r_w = {a: arm_acc_rest[a] / total_w for a in ARMS}
     return r_w, total_w, n_sections, n_with_target
+
+
+def _compute_gate_diagnostics(
+    oracle_sections: dict[str, dict],
+) -> dict[str, dict[str, float]] | None:
+    """Per-arm simple mean of cp/ra/gsp across sections (unweighted -- these
+    are satisficing checks, not content-value signals). Returns None when
+    section_oracle.json predates the "diagnostics" field (v<5).
+    """
+    sums = {a: {"cp": 0.0, "ra": 0.0, "gsp": 0.0} for a in ARMS}
+    n = 0
+    for info in oracle_sections.values():
+        diag = info.get("diagnostics")
+        if diag is None:
+            return None
+        n += 1
+        for a in ARMS:
+            for k in ("cp", "ra", "gsp"):
+                sums[a][k] += diag[a][k]
+    if n == 0:
+        return None
+    return {a: {k: round(v / n, 6) for k, v in sums[a].items()} for a in ARMS}
 
 
 # ---------------------------------------------------------------------------
@@ -650,8 +681,15 @@ def compute_article_oracle(article: str) -> dict:
         oracle_sections, features_sections, total_tw
     )
 
+    gate_diagnostics = _compute_gate_diagnostics(oracle_sections)
+    low_signal_flag = gate_diagnostics is not None and any(
+        gate_diagnostics[a][k] < DIAG_LOW_SIGNAL_THRESHOLD
+        for a in ARMS
+        for k in ("cp", "ra", "gsp")
+    )
+
     return {
-        "version": 2,
+        "version": 3,
         "article": article,
         "variant": _variant_of(article),
         "computed_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -666,6 +704,8 @@ def compute_article_oracle(article: str) -> dict:
         "decision_path": decision_path,
         "manual_override": manual_override,
         "needs_review": needs_review,
+        "gate_diagnostics": gate_diagnostics,
+        "low_signal_flag": low_signal_flag,
         "n_sections": n_sections,
         "n_sections_with_target": n_with_target,
         "total_target_words": total_tw,
@@ -734,6 +774,7 @@ def main() -> None:
 
             flag = " ★OVERRIDE" if data["manual_override"] else ""
             flag += " ⚠REVIEW" if data["needs_review"] else ""
+            flag += " ⚑LOWSIG" if data["low_signal_flag"] else ""
             r_w_str = "  ".join(
                 f"{a}={data['r_w_rewards'][a]:.3f}" for a in ARMS
             )
@@ -768,6 +809,7 @@ def main() -> None:
         for d in results:
             flags = " ★" if d["manual_override"] else "  "
             flags += "⚠" if d["needs_review"] else " "
+            flags += "⚑" if d["low_signal_flag"] else " "
             path0 = d["decision_path"][0][:60] if d["decision_path"] else ""
             print(
                 f"  {d['article']:<{col_w}}  "

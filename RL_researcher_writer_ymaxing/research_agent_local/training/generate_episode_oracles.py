@@ -140,6 +140,10 @@ _REWARD_DIMS = [
     "user_intent_research_anchoring",  # ra
 ]
 
+# Diagnostic-only dims (not used by the reward formula) captured alongside
+# _REWARD_DIMS for the C2 gate_diagnostics metadata -- see Part 7 S56/S57.
+_DIAG_DIMS = ["user_intent_golden_source_priority"]  # gsp
+
 # Section titles that are not article content sections (skip when building oracle)
 _NON_CONTENT_SECTIONS = {"references", "bibliography", "further reading", "notes"}
 
@@ -429,7 +433,7 @@ def _load_episode(episode_dir: Path) -> dict[str, list[tuple[str, str, int, tupl
         return {}
     return {
         dim: _parse_sections_ordered(data[dim])
-        for dim in _REWARD_DIMS
+        for dim in _REWARD_DIMS + _DIAG_DIMS
         if dim in data
     }
 
@@ -454,13 +458,19 @@ def process_article_variant(
     article: str,
     variant: str | None,
     dry_run: bool = False,
-) -> bool:
+    return_data: bool = False,
+) -> bool | tuple[bool, dict | None]:
     """Derive and write the section oracle for one (article, variant) pair.
 
     Pass ``variant=None`` for no-variant (test-set) articles whose bases and
     episode directories carry no variant suffix, e.g.
     ``bases/<article>/`` and ``episodes/<article>__preset{p}/``.
     The reward formula will use the ``'standard'`` variant in that case.
+
+    ``return_data=True`` returns ``(ok, sections_output)`` instead of just
+    ``ok`` -- ``sections_output`` is ``None`` on failure. Used by
+    verify_oracle_reproducibility.py to recompute via this EXACT code path
+    (not a parallel re-implementation) and diff against the stored file.
     """
     no_variant = variant is None
     art_var = article if no_variant else f"{article}__{variant}"
@@ -468,7 +478,7 @@ def process_article_variant(
 
     if not bases_dir.exists():
         log.warning("  Bases dir missing: %s", art_var)
-        return False
+        return (False, None) if return_data else False
 
     # Determine the digest to use for sec_id extraction.
     # Some variant digests were truncated during generation (section_coverage has
@@ -478,7 +488,7 @@ def process_article_variant(
     digest_path = bases_dir / "research_digest.md"
     if not digest_path.exists():
         log.warning("  No digest: %s", art_var)
-        return False
+        return (False, None) if return_data else False
 
     digest = digest_path.read_text(encoding="utf-8")
     sec_ids = _extract_sec_ids_ordered(digest)
@@ -532,7 +542,7 @@ def process_article_variant(
 
     if not sec_ids:
         log.warning("  No section IDs found for %s", art_var)
-        return False
+        return (False, None) if return_data else False
 
     sec_norms = [_sec_id_to_norm(sid) for sid in sec_ids]
 
@@ -573,6 +583,7 @@ def process_article_variant(
         # Per-active-preset reward
         preset_rewards: dict[int, float] = {}
         preset_explore: dict[int, float] = {}
+        preset_diag: dict[int, dict[str, float]] = {}
         for p in _ACTIVE_PRESETS:
             ep = episode_dims[p]
             nr = _ARM_COST_UNITS[_preset_to_arm[p]]
@@ -591,36 +602,46 @@ def process_article_variant(
                 _count, qualities = enh
                 return enhancement_credit(qualities)
 
+            cp_val = _score("ground_truth_core_preservation")
+            ra_val = _score("user_intent_research_anchoring")
+            gsp_val = _score("user_intent_golden_source_priority")
+
             rest, explore = _section_reward_components(
                 cc=_score("ground_truth_core_content"),
                 fl=_score("ground_truth_flow"),
                 de=_enh_credit("ground_truth_depth_enhancement"),
                 be=_enh_credit("ground_truth_breadth_enhancement"),
-                cp=_score("ground_truth_core_preservation"),
+                cp=cp_val,
                 ga=_score("user_intent_guideline_adherence"),
-                ra=_score("user_intent_research_anchoring"),
+                ra=ra_val,
                 nr=nr,
                 variant=variant_short,
             )
             preset_rewards[p] = rest + explore
             preset_explore[p] = explore
+            preset_diag[p] = {"cp": cp_val, "ra": ra_val, "gsp": gsp_val}
 
         # Map active presets → 4 arms (each arm now maps to exactly one preset).
-        # Pick the SAME winning preset for both the combined reward and its
-        # explore component, so "explore" always corresponds to the arm's
-        # actual chosen preset, not an independently-maxed value.
+        # Pick the SAME winning preset for the combined reward, its explore
+        # component, and its diagnostics, so all three always correspond to
+        # the arm's actual chosen preset, not an independently-maxed value.
         arm_rewards: dict[str, float] = {}
         arm_explore: dict[str, float] = {}
+        arm_diag: dict[str, dict[str, float]] = {}
         for arm, preset_ids in _arm_presets.items():
             best_p = max(preset_ids, key=lambda p: preset_rewards[p])
             arm_rewards[arm] = preset_rewards[best_p]
             arm_explore[arm] = preset_explore[best_p]
+            arm_diag[arm] = preset_diag[best_p]
         oracle = max(_ARM_ORDER, key=arm_rewards.__getitem__)
 
         sections_output[sec_id] = {
             "oracle": oracle,
             "rewards": {k: round(arm_rewards[k], 6) for k in _ARM_ORDER},
             "explore": {k: round(arm_explore[k], 6) for k in _ARM_ORDER},
+            "diagnostics": {
+                k: {m: round(v, 6) for m, v in arm_diag[k].items()} for k in _ARM_ORDER
+            },
         }
 
     # Summary stats for logging
@@ -633,20 +654,17 @@ def process_article_variant(
     )
 
     if dry_run:
-        return True
+        return (True, sections_output) if return_data else True
 
-    # Write section_oracle.json (version 4 format -- each section's "rewards"
-    # dict is unchanged (full per-arm reward, gt_base+explore+user_intent+cost),
-    # but a NEW "explore" dict is added alongside it holding just the explore
-    # component per arm. This lets compute_article_oracle.py aggregate
-    # "explore" via a SIMPLE (unweighted) mean across sections while the rest
-    # of the reward stays target-words-weighted -- see _section_reward_components()
-    # docstring and run13_rl_grok_pipeline_analysis.md Part 5 for why. Version 3
-    # (de/be derived from enhancement_credit(), no separate explore field) and
-    # version 2 (raw 0/1 de/be) data remain readable -- compute_article_oracle.py
-    # falls back to the old pure target-words-weighted mean when "explore" is absent.
+    # Write section_oracle.json (version 5 format -- adds a "diagnostics" dict
+    # per section holding the raw (not reward-weighted) cp/ra/gsp satisficing
+    # metrics per arm, for compute_article_oracle.py's gate_diagnostics/
+    # low_signal_flag (informational only, does not affect oracle_arm -- see
+    # Part 7 S56/S57). Version 4's "rewards"/"explore" fields are unchanged;
+    # versions 2/3 (no "explore") remain readable via compute_article_oracle.py's
+    # existing fallback.
     output = {
-        "version": 4,
+        "version": 5,
         "article": article,
         "variant": variant if variant is not None else "no_variant",
         "sections": sections_output,
@@ -656,7 +674,7 @@ def process_article_variant(
     }
     oracle_path = bases_dir / "section_oracle.json"
     oracle_path.write_text(json.dumps(output, indent=2), encoding="utf-8")
-    return True
+    return (True, sections_output) if return_data else True
 
 
 # ---------------------------------------------------------------------------

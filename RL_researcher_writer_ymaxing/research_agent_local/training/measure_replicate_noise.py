@@ -7,8 +7,11 @@ weighting as production (imported, not duplicated, per repo convention) from
 ``generate_episode_oracles.py`` and ``compute_article_oracle.py``.
 
 For each target article:
-  - Loads N replicate reasoning.json sets (temperature 0.25, this experiment)
-    from rl_training_data/noise_experiment/<article>__replicateR__preset{P}.
+  - Loads N replicate reasoning.json sets from
+    rl_training_data/noise_experiment/<article>__replicateR__preset{P}. NOTE:
+    this script does not know/verify what generation temperature the replicate
+    dirs were written at -- the caller is responsible for that (see analysis
+    md A.7.1: 0.25 is a confirmed systematic bias vs 0.7, do not mix them).
   - Computes per-section per-arm rewards for each replicate (same formula as
     production section_oracle.json).
   - Computes the target-words-weighted article-level R_w and margin for each
@@ -52,6 +55,42 @@ _DEFAULT_REPLICATES = 3
 _ARM_PRESETS = geo._ARM_PRESETS
 _ARM_ORDER = geo._ARM_ORDER
 
+# TEST (no-variant) articles map presets directly 0-3 (skip/light/standard/deep),
+# unlike TRAIN's {0,1,3,5} -- needed since A.15.4 replicates TEST articles too.
+_TEST_ARM_PRESETS = geo._TEST_ARM_PRESETS
+_TEST_ARTICLES = {
+    "04_structured_outputs", "07_reasoning_planning", "13_agent_framework",
+    "14_agent_system_design", "29_evaluation_metrics", "31_CI",
+    "Bird_Eye_Extreme", "Dark_Dimension", "Distinct_AI_Models",
+    "Earth_Oceans_Origin", "Gravity_Entropy", "HNSW",
+    "Insects_Consciousness", "Space-Time_QECC", "State_of_LLM_Reasoning",
+    "Understanding_Reasoning_LLMs",
+}
+
+
+def _arm_presets_for(article: str) -> dict[str, list[int]]:
+    return _TEST_ARM_PRESETS if article in _TEST_ARTICLES else _ARM_PRESETS
+
+
+def _arm_presets_flat_for(article: str) -> list[int]:
+    return sorted({p for ps in _arm_presets_for(article).values() for p in ps})
+
+
+def _production_sec_ids(article: str) -> list[str]:
+    """Digest-ordered section ids EXACTLY as generate_episode_oracles.py derives them.
+
+    Duplicates are deliberately KEPT: every research_digest.md lists each section
+    twice, so production's `sections_output` is written twice per section and the
+    surviving value is the one computed at ordinal index n+i, not i. `_get_score`
+    only falls back to that ordinal when title matching fails (~9% of cells), but
+    for those cells a deduped list silently produces a DIFFERENT reward than
+    production -- see run13_rl_grok_pipeline_analysis.md A.15.4 (2026-08-20).
+    """
+    digest_path = _BASES_DIR / article / "research_digest.md"
+    if not digest_path.exists():
+        return []
+    return geo._extract_sec_ids_ordered(digest_path.read_text(encoding="utf-8"))
+
 
 def _variant_short(article: str) -> str:
     return article.rsplit("__", 1)[-1].replace("var_", "")
@@ -73,17 +112,20 @@ def _compute_replicate_sections(article: str, replicate_dir_prefix: Path, sec_id
     # preset id -> arm name, so cost uses geo._ARM_COST_UNITS (empirical, H0,
     # shipped 2026-07-25) instead of the stale ordinal _EPISODE_ROUNDS_FLAT --
     # keeps this replicate computation in sync with real production.
-    preset_to_arm = {pid: arm for arm, ids in _ARM_PRESETS.items() for pid in ids}
+    arm_presets = _arm_presets_for(article)
+    arm_presets_flat = _arm_presets_flat_for(article)
+    preset_to_arm = {pid: arm for arm, ids in arm_presets.items() for pid in ids}
 
     episode_dims: dict[int, dict] = {}
-    for p in _ARM_PRESETS_FLAT:
+    for p in arm_presets_flat:
         ep_dir = Path(f"{replicate_dir_prefix}__preset{p}")
         episode_dims[p] = geo._load_episode(ep_dir) if ep_dir.exists() else {}
 
     sections_output: dict[str, dict] = {}
     for sec_idx, (sec_id, sec_norm) in enumerate(zip(sec_ids, sec_norms)):
         preset_rewards: dict[int, float] = {}
-        for p in _ARM_PRESETS_FLAT:
+        preset_explore: dict[int, float] = {}
+        for p in arm_presets_flat:
             ep = episode_dims[p]
             nr = geo._ARM_COST_UNITS[preset_to_arm[p]]
 
@@ -97,7 +139,7 @@ def _compute_replicate_sections(article: str, replicate_dir_prefix: Path, sec_id
                 _count, qualities = enh
                 return geo.enhancement_credit(qualities)
 
-            preset_rewards[p] = geo._section_reward(
+            rest, explore = geo._section_reward_components(
                 cc=_score("ground_truth_core_content"),
                 fl=_score("ground_truth_flow"),
                 de=_enh_credit("ground_truth_depth_enhancement"),
@@ -108,12 +150,21 @@ def _compute_replicate_sections(article: str, replicate_dir_prefix: Path, sec_id
                 nr=nr,
                 variant=variant_short,
             )
+            preset_rewards[p] = rest + explore
+            preset_explore[p] = explore
 
-        arm_rewards = {arm: preset_rewards[_ARM_PRESETS[arm][0]] for arm in _ARM_ORDER}
+        arm_rewards = {arm: preset_rewards[arm_presets[arm][0]] for arm in _ARM_ORDER}
+        arm_explore = {arm: preset_explore[arm_presets[arm][0]] for arm in _ARM_ORDER}
         oracle = max(_ARM_ORDER, key=arm_rewards.__getitem__)
         sections_output[sec_id] = {
             "oracle": oracle,
             "rewards": {k: round(arm_rewards[k], 6) for k in _ARM_ORDER},
+            # v4+ split, needed so compute_article_oracle.py::_compute_r_w() applies
+            # Candidate E's simple-mean-explore aggregation identically to production
+            # section_oracle.json -- see run13_rl_grok_pipeline_analysis.md A.15.4 follow-up
+            # (2026-08-20): omitting this silently fell back to the pre-Candidate-E pure
+            # target-words-weighted mean, an apples-to-oranges mismatch vs production's R_w.
+            "explore": {k: round(arm_explore[k], 6) for k in _ARM_ORDER},
         }
     return sections_output
 
@@ -146,6 +197,7 @@ def measure_article(article: str, n_replicates: int) -> None:
     features = json.loads(features_path.read_text(encoding="utf-8"))
     features_sections = features.get("sections", {})
     sec_ids = list(orig_oracle["sections"].keys())
+    prod_sec_ids = _production_sec_ids(article) or sec_ids
 
     orig_r_w, total_w, n_sections, _ = cao._compute_r_w(orig_oracle["sections"], features_sections)
     orig_margin = None
@@ -162,13 +214,14 @@ def measure_article(article: str, n_replicates: int) -> None:
     replicate_r_w: list[dict[str, float]] = []
     replicate_sections: list[dict[str, dict]] = []
     missing = 0
+    arm_presets_flat = _arm_presets_flat_for(article)
     for r in range(1, n_replicates + 1):
         prefix = _NOISE_EXPERIMENT_DIR / f"{article}__replicate{r}"
         if not any((_NOISE_EXPERIMENT_DIR / f"{article}__replicate{r}__preset{p}" / "reasoning.json").exists()
-                   for p in _ARM_PRESETS_FLAT):
+                   for p in arm_presets_flat):
             missing += 1
             continue
-        sections = _compute_replicate_sections(article, prefix, sec_ids)
+        sections = _compute_replicate_sections(article, prefix, prod_sec_ids)
         replicate_sections.append(sections)
         r_w, *_ = cao._compute_r_w(sections, features_sections)
         replicate_r_w.append(r_w)
@@ -180,7 +233,7 @@ def measure_article(article: str, n_replicates: int) -> None:
     if missing:
         print(f"  ({missing}/{n_replicates} replicate(s) not yet graded)")
 
-    print(f"  --- {len(replicate_r_w)} replicate(s) (temp=0.25) ---")
+    print(f"  --- {len(replicate_r_w)} replicate(s) ---")
     for i, r_w in enumerate(replicate_r_w, start=1):
         ranked = sorted(_ARM_ORDER, key=lambda a: r_w[a], reverse=True)
         margin = r_w[ranked[0]] - r_w[ranked[1]]
@@ -216,11 +269,15 @@ def measure_article(article: str, n_replicates: int) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--articles", nargs="+", default=_DEFAULT_ARTICLES)
-    parser.add_argument("--replicates", type=int, default=_DEFAULT_REPLICATES)
+    parser.add_argument("--replicates", type=int, default=_DEFAULT_REPLICATES,
+                         help="Max replicate index to look for (additional to the production draw).")
+    parser.add_argument("--target-n", type=int, default=None,
+                         help="Total draws INCLUDING the production one; overrides --replicates as target_n - 1.")
     args = parser.parse_args()
+    replicates = args.replicates if args.target_n is None else args.target_n - 1
 
     for article in args.articles:
-        measure_article(article, args.replicates)
+        measure_article(article, replicates)
 
 
 if __name__ == "__main__":

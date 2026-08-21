@@ -10,21 +10,21 @@
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
-    0.4571,
-    0.4765,
-    0.4195,
-    0.4252
+    0.1643,
+    0.1889,
+    0.1079,
+    0.1093
   ],
   "verdict": "NEAR",
-  "regret": -0.0194,
+  "regret": -0.0246,
   "regret_counted": null,
-  "entropy_bits": 1.3381,
-  "confidence": 0.6071,
-  "floor_applied": true,
+  "entropy_bits": 0.976,
+  "confidence": 0.591,
+  "floor_applied": false,
   "rl_agg_probs": [
-    0.25,
-    0.6071,
-    0.1429,
+    0.409,
+    0.591,
+    0.0,
     0.0
   ],
   "grok_override": null,

@@ -1,0 +1,59 @@
+{
+  "external_evidence_policy": "allowed",
+  "sections": {
+    "S1::section-1-introduction": {
+      "target_words": 150,
+      "mandatory_bullets": 2,
+      "must_cover_depth": 0,
+      "must_stay_brief": 0
+    },
+    "S2::section-2-understanding-why-agents-need-tools": {
+      "target_words": 350,
+      "mandatory_bullets": 7,
+      "must_cover_depth": 0,
+      "must_stay_brief": 0
+    },
+    "S3::section-3-implementing-tool-calls-from-scratch": {
+      "target_words": 1000,
+      "mandatory_bullets": 22,
+      "must_cover_depth": 22,
+      "must_stay_brief": 0
+    },
+    "S4::section-4-implementing-a-small-tool-calling-framework-from-scratch": {
+      "target_words": 600,
+      "mandatory_bullets": 11,
+      "must_cover_depth": 11,
+      "must_stay_brief": 0
+    },
+    "S5::section-5-implementing-production-level-tool-calls-with-gemini": {
+      "target_words": 450,
+      "mandatory_bullets": 14,
+      "must_cover_depth": 14,
+      "must_stay_brief": 0
+    },
+    "S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs": {
+      "target_words": 380,
+      "mandatory_bullets": 6,
+      "must_cover_depth": 6,
+      "must_stay_brief": 0
+    },
+    "S7::section-7-the-downsides-of-running-tools-in-a-loop": {
+      "target_words": 600,
+      "mandatory_bullets": 9,
+      "must_cover_depth": 3,
+      "must_stay_brief": 0
+    },
+    "S8::section-8-popular-tools-used-within-the-industry": {
+      "target_words": 450,
+      "mandatory_bullets": 4,
+      "must_cover_depth": 4,
+      "must_stay_brief": 0
+    },
+    "S9::section-9-conclusion": {
+      "target_words": 120,
+      "mandatory_bullets": 3,
+      "must_cover_depth": 3,
+      "must_stay_brief": 0
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "version": 3,
+  "article": "Dark_Dimension",
+  "variant": "no_variant",
+  "computed_at": "2026-07-30T02:01:42.770185+00:00",
+  "oracle_arm": "deep",
+  "oracle_arm_idx": 3,
+  "runner_up_arm": "light",
+  "runner_up_arm_idx": 1,
+  "margin": 0.002644,
+  "reward_spread": 0.1082,
+  "r_w_rewards": {
+    "skip": 0.38,
+    "light": 0.485556,
+    "standard": 0.459156,
+    "deep": 0.4882
+  },
+  "r_w_rewards_list": [
+    0.38,
+    0.485556,
+    0.459156,
+    0.4882
+  ],
+  "decision_path": [
+    "near-tie band=['light', 'standard', 'deep'] R_w=[light:0.4856, standard:0.4592, deep:0.4882]",
+    "active signals: [S4(\u0394\u22650.05), S3(\u0394\u22650.15), S5(\u0394\u22650.05)]  winner=deep  S4={light:0.430, standard:0.600, deep:0.874}  S5={light:0.844, standard:0.928, deep:0.924}"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "gate_diagnostics": {
+    "skip": {
+      "cp": 1.0,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "light": {
+      "cp": 1.0,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "standard": {
+      "cp": 1.0,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "deep": {
+      "cp": 1.0,
+      "ra": 1.0,
+      "gsp": 1.0
+    }
+  },
+  "low_signal_flag": false,
+  "n_sections": 3,
+  "n_sections_with_target": 3,
+  "total_target_words": 1800,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 360,
+      "weight_words": 360,
+      "weight_frac": 0.2,
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.37,
+        "standard": 0.3436,
+        "deep": 0.3307
+      },
+      "rewards_by_preset": [
+        0.3,
+        0.37,
+        0.3436,
+        0.3307
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-dark-interactions",
+      "title": "dark interactions",
+      "target_words": 620,
+      "weight_words": 620,
+      "weight_frac": 0.34444,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.27,
+        "standard": 0.2436,
+        "deep": 0.3882
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.27,
+        0.2436,
+        0.3882
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-a-dark-dimension",
+      "title": "a dark dimension",
+      "target_words": 820,
+      "weight_words": 820,
+      "weight_frac": 0.45556,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.82,
+        "standard": 0.7936,
+        "deep": 0.7857
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.82,
+        0.7936,
+        0.7857
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

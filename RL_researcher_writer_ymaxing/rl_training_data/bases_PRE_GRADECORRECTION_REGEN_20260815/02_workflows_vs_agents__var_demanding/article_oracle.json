@@ -1,0 +1,189 @@
+{
+  "version": 3,
+  "article": "02_workflows_vs_agents__var_demanding",
+  "variant": "var_demanding",
+  "computed_at": "2026-07-30T02:00:59.927975+00:00",
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "standard",
+  "runner_up_arm_idx": 2,
+  "margin": 0.069288,
+  "reward_spread": 0.218266,
+  "r_w_rewards": {
+    "skip": 0.324138,
+    "light": 0.456638,
+    "standard": 0.38735,
+    "deep": 0.238372
+  },
+  "r_w_rewards_list": [
+    0.324138,
+    0.456638,
+    0.38735,
+    0.238372
+  ],
+  "decision_path": [
+    "unique reward winner (margin=+0.0693 > EPS_BAND=0.03)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "gate_diagnostics": {
+    "skip": {
+      "cp": 1.0,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "light": {
+      "cp": 1.0,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "standard": {
+      "cp": 0.833333,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "deep": {
+      "cp": 1.0,
+      "ra": 1.0,
+      "gsp": 1.0
+    }
+  },
+  "low_signal_flag": true,
+  "n_sections": 6,
+  "n_sections_with_target": 6,
+  "total_target_words": 4350,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces",
+      "title": "introduction the critical decision every ai engineer faces",
+      "target_words": 450,
+      "weight_words": 450,
+      "weight_frac": 0.10345,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.37,
+        "standard": 0.3436,
+        "deep": 0.2307
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.37,
+        0.3436,
+        0.2307
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-understanding-the-spectrum-from-workflows-to-agents",
+      "title": "understanding the spectrum from workflows to agents",
+      "target_words": 600,
+      "weight_words": 600,
+      "weight_frac": 0.13793,
+      "rewards": {
+        "skip": 0.1,
+        "light": 0.2275,
+        "standard": 0.4486,
+        "deep": 0.1657
+      },
+      "rewards_by_preset": [
+        0.1,
+        0.2275,
+        0.4486,
+        0.1657
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-choosing-your-path",
+      "title": "choosing your path",
+      "target_words": 750,
+      "weight_words": 750,
+      "weight_frac": 0.17241,
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.3275,
+        "standard": 0.3436,
+        "deep": 0.1882
+      },
+      "rewards_by_preset": [
+        0.2,
+        0.3275,
+        0.3436,
+        0.1882
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-exploring-common-patterns",
+      "title": "exploring common patterns",
+      "target_words": 800,
+      "weight_words": 800,
+      "weight_frac": 0.18391,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.475,
+        "standard": 0.5011,
+        "deep": 0.2332
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.475,
+        0.5011,
+        0.2332
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-zooming-in-on-our-favorite-examples",
+      "title": "zooming in on our favorite examples",
+      "target_words": 1250,
+      "weight_words": 1250,
+      "weight_frac": 0.28736,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.37,
+        "standard": 0.3436,
+        "deep": 0.2932
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.37,
+        0.3436,
+        0.2932
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-conclusion-the-challenges-of-every-ai-engineer",
+      "title": "conclusion the challenges of every ai engineer",
+      "target_words": 500,
+      "weight_words": 500,
+      "weight_frac": 0.11494,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.925,
+        "standard": 0.3436,
+        "deep": 0.4882
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.925,
+        0.3436,
+        0.4882
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

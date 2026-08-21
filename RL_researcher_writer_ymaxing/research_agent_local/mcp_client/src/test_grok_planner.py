@@ -20,7 +20,7 @@ Corpus
              Understanding_Reasoning_LLMs).
 
 Oracle
-------
+------          
   Read from <bases_dir>/<variant>/article_oracle.json  (version 2).
   Key field: oracle_arm_idx  (0=skip, 1=light, 2=standard, 3=deep).
 

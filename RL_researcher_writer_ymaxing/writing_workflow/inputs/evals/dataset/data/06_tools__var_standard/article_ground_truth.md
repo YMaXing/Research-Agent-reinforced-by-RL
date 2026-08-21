@@ -6,7 +6,7 @@ In this lesson, you will learn how to implement tool calling from scratch, build
 
 ## Understanding Why Agents Need Tools
 
-Before starting to implement tool calling from scratch, let’s quickly understand what they are and why LLMs need them. 
+Before starting to implement tool calling from scratch, let’s quickly understand what they are and why LLMs need them.  
 
 The core idea is simple: LLMs have a fundamental limitation, which is that they cannot interact with the external world on their own. They cannot browse the web, access a database, or even check the current time. Their knowledge is static, frozen at the time of their last training run, which means they cannot access real-time information or update themselves with new data [[1]](https://www.projectpro.io/article/llm-limitations/1045), [[2]](https://memgraph.com/blog/llm-limitations-query-enterprise-data), [[3]](https://arxiv.org/html/2412.04503v1), [[4]](https://learnprompting.org/docs/basics/pitfalls). Tools are the engineering solution to this problem.
 

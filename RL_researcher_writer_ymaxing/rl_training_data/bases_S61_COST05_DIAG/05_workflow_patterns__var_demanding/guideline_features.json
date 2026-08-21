@@ -1,0 +1,47 @@
+{
+  "external_evidence_policy": "allowed",
+  "sections": {
+    "S1::section-1-the-challenge-with-complex-single-llm-calls": {
+      "target_words": 650,
+      "mandatory_bullets": 7,
+      "must_cover_depth": 7,
+      "must_stay_brief": 0
+    },
+    "S2::section-2-the-power-of-modularity-why-chain-llm-calls": {
+      "target_words": 500,
+      "mandatory_bullets": 7,
+      "must_cover_depth": 7,
+      "must_stay_brief": 0
+    },
+    "S3::section-3-building-a-sequential-workflow-faq-generation-pipeline": {
+      "target_words": 850,
+      "mandatory_bullets": 2,
+      "must_cover_depth": 0,
+      "must_stay_brief": 0
+    },
+    "S4::section-4-optimizing-sequential-workflows-with-parallel-processing": {
+      "target_words": 650,
+      "mandatory_bullets": 2,
+      "must_cover_depth": 2,
+      "must_stay_brief": 0
+    },
+    "S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic": {
+      "target_words": 350,
+      "mandatory_bullets": 3,
+      "must_cover_depth": 3,
+      "must_stay_brief": 0
+    },
+    "S6::section-building-a-basic-routing-workflow": {
+      "target_words": 550,
+      "mandatory_bullets": 2,
+      "must_cover_depth": 2,
+      "must_stay_brief": 0
+    },
+    "S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition": {
+      "target_words": 750,
+      "mandatory_bullets": 6,
+      "must_cover_depth": 6,
+      "must_stay_brief": 0
+    }
+  }
+}

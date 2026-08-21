@@ -186,8 +186,10 @@ pre-generated item appears in the correct section per its declared `<location>`:
 
 ## Research Context
 
-The following information about the research used to write the article is provided to help you
-check exploration-phase source integration:
+The following is the full research content used to write the article, together with format-specific
+guidance. Use it for two purposes: (1) cross-referencing article claims against golden/exploitation
+source material for the golden/exploitation citation completeness check below, and (2) checking
+exploration-phase source integration where applicable:
 
 {research_context}
 
@@ -248,6 +250,21 @@ No.1 focus.
     the most throughout the article, expect this check to surface the largest number of citation
     instances to verify — do not let that volume cause paragraphs to be skimmed instead of checked
     individually.
+  - **Citation-to-reference mismatch (applies regardless of research format):** A citation being
+    present inline is a separate question from whether it points to the *correct* entry. For every
+    distinct identifier `N` used inline as `[[N]](url)`, find the corresponding `## References` entry
+    `- [N] [Title](url)` and check two things: (1) the entry's `url` is identical to the `url` used
+    by every inline `[[N]](...)` occurrence — flag a `citation` review if they differ; (2) the entry's
+    `Title` genuinely describes the source actually located at that `url` (cross-check against the
+    `<research>` content), not a different, unrelated source — flag a `citation` review specifying
+    the identifier, the inline location(s), and what the entry currently says versus what it should
+    say. This is a distinct failure mode from a missing citation: the inline citation can be fully
+    present and well-grounded in real research content while the References entry for its identifier
+    describes an unrelated source (e.g., because the identifier collided with a different source
+    during incremental edits, or because a similarly-numbered sub-source inside a `tavily_results`
+    block in the `<research>` was mistaken for the article's own citation identifier). Treat this with
+    the same strictness as a missing citation — do not treat "a citation exists at that location" as
+    sufficient without confirming the References entry actually matches it.
   - **Exploration integration (Format B only):** When the research is in Format B, the `## Research
     Context` section above provides the actual `<exploration_sources>` that were available to the writer.
     Use these sources to perform a direct cross-reference between source content and article content.
@@ -399,6 +416,14 @@ or "Implementing GraphRAG - Third paragraph"
    through the article paragraph by paragraph. For every paragraph whose content is traceable to a
    golden or exploitation source, confirm it carries an inline `[[N]](url)` citation. Flag every
    instance that does not, per the "Uncited golden/exploitation content" rule above.
+7a. **Citation-to-reference mismatch check (always performed, regardless of research format):**
+    Build a list of every distinct identifier `N` used inline as `[[N]](url)` and the `url` it is
+    paired with at each occurrence. For each identifier, locate its `## References` entry and verify
+    the entry's `url` matches every inline occurrence, and that the entry's `Title` actually describes
+    the source at that `url` (not a different, unrelated source from the `<research>`). Flag every
+    mismatch per the "Citation-to-reference mismatch" rule above — do this even for citations that
+    already passed the checks in step 7, since a citation can be present and well-grounded inline
+    while still pointing to a wrong References entry.
 8. If the research is in Format B and exploration sources are provided, perform two passes:
    a. **Coverage check:** For each exploration source, assess whether it qualifies by the depth/breadth
       criteria. If it qualifies and its content does not appear anywhere in the article, flag the

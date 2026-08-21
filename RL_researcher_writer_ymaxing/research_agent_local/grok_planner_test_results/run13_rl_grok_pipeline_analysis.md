@@ -4096,6 +4096,3399 @@ metrics, per the `run14_phase0` lesson). **Primary comparison baseline: `run15_r
 is cleanly attributable to the `ga`-gate + `ra`-removal reward redesign, isolating exactly the
 variable this whole Part 7 investigation set out to test.
 
+## 58. `C2` shipped — execution log and before/after signal-strength comparison (2026-07-29)
+
+Phases 1-6 of §57's roadmap were executed for real, in order, with no deviations from the plan
+except two corrected CLI-flag assumptions (documented below).
+
+**Phase 1 — Backup.** `rl_training_data/bases/` copied to `bases_PRE_C2_RAREMOVAL_20260729/`
+(45 article dirs, including the 3 non-official pilots) before any edit.
+
+**Phase 2 — Code change.** `generate_episode_oracles.py`'s `_section_reward()` and
+`_section_reward_components()` rewritten to the exact formula from §57. New
+`_ga_gate_penalty(ga)` helper added (`-0.10 if ga < 0.5 else 0.0`). `ra` kept as an accepted-but-
+unused parameter for call-site compatibility. Verified directly: `ra` is fully inert, the `ga`
+gate fires exactly at the 0.5 boundary, and `rest + explore == _section_reward(...)` still holds.
+
+**Phase 3 — Diagnostic metadata + regeneration.** `section_oracle.json` bumped to version 5:
+each section gained a per-arm `"diagnostics"` dict (`cp`/`ra`/`gsp`, raw, not reward-weighted;
+`gsp` now loaded via a new `_DIAG_DIMS` list added to `_load_episode`'s filter, since
+`_REWARD_DIMS` itself deliberately excludes it and was left untouched to stay in sync with
+`train_grpo.py`'s parallel list). `compute_article_oracle.py` bumped to version 3: new
+`_compute_gate_diagnostics()` (simple per-arm mean of `cp`/`ra`/`gsp` across sections, `None` for
+pre-v5 data) plus `gate_diagnostics`/`low_signal_flag` output fields (new
+`DIAG_LOW_SIGNAL_THRESHOLD = 0.85` constant) — informational only, does **not** affect
+`oracle_arm`. Uses a new field name, not `needs_review` (already means something unrelated: no
+S3/S4/S5 tiebreak signal cleared its threshold). All 42 official articles (24 TRAIN + 16 TEST + 2
+mixeddepth) regenerated to `section_oracle.json` v5 + `article_oracle.json` v3.
+
+**CLI-flag corrections vs. the original §57 plan:** `generate_episode_oracles.py` has **no**
+`--force` flag — it always overwrites unconditionally (`--dry-run` is the only write-suppressing
+flag). `compute_article_oracle.py` **does** have `--force` (default is skip-if-exists). The 3
+non-official pilots (`05_workflow_patterns__depthboost`, `11_multimodal__depthboost`,
+`10_memory_knowledge_access__var_goldremoved`) were correctly left untouched (out of scope).
+
+**Phase 4 — Diff** (`diff_oracle_regen.py --before bases_PRE_C2_RAREMOVAL_20260729`): 40/45
+unchanged, 5 flipped, **all thin-margin, zero comfortable**. Arm distribution
+`{skip:10,light:14,standard:12,deep:9}` → `{skip:10,light:15,standard:11,deep:9}`.
+`06_tools__var_standard`/`09_RAG__var_standard` not in the flip list (unchanged). Flips:
+`02_workflows_vs_agents__var_demanding` standard→light, `06_tools__var_demanding` standard→deep,
+`10_memory_knowledge_access__var_demanding` deep→standard, `Dark_Dimension` standard→deep,
+`Earth_Oceans_Origin` deep→standard.
+
+**Phase 5 — Non-circular replicate-majority-vote re-check** (`measure_replicate_noise.py`,
+imports `geo._section_reward` directly so it automatically reflects `C2`, no code changes
+needed). `06_tools__var_standard` (the load-bearing article) stays `deep`, margin improved
+0.0010 → 0.0914 (no longer needs any tiebreak at all). Replicate votes deep=2/standard=1 —
+**identical to the 3-1-combined-majority pattern under every prior formula tested this entire
+investigation** (cost -0.06 through -0.03, G0, J0, H0). `09_RAG__var_standard` replicate votes
+light=2/standard=1/deep=0 — the same historical toss-up character as always; no label change
+forced, per the long-established decision rule.
+
+**Phase 6 — Mirror constants.** `sweep_reward_formula.py`'s `_PROD_COST_COEF` was found *already*
+stale at -0.02 (left over from the run17-19 era, never reverted after that regressed) — fixed to
+-0.03. Since `C2` changes the formula's *shape* (not just a value), both `_recompute_from_episode_dims`
+and `_recompute_core` were rewritten (new `_PROD_DE_WEIGHT=0.45`/`_PROD_BE_WEIGHT=0.30`/
+`_PROD_GA_GATE_THRESHOLD=0.5`/`_PROD_GA_GATE_PENALTY=-0.10`, `ra` removed). `_PROD_EXPLORE_MULT`
+kept defined but retired from the formula (only referenced by `majority_vote_sweep`/
+`corpus_explore_mult_sweep`, whose whole premise — a single explore scalar — no longer maps onto
+`C2`; their explore_mult grids are archived/pre-`C2`). `analyze_cost_imbalance.py` had its own
+independent inline formula copy (the 4th documented instance of this staleness-bug class) — fixed
+identically, `user_intent` component renamed to `ga_gate` throughout. Both scripts verified to
+reproduce real production `R_w` **exactly** (6-decimal match) for `06_tools__var_standard` and
+`09_RAG__var_standard`. `measure_replicate_noise.py` re-confirmed already clean. Left untouched
+(already-documented dead/stale code, established "do NOT revive" precedent): `analyze_dataset.py`,
+`eval_accuracy.py`, `test_meta_reasoner.py`, `train_grpo.py::_compute_episode_reward`/`load_groups`
+(confirmed still genuinely unreachable — only used via `--granularity article`, which no real
+training run has ever used).
+
+### 58.1 Signal-strength comparison: `A0` (pre-`C2` production) vs. `C2` (shipped)
+
+Using `model_gate_candidates.py`'s existing `A0_current_cost002` (cost=-0.02, additive
+`0.5·ga+0.5·ra` term — literally what `bases_PRE_C2_RAREMOVAL_20260729` contains) against
+`C2_soft_ga_pen010` (cost=-0.03, `ra` dropped, `ga` soft-gated — literally what shipped), on the
+same 282-section/40-article corpus:
+
+| Metric | Before (`A0`) | After (`C2`) | Change |
+|---|---|---|---|
+| **TRAIN (171 sections)** | | | |
+| Sections hitting `sigma_floor` (`floor%`) | 24.6% | 20.5% | **-4.1pp** |
+| Mean top1-vs-top2 margin | 0.0775 | 0.0931 | **+20%** |
+| Median margin | 0.0421 | 0.0436 | +3.6% |
+| Normalized GRPO advantage (`advNorm`) | 1.108 | 1.206 | **+8.8%** |
+| Near-tie rate (2+ arms within 0.06) | 64.3% | 55.6% | **-8.7pp** |
+| **Full corpus (282 sections / 40 articles)** | | | |
+| Sections hitting `sigma_floor` | 25.6% | 23.4% | -2.2pp |
+| Median margin | 0.0376 | 0.0436 | **+16%** |
+| Normalized GRPO advantage | 1.121 | 1.197 | **+6.8%** |
+| Articles needing a tiebreak (`thin`, TRAIN) | 12/24 | 9/24 | **-3 articles** |
+| Articles needing a tiebreak (`thin`, all 40) | 20/40 | 16/40 | **-4 articles** |
+
+Arm distribution held up rather than merely shifting: TRAIN section-level skip/light/standard/deep
+went 44/55/39/33 → 43/56/38/34 (deep essentially flat); TRAIN article-level went 5/10/3/6 →
+3/11/4/6 (`deep` unchanged at 6). The signal got cleaner — bigger margins, fewer floor-clipped
+sections, fewer near-ties, a stronger normalized gradient, ~20% fewer articles landing in the
+ambiguous tiebreak zone — **without** trading away `deep`-representation, which was the whole
+point of pairing the `ga`-gate redesign with the `cost_coef` revert. Mechanistically this
+reproduces §53.6's finding almost exactly: `ga`'s old additive term contributed 26% of total
+reward variance for only 2.2% of arm-separating signal — removing that noise source (while
+keeping it as a satisficing gate) tightens margins everywhere without hurting decisiveness.
+
+*Caveat:* this uses `model_gate_candidates.py`'s own simplified recompute (matches
+`train_grpo.py`'s `sigma_floor`/near-tie logic exactly, but not `compute_article_oracle.py`'s
+S3/S4/S5 tiebreak or hard policy/override rules) — so `thin` here is a proxy for tiebreak need,
+not identical to the Phase 4 diff above, but it is an apples-to-apples comparison since both `A0`
+and `C2` ran through the identical code path.
+
+**Status:** Phases 1-6 complete. Phase 7 (explicit sign-off) was given by the user; Phase 8
+(fresh retrain, task-id `run20_c2`, `--inv-freq-temp 0.5` + the unchanged run17-19 recipe) is
+in progress. Phase 9 (eval vs. `run15_recalibrated`) is next once a checkpoint is chosen.
+
+## 59. Exploring `cc`/`fl` as soft gates (like `ga`) — modelled and **not recommended**
+
+Motivated by `C2`'s success, the natural follow-up question is whether `gt_base`'s other two
+additive terms — `cc` (`ground_truth_core_content`, weight 0.20) and `fl` (`ground_truth_flow`,
+weight 0.20) — should receive the same treatment: drop them from the additive sum and replace
+them with a flat satisficing-gate penalty, the way `ga` was.
+
+### 59.1 Why `ga` was safe to gate: the arm-neutrality precondition
+
+§54.3 rejected a *hard* `ga` gate but validated a *soft* one specifically because `ga`'s failure
+rate was **arm-neutral** — every arm failed at roughly the same rate (skip 29.8%, light 29.8%,
+standard 31.2%, deep 30.1%) and, critically, `ga`'s per-arm reward *means* were nearly identical
+(all corpus: skip=.702, light=.702, standard=.688, deep=.699 — a 1.4pp spread). That flatness is
+what makes gating safe: converting a term that doesn't differentiate arms anyway from "noisy
+additive credit" into "a satisficing floor" cannot introduce a new arm bias, because there was no
+real signal to lose.
+
+**`cc` and `fl` do not have this property.** Both carry real, non-trivial signal (§53: `cc`
+SNR=0.15, `fl` SNR=0.21 — weaker than `de`/`be` (0.71/0.53) but clearly stronger than `ga`'s
+0.03), and neither is arm-neutral:
+
+| | skip | light | standard | deep | Direction |
+|---|---|---|---|---|---|
+| `cc` (ALL, n=282) | 0.901 | 0.894 | 0.883 | 0.879 | declines skip→deep |
+| `cc` (TRAIN, n=171) | 0.906 | 0.906 | 0.865 | 0.854 | declines skip→deep (sharper) |
+| `cc` (TEST, n=111) | 0.892 | 0.874 | 0.910 | 0.919 | **rises** skip→deep (opposite!) |
+| `fl` (ALL, n=282) | 0.652 | 0.716 | 0.720 | 0.720 | rises skip→deep |
+| `fl` (TRAIN, n=171) | 0.538 | 0.614 | 0.626 | 0.643 | rises skip→deep |
+| `fl` (TEST, n=111) | 0.829 | 0.874 | 0.865 | 0.838 | peaks at light, deep ≈ skip |
+| `ga` (ALL, reference) | 0.702 | 0.702 | 0.688 | 0.699 | flat (arm-neutral) |
+
+`cc` is the more concerning of the two: it shows a *real, consistent* decline from skip to deep
+on TRAIN (already flagged in §53.6 as "split-unstable" — TRAIN and TEST disagree on direction
+entirely), meaning `deep` genuinely has somewhat worse core-content preservation on the training
+distribution specifically, for reasons that flip sign on TEST. `fl` shows the opposite pattern —
+a real, TRAIN-consistent *advantage* for `deep`/`standard`.
+
+### 59.2 Modelled candidates
+
+Built a small scratch extension of `model_gate_candidates.py` with independent, stackable gates
+(unlike `make_candidate`'s single combined gate group, so a `cc` failure and a `ga` failure are
+each penalized once, not collapsed into one shared trigger): `K1` gates `cc` only, `K2` gates `fl`
+only, `K3` gates both — all at the same threshold/penalty convention as `C2` (`< 0.5` → `-0.10`),
+with the freed weight folded into `de`/`be` at `C2`'s established 60:40 split, against the shipped
+`C2` baseline.
+
+| candidate | TRAIN floor% | TRAIN medMrg | TRAIN advNorm | TRAIN nearTie | TRAIN deep (sec/art) | ALL thin |
+|---|---|---|---|---|---|---|
+| `C2` (shipped) | 20.5% | 0.0436 | 1.203 | 56.1% | 34 / 6 | 16 |
+| `K1` (gate `cc`) | 18.7% | 0.0564 | 1.234 | 50.9% | 38 / 7 | 15 |
+| `K2` (gate `fl`) | 19.3% | 0.0564 | 1.245 | 51.5% | 38 / 7 | **19 (worse)** |
+| `K3` (gate both) | 17.5% | 0.0581 | 1.261 | 50.9% | 40 / **10** | 15 |
+
+At face value every aggregate metric improves, and `deep`'s representation grows substantially
+(TRAIN article-level `deep` nearly doubles, 6→10, under `K3`). This is the *same shape* of result
+that made the hard `ga` gate look attractive before §54.3 found the arm-bias mechanism underneath
+it — so the improvement was **not taken at face value**.
+
+### 59.3 Why the improvement is not trustworthy, on inspection
+
+1. **The arm-neutrality precondition fails.** Because `cc` declines toward `deep` on TRAIN, the
+   old additive term was *correctly* charging `deep` a real (if modest) cost for its typically
+   worse core-content preservation. A flat gate penalty of 0.10 is **smaller** than the 0.20
+   additive weight it replaces — so whenever the gate does fire, it charges roughly half what the
+   proportional term used to. Working through the arithmetic (`cc` ALL-corpus mean for `deep` =
+   0.879 ⇒ ~12.1% expected zero-rate if scores are binary): expected additive cost ≈
+   `0.20 × 0.121 = 0.0242`; expected gate cost ≈ `0.10 × 0.121 = 0.0121` — the gate mechanically
+   halves `deep`'s real, non-noise penalty. That is not "removing noise", it is quietly cutting
+   `deep`'s true cost in half with no independent justification that 0.10 (`ga`'s calibrated
+   value) is the correct exchange rate for `cc`.
+2. **`cc`'s sign instability makes any single gate direction unjustifiable.** A TRAIN-favoring
+   design (gate charges `deep` less) is directly contradicted by TEST, where `cc` rises toward
+   `deep` — the "right" gate behavior is genuinely ambiguous, unlike `ga` where the flatness meant
+   the gate's exact calibration barely mattered.
+3. **The design confounds gating with reweighting.** Both `cc` and `fl`'s freed weight was folded
+   into `de`/`be` (matching `C2`'s own convention) — and `de` in particular already differentiates
+   *strongly* toward `deep` (§53: `armSprd`=0.196, the largest of any metric). Handing `de`/`be`
+   *more* weight independently pushes toward `deep`, regardless of what happens to `cc`/`fl`'s own
+   gate. This is the same lever (`explore_mult`-style reweighting) that §35/§36 already found
+   **overturns confirmed-correct labels** when pushed too far — so part of `K1`-`K3`'s apparent
+   improvement is plausibly just re-running that already-cautioned-against lever, not evidence
+   that gating `cc`/`fl` specifically is sound.
+4. **The full-corpus check contradicts the TRAIN-only story.** `K2` (gate `fl` only) *regresses*
+   the full-40-article `thin`-article count (16→19) even though it improves every TRAIN-only
+   metric — the same kind of view-dependent inconsistency that has caught bad candidates
+   elsewhere in this investigation (§35's cross-article-agreement trap, §54.8's structural
+   false-positive gate rejection).
+
+### 59.4 Recommendation
+
+**Do not gate `cc` or `fl`.** Both carry real (if modest) signal that the current additive
+formula is using correctly and proportionally — the precondition that made `ga`'s gate safe
+(arm-neutral, ~97%-noise signal) does not hold for either metric. `cc`'s TRAIN/TEST sign
+instability (already flagged in §53.6) is a genuine open question, but the fix for a
+sign-unstable metric is to understand *why* it flips (the way the `golden_local` investigation in
+Part 2 §8 dug into a mechanism rather than gating the symptom away), not to convert it into a
+threshold check with an arbitrary, unvalidated exchange rate. If `deep`'s representation is
+believed to be still too low after `C2`'s retrain results come in, the correct next lever is a
+fresh, independently-calibrated investigation of `cost_coef` or `de`/`be` weighting on its own
+merits — not reusing `ga`'s gate mechanism on metrics that don't share `ga`'s defining property.
+
+## 59.5 Part 7 re-run on N=3-replicated TRAIN data (2026-08-17) — do the choices hold up?
+
+Part 7's entire analysis (§52–59) was built from single-draw (N=1) production `reasoning.json`
+data. All 24 TRAIN articles now have N=3 draws (1 production + 2 real temperature=0.7 replicates,
+per Appendix A.13). This section re-derives §53's metric-differentiation indices and §54/§54.6/
+§54.7/§58.1's gate-candidate comparisons on the averaged data, to check whether the design choices
+(soft-gate `ga` at penalty 0.10, drop `ra`, keep `cc`/`fl` additive/ungated, `cost_coef=-0.03`)
+still hold. **Nothing here touches actual GRPO training-run results** (entropy, checkpoints, TEST
+eval accuracy) — this is purely a re-derivation of Part 7's zero-cost reward-signal diagnostics.
+
+**New tool**: `research_agent_local/training/reanalyze_part7_averaged.py`. Read-only, zero LLM
+calls. Loads production + both replicate `reasoning.json` files for each of the 24 TRAIN articles'
+4 arms, computes each (section, arm, dimension) scalar per draw exactly as
+`model_gate_candidates.load_corpus()` does (raw `_get_score()`, or `enhancement_credit()` for
+`de`/`be`), then **simple-averages the scalars across the 3 draws** before handing the corpus to
+`model_gate_candidates.evaluate()` — so every Part 7 candidate formula (`A1`/`B`/`C1`/`C2`/`C3`/
+`D`/`E`/`F`, the `H`-series `cost_coef` sweep) is re-scored using the *exact same formula code*, no
+duplication. TEST articles pass through single-draw/unchanged (their replication is a separate,
+still-in-progress track).
+
+**Important methodological caveat, stated up front**: this averages RAW per-dimension inputs, then
+applies each candidate's formula (including gate checks) *once* to the averaged values. This is a
+*different* aggregation order than what `merge_replicate_oracles.py`/Appendix A.13 actually do for
+any real future retrain — they compute the *full formula* (including the `ga` gate check)
+separately per draw, then average the 3 resulting *final rewards*. For a linear weighted sum the
+two orders are equivalent; for a nonlinear step-function gate (`ga < 0.5`) they are not (averaging
+`ga`'s raw {0,1} values first can produce fractional values like 0.33/0.67 that the gate check then
+rounds through a single threshold, rather than letting 3 independent per-draw gate decisions
+combine). This tool is therefore the right instrument for asking "do the metrics' underlying
+*differentiation properties* (armSprd, arm-neutrality, signal share) survive averaging" — not for
+predicting exactly what a real `--use-averaged-oracle` retrain's gate behavior would be.
+
+### 59.5.1 Gate-candidate comparison (§54.2/§54.6/§54.7 re-run), TRAIN, averaged vs. single-draw
+
+| candidate | floor% (N=1 → N=3) | nearTie (N=1 → N=3) | advNorm (N=1 → N=3) | medMrg (N=1 → N=3) | ALL thin (N=1 → N=3) | corpus deep (N=1 → N=3) |
+|---|---|---|---|---|---|---|
+| `A1` (cost -0.03) | 22.9% → 29.3% | 61.2% → 65.9% | 1.144 → 1.196 | 0.0392 → 0.0455 | 21 → 25 | 7 → 5 |
+| `B` (drop `ra`) | 19.3% → 29.7% | 57.9% → 59.4% | 1.175 → 1.220 | 0.0424 → 0.0499 | — → 25 | — → 9 |
+| `C1` (soft `ga`, 0.05) | 23.1% → 24.7% | 56.8% → 60.5% | 1.200 → 1.209 | 0.0393 → 0.0403 | 17 → 21 | 9 → 8 |
+| **`C2` (soft `ga`, 0.10, shipped)** | 20.5% → **23.5%** | 55.6% → 61.4% | 1.206 → 1.207 | 0.0436 → 0.0410 | **16 → 19** | **11 → 10** |
+| `C3` (soft `ga`, 0.15) | **17.5% → 18.0%** | **52.6% → 59.9%** | 1.203 → 1.216 | 0.0403 → 0.0403 | 19 → 22 | 10 → 9 |
+| `G` (pure drop `ga`) | 22.8% → 29.9% | 59.6% → 65.9% | 1.187 → 1.184 | — → 0.0367 | 16 → 20 | 9 → 8 |
+| `D` (hard `ga`) | 23.4% → **49.7%** | 56.1% → **70.8%** | 1.172 → 1.147 | 0.0393 → 0.0300 | 13 → **9** | 6 → **9** |
+| `E` (hard trio, drop `ga`) | 22.2% → 28.7% | 59.6% → 65.9% | 1.178 → 1.169 | 0.0383 → 0.0367 | 18 → 20 | — → 10 |
+| `F` (hard trio, drop `ga`+`cc`) | 24.0% → 31.2% | 55.0% → 62.9% | 1.210 → 1.179 | 0.0445 → 0.0346 | 15 → 15 | — → 10 |
+
+**What holds up:**
+- **`C2` remains the best-justified all-round candidate.** It still has the fewest ALL-corpus
+  thin-margin articles among the soft-gate family (19, vs. `C1`'s 21 and `C3`'s 22) — the *exact
+  same relative ordering* §54.6 found on single-draw data (`C2` 16 < `C3` 19 < `C1` 17 there too,
+  modulo the absolute-count shift documented below). `C3` again posts the best raw `floor%`/
+  `nearTie` (as it did originally) but again costs more thin articles — §54.6's "returns past 0.10
+  trade section-level gains for article-level cost" finding reproduces almost exactly.
+- **`ga`'s arm-neutrality — the precondition the whole soft-gate design rests on — holds.** See
+  §59.5.3; this is the single most important thing to have survived, since C2/C1/C3/D/E/F all
+  depend on it.
+- **`cost_coef=-0.03` is still where `deep` recovers.** See §59.5.2 — the qualitative relationship
+  (deep-scarcity worsens as `cost_coef` goes more negative, recovers by `-0.03`) is intact.
+- **Hard gates (`D`) remain disqualified — but via a different, still-decisive route.** `D`'s
+  `floor%` (49.7%) and `nearTie` (70.8%) are catastrophically worse than every other candidate on
+  averaged data, roughly double `D`'s already-bad single-draw numbers — the rejection is, if
+  anything, *more* clear-cut now.
+
+**What moved, worth flagging honestly:**
+- **Every candidate's `floor%`/`nearTie` rose under averaging, not fell** (e.g. `A1` 22.9%→29.3%,
+  `C2` 20.5%→23.5%). This is *directionally consistent* with A.14.1's own already-documented
+  finding for the shipped `C2` formula specifically (floored-rate 21.1%→26.7%, near-tie 55.0%→
+  58.5%, post-correction) — averaging clarifies the *typical* section (median margin/normAdv both
+  still rise too, e.g. `A1` medMrg 0.0392→0.0455, advNorm 1.144→1.196) while flattening some
+  sections that looked separated only by single-draw luck. Same mechanism, reproduced here at the
+  gate-candidate level, not just the shipped-formula level.
+- **`D`'s specific deep-collapse *mechanism* (§54.3) does not reproduce as cleanly.** On
+  single-draw data `D`'s corpus `deep` fell to 6 (below `A1`'s 7). On averaged data `D`'s corpus
+  `deep` is 9, *above* the averaged `A1` baseline's own 5 — `A1` itself lost deep-representation
+  under averaging (7→5) independent of any gate. `D` is still unambiguously rejected (its
+  floor%/nearTie are disqualifying on their own), but the *specific* "hard gate asymmetrically
+  destroys deep's explore credit" story from §54.3 is not the reason anymore on this data — a
+  genuine, honestly-reported divergence, not swept under the rug.
+- **Absolute thin-article and corpus-deep counts shifted (mostly downward for deep) across nearly
+  every candidate**, `A1` itself included — this reflects real changes in the underlying averaged
+  section rewards, not a candidate-specific effect. Any future retrain using averaged labels should
+  expect somewhat different absolute deep-representation than the single-draw-era numbers this
+  document has cited throughout, even before any formula choice is factored in.
+
+### 59.5.2 `cost_coef` sweep under `C2` (§54.7 re-run)
+
+| `cost_coef` | floor% (N=1 → N=3) | advNorm (N=1 → N=3) | corpus `deep` (N=1 → N=3) | ALL thin (N=1 → N=3) |
+|---|---|---|---|---|
+| -0.06 | 8.2% → 21.3% | 1.266 → 1.219 | 3 → 2 | 10 → 16 |
+| -0.045 | 21.1% → 25.1% | 1.258 → 1.218 | 4 → 4 | 19 → 23 |
+| **-0.03** | 20.5% → 23.5% | 1.206 → 1.207 | **11 → 10** | 16 → 19 |
+| -0.02 | 20.5% → 24.3% | 1.166 → 1.188 | 13 → 12 | 18 → 21 |
+
+**The qualitative recommendation survives: `-0.03` is still the point where `deep` recovers to a
+healthy count while retaining `C2`'s signal-quality gains.** `-0.06`/`-0.045` still leave `deep`
+scarce (2-4 articles) on averaged data just as they did on single-draw (3-4). **But the sharp
+"floor% cliff" between `-0.06` and `-0.045`** that motivated calling `-0.045` a bad
+"worst-of-both-worlds" midpoint in the later §61 cost_coef investigation **is much weaker here**:
+single-draw showed an 8.2%→21.1% jump (2.6×) between `-0.06` and `-0.045`; averaged shows
+21.3%→25.1%, a difference of only ~4pp. This doesn't change the `cost_coef=-0.03` decision (which
+was driven by `deep`-representation, not the floor% cliff specifically), but the cliff-shaped
+evidence behind the later, separate `-0.045`-vs`-0.05` sharpness-cliff finding (§61 Stage 1
+addendum) should be treated as a single-draw-specific observation, not necessarily one that would
+reproduce if that sweep were re-run on averaged data.
+
+### 59.5.3 `A0` vs. `C2` signal-strength comparison (§58.1 re-run)
+
+| Metric (TRAIN) | `A0` (N=1 → N=3) | `C2` (N=1 → N=3) | `C2` advantage, N=1 | `C2` advantage, N=3 |
+|---|---|---|---|---|
+| `floor%` | 24.6% → 33.9% | 20.5% → 23.5% | -4.1pp | **-10.4pp** |
+| Near-tie rate | 64.3% → 68.5% | 55.6% → 61.4% | -8.7pp | -7.1pp |
+| Normalized advantage | 1.108 → 1.172 | 1.206 → 1.207 | +8.8% | +3.0% |
+| Median margin | 0.0421 → 0.0412 | 0.0436 → 0.0410 | +3.6% | **-0.5%** |
+
+**`C2` still beats `A0` on 3 of 4 headline metrics on averaged data, on `floor%` by an even wider
+margin than on single-draw** — the core §58.1 "shipped `C2` is a real signal-quality improvement"
+finding is reinforced, not just preserved. **The one metric that weakens to a wash is median
+margin** (`C2`'s +3.6% single-draw advantage becomes essentially flat, -0.5%, on averaged data) —
+both `A0` and `C2`'s median margins move in slightly different ways under averaging than their
+means/floor%/near-tie do (the same mean-vs-median dissociation A.14.1 already documented), so this
+specific sub-claim should be considered weakened, while the other three (larger, more
+decision-relevant) metrics hold or strengthen.
+
+### 59.5.4 Metric-differentiation indices (§53 re-run), TRAIN
+
+| metric | armSprd (N=1 → N=3) | %const (N=1 → N=3) | monoUp (N=1 → N=3) | SNR (N=1 → N=3, full-corpus N=1 ref.) | arm-mean shape (N=3) |
+|---|---|---|---|---|---|
+| `de` | 0.1943 → 0.1745 | 43.9% → 29.2% | 46.9% → 37.2% | (0.71) → 0.72 | skip 0.000 < light≈std 0.13 < deep 0.175 — still the top signal source |
+| `be` | 0.0812 → 0.0832 | 57.3% → 42.7% | 30.1% → 24.5% | (0.53) → 0.65 | skip 0 < light 0.060 < deep 0.064 < **std 0.083** — non-monotone peak-at-standard shape reproduces exactly |
+| `fl` | 0.1053 → **0.0448** | 56.7% → 48.5% | 43.2% → 26.1% | (0.21) → 0.20 | now peaks at light (0.684), flat/slightly down through deep (0.676) — was monotone-increasing on N=1 |
+| `cc` | 0.0526 → **0.0253** | 80.7% → 60.8% | 15.2% → 16.4% | (0.15) → 0.15 | skip≈light 0.782 > std 0.756 < deep 0.778 — the TRAIN "declines toward deep" shape (§53.6/F4) weakens substantially |
+| `ga` | 0.0234 → 0.0273 | 53.8% → 25.1% | 22.8% → 17.2% | (0.03) → 0.08 | **still flat** (0.39-0.42 across all 4 arms) — arm-neutrality holds |
+| `ra` | 0.0117 → 0.0136 | 95.9% → 88.9% | 14.3% → 31.6% | — → 0.30 | still ≥88% constant — safe-to-drop conclusion holds |
+| `cp` | 0.0058 → 0.0039 | 99.4% → 98.2% | 0.0% → 0.0% | — → 0.67 | still ≥98% constant — unchanged multiplicative-gate role holds |
+| `gsp` | 0.0117 → 0.0195 | 97.7% → 87.7% | 25.0% → 52.4% | — → 0.37 | still ≥87% constant — zero-weight decision holds |
+
+**What holds firmly**: `de` remains the dominant, cleanest signal source (largest `armSprd`, `SNR`
+≈0.7-0.72 both ways) with `deep` clearly highest. `be`'s distinctive non-monotone "peaks at
+`standard`, falls at `deep`" shape — the "third round adds depth not breadth" finding — reproduces
+almost exactly. **`ga`'s arm-neutrality (flat means across all 4 arms) is the load-bearing property
+for the whole soft-gate design, and it survives averaging intact** — this is the single most
+important confirmation in this whole re-analysis. `ra`/`cp`/`gsp` all remain safely
+near-constant, supporting their unchanged treatment (drop / keep-as-multiplicative-gate /
+zero-weight respectively).
+
+**What weakens or surfaces as new, worth flagging honestly:**
+- **`fl` and `cc`'s already-modest signal weakens further under averaging** (`fl` `armSprd`
+  0.1053→0.0448, more than halved; `cc` 0.0526→0.0253, also more than halved). `cc`'s specific
+  "declines toward `deep` on TRAIN" shape (§53.6/F4, already flagged as split-unstable against
+  TEST) is *considerably* less pronounced on averaged TRAIN data — this further **reinforces**,
+  not undermines, §59's decision not to gate `cc`: if anything, the original TRAIN-vs-TEST
+  sign-instability finding looks even more like it was partly single-draw noise, strengthening the
+  case that gating `cc` on any single-draw-derived exchange rate would have been unjustified.
+- **`ga`'s absolute mean dropped sharply (TRAIN 0.740→0.412)** even though its arm-neutral *shape*
+  held. Sanity-checked directly against raw per-section values (not a parsing artifact — e.g.
+  `06_tools__var_standard`/light: production 4/9 sections pass, replicate1 3/9, replicate2 3/9,
+  genuinely different pass/fail patterns per draw, all read via the same code path). Plausible
+  mechanism, consistent with §53.6/F2's already-established finding that `ga`'s real failure mode
+  is missing mandated visual elements (a writing-workflow property): whether a given independent
+  draft happens to include every mandated visual element seems to vary substantially draft-to-draft,
+  so `ga` carries more *cross-draft* noise than most other dimensions, on top of its already-known
+  large *cross-section* noise. **Practical implication, not yet acted on**: the shipped gate's
+  `0.5` threshold was calibrated against single-draw `ga`'s ~70-74% typical pass rate; if a future
+  retrain ever gates on an *averaged* `ga` value directly (rather than the per-draw-gate-then-
+  average-final-reward order `merge_replicate_oracles.py` actually uses), `0.5` may need
+  re-calibrating against this lower baseline. Not urgent — the real merge-back path doesn't average
+  raw `ga` before gating, so shipped behavior is unaffected — but worth remembering if this
+  aggregation order is ever used for something other than diagnostics.
+
+### 59.5.5 Overall verdict
+
+**Every major Part 7 decision is reinforced, not overturned, by re-running on N=3-replicated TRAIN
+data**: `C2` (soft `ga` gate, penalty 0.10) remains the best all-round candidate by the same
+relative margins that justified it originally; `cost_coef=-0.03` remains the point where `deep`
+recovers; dropping `ra` remains safe; not gating `cc`/`fl` remains correct (more so, if anything,
+given `cc`'s weakened signal under averaging); hard gates remain disqualified. **Two findings are
+genuinely new and worth carrying forward**: (1) `D`'s specific deep-collapse *mechanism* doesn't
+reproduce identically, though its overall rejection still holds on stronger grounds; (2) `ga`'s
+absolute pass rate is markedly lower and noisier across independent drafts than single-draw data
+suggested, a data point for any future work on `ga`'s calibration, though it does not affect
+anything already shipped.
+
+## 60. `run20_c2` post-mortem: severe entropy collapse, and why `run13_formulaB` was so much better
+
+`run20_c2` (`C2`, `cost_coef=-0.03`, task-id `run20_c2`, entropy-coef 0.22 — the unchanged
+run17-19 recipe) was evaluated at its `best_strict` checkpoint (epoch 95) and produced a
+catastrophic result, prompting a full diagnosis.
+
+### 60.1 The result
+
+From `grok_planner_test_results/_summary.json`:
+
+| Split | exact | near | miss | MAE | chosen preset dist | oracle dist |
+|---|---|---|---|---|---|---|
+| TRAIN (24) | 11 | 8 | 5 | 0.875 | {light:10, standard:5, **deep:9**} | {skip:8, light:8, standard:4, deep:4} |
+| TEST (16) | **1** | 5 | **10** | **1.688** | {light:3, **deep:13**} | {skip:2, light:6, standard:5, deep:3} |
+
+TEST predicted `deep` for 13 of 16 articles and `skip` for **zero** articles on either split
+(despite 10 combined skip-oracle labels across TRAIN+TEST) — a degenerate, near-constant policy,
+not a genuine per-input generalization failure.
+
+### 60.2 Root cause: entropy collapsed far earlier than any prior run
+
+Full `training_log.jsonl` trajectory:
+
+```
+ep 0-20:  entropy 0.18-0.42  (healthy, exploring)
+ep 30:    entropy 0.030      <- already collapsed
+ep 40-99: entropy 0.007-0.03 (stays collapsed for the remaining 70 epochs)
+peak strict_top1_accuracy: 0.5848 at epoch 95
+```
+
+Entropy collapsed by **epoch 30** — far earlier than `run13_formulaB`'s ~epoch 80 or
+`run14_phase0`'s ~epoch 97, under the *identical* `--entropy-coef 0.22`/`--beta 0.15`. Worse,
+`strict_top1_accuracy` kept slowly climbing through the entire collapsed regime (0.42→0.58 from
+epoch 30 to 95), so `--patience 50` never fired — patience tracks a train-set metric that looks
+like it's still improving even as the policy degenerates into a near-constant output, the same
+"train metric ≠ generalization signal" trap already documented for `run14_phase0`.
+`train_grpo.py`'s `load_section_groups()` was checked and confirmed to only read the `"rewards"`
+key from `section_oracle.json` — the new `C2` `"diagnostics"` field (§58) is safely ignored, so
+this is not a code regression from that change. `best_strict_epochs/` contains only
+`epoch_0095` (strict accuracy climbed monotonically, never tying an earlier epoch), so there is
+no earlier, pre-collapse checkpoint available to fall back to.
+
+### 60.3 Confirming the historical comparison: `run13_formulaB` really was this much better
+
+`run13_formulaB` (`cost_coef=-0.06`, Formula B, trained *before* `G0`/`J0`/`H0`/`EPS_BAND`/
+I-series/`C2` existed — all landed 2026-07-13 through 2026-07-29, after this run):
+- **TRAIN**: strict_top1 peaked **0.848** at epoch 84, near-tie top1 peaked **0.947** at epoch 90.
+- **TEST**: RL-only exact 7-10/16 (44-62%), **0 misses**, MAE 0.375-0.562. Full RL+Grok pipeline:
+  exact=10/16 (62%), miss=0, MAE=0.375, regret_mean=0.0384.
+
+This confirms the recollection precisely and the gap to `run20_c2` (TEST exact=1/16, miss=10/16,
+MAE=1.688) is real and severe, not exaggerated.
+
+### 60.4 Causes — several confounded factors, `cost_coef` is real but secondary
+
+1. **Entropy-collapse timing/severity is the primary, most direct cause.** `run13`'s peak
+   checkpoint (epoch 84) was captured *before* entropy fully bottomed out — still a genuinely
+   differentiated policy. `run20_c2` collapsed by epoch 30 and never recovered; its "best"
+   checkpoint (epoch 95) is deep inside the collapsed regime. Same hyperparameters both runs — the
+   difference is *when* collapse happened, not whether the regularizer existed.
+2. **Why collapse got so much earlier — originally hypothesized as "the reward signal got
+   stronger", but this claim did NOT survive checking against the true original formula (see
+   §60.6 correction below).** The initial version of this section cited §58.1's `A0` vs `C2`
+   comparison as evidence — but `A0` is only the *immediately preceding* formula state (already
+   including `H0`, `G0`, `J0`, and four `cost_coef` reductions), not what actually trained `run13`.
+   Directly compared against the true original Formula B (§60.6), `C2` is measurably **less**
+   decisive by these same aggregate metrics, not more — so this specific mechanism is retracted.
+   The real cause of the collapse-timing difference is not yet established; see §60.6 for the
+   corrected, more honest accounting.
+3. **Digest-pipeline evolution — a real, independently-already-quantified factor.** Between
+   `run13` and now, the digest pipeline changed materially (Phase 0's anchor-hygiene filter,
+   temp=0 fixes, `golden_local` fix, policy majority-vote — landed 2026-07-11, after `run13`).
+   §14.3's decisive attribution eval already showed that taking `run13_formulaB/best` **unchanged**
+   and re-evaluating on the new Phase-0 digests alone regressed TEST from exact=10/miss=0/
+   MAE=0.375 to exact=10/near=3/**miss=3**/MAE=0.625 — zero retraining involved. Part of the gap
+   is baked into digest evolution, independent of training or `cost_coef`.
+4. **Oracle-label drift — minor, not apples-to-apples.** TEST ground-truth labels themselves
+   shifted across `G0`/`J0`/`H0`/`EPS_BAND`/staged `cost_coef`/`C2` (each individually validated as
+   thin-margin-only). Smaller effect than 1-3, but `run13`'s TEST score isn't measured against an
+   identical target.
+5. **`cost_coef` itself shapes *which* degenerate output, not *whether* collapse happens.**
+   `-0.03`'s corpus deep-count (11) vs. `-0.06`'s (3, §54.7/§59 sweep) plausibly explains why this
+   run's collapse specifically converged to "always deep" rather than "always cheap" (`run12`'s
+   old failure mode). But `-0.06` actually has the *highest* `advNorm` (1.266) of any `cost_coef`
+   value under `C2` — so reverting `cost_coef` would not obviously prevent collapse, only
+   relocate it to a different constant output.
+
+### 60.5 Interpretation and next step
+
+Reverting to Formula B / `cost_coef=-0.06` is not recommended: its good TEST result was likely a
+side effect of a *weaker* signal buying more pre-collapse epochs, not evidence of a fundamentally
+more stable training setup, and it reintroduces the severe deep-scarcity problem this whole
+investigation spent weeks fixing. The cleaner interpretation is that `entropy_coef=0.22` needs to
+be recalibrated upward to match the genuinely-improved signal strength, not that the signal
+improvements should be undone. `run21_ecoef035` (`--entropy-coef 0.35`, everything else
+unchanged from `run20_c2`, fresh task-id) was launched to test this directly — the key thing to
+watch is whether `mean_entropy` stays meaningfully above the ~0.01-0.03 collapsed range well past
+epoch 30 this time, before trusting any checkpoint's train-set accuracy.
+
+### 60.6 Correction (2026-07-30): the "signal got stronger" claim does not hold against the true original Formula B
+
+**User challenge:** §60.4 point 2 cited §58.1's `A0` vs `C2` comparison as evidence the reward
+signal "genuinely got stronger over time" — but `A0` (cost=-0.02, the state immediately
+preceding `C2`) already includes `H0`'s empirical cost units, `G0`/`J0`'s enhancement-curve
+fixes, and three prior `cost_coef` reductions. None of that existed when `run13_formulaB`
+actually trained. The comparison needed is `C2` vs. the *true* original Formula B, not `C2` vs.
+its immediate predecessor.
+
+**Found the real data to check this directly.** `rl_training_data/bases_ORACLE_BACKUP_20260708_231117/`
+(taken the moment Formula B first shipped, per the Part-1 shipping log) is `section_oracle.json`
+version 2 — no `"explore"` field (pre-candidate-E, §39), raw-binary `de`/`be` (pre-enhancement-tag,
+§25-29), `cost_coef=-0.06` with ordinal `nr` units (pre-H0). This is, as directly as the repo's
+surviving artifacts allow, exactly what `run13_formulaB` trained on. Recomputed the same
+signal-quality metrics (`train_grpo.py`'s own `sigma_floor`/near-tie/`advNorm` logic,
+target-words-weighted article aggregation, `EPS_BAND` thin-article check) directly from this
+backup's already-computed `rewards` — no reformula needed, since v2's `rewards` dict already *is*
+the historical Formula-B output.
+
+| | True original Formula B (2026-07-08) | `C2` (shipped) | Direction |
+|---|---|---|---|
+| **TRAIN (171 sections)** | | | |
+| `floor%` | **7.0%** | 20.5% | original is *cleaner* |
+| Mean margin | **0.1171** | 0.0931 | original is *bigger* |
+| Median margin | **0.0500** | 0.0436 | original is *bigger* |
+| `advNorm` | **1.230** | 1.206 | original is *stronger* |
+| Near-tie rate | 56.1% | 55.6% | ~equal |
+| TRAIN article dist (sk/li/st/dp) | 8/10/**3**/**3** | 3/11/4/**6** | original is severely `deep`-scarce |
+| **Full corpus (282 sections / 40 articles)** | | | |
+| `floor%` | **6.0%** | 23.4% | original is *cleaner* |
+| Median margin | **0.0500** | 0.0436 | original is *bigger* |
+| `advNorm` | **1.251** | 1.197 | original is *stronger* |
+| ALL article dist (sk/li/st/dp) | 11/19/**5**/**5** | 4/18/7/**11** | original is severely `deep`-scarce |
+
+**This is the opposite of the §60.4 point 2 claim.** Directly compared — not via a proxy
+comparison against an intermediate state — the true original Formula B is *more* decisive on
+every aggregate signal-quality metric than `C2`, on TRAIN specifically (what GRPO actually
+trains on) as well as the full corpus. **The specific mechanism proposed in §60.4 point 2
+("signal got stronger ⇒ faster collapse") is retracted** — it is not supported by the direct
+comparison, and if anything predicts the wrong direction (a *more* decisive original signal
+should, by that same logic, have collapsed faster or as fast, not slower).
+
+**Why the original formula's aggregate numbers look better — a plausible, not yet confirmed,
+reconciliation.** This finding does not contradict the rest of this investigation; it's
+consistent with two already-documented, independently-diagnosed problems with the original
+formula that were never framed in these particular aggregate terms before:
+1. **`cost_coef=-0.06` with ordinal units spans a much wider mechanical range** than today's
+   `-0.03` with H0's empirical units (max cost spread `0.18` vs. `0.069`, §52.1-52.2) — a bigger,
+   blunter cost term mechanically creates bigger, "cleaner"-looking margins between cheap and
+   expensive arms, independent of whether the *content* signal underneath is well-calibrated.
+   `analyze_cost_imbalance.py` already found this exact term explained ~93% of `deep`'s average
+   shortfall at `-0.06` — a large fraction of the original formula's "decisiveness" is this one
+   mechanical term, not genuine content differentiation.
+2. **Raw-binary `de`/`be` is a coarser, bigger-jump signal than the saturating `enhancement_credit()`
+   curve** — a 0→1 flip is a bigger, more "decisive"-looking swing than a smooth 0.35→0.80
+   transition, even though the pairwise-grading investigation (Part 6, p=0.031 across two
+   independent 12+6-article samples) found the binary version specifically *overstates* the true
+   content-quality gap at exactly this tier boundary. Coarser is not the same as more correct.
+
+   Both of these mean the original formula's superior `floor%`/margin/`advNorm` numbers are
+   plausibly an artifact of two mechanisms *this investigation itself later diagnosed as
+   miscalibrated* (H0's cost-unit fix, the pairwise-grading tier-1 fix) — not evidence the
+   original reward signal was more *correct*. The near-total `deep` scarcity in the original
+   distribution (3-5 articles out of 40, matching the historical "skip≈8/light≈11/standard≈3/
+   deep≈2" complaint that motivated the entire H0/G0/J0/`cost_coef` arc) is the direct cost of
+   that same bluntness. **This reconciliation is plausible but not independently verified** —
+   it explains why the numbers could look this way without contradicting anything else in this
+   document, but it has not been tested as rigorously as the rest of this investigation's claims.
+
+**What this means for the actual open question.** §60's core findings about `run20_c2`/
+`run21_ecoef035` themselves are unaffected — the entropy-collapse timing, the `patience`
+blind spot, and the recommendation against reverting `cost_coef` (§54.7's sweep already showed
+`-0.06` has the *highest* `advNorm` of any tested value, so reverting wouldn't prevent collapse
+regardless of this correction) all stand on their own directly-observed merits. What changes is
+the **explanation** for why collapse happens so much earlier now than in `run13`. That is now
+honestly unresolved. Candidate factors, none confirmed: (a) the digest-pipeline refresh between
+`run13` and every later run (Phase 0, §14.3) — already independently proven to change held-out
+behaviour with zero retraining, a stronger prior than the retracted signal-strength story; (b)
+the underlying grading judge/pipeline changed (`run13`'s original Gemini binary grades vs.
+today's Claude + tag-instrumented re-grade, §37), a different source of section-level noise
+characteristics than either compared formula's *shape*; (c) genuine run-to-run stochastic
+training variance — collapse-epoch claims rest on `n=1` run per configuration, a weak sample for
+any deterministic causal story. Resolving this would need a dedicated, controlled comparison
+(e.g. retraining on `C2` reward *values* but `run13`-era digests, or vice versa) — not attempted
+here; the practical recommendation (try `entropy_coef` first, keep `cost_coef` where it is)
+is unchanged since it does not depend on which of these explanations turns out to be right.
+
+### 60.7 `run22_reg_combo` post-mortem (2026-07-31): third consecutive collapse, flat returns from the entropy_coef/grad-clip lever, and the new safety net's first real save
+
+`run22_reg_combo` (`--entropy-coef 0.6 --max-grad-norm 0.1 --warmup-epochs 20`, otherwise the same
+recipe) was checked at epoch 83/200 (still running). Full trajectory read from `training_log.jsonl`.
+
+**Entropy collapsed again.** Peaked 0.50 (epoch 14), oscillated 0.14–0.42 through epoch 29, then
+crashed epoch 30→38 (0.122→0.022) and has stayed pinned in the 0.005–0.05 range for the ~50
+epochs since, with zero recovery — the identical shape as `run20_c2`/`run21_ecoef035`.
+
+**Collapse-onset timing across all 3 runs shows flat, not improving, returns:**
+
+| run | `entropy_coef` | extra regularization | entropy at epoch 30 | epoch entropy first `<0.03` |
+|---|---|---|---|---|
+| `run20_c2` | 0.22 | none | collapsed | ~epoch 30 |
+| `run21_ecoef035` | 0.35 | none | 0.0662 | ~epoch 32 |
+| `run22_reg_combo` | 0.60 | `max_grad_norm=0.1`, `warmup=20` | 0.1223 | ~epoch 37–38 |
+
+Nearly tripling `entropy_coef` (0.22→0.6) plus adding gradient clipping and doubling warmup bought
+only ~5–8 more epochs before full collapse. This is a flat curve, not a dose-response still
+climbing — three consecutive escalations on this exact lever have now failed the same way, strong
+evidence it is exhausted rather than under-tuned.
+
+**`strict_top1_accuracy`/`top1_accuracy` (near-tie-tolerant, confirmed via
+`top1_correct = top1 in group.acceptable_idxs`) both climb continuously through the entire
+collapsed regime** — strict 0.42→0.55 and near-tie 0.63→0.80 from epoch 37 to 83, while entropy
+sits at ~0.01–0.03 the whole time. Exactly the illusory-progress pattern §60.2 first flagged.
+
+**The new `best_strict_healthy` tracker (built after `run21`, §-prior entry) is validated in
+practice — its first real save.** It stopped updating at epoch 28, the last epoch where entropy
+was still ≥ the 0.15 healthy floor, and has correctly refused to certify anything since:
+
+| tracker | value | epoch | entropy there | trustworthy? |
+|---|---|---|---|---|
+| `best_strict_healthy_top1` | **0.281** | 28 | 0.186 (healthy) | **yes** |
+| `best_strict_top1` | 0.573 | 75 | ~0.03 (collapsed) | no |
+| `best_neartie_top1` | 0.801 | 83 | ~0.01 (collapsed) | no |
+
+This ~2–2.8x gap is exactly the "still suboptimal" signal: the 55%/80% numbers the untethered
+trackers report are an artifact of a near-deterministic policy re-confirming its own memorized
+argmax on the training groups it was fit to, not genuine competence. The only currently-trustworthy
+number across all 3 runs so far is **28.1%** — barely above a 25% random-4-arm baseline, meaning no
+run has yet demonstrated real generalizable competence before collapsing.
+
+**`sigma_floor_fraction` is flat at exactly 0.2222 across every logged epoch** — reconfirms (as
+expected, since labels are frozen and never touched by training) that this is a static property of
+the label set, not something drifting with the collapse. Ruled out as a collapse-timing mechanism.
+
+**Recommendation: stop escalating `entropy_coef`/grad-clip/warmup as the primary lever.** Three
+consecutive attempts spanning `entropy_coef` 0.22→0.35→0.6 (the last combined with grad clipping
+and longer warmup) show diminishing-to-flat returns on collapse timing, all via the identical
+never-recovers mechanism. Given §19's established mechanism (frozen, never-resampled reward
+labels — noisy labels get memorized, not averaged away) and §55.3's finding that a large fraction
+of the corpus's reward margins are statistically indistinguishable from noise, the more promising
+untested lever is Appendix A's already-planned label-noise reduction (A.10 steps 2–4: real
+temperature-0.7 replication → the now-built merge-back script → retrain on averaged labels). This
+is mechanistically plausible as a fix for collapse too, not just for label quality: if a handful of
+noisy/extreme-margin groups are driving disproportionately large policy-gradient updates each
+epoch, cleaning up those labels could reduce collapse pressure directly, rather than only
+delaying or safety-netting around it. Not yet confirmed — would need the retrain in step 4 to test.
+
+### 60.8 Free diagnostic on `run22`'s existing log (2026-07-31) + candidate experiment list before committing to replication
+
+Before spending on the noise-reduction plan, re-examined `run22`'s already-collected
+`training_log.jsonl` per-group data (killed at the user's decision after §60.7) to check whether
+collapse is concentrated in a few noisy/near-tie groups (which would argue replication alone might
+fix it) or broad-based across most of the training set (which would argue for an independent
+training-dynamics fix regardless of label quality).
+
+**Finding: the collapse is broad, not concentrated.** At epoch 45 (well into the collapsed regime),
+**146/171 groups (85.4%) have entropy `<0.001`, and 138/171 (80.7%) are at *exactly* `0.0000`** —
+essentially every group's policy has gone fully deterministic, not just a noisy minority. Only 9
+groups (5.3%) retain entropy `>0.1`. This is broad-based convergence toward one-hot outputs across
+nearly the whole 171-group training set, consistent with **full-batch gradient ascent on a small,
+fixed dataset (repeated backprop over the same 171 groups every epoch, no resampling, no
+mini-batching, no fresh stochasticity — see the `train_grpo.py` architecture note) reliably driving
+memorization/argmax-commitment given enough epochs**, rather than a few outlier labels dominating.
+
+**Secondary finding: predictions are skewed, not single-mode.** `top1_preset` distribution at
+epoch 45 (skip/light/standard/deep): **1 / 63 / 30 / 77** — `skip` is nearly abandoned (predicted
+for only 1 of 171 groups) while `light`/`deep` dominate. Not literal collapse-to-one-class, but a
+genuine skew worth tracking separately from the entropy question.
+
+**The LR-schedule-timing hypothesis is weakened, not confirmed.** `train_grpo.py` uses cosine decay
+with linear warmup; at the observed collapse window (epoch 25-40), the LR multiplier is still
+~95-100% of peak regardless of `warmup_epochs=10` (`run20`/`run21`) vs. `20` (`run22`) — the cosine
+curve barely moves until much later (~epoch 100+). So "LR just reaching full strength post-warmup"
+does not cleanly explain why all 3 runs collapsed in the same narrow epoch band despite different
+warmup lengths; this axis has not been tested in isolation (`run22` changed it simultaneously with
+`entropy_coef` and `max_grad_norm`), so it isn't ruled out either.
+
+**Candidate experiments, prioritized by expected information gain per run (each held to ONE changed
+variable vs. a common baseline — `run22` conflated 3 changes at once, which is why the current
+evidence can't attribute its modest delay to any one of them):**
+
+| # | Experiment | Lever type | Why it's informative | Cost |
+|---|---|---|---|---|
+| 1 | Lower `--lr` (e.g. 1e-5 or 2e-5, vs. the untouched 5e-5 baseline in all 3 runs) | Untested, orthogonal to entropy_coef | Directly throttles the full-batch optimization step size; if collapse-onset scales roughly with `lr`, confirms the "too much gradient per step on a tiny fixed dataset" mechanism and gives a controllable fix (unlike `entropy_coef`'s flat returns) | 1 short run |
+| 2 | Smaller LoRA capacity (`--lora-r 4` or `8`, vs. 16 in all 3 runs) | Untested, capacity-driven | Tests whether reduced adapter capacity slows/prevents the collapse-into-argmax dynamic directly | 1 short run |
+| 3 | Higher `--beta` (e.g. 0.3-0.5, vs. 0.15 in all 3 runs) | Untested as primary lever | A genuinely different regularizer — pulls toward the reference *distribution shape*, not just toward high entropy in isolation | 1 short run |
+| 4 | Higher `--weight-decay` (e.g. 0.05-0.1, vs. the untouched 0.01 default) | Untested, cheap | Direct, orthogonal, standard anti-overfitting lever never varied so far | 1 short run |
+| 5 | Isolated `--warmup-epochs` sweep (e.g. 5 vs. 40), holding `entropy_coef`/`max_grad_norm` at `run20`'s original values | Re-test of a confounded variable | `run22` never isolated this; the LR-schedule math above weakens its priority but doesn't rule it out — cheap enough to settle cleanly | 2 short runs |
+| 6 | Mini-batch/stochastic group subsampling per epoch (sample a random subset of groups each epoch instead of full-batch every time) | Bigger lever, addresses the root mechanism most directly | Injects the stochastic-gradient noise full-batch-on-fixed-data structurally lacks; requires a real code refactor (`train_grpo.py`'s loop is hard-coded to backprop every group before one `optimizer.step()`) | Code change + 1 run |
+| — | Stronger inverse-frequency reweighting (`--inv-freq-temp` 1.0, vs. 0.5) | Complementary, not a substitute | Addresses the `skip`-abandonment skew specifically; unlikely to change collapse *timing*, but may change prediction quality/class balance once collapsed | 1 short run |
+
+**Methodological suggestion: run these short, not to 200 epochs.** Collapse has now manifested by
+epoch ~30-40 in all 3 configurations tried — there is no need to run future diagnostic experiments
+to `--epochs 200` to learn whether a lever shifts collapse-onset timing. `--epochs 60-80` with the
+same `best_strict_healthy` tracking is enough to read the entropy trajectory and cut the feedback
+loop by more than half.
+
+**Recommendation on sequencing:** #1 (lower `lr`) and #2 (smaller LoRA rank) are the highest
+priority — they are the two levers most directly implicated by the broad-collapse finding above and
+have never been touched across `run20`/`21`/`22`, unlike `entropy_coef`, which is now shown
+exhausted (§60.7). This is independent of, and can run in parallel with, the label-noise-reduction
+plan (Appendix A) — the broad-based nature of the collapse means training-dynamics fixes are worth
+pursuing on their own merits, not only as a downstream consequence of cleaner labels.
+
+### 60.9 Revisiting the pre-`run22` Formula-B reward-swap diagnostic, in light of §60.8 (2026-07-31)
+
+Before `run22` concluded, a diagnostic was proposed for exactly this scenario (collapse recurring a
+third time): swap in the *true* original Formula-B reward values (from
+`bases_ORACLE_BACKUP_20260708_231117`, zero new generation) while keeping *today's* digests/model
+inputs unchanged, and retrain — reasoning that if collapse still happens, that rules out "reward
+decisiveness" as the driver (since §60.6 showed the old formula is *more* decisive) and points at
+the digest-pipeline refresh or grading-judge change; if it doesn't collapse, that isolates the
+reward labels themselves.
+
+**Still worth running — cheap, and directly informative regardless of outcome.** Feasibility
+confirmed: section IDs are identical between the old backup and today's production
+`section_oracle.json` across **all 24 TRAIN articles (24/24 match, 0 mismatches)** — the Phase-0
+digest refresh changed section *content*, not the ID scheme, so a merged directory (today's
+`research_digest.md`/`guideline_features.json` + the old backup's `section_oracle.json`) is
+directly constructable with no section-alignment risk.
+
+**But its original two-way interpretation is now outdated — §60.8 adds a third candidate cause the
+original framing didn't have.** The original logic only weighed "reward decisiveness" against
+"digest-pipeline/grading-judge change." §60.8's broad-collapse finding (85%+ of groups go fully
+deterministic, not a noisy minority) makes a third explanation — **full-batch gradient ascent on a
+small, fixed, 171-group dataset, independent of which specific reward values populate it** — at
+least as plausible as either original candidate. This changes how each outcome should be read:
+
+- **If it still collapses early (now the more likely outcome given §60.8):** this no longer cleanly
+  "points at the digest-pipeline or grading-judge" as originally stated — a full-batch/capacity-driven
+  collapse would be expected to recur under *any* valid reward signal, old or new, if `lr`/`lora_r`
+  are unchanged. This result would be consistent with (not exclusive proof of) the full-batch
+  hypothesis, and would need to be read alongside the `lr`/`lora_r` experiments (§60.8 #1-#2) to
+  disambiguate from the digest/judge explanation — not decisive on its own anymore.
+- **If it does *not* collapse early:** this reading is unaffected and remains strong — it would
+  isolate the old formula's specific reward *structure* (not just its aggregate decisiveness, which
+  is higher and would, if anything, predict earlier collapse under the old two-way framing) as
+  conferring genuine stability benefits distinct from the full-batch/capacity story, and would be a
+  substantive, surprising-enough-to-need-follow-up finding.
+
+**Recommendation: run it, but as a complementary diagnostic, not a substitute for #1/#2.** It is
+diagnostic-only — the old Formula B is not a viable production fix regardless of outcome (its
+severe `deep`-scarcity, §60.6, is exactly the problem the H0/G0/J0/C2 arc spent weeks fixing) —
+whereas lower `lr`/smaller `lora_r` are both diagnostic *and* directly actionable. If GPU capacity
+allows only one job at a time, run #1/#2 first; if there is spare capacity, this is a good use of
+it in parallel, since it costs zero new generation. Hold `entropy_coef=0.22`, `lr=5e-5`,
+`beta=0.15`, `lora_r=16`, `warmup=10` identical to `run20_c2` for the cleanest possible
+single-variable comparison, and run short (60-80 epochs, per §60.8's methodological note).
+
+### 60.10 `run23_lr1e5` / `run24_lorar4` handed off to the user (2026-07-31)
+
+Local GPU allows only one run at a time, so #1 (lower `lr`) and #2 (smaller LoRA rank) are handed
+off sequentially, each a single-variable change against the exact `run20_c2` baseline (recovered
+from shell history: `lr=5e-5, beta=0.15, entropy-coef=0.22, warmup=10, patience=50, lora-r=16,
+lora-alpha=16, lora-dropout=0.05, granularity=section, section-weight=hybrid, inv-freq-temp=0.5,
+epochs=200`). `--epochs` is kept at 200 in both (not shortened) because it also sets the cosine
+LR-schedule's denominator — shortening it would change the LR trajectory shape, not just when the
+run stops. The "run short" methodology from §60.8 is instead applied by killing each run manually
+once the entropy trajectory is clear (~epoch 60-80), the same way `run22` was handled.
+
+```bash
+# Experiment #1 — only --lr changed (5e-5 -> 1e-5)
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True nohup uv run python train_grpo.py \
+  --task-id run23_lr1e5 --epochs 200 --lr 1e-5 --beta 0.15 --entropy-coef 0.22 \
+  --warmup-epochs 10 --patience 50 --lora-r 16 --lora-alpha 16 --lora-dropout 0.05 \
+  --granularity section --section-weight hybrid --inv-freq-temp 0.5 \
+  > ../../rl_training_data/checkpoints/tasks/run23_lr1e5_stdout.log 2>&1 &
+
+# Experiment #2 — only --lora-r/--lora-alpha changed (16 -> 4, ratio held at 1:1); run AFTER #1
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True nohup uv run python train_grpo.py \
+  --task-id run24_lorar4 --epochs 200 --lr 5e-5 --beta 0.15 --entropy-coef 0.22 \
+  --warmup-epochs 10 --patience 50 --lora-r 4 --lora-alpha 4 --lora-dropout 0.05 \
+  --granularity section --section-weight hybrid --inv-freq-temp 0.5 \
+  > ../../rl_training_data/checkpoints/tasks/run24_lorar4_stdout.log 2>&1 &
+```
+
+Watch `mean_entropy` in each `training_log.jsonl` — does it stay meaningfully above the 0.15
+healthy floor well past epoch 30-40 this time — and whether `best_strict_healthy_epochs/` keeps
+accumulating (health holding) vs. freezing early like `run22`'s did at epoch 28.
+
+### 60.11 `run23_lr1e5` interim check-in (2026-08-01, epoch 149/200, still running): slower decay, but no healthier ceiling
+
+Entropy stayed above the 0.15 healthy floor through epoch ~48 (vs. ~28-30 in `run20`/`21`/`22` —
+~65% longer), and at epoch 148 sits around 0.05, not yet at `run22`'s eventual <0.03 floor —
+possibly stabilizing at a slightly higher plateau, though only ~20 epochs of data so far.
+
+**But the `best_strict_healthy` comparison shows no real improvement:**
+
+| | `run22` (`entropy_coef=0.6`) | `run23_lr1e5` (`lr=1e-5`) |
+|---|---|---|
+| Epoch health lost | ~28 | ~48 (65% later) |
+| Health-gated strict_top1 ceiling | 28.1% | **25.7%** |
+
+Despite taking 65% longer to lose health, the trustworthy-ceiling did not improve — if anything it's
+marginally lower. The raw (untrusted) strict/near-tie numbers climbing at epoch 135-148 (~40%/~66%)
+are climbing for the identical reason `run22`'s did — entropy is below the healthy floor and still
+slowly shrinking — so they carry the same interpretive caveat. **Preliminary read: lower `lr`, at
+this magnitude, appears to stretch the same collapse dynamic over more wall-clock epochs rather than
+changing its ultimate character** — a genuinely informative, if modest, result. Not yet conclusive
+(entropy hasn't bottomed out), but the health-gated ceiling already answers the more important
+question about whether this lever produces a *healthier*, not just *slower*, run.
+
+### 60.12 The trustworthy ceiling is invariant across all 4 runs — and sits *below* the majority-class baseline (2026-08-01)
+
+Two free checks, prompted by the user's argument that `lora_r=4` (§60.8 #2) is not worth the GPU
+time because the trustworthy-learning ceiling appears reward-signal-limited rather than
+training-dynamics-limited. Both computed from data already on disk, zero new runs.
+
+**Check 1 — retroactive health-gated ceiling for every run.** `run20`/`run21` predate the
+entropy-aware tracker, but the metric it computes can be reconstructed exactly from their logs
+(max `strict_top1_accuracy` over epochs where `mean_entropy >= 0.15`):
+
+| run | changed variable | health-gated ceiling | reached at | healthy epochs |
+|---|---|---|---|---|
+| `run20_c2` | (baseline) `entropy_coef=0.22` | 26.9% | epoch 21 | 21 |
+| `run21_ecoef035` | `entropy_coef=0.35` | 25.7% | epoch 21 | 22 |
+| `run22_reg_combo` | `entropy_coef=0.6` + grad-clip + warmup | 28.1% | epoch 28 | 29 |
+| `run23_lr1e5` | `lr=1e-5` | 25.7% | epoch 45 | 49 |
+
+**The ceiling spans just 25.7%–28.1% — a 2.3-point spread — across four wildly different
+configurations** (`entropy_coef` 0.22→0.6, `lr` 5e-5→1e-5, grad-clip 0.2→0.1, warmup 10→20).
+`run23` more than doubled the number of healthy epochs (21→49) and still did not raise the ceiling.
+This strongly confirms the user's premise: **the trustworthy ceiling is essentially invariant to
+training-dynamics hyperparameters**, which makes further single-hyperparameter runs (including
+`lora_r=4`) low-value for raising it.
+
+**Check 2 — constant-predictor baselines, and the finding that reframes everything.** Applying
+`load_section_groups`' flat-filter and argmax logic directly to the label sets:
+
+| label set | strict label dist (sk/li/st/dp) | best constant predictor (strict) | best constant predictor (near-tie) |
+|---|---|---|---|
+| **C2 (current production)** | 50 / 49 / 38 / 34 | **`skip` → 29.2%** | `light` → 58.5% |
+| **True original Formula B** | 71 / 49 / 33 / 18 | **`skip` → 41.5%** | `light` → 59.1% |
+
+**Every single run's health-gated ceiling (25.7%–28.1%) is *below* C2's 29.2% majority-class
+baseline.** No run has ever, while in a genuinely healthy (non-collapsed) state, beaten a trivial
+"always predict `skip`" predictor on strict top-1. The problem is not merely that trustworthy
+learning is *low* — it is that **no learning above a trivial constant baseline has yet been
+demonstrated at all under healthy entropy**. This is a materially stronger statement than §60.7's
+"barely above the 25% random-4-arm baseline," and it reframes the whole investigation: the binding
+constraint is very unlikely to be a training-dynamics hyperparameter.
+
+**Critical caveat for the planned Formula-B swap experiment (§60.9): its success criterion must be
+baseline-relative, or its result will be misleading.** Formula B's labels are substantially more
+skewed than C2's (`skip` 71/171 vs. 50/171 — the known deep-scarcity, §60.6), so its
+constant-predictor baseline is **41.5%, not 29.2%**. A Formula-B run reaching, say, a 35%
+health-gated ceiling would *look* like a large improvement over C2's 25.7–28.1% while actually
+being **6.5 points worse than its own trivial baseline**. The correct metric is
+**`ceiling − that label set's own constant-predictor baseline`**, i.e. does the model beat trivial
+*on the labels it was trained on*. Usefully, the **near-tie baselines are nearly identical
+(58.5% vs. 59.1%)**, so `top1_accuracy` (near-tie) is directly comparable across the two label sets
+without this correction and should be tracked as the cleaner cross-run comparison.
+
+**Assessment of the user's proposal (run Formula-B swap instead of `lora_r=4`): agreed, with the
+above correction.** The reasoning is sound and now well-evidenced by Check 1. It also improves on
+§60.9's own framing: §60.9 judged the swap experiment partly ambiguous because the full-batch
+hypothesis could explain *collapse timing* under any reward signal — but the user's reframing
+targets the **ceiling**, not the timing, and the full-batch mechanism does not obviously predict a
+particular ceiling. So the experiment is *more* informative under this success criterion than
+§60.9 concluded, provided it is measured baseline-relative.
+
+**Expected-outcome caveat, stated in advance to avoid post-hoc rationalization:** given Check 1's
+flatness *and* the fact that Formula B's higher raw ceiling would be partly mechanical (easier,
+more skewed labels), the most likely result is that Formula B also fails to beat its own 41.5%
+baseline. That would be a genuinely valuable negative result — it would mean neither reward
+structure tested so far supports above-trivial learning under healthy entropy, pointing at label
+noise (Appendix A) or the input representation, rather than at reward *shape*, as the true binding
+constraint.
+
+### 60.13 `run25_formulab_diag` built and handed off (2026-08-01)
+
+`run23_lr1e5` killed at the user's decision (its diagnostic question — healthier vs. just slower —
+was already answered by §60.12's ceiling comparison). Built the Formula-B swap experiment instead
+of `run24_lorar4` (§60.8 #2), per the user's argument in §60.12 that further training-dynamics
+hyperparameter runs are low-value given the ceiling's invariance.
+
+**Implementation (new, separate script — production paths untouched):**
+- `training/build_formulab_diag_bases.py`: for each of the 24 TRAIN articles, copies today's
+  `research_digest.md` + `guideline_features.json` from `rl_training_data/bases/` (current digest
+  pipeline, unchanged model inputs) and `section_oracle.json` from
+  `bases_ORACLE_BACKUP_20260708_231117/` (true original Formula-B rewards, zero new generation)
+  into a new root, `rl_training_data/bases_FORMULAB_DIAG/`. Verified 24/24 built; a direct
+  pure-JSON/regex check (no heavy-lib import, to sidestep this environment's slow
+  `import train_grpo` startup) confirms every oracle section ID is present in its digest for all
+  24 articles.
+- `train_grpo.py`: added a minimal `--bases-dir` CLI override (mirrors the existing
+  `--episodes-dir` pattern used elsewhere in the repo) — when set, overrides the module-level
+  `_BASES_DIR` before data loading, so `section_oracle.json`/`research_digest.md`/
+  `guideline_features.json` lookups redirect to the given root. Default `None`, so every other
+  invocation is unaffected. `py_compile`-verified.
+
+**Recipe: identical to `run20_c2`'s baseline except `--bases-dir`**, for the cleanest possible
+single-variable comparison against the existing `run20`-`run23` results:
+
+```bash
+cd /mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local/training
+
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True nohup uv run python train_grpo.py \
+  --task-id run25_formulab_diag --epochs 200 --lr 5e-5 --beta 0.15 --entropy-coef 0.22 \
+  --warmup-epochs 10 --patience 50 --lora-r 16 --lora-alpha 16 --lora-dropout 0.05 \
+  --granularity section --section-weight hybrid --inv-freq-temp 0.5 \
+  --bases-dir ../../rl_training_data/bases_FORMULAB_DIAG \
+  > ../../rl_training_data/checkpoints/tasks/run25_formulab_diag_stdout.log 2>&1 &
+```
+
+**What to watch, per §60.12's baseline-relative correction — do not compare raw ceilings across
+label sets:** track `top1_accuracy` (near-tie) against its own near-tie constant baseline (59.1%
+for Formula-B, vs. 58.5% for C2 — nearly identical, so this metric *is* directly comparable
+without correction), not `strict_top1_accuracy` against C2's 29.2% baseline. The informative
+question is whether the health-gated ceiling for *either* metric clears *its own* label set's
+constant-predictor floor — not whether Formula-B's raw numbers look bigger than C2's.
+
+**Input-identity verified directly, not just by construction (2026-08-01):** `_rl_preset.py`'s
+`build_rl_input(digest, target_section_id)` — what the model actually receives — is a pure
+function of the digest text and section id; it never reads `section_oracle.json`. Confirmed by
+direct `diff -q` on 3 sampled TRAIN articles between `bases/` and `bases_FORMULAB_DIAG/`:
+`research_digest.md` and `guideline_features.json` are byte-identical, while `section_oracle.json`
+correctly differs (the one deliberately swapped file). `guideline_features.json` only supplies
+`word_weight` for the loss's section weighting — not part of the model's input text either. So the
+only difference between `run25_formulab_diag` and `run20_c2` is the reward labels; everything else
+(model input text, loss-weighting inputs, LoRA/optimizer hyperparameters) is identical — the
+single-variable design holds.
+
+**Monitoring:** `tail -f /mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/checkpoints/tasks/run25_formulab_diag_stdout.log` for raw
+progress; TensorBoard via `tensorboard --logdir /mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/checkpoints/tasks/run25_formulab_diag/runs --port 6006` (path also printed by
+the script itself at startup) for `eval/mean_entropy`, `eval/top1_accuracy`,
+`eval/strict_top1_accuracy`, `eval/mean_expected_reward`.
+
+### 60.14 `run13_formulaB`'s hyperparameters and time series, verified directly (2026-08-01)
+
+Investigated `run13_formulaB`'s checkpoint state directly (not re-citing prior claims) to give
+`run25_formulab_diag`'s comparison a precisely-verified baseline.
+
+**Hyperparameters, independently verified from checkpoint state:**
+
+| | value | source |
+|---|---|---|
+| `lr` (peak) | **5e-5** | scheduler `base_lrs` |
+| `lr` at epoch 96 | 2.83e-5 (56.6% of peak) | optimizer `param_groups` — implies `--epochs≈200`, `--warmup≈10` via the cosine schedule's math |
+| `weight_decay` | **0.01** | optimizer `param_groups` |
+| `lora_r` / `lora_alpha` / `lora_dropout` | **16 / 16 / 0.05** | `adapter_config.json` (direct read) |
+| `granularity` | **section** | `resume_state.pt` |
+| target modules | q/k/v/o_proj, gate/up/down_proj | `adapter_config.json` |
+
+Every value matches `run20_c2`'s recipe exactly (cross-checked against the bash-history command
+recovered in §60.13). Combined with the document's already-established `entropy_coef=0.22`/
+`beta=0.15` match, **the only two things that differ between `run13` and `run20_c2` are the
+reward formula and the digest pipeline** — exactly the two candidates `run25_formulab_diag`
+(§60.13) is designed to separate.
+
+**Time-series behavior — a genuinely different shape, not just "collapsed later":**
+- `sigma_floor_fraction` = **0.0058 (0.58%) constant for all 97 epochs** — vs. C2's 22.22%,
+  confirming Formula B's labels were far less degenerate/near-tie (matches §60.6's 6-7% floor%).
+- **Entropy does not crash early and stay down — it oscillates substantially throughout**:
+  0.18→0.15→**0.51 (spike, epoch 10)**→0.15→0.23→0.07→0.14→0.09→0.07→0.05→**0.09 (bounce)**→
+  0.03→**0.09 (bounce)**→0.06→0.05→0.02→0.01, only really settling low around epoch 75-96 —
+  qualitatively different from `run20`-`23`'s sharp-cliff-then-flat pattern.
+- **Despite ending collapsed (H≈0.01-0.03 by epoch 90-96), accuracy reached genuinely high
+  levels**: strict **83-84%**, near-tie **93-95%** — far beyond anything in the C2 era
+  (health-gated ceiling ~26-28%, raw collapsed ceiling ~55-58%/70-80%, §60.12).
+- **Critically, this collapsed-but-high-accuracy state actually generalized**: TEST exact=10/16,
+  miss=0, MAE=0.375 (§60.3). The opposite of `run20_c2`'s collapse, which produced a degenerate
+  always-`deep` policy that failed TEST badly (exact=1/16).
+
+**Synthesis: entropy collapse alone is not disqualifying — what matters is whether what gets
+memorized is genuinely learnable/generalizable, not just low-entropy.** `run13` converged to
+something that held up on TEST; `run20`-`23` converged to something that didn't, under identical
+hyperparameters. This reframes the open question from "why does entropy collapse" to "why did the
+thing `run13` converged to generalize, while the thing `run20`-`23` converged to did not."
+
+**Live signal from `run25_formulab_diag` (checked at epoch 25/200) — already promising, not yet
+conclusive:**
+- `sigma_floor_fraction = 0.0702 (7.0%)` — an order of magnitude better than C2's 22.22%, much
+  closer to `run13`'s clean-label profile than to any C2-era run.
+- **Entropy already shows the same oscillating character as `run13`**: 0.26→dips→**spikes to
+  0.66-0.79 at epochs 8-11**→gradually declines to 0.10 by epoch 25 — a strikingly different shape
+  from `run20`-`23`'s smooth monotonic pattern, and closely resembling `run13`'s own epoch-10 spike.
+
+Only 25/200 epochs in, but directionally suggestive that **the reward formula, not the digest
+pipeline, is the operative variable** behind `run13`'s healthier dynamics — worth continued
+monitoring as `run25` progresses, and directly actionable once it reaches a comparable epoch count
+to check against `run13`'s eventual TEST-generalizing outcome.
+
+### 60.15 Is replication the right primary lever for `sigma_floor_fraction`? A synthesis across §54.7/§60.6/§60.12/§60.14 (2026-08-01)
+
+**What `sigma_floor_fraction` precisely measures, restated for clarity:** the fraction of *kept*
+training groups whose population std across all 4 arm rewards (`std({r_skip,r_light,r_standard,
+r_deep})`) is below `sigma_floor=0.04` — a different statistic from `margin` (top1−top2 gap, used
+in §55.2/§55.3/A.7) and from the separate flat-drop filter (`max−min < sigma_floor`, which fires on
+zero groups today). When it fires, `0.04` is substituted for the true (smaller) std in the
+advantage-normalization denominator — this *dampens*, not amplifies, that section's contribution.
+
+**Replication is well-justified, but has a real, currently-unknown ceiling.** It is the *only*
+lever proven able to move the underlying defensible-section count — §55.3's `sigma_floor` sweep
+already showed threshold tuning cannot (45/282 and 10/282 stayed flat at every value tested).
+Averaging shrinks the *noise* component of a section's observed spread, which can only reveal a
+genuine difference that noise was masking — **it cannot manufacture a real difference where the
+true arms are genuinely tied.** What fraction of today's 22.22% (`C2`) reflects noise-masked
+signal vs. genuine ties is not yet known; A.7's tiny (`n=15`) sample was suggestive but far too
+small to bound this for the full corpus.
+
+**A materially cheaper, already-measured, currently-underweighted alternative sits in this
+investigation's own history: `cost_coef`.** §54.7's sweep already showed `floor%` is *extremely*
+sensitive to it — 8.2% at `-0.06` → 21.1% at `-0.045` → ~20.5% at `-0.03`/`-0.02` — a pure formula
+constant, zero new generation cost (just a regen from already-graded episodes). Today's `-0.03`
+was chosen to protect `deep`-representation (§54.7), **not because it was judged noise-optimal** —
+`floor%`/training-stability was not the deciding criterion at the time.
+
+**But §60.6 already warned decisiveness obtained this way isn't automatically correctness** — a
+blunter cost term or coarser binary scoring can manufacture bigger, "cleaner"-looking margins
+mechanically, independent of genuine content differentiation. This is the real tension: is
+lowering `sigma_floor_fraction` via `cost_coef` legitimate signal-sharpening, or just the same
+"bluntness masquerading as decisiveness" §60.6 flagged in the original Formula B?
+
+**§60.14 complicates the caution, empirically.** The one clean natural experiment available
+(`run13` vs. `run20`-`23`, *identical* hyperparameters, only reward formula + digest differ) shows
+`run13`'s much lower `sigma_floor_fraction` (0.58% vs. 22.22%) — achieved partly via the same
+blunt mechanisms §60.6 flagged — nonetheless coincided with a dramatically better-generalizing
+model (TEST exact=10/16 vs. 1/16). Theory says bluntness ≠ correctness; the one real before/after
+comparison we have says lower `sigma_floor_fraction`, however achieved, correlated with a much
+healthier outcome. Both things can be true: bluntness may not indicate *better-calibrated content
+judgment*, while still producing a *more learnable training signal* in practice — decisiveness and
+correctness can come apart on content quality while still moving together on trainability. This is
+`n=1` clean comparison, not proof, but it's the best evidence available and shouldn't be ignored.
+
+**Recommendation: don't treat replication as the single most important thing in isolation —
+pursue it alongside two cheaper, already-informed levers, in parallel:**
+1. **Replication (Appendix A)** — the theoretically cleanest fix, targets noise specifically,
+   but expensive (192 cycles) and its payoff ceiling is unknown until it's run.
+2. **A fresh, dedicated look at `cost_coef` with training-stability as an explicit criterion** —
+   §54.7's sweep only weighed it against `deep`-representation; it was never re-evaluated against
+   `sigma_floor_fraction`/generalization now that §60.14 supplies real evidence this matters. Values
+   between `-0.03` and `-0.06` (e.g. `-0.045`, already swept, `floor%=21.1%`) may capture much of
+   the training-stability benefit without `-0.06`'s severe deep-scarcity — worth testing directly
+   with a real retrain, not just modeled, since it's near-zero cost (reuses already-graded data).
+3. **A.8's confidence-weighting** — down-weights uncertain sections directly, extracting value
+   without waiting on either of the above, code-only.
+
+`run25_formulab_diag`'s outcome (§60.13/§60.14) is the fourth, currently-running data point that
+will help disentangle how much of `run13`'s advantage was the reward formula (supporting lever #2
+above) vs. the digest pipeline (which would argue for neither #1 nor #2 alone being sufficient).
+
+### 60.16 `run25_formulab_diag` completed — real TEST results, and what they change (2026-08-02)
+
+The run completed all 200 epochs. Real RL-only TEST-set inference was run at 4 checkpoints
+(epoch 114, 137, 145, 155). This is the first real held-out evaluation of Formula B's reward
+*values* combined with *today's* digest — directly testing what §60.9/§60.13/§60.14 set out to
+separate.
+
+**Full completed trajectory, read from `training_log.jsonl` (was only checked through epoch 25
+in §60.14):** entropy actually **does** collapse early after all — crashes to 0.076 by epoch 30
+and stays in the 0.02-0.06 band for the remaining 170 epochs, never recovering. The epoch-8-11
+spike noted in §60.14 was real but did not prevent the same broad collapse timing as `run20`-`23`
+(~epoch 20-30). **Health-gated ceiling: 22.2% at epoch 20 (23/200 healthy epochs)** — this is
+*lower* than every C2-era run (25.7-28.1%, §60.12), and further below Formula B's own 41.5% strict
+constant-predictor baseline than C2's runs were below C2's 29.2% baseline. By the health-gate
+criterion alone, `run25` looks like the *worst* run yet.
+
+**But the real TEST results tell the opposite story — decisively better than every C2-era run:**
+
+| run (TEST, RL-only unless noted) | exact | miss | MAE | regret (mean) |
+|---|---|---|---|---|
+| `run20_c2` (best_strict, ep95) | 6.25% (1/16) | 62.5% (10) | 1.688 | — (catastrophic) |
+| `run15_recalibrated` | 33% | 27% (4) | 0.933 | 0.0165 |
+| `run17_invfreqtemp10_recal` | 40% | 33% (5) | 1.000 | 0.0128 |
+| **`run25` @ epoch 114 (best)** | **38% (6/16)** | **12% (2)** | **0.750** | **0.0219** |
+| `run25` @ epoch 137 | 38% (6/16) | 19% (3) | 0.812 | — |
+| `run13_formulaB` (original, old digest — RL-only per §13.2, **not re-verified today**, see correction below) | 62.5% (10/16) | **0%** | 0.375 | 0.0384 |
+| `run13_formulaB`/best on new digests, **RL-only, direct fresh re-run (2026-08-03) — the true zero-retrain baseline** | 38% (6/16) | 19% (3) | 0.812 | 0.0177 (max 0.0667) |
+| §14.3 figure previously cited here as "zero-retrain" — **was actually RL+Grok, not a zero-retrain RL-only number at all** | 62.5% (10/16) | 18.75% (3) | 0.625 | 0.0472 |
+
+Verified directly from the saved `grok_planner_test_results/_summary.json` (dated 2026-08-03,
+not the stale `rl_only_train_and_test_results.md` in the same directory, which predates this run
+and still reflects an older evaluation) — n=16, exact=6, near=7, miss=3, MAE=0.8125, regret
+mean=0.0177/max=0.0667 over the 15 non-forbidden articles, matching the headline figures above
+exactly. **The 3 misses are `13_agent_framework`** (chosen=light, oracle=deep), **`29_evaluation_
+metrics`** (chosen=deep, oracle=light), **and `Dark_Dimension`** (chosen=light, oracle=deep) — all
+2-level, all different from §14.2/§14.3's RL+Grok-layer miss set (`13_agent_framework`,
+`29_evaluation_metrics`, `Space-Time_QECC`). `Dark_Dimension` is a genuinely new RL-only-layer miss
+not present at the RL+Grok layer, and `Space-Time_QECC` — a miss at the RL+Grok layer — is only a
+**near** here (chosen=standard, oracle=light), consistent with §14.4's finding that Grok escalates
+that article, not corrects it. This is concrete, per-article evidence for implication #5 below:
+Grok's net effect on new digests is not one isolated fix, it reshuffles several articles in both
+directions.
+
+`run25` beats every C2-era run on `miss%` and `MAE` (the more informative granular metrics),
+despite a comparable or *worse* raw `exact%` to `run15`/`run17`, and obliterates `run20_c2`'s
+collapse specifically. **This is strong, direct evidence that the reward formula — not just
+training-dynamics hyperparameters — is a major, independently-operating lever on TEST
+generalization**, confirming what §60.14's `run13`-vs-`run20`-`23` comparison already suggested,
+now with a real controlled swap (only the reward labels changed) rather than a historical
+before/after across many confounded changes.
+
+**A genuinely important correction to the entropy-health-gate framework.** `run25`'s useful
+checkpoints (114-155) are *all* deep in the collapsed regime (health lost at epoch ~22) — by the
+health-gate criterion built in §60.7 specifically to distrust post-collapse checkpoints, *none* of
+these would ever be certified as trustworthy, yet they demonstrably generalize far better than any
+C2-era checkpoint (healthy or not). **Entropy collapse does not have the same consequence under
+every reward formula.** Under C2, collapse converges to a degenerate, near-constant policy that
+fails TEST catastrophically (§60.1-60.2). Under Formula B — in both `run13` (§60.14) and now `run25`
+— collapse still happens, but what the policy converges to memorizing evidently corresponds to a
+more genuinely correct decision function, one that continues to generalize despite low entropy.
+**The health-gate remains a valid, valuable red flag for catching C2's specific degenerate-collapse
+failure mode** (its whole reason for existing, §60.7) **but should not be treated as a universal
+"post-collapse checkpoints are worthless" rule** — checkpoint trustworthiness ultimately needs to be
+judged against held-out performance (or a genuine proxy for it), not entropy health alone.
+
+**Real overfitting/drift confirmed, and it is a plateau-then-degrade pattern, not classic
+still-improving overfitting.** TRAIN metrics are essentially flat from epoch 100 through 199
+(exact 42-46%, near-tie 88-93%, barely moving) while TEST clearly degrades past epoch 114:
+
+| epoch (tracker) | TEST exact | TEST near | TEST miss | TEST MAE |
+|---|---|---|---|---|
+| 114 (tie-best near-tie) | 38% | 50% | 12% | 0.750 |
+| 137 (best mean-expected-reward) | 38% | 44% | 19% | 0.812 |
+| 145 (tie-best near-tie, later tie) | 31% | 44% | 25% | 0.938 |
+| 155 (best-strict) | 31% | 44% | 25% | 0.938 |
+
+Since TRAIN isn't still climbing while this happens, continuing training past ~epoch 114-120 buys
+*nothing* on the training objective while actively costing held-out performance — a pure drift
+phase, not a real accuracy-vs-generalization tradeoff. The TRAIN-side checkpoint trackers
+(`best_strict`/`best_neartie`) picked *worse*-for-TEST checkpoints at later ties (145, 155) than an
+earlier one (114) that was never their own final answer — direct evidence that TRAIN-metric-driven
+checkpoint selection is not reliable for this style of run, either.
+
+**What is still unresolved (superseded — see the 2026-08-03 correction two paragraphs below):**
+~~`run25` falls meaningfully short of `run13`'s full result, and even short of the "free"
+zero-retrain baseline.~~ `run13`'s original TEST result (10/16, 0% miss, MAE 0.375) and even the
+do-nothing baseline (naively re-evaluating `run13`/best on new digests with zero retraining: 10/16,
+18.75% miss, MAE 0.625, §14.3) both beat `run25`'s best retrained checkpoint (6/16, 12% miss, MAE
+0.750) on `exact`/`MAE`. Retraining from scratch on the new digests — even with the
+historically-successful reward formula — does not fully recover, and notably underperforms just
+keeping the old model and running it on new inputs with no retraining at all. This points at
+something beyond reward-formula choice: either the digest pipeline itself costs real, independent
+performance (consistent with §14.3's original finding), or the *process* of retraining for 100+
+epochs on the new digests' specific content/structure is itself lossy in a way that zero-shot
+transfer from the old model isn't — plausibly connected to the same full-batch/fixed-dataset
+dynamics (§60.8) finding new material to overfit to. **(This whole framing turned out to rest on a
+mislabeled RL+Grok figure — see below.)**
+
+**Correction (2026-08-02): the §14.3 zero-retrain baseline cited above is RL+Grok, not RL-only —
+`run25`'s eval is RL-only, so the miss-rate comparison above was not apples-to-apples.** Confirmed
+directly: §14.3's own "baseline" column (10/16 exact, 0 miss, MAE=0.375, regret_mean=0.0384,
+regret_max=0.170) exactly matches §13.4's explicitly-labeled "fresh full RL+Grok eval" result,
+figure for figure. §14.4 states directly that "the full RL+Grok eval (§14.3) shows Grok escalating
+[`Space-Time_QECC`] further, P2→P3, turning a recoverable near-miss into a severe 2-level miss" —
+at the RL-only+cost-rule layer that same article was only a **near** (`chosen=P2, oracle=P1`,
+regret 0.126), not a miss. Correcting for this one documented layer-difference, the **RL-only­
+equivalent** zero-retrain baseline is: exact=10/16 (62.5%, unchanged), near=4 (not 3), **miss=2/16
+(12.5%, not 18.75%)**, MAE≈**0.5625** (not 0.625). This **retracts** the earlier claim that `run25`
+beats the zero-retrain baseline on miss-rate — under the corrected, consistent (both RL-only)
+comparison, they are essentially **tied** on miss-rate (12% vs. 12.5%), and the baseline remains
+clearly ahead on `exact%` and `MAE`. If anything this sharpens, rather than weakens, the
+"retraining on new digests doesn't recover what's lost" conclusion below — the zero-retrain
+baseline is now at least as good as `run25` on all three metrics, not mixed.
+
+**Correction (2026-08-03): the reconstruction above was itself wrong — a direct re-run shows the
+true RL-only zero-retrain baseline is dramatically worse than 10/16, and `run25` in fact ties or
+beats it.** Rather than continuing to infer the RL-only number from the RL+Grok figure and one
+documented Grok fix, `infer.py::_DEFAULT_ADAPTER_DIR` was pointed directly at `run13_formulaB/best`
+and `test_grok_planner.py --rl-only --save-json` was re-run against TODAY's (current,
+Phase-0-refreshed) digests — the actual "old checkpoint + new digests, RL-only" experiment, not an
+inference from prose. **Real result: exact=6/16 (38%), near=7 (44%), miss=3 (19%), MAE=0.812.**
+
+This means essentially all of the apparent 10/16-exact strength in §14.3's figure came from Grok's
+correction pass, not the RL layer — Grok's marginal contribution on the new digests is far larger
+than the single documented `Space-Time_QECC` near→miss case (§14.4) suggested; there must be
+several more articles where Grok flips a near→exact (or otherwise improves on the raw RL vote) that
+were never individually inventoried. The one-fix reconstruction method used above is now known to
+fail on this dataset and should not be repeated — a genuine re-run is required whenever an RL-only
+number is needed and no direct RL-only run exists.
+
+Comparing like-for-like (both RL-only, both on new digests), the TRUE zero-retrain baseline
+(exact=6/16, near=7, miss=3, MAE=0.812) is **matched or beaten by `run25`'s own checkpoints on every
+metric**: epoch 114 (exact=6/16, miss=2, MAE=0.750) is strictly better on miss-rate and MAE at equal
+exact%, and epoch 137 (exact=6/16, near=7, miss=3, MAE=0.812) matches it digit-for-digit on all four
+metrics. **This retracts the "run25 falls short of the free zero-retrain baseline" conclusion
+entirely** (the paragraph two above, marked superseded) — under a consistent RL-only comparison,
+retraining does not lose to doing nothing on the new digests; it ties or wins. The only genuinely
+open gap left is between
+`run25`/zero-retrain-on-new-digests (~38% exact) and `run13`'s performance on the **old** digests
+(62.5% exact, §13.2) — but that crosses a digest-distribution change, not a retraining-vs-no­
+retraining question, so it points at the digest pipeline being harder/different, not at retraining
+being lossy.
+
+**This also reopens the question of how solid the old-digest "10/16 exact, 0 miss" RL-only figure
+itself is**, given the RL-only/RL+Grok gap on new digests has just been shown to be far larger than
+assumed. The case for it being genuinely RL-only: §13.2's "TEST constrained rule" row (10/16 exact,
+6 near, 0 miss, MAE 0.375, regret_mean 0.0384) was measured and labeled *before* Grok was introduced
+into this investigation thread (§13.4, titled "Full RL+Grok eval confirmed the concern," comes
+after), and §14.2's "production baseline" row later cites the identical six figures for what it
+explicitly calls the full RL+Grok pipeline — i.e. Grok was independently shown to be a complete
+no-op on the old digests at the time (consistent with §13.4's own "exactly matches the RL-only
+cost-rule ceiling (§13.2)" note). That is real, explicitly-labeled contemporaneous evidence, not a
+reconstruction — but unlike the number above, **it has not been independently re-run today**. A
+full re-verification would need the old (pre-golden_local-fix) digests for all 40 articles; only a
+partial backup survives (`bases_GOLDENLOCAL_BACKUP_20260710_223940`, covering just the
+golden_local-sourced TEST articles — `Bird_Eye_Extreme`, `Dark_Dimension`, `Distinct_AI_Models`,
+`Earth_Oceans_Origin`, `HNSW`, `Space-Time_QECC`, and a couple more), not a full 40-article corpus.
+Treat the old-digest 62.5%-exact/0-miss figure as **well-documented but not re-confirmed today**,
+rather than as solidly established as the fresh new-digest number above.
+
+**Implications for the plan:**
+1. **Elevate §60.15's `cost_coef` re-investigation, and sharpen it into a real ablation.** Formula B
+   differs from C2 in *two* respects simultaneously (larger/ordinal `cost_coef`, and raw-binary
+   `de`/`be` instead of the saturating `enhancement_credit()` curve) — `run25` cannot tell us which
+   one (or both) drives the improvement. The highest-value next experiment is a real retrain of
+   **C2 with only `cost_coef` reverted** (e.g. `-0.045` or `-0.06`, everything else — `ga`-gate,
+   `ra`-removal, `enhancement_credit()` curve — left as shipped), isolating the cost-magnitude
+   variable cleanly against both `C2` and `run25`.
+2. **Sequence formula-selection before the expensive replication spend — refined (2026-08-03, see
+   below): only the FINAL retrain step actually needs to wait, not the replication generation
+   itself.** Appendix A's 192-cycle plan was scoped around C2's current labels; given real evidence
+   the formula itself is a major lever, this originally argued for resolving *which* formula to use
+   before spending on replication. Verified directly against the code (`merge_replicate_oracles.py`
+   calls `measure_replicate_noise.py::_compute_replicate_sections`, which recomputes rewards from
+   each replicate's raw `reasoning.json` using whichever formula is *currently* live in
+   `generate_episode_oracles.py::_section_reward` at call time — not baked in at generation time):
+   the expensive step (writing + grading 192 replicate drafts) produces raw per-dimension grader
+   scores that are **formula-agnostic and fully reusable**, exactly like the single-draw episode
+   data `sweep_reward_formula.py`/`model_gate_candidates.py` already re-use for free. **This means
+   Appendix A's replication (A.10 step 2) can run in parallel with §61's Stage 1 GPU experiments**
+   — different resources entirely (external LLM write/grade API calls vs. local GPU RL training),
+   no scheduling contention. Only **A.10 step 4 (retrain GRPO on the merged/averaged labels)**
+   should wait for §61 to conclude — that is the one step where training under a formula that gets
+   superseded shortly after would be genuinely wasted GPU time; re-running `merge_replicate_oracles.py`
+   itself after §61 concludes is free and will automatically pick up whichever formula wins.
+3. **The digest-pipeline gap is no longer the best-supported explanation — see §60.17's ablation,
+   which weakens it considerably.** The 8-article old-vs-new-digest test shows digest content
+   alone accounts for only ~1 exact hit net, far short of the full 16-article 62.5%→38% swing. The
+   old-digest baseline figure's own reliability (already flagged as unconfirmed in §60.16) is now
+   the more probable locus of the discrepancy, alongside newly-recognized oracle/label drift since
+   the original 2026-07-10 evaluation (the oracle has been revised multiple times since — G0, J0,
+   H0, `EPS_BAND`, cost_coef staging, C2 — so the historical "62.5%, 0 miss" figure and every fresh
+   rerun this week are not even scored against the same ground truth). A direct content/structure
+   diff between old and new digests remains informative but is no longer the leading hypothesis for
+   the gap.
+4. **Checkpoint selection for future Formula-B-style runs needs to be TEST-informed, not purely
+   TRAIN-tracker- or entropy-gate-driven.** Concretely: periodically evaluate on TEST during/after
+   training rather than trusting `best_strict`/`best_neartie`'s own notion of "best," and consider
+   capping exploratory runs around epoch 120-150 rather than 200, given the confirmed drift past
+   that point here.
+5. **Grok's marginal contribution on the new digests needs its own accounting — it is much larger
+   than previously documented.** The 2026-08-03 re-run shows RL-only alone recovers only 38% exact
+   on new digests while RL+Grok (§14.3) recovers 62.5% — a 6-article swing that only one case
+   (`Space-Time_QECC`, §14.4) was ever individually attributed. Before trusting any future
+   RL-only ablation as a proxy for full-pipeline behavior on new digests, inventory which specific
+   TEST articles Grok is correcting and why, the same way §14.4 did for the single known case.
+
+### 60.17 One-off old-digest-structure ablation (2026-08-03) — digest structure alone explains little of the gap
+
+**Motivation.** §60.16's zero-retrain re-run showed a large gap between `run13_formulaB`'s
+historical OLD-digest result (62.5% exact, 0 miss, full 16-article TEST) and its freshly-measured
+NEW-digest result (38% exact, 3 miss) — previously attributed to the digest-pipeline refresh
+(implication #3, original wording). The user proposed testing this directly: rerun the *same*
+checkpoint on the *old* digest structure, as a one-off, without touching the current new-digest
+production code path.
+
+**Feasibility.** Full old digests for all 40 articles are not recoverable —
+`bases_ORACLE_BACKUP_20260708_231117` (2026-07-08) preserved only oracle files, no digests. The
+only surviving old-digest snapshot is `bases_GOLDENLOCAL_BACKUP_20260710_223940`, covering exactly
+the 8 golden_local-sourced TEST articles Phase-0's `collect_sources()` fix actually regenerated
+(`Bird_Eye_Extreme`, `Dark_Dimension`, `Distinct_AI_Models`, `Earth_Oceans_Origin`, `HNSW`,
+`Space-Time_QECC`, `State_of_LLM_Reasoning`, `Understanding_Reasoning_LLMs`) — the other 32
+articles' digests never changed, so there is no old-vs-new question for them. Built an isolated
+`rl_training_data/bases_OLDDIGEST_DIAG/`: OLD `research_digest.md`/`guideline_features.json` (the
+one variable under test) paired with TODAY's current `article_oracle.json`/`section_oracle.json`
+(held constant, matching how the new-digest run was scored) — confirmed the digest text genuinely
+differs (313 diff lines on `Space-Time_QECC`) while the oracle is byte-identical to production.
+`infer.py::_DEFAULT_ADAPTER_DIR` and `test_grok_planner.py::_BASES_DIR` were temporarily repointed
+(one-off, comment-marked, reverted immediately after the run), no permanent CLI flag added, per the
+user's explicit constraint.
+
+**Result — matched 8-article subset, RL-only, `run13_formulaB/best`, old vs new digest:**
+
+| digest | exact | near | miss | MAE | regret mean |
+|---|---|---|---|---|---|
+| NEW (today's production, same 8 articles pulled from §60.16's 16-article run) | 3 (37.5%) | 4 (50%) | 1 (12.5%) | 0.750 | — |
+| OLD (`bases_OLDDIGEST_DIAG`, fresh 2026-08-03 run) | 4 (50%) | 3 (37.5%) | 1 (12%) | 0.750 | 0.0274 |
+
+**MAE is identical, miss count is identical (both `Dark_Dimension`), and the exact/near split
+differs by only 1 article net.** Per-article detail:
+
+| Article | Oracle | New-digest RL (verdict) | Old-digest RL (verdict) | Changed |
+|---|---|---|---|---|
+| `Bird_Eye_Extreme` | light | light (EXACT) | light (EXACT) | no |
+| `Dark_Dimension` | deep | light (MISS) | skip (MISS) | yes — miss got *worse* (2→3 levels off) |
+| `Distinct_AI_Models` | deep | standard (NEAR) | standard (NEAR) | no |
+| `Earth_Oceans_Origin` | standard | deep (NEAR) | standard (EXACT) | yes — improved |
+| `HNSW` | light | light (EXACT) | light (EXACT) | no |
+| `Space-Time_QECC` | light | standard (NEAR) | light (EXACT) | yes — improved |
+| `State_of_LLM_Reasoning` | skip (forbidden) | light (NEAR) | light (NEAR) | no |
+| `Understanding_Reasoning_LLMs` | standard | standard (EXACT) | deep (NEAR) | yes — worsened |
+
+4 of 8 articles flip their specific RL preset between old and new digest — digest content clearly
+does move individual predictions — but the flips go **both directions** (2 improve, 1 worsens, 1
+miss shifts marginally worse) and **net out to almost nothing in aggregate** (+1 exact / −1 near,
+tied MAE, tied miss count).
+
+**This is real evidence against "digest pipeline" as the primary explanation for the full
+16-article gap — supporting the user's hypothesis.** The historical old-digest full-TEST figure
+(62.5% exact, 0 miss) vs. the fresh new-digest full-TEST figure (38% exact, 3 miss, §60.16) is a
+swing of 4 exact hits and 3 misses across 16 articles. But on the only 8 articles where the digest
+actually changed, the net swing is ~1 exact hit and 0 miss-count change — nowhere near enough to
+account for the full-corpus gap by itself. Whatever explains the bulk of the 62.5%→38% drop, it is
+very unlikely to be the digest-structure change alone.
+
+**What's left unexplained, and two newly-sharpened candidate causes.** The other 8 TEST articles
+(`04_structured_outputs`, `07_reasoning_planning`, `13_agent_framework`, `14_agent_system_design`,
+`29_evaluation_metrics`, `31_CI`, `Gravity_Entropy`, `Insects_Consciousness`) never had their
+digests touched by Phase-0 — today's `bases/` already holds their original digest, unchanged. Two
+of the three fresh misses in §60.16's 16-article run (`13_agent_framework`, `29_evaluation_
+metrics`) are in this unchanged-digest group, which rules out the digest refresh as their specific
+cause. Two candidates now stand out ahead of "digest pipeline": (1) **the old-digest "62.5%, 0
+miss" figure's own reliability** — already flagged in §60.16 as documented-but-not-re-confirmed
+today, and now the more probable locus of the discrepancy; (2) **oracle/label drift since the
+original 2026-07-10 evaluation** — the oracle has been revised multiple times since (`G0`, `J0`,
+`H0`, `EPS_BAND`, cost_coef staging, `C2`, shipped 2026-07-29), so the historical figure and every
+fresh rerun this week are not even scored against the same ground truth, independent of any digest
+or checkpoint change at all. Both require data that no longer fully exists (old digests for the
+other 8 TEST articles; the exact oracle snapshot in effect on 2026-07-10) to resolve further —
+recorded as open, not resolved.
+
+**Cleanup:** `infer.py::_DEFAULT_ADAPTER_DIR` and `test_grok_planner.py::_BASES_DIR` reverted to
+production defaults (`run25_formulab_diag/best_er` and `bases/`); `bases_OLDDIGEST_DIAG/` left on
+disk as a reusable diagnostic artifact (production untouched throughout).
+
+## 61. Investigation plan: why is Formula-B-era (`run13`/`run25`) TEST performance so much better than C2-era? (2026-08-03)
+
+**What §60.16/§60.17 have already substantially ruled out**, so this plan doesn't re-litigate them:
+- **The digest pipeline** (§60.17): the only clean single-variable test available (8-article
+  subset) shows digest content alone nets ~1 exact hit — nowhere near the observed gaps.
+- **"Retraining itself is lossy"** (§60.16's 2026-08-03 correction): `run25` ties/beats the true
+  RL-only zero-retrain baseline on new digests — retraining does not lose to doing nothing.
+
+That leaves the **reward formula structure** as the dominant remaining candidate, with
+**oracle/label drift since 2026-07-10** as a separate, still-open confound specific to the
+old-vs-new-digest comparison (not the run25-vs-C2 comparison, which is a clean same-digest,
+same-oracle, formula-only difference).
+
+**Correcting an undercount before designing the ablation.** Implication #1 (§60.16) described
+Formula B as differing from C2 in "two respects" (`cost_coef` magnitude/units, raw-binary `de`/`be`
+vs `enhancement_credit()`). There is actually a **third**: Formula B's `user_intent = (0.50*ga +
+0.50*ra) * 0.30` (additive, no gate) vs C2's `ga`-only gate penalty (`-0.10 if ga<0.5 else 0.0`,
+`ra` removed entirely). §52-54's metric-differentiation analysis already found `ga`/`ra` near-zero
+discriminative signal under earlier formula versions (`ga` SNR=0.03, `ra` ~97% constant) — a reason
+to *deprioritize*, not ignore, this third difference; a discrete gate vs. a smooth additive term
+can still behave differently for the minority of articles where `ga` actually crosses 0.5, and this
+hasn't been directly tested.
+
+### Stage 0 — free diagnostics, zero GPU / zero new API calls, do first
+
+Reuses `sweep_reward_formula.py` / `model_gate_candidates.py` / `analyze_metric_differentiation.py`
+(all already built, already proven at recomputing signal-quality metrics from already-graded data):
+
+0.1. Re-verify the 3-way formula diff directly against the shipped `_section_reward` code and the
+     `bases_ORACLE_BACKUP_20260708_231117` reconstruction, to confirm there are exactly 3 differences,
+     not more (a quick correctness check before designing any ablation around it).
+0.2. For each of the 3 differences **individually and in combination** (2³=8 cells, reusing
+     `sweep_reward_formula.py`'s variant-recompute pattern on existing graded data, zero new
+     generation), recompute `sigma_floor_fraction`, mean/median margin, `advNorm`, and the
+     constant-predictor baseline (strict + near-tie, per §60.12's baseline-relative methodology) —
+     isolates *which* mechanical change drives the 22%→0.6-7% `sigma_floor_fraction` gap, and
+     whether it's mostly the two "bluntness" mechanisms §60.6 already suspected.
+0.3. Diff `oracle_arm` assignments directly, per-article, between C2 and true-Formula-B on the
+     already-available data (`diff_oracle_regen.py`-style) — quantifies how many of the 40
+     articles' *labels* actually differ, not just their margins. Distinguishes "Formula B assigns
+     different (better-generalizing) decisions" from "same decisions, just cleaner separation."
+0.4. Cross-reference with the TEST articles where Formula-B-trained checkpoints (`run13`/`run25`)
+     get it right and C2-trained checkpoints don't (already have both `_summary.json`s) — for
+     those specific articles, check whether the Formula-B vs. C2 oracle labels actually differ. If
+     they don't, credit goes to signal-quality/trainability, not label correctness.
+
+**Stage 0 results (2026-08-03) — executed.** Extended `model_gate_candidates.py` (already designed
+for exactly this kind of candidate-formula modeling) with two new toggles: `raw_de_be` (bypass
+`enhancement_credit()` and use the plain grader score for `de`/`be`, regardless of whether tag
+metadata exists) and `cost_units` (per-candidate override of the cost term's per-arm multiplier, so
+the ordinal `{skip:0,light:1,standard:2,deep:3}` mechanism can be tested alongside H0's empirical
+units). Added a clean 2×2×2 factorial (`S61_C2_baseline`, `S61_cost_only`, `S61_debe_only`,
+`S61_gara_only`, plus the 3 pairwise + all-three cells) holding the two non-varied dimensions at
+C2's exact production values, so each cell isolates exactly one/two of the three real differences.
+
+**0.1 — formula reconstruction verified, but bit-exact backup matching is not possible (a 4th,
+newly-discovered confound).** Hand-computed sanity checks (plugging known `cc/fl/de/be/cp/ga/ra/nr`
+values through the new candidate code and verifying by arithmetic) confirm the 3-way reconstruction
+is implemented correctly. A bit-exact check against `bases_ORACLE_BACKUP_20260708_231117`'s actual
+saved rewards was attempted and **failed** (differences up to 0.52 on individual arms,
+`06_tools__var_standard`) — traced to the episode grading data itself having been regenerated since
+the 2026-07-08 backup (`episodes/06_tools__var_standard__preset0/reasoning.json` is dated
+2026-07-15, a week later). **This means the true-Formula-B "as-shipped" result and every fresh
+recompute in this document are not just formula-different but also grading-snapshot-different** —
+a 4th confound (beyond digest, oracle-formula, and now grading-snapshot drift) that was silently
+present in every historical-vs-fresh comparison this session. It does not undermine the Stage 0.2
+factorial below (all 8 cells use today's grading data consistently, so the *relative* comparison
+between them is clean), but it does mean §60.6's exact historical numbers (floor%=7.0%, TRAIN dist
+8/10/3/3) cannot be reproduced from today's data even with a perfect formula reconstruction.
+
+**0.2 — cost mechanism is overwhelmingly the dominant lever, but at a real deep-scarcity cost.**
+TRAIN `floor%` (n=171 sections, lower is more decisive):
+
+| candidate | floor% | mean margin | advNorm | TRAIN art dist (sk/li/st/dp) | thin articles |
+|---|---|---|---|---|---|
+| `S61_C2_baseline` (= production C2) | 20.5% | 0.0942 | 1.203 | 3/11/4/**6** | 9 |
+| `S61_cost_only` | **4.1%** | 0.1031 | 1.266 | 8/12/2/**2** | 2 |
+| `S61_debe_only` | 12.9% | 0.1661 | 1.246 | 1/10/6/**7** | 5 |
+| `S61_gara_only` | 17.5% | 0.0986 | 1.200 | 4/11/4/**5** | 9 |
+| `S61_cost_debe` | **0.0%** | 0.1732 | 1.334 | 3/13/6/2 | 7 |
+| `S61_cost_gara` | 4.7% | 0.1076 | 1.262 | 8/11/2/3 | 6 |
+| `S61_debe_gara` | 11.7% | 0.1684 | 1.248 | 1/10/6/7 | 6 |
+| `S61_all_three_C2weights` | **0.0%** | 0.1750 | 1.334 | 3/13/7/1 | 9 |
+| `S61_TRUE_FORMULAB_EXACT` (real weights) | 0.0% | 0.1306 | 1.331 | 6/14/4/**0** | 8 |
+
+The cost mechanism alone closes **80% of the total floor% gap** (20.5%→4.1%, a 16.4pp drop out of
+20.5pp available), `de`/`be` shape alone closes **37%** (20.5%→12.9%), and `ga`/`ra` treatment alone
+closes only **15%** (20.5%→17.5%). `cost_debe` alone already reaches `floor%=0.0%`, matching
+all-three exactly — **`ga`/`ra` treatment's marginal contribution to signal-quality is essentially
+zero once cost and `de`/`be` are both changed**, consistent with §52-54's near-zero-SNR finding for
+`ga`/`ra` and confirming it as the lowest priority of the three, quantitatively this time.
+
+**But the cost mechanism is also the single biggest driver of deep-scarcity**, the exact failure
+mode the whole H0/G0/J0/C2 arc was built to fix: `cost_only`'s TRAIN deep count drops to **2** (from
+C2's 6) — worse than `debe_only`, which actually *improves* deep-representation slightly (6→**7**).
+`TRUE_FORMULAB_EXACT` (all three combined, real weights) has **zero** deep articles in TRAIN. This
+is a genuine, sharp tradeoff for Stage 1 to resolve empirically: the lever that fixes signal-quality
+the most is also the one most likely to reintroduce the problem C2 exists to solve.
+
+**0.3/0.4 — oracle labels change dramatically, not just margins: 13/24 TRAIN (54%) and 13/16 TEST
+(81%) articles flip to a different `oracle_arm` under at least one of these formula variants.**
+Comparing C2 directly against the full `TRUE_FORMULAB_EXACT` formula on TEST specifically, **5 of 16
+articles get a genuinely different oracle label**: `07_reasoning_planning` (deep→skip),
+`14_agent_system_design` (standard→light), `Dark_Dimension` (deep→light), `Distinct_AI_Models`
+(deep→light), `Earth_Oceans_Origin` (deep→standard) — all Formula B pulling the label *down* from
+C2's more escalation-heavy assignment. This is real evidence against the "same decisions, just
+cleaner margins" framing (H2 alone) — Formula B is assigning **materially different decisions** for
+the majority of articles, so the content-correctness channel (H1) is very plausibly a real,
+independent contributor, not merely a signal-quality artifact. (3 TEST articles — `29_evaluation_
+metrics`, `Insects_Consciousness`, `Understanding_Reasoning_LLMs` — agree across every variant
+tested, including the full swap; these are not informative for attributing the gap.)
+
+**Revised priority for Stage 1, given these results:** run `run26_costcoef_only` first — it has the
+largest, most decisive signal-quality effect by far — but track TRAIN/TEST deep-representation and
+arm balance explicitly alongside accuracy, not just accuracy alone, since this is also the variant
+most likely to reintroduce severe deep-scarcity. If `run26` shows a real TEST gain, the open
+follow-up question becomes whether that gain is *worth* the deep-scarcity cost, or whether
+`run27_debecurve_only` (smaller signal-quality gain, but neutral-to-positive on deep-representation)
+is the better production candidate despite a smaller raw floor%-improvement. `run28_garatreat_only`
+remains lowest priority — 0.2 confirms its marginal contribution is negligible once the other two
+are addressed.
+
+### Stage 1 — single-variable incremental retraining ablation (real GPU jobs, sequential, handed off one at a time)
+
+Unlike `run25` (all 3 Formula-B differences at once), introduce them **one at a time** onto
+`run20_c2`'s exact recipe, so each run's marginal TEST-generalization delta is attributable:
+
+1.1. `run26_costcoef_only` — C2 + Formula-B's `cost_coef` (`-0.06`, ordinal `nr` units) only.
+1.2. `run27_debecurve_only` — C2 + Formula-B's raw-binary `de`/`be` (no `enhancement_credit()`)
+     only, `cost_coef` stays at C2's `-0.03` H0 units.
+1.3. `run28_garatreat_only` (lower priority per the SNR finding above, but still worth confirming
+     empirically) — C2 + Formula-B's additive `(0.5*ga + 0.5*ra) * 0.30` term instead of the
+     `ga`-gate, everything else C2.
+
+Priority ordering of 1.1/1.2/1.3 should be set by Stage 0.2's factorial results — whichever single
+change moves `sigma_floor_fraction`/margin the most is the best first candidate to also check for
+real TEST impact. **Methodological notes carried forward from §60.16:** expect early entropy
+collapse regardless of which variant is tested (§60.8's broad-based, dataset-size-driven mechanism,
+not formula-specific) — do not kill a run just because it collapses early; track real TEST-set
+RL-only accuracy across the run (not just the health-gated ceiling) and cap around epoch 120-150
+per the confirmed post-114 drift in `run25`.
+
+#### Stage 1 execution and results (2026-08-03 to 2026-08-06)
+
+**Stage 1 built and handed off (2026-08-03).** `training/build_s61_diag_bases.py` (new, reuses
+`model_gate_candidates.py`'s corpus loader + the `S61_*` candidate functions directly, zero new
+generation) writes 3 isolated bases roots for the 24 TRAIN articles — `bases_S61_COSTONLY_DIAG/`,
+`bases_S61_DEBEONLY_DIAG/`, `bases_S61_GARAONLY_DIAG/` — each pairing today's unchanged
+`research_digest.md`/`guideline_features.json` with a freshly-computed `section_oracle.json` (v5
+schema) under exactly one isolated formula difference. Verified 72/72 (24 articles × 3 candidates)
+built via `--dry-run` then for real; spot-checked schema/content of one output file. Launch
+commands (identical to `run25`'s recipe except `--task-id`/`--bases-dir`, run **sequentially, one
+GPU job at a time**, priority order set by Stage 0.2):
+
+```bash
+cd /mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local/training
+
+# Priority 1 — biggest signal-quality lever, but watch deep-representation closely (§61 Stage 0.2)
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True nohup uv run python train_grpo.py \
+  --task-id run26_costcoef_only --epochs 200 --lr 5e-5 --beta 0.15 --entropy-coef 0.22 \
+  --warmup-epochs 10 --patience 50 --lora-r 16 --lora-alpha 16 --lora-dropout 0.05 \
+  --granularity section --section-weight hybrid --inv-freq-temp 0.5 \
+  --bases-dir ../../rl_training_data/bases_S61_COSTONLY_DIAG \
+  > ../../rl_training_data/checkpoints/tasks/run26_costcoef_only_stdout.log 2>&1 &
+
+# Priority 2 — smaller signal-quality gain, but neutral-to-positive on deep-representation
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True nohup uv run python train_grpo.py \
+  --task-id run27_debecurve_only --epochs 200 --lr 5e-5 --beta 0.15 --entropy-coef 0.22 \
+  --warmup-epochs 10 --patience 50 --lora-r 16 --lora-alpha 16 --lora-dropout 0.05 \
+  --granularity section --section-weight hybrid --inv-freq-temp 0.5 \
+  --bases-dir ../../rl_training_data/bases_S61_DEBEONLY_DIAG \
+  > ../../rl_training_data/checkpoints/tasks/run27_debecurve_only_stdout.log 2>&1 &
+
+# Priority 3 (lowest) — Stage 0.2 showed ~zero marginal signal-quality contribution once cost+de/be
+# both change; run mainly to confirm it doesn't matter for real TEST accuracy either
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True nohup uv run python train_grpo.py \
+  --task-id run28_garatreat_only --epochs 200 --lr 5e-5 --beta 0.15 --entropy-coef 0.22 \
+  --warmup-epochs 10 --patience 50 --lora-r 16 --lora-alpha 16 --lora-dropout 0.05 \
+  --granularity section --section-weight hybrid --inv-freq-temp 0.5 \
+  --bases-dir ../../rl_training_data/bases_S61_GARAONLY_DIAG \
+  > ../../rl_training_data/checkpoints/tasks/run28_garatreat_only_stdout.log 2>&1 &
+```
+
+**What to watch, per §60.16's methodological carryover:** expect early entropy collapse regardless
+of variant (§60.8's broad, dataset-size-driven mechanism, not formula-specific) — do not kill a run
+just because it collapses early. Track real TEST-set RL-only accuracy (via `infer.py`'s
+`_DEFAULT_ADAPTER_DIR` pointed at the resulting `best`/`best_er` checkpoint + `test_grok_planner.py
+--rl-only --save-json`, exactly as done for `run25` — no `--bases-dir` override needed at *eval*
+time, since production `bases/` already holds the correct current digests/oracle for scoring) at
+several checkpoints spanning ~epoch 100-150, not just the health-gated ceiling. Also inspect each
+run's TRAIN arm distribution (`training_log.jsonl`) for deep-representation collapse, per Stage
+0.2's warning that `run26_costcoef_only` in particular is the variant most likely to reproduce it.
+Cap around epoch 120-150 given the confirmed post-114 drift pattern in `run25` — kill early once the
+entropy/accuracy trajectory is clear, same discipline used for `run22`/`run23`.
+
+**`run26_costcoef_only` interim results (2026-08-04) — best TEST result yet among any
+new-digest, trained-from-scratch run.** Still running (PID confirmed alive, epoch 163/200 logged as
+of this check, `patience=50` not yet triggered since `best_er` last improved at epoch 146). TRAIN
+metrics have plateaued/oscillated without a clear trend since roughly epoch 130-140 (strict
+top1 0.71-0.78, near-tie 0.92-0.94) — already past the recommended epoch 120-150 cap, worth a kill
+decision now rather than waiting for `patience`/epoch 200.
+
+*Health-gated ceiling, baseline-corrected:* entropy oscillates the same way run13/run25 did (spikes
+to 0.43-0.46 around epoch 9-10, brief secondary bumps through epoch 20-34, then settles into an
+unhealthy 0.02-0.05 band from ~epoch 40 onward) — 15 healthy epochs (entropy≥0.15) logged so far.
+Health-gated strict ceiling = **38.0%** at epoch 34, near-tie ceiling = **60.8%** — both *look*
+dramatically higher than every prior run (25.7-28.1% strict, C2-era) but this run's own
+constant-predictor baseline (computed directly from `bases_S61_COSTONLY_DIAG`'s section-level
+labels, section dist sk/li/st/dp=65/71/22/13) is **41.5% strict / 71.4% near-tie** ("always predict
+`light`") — **both ceilings are still below their own label set's trivial baseline**, extending
+§60.12's invariance finding to this formula variant too: no run has yet demonstrated genuinely
+above-baseline learning while entropy is healthy, regardless of which of the 3 formula differences
+is isolated.
+
+*Real TEST result — **corrected checkpoint attribution (2026-08-04): the first eval below is
+epoch 159, not epoch 146** (user directly ran both and compared; my mtime-based attribution to
+epoch 146 was wrong — "`best`" evidently mirrors `best_strict`, which last updated at epoch 159,
+not `best_er`). Both checkpoints run via `test_grok_planner.py --rl-only --save-json`, verified
+from `grok_planner_test_results/_summary.json`:*
+
+| run (TEST, RL-only) | exact | near | miss | MAE | regret mean |
+|---|---|---|---|---|---|
+| true zero-retrain baseline (§60.16/17) | 38% (6/16) | 7 | 19% (3) | 0.812 | 0.0177 |
+| `run25` @ epoch 114 (best) | 38% (6/16) | — | 12% (2) | 0.750 | 0.0219 |
+| `run26_costcoef_only` @ **epoch 159** ("best") | 50% (8/16) | 5 | 19% (3) | 0.6875 | 0.0129 |
+| **`run26_costcoef_only` @ epoch 146** | **50% (8/16)** | **6** | **12.5% (2)** | **0.625** | **≈0.0129** |
+
+The only difference between epoch 146 and 159: `07_reasoning_planning` (oracle=skip) is predicted
+`light` at epoch 146 (near) vs. `standard` at epoch 159 (miss) — one article moving from a 2-level
+miss to a 1-level near accounts for the entire delta (miss 3→2, MAE 0.6875→0.625, regret_mean
+essentially unchanged since regret is reward-based not preset-distance-based). **Epoch 146 is
+therefore the better of the two, and now the best real TEST result across every metric of any
+from-scratch retrain on the new digests** — beating `run25` and the true zero-retrain baseline on
+`exact%`, `miss%`/`MAE` (tied with `run25`'s miss-rate, better MAE), and `regret_mean`. This
+isolates only the cost mechanism, not the full 3-way Formula-B swap — a genuinely important,
+somewhat surprising result suggesting `cost_coef` alone may be doing most of Formula-B's real
+generalization benefit, with the other two differences (`de`/`be` shape, `ga`/`ra` treatment)
+adding little beyond it, or even mildly diluting it (epoch 159, later in training, is *worse* than
+146 on the one article that differs — consistent with continued drift past the best point, not
+further improvement).
+
+**But the deep-scarcity tradeoff flagged in Stage 0.2 shows up concretely in these predictions.**
+Of the 3 TEST articles with a `deep` oracle label, `run26` gets only 1 right (`Dark_Dimension`,
+exact) and misses the other 2 by predicting `light` instead of `deep` (`13_agent_framework`,
+`Distinct_AI_Models` — 2 of the remaining 2 misses at epoch 146). The miss set also changed
+composition vs. the zero-retrain baseline: `run26` *fixes* `Dark_Dimension` and `29_evaluation_
+metrics` (both correct now) and, at epoch 146, avoids the `07_reasoning_planning` miss too — but
+keeps `Distinct_AI_Models`, and the higher exact% overall comes from several NEAR articles flipping
+to EXACT, not from fixing the deep-scarcity-driven misses specifically.
+
+**Recommendation: kill `run26_costcoef_only` now — agreed with the user's read.** TRAIN has been
+plateaued/oscillating since ~epoch 130-140 with no further improvement (epoch 159 is measurably
+*worse* than epoch 146 on the one TEST article that moved), the epoch 120-150 cap is already
+exceeded, and `patience` won't fire until ~epoch 196 — continuing would spend real GPU time with no
+evidence of further gains, exactly the pattern that justified killing `run22`/`run23` early.
+Epoch 146's checkpoint is safely preserved in dedicated per-epoch snapshots (`best_er_epochs/
+epoch_0146`, `best_neartie_epochs/epoch_0146`), so nothing is lost by stopping now — it is not at
+risk of being overwritten. Kill and free the GPU for `run27_debecurve_only` (next priority):
+
+```bash
+kill 55407 55410   # uv wrapper + actual train_grpo.py process for run26_costcoef_only
+```
+
+`run26_costcoef_only`'s final, representative result for §61 Stage 2/3 going forward: **epoch 146,
+exact=8/16 (50%), near=6, miss=2 (12.5%), MAE=0.625, regret_mean=0.0144** — the best TEST result of
+the investigation so far, from isolating cost_coef alone.
+
+**`run27_debecurve_only` interim results (2026-08-05) — decisively worse than `run26`, and a
+different failure mode entirely.** Still running (epoch 134/200 logged; `sigma_floor_fraction`
+constant at 0.1287 every epoch, matching Stage 0.2's `debe_only` prediction of 12.9% exactly).
+TRAIN has plateaued/oscillated since ~epoch 90-134 (strict 0.44-0.64, near-tie 0.75-0.83, `best_er`
+last improved at epoch 110, `patience` won't fire until ~epoch 160).
+
+*Health-gated ceiling, baseline-corrected:* only 23/135 healthy epochs — strict ceiling 32.2% @
+epoch 20 (below this run's own label-set baseline of 38.6% "always `light`", consistent with the
+invariance pattern), but near-tie ceiling 58.5% @ epoch 20 is *slightly above* its own 54.4%
+baseline — the first modest exception to the below-baseline pattern seen so far, though small
+(4 points) and single-metric; not treated as a reversal of §60.12's finding.
+
+*Real TEST result (checkpoint = epoch 110, the `best_er` tracker, matching the user's attached
+eval — same convention as `run25`/`run26`):*
+
+| run (TEST, RL-only) | exact | near | miss | MAE | regret mean |
+|---|---|---|---|---|---|
+| **`run26_costcoef_only` @ epoch 146** | **50% (8/16)** | 6 | **12.5% (2)** | **0.625** | **0.0144** |
+| `run27_debecurve_only` @ epoch 110 | 25% (4/16) | 6 | 38% (6) | 1.250 | 0.0231 |
+
+`run27` is worse than `run26` on every metric — half the exact rate, 3× the miss rate, 2× the MAE.
+TRAIN tells the same story (`run27`: exact=25%, miss=25%, MAE=1.125 vs. `run26`: exact=46%,
+miss=8%, MAE=0.625) — this is not TEST-specific overfitting, `run27`'s checkpoint is uniformly
+worse.
+
+**The failure mode is different from — almost opposite to — `run26`'s deep-scarcity risk.**
+`run27` predicts `deep` for 7 of 16 TEST articles (44%) against a true oracle rate of 19% (3/16) —
+systematic *over*-prediction of `deep`, not under-prediction. Plausible mechanism: raw
+(pre-`enhancement_credit()`) `de`/`be` scores have no saturating ceiling dampening marginal
+exploration credit, so any article with moderately decent depth/breadth content mechanically
+inflates the `deep`/`standard` arms' explore term — teaching the model deep is often the right
+call far more often than the label distribution (or reality) supports. This is a genuinely
+different, novel failure mode from `run26`'s (which under-predicts `deep` instead) — both single-
+variable changes distort the deep-prediction rate, just in opposite directions.
+
+**Recommendation: kill `run27_debecurve_only` now too — agreed with the user's read.** Same
+justification as `run26`: TRAIN plateaued, past the epoch cap, no evidence of further gains, and
+the result is already decisively resolved (worse on every metric, at both TRAIN and TEST). This is
+now two-for-two evidence that isolating `cost_coef` alone is the dominant, load-bearing lever for
+real TEST generalization — `de`/`be` shape alone does not confer the benefit and actively hurts.
+Given `run28_garatreat_only`'s predicted near-zero marginal signal-quality contribution (Stage 0.2)
+and unchanged deep-representation (neither failure mode expected), it is now a lower-value
+confirmatory experiment rather than a live open question — worth discussing whether to still run
+it for completeness or move directly to Stage 2/3 with `run26`'s result as the leading candidate.
+
+```bash
+kill 67743 67762   # uv wrapper + actual train_grpo.py process for run27_debecurve_only
+```
+
+**`run28_garatreat_only` results (2026-08-06) — Stage 1 complete.** User ran this one to
+completion-for-completeness, observed the same plateau pattern, killed it, and evaluated the best
+checkpoint directly (no further handoff needed for this one). Trajectory confirms the pattern seen
+in `run26`/`run27`: 139 epochs logged, `sigma_floor_fraction` constant at **0.1754** (matches Stage
+0.2's `gara_only` prediction of 17.5% almost exactly), only 24/139 healthy epochs, health-gated
+ceiling strict=26.3%/near-tie=48.5% @ epoch 21-23 — both *below* this run's own label-set baseline
+(computed from `bases_S61_GARAONLY_DIAG`: 32.75% strict / 59.65% near-tie, "always `light`"),
+consistent with the invariance pattern (no exception this time, unlike `run27`'s near-tie case).
+`best_er` peaked at epoch 120 (TRAIN plateaued 0.62-0.70 strict from there through epoch 138,
+matching the user's observation).
+
+*Real TEST result (checkpoint = epoch 120, `best_er`):* exact=38% (6/16), near=4, miss=38% (6),
+MAE=1.125, regret_mean=0.0257, regret_max=0.1273.
+
+**Stage 1 complete — full comparison, all 3 single-variable isolations plus reference points:**
+
+| run | isolates | exact | near | miss | MAE | regret mean | TEST `deep` predictions (true rate 19%, 3/16) |
+|---|---|---|---|---|---|---|---|
+| true zero-retrain baseline | — | 38% (6) | 7 | 19% (3) | 0.812 | 0.0177 | — |
+| `run25_formulab_diag` @ ep114 | all 3 (full swap) | 38% (6) | — | 12% (2) | 0.750 | 0.0219 | — |
+| **`run26_costcoef_only` @ ep146** | **cost mechanism only** | **50% (8)** | 6 | **12.5% (2)** | **0.625** | **0.0144** | 6% (1) — under-predicts |
+| `run28_garatreat_only` @ ep120 | `ga`/`ra` treatment only | 38% (6) | 4 | 38% (6) | 1.125 | 0.0257 | 50% (8) — over-predicts most |
+| `run27_debecurve_only` @ ep110 | `de`/`be` shape only | 25% (4) | 6 | 38% (6) | 1.250 | 0.0231 | 44% (7) — over-predicts |
+
+`run26_costcoef_only` is decisively the best of all three isolated variants, and the best result of
+the entire investigation — beating even `run25`'s full 3-way swap. `run27` and `run28` are both
+clearly worse than the zero-retrain baseline on every metric; only `run26` beats it outright.
+
+**A coherent mechanistic story emerges from the deep-prediction bias direction.** All three
+single-variable variants distort the `deep`-prediction rate away from truth (19%), but in a
+pattern that implicates the cost mechanism specifically as the thing that suppresses over-eager
+escalation: when `cost_coef` itself is changed to Formula-B's blunter form (`run26`), the model
+*under*-predicts `deep` (6%). When `cost_coef` is left at C2's shipped, milder form and *either*
+other dimension changes instead (`run27`'s raw `de`/`be`, `run28`'s additive `ga`/`ra`), the model
+swings the *other* way and *over*-predicts `deep` (44-50%) — worse than either C2 or Formula-B's
+full swap. This suggests C2's cost mechanism alone is not sufficient to keep escalation in check
+once other reward terms shift even slightly toward rewarding effort more freely (raw `de`/`be`'s
+uncapped credit, or `ga`/`ra`'s unconditional additive bonus) — and that Formula-B's *specific*
+cost magnitude/units are doing real, load-bearing suppression work, not just contributing "noise
+reduction" as the Stage 0 signal-quality framing alone would suggest.
+
+**Stage 1 conclusion and recommended next step:** `cost_coef` (magnitude + unit shape, isolated in
+`run26`) is the single dominant, load-bearing lever behind Formula-B's TEST-generalization
+advantage — the other two differences do not contribute positively on their own and each
+introduces a distinct, opposite-direction deep-prediction distortion when isolated. This sharpens
+implication #1's original proposal (a real retrain of C2 with only `cost_coef` reverted) from a
+hypothesis into the best-supported next step: proceed to Stage 2/3 by testing a **range of
+`cost_coef` magnitudes** (not just Formula-B's `-0.06`/ordinal-units endpoint) against `run20_c2`'s
+baseline, to find whether a smaller shift already recovers most of `run26`'s gain without its
+milder deep-scarcity symptom (§60.16), rather than assuming `-0.06`/ordinal-units is itself the
+optimal point on this lever.
+
+### Stage 1 addendum — cost_coef magnitude preview (2026-08-06), before committing to another real retrain
+
+Given Stage 1 established `cost_coef` as the dominant lever, the natural next question is whether
+Formula B's exact endpoint (`-0.06`, ordinal units) is the best point on that lever, or whether a
+smaller shift already captures most of the benefit with less deep-scarcity cost. Extended
+`model_gate_candidates.py` with a `cost_coef` magnitude sweep (`-0.035` through `-0.06`, in `0.005`
+steps) under two unit conventions: **H0** (production's own empirical units, only the coefficient
+scaled — matching the "C2 + a larger `cost_coef`" framing exactly) and **ORD** (ordinal units too,
+for comparison against `run26`'s exact mechanism at smaller magnitudes). Zero new generation,
+reuses Stage 0's corpus loader.
+
+**TRAIN floor% and deep-representation across the sweep (H0 units, C2 shape otherwise unchanged):**
+
+| cost_coef | floor% | mean margin | TRAIN dist (sk/li/st/dp) | thin |
+|---|---|---|---|---|
+| `-0.03` (C2 baseline) | 20.5% | 0.0942 | 3/11/4/**6** | 9 |
+| `-0.035` | 19.9% | 0.0946 | 5/12/3/**4** | 9 |
+| `-0.04` | 20.5% | 0.0952 | 6/12/2/**4** | 8 |
+| `-0.045` | 21.1% | 0.0958 | 7/12/2/**3** | 9 |
+| `-0.05` | **8.2%** | 0.0968 | 7/12/2/**3** | 6 |
+| `-0.055` | 8.8% | 0.0979 | 7/12/2/**3** | 4 |
+| `-0.06` (H0 units) | 8.2% | 0.0992 | 8/11/2/**3** | 4 |
+| `-0.06` ordinal units (`run26`'s exact mechanism) | 4.1% | 0.1031 | 8/12/2/**2** | 2 |
+
+**Key finding: the tradeoff is not a smooth curve — there's a sharpness cliff between `-0.045` and
+`-0.05`, and `-0.045` specifically lands in the worst spot on both axes.** `floor%` barely moves
+(20.5%→19.9%→20.5%→21.1%) from `-0.03` through `-0.045` — no real signal-quality gain yet — while
+deep-representation has *already* dropped from 6 to 3 by `-0.045`. The floor% benefit only actually
+appears at `-0.05` (a sudden drop to 8.2%, matching `-0.06`'s H0-unit value almost exactly) — by
+which point deep-representation is unchanged from `-0.045` (still 3). **`-0.045` therefore buys
+none of the signal-quality benefit while already paying essentially all of the deep-scarcity cost
+`-0.05`/`-0.06` pay** — it is not the good middle-ground the "smaller than `-0.06`" framing
+suggested. `-0.05`, `-0.055`, and `-0.06` (H0 units) are all roughly equivalent to each other on
+both floor% (8.2-8.8%) and deep-count (3) — the benefit plateaus well before `-0.06`, so nothing is
+gained by going all the way there under H0 units specifically.
+
+The ORD-units comparison (secondary, not the primary recommendation since it changes two things at
+once) shows the same cliff arriving earlier — around `-0.04`, not `-0.045`-`-0.05` — consistent
+with ordinal units applying a proportionally larger penalty at `standard`/`deep` than H0's units at
+the same nominal coefficient.
+
+**Recommendation: `-0.05` (H0 units), not `-0.045`, for the next real retrain.** It is the smallest
+magnitude that captures essentially all of the achievable floor%-sharpening benefit (8.2%, tied
+with `-0.06`) while sitting at the same deep-representation (3) as every value from `-0.045`
+onward — a strictly better choice than `-0.045` (no signal benefit yet, same deep cost) and
+equivalent to `-0.06` (H0 units) at a smaller departure from production. It won't fully match
+`run26`'s ordinal-units result (4.1% floor%, deep=2) since that mechanism is sharper still, but it
+tests whether the H0-unit-only lever alone, at its plateau point, recovers a useful fraction of
+`run26`'s real TEST gain without needing the ordinal-unit switch too.
+
+**Built and ready:** `training/build_s61_diag_bases.py --candidates S61_cost05_H0` (new candidate
+added alongside the existing three) → `rl_training_data/bases_S61_COST05_DIAG/`, verified 24/24
+TRAIN articles built. Launch command (identical recipe, new `--bases-dir`):
+
+```bash
+cd /mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local/training
+
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True nohup uv run python train_grpo.py \
+  --task-id run29_costcoef05 --epochs 200 --lr 5e-5 --beta 0.15 --entropy-coef 0.22 \
+  --warmup-epochs 10 --patience 50 --lora-r 16 --lora-alpha 16 --lora-dropout 0.05 \
+  --granularity section --section-weight hybrid --inv-freq-temp 0.5 \
+  --bases-dir ../../rl_training_data/bases_S61_COST05_DIAG \
+  > ../../rl_training_data/checkpoints/tasks/run29_costcoef05_stdout.log 2>&1 &
+```
+
+Same monitoring discipline as Stage 1: expect early entropy collapse, track real TEST accuracy at
+several checkpoints (not just the health-gated ceiling), and cap around epoch 120-150.
+
+#### `run29_costcoef05` result (2026-08-07): the milder H0-unit lever does NOT recover `run26`'s gain
+
+User ran `run29_costcoef05` to completion, observed a plateau, killed it, and ran RL-only inference
+on the `best_er` checkpoint (epoch 94 — the single all-time-peak `mean_expected_reward`, 0.4027,
+confirmed directly from `training_log.jsonl`; no other epoch in the 136-epoch log reaches it).
+
+**Training dynamics**, read directly from `training_log.jsonl` (136 epochs logged): `sigma_floor_fraction`
+is **constant at 0.0819 (8.19%) every single epoch** — matching the Stage 1 addendum's zero-cost
+preview prediction (8.2%) almost exactly, a nice validation that the preview methodology transfers
+to the real training run. Entropy shows the now-familiar shape: healthy (≥0.15) through epoch 22
+(with one brief dip at epoch 16), then **permanently collapses starting epoch 23** and never
+recovers above ~0.07 for the remaining 113 epochs — the earliest sustained collapse of any Stage 1
+run so far (`run26`/`run27`/`run28` all stayed healthy into the high-20s/30s). Health-gated ceiling
+= 33.9% strict / 54.97% near-tie @ epoch 21-22 — computed this run's own constant-predictor
+baseline directly from `bases_S61_COST05_DIAG`'s 171 TRAIN sections (dist skip51/light61/standard31/deep28,
+"always light" baseline = **35.7% strict / 83.6% near-tie(±1)**) — the health-gated ceiling sits
+*below* its own baseline on both metrics, extending §60.12's invariant (no run has ever beaten its
+own trivial constant-predictor baseline while genuinely healthy) to this candidate too. TRAIN
+plateaued in a narrow `mean_expected_reward` band (0.399-0.403) for the last ~40 logged epochs
+(92-135) with no clear trend, confirming the user's "plateaued" read and justifying the kill.
+
+**Real TEST/TRAIN result vs. every reference point to date:**
+
+| | exact | near | miss | MAE | regret_mean | regret_max |
+|---|---|---|---|---|---|---|
+| zero-retrain baseline (`run13_formulaB/best`, new digests) | 38% (6/16) | 44% | 19% (3/16) | 0.812 | 0.0177 | — |
+| `run26_costcoef_only` (`-0.06`, **ordinal** units) @ep146 | **50% (8/16)** | 37.5% | **12.5% (2/16)** | **0.625** | **0.0144** | **0.0652** |
+| `run27_debecurve_only` @ep110 | 25% (4/16) | 37.5% | 38% (6/16) | 1.250 | 0.0231 | 0.0926 |
+| `run28_garatreat_only` @ep120 | 38% (6/16) | 25% | 38% (6/16) | 1.125 | 0.0257 | 0.1273 |
+| `run25_formulab_diag` (full 3-way swap) @ep114 | 38% (6/16) | — | 12% (2/16) | 0.750 | 0.0219 | — |
+| **`run29_costcoef05` (`-0.05`, H0 units) @ep94** | 44% (7/16) | 31% (5/16) | 25% (4/16) | 0.812 | 0.0194 | 0.1273 |
+
+`run29` underperforms `run26` on **every single metric** — lower exact%, lower near%, more than
+double the miss rate, 30% worse MAE, 35% worse mean regret. Against the zero-retrain baseline it is
+roughly a wash: identical MAE, a modestly better exact% (44% vs 38%) offset by a worse miss rate
+(25% vs 19%) and worse mean regret (0.0194 vs 0.0177). TRAIN (n=24): exact=46%, near=46%, miss=8%,
+MAE=0.625, regret_mean=0.0113 — solid but, per this investigation's established discipline, not
+informative on its own about generalization.
+
+**Failure mode — a clean, bimodal light↔deep confusion, unlike any single-variable run so far.**
+All 4 TEST misses are *exactly* the P1(light)↔P3(deep) two-level axis, split evenly by direction:
+`13_agent_framework` and `Distinct_AI_Models` under-predict (true `deep`, predicted `light`, mirroring
+`run26`'s under-escalation tendency); `Bird_Eye_Extreme` (regret **0.1273**, the run's `regret_max`,
+predicted at 61% confidence) and `Space-Time_QECC` over-predict (true `light`, predicted `deep`,
+mirroring `run27`/`run28`'s over-escalation tendency). Zero misses involve `skip` or `standard` —
+every `standard`-oracle TEST article (5 of them) lands on an exact hit or a 1-level near, never a
+miss, and `standard` itself is under-*represented* in predictions (2/16 vs. true 5/16) without ever
+causing an outright error. The model also never predicts `skip` anywhere (0/16 TEST, 0/24 TRAIN),
+matching a tendency seen since the C2 era, though it costs no regret here (the 2 TEST skip-oracle
+articles are either policy-forced or land as a 1-level near).
+
+**Interpretation — this closes the "milder lever" question negatively.** `run29` directly answers
+the question the addendum posed: does the H0-unit-only magnitude increase (no ordinal-unit switch)
+recover a useful fraction of `run26`'s gain? **No.** It performs worse than `run26` on every metric
+and no better than doing nothing. This means Formula B's **ordinal unit convention itself**
+(`{skip:0,light:1,standard:2,deep:3}`), not just the larger `cost_coef` magnitude, is doing real,
+load-bearing work — consistent with the empirical-cost-ratio finding (§"EMPIRICAL COST SIGNAL
+FOUND", 2026-07-25) that H0's units are *shaped* by diminishing real exploration effort
+(`light:1.00 → standard:1.88 → deep:2.31`, a shrinking marginal step), so scaling the coefficient up
+within H0 units still leaves the `standard→deep` cost step proportionally small (~23%) — it sharpens
+overall margin decisiveness (the sigma_floor cliff) without specifically discouraging escalation past
+`standard` the way ordinal units' constant per-round step (`+1` every time, a full 50% relative
+jump from `standard→deep`) does. **`run26`'s ordinal-unit mechanism remains the best-validated,
+leading candidate from Stage 1** — this result does not unseat it, and Stage 2/3 should proceed with
+`run26`'s exact mechanism rather than investigating further intermediate H0-unit magnitudes.
+
+### Stage 2 — content-correctness vs. signal-quality disentanglement
+
+2.1. For whichever Stage 1 run(s) show a real TEST improvement over `run20_c2`, repeat Stage
+     0.3/0.4's label-diff check for that specific variant — if the TEST improvement correlates with
+     genuinely *different* label assignments on the articles that matter, that's evidence for
+     "more correct decisions."
+2.2. If a run improves signal-quality *without* materially changing which articles get which
+     label, and still improves TEST — that's evidence for a pure trainability/SNR channel,
+     independent of content correctness (a real, somewhat surprising finding if confirmed, and
+     exactly the tension §60.15 already flagged but couldn't resolve with n=1).
+
+### Stage 3 — consolidate and decide
+
+3.1. Combine whichever single-variable change(s) show real, attributable TEST gains into one
+     candidate formula, retrain, and re-check — components may compose or interact/cancel (§60.9
+     already saw this with the cap-extension + `explore_mult` combination).
+3.2. Re-validate the winning candidate against both baseline-relative signal-quality (§60.12) and
+     real RL-only TEST metrics (§60.16/§60.17's corrected methodology) before shipping.
+3.3. Only then proceed to Appendix A's 192-cycle replication spend (per implication #2) — avoids
+     replicating labels under a formula that might get superseded shortly after.
+
+**Priority note:** Stage 0 is free and should run immediately, before committing to any Stage 1
+GPU job — it determines which of the 3 candidate single-variable runs to prioritize given only one
+GPU job runs at a time. This mirrors the "free diagnostic before expensive experiments" discipline
+that already paid off in §60.8/§60.12.
+
+# Appendix A — The data constraint: what to actually target, and how to carry out replication (2026-07-30)
+
+**Scope:** §60.6's correction retired "sharpen the reward signal" as a north star (decisiveness
+and correctness were shown to come apart). This appendix answers the follow-up: *what is the
+primary data target, is it noise reduction, and if so how is replication actually carried out —
+does it need new topics or just re-running the existing ones?* Planning document; nothing here
+has been executed.
+
+## A.1 Two different "noise" problems, routinely conflated
+
+These need separating before the target can be chosen, because they have different causes,
+different fixes, and different costs:
+
+| | **Label noise** | **Sampling noise** |
+|---|---|---|
+| Question it corrupts | "Is *this* article/section's `oracle_arm` the right answer?" | "Is my 16-article TEST set representative enough to detect a real change?" |
+| Measured at | §55.2: per-cell reward sd ≈ 0.099; arm-difference noise ≈ 0.140 | §13/§15: n=16, σ≈2 exact-hits, 56% majority-class baseline |
+| Consequence | §55.3: **84% of sections' "winning" arm is not statistically distinguishable from a single-draw coin flip** | ±2 exact is within binomial noise — most candidate improvements are unmeasurable |
+| Fixed by | **Replication** (re-run write+grade N times, average) | **More articles** (new topics) |
+| *Not* fixed by | more articles | replication (40 replicated articles are still 40 articles) |
+
+**Replication does not increase `n`, and new topics do not fix label precision.** They are
+complements, not substitutes. Any plan that treats "more data" as one undifferentiated goal will
+mis-sequence them.
+
+## A.2 Which is primary, and for what
+
+- **For TRAINING (what the model learns): label noise is binding.** §19 established the specific
+  mechanism — unlike the RL folklore case where a noisy reward is resampled every visit and
+  averages out, this pipeline computes each `(article, section, arm)` reward **once**, freezes it
+  into `section_oracle.json`, and reuses it as a fixed target for every GRPO epoch. There is no
+  resampling to average anything away. A model fitting a small set of frozen point-labels, a
+  large fraction of which are single noisy draws, cannot distinguish generalizable signal from
+  noise it should ignore — it memorizes both. That is exactly the overfitting + entropy-collapse
+  signature seen in `run14`, `run20_c2`, and `run21_ecoef035`.
+- **For EVALUATION (whether a change worked): sampling noise is binding.** Replicating the 16
+  TEST articles makes each label more trustworthy but leaves `n=16` — the σ≈2 measurement floor
+  that has blocked adjudicating every candidate improvement in this document stays exactly where
+  it is.
+
+**Primary target: label noise first, via replication.** Not because sampling noise matters less,
+but because of ordering — adding more articles under the current labelling precision just
+produces *more* articles whose labels are ~84% coin-flips. Label precision is a prerequisite for
+the added articles to be worth what they cost.
+
+## A.3 Why replication is the higher-leverage first move
+
+1. **It is the only lever that moves the §55.3 numbers at all.** The `sigma_floor` sweep proved
+   thresholds cannot help: the absolute count of statistically-defensible sections stayed flat at
+   45/282 (>1 sd) and 10/282 (>2 sd) at *every* `sigma_floor` value tested — raising the floor only
+   discarded training data. Averaging N draws cuts noise sd by `√N`, which moves the *threshold*,
+   which is the only thing that can move those counts.
+2. **It is much cheaper than it sounds, because it skips the expensive half of the pipeline.**
+   Replication reuses each article's existing `research.md` / `.research/` — **zero** Tavily
+   searches, zero Firecrawl scrapes, zero re-research. Only the write + grade steps re-run.
+3. **The infrastructure already exists and has been validated end-to-end** (§23, §30-31) — see
+   A.5.
+4. **It improves the labels for articles we already paid the expensive research+GT cost on**,
+   rather than paying that cost again for new topics.
+
+Expected effect, using the measured numbers: arm-difference noise `0.140` (N=1) → `0.081` (N=3)
+→ `0.063` (N=5). §55.3's own estimate is that N=3 would *roughly double* the fraction of sections
+with a statistically defensible winner. Diminishing returns are steep after N=3 (N=5 buys another
+~22% reduction for 67% more cost), so **N=3 is the sweet spot** unless A.7's validation says
+otherwise.
+
+## A.4 Do you need new topics? Not for this — but for the other two problems, yes
+
+**For replication specifically: no new topics at all.** Replication is by definition re-running
+the *existing* articles. No new guidelines, no new golden sources, no new
+`article_ground_truth.md`, no new research phase.
+
+New topics remain necessary for the *other* two data problems already documented in §16, neither
+of which replication touches:
+- **TEST-set expansion** (§16.1.1's arm × golden-type grid) — the `n=16` measurement floor, the
+  empty `golden_web`-only cells at P0/P2/P3, and the thin P2/P3 cells (2 articles each).
+- **TRAIN archetype gaps** (§16.1's Priority 2) — the "high-demand but golden-satisfiable → P1"
+  lesson, and no-variant genuine P2/P3 examples to break the `var_demanding`→escalate confound.
+  Note the current TRAIN set is 24 articles but only **8 genuinely independent topics** (each ×3
+  correlated variants), so its effective sample size is far below 24 for any generalization claim.
+
+Sequencing recommendation: **replicate what exists → re-measure → then expand.** Expansion is the
+larger, slower spend and its value is easier to judge once labels are trustworthy.
+
+## A.5 What already exists (verified on disk) vs. what is missing
+
+**Already built and validated** — the §23 noise-experiment work generalizes directly:
+
+| Component | Path | Role |
+|---|---|---|
+| Replicate-dir setup | `training/setup_noise_experiment.py` | Copies `article_guideline.md` + `research.md` + `.research/` into `rl_training_data/noise_experiment/<article>__replicateN__preset{p}/`. Never touches real `episodes/`; copies no `article.md`, so the writer runs fresh. |
+| Low-temp writing profile | `writing_workflow/configs/rl_generation.yaml` | `write_article`/`integrate_exploration` at temp 0.25 (vs. `course.yaml`'s 0.7). Selected per-invocation via `CONFIG_FILE`; production config untouched. |
+| Writer redirect | `rl_writing_generator.py --episodes-dir` | Points the generator at the replicate root. Default unchanged. |
+| Grader redirect | `rl_grading_generator.py --episodes-dir --grading-model claude` | Same, plus `_strip_replicate_suffix()` resolves `__replicateN` back to the base article's ground truth — no GT duplication needed. |
+| Noise measurement | `training/measure_replicate_noise.py` | Imports the production `_section_reward_components` / `_compute_r_w` (no duplicated formula), reports per-section per-arm sd, article margin distribution, arm vote tally. |
+| Noise-floor estimate | `training/estimate_noise_floor.py` | Produced §55.2's `0.099` / `0.140` figures. |
+| Margin tiering | `training/audit_oracle_margins.py` | CRITICAL/HIGH/MODERATE/COMFORTABLE tiers, correctly excluding policy-forbidden / manual-override articles. |
+| Real replicate data | `rl_training_data/noise_experiment/` | **2 articles × 3 replicates × 4 arms already written and graded** (`09_RAG__var_standard`, `06_tools__var_standard`) — the basis for A.7's free validation. |
+
+**The one genuine gap — there is no merge-back path.** Today the replicates are only *measured*;
+they never become the production label. `generate_episode_oracles.py` reads exactly one
+`reasoning.json` per episode directory, and §23's decision rule (`majority vote across draws`)
+operates at the **article** level only — coarser than what training needs, since GRPO consumes
+**section-level** rewards. Closing this needs a small new step:
+
+> For each `(section, arm)`, average the per-draw reward components across the N replicates
+> (plus the original production draw), and write the averaged values into `section_oracle.json`.
+> Also worth storing the per-cell sd alongside, since it is exactly the per-label confidence
+> measure A.8 wants — computing it is free once the draws are loaded.
+
+This should be a **new, separate script** that consumes replicate dirs and emits an averaged
+`section_oracle.json`, rather than a modification of `generate_episode_oracles.py` — keeping the
+single-draw path intact preserves the ability to reproduce every historical label, which this
+investigation has relied on repeatedly (most recently §60.6).
+
+**DONE (2026-07-30):** built `training/merge_replicate_oracles.py`. For each `(section, arm)` cell
+it averages the reward across every available draw — the original production draw already in
+`section_oracle.json` plus every graded replicate under `noise_experiment/` (reusing
+`measure_replicate_noise.py`'s exact recompute path, no formula duplication) — and writes
+`bases/<article>/section_oracle_averaged.json`: `oracle` (argmax of the averaged rewards),
+`rewards` (the average), `reward_sd` (per-arm sd across draws, exactly A.8's confidence signal),
+and `n_draws`. Production `section_oracle.json` is never opened for writing. Verified against the
+2 existing `noise_experiment/` articles: `06_tools__var_standard` merges cleanly (0/9 section-oracle
+flips vs. the single draw — the confirmed-correct `deep` label is stable under averaging),
+`09_RAG__var_standard` shows 3/6 flips (expected — this was the near-tie article the whole
+replication effort targeted). Confirmed via `git check-ignore`/direct read that
+`section_oracle.json`'s `version` field is still `5` (untouched) after the run. **Caveat carried
+forward from §A.7.1: this test run's input is the known temperature-0.25-confounded data** — the
+script itself is temperature-agnostic (it only averages whatever draws it's given), so this
+validates the merge *mechanism*, not a production-ready label for these 2 articles. Re-run once
+real temperature-0.7 replicates exist (A.10 step 2).
+
+## A.6 Design decisions to make before spending
+
+**How many draws?** N=3 total (i.e. 2 additional draws per arm, since the production draw
+already exists and can be counted as one). Justified by the `√N` curve above; revisit only if
+A.7 contradicts it.
+
+**Which articles?** Two defensible strategies, with a real trap between them:
+
+- **Uniform** — replicate everything. Unbiased, and correctly matches the fact that §55.3's 84%
+  figure is corpus-wide, not concentrated in a few articles.
+- **Targeted** (§20 fix #4) — replicate only thin-margin articles from `audit_oracle_margins.py`
+  (12 CRITICAL+HIGH). Much cheaper. **But note the trap:** that tool tiers by *article-level*
+  margin, while the training-relevant noise is *section-level*. An article with a comfortable
+  article margin can still contain many coin-flip sections. So article-margin targeting is a
+  sound proxy for improving **eval ground truth**, and a poor proxy for improving **training
+  labels**. If targeting is used for the training set, target by section-level margin-to-noise
+  ratio instead — which needs a small extension to the audit tool (it does not do this today).
+
+**Recommended split, given the A.2 finding:**
+1. **TRAIN (24 articles) — uniform N=3.** This is what GRPO actually consumes and where §19's
+   frozen-label memorization mechanism operates. Cost: 24 × 4 arms × 2 extra draws = **192
+   write+grade cycles** (no research).
+2. **TEST (16 articles) — defer, or targeted-only.** TEST label precision matters for measurement
+   honesty, but `n=16` sampling noise likely dominates there anyway (A.1), so this spend competes
+   directly with test-set *expansion*, which fixes the binding constraint instead. If any TEST
+   replication is done first, restrict it to the CRITICAL/HIGH-margin articles where a label flip
+   is actually plausible.
+
+**Temperature: use `course.yaml` (0.7), matching GT and the original 40-article production
+episodes — NOT `rl_generation.yaml` (0.25).** This reverses the original recommendation in this
+section ("use 0.25 for consistency with the existing replicates"), superseded by the direct
+measurement in A.7.1 below: 0.25 is not just lower-noise, it's a confirmed systematic bias against
+`standard`/`deep` specifically — using it for the real replication would corrupt exactly the
+arm-choice decision GRPO is being trained to make, on top of the already-known deep-arm
+under-representation problem (§54.7).
+
+**Judge:** Claude (`--grading-model claude`), matching the current production re-grade (§37).
+
+## A.7 Free validation — DONE (2026-07-30): averaging works directionally as predicted, on a necessarily tiny sample
+
+Computed directly from the 15 real sections that exist across the 2 replicated articles
+(`09_RAG__var_standard` 6 sections, `06_tools__var_standard` 9 sections) — 4 independent draws
+each (1 production + 3 replicates), same production `_section_reward`/H0 formula applied
+consistently to all 4 via `measure_replicate_noise.py`'s exact recompute path. Zero new API calls.
+
+| | threshold used | sections crossing | vs §55.3 corpus baseline (282 sections) |
+|---|---|---|---|
+| Single-draw margin > 1 noise-sd | 0.140 | **3/15 (20.0%)** | 45/282 (16%) |
+| Single-draw margin > 2 noise-sd | 0.280 | **2/15 (13.3%)** | 10/282 (4%) |
+| Averaged(N=4) margin > 1 noise-sd | 0.070 (predicted `√4`-shrunk) | **8/15 (53.3%)** | — |
+| Averaged(N=4) margin > 2 noise-sd | 0.140 | **2/15 (13.3%)** | — |
+
+**The 1-sd bar shows a real, substantial jump (20%→53%, ~2.7x)** — larger than §55.3's own
+"roughly double" estimate for N=3, on this sample. **The 2-sd bar shows the same raw count (2)
+both times, but they are not the same sections** — `09_RAG`'s "Agentic RAG" (single margin 0.385,
+the largest in the whole set) drops to 0.106 once averaged, while `06_tools`'s "Downsides of
+Running Tools in a Loop" (single margin only 0.066, invisible at the single-draw level) rises to
+0.144 and newly clears the bar. This is exactly the behaviour averaging is supposed to produce —
+some single-draw margins are deceptively large (regress toward the mean once averaged), others
+are deceptively small (rise once the specific draw's noise cancels) — not a null result dressed
+up as one.
+
+**This is evidence against the systematic-bias failure mode, not for it.** If the noise were
+mostly systematic (the same bias in every draw for a given section — a real concern given GT
+itself was written at temp 0.7 with zero exploration, §30), margins would stay roughly unchanged
+under averaging. Instead several margins moved substantially in both directions (`09_RAG` S5:
+0.385→0.106; `06_tools` S4: 0.549→0.238; `06_tools` S7: 0.066→0.144) — consistent with genuine,
+largely-independent per-draw noise being averaged out, not a fixed bias persisting through it.
+
+**Honest caveat: `n=15` sections is far too small to treat these percentages as precise estimates**
+of what N=3-replicating all 282 sections would deliver — this is a directional spot-check, not a
+corpus projection.
+
+**Superseded by A.7.1 below — this result is confounded and its "proceed" recommendation no longer
+stands as stated.** The 4 "draws" averaged above are not 4 draws from one consistent distribution:
+1 draw is the original production episode at temperature 0.7, and the other 3 are
+`noise_experiment` replicates at temperature 0.25. Direct measurement (A.7.1) found this is not a
+neutral swap — 0.25 systematically understates `standard`/`deep` rewards relative to 0.7. So the
+margin shifts reported above (e.g. `09_RAG` S5 0.385→0.106) are a mix of genuine noise-averaging
+*and* this regime-shift artifact, not purely the former as originally stated.
+
+### A.7.1 Correction (2026-07-30): temp=0.25 is a systematic bias, not just lower noise
+
+User-prompted check (the noise_experiment replicates were generated at temperature 0.25 per
+`rl_generation.yaml`, while GT and all 40 original production episodes were generated at
+temperature 0.7 per `course.yaml` — confirmed via direct file read plus git log showing the 0.25
+profile was created 2026-07-23, three months after "all episodes generated" on 2026-04-19; the
+`write_article`/`integrate_exploration` node code itself is unchanged since that commit, ruling out
+a prompt-drift confound). Comparing the original 0.7 draw against the mean of the 3×0.25
+replicates for all 60 `(section, arm)` cells across both noise-experiment articles:
+
+- **Sign of (0.25-mean − 0.7-draw): 41 negative / 12 positive / 7 zero (68% negative)** — a pure
+  same-distribution noise relationship would split ~50/50, not 68/20.
+- **Mean signed diff: −0.0735** — a real, one-directional shift, not centered on zero.
+- **Concentrated in `standard`/`deep`, near-zero in `skip`**: e.g. `09_RAG` "Agentic RAG" deep arm
+  0.7=+0.786 vs 0.25-mean=+0.150 (diff=−0.636); `06_tools` S4 deep 0.7=+0.649 vs 0.25-mean=+0.262
+  (diff=−0.387). `skip` (zero exploration rounds, nothing to integrate) shows no consistent shift.
+
+**Conclusion: temperature 0.25 doesn't just reduce variance, it systematically understates how
+well `standard`/`deep` integrate the extra depth/breadth research, relative to 0.7.** Plausible
+mechanism: lower-temperature writing is measurably worse at creatively synthesizing supplementary
+research into coherent prose, which is exactly what `de`/`be` grade. This also means **§55.2's
+official noise-floor figures (sd≈0.0991, arm-diff≈0.140), which all of §55.3's sigma_floor analysis
+is built on, were computed purely from the 3×0.25 replicates** (`estimate_noise_floor.py` loads only
+`REPLICATES=[1,2,3]` from `noise_experiment/`, never the 0.7 draw) — so that noise-floor estimate
+reflects a lower-variance-but-biased regime, not necessarily the noise of the actual
+temperature-0.7-generated production `section_oracle.json` that GRPO trains on. This is a
+documented limitation of §55.2/§55.3, not something to redo now — a proper re-estimate needs real
+temperature-0.7 replicates, which don't exist yet.
+
+**Revised recommendation: replicate at temperature 0.7 (A.6, revised above), not 0.25.** The
+existing 2-article 0.25 dataset remains useful for the qualitative claim that *some* independent
+noise exists and averaging moves margins, but should not be treated as a clean noise-floor estimate
+or merged directly with 0.7 production draws going forward.
+
+## A.8 Getting more value from the same spend: confidence-weighted training
+
+Replication produces a per-label **sd**, not just a better mean — and that sd is currently thrown
+away. `train_grpo.py` already supports `--section-weight {wordcount,variance,hybrid,regret-hybrid,uniform}`,
+so a natural addition is a **confidence** mode that down-weights sections whose margin is small
+relative to their measured noise, instead of treating a coin-flip section and a decisively-labelled
+section as equally authoritative training targets.
+
+This is strictly more information-efficient than averaging alone: averaging improves the label,
+weighting additionally stops the model from being forced to fit labels that remain uncertain even
+after averaging (which, per §55.3, will still be the majority of sections even at N=3). It costs
+one new weighting function and no additional generation. Worth building in the same pass as A.5's
+merge-back script, since both consume the same per-draw data.
+
+## A.9 What replication will NOT fix
+
+Stating plainly, to prevent over-claiming later:
+- **`n=16` TEST measurement floor** — unchanged. Only new test articles fix this.
+- **Archetype gaps and class imbalance** (§16) — unchanged. Only new train articles fix these.
+- **The 8-independent-topics limitation** of TRAIN — unchanged.
+- **Systematic (as opposed to random) label bias** — averaging N draws of a consistently-biased
+  process converges on the biased answer. A.7 is specifically designed to detect this case.
+- **The entropy-collapse problem currently under investigation** (§60, `run22_reg_combo`) — that
+  is a training-dynamics question; better labels may or may not help it, and the two should not
+  be conflated.
+
+## A.10 Recommended sequence
+
+| # | Action | Cost | Rationale |
+|---|---|---|---|
+| 0 | ~~A.7's free validation~~ **DONE, then corrected (2026-07-30, see A.7.1)** | Zero | Averaging works directionally, BUT the existing noise_experiment data is confounded: replicates were generated at temp 0.25 vs GT/production's 0.7, and this is a confirmed systematic bias against `standard`/`deep`, not just lower noise |
+| 1 | ~~Build A.5's merge-back script~~ **DONE (2026-07-30)**: `training/merge_replicate_oracles.py`, keeping the single-draw path intact | Small, code only | Prerequisite — without it, replicates cannot become production labels. Verified on the 2 existing (temp=0.25, confounded) articles as a mechanism check; not yet run on real 0.7 data |
+| 2 | Uniform N=3 replication of the **24 TRAIN articles at temperature 0.7** (192 write+grade cycles, no research) | Moderate | Directly attacks §19's frozen-noisy-label mechanism where it actually bites; temperature 0.7 avoids A.7.1's confirmed regime-shift bias against exploration-heavy arms |
+| 3 | Regenerate labels from averaged draws; re-run `estimate_noise_floor.py` / `audit_oracle_margins.py` on the new 0.7 replicates to get an unconfounded noise-floor estimate, then quantify the real improvement in defensible-section share | Zero | Measures whether step 2 delivered what A.3 predicted, and finally gives §55.2/§55.3 a noise-floor figure not built on the 0.25 confound |
+| 4 | Retrain on the averaged labels; compare entropy trajectory and held-out eval against the current runs | One training run | The actual test of whether label precision changes training behaviour |
+| 5 | *Then* revisit §16's test-set expansion with new topics, now that label precision is no longer the limiting factor | Expensive | Fixes the `n=16` sampling-noise constraint replication cannot touch |
+| — | (optional, alongside 1-2) A.8's confidence weighting | Small, code only | Extracts extra value from data already being collected |
+
+**Can step 2 run in parallel with §61's reward-formula investigation? Yes (2026-08-03).** §60.16
+implication #2 originally argued for resolving the formula question before spending on replication.
+Verified directly against the code: `merge_replicate_oracles.py` recomputes rewards from each
+replicate's raw `reasoning.json` via `measure_replicate_noise.py`, using whichever formula is
+*currently* live in `generate_episode_oracles.py` at call time — the reward formula is not baked in
+when the replicate drafts are written and graded. Step 2 (the actual write+grade cost, real LLM API
+spend) is therefore formula-agnostic and safe to run now, in parallel with §61's local-GPU training
+experiments — no resource contention, and no risk of wasted replication effort regardless of which
+formula §61 settles on. **Only step 4 (the retrain) should wait** for §61 to conclude — re-running
+step 3's merge/average is free and will pick up whichever formula is live at the time.
+
+**Bottom line:** the primary data target is **label noise, addressed by replication of the
+existing articles at temperature 0.7** — no new topics required for this step, and no re-research
+(write+grade only). New topics remain necessary, but for a *different* constraint (`n`, archetype
+coverage), and they are better spent after label precision is fixed rather than before. A.7's free
+validation was worth running, but its own data source turned out to have a real confound (A.7.1) —
+another instance of this investigation's recurring lesson: verify the validation data itself before
+trusting what it says.
+
+## A.11 Step 2/3 executed for real (2026-08-04): the 6 Lesson-6/9 variants, temperature=0.7
+
+User ran the real replication: **N=3 draws (1 production + 2 replicates) at temperature 0.7**,
+for all 3 variants of both Lesson 6 and Lesson 9 — `06_tools`/`09_RAG` × `{var_minimal,
+var_standard, var_demanding}` — via the existing `setup_noise_experiment.py` +
+`rl_writing_generator.py`/`rl_grading_generator.py --episodes-dir` infrastructure (A.5). Data lands
+in `rl_training_data/noise_experiment/<article>__replicate{1,2}__preset{0,1,3,5}/`; the original
+2-article/3-replicate temp=0.25 dataset was moved aside to `noise_experiment/old_experiment/` and
+kept as a reference fixture. All 48 new dirs verified graded (`scores.json`+`reasoning.json`
+present) before analysis.
+
+**Tooling changes made to run this** (both minimal, backward-compatible): (1) `estimate_noise_floor.py`
+gained a `--articles`/`--replicates` CLI (previously hardcoded to the 2 original articles/3
+replicates, mirroring the pattern already used by `measure_replicate_noise.py`/
+`merge_replicate_oracles.py`); its core loop was factored into a `run(articles, replicates)` function
+that also *returns* a stats dict (mean/median/p90 sd, 1×/2× arm-difference sd) for reuse by other
+scripts, not just printing. (2) Fixed a stale hardcoded `"(temp=0.25)"` print label in
+`measure_replicate_noise.py` that was left over from when the script only ever saw the original
+0.25 dataset — it was a cosmetic string, not an actual check, but would have been actively
+misleading applied to the new 0.7 data. (3) New script `training/quantify_defensible_gain_070.py`
+(read-only, reuses `estimate_noise_floor`/`measure_replicate_noise`/`model_gate_candidates`, no
+duplicated formula) computes the actual "before vs after" defensible-section-share numbers below.
+
+### A.11.1 Unconfounded noise-floor estimate
+
+| | old (temp=0.25, 2 articles, 3 reps, n=60 cells) | new (temp=0.7, 6 articles, 2 reps, n=180 cells) | new, SAME 2 articles as old (n=60 cells) |
+|---|---:|---:|---:|
+| mean per-cell sd | 0.0929–0.0991* | 0.0751 | **0.0686** |
+| median per-cell sd | 0.0866–0.0955* | 0.0707 | 0.0707 |
+| 1× arm-diff sd (mean·√2) | 0.1313–0.1400* | 0.1062 | 0.0970 |
+| 2× arm-diff sd | 0.2627–0.2800* | 0.2123 | 0.1940 |
+
+\*range reflects that the reward *formula* has changed several times since the original §55.2
+figures (0.0991/0.140) were published; re-running the identical script against the identical old
+0.25 dataset today (current formula) gives 0.0929/0.1313 — a formula-vintage difference, not a
+data difference.
+
+**Headline, apples-to-apples (rightmost column, identical 2 articles both times): real
+temperature=0.7 replicate-to-replicate noise (mean sd 0.0686) is *lower* than the temperature=0.25
+noise it superseded (0.0929)**, not higher. This is the opposite of the original design assumption
+("lower temperature *should* reduce noise", the stated rationale for `rl_generation.yaml`'s 0.25 —
+see §21/§23). Caveat: n=2 replicates (new) vs n=3 (old), and this is a single article-pair
+comparison — not enough to assert a general "0.7 is less noisy than 0.25" law, but it is a real,
+controlled (same articles, same current formula) measurement, not an artifact of comparing
+different topics. Combined with A.7.1's already-confirmed *mean* bias (0.25 systematically
+understates `standard`/`deep` vs 0.7), this means 0.25 was worse on **both** axes — biased *and*
+(on this evidence) not even lower-variance — reinforcing that A.7.1's temperature-0.7 pivot was the
+right call.
+
+### A.11.2 Defensible-section share: single-draw vs. averaged (N=3), the 45 sections across the 6 variants
+
+Using the new unconfounded thresholds (1×=0.1062, 2×=0.2123), and — critically — the
+**√3-shrunk** thresholds (1×=0.0613, 2×=0.1226) for the averaged-margin side, since an N=3 average's
+own noise floor is the single-draw floor divided by √N (the same convention A.7 used for its
+√4-shrunk N=4 comparison; comparing an averaged margin against the *unshrunk* single-draw threshold
+was tried first and produces a misleading "averaging made it worse" artifact purely from the
+mismatched comparison):
+
+| bar | single-draw | averaged (N=3) |
+|---|---:|---:|
+| margin > 1× noise-sd | 11/45 (24.4%) | **18/45 (40.0%)** |
+| margin > 2× noise-sd | 7/45 (15.6%) | 6/45 (13.3%) |
+
+**The 1×-sd bar shows a real, substantial gain (24.4%→40.0%, ~1.6×)** — directionally matching
+A.3/§55.3's "N=3 should roughly double the defensible-section share" prediction, now measured on
+real unconfounded data rather than the confounded pilot. **The 2×-sd (95%-confidence) bar shows no
+gain, even a slight dip** — consistent with A.7's own observation that some single-draw margins
+that happen to look large by chance regress toward a smaller true value once averaged (the 2×-sd
+bar is disproportionately populated by exactly those spurious cases); this is the same qualitative
+pattern A.7 found on the confounded data, now replicated on real 0.7 data. **Net verdict: replication
+delivers a real gain at the "reasonably confident" bar but does not manufacture confidence at the
+"very confident" bar** — some fraction of sections are genuinely, irreducibly near-tied, matching
+A.9's stated expectation that replication does not fix everything.
+
+### A.11.3 Full 282-section corpus, re-scored against the new (unconfounded) noise floor
+
+Same single-draw corpus margins used throughout §54–56 (current `C2_soft_ga_pen010` production
+formula), re-thresholded:
+
+| bar | old (confounded 0.25) threshold | new (unconfounded 0.7) threshold |
+|---|---:|---:|
+| margin > 1× noise-sd | 45/282 (16.0%) | **65/282 (23.0%)** |
+| margin > 2× noise-sd | 10/282 (3.5%) | **24/282 (8.5%)** |
+
+Because the new unconfounded noise floor is *smaller* than the old confounded one (A.11.1), more of
+the existing single-draw corpus now clears the bar — the §54–56 "84% of sections are statistically
+indistinguishable from noise" framing was itself somewhat pessimistic, an artifact of the 0.25
+confound inflating the noise estimate used at the time, not a change in the underlying labels.
+Still a minority of the corpus (23%) clears even the weaker 1×-sd bar — the core finding (most
+single-draw section labels are not confidently defensible) survives, just less starkly than
+originally stated.
+
+### A.11.4 Article-level result — 2 of 3 reward-decided labels confirmed, 1 corrected
+
+`audit_oracle_margins.py`'s current tiering classifies 3 of the 6 target articles as hard-ruled
+(immune to this whole question by construction): `06_tools__var_minimal` and `09_RAG__var_minimal`
+are `policy=forbidden` (forced `skip`), `09_RAG__var_demanding` is a manual override (forced
+`deep`). Real replicated data corroborates all three anyway where reward-comparable (`skip`'s raw
+argmax was itself borderline `deep` at near-zero margin for both minimal articles — moot given the
+hard rule; `09_RAG__var_demanding`'s raw argmax was already `deep` before the override, and 3/3
+replicate draws unanimously vote `deep`, the strongest confirmation of any article measured).
+
+The 3 genuinely reward-decided articles (`compute_article_oracle._compute_r_w` on
+`section_oracle_averaged.json` vs. the current single-draw `article_oracle.json`):
+
+| article | risk tier (audit_oracle_margins) | production (single-draw) | averaged (N=3) |
+|---|---|---|---|
+| `06_tools__var_standard` | MODERATE (0.0914) | `deep`, margin +0.0914 | `deep`, margin **+0.0531** — same winner, thinner but still well outside EPS_BAND=0.03 |
+| `09_RAG__var_standard` | HIGH (0.0469) | `deep`, margin +0.0469 | `deep`, margin **+0.0311** — same winner, similar margin, still outside EPS_BAND |
+| `06_tools__var_demanding` | HIGH (0.0304, barely above EPS_BAND) | `deep`, margin +0.0304 | **`light`**, margin **+0.0085** — winner flips AND drops inside EPS_BAND (now a genuine near-tie) |
+
+**`06_tools__var_standard` — the article this whole investigation has used as its one
+"confirmed-correct" reference point (§31 onward) — holds up under real, unconfounded temperature=0.7
+replication**: still `deep`, replicate vote 2-1 (production + replicate2 vs. replicate1), same
+qualitative pattern validated repeatedly under the old confounded data. `09_RAG__var_standard` is
+now also confirmed (previously only ever a persistent, unresolved toss-up under the 0.25 data —
+§30/§34/§40/etc. — real 0.7 data resolves it 2-1 for `deep`, consistent both by per-draw vote and by
+averaged-R_w). **`06_tools__var_demanding` is a genuine correction**: its production label (`deep`,
+margin 0.0304, HIGH-risk-tiered) is contradicted by both replicates (2/2 vote `light`) and by the
+averaged R_w (flips to `light`, margin collapses to 0.0085 — inside the near-tie band). This is
+exactly the kind of shaky HIGH-tier label Appendix A was built to catch and is the first article in
+this whole investigation directly corrected by real (not confounded) replication evidence.
+
+**Recommendation**: do not yet merge `section_oracle_averaged.json` into production
+`section_oracle.json` for any of these 6 (A.10 step 4, the retrain, is explicitly deferred pending
+§61's formula investigation). `06_tools__var_demanding`'s flip should be flagged `needs_review` /
+treated as a near-tie if a decision is needed before the fuller 24-article TRAIN replication (A.10
+step 2 proper) is run — do not silently keep trusting its current HIGH-risk `deep` label given
+direct contradicting evidence now exists.
+
+## A.12 What the C2 RL-pipeline will actually update once the full 24-article×N=3 replication lands (2026-08-06)
+
+User is running the full uniform N=3 replication (A.10 step 2 proper, all 24 TRAIN articles, in
+parallel with §61's GPU experiments per the parallelization note above) — expected to take several
+days. This section enumerates, concretely, which pipeline components change and in what order once
+those scores are in, so the sequence doesn't have to be re-derived from scratch when the data
+lands.
+
+**1. Per-article averaged oracle (mechanism already built, just needs to run at full scale).**
+`training/merge_replicate_oracles.py` runs for all 24 TRAIN articles (currently validated only on
+the 6 Lesson-6/9 pilot variants, §A.11). For each `(section, arm)` cell it averages reward
+components across all draws (1 production + 2 replicates) and writes a **sibling** file
+`bases/<article>/section_oracle_averaged.json` — production `section_oracle.json` is never
+overwritten, so every historical label stays reproducible.
+
+**2. `train_grpo.py::load_section_groups()` — needs a new read path.** Currently reads only
+`section_oracle.json`. Needs a small addition (e.g. `--use-averaged-oracle` flag) to read
+`section_oracle_averaged.json` for the 24 replicated TRAIN articles, falling back to the
+single-draw file for TEST/any non-replicated article. This is the step that actually makes
+replication *matter* — without it, the averaged data just sits on disk unused (A.5's originally-
+identified gap, still open at full scale).
+
+**3. Article-level oracle recompute.** `compute_article_oracle.py` (or a parallel `_averaged`
+variant of it) needs to run on the averaged section rewards to produce updated `oracle_arm`s/
+margins. This is what would let a real correction like `06_tools__var_demanding`'s flip
+(deep→light, §A.11.4, currently only flagged `needs_review` not applied) become an actual
+production label change, pending explicit sign-off — and surfaces any other such corrections the
+full 24-article pass turns up.
+
+**4. Noise-floor re-estimate, at full scale.** `estimate_noise_floor.py` / `audit_oracle_margins.py`
+rerun on the complete 24-article temp=0.7 replicate set. §A.11.1 already did this for the 6-variant
+pilot (mean per-cell sd 0.0686-0.0751, vs. the old temp=0.25-confounded 0.0929-0.0991); the full run
+gives a corpus-representative, not just pilot-representative, unconfounded noise floor — the real
+evidentiary basis `sigma_floor`/`near_tie_margin` never had (§54.7).
+
+**5. Possibly `sigma_floor`/`near_tie_margin` recalibration.** Once step 4 gives a trustworthy,
+full-scale noise floor, `train_grpo.py`'s `sigma_floor=0.04` default (never formally derived) and
+`near_tie_margin=0.06` become revisitable with real evidence — though widening `near_tie_margin` was
+explicitly deferred earlier in this investigation (§54), so this needs a fresh explicit decision,
+not an automatic change.
+
+**6. The actual retrain (the real payoff, deferred until §61 concludes, A.10 step 4).** A fresh GRPO
+run consuming **both** fixes together: the averaged/cleaner section labels (this replication) *and*
+whichever cost_coef conclusion §61 lands on (currently `-0.05` H0-units is the leading candidate
+pending `run29_costcoef05`'s result). Steps 1-5 above are formula-agnostic and safe to keep running
+in parallel with §61; only this step must wait.
+
+**7. Optional, same-pass bonus.** A.8's confidence-weighted `--section-weight` mode in
+`train_grpo.py`, using the per-cell `reward_sd` that `merge_replicate_oracles.py` already computes
+but nothing currently consumes — down-weights sections that stay uncertain even after averaging, at
+zero extra generation cost.
+
+**Net**: replication changes *what data exists* (steps 1, 4); making it actually influence anything
+requires the loader/recompute wiring (steps 2-3, not yet built at full 24-article scale); and the
+real test of whether it was worth it is the eventual joint retrain (step 6), intentionally
+sequenced after — not before — `run29`'s result settles the cost_coef question.
+
+## A.13 Full 24-article×N=3 replication landed — steps 1 and 4 executed at full scale (2026-08-15, updated in place 2026-08-16 after the TRAIN grade correction pass)
+
+The full uniform replication anticipated by A.12 is done: **all 24 TRAIN articles** (8 lessons ×
+`{var_minimal, var_standard, var_demanding}`), **N=3 draws each** (1 production + 2 replicates at
+temperature 0.7) — 192 write+grade cycles, exactly A.10 step 2's plan, verified complete (all 192
+`noise_experiment/` dirs have `scores.json`+`reasoning.json`). This section executes A.12's steps 1
+and 4 (merge-back + full-scale noise-floor/defensible-share re-estimate) and reports the real
+numbers, superseding A.11's 6-article pilot with the complete 171-section TRAIN corpus. **Steps 2/3/6
+(loader wiring, article-oracle recompute wiring, the retrain) remain NOT done** — out of scope for
+this pass, consistent with A.12's own sequencing (formula question / `run29` still pending).
+
+**Update (2026-08-16): the user manually reviewed and corrected `scores.json`/`reasoning.json` for
+a subset of the 24 production episodes** (32 of 96 `scores.json` files, spanning 11 articles — the
+CRITICAL/HIGH/flip/erosion candidates this appendix had flagged), plus some replicate drafts for the
+most concerning articles (`06_tools__var_demanding`/`__var_standard` partially, `10_memory_knowledge_access__var_demanding`
+and `11_multimodal__var_standard` fully, both replicates). Backed up the pre-correction
+`section_oracle.json`/`article_oracle.json` for all 24 articles to `bases_PRE_GRADECORRECTION_REGEN_20260815/`,
+then regenerated both files for all 24 from the corrected grades (`generate_episode_oracles.py` +
+`compute_article_oracle.py --force`) and re-ran every tool in this section against the corrected
+data. `diff_oracle_regen.py` confirms exactly **2 production-level oracle_arm flips from the
+correction itself** (independent of any replicate averaging): `02_workflows_vs_agents__var_demanding`
+`light→standard` (old margin +0.0693, COMFORTABLE; new margin +0.0232) and
+`10_memory_knowledge_access__var_demanding` `standard→deep` (old margin -0.0275, tie-broken; new
+margin +0.0330, unique winner) — the second one an exact match to what the unanimous 3/3 replicate
+vote below had already predicted before any correction was applied. New TRAIN arm distribution:
+skip8/light7/standard4/**deep5**  (was skip8/light8/standard4/deep4) — a small but real gain for
+the long-standing deep-scarcity concern. All numbers below are the post-correction, re-run values;
+the pre-correction numbers this section originally reported are superseded, not shown separately.
+
+**Tooling**: `merge_replicate_oracles.py` and `estimate_noise_floor.py` needed no changes to scale
+from 6 to 24 articles (both already took `--articles`/`--replicates`, per A.11's tooling work).
+Extended `quantify_defensible_gain_070.py` to (a) default to the full 24-article list instead of
+the 6-article pilot, (b) add a TRAIN-only (171-section) row to the corpus-wide re-scoring, and (c)
+add a new Step D — per-article production-vs-averaged oracle_arm/margin, cross-referenced against
+`audit_oracle_margins.py`'s risk tier and the raw 3-draw vote tally, so CONFIRMED/FLIPPED status is
+computed directly rather than eyeballed article-by-article as A.11 did by hand.
+
+### A.13.1 Noise floor, full scale (684 cells, all 24 articles — supersedes A.11.1's 180-cell estimate)
+
+| | mean sd | median sd | 1× arm-diff sd | 2× arm-diff sd |
+|---|---:|---:|---:|---:|
+| old (temp=0.25, 2 articles, 3 reps, n=60) | 0.0929 | 0.0955 | 0.1313 | 0.2627 |
+| A.11 pilot (temp=0.7, 6 articles, 2 reps, n=180) | 0.0751 | 0.0707 | 0.1062 | 0.2123 |
+| full, pre-correction (temp=0.7, 24 articles, 2 reps, n=684) | 0.0645 | 0.0658 | 0.0913 | 0.1825 |
+| **full, post-correction (temp=0.7, 24 articles, 2 reps, n=684)** | **0.0659** | 0.0681 | **0.0932** | 0.1864 |
+
+The full-scale unconfounded noise floor is lower still than the 6-article pilot's already-lower
+estimate — consistent, not a fluke: real temperature=0.7 replicate noise is smaller than what the
+temperature=0.25-confounded data implied, now confirmed on 11.4× more cells. The correction pass
+nudged this UP very slightly (0.0645→0.0659) rather than down — expected, since the corrected
+replicate drafts (a handful of files, not a systematic retreatment) don't mechanically reduce
+variance, they just make individual cells more accurate. This is the corpus-representative figure
+A.12 step 4 called for; **`sigma_floor=0.04` remains ~0.61× this mean cell sd** (was 0.62% pre-correction,
+0.53× at pilot scale, 0.43× under the old confounded estimate) — still on the permissive side, but
+the gap to "adequately conservative" is smaller than originally measured.
+
+### A.13.2 Defensible-section share, full 171-section TRAIN corpus (single-draw vs. averaged N=3)
+
+Using the corrected-data thresholds (1×=0.0932, 2×=0.1864 single-draw; 0.0538/0.1076 √3-shrunk for
+the averaged side — same shrinkage discipline as A.11, required to avoid the apples-to-oranges
+mistake of comparing an averaged margin against an unshrunk threshold):
+
+| bar | single-draw | averaged (N=3) |
+|---|---:|---:|
+| margin > 1× noise-sd | 53/171 (31.0%) | **79/171 (46.2%)** |
+| margin > 2× noise-sd | 26/171 (15.2%) | 29/171 (17.0%) |
+
+**The 1×-sd bar still shows a substantial gain (31.0%→46.2%, 1.49×)** — slightly smaller than the
+pre-correction figure (29.8%→49.1%, 1.65×) since the correction itself already resolved some of
+what averaging used to fix, but still comfortably in line with A.3/§55.3's "N=3 roughly doubles the
+defensible share" prediction. **The 2×-sd bar (15.2%→17.0%) is essentially unchanged from
+pre-correction (17.0%→19.3%)** — modestly positive either way, consistent with the pilot's own
+finding that this specific bar moves weakly.
+
+**Section-level oracle flip rate (single-draw argmax vs. averaged argmax, raw count from
+`merge_replicate_oracles.py`, all 171 sections): 79/171 = 46.2%** (was 80/171=46.8% pre-correction —
+essentially unchanged). Just under half of all single-draw section-level winners change once
+averaged over 3 draws — a distinct statistic from defensible-share (this one is about raw decision
+instability, not confidence-vs-noise-floor), and the starkest single number this whole investigation
+has produced for "how much does the training signal actually depend on which one draw happened to
+get generated" — largely unmoved by directly fixing a subset of the underlying grades, since most of
+the corpus's flip-rate is driven by articles/sections the correction pass didn't touch at all.
+
+### A.13.3 Corpus-wide re-scoring at the new vs. old noise floor (single-draw only, independent of averaging)
+
+| scope | n | OLD (0.25-confounded) 1×/2× | NEW (0.7, unconfounded) 1×/2× |
+|---|---:|---|---|
+| all production articles | 282 | 43 (15.2%) / 8 (2.8%) | **79 (28.0%)** / 25 (8.9%) |
+| TRAIN-only (matches GRPO exactly) | 171 | 34 (19.9%) / 7 (4.1%) | **54 (31.6%)** / 22 (12.9%) |
+
+(Pre-correction these were 45/282 (16.0%), 10/282 (3.5%), 82/282 (29.1%), 26/282 (9.2%) and
+36/171 (21.1%), 9/171 (5.3%), 53/171 (31.0%), 23/171 (13.5%) respectively — small shifts throughout,
+since only 11 of 24 TRAIN articles' single-draw grades actually changed.)
+
+**Just correcting the noise floor — before any averaging — still nearly doubles the apparent
+defensible-section share** (e.g. TRAIN-only 1×: 19.9%→31.6%). This means a substantial share of
+§54–56's "84% of sections are statistically indistinguishable from noise" pessimism was an artifact
+of the temperature=0.25 confound inflating the noise estimate (A.7.1), not an unmovable property of
+the underlying labels. The core finding survives (most single-draw section labels are still not
+confidently defensible — roughly 68-69% still miss the 1×-sd bar even at the corrected, smaller
+threshold) but is meaningfully less dire than originally stated.
+
+### A.13.4 Article-level: 12 confirmed, 2 flipped, 10 hard-ruled (of 24) — improved from 10/4/10 pre-correction
+
+> **SUPERSEDED IN PART (2026-08-20, see A.16.0):** a third tooling bug (ordinal-index misalignment —
+> every TRAIN digest lists each section twice, so production's ordinal fallback used index `n+i`
+> while the replicate path used `i`) affected ~9% of cells. After the fix this table reads
+> **11 confirmed / 3 flipped / 10 hard-ruled**: `06_tools__var_demanding`'s averaged draw now
+> computes to `light +0.0101` (not `deep +0.0013`), so it moves from "CONFIRMED in name only" to a
+> genuine FLIP — which **agrees with** the `light` label A.15.2 had already assigned it by
+> majority vote. All 5 of A.15.2's finalized TRAIN labels are unchanged by the fix.
+
+`audit_oracle_margins.py` classifies 10 of the 24 as hard-ruled (immune to this whole question):
+**all 8 `var_minimal` articles are `policy=forbidden`→`skip`** (the already-known 8/8 pattern), plus
+2 manual overrides (`09_RAG__var_demanding`, `11_multimodal__var_demanding`→`deep`/`standard`). Of
+the 14 reward-decided articles:
+
+| article | tier | production | averaged (N=3) | votes (prod,rep1,rep2) | |
+|---|---|---|---|---|---|
+| `02_workflows_vs_agents__var_standard` | CRITICAL | light +0.0030 | light +0.0853 | light,light,light | CONFIRMED (more decisive) |
+| `02_workflows_vs_agents__var_demanding` | CRITICAL | standard +0.0232 | standard +0.0184 | standard,deep,standard | CONFIRMED — **resolved by the correction itself** (see below) |
+| `03_context_engineering__var_standard` | MODERATE | standard +0.0817 | standard +0.0195 | standard,deep,light | CONFIRMED (thinner, unaffected by correction) |
+| `03_context_engineering__var_demanding` | CRITICAL | light +0.0241 | light +0.0512 | light,light,light | CONFIRMED (more decisive, unaffected) |
+| `05_workflow_patterns__var_standard` | CRITICAL | light +0.0076 | light +0.0384 | light,light,light | CONFIRMED (more decisive, unaffected) |
+| `05_workflow_patterns__var_demanding` | HIGH | light +0.0302 | light +0.0202 | light,standard,deep | CONFIRMED (thinner, unaffected by correction despite touched presets) |
+| `06_tools__var_standard` | MODERATE | deep +0.0839 | deep +0.0841 | deep,deep,light | CONFIRMED (this investigation's reference article — now *more* stable under averaging than before) |
+| `06_tools__var_demanding` | HIGH | deep +0.0523 | **deep +0.0013** | deep,light,light | CONFIRMED in name only — margin collapsed to near-zero, 2/3 votes still favor `light` |
+| `08_react_practice__var_standard` | COMFORTABLE | light +0.1752 | light +0.0906 | light,deep,light | CONFIRMED |
+| **`08_react_practice__var_demanding`** | MODERATE (was COMFORTABLE) | standard +0.0786 | **light +0.0036** | standard,light,light | **FLIPPED** — production itself eroded from 0.1189→0.0786 under correction, averaging then flips it |
+| `09_RAG__var_standard` | MODERATE (was HIGH) | deep +0.0937 | deep +0.0347 | deep,standard,deep | CONFIRMED — reinforced by correction (was +0.0469) |
+| `10_memory_knowledge_access__var_standard` | HIGH | light +0.0414 | light +0.0088 | light,standard,light | CONFIRMED (thinner still, despite correction reinforcing production to +0.0414) |
+| `10_memory_knowledge_access__var_demanding` | HIGH (was CRITICAL) | deep +0.0330 | deep +0.0295 | deep,light,deep | CONFIRMED — **resolved by the correction itself** (see below) |
+| **`11_multimodal__var_standard`** | CRITICAL | light +0.0263 | **skip +0.0118** | light,skip,skip | **FLIPPED** — persists even with BOTH replicates fully corrected/reviewed |
+
+**Two of the original 4 flips were resolved directly by the correction pass, without needing to
+touch replication at all:**
+
+1. **`10_memory_knowledge_access__var_demanding`** — the production draw itself now computes to
+   `deep +0.0330` (a unique winner, no tie-break needed), matching exactly what the unanimous 3/3
+   replicate vote predicted before any correction existed. The averaged draw agrees (`+0.0295`,
+   2/3 vote `deep`). This is about as clean a resolution as this investigation gets: independent
+   replication evidence and a manual grade correction converged on the identical answer.
+2. **`02_workflows_vs_agents__var_demanding`** — `diff_oracle_regen.py` shows this flipped at the
+   *production* level alone (`light +0.0693` → `standard +0.0232`, a COMFORTABLE-margin flip from
+   correction). The averaged draw (`standard +0.0184`, 2/3 vote `standard`) corroborates it. No
+   longer an "erosion" case (A.15.3.1's original framing) — it's now a resolved, cross-validated
+   flip.
+
+**Two flips remain genuinely open, and one "confirmed" label is fragile enough to be a de facto
+third:**
+
+1. **`08_react_practice__var_demanding`** newly flips (was a 2/3-vote-only concern pre-correction,
+   at a COMFORTABLE production margin that made it easy to discount) — now that production itself
+   independently eroded to MODERATE tier under correction, the flip to `light` is corroborated by
+   two separately-sourced pieces of evidence (the corrected production value's own erosion, and the
+   2/3 replicate vote) rather than resting on replication alone. Caveat: this article's *replicates*
+   were not part of the review pass (only production was corrected) — an asymmetry worth knowing
+   before treating this as fully resolved.
+2. **`11_multimodal__var_standard`** still flips to `skip` — and this is now the single most
+   trustworthy flip in the dataset, since BOTH replicates for this article were fully reviewed and
+   corrected (not just production), yet the result is unchanged from pre-correction. Strong
+   candidate for accepting the correction outright rather than spending more replicate budget on it.
+3. **`06_tools__var_demanding`** stays nominally `deep` (CONFIRMED) but its averaged margin
+   collapsed to `+0.0013` — production reinforced `deep` under correction (0.0304→0.0523), yet the
+   2/3 replicate vote still favors `light`. This is *not* a clean confirmation; it is arguably the
+   most unresolved article in the whole set now, since the two evidence sources (corrected
+   production, replicate majority) now point in opposite directions with almost no margin on either
+   side.
+
+**Recommendation (updated)**: `10_memory_knowledge_access__var_demanding` and
+`02_workflows_vs_agents__var_demanding` are resolved — their corrected production values can be
+trusted as-is, no further replication needed. `08_react_practice__var_demanding`,
+`11_multimodal__var_standard`, and `06_tools__var_demanding` remain open and are the concrete basis
+for A.15.3's revised N=5 target list. As before, none of this should be merged into a retrain
+without the explicit sign-off this investigation has required for every prior label/formula change.
+
+## A.14 Detailed reward-signal-quality report — section and article level (2026-08-15, updated in place 2026-08-16 after the TRAIN grade correction)
+
+New tool `training/reward_signal_quality_report.py` (read-only) consolidates A.13's metrics plus
+the GRPO-specific ones `train_grpo.py` itself actually uses (`sigma_floor=0.04` flat-drop filter,
+`near_tie_margin=0.06` acceptance window, normalized advantage `regret/max(std,sigma_floor)` — the
+literal quantity that scales the GRPO gradient) into one run, computed identically for single-draw
+(`section_oracle.json`) and averaged N=3 (`section_oracle_averaged.json`) so every number is a true
+apples-to-apples comparison. Re-run after the correction pass; all numbers below are post-correction.
+
+### A.14.1 Section-level GRPO signal quality, corpus aggregate (171 TRAIN sections)
+
+| metric | single-draw | averaged (N=3) |
+|---|---:|---:|
+| flat-drop rate (spread < `sigma_floor`) | 0.0% | 3.5% (6 sections) |
+| floored rate, of kept (std < `sigma_floor`) | 21.1% | 26.7% |
+| near-tie rate (2+ arms within `near_tie_margin`) | 55.0% | **58.5%** |
+| mean margin | 0.0961 | 0.0657 |
+| **median margin** | 0.0446 | **0.0491** |
+| mean normalized advantage (real GRPO gradient scale) | 1.216 | **1.234** |
+| arm distribution (skip/light/standard/deep) | 49/50/39/33 | 45/53/37/36 |
+
+(Pre-correction these were flat-drop 0.0%→2.3%, floored 22.2%→25.7%, near-tie 58.5%→56.7%, mean
+margin 0.0974→0.0680, median margin 0.0393→0.0501, normAdv 1.200→1.235, dist 50/49/38/34→46/54/34/37
+— broadly the same story, shuffled by the 11 corrected articles.)
+
+**Mean margin drops but median margin rises — a real, informative dissociation, not noise.** The
+single-draw distribution has a fatter right tail (some sections look decisively separated purely by
+chance — the same regression-to-the-mean pattern A.7/A.11/A.13 already documented for individual
+articles); averaging pulls those inflated outliers down (lowering the mean) while genuinely
+clarifying the *typical* section (raising the median). **Mean normalized advantage — the number that
+actually scales the GRPO policy gradient — still improves slightly (1.216→1.234) despite more groups
+being denominator-clamped (floored 21.1%→26.7%)**: averaging remains, net, not hurting trainability,
+unchanged conclusion from pre-correction. **Near-tie rate now RISES slightly under averaging
+(55.0%→58.5%)** — the opposite direction from the pre-correction reading (58.5%→56.7%) — but this
+flip is small (both close to the ~55-58% range) and better attributed to which specific sections'
+grades moved than to any systematic change in what averaging does. **Deep-representation still rises**
+(33→36, +9%, light also rises 50→53) while skip/standard both fall slightly — the same small, welcome
+move away from this investigation's long-standing deep-scarcity concern (§54.7 onward) as before.
+**Flat-drop rate rises from 0.0% to 3.5%** (was 0.0%→2.3%): averaging genuinely flattens 6 sections'
+arm-spread below `sigma_floor` that weren't flat on the single draw — real information, not a
+training-data loss to worry about.
+
+### A.14.2 Per-lesson breakdown — improvement is lesson-dependent, not uniform (unchanged conclusion after correction)
+
+The corpus aggregate (A.14.1) obscures real heterogeneity. Per-lesson near-tie rate and normalized
+advantage, single-draw → averaged, post-correction:
+
+| lesson | near-tie | normAdv | direction | touched by correction? |
+|---|---|---|---|---|
+| `02_workflows_vs_agents` | 55.6%→**38.9%** | 1.219→1.353 | clearly improves | yes (2 articles) |
+| `03_context_engineering` | 66.7%→**79.2%** | 1.186→1.140 | **degrades** (flat-drop 0%→8.3% too) | no |
+| `05_workflow_patterns` | 57.1%→61.9% | 1.079→1.179 | mixed (near-tie worse, gradient better) | yes (1 article, no aggregate effect) |
+| `06_tools` | 55.6%→48.1% | 1.242→1.366 | clearly improves | yes (2 articles) |
+| `08_react_practice` | 33.3%→**61.1%** | 1.381→1.224 | **degrades** (gap widened by correction) | yes (production only, 1 article) |
+| `09_RAG` | 66.7%→**83.3%** | 1.169→1.106 | **degrades** | yes (1 article, no aggregate effect) |
+| `10_memory_knowledge_access` | 42.9%→38.1% | 1.318→1.342 | clearly improves (single-draw itself improved from correction) | yes (2 articles) |
+| `11_multimodal` | 58.3%→58.3% | 1.153→1.142 | ~flat | yes (1 article, no aggregate effect) |
+
+**Unchanged conclusion: the same 3 of 8 lessons (`03_context_engineering`, `08_react_practice`,
+`09_RAG`) still get a *noisier* reward signal under N=3 averaging on both near-tie rate and
+normalized advantage simultaneously** — none of the 11 corrected articles happened to fall in a way
+that resolved this pattern (only 1 of the 3 flagged lessons, `08_react_practice`, had any article
+touched by the correction at all, and only its production draw, not its replicates — the aggregate
+degradation, if anything, is slightly *more* pronounced now: single-draw near-tie improved 38.9%→33.3%
+from the correction itself, widening the gap to averaging's unchanged 61.1%). This is real, corrected
+data, not a residual pre-correction artifact — the case for N=5 on these 3 lessons (A.15.3) stands
+unchanged.
+
+### A.14.3 Per-variant breakdown — `var_standard` still improves most cleanly, but no longer with zero new flat-drops
+
+| variant | near-tie | normAdv | flat-drop |
+|---|---|---|---|
+| `var_minimal` | 59.6%→61.4% | 1.214→1.271 | 0%→3.5% |
+| **`var_standard`** | 54.4%→**52.6%** | 1.179→**1.239** | 0%→**1.8%** |
+| `var_demanding` | 50.9%→61.4% | 1.254→1.192 | 0%→5.3% |
+
+(Pre-correction: `var_minimal` identical (untouched by the correction); `var_standard` was
+59.6%→49.1%/1.157→1.236/0%→0%; `var_demanding` was 56.1%→59.6%/1.227→1.198/0%→3.5%.)
+`var_standard` remains the only variant that improves on *both* near-tie rate and normalized
+advantage, but the correction pass (which touched several `var_standard` articles directly) moved
+its single-draw near-tie rate down from 59.6% to 54.4% at the source, and introduced a small
+(1.8%) flat-drop rate under averaging that wasn't there before — **the "incurring zero new
+flat-drops" claim from the pre-correction reading no longer holds exactly**, though the variant's
+overall improve-on-both-axes conclusion is unchanged. Same untested hypothesis as before for *why*
+`var_standard` behaves best: `var_minimal`/`var_demanding` sit at the two extremes of the
+depth-demand spectrum where section rewards are more likely to already be near a genuine
+floor/ceiling, leaving less room for averaging to clarify a real signal.
+
+### A.14.4 Article-level: flip-rate by risk tier (n=14, updated: 2 flips not 4)
+
+Reusing A.13.4's per-article table, aggregated by `audit_oracle_margins.py` tier (reward-decided
+articles only, n=14; tier populations shifted slightly since the correction moved
+`08_react_practice__var_demanding` from COMFORTABLE to MODERATE):
+
+| tier | flipped |
+|---|---|
+| CRITICAL | 1/5 (20%) |
+| HIGH | 0/4 (0%) |
+| MODERATE | 1/4 (25%) |
+| COMFORTABLE | 0/1 (0%) |
+
+(Pre-correction: CRITICAL 2/5 (40%), HIGH 1/4 (25%), MODERATE 0/3 (0%), COMFORTABLE 1/2 (50%).)
+**Still not monotonic** (MODERATE's 25% exceeds HIGH's 0%) but for a different reason than before —
+pre-correction the counter-example was a COMFORTABLE-tier article flipping; post-correction that
+same article moved down into MODERATE (correctly reflecting its now-real fragility) and the sole
+remaining COMFORTABLE-tier article did *not* flip, restoring the intuitive "COMFORTABLE = safe"
+pattern at n=1. With only 1-5 articles per tier this remains not a reliable calibration curve —
+just confirmation that tier alone is an incomplete predictor of stability, now slightly less
+alarming than the pre-correction reading since the correction resolved the worst counter-example.
+
+### A.14.5 Confirmed net verdict (updated)
+
+Averaging N=3 real temperature=0.7 draws is, in aggregate, a **genuine, if partial and
+non-uniform**, improvement in section-level reward-signal quality: better median margin, better
+mean normalized advantage, slightly better deep-representation — largely unchanged conclusions from
+before the correction pass. It still degrades the signal for the same 3 of 8 lessons, still does not
+raise the 2×-sd defensible bar much (A.13.2), and article-level near-tie rate now moves in the
+opposite small direction (55.0%→58.5%, was 58.5%→56.7%) — a minor, not load-bearing, reversal.
+**The correction pass itself measurably improved article-level label confidence independent of
+averaging**: 12 confirmed/2 flipped (was 10/4), with 2 of the original 4 flips resolved directly by
+fixing the underlying grades rather than needing replication to catch them, and the 2 that remain
+(`08_react_practice__var_demanding`, `11_multimodal__var_standard`) now backed by more consistent
+evidence than before. None of this changes the A.12/A.13 recommendation: production labels for the
+2 remaining open articles stay untouched pending A.15's N=5 expansion, and the retrain (A.12 step 6)
+still waits on §61's cost_coef conclusion (already reached — see A.15).
+
+## A.15 Updated plan after the N=3 TRAIN replication — next steps before retraining (2026-08-15, updated in place 2026-08-16 after the TRAIN grade correction)
+
+§61 concluded with `run26`'s exact mechanism (C2 + `cost_coef=-0.06`, ordinal units) as the winning
+single-variable candidate (`run29`'s H0-unit test came back worse on every metric, closing that
+branch — see the Stage 1 addendum). A.12 step 6 (the joint retrain: winning formula + replicated
+labels) is therefore no longer blocked on the formula question — but three things need deciding
+first: what to do with the TRAIN flips (A.13.4), whether N=3 is enough everywhere it was applied,
+and whether TEST also needs replication before trusting Stage 1's model comparisons. This section
+answers all three, plus a fresh CRITICAL/HIGH margin audit to ground the TEST question concretely
+(the only previously-published audit, §"MARGIN-DIAGNOSTIC SCRIPT", is from 2026-07-13 and predates
+G0/H0/J0/C2/the cost_coef staging — stale for this purpose). **Update (2026-08-16): the user then
+manually reviewed and corrected a subset of TRAIN grades (A.13's update note); this section's TEST
+analysis (A.15.1, A.15.4) is unaffected since only TRAIN was touched, but A.15.2/A.15.3 are rewritten
+below to reflect the correction's effect on the label-confidence picture.**
+
+### A.15.0 Signal landscape at a glance — TRAIN vs TEST (2026-08-20)
+
+A quick-reference summary of A.13-A.15.4's findings, once all of TRAIN's and TEST's replication work
+had landed; see the referenced subsections for full evidence and derivations.
+
+**TRAIN (24 articles, 171 sections)** — question was "does N=3 averaging help, and how much":
+
+| metric | single-draw | N=3-averaged |
+|---|---:|---:|
+| defensible share (margin > 1x noise-sd) | 31.0% | **46.2%** |
+| defensible share (margin > 2x noise-sd) | 15.2% | 17.0% |
+| near-tie rate | 55.0% | 58.5% |
+| median section margin | 0.0446 | **0.0491** |
+| mean normalized advantage (GRPO gradient scale) | 1.216 | **1.234** |
+| section-level oracle flip rate | — | 46.2% |
+
+Net (A.14.5): genuine but non-uniform improvement — 5/8 lessons improve, 3/8
+(`03_context_engineering`, `08_react_practice`, `09_RAG`) get noisier on both near-tie rate and
+normalized advantage. Article-level: 12 confirmed / 2 flipped / 10 hard-ruled (of 24); all 5
+originally-flagged articles finalized via majority vote (A.15.2), N=5 declined (A.15.3). Re-verified
+2026-08-20 after the explore-split aggregation bug fix (A.15.4) — tally unchanged, TRAIN corrections
+hold. **Not yet applied to production.**
+
+**TEST (16 official articles, 12 replicated)** — question was "are the eval labels themselves
+trustworthy enough for model-vs-model comparisons":
+
+| metric | value |
+|---|---:|
+| scored TEST articles at CRITICAL/HIGH margin risk (A.15.1) | 12/15 (80%) |
+| cross-draw cell sd, mean / median (12 replicated articles, 288 cells) | 0.0804 / 0.0577 |
+| (TRAIN's cross-draw cell sd, mean / median, for comparison) | 0.0659 / 0.0681 |
+| section-level oracle flip rate (12 replicated articles) | 40.3% (29/72) |
+| article-level: confirmed / corrected / unresolved (of 12) | **7 / 4 / 1** |
+| light↔deep confusion cluster (5 articles) | 4/5 confirmed, 1 corrected (`13_agent_framework`: deep→light) |
+
+TEST is noisier on average than TRAIN but with a fatter right tail (median < mean, the opposite of
+TRAIN) — driven by a small number of extreme-spread sections (see A.15.4 detail below), most
+concentrated in `07_reasoning_planning`, the sole unresolved article. `ga`'s TRAIN-side mean-drop
+under averaging (0.740→0.412) does **not** replicate for TEST (0.5938→0.5880), and gate-threshold
+sweeps (0.5→0.2) show zero effect on the label landscape. **Not yet applied to production.**
+
+### A.15.1 Fresh margin audit (`audit_oracle_margins.py`, re-run today) — TEST is far riskier than assumed
+
+Re-ran the audit against current production `bases/` (all 45 article-oracles incl. augmented
+pilots). Headline count: **CRITICAL=15, HIGH=10, MODERATE=6, COMFORTABLE=3** (of 34 noise-risk-scored;
+11 more are policy-forced/manual-override, immune to this question). Restricting to the **16
+official TEST articles** (`State_of_LLM_Reasoning` excluded, policy-forced):
+
+| tier | TEST articles | count |
+|---|---|---|
+| CRITICAL | `Earth_Oceans_Origin`(-0.0032), `Gravity_Entropy`(-0.0009), `Dark_Dimension`(0.0026), `14_agent_system_design`(0.0077), `07_reasoning_planning`(0.0127), `Distinct_AI_Models`(0.0169), `04_structured_outputs`(0.0180) | 7 |
+| HIGH | `Space-Time_QECC`(0.0336), `13_agent_framework`(0.0363), `Bird_Eye_Extreme`(0.0398), `Understanding_Reasoning_LLMs`(0.0431), `Insects_Consciousness`(0.0455) | 5 |
+| MODERATE | `29_evaluation_metrics`(0.0667), `HNSW`(0.0845), `31_CI`(0.0888) | 3 |
+| COMFORTABLE | (none) | 0 |
+
+**12 of 15 scored TEST articles (80%) sit at CRITICAL or HIGH margin risk** — dramatically more than
+the ~3/16 the stale 2026-07-13 audit implied (margins have moved substantially under G0/H0/J0/C2).
+**Striking, load-bearing overlap: every article in the recurring light↔deep confusion cluster that
+has driven the failure pattern in `run26`/`run27`/`run28`/`run29` (`13_agent_framework`,
+`Distinct_AI_Models`, `Bird_Eye_Extreme`, `Space-Time_QECC`, `Dark_Dimension`) is on this CRITICAL/HIGH
+list.** This reframes TEST replication from "optional, lower priority, competes with test-set
+expansion" (A.6's original framing) to something with direct bearing on whether §61 Stage 1's
+model-vs-model TEST comparisons are even measuring a stable target — if 80% of the scored TEST
+oracle labels are this thin, some fraction of the exact/near/miss differences between `run26` and
+its alternatives could be noise in the ORACLE, not the model.
+
+### A.15.2 TRAIN label corrections — all 5 flagged articles now finalized at N=3 (no N=5)
+
+**User decision (2026-08-17): do not expand to N=5 — the overall training-signal gain from N=3 is
+real (A.13/A.14), even if uneven across lessons, and that's enough to finalize on.** This closes out
+the 3 previously-open articles using the pre-registered decision rule from §23/A.10 (majority vote
+of each draw's own arm-winner across all 3 draws — production + 2 replicates — takes precedence
+over the averaged-reward-argmax computation `section_oracle_averaged.json` reports, precisely for
+cases like these where the two methods disagree):
+
+The two cleanest cases resolved directly at the grade-correction source, no vote needed:
+
+1. **`10_memory_knowledge_access__var_demanding`** — production now independently computes to
+   `deep +0.0330` (was the unanimous-3/3-contradicted `standard −0.0275` tie-broken label). **Final: `deep`.**
+2. **`02_workflows_vs_agents__var_demanding`** — production now computes to `standard +0.0232` (was
+   `light +0.0693`), corroborated by the averaged draw (2/3 vote `standard`). **Final: `standard`.**
+
+The 3 remaining articles, finalized now by majority vote (2/3) rather than deferred to N=5:
+
+3. **`08_react_practice__var_demanding`** — votes `standard, light, light`. Majority-vote and
+   averaged-reward-argmax agree (both `light`). **Final: `light`.** Caveat carried forward: only
+   this article's production draw was reviewed, not its replicates — a real asymmetry, but the
+   2/3 majority doesn't depend on the review status of the dissenting draws to be valid evidence.
+4. **`11_multimodal__var_standard`** — votes `light, skip, skip`. Majority-vote and
+   averaged-reward-argmax agree (both `skip`). **Final: `skip`.** The most trustworthy of the three
+   — both replicates were fully reviewed/corrected, not just production.
+5. **`06_tools__var_demanding`** — votes `deep, light, light`. **This is the one case where the two
+   decision methods disagree**: averaged-reward-argmax nominally says `deep` (but by a margin of
+   only `+0.0013` — indistinguishable from a coin flip), while the majority-vote rule says `light`
+   (2/3). Per the pre-registered decision rule (majority vote governs exactly this kind of
+   disagreement, and was the ORIGINAL rule this investigation committed to before
+   `merge_replicate_oracles.py`'s averaged-reward method existed), **final: `light`** — the
+   near-zero averaged margin means there's no real substantive conflict, just two methods reporting
+   the same underlying near-tie differently.
+   **UPDATE (2026-08-20, A.16.0): this disagreement no longer exists.** After the ordinal-index bug
+   fix, averaged-reward-argmax also computes `light` (+0.0101). Both methods now agree and the
+   `light` label stands on strictly stronger evidence than when it was chosen.
+
+**Net result: all 5 flagged articles are now finalized** — 2 by direct grade correction (`standard`,
+`deep`), 3 by majority vote (`light`, `skip`, `light`). None of this has been written to production
+`section_oracle.json`/`article_oracle.json` yet — see A.15.5 for what's still needed before these
+can actually reach a retrain, and confirm before I apply them (same sign-off discipline as every
+prior label/formula change this investigation).
+
+### A.15.3 N=5 expansion — declined; N=3 accepted as final for all 24 TRAIN articles (2026-08-17)
+
+A.14.2 flagged 3 lessons (`03_context_engineering`, `08_react_practice`, `09_RAG`) whose signal is
+*noisier* under N=3 averaging on both near-tie rate and normalized advantage simultaneously, and a
+prior pass of this section (2026-08-16) had built a targeted 12-article N=5 list around this plus
+the 3 open flip candidates. **User decision (2026-08-17): skip N=5 entirely.** Rationale: A.13/A.14
+already established a genuine, corpus-wide net gain in training-signal quality from N=3 (better
+median margin, better mean normalized advantage — the number that actually scales the GRPO gradient
+— modest deep-representation gains), and while that gain is uneven across lessons (3 of 8 get
+noisier, A.14.2), the *aggregate* direction is favorable and real. Given this investigation has
+already spent a multi-week detour on data-quality work (A.7 through A.15), the marginal value of a
+further 96-cycle N=5 pass to disambiguate "genuinely harder to average" from "unlucky 2-replicate
+draw" for 3 specific lessons is judged not worth the additional calendar time — the 3 previously-open
+articles get finalized directly by majority vote instead (A.15.2), which is a legitimate use of the
+existing N=3 evidence, not a shortcut around it.
+
+**Consequence: N=3 (1 production + 2 replicates, temperature 0.7) is now the FINAL replication depth
+for all 24 TRAIN articles.** No further TRAIN-side write+grade cycles are planned. The per-lesson
+degradation for `03_context_engineering`/`08_react_practice`/`09_RAG` (A.14.2) is accepted as a known,
+documented limitation of the N=3 pass rather than something requiring resolution before a retrain —
+consistent with A.9's original framing that replication was never expected to fix everything.
+
+### A.15.4 TEST replication — elevated from "optional" to a real priority, given A.15.1 (now IN PROGRESS, and sequenced ahead of the retrain per user decision 2026-08-17)
+
+Given 12/15 scored TEST articles are CRITICAL/HIGH and they directly overlap the recurring failure
+cluster, recommend **N=3 replication (1 production + 2 new draws, temperature 0.7, same
+infrastructure as A.10/A.11/A.13 — reuses each article's existing `research.md`, zero new research
+cost) for all 12 CRITICAL/HIGH TEST articles**: `Earth_Oceans_Origin`, `Gravity_Entropy`,
+`Dark_Dimension`, `14_agent_system_design`, `07_reasoning_planning`, `Distinct_AI_Models`,
+`04_structured_outputs`, `Space-Time_QECC`, `13_agent_framework`, `Bird_Eye_Extreme`,
+`Understanding_Reasoning_LLMs`, `Insects_Consciousness`. Cost: 12 articles × 4 arms × 2 draws = **96
+write+grade cycles** (TEST articles map directly to presets 0-3, no archived middle presets to
+account for). The 3 MODERATE TEST articles (`29_evaluation_metrics`, `HNSW`, `31_CI`) are lower
+priority — replicate only if budget allows after the CRITICAL/HIGH set.
+
+**User decision (2026-08-17): run this now, and wait for it (plus the post-replication TEST signal
+evaluation below) to complete before applying the 5 finalized TRAIN label corrections or starting
+the retrain.** This reverses the earlier framing ("independent, non-blocking, can run in parallel")
+— structurally TEST labels only feed §61 Stage 1's model-ranking comparisons, not GRPO training
+directly, so nothing about A.12 step 6 *requires* this; the user is choosing to sequence it first
+anyway, plausibly to get one consolidated, fully-validated state (TRAIN and TEST both
+replication-checked) before committing GPU time, rather than revisiting TEST label confidence again
+later. Generation is in progress (external LLM API calls, not GPU-bound); analysis is pending
+completion.
+
+**Post-replication TEST signal evaluation plan** (mirrors A.13/A.14's TRAIN analysis, adapted for
+TEST's role as eval ground truth rather than a GRPO training target):
+1. Re-run `merge_replicate_oracles.py` for the 12 replicated TEST articles to produce
+   `article_oracle_averaged.json`-equivalent per-article averaged R_w/margin (TEST has no
+   section-level GRPO consumer, so the section-level signal-quality metrics A.14 computed for TRAIN
+   — sigma_floor/near_tie_margin/normalized-advantage — are not directly relevant here; the
+   TEST-relevant output is the article-level `oracle_arm`/margin change, comparable to A.13.4's
+   Step D).
+2. Re-run `audit_oracle_margins.py` on the replicated TEST articles' averaged oracle to see whether
+   any of the 12 CRITICAL/HIGH labels flip or erode/strengthen under averaging — same
+   confirmed/flipped framework as A.13.4, applied to TEST instead of TRAIN.
+3. Specifically check the recurring light↔deep confusion cluster (`13_agent_framework`,
+   `Distinct_AI_Models`, `Bird_Eye_Extreme`, `Space-Time_QECC`, `Dark_Dimension` — all already in the
+   replication list) for label flips, since this is the cluster that has driven every Stage 1 run's
+   (`run26`/`27`/`28`/`29`) TEST failure pattern — if the TRUE oracle for any of these changes under
+   replication, it directly revises the historical Stage 1 comparison, not just future runs.
+4. Decide (same majority-vote-vs-averaged-argmax discipline as A.15.2) whether any TEST oracle
+   labels should be corrected before treating §61's existing model comparisons as final.
+
+**This does not change A.1's original distinction** (replication fixes label noise, not the `n=16`
+sampling-noise floor) — TEST replication here is justified by a *different* rationale than A.6's
+original one: not "make the eval more trustworthy in general," but "several of §61 Stage 1's
+decisive TEST articles have oracle labels this thin, so the model-ranking conclusion itself needs
+this check" — a sharper, more specific justification than the deferred original framing.
+
+**Tooling fix required before execution (2026-08-18)**: `merge_replicate_oracles.py` and
+`measure_replicate_noise.py::_compute_replicate_sections()` hardcoded TRAIN's variant preset mapping
+(`geo._ARM_PRESETS` = `{skip:[0], light:[1], standard:[3], deep:[5]}`, flattened to `{0,1,3,5}`) with
+no TEST-awareness. Running them as-is against TEST articles (which map presets **directly** `0→skip,
+1→light, 2→standard, 3→deep` via `geo._TEST_ARM_PRESETS`) would have silently searched for a
+nonexistent `preset5` directory and mis-attributed `preset2`/`preset3` reasoning.json data —
+corrupting every downstream step. Fixed by adding `_arm_presets_for(article)`/`_arm_presets_flat_for(article)`
+helpers to `measure_replicate_noise.py` (a hardcoded 16-name `_TEST_ARTICLES` set selects
+`geo._TEST_ARM_PRESETS` instead of `geo._ARM_PRESETS`) and threading them through
+`_compute_replicate_sections()`, `measure_article()`, and `merge_replicate_oracles.py::_discover_replicates()`.
+Verified via a dry-run on `13_agent_framework` before running for real (correctly found 3 draws/arm,
+15 sections). TRAIN call sites are unaffected (still default to `geo._ARM_PRESETS`).
+
+**Results (executed 2026-08-18, `merge_replicate_oracles.py` + new `_test_replication_eval.py`;
+CORRECTED 2026-08-20 — see explore-split bug below)**:
+
+Step 1 (merge) succeeded for all 12/12 articles, writing `section_oracle_averaged.json` per article
+(production `section_oracle.json` untouched).
+
+**Second tooling bug found and fixed (2026-08-20, while investigating the ga-gate-threshold question
+below)**: `merge_replicate_oracles.py`'s merged output never carried a v4+ `"explore"` sub-field, so
+`compute_article_oracle.py::_compute_r_w()` silently fell back to its pre-Candidate-E pure
+target-words-weighted mean for the *averaged* side, while the *production* side (real
+`section_oracle.json`, which does carry `"explore"`) correctly used Candidate E's
+split-weighted/simple-mean-explore aggregation — an apples-to-oranges mismatch between the two sides
+of every "production vs averaged" comparison this investigation has made since A.13.4. Root-caused by
+comparing a raw recompute against real production data for `14_agent_system_design` (R_w for
+light/standard/deep off by +0.08 to +0.12 vs the real values; `skip`, which has zero explore credit,
+matched exactly — the tell). Fixed in `measure_replicate_noise.py::_compute_replicate_sections()`
+(now calls `geo._section_reward_components()` instead of `geo._section_reward()` and stores `explore`
+alongside `rewards`) and `merge_replicate_oracles.py::merge_article()` (averages `explore` across
+draws the same way it averages `rewards`, and writes it into `section_oracle_averaged.json`).
+**Blast-radius check**: re-ran `quantify_defensible_gain_070.py`'s Step D for all 24 TRAIN articles
+after regenerating their `section_oracle_averaged.json` with the fix — the tally is **unchanged**
+(still 12 confirmed / 2 flipped / 10 hard-ruled, same specific articles, same votes); margins shifted
+by ~0.003-0.006 in a few near-zero cases but no classification or A.15.2 correction changes. TRAIN's
+finalized labels are unaffected. **TEST is materially affected** (regenerated below).
+
+Step 2's naive production-vs-averaged-argmax comparison, post-fix:
+
+| metric | count |
+|---|---|
+| CONFIRMED (averaged-argmax = production) | 4/12 |
+| **FLIPPED** (averaged-argmax ≠ production) | 8/12 |
+
+Applying the same **majority-vote-of-per-draw-winners** discipline established in A.15.2 (majority
+governs over averaged-argmax when they disagree) gives a materially cleaner picture than both the
+naive view above AND the pre-fix majority-vote pass reported earlier:
+
+| article | tier | production | votes (prod, rep1, rep2) | majority vote | disposition |
+|---|---|---|---|---|---|
+| `Dark_Dimension` | CRITICAL | deep | deep, deep, standard | **deep** (2/3) | CONFIRMED (unchanged) |
+| `14_agent_system_design` | CRITICAL | standard | standard, standard, light | **standard** (2/3) | CONFIRMED (unchanged) — averaged-argmax now agrees too, post-fix |
+| `Distinct_AI_Models` | CRITICAL | deep | deep, standard, deep | **deep** (2/3) | CONFIRMED (unchanged) |
+| `04_structured_outputs` | CRITICAL | standard | standard, standard, deep | **standard** (2/3) | CONFIRMED (unchanged) — was a 3-way-split UNRESOLVED before the fix |
+| `Space-Time_QECC` | HIGH | light | light, standard, light | **light** (2/3) | CONFIRMED (unchanged) |
+| `Bird_Eye_Extreme` | HIGH | light | light, standard, light | **light** (2/3) | CONFIRMED (unchanged) |
+| `Understanding_Reasoning_LLMs` | HIGH | standard | standard, light, standard | **standard** (2/3) | CONFIRMED (unchanged) — was CORRECTED to `light` before the fix; the fix reverses that |
+| `Earth_Oceans_Origin` | CRITICAL | standard | deep, deep, deep | **deep** (3/3) | **CORRECTED**: standard → deep |
+| `Gravity_Entropy` | CRITICAL | standard | light, light, light | **light** (3/3) | **CORRECTED**: standard → light |
+| `13_agent_framework` | HIGH | deep | deep, light, light | **light** (2/3) | **CORRECTED**: deep → light — was a 3-way-split UNRESOLVED before the fix |
+| `Insects_Consciousness` | HIGH | light | light, deep, deep | **deep** (2/3) | **CORRECTED**: light → deep |
+| `07_reasoning_planning` | CRITICAL | skip | skip, deep, light | **no majority** (3-way split) | **UNRESOLVED** |
+
+Net: **7 confirmed, 4 corrected, 1 unresolved** — a substantially cleaner outcome than the pre-fix
+pass (5 confirmed / 4 corrected / 3 unresolved). Two of the three previously-"unresolved" 3-way
+splits (`04_structured_outputs` and `13_agent_framework`) resolve to clean 2/3 majorities once the
+aggregation is corrected; only `07_reasoning_planning` remains a genuine 3-way split.
+
+Step 3 (confusion cluster: `13_agent_framework`, `Distinct_AI_Models`, `Bird_Eye_Extreme`,
+`Space-Time_QECC`, `Dark_Dimension`): **now fully resolved, no article left ambiguous**.
+`Dark_Dimension`, `Distinct_AI_Models`, `Space-Time_QECC`, `Bird_Eye_Extreme` all CONFIRM their
+original production label (unchanged). `13_agent_framework` — the one member that was genuinely
+unresolved pre-fix — now shows a clean, confident **CORRECTION: deep → light** (2/3 majority: deep,
+light, light). This is the single most consequential finding of this investigation for §61: since
+`13_agent_framework` is one of the recurring TEST failure articles across `run26`-`29`, and its true
+oracle appears to be `light` rather than the originally-labeled `deep`, those historical Stage 1
+comparisons may have been scoring the model against the wrong ground truth on this article — worth
+flagging explicitly before treating any of those runs' `13_agent_framework` verdict as settled.
+
+**Step 4 decision (2026-08-20, supersedes the 2026-08-18 pass)**: apply these **4 corrections** to
+TEST oracle labels under the same discipline as A.15.2's TRAIN corrections: `Earth_Oceans_Origin`
+(standard→deep), `Gravity_Entropy` (standard→light), `13_agent_framework` (deep→light),
+`Insects_Consciousness` (light→deep). Only **`07_reasoning_planning`** remains unresolved (genuine
+3-way split: skip/deep/light) — leave it at its original production label (`skip`) for now, flagged
+`needs_review`, pending N=5 expansion or manual grading review for this one article specifically.
+
+#### A.15.4 follow-up: does TEST show TRAIN's ga mean-drop, and does a lower gate threshold help? (2026-08-20)
+
+§59.5 found that under N=3 averaging, TRAIN's raw `ga` (guideline_adherence) mean dropped sharply
+(0.740 → 0.412) while its arm-neutral shape held — a real, sanity-checked cross-draft noise finding
+(whether a draft happens to include every mandated visual element varies substantially draft-to-draft).
+Question: does the same drop occur for TEST, and if so, would lowering the shipped `ga` gate
+threshold (`_ga_gate_penalty()`, default 0.5, see `generate_episode_oracles.py`) clear up the label
+instability found above?
+
+**Part 1 — ga mean drop check (new `_test_ga_gate_threshold_sweep.py`, raw dimension extraction
+across all 12 TEST articles' sections × arms)**:
+
+| | n | mean | pass-rate (≥0.5) |
+|---|---|---|---|
+| production (single-draw) | 288 | 0.5938 | 59.4% |
+| N=3-averaged | 288 | 0.5880 | 60.8% |
+
+**No — TEST does NOT replicate TRAIN's ga drop.** The mean is essentially flat under averaging
+(0.5938→0.5880, within noise) and the gate pass-rate slightly *increases* (59.4%→60.8%), the opposite
+direction from TRAIN's collapse. TEST's single-draw ga baseline is also already substantially lower
+than TRAIN's (59.4% vs TRAIN's ~74%-mean-implied baseline) — a separate, pre-existing difference
+between the two corpora, not something averaging introduces.
+
+**Part 2 — ga gate threshold sweep** (thresholds 0.50 down to 0.20, recomputing all 12 TEST articles'
+per-draw oracle + votes at each threshold, same explore-split fix applied): **the classification
+(7 confirmed / 4 corrected / 1 unresolved) is IDENTICAL at every threshold tested, 0.50 through 0.20 —
+zero sensitivity.** No article's vote, majority, or disposition changes as the threshold is lowered.
+
+**Conclusion: no, and the threshold sweep isn't the answer either.** Since ga isn't systematically
+drifting under averaging for TEST (unlike TRAIN), there is no gate-miscalibration to correct by
+lowering the threshold — and the sweep confirms this directly: the label instability found in this
+TEST population is driven by genuine cross-draft variance in the content-quality dimensions
+(cc/fl/de/be/cp), not by the `ga` gate firing inconsistently. Lowering the gate threshold would not
+have "cleared" the landscape; the actual resolution (7/12 confirmed, 4/12 real corrections, 1/12
+still genuinely ambiguous) came from fixing the explore-split aggregation bug above, not from touching
+the gate. No change to the shipped `ga_gate_threshold=0.5` is warranted from this evidence.
+
+*(Caveat: `07_reasoning_planning`'s raw-recomputation numbers in this specific sweep script disagree
+with its real production `section_oracle.json` values for reasons not yet root-caused — isolated to
+this one article, already the sole unresolved case, and does not affect the flat-threshold-sensitivity
+finding since it holds identically across all 7 tested thresholds including 0.5.)*
+
+> **CAVEAT RESOLVED (2026-08-20):** that discrepancy was the ordinal-index misalignment bug, now
+> root-caused and fixed — see A.16.0. Re-run post-fix, Part 1 reads production ga mean 0.5868 →
+> averaged 0.5845 (still essentially flat, still nothing like TRAIN's 0.740 → 0.412) and Part 2 is
+> still **completely flat across thresholds 0.50 → 0.20**. Both conclusions stand unchanged.
+
+#### A.15.4 detail: TEST margin/spread diagnostics (new `_test_margin_spread_detail.py`, 2026-08-20)
+
+The TEST-side analogue of A.13.1 (noise floor) / A.13.2 (defensible share), not previously reported
+for TEST at the section level — read-only, reads `section_oracle.json` (production) and
+`section_oracle_averaged.json`'s `reward_sd` field (per-arm cross-draw std, written by
+`merge_replicate_oracles.py`) for the 12 replicated TEST articles.
+
+**Article margin distribution** (12 articles):
+
+| | production | N=3-averaged |
+|---|---:|---:|
+| mean | +0.0210 | +0.0262 |
+| median | +0.0175 | +0.0226 |
+| min | −0.0032 | +0.0000 |
+| max | +0.0455 | +0.0648 |
+| \|margin\| < 0.02 (near-tie) | 7/12 | 6/12 |
+
+Averaging nudges margins up slightly on average, but the population remains thin even after
+averaging — half the articles are still within the near-tie band (expected, since A.15.1 selected
+exactly the riskiest articles for replication).
+
+**Cross-draw spread (cell sd), TEST vs TRAIN:**
+
+| | TEST (12 articles, 288 cells) | TRAIN (A.13.1, 684 cells) |
+|---|---:|---:|
+| mean cell sd | **0.0804** | 0.0659 |
+| median cell sd | 0.0577 | 0.0681 |
+
+TEST is noisier on average than TRAIN, but with a right-skewed distribution (median < mean, the
+reverse of TRAIN) — most TEST sections have TRAIN-like spread, but a handful of extreme outliers pull
+the mean up.
+
+**Per-article spread (mean/max cross-draw sd) and section-level flips:**
+
+| article | tier | n_sec | mean_sd | max_sd | section flips |
+|---|---|---:|---:|---:|---|
+| `Earth_Oceans_Origin` | CRITICAL | 4 | 0.1017 | 0.2976 | 2/4 |
+| `Gravity_Entropy` | CRITICAL | 5 | 0.0474 | 0.1528 | 3/5 |
+| `Dark_Dimension` | CRITICAL | 3 | 0.0726 | 0.2622 | 2/3 |
+| `14_agent_system_design` | CRITICAL | 6 | 0.0872 | 0.2716 | 4/6 |
+| **`07_reasoning_planning`** | CRITICAL | 8 | **0.1719** | **0.4807** | 4/8 |
+| `Distinct_AI_Models` | CRITICAL | 4 | 0.0740 | 0.1946 | 1/4 |
+| `04_structured_outputs` | CRITICAL | 7 | 0.0559 | 0.2798 | 3/7 |
+| `Space-Time_QECC` | HIGH | 5 | 0.0570 | 0.2646 | 1/5 |
+| `13_agent_framework` | HIGH | 15 | 0.0482 | 0.2887 | 5/15 |
+| `Bird_Eye_Extreme` | HIGH | 4 | 0.0963 | 0.1739 | 0/4 |
+| `Understanding_Reasoning_LLMs` | HIGH | 8 | 0.0886 | 0.3478 | 3/8 |
+| `Insects_Consciousness` | HIGH | 3 | 0.0793 | 0.2068 | 1/3 |
+
+**`07_reasoning_planning`'s spread is more than double every other article's** (mean 0.1719 vs the
+~0.05-0.10 range everyone else sits in). Its two worst sections (S4, S5 — the ReAct/Plan-and-Execute
+"pros and cons" analysis) have cross-draw sd of 0.44-0.48, the largest in the whole TEST replication
+set. This directly explains why it is the *sole* article left with a genuine 3-way vote split
+(skip/deep/light, no majority): not a labeling-methodology artifact, but real underlying
+content-generation instability concentrated in two sections.
+
+**Other notable findings**:
+- **Section-level oracle flip rate**: 29/72 = 40.3% for this TEST subset vs TRAIN's corpus-wide
+  46.2% — despite being the highest-risk TEST articles by construction, section-level flips are
+  actually *lower* than TRAIN's average; article-level risk tier and section-level flip rate aren't
+  tightly coupled.
+- **Arm distribution shift under averaging** (section-level, all 12 articles): `skip` drops sharply
+  (17→10), `light` and `deep` both gain (15→18, 19→22), `standard` holds steady (21→22). Averaging
+  systematically pulls sections away from `skip` — consistent with the same deep/light-scarcity
+  theme tracked on TRAIN since §54.7: single-draw grading appears to overcredit "good enough as-is"
+  more than repeated draws support.
+- **`13_agent_framework`** (15 sections, the largest article in this batch) has the *lowest* mean
+  spread (0.0482) of the whole set, yet still had a genuine article-level label correction
+  (deep→light) — low average section-level spread doesn't guarantee a stable article-level margin,
+  since article R_w aggregates many low-noise sections whose small individual biases can still
+  combine into a real net direction shift.
+
+### A.15.5 Technical prerequisites still outstanding (from A.12, unchanged)
+
+Regardless of how much of A.15.2-A.15.4 gets done, A.12 steps 2/3 remain unbuilt and are required
+before any of this data can influence a retrain: (2) `train_grpo.py::load_section_groups()` needs a
+read path for `section_oracle_averaged.json` (e.g. `--use-averaged-oracle`), falling back to the
+single-draw file for TEST/non-replicated articles; (3) an `_averaged` variant of
+`compute_article_oracle.py` to recompute article-level `oracle_arm`/margins from averaged section
+rewards, needed to actually apply A.15.2's corrections rather than leave them as `needs_review`
+flags. Pure code work, zero generation cost, independent of A.15.3/A.15.4's data collection.
+
+### A.15.6 Recommended sequence and the honest cost/time trade-off (updated 2026-08-17: N=5 declined, TEST replication now sequenced first)
+
+| phase | items | cost | blocks retrain? |
+|---|---|---|---|
+| 1 (**done**, 2026-08-16) | Reviewed/corrected TRAIN grades; 2 of the original 4 flip candidates resolved directly (A.15.2) | zero further cost — complete | No |
+| 1b (**done**, 2026-08-17) | N=5 declined; all 5 flagged TRAIN articles finalized at N=3 via majority vote (A.15.2) | zero further cost — complete | No |
+| 2 (**done**, 2026-08-18) | N=3 TEST replication, 12 CRITICAL/HIGH articles (A.15.4, 96 cycles) | 96 write+grade cycles — complete | No further (done) |
+| 3 (**done**, 2026-08-20) | TEST signal evaluation (A.15.4's 4-step plan): re-merged, re-audited margins, checked the light↔deep confusion cluster specifically. A 2nd tooling bug (explore-split aggregation, see A.15.4) was found+fixed mid-analysis; corrected result: 7 confirmed, 4 corrected (`Earth_Oceans_Origin`→deep, `Gravity_Entropy`→light, `13_agent_framework`→light, `Insects_Consciousness`→deep), 1 unresolved 3-way split (`07_reasoning_planning` — left at production label pending N=5/manual review). ga-gate-threshold follow-up: TEST does not replicate TRAIN's ga mean-drop, and threshold sweeps (0.5-0.2) show zero classification sensitivity — no gate recalibration warranted | zero cost, pure analysis — complete | No further (done) |
+| 1c (**next**) | Build A.12 steps 2/3 (`train_grpo.py --use-averaged-oracle` loader flag + `compute_article_oracle.py` `_averaged` variant); apply the 5 finalized TRAIN labels + 4 finalized TEST corrections to production (pending go-ahead) | zero generation cost, some engineering | Yes |
+| 4 (GPU) | The joint retrain (A.12 step 6): `run26`'s formula + finalized TRAIN labels | one training run | — |
+
+**Sequencing note**: phases 2-3 (TEST) don't structurally need to precede 1c/4 — TEST labels feed
+§61 Stage 1's model-ranking comparisons, not the GRPO training target itself. The user has chosen
+to sequence them first anyway (2026-08-17), for one consolidated, fully-validated state before
+committing GPU time rather than revisiting TEST confidence after a retrain. This investigation's
+multi-week data-quality detour (A.7 through A.15) is nearly concluded — TEST replication (already
+running) plus its evaluation is the last data-quality step before the code wiring (1c) and the
+actual retrain (4).
+
+## A.16 Pre-retrain audit: is N=3 actually worth retraining on, is there formula headroom left, and does A.8 still stand? (2026-08-20)
+
+Prompted by the user's pre-sign-off question. Everything below is derived from data already on
+disk (zero LLM calls, zero GPU), using `train_grpo.py::load_section_groups()`'s **exact** flat-filter
+/ near-tie / advantage arithmetic so the numbers are the ones training would actually see.
+
+New read-only tools: `training/_compare_label_sets_for_training.py`,
+`training/_replication_retrain_analysis.py`, `training/_disagreement_vs_margin.py`,
+`training/_rescore_stage1_corrected_labels.py`.
+
+### A.16.0 THIRD tooling bug found and fixed — ordinal-index misalignment (invalidated ~9% of every replicate cell)
+
+While validating a recompute against production `section_oracle.json`, an 8.9% cell-level mismatch
+surfaced that could not be explained by the formula. Root cause, confirmed exactly:
+
+**Every one of the 24 TRAIN `research_digest.md` files lists each section TWICE** (e.g.
+`06_tools__var_standard`: 18 `<section id=...>` tags for 9 real sections). `generate_episode_oracles.py`
+builds `sec_ids = _extract_sec_ids_ordered(digest)` *without deduplication*, so it iterates 2n times
+and each section's stored value is the one written on the **second** pass — computed at ordinal
+index `n+i`, not `i`. `_get_score()` only uses that ordinal as a **fallback** when exact/substring
+title matching fails, but for the ~9% of cells where it does fall back, index `i` and `n+i` return
+**different graded entries**.
+
+`merge_replicate_oracles.py` passed the *deduped* `list(section_oracle["sections"].keys())`
+(indices `0..n-1`) into `measure_replicate_noise._compute_replicate_sections()`. So for ~9% of cells
+the **production draw** (read from the stored file, computed at `n+i`) was being averaged against
+**replicate draws computed at `i`** — an apples-to-oranges average present in every replication
+result since A.13. Verified decisively: recomputing with the deduped list reproduces production for
+623/684 cells (91.1%); recomputing with the full digest-ordered list reproduces it for **684/684
+(100.0%)**.
+
+Fixed by adding `measure_replicate_noise._production_sec_ids(article)` (returns the digest-ordered
+list, duplicates deliberately preserved) and threading it through `merge_replicate_oracles.merge_article()`,
+`measure_replicate_noise.measure_article()`, and the A.15.4/A.16 analysis scripts. All 24 TRAIN + 12
+TEST `section_oracle_averaged.json` files regenerated.
+
+**Blast radius — what actually moved:**
+
+| result | before fix | after fix | verdict |
+|---|---|---|---|
+| TRAIN article-level Step D (A.13.4) | 12 confirmed / 2 flipped / 10 hard-ruled | **11 / 3 / 10** | `06_tools__var_demanding` now flips to `light` |
+| TEST A.15.4 (12 articles) | 7 confirmed / 4 corrected / 1 unresolved | **7 / 4 / 1 (identical)** | fully robust |
+| A.15.2's 5 finalized TRAIN labels | — | **all 5 unchanged** | 4 reinforced, 1 weakened justification |
+| A.15.4's 4 TEST corrections | — | **all 4 unchanged** | robust |
+
+Two things are worth stating plainly. First, **the fix strengthens rather than undermines A.15.2**:
+`06_tools__var_demanding` was A.15.2's single awkward case, where averaged-argmax nominally said
+`deep` (+0.0013) while majority-vote said `light`, and the pre-registered rule had to break the tie.
+Post-fix, averaged-argmax **also** says `light` (+0.0101) — both methods now agree, and the
+already-chosen label stands on stronger evidence. Second, `02_workflows_vs_agents__var_demanding`'s
+justification weakens: A.15.2 cited a "2/3 vote `standard`", but the corrected per-draw votes are
+`standard, deep, light` — a 3-way split with no majority. Its label (`standard`) still stands
+because both production and averaged-argmax agree, but the vote-based half of that argument should
+be considered withdrawn.
+
+**Lesson (third instance of the same class)**: before trusting any tool on this corpus, verify it
+reproduces production `section_oracle.json` **cell-for-cell** first. All three bugs found in this
+appendix (TRAIN-only preset mapping, missing `explore` split, ordinal-index misalignment) were
+silent, produced plausible-looking numbers, and would each have propagated into the retrain.
+
+### A.16.1 How reliable is a single draw, really? (the number this whole detour was chasing)
+
+Per-section argmax agreement across the 3 draws, shipped C2 formula, all 171 TRAIN sections:
+
+| pattern | count | share | iid-random null |
+|---|---:|---:|---:|
+| unanimous (3/3) | 37/171 | **21.6%** | 6.3% |
+| majority (2/1) | 95/171 | 55.6% | 56.3% |
+| 3-way split (1/1/1) | 39/171 | **22.8%** | 37.5% |
+
+Pairwise: `prod-rep1` 33.9%, `prod-rep2` 39.8%, **`rep1-rep2` 46.8%**. Only the `rep1-rep2` pair is
+unbiased — the 2026-08-16 correction pass reviewed production drafts far more than replicates, so
+`prod-repN` is deflated by construction and should not be quoted as the reliability figure.
+
+**Two independent drafts of the same section agree on the best arm 46.8% of the time, against a
+~26% chance rate given the observed marginal distribution — Cohen's κ ≈ 0.28, "fair" agreement at
+best.** Under a simple uniform-error model this implies a **single-draw label accuracy of ~65%**,
+which N=3 majority voting lifts to roughly **70-75%**. That is a real improvement, and it is also
+the honest ceiling: at this per-draw reliability, N=5 would reach only ~76% and N=7 ~80%. **No
+feasible replication depth produces clean labels.** This is the single most important quantitative
+result in this appendix, and it reframes the entire replication programme: N=3 bought a genuine but
+bounded improvement, and further N-expansion has clearly diminishing returns (retroactively
+supporting A.15.3's decision to decline N=5, for a better reason than the one originally given).
+
+**Crucially, the unreliability is not uniform — it is concentrated exactly where the decision
+doesn't matter:**
+
+| averaged margin | n | rep1=rep2 agreement | 3-way split | mean regret of worst nominee |
+|---|---:|---:|---:|---:|
+| 0.00 – 0.02 | 38 | **21.1%** | 42.1% | 0.0402 |
+| 0.02 – 0.04 | 38 | 36.8% | 28.9% | 0.0450 |
+| 0.04 – 0.08 | 50 | 54.0% | 18.0% | 0.0621 |
+| 0.08 – 0.15 | 27 | 59.3% | 11.1% | 0.0738 |
+| ≥ 0.15 | 18 | **83.3%** | 0.0% | 0.0882 |
+
+Agreement rises monotonically from 21% to 83% as the margin grows. **Where the arm choice is
+decisive, the labelling process is reliable; where it is near-tied, it is barely better than a coin
+flip — but picking wrong there costs little.** Note however that expected regret from disagreement
+(≈ `(1−agreement) × regret`) is roughly **flat at ~0.025-0.033 across every bucket** — so the noise
+is not *free* at the decisive end either, it is simply rarer there. 44.4% of sections sit below the
+`sigma_floor=0.04` margin with only 28.9% draw-agreement; 55.6% sit above it with 61.1% agreement.
+
+### A.16.2 Does N=3 better prepare the next retrain? — mixed, and NOT via signal strength
+
+Both label sets scored through `load_section_groups()`'s exact logic (`sigma_floor=0.04`,
+`near_tie_margin=0.06`):
+
+| quantity | single-draw | N=3-averaged | direction |
+|---|---:|---:|---|
+| trainable groups (survive flat-filter) | 171 | 165 | worse (−6) |
+| **STRICT constant-predictor bar** (§60.12's success criterion) | 29.2% | **30.9%** | **worse (+1.7pp)** |
+| **NEAR-TIE constant-predictor bar** | 56.7% | **54.5%** | **better (−2.2pp)** |
+| label entropy (bits) | 1.980 | 1.974 | ~flat |
+| `sigma_floor_fraction` | 21.1% | **27.3%** | worse (+6.2pp) |
+| mean \|advantage\| | 0.8188 | 0.8061 | ~flat |
+| median section margin | 0.0446 | **0.0497** | better |
+| **oracle arm CHANGES vs single-draw** | — | **75/165 = 45.5%** | — |
+
+**The honest read: N=3 does not make the training signal meaningfully stronger. Aggregate
+trainability metrics are a wash or slightly worse** (6 fewer groups, 6pp more denominator-clamping,
+flat advantage magnitude, and the strict trivial bar actually goes *up*). **What it does is change
+45.5% of the training targets.** The case for retraining on averaged labels therefore rests entirely
+on those new targets being *more correct* — which A.16.1 supports (~65% → ~70-75% accuracy) but does
+not make overwhelming.
+
+This is a materially more sober conclusion than A.13/A.14's framing. It does not say the replication
+was wasted — a ~5-10pp absolute gain in label accuracy across 45% of the training set is real, it is
+the largest single lever this investigation has actually validated, and it cost no GPU time. It does
+say **replication alone should not be expected to break §60.12's invariant** (no run beating its own
+trivial baseline under healthy entropy), because that invariant is about the *strict* bar, and the
+strict bar gets slightly *harder* under averaging.
+
+### A.16.3 Is there formula headroom left? Should `ga` / `fl` be demoted further? — Mostly no; `ga` demotion is actively wrong
+
+All candidates re-scored on N=3-averaged TRAIN labels using the **correct aggregation order**
+(full formula per draw, then average the 3 final rewards — i.e. what `merge_replicate_oracles.py`
+actually does, avoiding §59.5's documented raw-dimension-averaging caveat):
+
+| candidate | grps | sk/li/st/dp | STRICT bar | NEAR bar | floor% | \|adv\| | medMrg | labels changed |
+|---|---:|---|---:|---:|---:|---:|---:|---:|
+| **`C2_shipped`** | 165 | 47/51/33/34 | 30.9% | 54.5% | 27.3% | 0.806 | 0.0497 | — |
+| `fl_halved(0.10)` | 166 | 50/52/32/32 | 31.3% | 56.6% | 33.1% | 0.784 | 0.0450 | 8 |
+| `fl_dropped(0.00)` | 165 | 50/53/30/32 | 32.1% | 57.0% | **35.8%** | 0.781 | 0.0439 | 20 |
+| `cc_halved(0.10)` | 163 | 46/50/34/33 | 30.7% | 55.8% | 31.9% | 0.800 | 0.0453 | 6 |
+| `cc_dropped(0.00)` | 165 | 48/49/35/33 | **29.7%** | 57.0% | 33.9% | 0.783 | 0.0447 | 11 |
+| `cc+fl_halved,de/be_up` | 163 | 41/48/37/37 | 29.4% | **53.4%** | 28.2% | 0.795 | **0.0526** | 18 |
+| `ga_pen_005` | 166 | 52/46/34/34 | 31.3% | 63.9% | 30.7% | 0.799 | 0.0465 | 8 |
+| **`ga_pen_000` (ga removed)** | 167 | 48/47/34/38 | 28.7% | **63.5%** | 31.1% | 0.793 | **0.0380** | 17 |
+| **`ga_pen_015`** | 165 | 48/52/31/34 | 31.5% | **52.7%** | **20.0%** | **0.816** | **0.0515** | 5 |
+| `ga=0,cc+fl_halved` | 161 | 46/47/31/37 | 29.2% | **64.6%** | **42.2%** | 0.776 | **0.0311** | 22 |
+| `C2_cost-0.02` | 166 | 41/44/37/44 | **26.5%** | 60.2% | 26.5% | 0.792 | 0.0462 | 12 |
+| `C2_cost-0.05` | 169 | 61/55/27/26 | 36.1% | 59.2% | 21.9% | 0.822 | 0.0500 | 16 |
+| **`run26_ORD_cost-0.06`** | 170 | **70/66/25/9** | **41.2%** | 61.2% | 11.8% | 0.836 | 0.0600 | 41 |
+
+**Finding 1 — demoting `ga` further is clearly wrong, and the data points the other way.** Removing
+the gate entirely (`ga_pen_000`) is among the worst candidates tested: near-tie bar blows out to
+63.5% (from 54.5%), median margin collapses 0.0497 → 0.0380, `floor%` worsens. The maximal-demotion
+variant (`ga=0, cc+fl` halved) is worse still on every axis (`floor%` 42.2%, medMrg 0.0311, near-tie
+bar 64.6%). Conversely **`ga_pen_015` — *promoting* `ga`, not demoting it — is the single best
+candidate in the table on section-level trainability** (best `floor%` 20.0%, best `|adv|` 0.816,
+best near-tie bar 52.7%, second-best medMrg) **while changing only 5 labels.** §53.6/F2's finding
+that `ga`'s *raw additive signal* was ~97% noise remains true and is not contradicted — but that is
+precisely why C2 converted it from an additive term into a **gate**, and the gate is evidently doing
+useful work that a larger penalty does more of. Note the honest counterweight: §54.6/§59.5.1 found
+`C3`(=pen 0.15) costs *more* thin-margin **articles** (22 vs 19) even as it helps **sections** —
+GRPO trains on sections, evaluation happens on articles, so this is a real trade-off, not a free win.
+
+**Finding 2 — demoting `fl` is clearly wrong.** Despite `fl`'s tiny arm-spread on averaged data
+(§59.5.4: 0.1053 → 0.0448), halving or dropping it *degrades* the section-level signal substantially
+(`floor%` 27.3% → 33.1% → 35.8%; median margin 0.0497 → 0.0450 → 0.0439). The mechanism is
+intuitive in hindsight: a low-*spread* dimension still contributes to the spread, and removing it
+pushes more sections below `sigma_floor`. Low `armSprd` justified not *gating* `cc`/`fl` (§59); it
+does **not** justify removing them.
+
+**Finding 3 — `cc` is the only genuinely arguable demotion, and the gain is small.** `cc_dropped`
+lowers the strict bar 30.9% → 29.7% and balances the distribution slightly, but pays `floor%`
+27.3% → 33.9%. `cc+fl_halved, de/be_up` is the most interesting compound variant (best near-tie bar
+53.4%, best median margin 0.0526, `floor%` roughly neutral at 28.2%) — but it changes 18 labels,
+which is a lot of unvalidated movement for a marginal gain.
+
+**Conclusion on formula headroom: essentially exhausted for the "which dimensions" question.** Part 7
+already searched this space thoroughly and §59.5 confirmed its choices survive averaging; this
+re-run on the *correct* aggregation order confirms it again and closes the two specific demotion
+questions negatively. **The one cheap, well-evidenced experiment still worth running is
+`ga_pen_015`** — 5 label changes, best-in-table section-level metrics, and it is a one-line change.
+
+### A.16.4 The finding that should change the retrain plan: `run26`'s mechanism is badly mismatched to the corrected TEST distribution
+
+`run26_costcoef_only` (C2 + `cost_coef=-0.06` in **ordinal** units) is §61's designated winner and
+A.12 step 6's planned formula. Applied to the N=3-averaged TRAIN labels it produces
+**`sk/li/st/dp = 70/66/25/9`** — `deep` collapses to **9/170 = 5.3%** of sections, label entropy
+falls to 1.688 bits (vs C2's 1.974), and **the strict trivial-predictor bar rises to 41.2%**.
+
+Set that against the **corrected** TEST distribution from A.15.4 (`sk/li/st/dp = 2/7/3/4`), where
+`deep` is **4/16 = 25%**:
+
+| label set | `deep` share |
+|---|---:|
+| `run26_ORD_cost-0.06` on averaged TRAIN | **5.3%** |
+| `C2_shipped` on averaged TRAIN | 20.6% |
+| **corrected TEST (A.15.4)** | **25.0%** |
+
+**Training on a label set where `deep` is 5.3% of sections and evaluating on one where it is 25% is
+a 4.7× distribution mismatch — and A.15.4's corrections made it *worse*, since they moved TEST from
+3 `deep` articles to 4.** This is a mechanistic explanation for `run26`'s already-documented failure
+mode (it missed 2 of the 3 `deep` TEST articles by predicting `light`). The shipped `C2` formula's
+20.6% is by far the closest match to TEST's 25%.
+
+### A.16.5 Re-scoring §61 Stage 1 under the corrected TEST labels — `run26`'s claimed superiority does not survive
+
+A.15.4 corrected 4 of the 16 TEST oracle labels. Every §61 Stage 1 comparison was scored against the
+*old* labels. Re-scoring the saved per-article predictions (no GPU, no re-inference):
+
+| run | exact (orig) | exact (corrected) | MAE (corrected) | **vs. its own trivial baseline** (orig → corrected) |
+|---|---:|---:|---:|---|
+| `run26_costcoef_only` @ep146 | 8/16 | **9/16** | 0.625 | +2 → **+2 articles** |
+| `run29_costcoef05` @ep94 | 7/16 | **9/16** | 0.688 | +1 → **+2 articles** |
+| `run28_garatreat_only` | 6/16 | 6/16 | 1.250 | +0 → −1 articles |
+| `run27_debecurve_only` @ep110 | 4/16 | 6/16 | 1.125 | −2 → −1 articles |
+
+(The TEST trivial "always predict `light`" baseline itself rises from 6/16 = 37.5% to 7/16 = 43.8%
+under the corrections, which is why baseline-relative scoring is mandatory here — per §60.12.)
+
+**§61's Stage 1 addendum concluded that "`run29` underperforms `run26` on every single metric",
+and used that to close the H0-unit branch and crown `run26`'s ordinal-unit mechanism. Under the
+corrected labels that statement is false: the two tie on exact (9/16) and tie baseline-relative
+(+2 articles each).** `run26` retains a modest edge on MAE (0.625 vs 0.688) and miss count (3 vs 4)
+— it is still nominally ahead — but the evidence that the *ordinal unit convention* is load-bearing
+is now much thinner than §61 claimed, resting on a one-article MAE difference at n=16.
+
+A caution against over-reading this too: all four runs are near-constant `light` predictors (`run26`
+predicts `light` for 14 of 16 TEST articles), so **every** label correction toward `light` helps all
+runs and every correction away from it hurts all runs, nearly identically. That is exactly why the
+raw exact% moved a lot while the ranking barely did — and it is an independent reminder that these
+models are not yet doing much beyond the trivial baseline.
+
+### A.16.6 Does A.8 (confidence-weighted training) still stand? — Yes, and it is now the best-evidenced remaining lever
+
+**Strongly reaffirmed, and for a concrete reason that did not exist when A.8 was written.** A.8
+proposed a `--section-weight confidence` mode that down-weights sections whose margin is small
+relative to their measured noise. At the time this was speculative: there was no per-label sd. Now:
+
+1. **The per-label sd exists.** `section_oracle_averaged.json` carries `reward_sd` per section/arm,
+   for all 24 TRAIN articles. The input A.8 needs is already computed and on disk.
+2. **A.16.1 shows the signal it would exploit is large and monotone**: draw-agreement runs from 21%
+   to 83% across the margin spectrum. A weighting function keyed on margin/sd is not guessing — it
+   is tracking a directly measured 4× reliability gradient.
+3. **A.16.2 shows why plain averaging is not enough on its own.** N=3 changes 45.5% of targets but
+   leaves aggregate trainability flat and the strict trivial bar slightly higher. Confidence
+   weighting is the mechanism that converts better-measured labels into a better *gradient*, rather
+   than just a differently-labelled one.
+4. **44.4% of sections have margin < `sigma_floor` and only 28.9% draw-agreement.** Under the current
+   uniform/hybrid weighting these contribute gradient at full strength. They are the most plausible
+   single explanation for §60.12's invariant that this investigation has produced.
+
+Concretely, the reliability-vs-volume curve it would trade along (TRAIN, averaged):
+
+| keep sections with margin ≥ | sections kept | draw-agreement |
+|---|---:|---:|
+| 0.00 (current) | 171 (100%) | 46.8% |
+| 0.04 | 95 (55.6%) | 61.1% |
+| 0.08 | 45 (26.3%) | ~68% |
+| 0.15 | 18 (10.5%) | 83.3% |
+
+A soft weighting (not a hard cut) is the right shape here — hard-cutting to margin ≥ 0.15 would
+leave 18 sections, far too few. This remains "one new weighting function, no additional generation."
+
+### A.16.7 Recommended roadmap
+
+**Phase 0 — data integrity (do first, ~zero cost). DONE (2026-08-20).** Built
+`training/verify_oracle_reproducibility.py`: recomputes every `bases/*/section_oracle.json` cell
+(`rewards`, `explore`, `oracle` arm) by calling `generate_episode_oracles.py::process_article_variant()`
+itself in a new read-only mode (`dry_run=True, return_data=True`, added this pass — no other behavior
+change) rather than a parallel re-implementation, since re-implementation is exactly how bug #3
+(A.16.0) was introduced elsewhere. Diffs against the stored file and exits non-zero on any mismatch,
+for CI/pre-job use.
+
+**First real run, full `bases/` corpus (52 article dirs): 49/52 reproduce exactly, 3 fail.** The 3
+failures are all one-off ablation pilots — `05_workflow_patterns__depthboost`,
+`10_memory_knowledge_access__var_goldremoved`, `11_multimodal__depthboost` — none are part of the
+24 TRAIN / 16 TEST corpus this investigation's retrain plan targets. Root cause confirmed distinct
+from A.16.0's three bugs: these 3 files are `section_oracle.json` **version 4** (pre-`diagnostics`
+field), while every core-corpus file is **version 5** — they were generated once and never
+regenerated after the C2/H0/J0 formula shipped, so they are simply stale, not corrupted. This is
+exactly the kind of drift Phase 0 is meant to catch (a label file silently no longer matching the
+live formula) — regenerate them via `generate_episode_oracles.py` before using them for anything, or
+exclude them from any corpus-wide sweep until then. **The 24 TRAIN + 16 TEST core corpus is fully
+verified reproducible (100%).**
+
+**Phase 1 — apply the finalized labels (zero GPU, needs sign-off).** Write A.15.2's 5 TRAIN
+corrections and A.15.4's 4 TEST corrections to production. Leave `07_reasoning_planning` at `skip`,
+flagged `needs_review` (A.15.4's sole unresolved 3-way split; A.16.1 explains why it will not
+resolve cheaply — its cross-draw spread is 3× the corpus norm). Build A.12 steps 2/3
+(`train_grpo.py --use-averaged-oracle`, `compute_article_oracle.py` `_averaged` variant).
+
+**Phase 2 — build A.8's confidence weighting (zero GPU).** `--section-weight confidence`, keyed on
+`margin / max(reward_sd, sigma_floor)` from `section_oracle_averaged.json`. This is the highest-value
+remaining code-only change and, per A.16.6, better-evidenced than any remaining formula tweak.
+
+**Phase 3 — the retrain, with three changes from the current plan:**
+1. **Use `C2` (`cost_coef=-0.03`, H0 units), NOT `run26`'s ordinal `-0.06`.** A.16.4 shows `run26`'s
+   mechanism drives `deep` to 5.3% of averaged TRAIN sections against a 25% corrected-TEST `deep`
+   share, and A.16.5 shows its claimed superiority over `run29` does not survive the label
+   correction. Its apparent Stage 1 win was measured on labels now known to be wrong on 4 of 16
+   articles, and baseline-relative it ties a run §61 had already rejected.
+2. **Train on averaged labels + confidence weighting together**, not averaged labels alone —
+   A.16.2 is explicit that averaging by itself does not strengthen the signal.
+3. **Judge it baseline-relative from the start** (§60.12): the averaged label set's own bars are
+   **30.9% strict / 54.5% near-tie**, and the corrected TEST bar is **43.8% strict**. Pre-register
+   these before the run so the result cannot be read optimistically after the fact.
+
+**Phase 4 — one cheap formula probe, only if Phase 3 disappoints.** `ga_pen_015` (A.16.3): 5 label
+changes, best-in-table section-level metrics, one-line change. Do **not** pursue further `ga`/`fl`
+demotion — A.16.3 closes both negatively.
+
+**What to stop doing.** Further reward-formula search has hit clear diminishing returns: Part 7,
+§59.5, and A.16.3 have now each independently converged on the same shape. Further N-expansion of
+replication is also closed — A.16.1's κ ≈ 0.28 means even N=7 reaches only ~80% label accuracy.
+**If Phase 3 still fails to beat its own trivial baseline under healthy entropy, the binding
+constraint is neither the reward formula nor label noise, and the investigation should move to the
+remaining untested hypothesis from §60.12: the input representation** (what `build_rl_input` shows
+the model), plus A.9's structural limits (8 TRAIN topics, `n=16` TEST) — neither of which any amount
+of formula or replication work can address.
+
+
+
 
 
 

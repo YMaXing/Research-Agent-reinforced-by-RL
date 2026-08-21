@@ -1,4 +1,4 @@
-# Lesson 6: Tools
+    # Lesson 6: Tools
 
 In previous lessons, we covered the fundamentals of context engineering, structured outputs, and LLM workflow patterns like chaining and routing. Now, we will focus on tools, the building blocks that allow LLMs to take actions in external environments. Deeply understanding the mechanism behind tools, also known as function calling, is a core skill for any AI engineer who needs to build, debug, and monitor AI applications that interact with external systems.
 

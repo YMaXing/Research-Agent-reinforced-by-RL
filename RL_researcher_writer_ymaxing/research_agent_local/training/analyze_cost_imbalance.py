@@ -5,9 +5,9 @@ Motivation: F3's original concern (run13_rl_grok_pipeline_analysis.md Part 5-6,
 rounds) that its explore credit rarely earns back. Before treating `cost_coef`
 as the lever to tune, this script empirically checks WHERE `deep`'s shortfall
 against the winning arm actually comes from -- it could be the cost term, but
-it could equally be `user_intent` (guideline-adherence length penalties -- Part
-5 §25 already found deep/standard pay a real word-overage cost with no
-corresponding explore-credit ceiling protection) or `gt_base`.
+it could equally be `ga_gate` (guideline-adherence gate penalty, C2, Part 7
+§53-57 -- ra removed, ga demoted from a weighted term to a flat threshold gate)
+or `gt_base`.
 
 Reuses sweep_reward_formula.py's existing recompute machinery (episode loading,
 _credit(), section-context loading) -- does NOT duplicate the reward formula.
@@ -82,12 +82,11 @@ def _recompute_components(article_dir_name: str, cfg: dict) -> dict[str, dict[st
     episode_dims = {p: geo._load_episode(root / f"{article_dir_name}__preset{p}") for p in ep_rounds}
 
     cost_coef = cfg.get("cost_coef", srf._PROD_COST_COEF)
-    explore_mult = cfg.get("explore_mult", srf._PROD_EXPLORE_MULT)
 
-    # Accumulators: {arm: {"gt_base": tw-weighted sum, "user_intent": tw-weighted sum,
+    # Accumulators: {arm: {"gt_base": tw-weighted sum, "ga_gate": tw-weighted sum,
     #                      "explore": simple sum, "cost": constant}}
     acc_gt_base = {a: 0.0 for a in geo._ARM_ORDER}
-    acc_user_intent = {a: 0.0 for a in geo._ARM_ORDER}
+    acc_ga_gate = {a: 0.0 for a in geo._ARM_ORDER}
     acc_explore = {a: 0.0 for a in geo._ARM_ORDER}
     total_w = 0
     n_sections = len(sec_ids)
@@ -118,14 +117,18 @@ def _recompute_components(article_dir_name: str, cfg: dict) -> dict[str, dict[st
             be = _enh("ground_truth_breadth_enhancement")
             cp = _score("ground_truth_core_preservation")
             ga = _score("user_intent_guideline_adherence")
-            ra = _score("user_intent_research_anchoring")
+
+            de_weight = cfg.get("de_weight", srf._PROD_DE_WEIGHT)
+            be_weight = cfg.get("be_weight", srf._PROD_BE_WEIGHT)
+            ga_threshold = cfg.get("ga_gate_threshold", srf._PROD_GA_GATE_THRESHOLD)
+            ga_penalty = cfg.get("ga_gate_penalty", srf._PROD_GA_GATE_PENALTY)
 
             gt_base = 0.20 * cc + 0.20 * fl
-            explore = cp * (0.60 * de + 0.40 * be) * explore_mult
-            user_intent = (0.50 * ga + 0.50 * ra) * 0.30
+            explore = cp * (de_weight * de + be_weight * be)
+            ga_gate = ga_penalty if ga < ga_threshold else 0.0
 
             acc_gt_base[arm] += tw * gt_base
-            acc_user_intent[arm] += tw * user_intent
+            acc_ga_gate[arm] += tw * ga_gate
             acc_explore[arm] += explore
 
     if total_w == 0:
@@ -139,11 +142,11 @@ def _recompute_components(article_dir_name: str, cfg: dict) -> dict[str, dict[st
         units = cfg.get("cost_units", geo._ARM_COST_UNITS)[arm]
         out[arm] = {
             "gt_base": acc_gt_base[arm] / total_w,
-            "user_intent": acc_user_intent[arm] / total_w,
+            "ga_gate": acc_ga_gate[arm] / total_w,
             "explore": acc_explore[arm] / n_sections,
             "cost": cost_coef * units,
         }
-        out[arm]["total"] = sum(out[arm][k] for k in ("gt_base", "user_intent", "explore", "cost"))
+        out[arm]["total"] = sum(out[arm][k] for k in ("gt_base", "ga_gate", "explore", "cost"))
     return out
 
 
@@ -165,13 +168,13 @@ def analyze(articles: list[str]) -> None:
             marker = " <-- WINNER" if arm == winner else (" <-- DEEP" if arm == "deep" else "")
             print(
                 f"  {arm:9s} gt_base={c['gt_base']:+.4f} explore={c['explore']:+.4f} "
-                f"user_intent={c['user_intent']:+.4f} cost={c['cost']:+.4f}  total={c['total']:+.4f}{marker}"
+                f"ga_gate={c['ga_gate']:+.4f} cost={c['cost']:+.4f}  total={c['total']:+.4f}{marker}"
             )
         if winner != "deep":
             wc, dc = components[winner], deep
             print(
                 f"  deep's gap vs {winner}: {gap:+.4f}  (gt_base Δ={wc['gt_base']-dc['gt_base']:+.4f}, "
-                f"explore Δ={wc['explore']-dc['explore']:+.4f}, user_intent Δ={wc['user_intent']-dc['user_intent']:+.4f}, "
+                f"explore Δ={wc['explore']-dc['explore']:+.4f}, ga_gate Δ={wc['ga_gate']-dc['ga_gate']:+.4f}, "
                 f"cost Δ={wc['cost']-dc['cost']:+.4f})"
             )
         print()
@@ -183,7 +186,7 @@ def analyze(articles: list[str]) -> None:
         print("deep won every article in this sample -- nothing to decompose.")
         return
 
-    avg_delta = {"gt_base": 0.0, "explore": 0.0, "user_intent": 0.0, "cost": 0.0}
+    avg_delta = {"gt_base": 0.0, "explore": 0.0, "ga_gate": 0.0, "cost": 0.0}
     for r in non_winners:
         wc, dc = r["components"][r["winner"]], r["components"]["deep"]
         for k in avg_delta:

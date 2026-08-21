@@ -1,4 +1,4 @@
-# Lesson 9: Retrieval-Augmented Generation (RAG)
+ # Lesson 9: Retrieval-Augmented Generation (RAG)
 
 Most LLMs today are trained *once* on a fixed corpus, which makes their internal knowledge *static*. Pre-training is essentially taking a "closed-book exam" on the world's information. This leads to familiar limits; models won’t natively know about post-cutoff events or private/proprietary data, and when forced to guess, they may hallucinate [[1]](https://decodingml.substack.com/p/rag-fundamentals-first?utm_source=publication-search), [[2]](https://highlearningrate.substack.com/p/the-rise-of-rag). 
 

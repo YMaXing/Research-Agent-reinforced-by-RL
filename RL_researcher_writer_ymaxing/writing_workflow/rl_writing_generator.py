@@ -78,8 +78,8 @@ TEST_EPISODES_DIR = _THIS_DIR.parent / "rl_training_data" / "test_episodes"
 N_PRESETS = 4  # preset IDs 0-3 (skip / light / standard / deep)
 MAX_RETRIES = 3
 RETRY_BACKOFF_BASE = 60  # seconds; attempt N waits N * 60s
-DEFAULT_CONCURRENCY = 4  # concurrent episodes; Tier 2: 1K RPM / 5M TPM
-DEFAULT_LLM_CONCURRENCY = 2  # concurrent LLM API calls; each call can be 100K-500K tokens
+DEFAULT_CONCURRENCY = 6  # concurrent episodes; Tier 3: 2K RPM / 8M TPM
+DEFAULT_LLM_CONCURRENCY = 3  # concurrent LLM API calls; each call can be 100K-500K tokens
 
 
 # ---------------------------------------------------------------------------

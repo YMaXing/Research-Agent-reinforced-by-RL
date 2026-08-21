@@ -1,0 +1,69 @@
+{
+  "version": 2,
+  "article": "08_react_practice",
+  "variant": "var_standard",
+  "sections": {
+    "S1::section-1-setup-and-environment": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.45,
+        "standard": 0.4,
+        "deep": 0.35
+      }
+    },
+    "S2::section-2-tool-layer-mock-search-implementation": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.65,
+        "standard": 0.4,
+        "deep": 0.53
+      }
+    },
+    "S3::section-3-thought-phase-prompt-construction-and-generation": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.25,
+        "standard": 0.4,
+        "deep": 0.15
+      }
+    },
+    "S4::section-4-action-phase-function-calling-and-parsing": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.83,
+        "standard": 0.05,
+        "deep": 0.35
+      }
+    },
+    "S5::section-5-control-loop-messages-scratchpad-orchestration": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.0,
+        "light": 0.55,
+        "standard": 0.05,
+        "deep": 0.18
+      }
+    },
+    "S6::section-6-tests-and-traces-success-and-graceful-fallback": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.35,
+        "standard": 0.6,
+        "deep": 0.53
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-setup-and-environment": "skip",
+    "S2::section-2-tool-layer-mock-search-implementation": "skip",
+    "S3::section-3-thought-phase-prompt-construction-and-generation": "standard",
+    "S4::section-4-action-phase-function-calling-and-parsing": "light",
+    "S5::section-5-control-loop-messages-scratchpad-orchestration": "light",
+    "S6::section-6-tests-and-traces-success-and-graceful-fallback": "skip"
+  }
+}

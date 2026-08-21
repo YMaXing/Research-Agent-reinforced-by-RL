@@ -1,0 +1,62 @@
+{
+  "version": 5,
+  "article": "02_workflows_vs_agents",
+  "variant": "standard",
+  "merge_source": "model_gate_candidates.py::S61_gara_only",
+  "sections": {
+    "S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.67,
+        "standard": 0.8011,
+        "deep": 0.4807
+      }
+    },
+    "S2::section-2-understanding-the-spectrum-from-workflows-to-agents": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.32,
+        "standard": 0.2936,
+        "deep": 0.5857
+      }
+    },
+    "S3::section-3-choosing-your-path": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.5825,
+        "standard": 0.5786,
+        "deep": 0.2807
+      }
+    },
+    "S4::section-4-exploring-common-patterns": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.9325,
+        "standard": 0.9511,
+        "deep": 0.5857
+      }
+    },
+    "S5::section-5-zooming-in-on-our-favorite-examples": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.8725,
+        "standard": 0.8694,
+        "deep": 0.6832
+      }
+    },
+    "S6::section-6-conclusion-the-challenges-of-every-ai-engineer": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.9708,
+        "standard": 0.9144,
+        "deep": 0.9382
+      }
+    }
+  }
+}

@@ -94,6 +94,21 @@ class ArticleWriter(Node):
     cited immediately (by assigning the next available citation identifier and adding the source to
     the References section) or removed — uncited exploration content is indistinguishable from
     hallucinated content and is never acceptable.
+  - **Citation-to-reference mapping accuracy:** A citation being present inline is not sufficient —
+    it must also point to the correct entry in `## References`. For every distinct identifier `N`
+    used inline as `[[N]](url)`, locate the `## References` entry `- [N] [Title](url)` and verify
+    two things: (1) its `url` is character-for-character identical to the `url` used by every
+    inline `[[N]](...)` occurrence, and (2) its `Title` genuinely describes the source at that `url`
+    (not a different, unrelated source). This mismatch is easy to introduce when the `<research>`
+    contains many similarly-numbered sub-sources (e.g., `### Source [58]:` inside a `tavily_results`
+    block) whose internal numbering has nothing to do with the article's own citation identifiers —
+    never let that internal numbering leak into which title gets written for `N`. Because the
+    References section is edited incrementally as citations are added across the core draft,
+    exploration integration, and any review-driven edits, re-verify this mapping on every pass, not
+    only when a new citation is first added. A correctly-placed, well-grounded inline citation whose
+    References entry names an unrelated source is just as broken as an outright missing citation —
+    fix the References entry to describe the true source at its `url`; never edit the inline `url`
+    to match a wrong entry instead.
   - Scan every paragraph opener for bold-label patterns from guideline structural
     artifacts: `**Best Practice:**`, `**The Best Practice:**`, `**The Challenge:**`,
     `**The Old Challenge:**`, `**The New Reality:**`, or any bold label ending in `:` that

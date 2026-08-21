@@ -10,21 +10,21 @@
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
-    0.625,
-    0.7425,
-    0.6767,
-    0.7725
+    0.35,
+    0.4919,
+    0.4682,
+    0.5088
   ],
   "verdict": "MISS",
-  "regret": 0.03,
-  "regret_counted": 0.03,
-  "entropy_bits": -0.0,
-  "confidence": 1.0,
-  "floor_applied": false,
+  "regret": 0.0169,
+  "regret_counted": 0.0169,
+  "entropy_bits": 1.354,
+  "confidence": 0.6088,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.0,
-    1.0,
-    0.0,
+    0.1764,
+    0.6088,
+    0.2147,
     0.0
   ],
   "grok_override": null,

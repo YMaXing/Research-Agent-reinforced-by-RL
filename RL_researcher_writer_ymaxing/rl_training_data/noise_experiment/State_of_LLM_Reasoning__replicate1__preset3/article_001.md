@@ -1,0 +1,257 @@
+# What's New in Test-Time Scaling?
+
+Stronger LLM reasoning is a top priority in 2025, as agentic systems require reliable multi-step problem solving where direct-answer models often fail. Since the release of models like DeepSeek-R1, research has surged, blending techniques like inference-time compute scaling, pure reinforcement learning (RL), RL with supervised fine-tuning (SFT), and SFT with model distillation.
+
+This article surveys the latest advancements in inference-time compute scaling, focusing on noteworthy papers published post-DeepSeek-R1. We will break down the diverse methods being explored to make models "think longer" and more effectively at runtime.![The four main categories of implementing reasoning models. This article focuses on inference-time-scaling methods.](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Faf9e2677-652a-4af1-9f57-dc0c253d2198_1448x1260.png)
+
+Image 1: The four main categories of implementing reasoning models. This article focuses on inference-time-scaling methods. (Source: [Understanding Reasoning LLMs](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms))
+
+To provide a clear map of this landscape, we will first examine the four main categories of reasoning model development. This will show how inference-time scaling fits into the bigger picture before we dive into specific techniques.
+
+## Implementing and improving reasoning in LLMs: The four main categories
+
+Reasoning models are a specialized class of LLMs designed to tackle complex problems by generating a series of intermediate steps. These steps can be explicitly shown to the user or processed internally. This happens before arriving at a final answer. This is a significant departure from standard, direct-answer LLMs, which perform a single forward pass to map an input directly to an output.
+
+This distinction is critical. A direct-answer model might give you a simple, one-line response, whereas a reasoning model will show its work, breaking down the problem into a logical sequence. This "thinking" process, whether visible or not, is what allows these models to handle tasks that require multi-step logic, like solving math proofs or complex coding challenges.![Side-by-side comparison of a basic LLM's one-line answer and a reasoning LLM's explanatory response.](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F8abbfe39-f656-4845-b376-18c1e563210a_1326x564.png)
+
+Image 2: Side-by-side comparison of a basic LLM's one-line answer and a reasoning LLM's explanatory response. (Source: [Understanding Reasoning LLMs](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms))
+
+To build these reasoning capabilities, researchers and engineers primarily focus on two types of computational scaling: increasing **training compute** or increasing **inference compute**. Increasing training compute involves modifying the model's weights, typically through reinforcement learning or supervised fine-tuning on vast datasets. This process is expensive and time-consuming but fundamentally alters the model's internal knowledge and behavior.
+
+On the other hand, increasing inference compute involves allocating additional FLOPs at test time to improve the quality of the output without changing the model's weights. The simplest and most well-known example of this is chain-of-thought (CoT) prompting, where adding a phrase like "Let's think step by step" encourages the model to generate a more detailed reasoning process, thereby using more computational resources during inference [[1]](https://arxiv.org/abs/2205.11916).
+
+In practice, the most effective systems often blend both approaches. Relying solely on training-time compute can lead to issues like reward hacking, where the model learns to exploit the reward function without genuinely improving its reasoning. Conversely, applying pure inference-time scaling to a weak base model often yields limited gains. The sweet spot is a powerful base model, refined through extensive training, that is also capable of using additional compute at inference time to "think" more deeply about a problem.![Accuracy improvements can be achieved through increased training or test-time compute.](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fddde6f39-3b88-4962-9d02-2cf767dc82e9_1484x994.png)
+
+Image 3: Accuracy improvements can be achieved through increased training or test-time compute. (Source: [S\*: Test Time Scaling for Code Generation](https://arxiv.org/abs/2502.14382))
+
+The development of reasoning models generally falls into four main categories. Understanding these categories is essential for navigating the current landscape of AI research and making informed decisions when building your own systems [[2]](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms).![Four categories of reasoning models development](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb5e5fdf9-e72c-497b-9cf4-b4e3c24f33f1_1600x591.png)
+
+Image 4: The four main categories of reasoning model development. (Source: [Understanding Reasoning LLMs](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms))
+
+**1. Inference-time compute scaling.** This is the category we will focus on in this article. It involves techniques that increase computational resources during inference to improve output quality, without altering the model's weights. Models like OpenAI's o1 are rumored to heavily use this approach, which would explain their higher cost and latency compared to other models. The DeepSeek-R1 paper reported that their attempts to use explicit inference-time methods like Process Reward Model-based and Monte Carlo Tree Search-based approaches were largely unsuccessful. However, the model does exhibit an *implicit* form of inference scaling by generating longer, more detailed responses, which naturally increases inference costs [[3]](https://arxiv.org/abs/2501.12948).
+
+**2. Pure reinforcement learning (RL).** This approach, demonstrated by DeepSeek-R1-Zero, shows that reasoning capabilities can emerge from pure RL without any initial supervised fine-tuning. The model is trained using rewards based on the accuracy of its final answers, like those from a LeetCode compiler or a deterministic math evaluator. Over time, it learns to generate intermediate reasoning steps to improve its performance. The DeepSeek team observed an "Aha!" moment where the model began generating reflective reasoning traces despite not being explicitly trained to do so. While this is an interesting research direction, it presents practical challenges, such as the need for reliable, automated verifiers to provide reward signals and the risk of the model developing "unnatural" or uninterpretable reasoning patterns [[3]](https://arxiv.org/abs/2501.12948).
+
+**3. Reinforcement learning and supervised fine-tuning (SFT + RL).** This is a hybrid approach and the most common method for building high-performance reasoning models today. It typically involves an initial SFT stage to teach the model a baseline reasoning format, followed by RL to further refine its capabilities. DeepSeek-R1 is a prime example of this method. It builds upon the pure RL-trained DeepSeek-R1-Zero with additional SFT and RL stages. This multi-stage process enhances both its reasoning performance and its alignment with human-readable formats. For instance, the team used the R1-Zero model to generate "cold-start" SFT data, then applied instruction fine-tuning, and followed up with more RL that included a consistency reward to prevent language mixing [[3]](https://arxiv.org/abs/2501.12948).
+
+**4. Supervised fine-tuning (SFT) and model distillation.** This approach involves training a smaller, more efficient model on the outputs of a larger, more powerful "teacher" model. This is different from traditional knowledge distillation, where the student model is trained on the teacher's logits. Here, the student is simply fine-tuned on the high-quality reasoning traces generated by the teacher. The DeepSeek-R1-Distill models, for example, were created by fine-tuning smaller models like Llama and Qwen on data generated by the 671B-parameter DeepSeek-R1. This is a cost-effective way to create capable reasoning models, but it is fundamentally limited by the performance of the teacher model and does not drive new innovations in reasoning [[2]](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms).
+
+With these four categories mapped out, we can now zoom in on the first one—inference-time compute scaling—which forms the core of this article.
+
+## Inference-time compute scaling methods
+
+The core idea behind inference-time compute scaling is simple. Allowing a model to "think longer" about a problem often leads to a better answer, much like how humans benefit from spending more time on difficult tasks. This concept extends a long-standing principle in machine learning, where ensemble methods have historically been used to improve performance by combining multiple models at test time [[4]](https://magazine.sebastianraschka.com/p/categories-of-inference-time-scaling). In the context of LLMs, "thinking longer" translates to using more computational resources during the inference phase.
+
+The most classic example is **chain-of-thought (CoT) prompting**, where adding a phrase like "Let's think step by step" encourages intermediate reasoning. This increases the generated token count, which raises latency and monetary cost. While effective for complex problems, this approach is not a free lunch; it makes inference more expensive [[1]](https://arxiv.org/abs/2205.11916), [[5]](https://tianpan.co/blog/2026-04-10-token-economics-chain-of-thought-when-thinking-costs-more).![An example of classic CoT prompting from the 2022 Large Language Models are Zero-Shot Reasoners paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5d37faa4-3261-492c-85a4-766926b8c17c_1600x419.png)
+
+Image 5: An example of classic CoT prompting [[1]](https://arxiv.org/abs/2205.11916).
+
+Beyond simple prompting, **search and voting strategies** scale inference compute. **Majority voting** generates multiple answers and selects the most frequent one. More advanced techniques like **beam search** use a **process reward model (PRM)** to evaluate each intermediate step of a reasoning chain. This allows the search to prune incorrect paths and expand on promising ones, representing a more guided, sequential approach to scaling [[6]](https://arxiv.org/abs/2408.03314).![Different search-based methods rely on a process-reward model to select the best answer. Annotated figure from the LLM Test-Time Compute paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5ad9742b-993f-4ecd-8f80-2fa41d43164b_1334x798.png)
+
+Image 6: Different search-based methods rely on a process-reward model to select the best answer [[6]](https://arxiv.org/abs/2408.03314).
+
+We will now examine a concrete recent instantiation of these ideas in the `s1` paper, which combines curated reasoning traces with explicit length-control tokens to manage the inference budget.
+
+## s1: Simple test-time scaling
+
+The paper "[s1: Simple test-time scaling](https://arxiv.org/abs/2501.19393)" (31 Jan, 2025) presents a hybrid approach that combines a small, carefully curated SFT dataset with a simple yet effective inference-time technique for controlling compute. Instead of relying on complex reinforcement learning or massive datasets, the authors demonstrate that fine-tuning a model on just 1,000 high-quality reasoning traces is sufficient to unlock significant reasoning capabilities. This distinguishes their method from pure distillation, as it combines a training-time component (the curated dataset) with an inference-time control mechanism [[7]](https://huggingface.co/papers/2501.19393).
+
+The core of their inference-time technique is **budget forcing**, a method for controlling the length of the model's reasoning process. This is achieved in two ways:
+1.  **Forcing termination:** If the model's thinking process exceeds a desired token limit, an end-of-thinking token is appended to force the model to generate its final answer.
+2.  **Encouraging continuation:** If the model attempts to stop thinking too early, the end-of-thinking token is suppressed. Instead, a special **"Wait" token** is appended to the prompt, encouraging the model to continue its reasoning, double-check its work, and potentially self-correct any errors.
+
+This "Wait" token is more than just a pause; it seems to induce a state of doubt or reflection in the model. The paper's empirical results show that using "Wait" leads to better performance than neutral phrases like "Hmm" or no extrapolation at all. This suggests that the token actively triggers a self-verification mechanism, a behavior also observed in the "Aha moment" of DeepSeek-R1, where the model learned to use similar reflective language during its RL training [[3]](https://arxiv.org/abs/2501.12948), [[8]](https://ai.gopubby.com/i-wrote-thinking-gpt-4-months-ago-now-stanford-researchers-prove-it-right-beating-deepseek-r1-13a65d7f705a?sk=5d7cf4a72f59e530958698ffcb8631f9).
+
+Budget forcing is a sequential scaling technique, as it directly manipulates the length of a single reasoning trace. This contrasts with parallel methods like majority voting, which generate multiple independent traces. The paper reports a clear correlation between the length of the generated response and its accuracy on reasoning benchmarks, with performance generally improving as more thinking tokens are used, up to a certain point.![Illustration of "wait" token insertion to control the length of the output. Annotated figure from s1 paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0e7f4d94-9f8f-4353-87ad-78f3cba7b9cd_1154x854.png)
+
+Image 7: Illustration of "wait" token insertion to control the length of the output [[7]](https://huggingface.co/papers/2501.19393).
+
+However, the authors also acknowledge the limitations of this approach. The performance gains from budget forcing eventually flatten out, and the technique is constrained by the model's context window. The paper calls for future work to compare budget forcing against other sequential methods like beam search and lookahead search. Further research has revealed other critical failure modes. One significant issue is **inverse scaling**, where providing more reasoning steps can actually decrease accuracy by reinforcing bad reasoning patterns or distracting the model with irrelevant information. Budget forcing can also lead to repetition or instability where the model gets stuck in a loop. The technique's effectiveness also appears to be model-dependent, with some studies showing it rarely helps and often hurts performance for Llama and Mistral model families [[9]](https://www.turingpost.com/p/testtimescaling2).![Correlation between response accuracy and length. Annotated figure from s1 paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fd7f0c49b-a644-4142-bed0-7d114ecd39c2_798x456.png)
+
+Image 8: Correlation between response accuracy and length [[7]](https://huggingface.co/papers/2501.19393).!["Wait" vs "Hmm" tokens. Annotated figure from s1 paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6bdfe7db-8c97-4240-8be0-11efa7abdf7c_758x510.png)
+
+Image 9: "Wait" vs "Hmm" tokens [[7]](https://huggingface.co/papers/2501.19393).
+
+## Other noteworthy research papers on inference-time compute scaling
+
+The release of models like o1 and DeepSeek-R1 has ignited a flurry of research into inference-time compute scaling. Given the high volume of recent papers, we will keep our summaries of each one brief, focusing on the core mechanism and key takeaways. This will allow you to get a broad overview of the landscape without getting bogged down in repetitive details.
+
+A common pattern you will notice is that many of these papers blend some form of training with explicit control of inference-time compute. This is an important distinction. These are not purely prompt-based techniques; they often involve fine-tuning a model to respond to specific control mechanisms or to perform certain actions, like self-correction, at inference time. This active regulation of the compute budget differentiates these methods from simple distillation or SFT approaches that just happen to produce longer outputs as a byproduct of training.
+
+## Test-Time Preference Optimization
+
+The paper "[Test-Time Preference Optimization: On-the-Fly Alignment via Iterative Textual Feedback](https://arxiv.org/abs/2501.12895)" introduces an iterative alignment process that operates purely at inference time, without updating the model's underlying weights. This makes it a true test-time scaling technique [[10]](https://proceedings.mlr.press/v267/li25ac.html).
+
+The method uses a reward model to score multiple generated responses to a single query. The highest-scoring response is labeled "chosen," and the lowest-scoring one is "rejected." The LLM is then prompted to generate a textual critique, explaining the strengths of the chosen response and the weaknesses of the rejected one. This critique, along with specific suggestions for improvement, is then used to guide the model in generating a new, refined set of responses.
+
+This four-step loop of **generation, scoring, critique, and refinement** is repeated for a set number of iterations, progressively improving the quality of the output for that specific query. It is a clever way to perform on-the-fly preference optimization without the need for costly retraining [[11]](https://icml.cc/virtual/2025/poster/46149).![Test-Time Preference Optimization process. Annotated figure from the paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fd2a1bd16-7cf7-4898-8dce-a2d8352f76a8_1600x819.png)
+
+Image 10: The Test-Time Preference Optimization process [[10]](https://proceedings.mlr.press/v267/li25ac.html).
+
+## Thoughts Are All Over the Place
+
+The paper "[Thoughts Are All Over the Place: On the Underthinking of o1-Like LLMs](https://arxiv.org/abs/2501.18585)" identifies a phenomenon called **underthinking**, where models like o1 frequently switch between different reasoning paths without fully exploring any single one. This premature abandonment of promising lines of thought often leads to incorrect answers and reduced performance on complex problems [[12]](https://tldr.takara.ai/p/2501.18585).
+
+To address this, the authors propose a decoding strategy called **Thought Switching Penalty (TIP)**. This technique modifies the model's logits at inference time, applying a penalty to tokens associated with thought transitions (e.g., "alternatively," "on the other hand"). By discouraging these premature switches, TIP forces the model to explore each reasoning path more thoroughly before moving on. This approach improves accuracy on challenging benchmarks without requiring any fine-tuning, making it a lightweight and effective inference-time intervention [[13]](https://www.linkedin.com/pulse/thoughts-all-over-place-underthinking-o1-like-llms-vlad-bogolin-rhnme).![Thought Switching Penalty method visualization. Annotated figure from the paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7111ccaa-c4c1-4c7c-84f9-74d38df3c663_1528x894.png)
+
+Image 11: The Thought Switching Penalty mechanism [[12]](https://tldr.takara.ai/p/2501.18585).
+
+## Trading Inference-Time Compute for Adversarial Robustness
+
+The paper "[Trading Inference-Time Compute for Adversarial Robustness](https://arxiv.org/abs/2501.18841)" explores the relationship between inference-time compute and a model's resilience to adversarial attacks. The authors find that, in many cases, simply giving a model more time to "think" can significantly reduce the success rate of various attacks, even without any specific adversarial training [[14]](https://openai.com/index/trading-inference-time-compute-for-adversarial-robustness), [[15]](https://huggingface.co/papers/2501.18841).
+
+However, the paper also highlights important exceptions. When a policy is ambiguous or contains loopholes, an attacker can often find ways to exploit them, and in these scenarios, increased compute does not necessarily improve robustness. The authors also introduce two novel attack strategies aimed specifically at reasoning models: **Think Less** and **Nerd Sniping**.
+
+The key takeaway is that while scaling inference-time compute is a promising direction for improving LLM safety, it is not a standalone solution and must be combined with other robustness measures [[14]](https://openai.com/index/trading-inference-time-compute-for-adversarial-robustness), [[16]](https://arxiv.org/html/2507.15974v1).![Trading Inference-Time Compute for Adversarial Robustness analysis. Annotated figure from the paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F704acd82-10a8-4879-9bd3-26bb67c3155f_1600x1173.png)
+
+Image 12: An illustration of the trade-off between inference-time compute and attack success probability [[14]](https://openai.com/index/trading-inference-time-compute-for-adversarial-robustness).
+
+## Chain-of-Associated-Thoughts
+
+The "[CoAT: Chain-of-Associated-Thoughts Framework for Enhancing Large Language Models Reasoning](https://arxiv.org/abs/2502.02390)" paper proposes a framework that combines **Monte Carlo Tree Search (MCTS)** with a dynamic **associative memory**. This memory acts as a knowledge base that is updated in real-time during the inference process, allowing the model to recall earlier reasoning steps and incorporate new information without losing context. The MCTS algorithm provides systematic exploration, while the associative memory enables adaptive learning, making the combination powerful for complex, multi-hop reasoning tasks at test time [[17]](https://arxiv.org/html/2502.02390v3).![CoAT: Chain-of-Associated-Thoughts Framework visualization. Annotated figure from the paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5d0635fb-c0b4-45df-b8d3-b54254ab92b5_1600x777.png)
+
+Image 13: The Chain-of-Associated-Thoughts framework [[17]](https://arxiv.org/html/2502.02390v3).
+
+## Step Back to Leap Forward
+
+The paper "[Step Back to Leap Forward: Self-Backtracking for Boosting Reasoning of Language Models](https://arxiv.org/abs/2502.0440)" introduces a novel **self-backtracking** mechanism that teaches a model to recognize and correct its own suboptimal reasoning paths. This is a hybrid approach that involves both a training phase and an inference-time component [[18]](https://arxiv.org/html/2502.04404v1).
+
+During training, the model learns to generate a special **`<backtrack>` token** when it identifies a point in its reasoning where it may have gone wrong. This teaches the model to recognize when and where a revision is needed. At inference time, the model applies this learned skill to perform a dynamic tree-based search. When the `<backtrack>` token is generated, the model rolls back to a previous state and explores an alternative reasoning path [[19]](https://ojs.aaai.org/index.php/AAAI/article/view/39986/43947).
+
+This allows the model to dynamically adjust the depth and breadth of its search, systematically exploring multiple reasoning trajectories. A key advantage is that it does not require an external reward model to guide the process, unlike standard process-reward-guided search, as the model has learned when to backtrack on its own [[18]](https://arxiv.org/html/2502.04404v1).![Step Back to Leap Forward: Self-Backtracking mechanism. Annotated figure from the paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F1df5fbf3-97f2-4976-b46f-2d5196b6bdc4_1594x888.png)
+
+Image 14: The self-backtracking mechanism [[19]](https://ojs.aaai.org/index.php/AAAI/article/view/39986/43947).
+
+## Scaling up Test-Time Compute with Latent Reasoning
+
+The paper "[Scaling by Thinking in Continuous Space](https://arxiv.org/abs/2502.05171)" proposes a novel architecture that scales test-time compute by reasoning in a continuous **latent space** rather than by generating more output tokens. The model uses a recurrent block that iterates multiple times, refining its internal hidden state before producing an output [[20]](https://huggingface.co/papers/2502.05171), [[21]](https://openreview.net/forum?id=S3GhJooWIC).
+
+This approach is similar to how Recurrent Neural Networks (RNNs) process information, allowing for deeper computation without increasing the length of the visible output. While this method can significantly improve performance on reasoning tasks, it comes with a major drawback: the reasoning process is entirely implicit and not represented in words, which makes it difficult for humans to interpret or debug [[20]](https://huggingface.co/papers/2502.05171), [[22]](https://medium.com/@sahin.samia/scaling-test-time-compute-how-recurrent-depth-transforms-ai-reasoning-fa866fa968db).![Scaling up Test-Time Compute with Latent Reasoning: A Recurrent Depth Approach visualization. Annotated figure from the paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb82da925-5736-44ba-bed1-ea3207b06382_1516x602.png)
+
+Image 15: The recurrent depth approach for latent reasoning [[20]](https://huggingface.co/papers/2502.05171).
+
+## Can a 1B LLM Surpass a 405B LLM?
+
+The paper "[Can 1B LLM Surpass 405B LLM? Rethinking Compute-Optimal Test-Time Scaling](https://arxiv.org/abs/2502.06703)" conducts a systematic study of the interactions between inference-time scaling, process reward models (PRMs), and problem difficulty. The authors propose a **compute-optimal scaling strategy** that adaptively allocates the inference budget based on the specific policy model, PRM, and the complexity of the task at hand.
+
+Their key finding is that with the right scaling strategy, a much smaller model can outperform a significantly larger one. For example, they show that a 1B parameter model with compute-optimal scaling can surpass the performance of an unscaled 405B Llama 3 model on the same benchmarks.
+
+This has important implications for AI engineers, as it demonstrates that simply using a larger model is not always the best solution. Instead, intelligently allocating inference-time compute can allow for the use of smaller, more efficient models without sacrificing performance, directly impacting the trade-off between cost, latency, and capability.![Can 1B LLM Surpass 405B LLM? Compute-optimal scaling comparison. Annotated figure from the paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c471e7f-36e7-41a8-a7e0-80bebf3c0f36_1600x1046.png)
+
+Image 16: Compute-optimal scaling allows a 3B model to outperform a 405B model [[23]](https://arxiv.org/abs/2502.06703).
+
+## Learning to Reason from Feedback at Test-Time
+
+The paper "[Inference-Time Computations for LLM Reasoning and Planning: A Benchmark and Insights](https://www.arxiv.org/abs/2502.12521)" introduces a method that blurs the line between pure inference-time and training-time techniques, as it involves updating the model's weights during inference. The authors propose an optimizer called **OpTune** that adjusts the model's weights based on mistakes made on previous, similar problems [[24]](https://www.arxiv.org/abs/2502.12521).
+
+This is different from sequential revision, which adds failed attempts to the prompt context, and parallel sampling, which generates multiple independent attempts. Instead of growing the context window indefinitely, OpTune allows the model to "remember" its errors through lightweight weight updates. This approach offers a way to learn from mistakes at test-time without the overhead of storing long histories in the prompt.
+
+While this is not a pure inference-time scaling method in the strictest sense, it is a noteworthy approach that combines elements of both training and inference to achieve on-the-fly adaptation and improvement. It highlights the benefit of remembering errors via these updates rather than consuming context length [[24]](https://www.arxiv.org/abs/2502.12521).![Learning to Reason from Feedback at Test-Time: OpTune optimizer visualization. Annotated figure from the paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe1925302-7fc2-4c7b-91e9-1c0fc4f0609e_1426x652.png)
+
+Image 17: The OpTune optimizer updates model weights at test time based on feedback [[24]](https://www.arxiv.org/abs/2502.12521).
+
+## Inference-Time Computations for LLM Reasoning and Planning
+
+The paper "[Inference-Time Computations for LLM Reasoning and Planning: A Benchmark and Insights](https://www.arxiv.org/abs/2502.12521)" introduces **Sys2Bench**, a comprehensive benchmark for evaluating various inference-time techniques across a wide range of tasks. The benchmark covers five categories: arithmetic, logical, commonsense, and algorithmic reasoning, as well as planning domains [[24]](https://www.arxiv.org/abs/2502.12521), [[25]](https://github.com/usail-hkust/benchmark_inference_time_computation_LLM).
+
+The authors use this benchmark to evaluate several popular techniques, including CoT, Tree-of-Thought, and Reasoning as Planning. Their key finding is that **no single inference-time technique consistently performs best** across all task types. This highlights the need for engineers to carefully match the right method to the specific domain and problem they are trying to solve. The paper also provides a valuable analysis of the trade-off between computational cost and performance gains for each technique, offering practical insights for building efficient and effective reasoning systems [[24]](https://www.arxiv.org/abs/2502.12521).![Inference-Time Computations for LLM Reasoning and Planning benchmark results. Annotated figure from the paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F42115dab-1086-4035-9a64-65a83631377e_1600x1023.png)
+
+Image 18: Results from the Sys2Bench benchmark, showing that no single method dominates across all tasks [[24]](https://www.arxiv.org/abs/2502.12521).
+
+## Inner Thinking Transformer
+
+The "[Inner Thinking Transformer: Leveraging Dynamic Depth Scaling to Foster Adaptive Internal Thinking](https://arxiv.org/abs/2502.13842)" paper proposes an architecture that uses **dynamic depth scaling** instead of a fixed number of transformer layers for every token. The key mechanism is **Adaptive Token Routing (ATR)**, which identifies "difficult" tokens that require more complex reasoning and sends them through the same layer multiple times [[26]](https://arxiv.org/pdf/2502.13842), [[27]](https://arxiv.org/html/2502.13842v1).
+
+This approach selectively increases the inference compute budget for the specific tokens that need it most, allowing the model to "think deeper" about critical parts of the input without lengthening the overall output sequence. It's an efficient way to allocate extra computational effort exactly where it is needed, balancing performance and resource consumption. To ensure training stability across these deep, recursive computations, the architecture uses techniques like residual connections and step encoding to manage gradient propagation, although complex tokens can still trigger abrupt gradient spikes [[26]](https://arxiv.org/pdf/2502.13842), [[28]](https://www.emergentmind.com/topics/inner-thinking-transformer-itt), [[29]](https://aclanthology.org/2025.acl-long.1369.pdf).![Inner Thinking Transformer: Adaptive Token Routing mechanism. Annotated figure from the paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4a6eb47e-fcbe-4c71-8d45-e7d82ae14ba1_1414x1090.png)
+
+Image 19: The Adaptive Token Routing mechanism in the Inner Thinking Transformer [[27]](https://arxiv.org/html/2502.13842v1).
+
+## Test Time Scaling for Code Generation
+
+The paper "[S\*: Test Time Scaling for Code Generation](https://arxiv.org/abs/2502.14382)" introduces **S\***, a hybrid test-time scaling framework specifically designed for code generation. This method combines the strengths of both parallel and sequential scaling to improve the coverage and accuracy of generated code.![S*: Test Time Scaling for Code Generation overview. Annotated figure from the paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F94a88f17-b4b1-4642-aeb1-6db29071ef91_972x752.png)
+
+Image 20: An overview of the S\* framework for code generation [[30]](https://arxiv.org/abs/2502.14382).
+
+The S\* framework operates in a two-stage process. The first is the **Generation** stage, where the model generates multiple candidate solutions in parallel. Each of these solutions is then sequentially refined through a process of **iterative debugging**. The code is executed against public test cases, and the resulting outputs and error messages are fed back to the model to guide the repair process. This continues until a solution passes all public tests or a maximum number of revisions is reached.
+
+The second stage is **Selection and Repair**. After generating a set of refined candidates, the framework uses a novel technique called **adaptive input synthesis** to select the best one. Instead of relying on a pre-trained reward model or having the LLM generate its own test cases indiscriminately, S\* prompts an LLM to generate new, *discriminating* test cases specifically designed to tell the difference between the remaining candidate solutions. The candidates are executed against these new test cases, and the one that performs best is chosen as the final answer. This approach is particularly interesting because it applies the unique properties of the code domain—namely, the ability to get precise feedback from execution—to create a robust, self-correcting system. It also connects back to earlier research from Google on compute-optimal test-time scaling, showing how these ideas can be adapted and specialized for different domains.
+
+## Chain of Draft
+
+The paper "[Chain of Draft: Thinking Faster by Writing Less](https://arxiv.org/abs/2502.18600)" is based on a simple but powerful observation: when humans solve problems, they often jot down concise notes or "drafts" rather than writing out verbose, step-by-step explanations. Inspired by this, the authors propose **Chain of Draft (CoD) prompting**, a technique that encourages LLMs to generate minimal yet informative intermediate steps [[31]](https://www.helicone.ai/blog/chain-of-draft), [[32]](https://medium.com/data-science-in-your-pocket/what-is-chain-of-drafts-bye-bye-chain-of-thoughts-76658d913169).
+
+Instead of producing full natural-language reasoning, the model is prompted to output only the essential calculations or logical transformations needed to move to the next step. This approach drastically reduces the number of tokens generated, leading to significant gains in efficiency and lower latency, while maintaining an accuracy comparable to that of full chain-of-thought on many reasoning benchmarks [[33]](https://www.analyticsvidhya.com/blog/2025/03/chain-of-draft), [[34]](https://aws.amazon.com/blogs/machine-learning/move-beyond-chain-of-thought-with-chain-of-draft-on-amazon-bedrock).
+
+This presents an interesting trade-off for engineers. While you lose the human-readable reasoning traces that are useful for debugging and interpretability, you gain a much faster and cheaper system. This makes CoD a valuable technique for applications where efficiency is paramount and full transparency of the reasoning process can be sacrificed. The loss of interpretability, however, can make it more difficult to ensure model safety and diagnose failures, forcing a conscious decision based on the specific requirements of the application [[35]](https://arxiv.org/html/2502.18600v1).![Chain of Draft: Thinking Faster by Writing Less comparison. Annotated figures from the paper](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb869a967-9498-435f-85f2-a38557db14e3_1460x982.png)
+
+Image 21: A comparison of Chain of Draft with standard and Chain of Thought prompting [[35]](https://arxiv.org/html/2502.18600v1).
+
+## Better Feedback and Edit Models
+
+One of the major challenges in applying inference scaling is that many of the most effective techniques rely on having a verifiable, ground-truth answer to provide a reward signal. This works well for domains like math and coding, but it is much harder for open-ended tasks like creative writing or high-level strategic planning.
+
+The paper "[Dedicated Feedback and Edit Models Empower Inference-Time Scaling for Open-Ended General-Domain Tasks](https://arxiv.org/abs/2503.04378)" addresses this challenge by proposing a specialized, multi-model architecture. Instead of a single model performing all tasks, their system decouples the process into three distinct roles [[36]](https://arxiv.org/html/2503.04378v1), [[37]](https://liner.com/ko/review/dedicated-feedback-and-edit-models-empower-inferencetime-scaling-for-openended): a **generator**, a **feedback model**, and an **edit model**.
+
+Each of these models is trained on large, human-annotated datasets specifically designed for its role. This specialization allows the feedback and edit models to produce much higher-quality signals than a single, general-purpose model attempting a generic self-critique loop. By enabling this iterative refinement process at inference time, the system can significantly improve performance on open-ended tasks where automated verifiers are not available [[36]](https://arxiv.org/html/2503.04378v1).![Dedicated Feedback and Edit Models for Inference-Time Scaling system architecture](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F73568387-83fb-4744-bd3d-f5cbcfe53f1d_1136x716.png)
+
+Image 22: The system architecture with dedicated feedback and edit models [[36]](https://arxiv.org/html/2503.04378v1).
+
+## Conclusion
+
+Inference-time compute scaling is shaping up to be a major research direction in 2025, and for good reason. Unlike training-time methods that require permanent and costly weight modifications, inference-time techniques can often be applied to existing models, offering a more flexible way to enhance their capabilities.
+
+In this article, we have surveyed a wide range of these techniques, from simple "wait" tokens and budget forcing to sophisticated search algorithms, optimization loops, dynamic routing, and even iteration in latent space. A recurring theme across many of these papers is a powerful and encouraging finding: a smaller model with a well-designed inference-time scaling strategy can often rival or even exceed the performance of a much larger model that lacks such scaling. This has profound implications for engineering practice, as it directly impacts the trade-offs between model size, training costs, inference latency, and overall accuracy.
+
+However, it is also important to acknowledge the caveats. All of these methods come with an increased cost at inference time, which can affect user experience due to higher latency. Furthermore, as we have seen, there is no universally best technique that dominates across all tasks. The optimal approach often depends on the specific domain, the complexity of the problem, and the capabilities of the base model.
+
+We are already beginning to see this reality reflected in the industry, with the emergence of "thinking-on-demand" toggles in APIs that allow developers or even end-users to dial the amount of inference compute up or down depending on the difficulty of the task. This move toward more explicit and controllable reasoning is a trend we expect to continue. In the future, we predict that explicit reasoning will become the default mode of operation for agentic systems, rather than an optional feature.![Scaling up the number of initial responses and effective feedback can significantly improve performance.](https://substackcdn.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc1f749e4-4167-4013-b1c9-651c83bf8d3b_1504x756.png)
+
+Image 23: Scaling up the number of initial responses and effective feedback can significantly improve performance [[36]](https://arxiv.org/html/2503.04378v1).
+
+While this article has focused on inference-time scaling, it is only one piece of the puzzle. In an upcoming article, we will dive into the other side of the equation: train-time compute scaling. We will explore advanced reinforcement learning techniques like GRPO, hybrid RL and SFT pipelines like the one used for DeepSeek-R1, and various distillation strategies in depth, providing a complete picture of the state of the art in building powerful reasoning models.
+
+## References
+
+- [1] [Large Language Models are Zero-Shot Reasoners](https://arxiv.org/abs/2205.11916)
+- [2] [Understanding Reasoning LLMs](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms)
+- [3] [DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning](https://arxiv.org/abs/2501.12948)
+- [4] [Categories of Inference-Time Scaling](https://magazine.sebastianraschka.com/p/categories-of-inference-time-scaling)
+- [5] [Token Economics of Chain-of-Thought: When Thinking Costs More Than It's Worth](https://tianpan.co/blog/2026-04-10-token-economics-chain-of-thought-when-thinking-costs-more)
+- [6] [Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters](https://arxiv.org/abs/2408.03314)
+- [7] [s1: Simple test-time scaling](https://huggingface.co/papers/2501.19393)
+- [8] [I Wrote “Thinking GPT” 4 Months Ago. Now Stanford Researchers Prove It Right, Beating DeepSeek R1.](https://ai.gopubby.com/i-wrote-thinking-gpt-4-months-ago-now-stanford-researchers-prove-it-right-beating-deepseek-r1-13a65d7f705a?sk=5d7cf4a72f59e530958698ffcb8631f9)
+- [9] [What's New in Test-Time Scaling?](https://www.turingpost.com/p/testtimescaling2)
+- [10] [Test-Time Preference Optimization: On-the-Fly Alignment via Iterative Textual Feedback](https://proceedings.mlr.press/v267/li25ac.html)
+- [11] [Test-Time Preference Optimization: On-the-Fly Alignment via Iterative Textual Feedback](https://icml.cc/virtual/2025/poster/46149)
+- [12] [Thoughts Are All Over the Place: On the Underthinking of o1-Like LLMs](https://tldr.takara.ai/p/2501.18585)
+- [13] [Thoughts Are All Over the Place: On the Underthinking of o1-Like LLMs](https://www.linkedin.com/pulse/thoughts-all-over-place-underthinking-o1-like-llms-vlad-bogolin-rhnme)
+- [14] [Trading Inference-Time Compute for Adversarial Robustness](https://openai.com/index/trading-inference-time-compute-for-adversarial-robustness)
+- [15] [Trading Inference-Time Compute for Adversarial Robustness](https://huggingface.co/papers/2501.18841)
+- [16] [Follow-up Paper on Trading Inference-Time Compute](https://arxiv.org/html/2507.15974v1)
+- [17] [CoAT: Chain-of-Associated-Thoughts Framework for Enhancing Large Language Models Reasoning](https://arxiv.org/html/2502.02390v3)
+- [18] [Step Back to Leap Forward: Self-Backtracking for Boosting Reasoning of Language Models](https://arxiv.org/html/2502.04404v1)
+- [19] [Step Back to Leap Forward: Self-Backtracking for Boosting Reasoning of Language Models](https://ojs.aaai.org/index.php/AAAI/article/view/39986/43947)
+- [20] [Scaling by Thinking in Continuous Space](https://huggingface.co/papers/2502.05171)
+- [21] [Scaling by Thinking in Continuous Space](https://openreview.net/forum?id=S3GhJooWIC)
+- [22] [Scaling Test-Time Compute: How Recurrent Depth Transforms AI Reasoning](https://medium.com/@sahin.samia/scaling-test-time-compute-how-recurrent-depth-transforms-ai-reasoning-fa866fa968db)
+- [23] [Can 1B LLM Surpass 405B LLM? Rethinking Compute-Optimal Test-Time Scaling](https://arxiv.org/abs/2502.06703)
+- [24] [Inference-Time Computations for LLM Reasoning and Planning: A Benchmark and Insights](https://www.arxiv.org/abs/2502.12521)
+- [25] [Sys2Bench: A Benchmark for Inference-Time Computation in LLMs](https://github.com/usail-hkust/benchmark_inference_time_computation_LLM)
+- [26] [Inner Thinking Transformer: Leveraging Dynamic Depth Scaling to Foster Adaptive Internal Thinking](https://arxiv.org/pdf/2502.13842)
+- [27] [Inner Thinking Transformer: Leveraging Dynamic Depth Scaling to Foster Adaptive Internal Thinking](https://arxiv.org/html/2502.13842v1)
+- [28] [Inner Thinking Transformer (ITT)](https://www.emergentmind.com/topics/inner-thinking-transformer-itt)
+- [29] [Inner Thinking Transformer Paper](https://aclanthology.org/2025.acl-long.1369.pdf)
+- [30] [S\*: Test Time Scaling for Code Generation](https://arxiv.org/abs/2502.14382)
+- [31] [Chain of Draft](https://www.helicone.ai/blog/chain-of-draft)
+- [32] [What Is Chain of Drafts? Bye Bye Chain of Thoughts](https://medium.com/data-science-in-your-pocket/what-is-chain-of-drafts-bye-bye-chain-of-thoughts-76658d913169)
+- [33] [Chain of Draft](https://www.analyticsvidhya.com/blog/2025/03/chain-of-draft)
+- [34] [Move Beyond Chain-of-Thought with Chain-of-Draft on Amazon Bedrock](https://aws.amazon.com/blogs/machine-learning/move-beyond-chain-of-thought-with-chain-of-draft-on-amazon-bedrock)
+- [35] [Chain of Draft: Thinking Faster by Writing Less](https://arxiv.org/html/2502.18600v1)
+- [36] [Dedicated Feedback and Edit Models Empower Inference-Time Scaling for Open-Ended General-Domain Tasks](https://arxiv.org/html/2503.04378v1)
+- [37] [HelpSteer3: Human-Annotated Feedback and Edit Data to Empower Inference-Time Scaling in Open-Ended General-Domain Tasks](https://liner.com/ko/review/dedicated-feedback-and-edit-models-empower-inferencetime-scaling-for-openended)
+- [38] [Test-Time Scaling for Medical Reasoning](https://neurips.cc/virtual/2025/124931)
+- [39] [LLM Inference-Time Scaling in Robotics](https://arxiv.org/html/2510.10787v1)
+- [40] [Chain-of-Layers: A Test-time-adaptive-depth Method for LLMs](https://arxiv.org/abs/2507.07996)
+- [41] [Test-Time Diffusion Deep Researcher](https://arxiv.org/abs/2507.16075)
+- [42] [Inference-Time Scaling with Probabilistic Inference](https://arxiv.org/html/2502.01618v2)
+</article>

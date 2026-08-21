@@ -1,11 +1,11 @@
 {
-  "ground_truth_core_content": 0.7777777777777778,
-  "ground_truth_flow": 0.6666666666666666,
-  "ground_truth_structure": 0.3333333333333333,
-  "ground_truth_depth_enhancement": 0.3333333333333333,
-  "ground_truth_breadth_enhancement": 0.3333333333333333,
+  "ground_truth_core_content": 0.8,
+  "ground_truth_flow": 0.5,
+  "ground_truth_structure": 0.4,
+  "ground_truth_depth_enhancement": 0.5,
+  "ground_truth_breadth_enhancement": 0.1,
   "ground_truth_core_preservation": 1.0,
-  "user_intent_guideline_adherence": 0.4444444444444444,
+  "user_intent_guideline_adherence": 0.0,
   "user_intent_research_anchoring": 1.0,
-  "user_intent_golden_source_priority": 1.0
+  "user_intent_golden_source_priority": 0.888889
 }

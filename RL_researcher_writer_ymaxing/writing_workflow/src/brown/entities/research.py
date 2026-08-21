@@ -65,29 +65,50 @@ class Research(BaseModel, ContextMixin):
         return f"\n<{self.xml_tag}>\n    {stripped}\n</{self.xml_tag}>\n"
 
     def to_reviewer_context(self) -> str:
-        """Return a compact research context for the article reviewer.
+        """Return the research context for the article reviewer.
 
-        Tells the reviewer the detected format and — for Format B — provides the
-        exploration-phase source blocks so it can cross-reference article content
-        against the actual source material when checking exploration integration rules.
+        Previously this returned only a format summary (plus, for Format B, the extracted
+        exploration-phase blocks) — the reviewer never actually saw the golden/exploitation
+        source material, so it had no way to verify whether a claim in the article was really
+        traceable to research and therefore required a citation. This now always includes the
+        full research content so the golden/exploitation citation completeness check (which
+        applies to every format) can be cross-referenced against real source text, in addition
+        to the exploration integration checks (Format B only).
         """
         if self.is_format_a:
-            return (
+            banner = (
                 "Research format: **Format A** (deduplicated). "
                 "Exploration-phase content was pre-filtered upstream before the writer received the research. "
-                "Skip all exploration integration checks — they do not apply to Format A articles."
+                "Skip all exploration integration checks — they do not apply to Format A articles.\n\n"
+                "The deduplicated body below (everything before the `## Golden Source Reference` heading) is "
+                "the authoritative factual reference for the golden/exploitation citation completeness check: "
+                "treat every fact, claim, or example traceable to it with the same citation strictness as a "
+                "golden source. The `## Golden Source Reference` appendix that follows maps facts back to "
+                "their original `<golden_source>`/`<research_source>` provenance tags — use it to identify the "
+                "correct citation URL when flagging a missing citation, but do not use it as a source of "
+                "additional facts beyond what the deduplicated body already covers."
             )
+            return f"{banner}\n\n{self.content}"
+
         sources = self._exploration_sources
         if not sources:
-            return (
+            banner = (
                 "Research format: **Format B** (raw XML-tagged). "
                 'No `<research_source phase="exploration">` blocks were found in the research. '
-                "Skip all exploration integration checks — no exploration sources were available to the writer."
+                "Skip all exploration integration checks — no exploration sources were available to the writer.\n\n"
+                "The full research content below includes `<golden_source>` and "
+                '`<research_source phase="exploitation">` tags — use them for the golden/exploitation citation '
+                "completeness check."
             )
-        return (
+            return f"{banner}\n\n{self.content}"
+
+        banner = (
             "Research format: **Format B** (raw XML-tagged). "
-            "The following exploration-phase sources were available to the writer during the integration pass. "
-            "Use them for two sequential checks:\n\n"
+            "The full research content below includes `<golden_source>` and "
+            '`<research_source phase="exploitation">` tags — use them for the golden/exploitation citation '
+            "completeness check.\n\n"
+            "It also contains the exploration-phase sources that were available to the writer during the "
+            "integration pass, repeated separately below for convenience. Use them for two sequential checks:\n\n"
             "1. **Coverage check (missing integration):** For each source, assess whether it contains "
             "content that meets the depth/breadth integration bar — e.g. theoretical foundations, technical "
             "nuances, alternative perspectives, limitations, real-world case studies, adjacent concepts, "
@@ -103,6 +124,7 @@ class Research(BaseModel, ContextMixin):
             f"{sources}\n"
             "</exploration_sources>"
         )
+        return f"{banner}\n\n{self.content}"
 
     def to_context(self) -> str:
         return f"""

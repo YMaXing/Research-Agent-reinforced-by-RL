@@ -1,0 +1,29 @@
+{
+  "external_evidence_policy": "allowed",
+  "sections": {
+    "S1::section-1-introduction": {
+      "target_words": 550,
+      "mandatory_bullets": 6,
+      "must_cover_depth": 3,
+      "must_stay_brief": 1
+    },
+    "S2::section-2-the-company-being-kept": {
+      "target_words": 650,
+      "mandatory_bullets": 7,
+      "must_cover_depth": 3,
+      "must_stay_brief": 0
+    },
+    "S3::section-3-convergent-evolution": {
+      "target_words": 350,
+      "mandatory_bullets": 5,
+      "must_cover_depth": 3,
+      "must_stay_brief": 1
+    },
+    "S4::section-4-find-the-universals": {
+      "target_words": 450,
+      "mandatory_bullets": 5,
+      "must_cover_depth": 4,
+      "must_stay_brief": 0
+    }
+  }
+}

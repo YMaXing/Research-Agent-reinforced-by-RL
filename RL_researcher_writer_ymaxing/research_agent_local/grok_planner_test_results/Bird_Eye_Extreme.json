@@ -10,22 +10,22 @@
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
-    0.4915,
-    0.6542,
-    0.5785,
-    0.5104
+    0.2415,
+    0.3752,
+    0.3355,
+    0.2479
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.5783,
-  "confidence": 0.3777,
-  "floor_applied": false,
+  "entropy_bits": 1.4732,
+  "confidence": 0.2927,
+  "floor_applied": true,
   "rl_agg_probs": [
-    0.0,
-    0.3777,
-    0.3015,
-    0.3207
+    0.5122,
+    0.2927,
+    0.1951,
+    0.0
   ],
   "grok_override": null,
   "grok_reasoning": null,

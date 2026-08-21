@@ -1,0 +1,62 @@
+{
+  "version": 5,
+  "article": "08_react_practice",
+  "variant": "demanding",
+  "merge_source": "model_gate_candidates.py::S61_gara_only",
+  "sections": {
+    "S1::section-1-setup-and-environment": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.67,
+        "standard": 0.6436,
+        "deep": 0.6307
+      }
+    },
+    "S2::section-2-tool-layer-mock-search-implementation": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.67,
+        "standard": 0.6436,
+        "deep": 0.6307
+      }
+    },
+    "S3::section-3-thought-phase-prompt-construction-and-generation": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.5,
+        "light": 0.8275,
+        "standard": 0.6461,
+        "deep": 0.5882
+      }
+    },
+    "S4::section-4-action-phase-function-calling-and-parsing": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.52,
+        "standard": 0.8011,
+        "deep": 0.6382
+      }
+    },
+    "S5::section-5-control-loop-messages-scratchpad-orchestration": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.52,
+        "standard": 0.8936,
+        "deep": 0.4382
+      }
+    },
+    "S6::section-6-tests-and-traces-success-and-graceful-fallback": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.7724,
+        "standard": 0.8011,
+        "deep": 0.8332
+      }
+    }
+  }
+}

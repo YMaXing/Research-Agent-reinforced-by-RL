@@ -1,0 +1,211 @@
+{
+  "version": 3,
+  "article": "10_memory_knowledge_access__var_standard",
+  "variant": "var_standard",
+  "computed_at": "2026-07-30T02:01:00.611636+00:00",
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "deep",
+  "runner_up_arm_idx": 3,
+  "margin": 0.030679,
+  "reward_spread": 0.078551,
+  "r_w_rewards": {
+    "skip": 0.194393,
+    "light": 0.272944,
+    "standard": 0.224184,
+    "deep": 0.242265
+  },
+  "r_w_rewards_list": [
+    0.194393,
+    0.272944,
+    0.224184,
+    0.242265
+  ],
+  "decision_path": [
+    "unique reward winner (margin=+0.0307 > EPS_BAND=0.03)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "gate_diagnostics": {
+    "skip": {
+      "cp": 0.857143,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "light": {
+      "cp": 0.857143,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "standard": {
+      "cp": 0.857143,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "deep": {
+      "cp": 0.857143,
+      "ra": 1.0,
+      "gsp": 1.0
+    }
+  },
+  "low_signal_flag": false,
+  "n_sections": 7,
+  "n_sections_with_target": 7,
+  "total_target_words": 2675,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place",
+      "title": "introduction why agents need a memory in the first place",
+      "target_words": 400,
+      "weight_words": 400,
+      "weight_frac": 0.14953,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.37,
+        "standard": 0.5011,
+        "deep": 0.4882
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.37,
+        0.5011,
+        0.4882
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-the-layers-of-memory-internal-short-term-and-long-term",
+      "title": "the layers of memory internal short term and long term",
+      "target_words": 275,
+      "weight_words": 275,
+      "weight_frac": 0.1028,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.5275,
+        "standard": 0.5011,
+        "deep": 0.3882
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.5275,
+        0.5011,
+        0.3882
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-long-term-memory-semantic-episodic-and-procedural",
+      "title": "long term memory semantic episodic and procedural",
+      "target_words": 400,
+      "weight_words": 400,
+      "weight_frac": 0.14953,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.37,
+        "standard": 0.3436,
+        "deep": 0.4882
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.37,
+        0.3436,
+        0.4882
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-storing-memories-pros-and-cons-of-different-approaches",
+      "title": "storing memories pros and cons of different approaches",
+      "target_words": 400,
+      "weight_words": 400,
+      "weight_frac": 0.14953,
+      "rewards": {
+        "skip": -0.1,
+        "light": 0.3275,
+        "standard": 0.0011,
+        "deep": 0.0882
+      },
+      "rewards_by_preset": [
+        -0.1,
+        0.3275,
+        0.0011,
+        0.0882
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-memory-implementations-with-code-examples",
+      "title": "memory implementations with code examples",
+      "target_words": 500,
+      "weight_words": 500,
+      "weight_frac": 0.18692,
+      "rewards": {
+        "skip": 0.1,
+        "light": 0.17,
+        "standard": 0.1436,
+        "deep": 0.0307
+      },
+      "rewards_by_preset": [
+        0.1,
+        0.17,
+        0.1436,
+        0.0307
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-real-world-lessons-challenges-and-best-practices",
+      "title": "real world lessons challenges and best practices",
+      "target_words": 500,
+      "weight_words": 500,
+      "weight_frac": 0.18692,
+      "rewards": {
+        "skip": 0.0,
+        "light": -0.03,
+        "standard": -0.0564,
+        "deep": -0.0693
+      },
+      "rewards_by_preset": [
+        0.0,
+        -0.03,
+        -0.0564,
+        -0.0693
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::section-7-conclusion",
+      "title": "conclusion",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.07477,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.37,
+        "standard": 0.3436,
+        "deep": 0.4882
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.37,
+        0.3436,
+        0.4882
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "version": 5,
+  "article": "09_RAG",
+  "variant": "demanding",
+  "merge_source": "model_gate_candidates.py::S61_cost_only",
+  "sections": {
+    "S1::section-1-introduction-giving-llms-an-open-book-exam": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.245,
+        "standard": 0.08,
+        "deep": -0.175
+      }
+    },
+    "S2::section-2-the-rag-system-core-components": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.245,
+        "standard": 0.08,
+        "deep": 0.02
+      }
+    },
+    "S3::section-3-the-rag-pipeline-ingestion-and-retrieval": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.14,
+        "standard": 0.08,
+        "deep": 0.02
+      }
+    },
+    "S4::section-4-advanced-rag-techniques": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.4025,
+        "standard": 0.08,
+        "deep": 0.3382
+      }
+    },
+    "S5::section-5-agentic-rag": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.2975,
+        "standard": 0.53,
+        "deep": 0.675
+      }
+    },
+    "S6::section-6-conclusion": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.4083,
+        "standard": 0.28,
+        "deep": 0.1883
+      }
+    }
+  }
+}

@@ -1,145 +1,104 @@
-# From Scratch to Production: A Guide to AI Agent Tool Calling
+# Lesson 6: Agent Tools and Function Calling
 
-In our previous lessons, we explored the landscape of AI engineering, distinguished between LLM workflows and agents, and delved into context engineering and structured outputs. We have laid the foundation for building intelligent systems. Now, we will give those systems the ability to act.
+In the previous lessons, we built a foundation in AI Engineering. We distinguished between rule-based LLM workflows and autonomous AI agents, engineered context to feed LLMs the right information, and used structured outputs to get reliable data back. We also explored basic workflow patterns like chaining and routing.
 
-This lesson focuses on one of the most critical components of any AI agent: tools. Tools, also known as function calling, are what transform an LLM from a simple text generator into an agent that can interact with the external world. By implementing tool calling from scratch, you will understand how an LLM decides which tool to use, generates the correct parameters, and executes actions. This knowledge is essential for any AI engineer looking to build, debug, and monitor production-grade AI applications.
+Now, we will give our AI systems "hands and senses" to interact with the world. This lesson is about tools, also known as function calling. Tools are what elevate an LLM from a text generator to an agent that can take action, access real-time data, and connect to external systems. Understanding how tools work under the hood is one of the most critical skills for an AI Engineer. It is the key to building, debugging, and monitoring robust AI applications that go beyond simple chat.
+
+We will start by implementing tool calling from scratch to see the mechanics of how an LLM decides what to do. Then, we will use the native features of modern APIs like Gemini to build production-ready implementations. We will also cover using Pydantic models for on-demand structured outputs, running tools in loops for multi-step tasks, and finally, survey the most common tools used in the industry today.
 
 ## Understanding Why Agents Need Tools
 
-LLMs have a fundamental limitation: they are powerful pattern matchers and text generators, but they cannot perform actions or access information outside their training data on their own. They live within the confines of their weights. This is where tools come in. Tools are the bridge between an LLM's internal reasoning and the external world, enabling it to interact with its environment and execute specific instructions.
+LLMs have a fundamental limitation: they are powerful pattern matchers and text generators, but they are confined to the information in their training data [[16]](https://arxiv.org/html/2507.08034v1). They cannot, by themselves, browse the internet, check your calendar, or query a database. This is where tools come in. If the LLM is the brain of an AI agent, then tools are its hands and senses, allowing it to perceive and act in the world beyond its pre-trained knowledge [[5]](https://www.deeplearning.ai/the-batch/agentic-design-patterns-part-3-tool-use/).
 
-A useful analogy is to think of the LLM as the brain of an agent, while tools are its "hands and senses." They allow the agent to perceive and act in the world beyond its textual interface. This perception-action loop mirrors decision-making cycles in other autonomous systems, like robotics, where an agent must observe its environment, reason about the next step, and execute an action [[40]](https://arxiv.org/pdf/2601.20334), [[43]](https://openaccess.thecvf.com/content/CVPR2025W/MEIS/papers/Chen_Multi-Agent_Systems_for_Robotic_Autonomy_with_LLMs_CVPRW_2025_paper.pdf). With tools, an LLM graduates from being a passive text generator to an active AI agent.
+Tools are the bridge between the LLM’s internal reasoning and the external world. They are essentially functions that the LLM can ask our application to execute. With this capability, an LLM transforms into an AI agent that can perform a wide range of tasks [[10]](https://blogs.oracle.com/developers/what-is-the-ai-agent-loop-the-core-architecture-behind-autonomous-ai-systems).
+Image 1: An AI agent's core components, showing the LLM interacting with Planning, Memory, and Tools. (Source [swirl-ai.com](https://www.newsletter.swirlai.com/p/building-ai-agents-from-scratch-part))
 
-```mermaid
-flowchart LR
-  %% Core AI Agent Components
-  subgraph "AI Agent"
-    LLM["LLM<br/>(Brain)"]
-    Controller["Controller"]
-    Planning["Planning"]
-    Tools["Tools<br/>(Hands & Senses)"]
+As shown in Image 1, tools are a core component of any agent. Some of the most popular tools that power modern AI agents include:
+-   Accessing real-time information via APIs for weather or news [[19]](https://lnu.diva-portal.org/smash/get/diva2:1801354/FULLTEXT01.pdf).
+-   Interacting with external databases or other storage solutions like a PostgreSQL database, a Snowflake data warehouse, or an S3 data lake.
+-   Accessing the agent's long-term memory to recall information beyond the current context window.
+-   Executing code in languages like Python for precise calculations, data manipulation, or statistical analysis [[16]](https://arxiv.org/html/2507.08034v1).
+-   Performing precise calculations that go beyond their training data, from basic arithmetic to complex sorting and filtering operations.
 
-    subgraph "Memory System"
-      Memory["Memory"]
-      STM["Short-term<br/>Memory"]
-      LTM["Long-term<br/>Memory"]
-      Memory --> STM
-      Memory --> LTM
-    end
-  end
+By giving an LLM access to these tools, we empower it to break free from its static knowledge and engage with the dynamic, real-time world.
 
-  %% External Interaction
-  Environment["External<br/>Environment"]
+## Implementing tool calls from scratch
 
-  %% Interaction Flows
-  LLM -- "controls" --> Controller
-  Controller -- "interacts with" --> Environment
-  LLM -- "informs" --> Planning
-  LLM -- "accesses" --> Memory
-  LLM -- "utilizes" --> Tools
-  Tools -- "acts on" --> Environment
-
-  %% Visual Differentiation
-  classDef brain stroke-width:3px
-  classDef senses stroke-dasharray:5,5
-  class LLM brain
-  class Tools senses
-```
-Image 1: A conceptual diagram of an AI agent with the LLM as the brain and tools as hands and senses.
-
-Modern AI agents use a wide array of tools to enhance their capabilities and overcome their core limitations. Some popular examples include:
-
-*   **Accessing real-time information** through APIs to get today's weather or the latest news, overcoming the static nature of the model's training data [[19]](https://lnu.diva-portal.org/smash/get/diva2:1801354/FULLTEXT01.pdf).
-*   **Interacting with external databases** and storage solutions like a PostgreSQL database, a Snowflake data warehouse, or an S3 data lake, which is essential for enterprise applications that need to query proprietary data.
-*   **Accessing the agent's long-term memory** to recall information from past interactions, allowing for continuity and personalization beyond the limits of the context window.
-*   **Executing code** in languages like Python or JavaScript to perform precise calculations, sort data, or run simulations, which LLMs cannot do reliably on their own [[16]](https://arxiv.org/html/2507.08034v1).
-
-## Implementing Tool Calls From Scratch
-
-The best way to understand how tools work is to build them from scratch. This section will guide you through implementing a simple tool-calling mechanism, giving you a clear view of how an LLM discovers, selects, and uses tools.
-
-Our goal is to provide the LLM with a list of available tools and let it decide which one to use, along with the correct arguments, to fulfill a user's request. The high-level process involves five steps:
-
-1.  **App:** You send the LLM a prompt that includes a list of available tools and their definitions.
-2.  **LLM:** The model analyzes the prompt and responds with a `function_call` request, specifying the tool to use and the arguments for it.
-3.  **App:** Your application parses this request and executes the corresponding function with the provided arguments.
-4.  **App:** You send the output from the function back to the LLM.
-5.  **LLM:** The model uses the tool's output to generate a final, user-facing response.
+The best way to understand how an LLM uses tools is to build the mechanism from scratch. We will provide the LLM with a list of available tools and let it decide which one to use and with what arguments. The high-level process, illustrated in Image 2, follows a simple request-execute-respond flow.
 
 ```mermaid
 flowchart LR
-  %% Main Actors
-  App["Application"]
-  LLM["Large Language Model"]
-  User["User"]
-
-  %% Tool Execution Subgraph
-  subgraph ToolExecution["Tool Execution"]
-    T1["search_google_drive"]
-    T2["send_discord_message"]
-    T3["summarize_financial_report"]
+  %% Define the main actors
+  subgraph "Application (App)"
+    App_Start["User Prompt & Tool Definitions"]
+    App_ReceiveCall["Receive function_call"]
+    App_ExecuteTool["Parse & Execute Tool"]
+    App_CaptureOutput["Capture Tool Output"]
+    App_SendOutput["Send Tool Output"]
+    App_FinalResponse["Display Final Response / Handle New Tool Call"]
   end
 
-  %% Flow Steps
-  App -- "1. provides available tools" --> LLM
-  LLM -- "2. responds with function_call<br/>(tool, args)" --> App
-  App -- "3. executes requested function" --> T1
-  App -- "3. executes requested function" --> T2
-  App -- "3. executes requested function" --> T3
-  T1 -- "returns output" --> App
-  T2 -- "returns output" --> App
-  T3 -- "returns output" --> App
-  App -- "4. sends function output" --> LLM
-  LLM -- "5. generates user-facing response" --> User
+  subgraph "Large Language Model (LLM)"
+    LLM_ProcessInput["Process Input<br/>(Prompt & Tool Defs)"]
+    LLM_RespondCall["Respond with function_call"]
+    LLM_InterpretOutput["Interpret Tool Output<br/>& Generate Response"]
+  end
 
-  %% Visual Grouping for Highlighting
-  classDef app_llm_nodes stroke-width:2px
-  classDef tool_nodes stroke-dasharray:5,5
+  %% Step 1: App sends prompt and tool definitions to LLM.
+  App_Start -- "1. Sends user prompt & tool definitions" --> LLM_ProcessInput
 
-  class App,LLM app_llm_nodes
-  class T1,T2,T3 tool_nodes
+  %% Step 2: LLM processes input and responds with function_call.
+  LLM_ProcessInput -- "2. Responds with function_call (tool & args)" --> App_ReceiveCall
+
+  %% Step 3: App receives function_call, parses, and executes tool.
+  App_ReceiveCall -- "3. Parses & Executes Tool" --> App_ExecuteTool
+
+  %% Step 4: App captures output from executed tool.
+  App_ExecuteTool -- "4. Captures Output" --> App_CaptureOutput
+
+  %% Step 5: App sends tool's output back to LLM.
+  App_CaptureOutput -- "5. Sends Tool Output" --> LLM_InterpretOutput
+
+  %% Step 6: LLM interprets output and generates final response or new tool call.
+  LLM_InterpretOutput -- "6. Generates final response or new tool call" --> App_FinalResponse
+
+  %% Visual grouping (using stroke-width as per example)
+  classDef actor_boundary stroke-width:2px
+  class App_Start,App_ReceiveCall,App_ExecuteTool,App_CaptureOutput,App_SendOutput,App_FinalResponse actor_boundary
+  class LLM_ProcessInput,LLM_RespondCall,LLM_InterpretOutput actor_boundary
 ```
-Image 2: A flowchart illustrating the 5-step request-execute-respond flow of calling a tool, highlighting interactions between the App and LLM, and tool execution.
+Image 2: A flowchart illustrating the 6-step request-execute-respond flow of calling a tool between an Application and an LLM.
 
 Let's implement a simple example where we mock searching for a document on Google Drive and sending its summary to a Discord channel.
 
-1.  First, we set up our environment by importing the necessary libraries, loading our API key, and initializing the Gemini client. We will use the `gemini-2.5-flash` model for its speed and cost-effectiveness. We also define a `DOCUMENT` constant to mock the content of a PDF file.
+<aside>
+💡
+
+You can find all the code for this lesson in the accompanying [GitHub notebook](https://github.com/towardsai/course-ai-agents/blob/dev/lessons/06_tools/notebook.ipynb).
+
+</aside>
+
+1. First, we set up our environment by initializing the Gemini client and defining our model and a mock document. We will use `gemini-2.5-flash`, which is fast and cost-effective for our examples.
     ```python
     import json
     from typing import Any
-    
     from google import genai
     from google.genai import types
     from pydantic import BaseModel, Field
     
-    from lessons.utils import pretty_print
-    
-    # Load API key from .env file
-    from lessons.utils import env
-    env.load(required_env_vars=["GOOGLE_API_KEY"])
-    
+    # Assumes GOOGLE_API_KEY is set as an environment variable
     client = genai.Client()
-    
     MODEL_ID = "gemini-2.5-flash"
     
     DOCUMENT = """
     # Q3 2023 Financial Performance Analysis
     
     The Q3 earnings report shows a 20% increase in revenue and a 15% growth in user engagement, 
-    beating market expectations. These impressive results reflect our successful product strategy 
-    and strong market positioning.
-    
-    Our core business segments demonstrated remarkable resilience, with digital services leading 
-    the growth at 25% year-over-year. The expansion into new markets has proven particularly 
-    successful, contributing to 30% of the total revenue increase.
-    
-    Customer acquisition costs decreased by 10% while retention rates improved to 92%, 
-    marking our best performance to date. These metrics, combined with our healthy cash flow 
-    position, provide a strong foundation for continued growth into Q4 and beyond.
+    beating market expectations...
     """
     ```
 
-2.  Next, we define three mock functions to simulate our tools. To keep the focus on the tool-calling mechanism, these functions return hardcoded responses instead of interacting with real APIs.
+2. We define three mock Python functions to simulate our tools. The function signature and docstrings are what the LLM will use to understand each tool's purpose.
     ```python
     def search_google_drive(query: str) -> dict:
         """
@@ -149,7 +108,7 @@ Let's implement a simple example where we mock searching for a document on Googl
             query (str): The search query to find the file, e.g., 'Q3 earnings report'.
     
         Returns:
-            dict: A dictionary representing the search results, including file names and summaries.
+            dict: A dictionary representing the search results...
         """
         return {
             "files": [
@@ -160,8 +119,7 @@ Let's implement a simple example where we mock searching for a document on Googl
                 }
             ]
         }
-    ```
-    ```python
+    
     def send_discord_message(channel_id: str, message: str) -> dict:
         """
         Sends a message to a specific Discord channel.
@@ -179,8 +137,7 @@ Let's implement a simple example where we mock searching for a document on Googl
             "channel": channel_id,
             "message_preview": f"{message[:50]}...",
         }
-    ```
-    ```python
+    
     def summarize_financial_report(text: str) -> str:
         """
         Summarizes a financial report.
@@ -191,10 +148,10 @@ Let's implement a simple example where we mock searching for a document on Googl
         Returns:
             str: The summary of the text.
         """
-        return "The Q3 2023 earnings report shows strong performance across all metrics with 20% revenue growth, 15% user engagement increase, 25% digital services growth, and improved retention rates of 92%."
+        return "The Q3 2023 earnings report shows strong performance across all metrics..."
     ```
 
-3.  For the LLM to understand these tools, we must define their schemas in a machine-readable format, typically JSON Schema. The schema tells the LLM what the tool does (via the `description`), what parameters it needs (`parameters`), their types, and which ones are required. This is the industry standard for modern LLM providers like OpenAI and Gemini [[23]](https://tetrate.io/learn/ai/llm-output-parsing-structured-generation), [[57]](https://myengineeringpath.dev/tools/gemini-guide/).
+3. For each tool, we create a schema in JSON format. This schema is the contract that tells the LLM what the tool is called, what it does (`description`), and what inputs it needs (`parameters`). This is an industry-standard approach used by APIs from OpenAI, Google, and Anthropic [[23]](https://tetrate.io/learn/ai/llm-output-parsing-structured-generation), [[57]](https://myengineeringpath.dev/tools/gemini-guide/).
     ```python
     search_google_drive_schema = {
         "name": "search_google_drive",
@@ -210,8 +167,7 @@ Let's implement a simple example where we mock searching for a document on Googl
             "required": ["query"],
         },
     }
-    ```
-    ```python
+    
     send_discord_message_schema = {
         "name": "send_discord_message",
         "description": "Sends a message to a specific Discord channel.",
@@ -230,76 +186,57 @@ Let's implement a simple example where we mock searching for a document on Googl
             "required": ["channel_id", "message"],
         },
     }
-    ```
-    ```python
+    
     summarize_financial_report_schema = {
         "name": "summarize_financial_report",
         "description": "Summarizes a financial report.",
         "parameters": {
             "type": "object",
-            "properties": {
-                "text": {
-                    "type": "string",
-                    "description": "The text to summarize.",
-                },
-            },
+            "properties": {"text": {"type": "string", "description": "The text to summarize."}},
             "required": ["text"],
         },
     }
     ```
 
-4.  We then create a tool registry to map tool names to their corresponding functions and schemas. This makes it easy to look up and execute the correct tool later.
+4. We then aggregate these tools and their schemas into registries for easy access.
     ```python
     TOOLS = {
-        "search_google_drive": {
-            "handler": search_google_drive,
-            "declaration": search_google_drive_schema,
-        },
-        "send_discord_message": {
-            "handler": send_discord_message,
-            "declaration": send_discord_message_schema,
-        },
-        "summarize_financial_report": {
-            "handler": summarize_financial_report,
-            "declaration": summarize_financial_report_schema,
-        },
+        "search_google_drive": {"handler": search_google_drive, "declaration": search_google_drive_schema},
+        "send_discord_message": {"handler": send_discord_message, "declaration": send_discord_message_schema},
+        "summarize_financial_report": {"handler": summarize_financial_report, "declaration": summarize_financial_report_schema},
     }
     TOOLS_BY_NAME = {tool_name: tool["handler"] for tool_name, tool in TOOLS.items()}
     TOOLS_SCHEMA = [tool["declaration"] for tool in TOOLS.values()]
     ```
-    The `TOOLS_BY_NAME` mapping looks like this:
+    The `TOOLS_BY_NAME` mapping gives us quick access to the Python functions.
+    It outputs:
     ```text
-    Tool name: search_google_drive
-    Tool handler: <function search_google_drive at 0x104c7df80>
-    ---------------------------------------------------------------------------
-    Tool name: send_discord_message
-    Tool handler: <function send_discord_message at 0x104c7de40>
-    ---------------------------------------------------------------------------
-    Tool name: summarize_financial_report
-    Tool handler: <function summarize_financial_report at 0x1274f5c60>
-    ---------------------------------------------------------------------------
+    {'search_google_drive': <function search_google_drive at 0x...>, 
+     'send_discord_message': <function send_discord_message at 0x...>, 
+     'summarize_financial_report': <function summarize_financial_report at 0x...>}
     ```
-    And here is the schema for our `search_google_drive` tool:
+    And `TOOLS_SCHEMA` is the list of JSON schemas we will pass to the LLM. Here is the first one.
+    It outputs:
     ```json
     {
-      "name": "search_google_drive",
-      "description": "Searches for a file on Google Drive and returns its content or a summary.",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "query": {
-            "type": "string",
-            "description": "The search query to find the file, e.g., 'Q3 earnings report'."
-          }
-        },
-        "required": [
-          "query"
-        ]
-      }
+        "name": "search_google_drive",
+        "description": "Searches for a file on Google Drive and returns its content or a summary.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "The search query to find the file, e.g., 'Q3 earnings report'."
+                }
+            },
+            "required": [
+                "query"
+            ]
+        }
     }
     ```
 
-5.  Now, we need a system prompt to instruct the LLM on how to use these tools. This prompt defines the rules for tool selection, the expected output format for a tool call, and provides the list of available tools enclosed in XML tags.
+5. Next, we create a system prompt to instruct the LLM on how to use these tools. This prompt includes guidelines on when to use tools, how to select them, and the exact format for requesting a tool call. This is a critical piece of engineering, as the clarity of these instructions directly impacts the agent's reliability.
     ```python
     TOOL_CALLING_SYSTEM_PROMPT = """
     You are a helpful AI assistant with access to tools that enable you to take actions and retrieve information to better 
@@ -327,9 +264,9 @@ Let's implement a simple example where we mock searching for a document on Googl
     
     When you need to use a tool, output ONLY the tool call in this exact format:
     
-    <tool_call>
+    ```tool_call
     {{"name": "tool_name", "args": {{"param1": "value1", "param2": "value2"}}}}
-    </tool_call>
+    ```
     
     **Critical formatting rules:**
     - Use double quotes for all JSON strings
@@ -355,14 +292,11 @@ Let's implement a simple example where we mock searching for a document on Googl
     """
     ```
 
-6.  The LLM's decision-making process for tool calling relies heavily on the quality of the tool schemas and system prompt. Based on the `description` field in the schema, the model *decides* if a tool is appropriate for the user's query. This is why clear and distinct tool descriptions are critical. Ambiguous descriptions like "search documents" and "search files" can confuse the LLM. Explicit descriptions like "search documents on Google Drive" and "search files on the local disk" prevent this confusion [[51]](https://mbrenndoerfer.com/writing/function-calling-llm-structured-tools). Another disambiguation method is to be explicit in the system prompt. Instead of a generic instruction like "search documents," specify where to search, such as "search documents on Google Drive." By defining clear tool descriptions and system prompts, you ensure the agent can make the correct matches. This becomes crucial as you scale to 50-100 tools per agent [[52]](https://medium.com/@abhaychougule0907/underlying-factors-behind-inconsistency-in-llm-responses-with-multi-tool-calling-628ce7b4de76). We will explore scaling methods in more detail in Parts 2 and 3 of this course. Once a tool is selected, the LLM *generates* the function name and arguments as a structured output, like JSON. This capability is a result of instruction fine-tuning, where models are specifically trained to interpret schemas and produce structured tool calls [[23]](https://tetrate.io/learn/ai/llm-output-parsing-structured-generation).
+6. The LLM uses the `description` field from the tool schemas to decide which tool is most appropriate for a user's query. This is why clear and distinguishing descriptions are critical for building reliable agents [[32]](https://www.anthropic.com/research/building-effective-agents). If you have two tools with vague descriptions like "search documents" and "search files," the LLM will get confused. Explicit descriptions like "search documents on Google Drive" and "search files on the local disk" prevent this ambiguity [[51]](https://mbrenndoerfer.com/writing/function-calling-llm-structured-tools). This becomes even more important as you scale to dozens or hundreds of tools per agent [[52]](https://medium.com/@abhaychougule0907/underlying-factors-behind-inconsistency-in-llm-responses-with-multi-tool-calling-628ce7b4de76). Once a tool is selected, the LLM generates the function name and arguments as a structured output, like JSON. This capability is not magic; LLMs are specifically trained via instruction fine-tuning to interpret these schemas and produce valid tool call outputs [[51]](https://mbrenndoerfer.com/writing/function-calling-llm-structured-tools).
 
-7.  Let's test our setup. We send a user prompt along with our system prompt to the model.
+7. Let's test it. We send a user prompt along with our system prompt to the model.
     ```python
-    USER_PROMPT = """
-    Can you help me find the latest quarterly report and share key insights with the team?
-    """
-    
+    USER_PROMPT = "Can you help me find the latest quarterly report and share key insights with the team?"
     messages = [TOOL_CALLING_SYSTEM_PROMPT.format(tools=str(TOOLS_SCHEMA)), USER_PROMPT]
     
     response = client.models.generate_content(
@@ -370,20 +304,20 @@ Let's implement a simple example where we mock searching for a document on Googl
         contents=messages,
     )
     ```
-    The LLM correctly identifies the `search_google_drive` tool and generates the required arguments:
+    The LLM correctly identifies the `search_google_drive` tool and generates the required arguments.
+    It outputs:
     ```text
-    <tool_call>
+    ```tool_call
     {"name": "search_google_drive", "args": {"query": "latest quarterly report"}}
-    </tool_call>
+    ```
     ```
 
-8.  With a more complex prompt, the model still correctly identifies the first step.
+8. With a more complex prompt, the LLM still correctly identifies the first step.
     ```python
     USER_PROMPT = """
     Please find the Q3 earnings report on Google Drive and send a summary of it to 
     the #finance channel on Discord.
     """
-    
     messages = [TOOL_CALLING_SYSTEM_PROMPT.format(tools=str(TOOLS_SCHEMA)), USER_PROMPT]
     
     response = client.models.generate_content(
@@ -393,40 +327,47 @@ Let's implement a simple example where we mock searching for a document on Googl
     ```
     It outputs:
     ```text
-    <tool_call>
+    ```tool_call
     {"name": "search_google_drive", "args": {"query": "Q3 earnings report"}}
-    </tool_call>
+    ```
     ```
 
-9.  Now, we need to parse the LLM's response and execute the tool. First, we extract the JSON string from the response.
+9. Now, we need to parse this response and execute the function. First, we extract the JSON string from the Markdown block.
     ```python
     def extract_tool_call(response_text: str) -> str:
-        """
-        Extracts the tool call from the response text.
-        """
-        return response_text.split("<tool_call>")[1].split("</tool_call>")[0].strip()
+        """Extracts the tool call from the response text."""
+        return response_text.split("```tool_call")[1].split("```")[0].strip()
     
     tool_call_str = extract_tool_call(response.text)
     ```
-    This gives us a clean JSON string: `{"name": "search_google_drive", "args": {"query": "Q3 earnings report"}}`.
+    It outputs:
+    ```text
+    '{"name": "search_google_drive", "args": {"query": "Q3 earnings report"}}'
+    ```
 
-10. Next, we parse the string into a Python dictionary.
+10. We parse the string into a Python dictionary.
     ```python
     tool_call = json.loads(tool_call_str)
     ```
-    This results in: `{'name': 'search_google_drive', 'args': {'query': 'Q3 earnings report'}}`.
+    It outputs:
+    ```text
+    {'name': 'search_google_drive', 'args': {'query': 'Q3 earnings report'}}
+    ```
 
-11. We retrieve the corresponding Python function from our `TOOLS_BY_NAME` registry.
+11. Next, we retrieve the corresponding Python function from our `TOOLS_BY_NAME` registry.
     ```python
     tool_handler = TOOLS_BY_NAME[tool_call["name"]]
     ```
-    The `tool_handler` is now a reference to our `search_google_drive` function.
+    It outputs:
+    ```text
+    <function search_google_drive at 0x...>
+    ```
 
-12. Finally, we execute the function using the arguments generated by the LLM.
+12. Finally, we execute the function with the arguments provided by the LLM.
     ```python
     tool_result = tool_handler(**tool_call["args"])
     ```
-    The tool returns the mocked document content:
+    It outputs:
     ```json
     {
       "files": [
@@ -439,55 +380,68 @@ Let's implement a simple example where we mock searching for a document on Googl
     }
     ```
 
-13. We can wrap these steps into a single `call_tool` function for convenience.
+13. We can wrap these steps in a single helper function for convenience. This function encapsulates the logic of parsing the LLM's response and dispatching the call to the correct tool handler.
     ```python
     def call_tool(response_text: str, tools_by_name: dict) -> Any:
-        """
-        Call a tool based on the response from the LLM.
-        """
-    
+        """Call a tool based on the response from the LLM."""
         tool_call_str = extract_tool_call(response_text)
         tool_call = json.loads(tool_call_str)
         tool_name = tool_call["name"]
         tool_args = tool_call["args"]
         tool = tools_by_name[tool_name]
-    
         return tool(**tool_args)
     ```
-    Using this function gives us the same result as before.
 
-14. The final step in the cycle is to send the tool's output back to the LLM. This allows the model to interpret the results and either formulate a final response to the user or decide on the next action to take.
+14. Using our new function gives the same result, simplifying the execution flow.
+    ```python
+    call_tool(response.text, tools_by_name=TOOLS_BY_NAME)
+    ```
+    It outputs:
+    ```json
+    {
+      "files": [
+        {
+          "name": "Q3_Earnings_Report_2024.pdf",
+          "id": "file12345",
+          "content": "\n# Q3 2023 Financial Performance Analysis\n\nThe Q3 earnings report shows a 20% increase in revenue and a 15% growth in user engagement, \nbeating market expectations..."
+        }
+      ]
+    }
+    ```
+
+15. The final step in the loop is to send the tool's result back to the LLM. This allows the model to interpret the information and either generate a final response for the user or decide on the next action to take.
     ```python
     response = client.models.generate_content(
         model=MODEL_ID,
         contents=f"Interpret the tool result: {json.dumps(tool_result, indent=2)}",
     )
     ```
-    The LLM provides a user-friendly summary of the tool's output:
+    It outputs:
     ```text
     The tool result provides the content of a file named `Q3_Earnings_Report_2024.pdf`.
     
     This document is a **Q3 2023 Financial Performance Analysis** and details exceptionally strong results, significantly beating market expectations.
     
     **Key highlights from the report include:**
-    
     *   **Revenue Growth:** A 20% increase in revenue.
-    *   **User Engagement:** 15% growth in user engagement.
-    ...
+    *   **User Engagement:** 15% growth in user engagement...
     ```
-This covers the fundamental concepts of tool calling. We have successfully implemented the entire flow from scratch.
+This covers the basic concept of tool calling. We have successfully implemented the entire flow from scratch.
 
-## Implementing a Tool Calling Framework From Scratch
+## Implementing a tool calling framework from scratch
 
-Manually defining a JSON schema for every function is tedious and error-prone. It violates the Don't Repeat Yourself (DRY) principle of software engineering. Production frameworks and protocols solve this by using a `@tool` decorator that automatically generates the schema from a function's signature and docstring [[28]](https://pydantic.dev/docs/ai/tools-toolsets/tools/), [[29]](https://docs.langchain.com/oss/python/langchain/tools). This approach centralizes schema generation, making the code more modular, maintainable, and scalable.
+Manually defining a JSON schema for every function is tedious and error-prone. Production frameworks like LangGraph automate this by using a `@tool` decorator [[27]](https://strandsagents.com/docs/user-guide/concepts/tools/custom-tools/). This decorator inspects a function's signature, type hints, and docstring to generate the schema automatically.
 
-Let's build our own simple framework by creating a `@tool` decorator. This will give us a single, standardized place to compute tool schemas, abstracting away the boilerplate and allowing us to focus on the function's logic.
+This approach follows the Don't Repeat Yourself (DRY) principle by creating a single source of truth for the tool's definition and its implementation [[28]](https://pydantic.dev/docs/ai/tools-toolsets/tools/).
 
-1.  First, we define a `ToolFunction` class to wrap our decorated functions. This class will hold both the callable function and its generated schema, acting as a container that makes our tools self-describing.
+In Python, a decorator is a function that takes another function as an argument and extends its behavior without explicitly modifying it. It is a powerful feature for adding functionality like logging, timing, or, in our case, schema generation. The `@` syntax is just a more readable way of applying a decorator. For example, writing `@tool` above a function is equivalent to `my_function = tool(my_function)`. This allows us to wrap our functions cleanly and build a reusable framework.
+
+Let's build a simple version of this framework.
+
+1. We start by defining a `ToolFunction` class to wrap our function and its generated schema. This class will hold both the executable function and its machine-readable description.
     ```python
     from inspect import Parameter, signature
     from typing import Any, Callable, Dict, Optional
-    
     
     class ToolFunction:
         def __init__(self, func: Callable, schema: Dict[str, Any]) -> None:
@@ -500,44 +454,27 @@ Let's build our own simple framework by creating a `@tool` decorator. This will 
             return self.func(*args, **kwargs)
     ```
 
-2.  Next, we implement the `tool` decorator. It uses Python's `inspect` module to examine the function's signature at runtime. It extracts the function name, docstring (for the description), and parameter names. For each parameter, it determines if it is required (i.e., has no default value) and constructs a basic schema. This process transforms a standard Python function into a `ToolFunction` object with an attached schema.
+2. Next, we implement the `@tool` decorator. It inspects the decorated function's signature and docstring to build the JSON schema. This process involves extracting parameter names, determining if they are required, and using the function's docstring as the tool's description.
     ```python
     def tool(description: Optional[str] = None) -> Callable[[Callable], ToolFunction]:
-        """
-        A decorator that creates a tool schema from a function.
-    
-        Args:
-            description: Optional override for the function's docstring
-    
-        Returns:
-            A decorator function that wraps the original function and adds a schema
-        """
-    
+        """A decorator that creates a tool schema from a function."""
         def decorator(func: Callable) -> ToolFunction:
-            # Get function signature
             sig = signature(func)
-    
-            # Create parameters schema
             properties = {}
             required = []
     
             for param_name, param in sig.parameters.items():
-                # Skip self for methods
                 if param_name == "self":
                     continue
-    
+                
                 param_schema = {
-                    "type": "string",  # Default to string, can be enhanced with type hints
-                    "description": f"The {param_name} parameter",  # Default description
+                    "type": "string",  # Simplified for example
+                    "description": f"The {param_name} parameter",
                 }
-    
-                # Add to required if parameter has no default value
                 if param.default == Parameter.empty:
                     required.append(param_name)
-    
                 properties[param_name] = param_schema
     
-            # Create the tool schema
             schema = {
                 "name": func.__name__,
                 "description": description or func.__doc__ or f"Executes the {func.__name__} function.",
@@ -547,50 +484,41 @@ Let's build our own simple framework by creating a `@tool` decorator. This will 
                     "required": required,
                 },
             }
-    
             return ToolFunction(func, schema)
-    
         return decorator
     ```
 
-3.  Now, we can redefine our tools using the new decorator. The code is much cleaner as the schemas are generated automatically, and the function definition itself becomes the single source of truth.
+3. We can now redefine our tools using this decorator. The code is much cleaner as the schemas are generated automatically.
     ```python
     @tool()
     def search_google_drive_example(query: str) -> dict:
         """Search for files in Google Drive."""
         return {"files": ["Q3 earnings report"]}
     
-    
     @tool()
     def send_discord_message_example(channel_id: str, message: str) -> dict:
         """Send a message to a Discord channel."""
         return {"message": "Message sent successfully"}
-    
     
     @tool()
     def summarize_financial_report_example(text: str) -> str:
         """Summarize the contents of a financial report."""
         return "Financial report summarized successfully"
     
-    
     tools = [
         search_google_drive_example,
         send_discord_message_example,
         summarize_financial_report_example,
     ]
-    tools_by_name = {tool.schema["name"]: tool.func for tool in tools}
-    tools_schema = [tool.schema for tool in tools]
     ```
 
-4.  The decorated function is now a `ToolFunction` object. It contains the auto-generated schema, which is identical to the one we defined manually.
-    ```python
-    type(search_google_drive_example)
-    ```
+4. The decorated function is now a `ToolFunction` object.
     It outputs:
     ```text
     __main__.ToolFunction
     ```
-    The schema is accessible via `.schema`:
+    This object contains both the generated schema and the original function handler. The schema is identical to the one we created manually.
+    It outputs:
     ```json
     {
       "name": "search_google_drive_example",
@@ -609,15 +537,21 @@ Let's build our own simple framework by creating a `@tool` decorator. This will 
       }
     }
     ```
-    And the original function is accessible via `.func`.
+    We can access the original function via the `.func` attribute.
+    It outputs:
+    ```text
+    <function __main__.search_google_drive_example at 0x...>
+    ```
 
-5.  Let's test it with the LLM. We use the same multi-step prompt as before.
+5. We prepare the registries and call the LLM as before.
     ```python
+    tools_by_name = {tool.schema["name"]: tool.func for tool in tools}
+    tools_schema = [tool.schema for tool in tools]
+    
     USER_PROMPT = """
     Please find the Q3 earnings report on Google Drive and send a summary of it to 
     the #finance channel on Discord.
     """
-    
     messages = [TOOL_CALLING_SYSTEM_PROMPT.format(tools=str(tools_schema)), USER_PROMPT]
     
     response = client.models.generate_content(
@@ -625,14 +559,14 @@ Let's build our own simple framework by creating a `@tool` decorator. This will 
         contents=messages,
     )
     ```
-    The model responds with the correct tool call:
+    It outputs:
     ```text
-    <tool_call>
+    ```tool_call
     {"name": "search_google_drive_example", "args": {"query": "Q3 earnings report"}}
-    </tool_call>
+    ```
     ```
 
-6.  We execute the tool using our `call_tool` function.
+6. The execution step works exactly the same.
     ```python
     call_tool(response.text, tools_by_name=tools_by_name)
     ```
@@ -644,15 +578,15 @@ Let's build our own simple framework by creating a `@tool` decorator. This will 
       ]
     }
     ```
-Voilà! We have built a small, functional tool-calling framework. This implementation mirrors the underlying mechanics of popular frameworks, giving you a solid understanding of how they operate.
+We have built a small, reusable tool-calling framework similar to what modern agentic libraries provide under the hood.
 
-## Implementing Production-Level Tool Calls with Gemini
+## Implementing production-level tool calls with Gemini
 
-While building from scratch is a great learning exercise, in production, it is better to use the native tool-calling capabilities of APIs like Gemini or OpenAI. This approach is more robust, requires less code, and benefits from vendor-specific optimizations for their models [[54]](https://www.decodingai.com/p/tool-calling-from-scratch-to-production). The provider handles the complex system prompting needed to guide the model, which can be a significant burden to maintain, especially when working with open-source models or when model versions change.
+While building from scratch provides a great understanding, in production, we leverage the native tool-calling interfaces of APIs like Gemini or OpenAI. This is simpler, more robust, and more efficient, as the provider optimizes the process for their specific models [[3]](https://ai.google.dev/gemini-api/docs/function-calling). Providers fine-tune their models to respond to a specific tool-calling format, and by using their native SDK, you ensure you are using the most up-to-date and optimized method. This also makes your code more maintainable, as the SDK is updated by the provider whenever the underlying models or API specifications change.
 
-Let's refactor our example to use Gemini's native API.
+Let's see how to achieve the same result using Gemini's native capabilities.
 
-1.  Instead of a lengthy system prompt, we define a `GenerateContentConfig` object and pass our tool schemas to it. We set the `mode` to `"ANY"` to force the model to call a function, which is useful when you know an action is required.
+1. Instead of a large system prompt, we define a `GenerateContentConfig` object and pass our tool schemas to it. We can also set the `mode` to `"ANY"` to force the model to call a function.
     ```python
     tools = [
         types.Tool(
@@ -668,8 +602,12 @@ Let's refactor our example to use Gemini's native API.
     )
     ```
 
-2.  We can now call the model with just the user prompt, as the tool instructions are handled by the configuration. This is more reliable because the provider optimizes tool usage for each specific model.
+2. We can now call the model with just the user prompt. The Gemini API handles the complex instructions internally.
     ```python
+    USER_PROMPT = """
+    Please find the Q3 earnings report on Google Drive and send a summary of it to 
+    the #finance channel on Discord.
+    """
     response = client.models.generate_content(
         model=MODEL_ID,
         contents=USER_PROMPT,
@@ -677,79 +615,100 @@ Let's refactor our example to use Gemini's native API.
     )
     ```
 
-3.  The response contains a `function_call` object that is easy to parse and use.
-    ```python
-    response_message_part = response.candidates[0].content.parts[0]
-    function_call = response_message_part.function_call
-    ```
-    The `function_call` object looks like this: `FunctionCall(id=None, args={'query': 'Q3 earnings report'}, name='search_google_drive')`.
-
-4.  To simplify even further, the `google-genai` SDK can automatically generate the schema from a Python function's signature, type hints, and docstring, just like our custom decorator. We can pass our functions directly to the `GenerateContentConfig` object.
+3. To simplify even further, the `google-genai` SDK can automatically generate schemas from Python function signatures, just like our decorator [[2]](https://www.philschmid.de/gemini-function-calling). We can pass our functions directly to the `GenerateContentConfig` object.
     ```python
     config = types.GenerateContentConfig(
         tools=[search_google_drive, send_discord_message],
         tool_config=types.ToolConfig(function_calling_config=types.FunctionCallingConfig(mode="ANY")),
     )
+    
+    response = client.models.generate_content(
+        model=MODEL_ID,
+        contents=USER_PROMPT,
+        config=config,
+    )
     ```
 
-5.  We can then define a simplified `call_tool` function to execute the call.
+4. The response contains a `function_call` object, which is a structured object, not a JSON string.
     ```python
-    def call_tool(function_call) -> Any:
+    response_message_part = response.candidates[0].content.parts[0]
+    function_call = response_message_part.function_call
+    ```
+    It outputs:
+    ```text
+    FunctionCall(id=None, args={'query': 'Q3 earnings report'}, name='search_google_drive')
+    ```
+    The arguments are already parsed into a dictionary.
+    It outputs:
+    ```text
+    {'query': 'Q3 earnings report'}
+    ```
+
+5. We can create a simplified `call_tool` function to execute the call.
+    ```python
+    def call_tool(function_call) -> any:
         tool_name = function_call.name
         tool_args = {key: value for key, value in function_call.args.items()}
         tool_handler = TOOLS_BY_NAME[tool_name]
         return tool_handler(**tool_args)
-    
+
     tool_result = call_tool(function_call)
     ```
-    The output is the same as our manual implementation. By leveraging the native SDK, we reduced dozens of lines of code to just a few, creating a more robust and maintainable system. Other popular APIs from OpenAI and Anthropic follow a similar logic, making these concepts easily transferable [[55]](https://apxml.com/courses/prompt-engineering-llm-application-development/chapter-4-interacting-with-llm-apis/overview-common-llm-apis), [[56]](https://www.getorchestra.io/guides/llm-providers-gen-ai-platforms-compared).
+    The output is the same as our manual implementation. By leveraging the native SDK, we reduced dozens of lines of code to just a few, creating a more robust and maintainable system. Other popular APIs from OpenAI and Anthropic follow a similar logic, making these concepts easily transferable [[56]](https://www.getorchestra.io/guides/llm-providers-gen-ai-platforms-compared), [[58]](https://futuresearch.ai/blog/llm-provider-quirks/).
 
-## Using Pydantic Models as Tools for On-Demand Structured Outputs
+## Using Pydantic models as tools for on-demand structured outputs
 
-Connecting this lesson with what we learned in Lesson 4, we can use a Pydantic model as a tool to generate structured outputs dynamically. This is a powerful pattern in agentic systems where you might perform several intermediate steps that produce unstructured text (which is easy for an LLM to interpret) and then, at the final step, call a "tool" that forces the output into a structured Pydantic model. This ensures the final output is clean, validated, and ready for downstream processing in your application [[5]](https://pydantic.dev/docs/ai/core-concepts/output/), [[6]](https://pydantic.dev/docs/ai/guides/multi-agent-applications/).
+In Lesson 4, we learned how to use Pydantic for structured outputs. We can combine that pattern with tool calling to create a mechanism for on-demand data extraction within an agentic workflow. This pattern is particularly useful when an agent needs to perform several intermediate steps before producing a final, structured result. The agent can use other tools for its internal steps and then "call" the Pydantic model as its final action to ensure the output is in a clean, validated format for downstream processing [[6]](https://pydantic.dev/docs/ai/core-concepts/output/).
 
-This approach allows an agent to decide on-demand when to switch from free-form reasoning to structured data extraction. For example, an agent might first use a search tool to gather information, then a summarization tool to process it, and finally an "extraction" tool (our Pydantic model) to format the findings into a consistent structure.
+This is a reliable and effective pattern because it separates the agent's reasoning process from the final data formatting. The agent can use tools that return unstructured text, which is easier for an LLM to interpret during intermediate steps. When the reasoning is complete, it calls the Pydantic tool to package the final answer into a predictable structure that your application code can easily consume.
+
+Image 3 illustrates this flow, where an agent performs several intermediate tool calls before finally invoking a Pydantic-based tool to generate the structured output.
 
 ```mermaid
 flowchart LR
-  %% AI Agent
-  AI["AI Agent<br/>(Orchestrator)"]
+  %% Nodes
+  A["AI Agent"]
+  SO["Structured Output<br/>(e.g., DocumentMetadata)"]
 
-  %% Tools
-  subgraph "Available Tools"
-    IT1["Intermediate Tool 1<br/>(Unstructured Data Processing)"]
-    IT2["Intermediate Tool 2<br/>(Unstructured Data Processing)"]
-    SOT["Structured Output Tool<br/>(Pydantic Model: DocumentMetadata)"]
+  subgraph "Intermediate Tool Calls Loop"
+    direction LR
+    IT1["Tool 1: Data Retrieval"]
+    IT2["Tool 2: Data Processing"]
   end
 
+  FST["Tool N: Structured Output<br/>(Pydantic Model)"]
+
   %% Flow
-  AI -- "calls tool (loop)" --> IT1
-  IT1 -- "unstructured result" --> AI
-  AI -- "calls tool (loop)" --> IT2
-  IT2 -- "unstructured result" --> AI
-  AI -- "final call for structured output" --> SOT
-  SOT -- "structured data" --> FO["Final Output<br/>(Structured Data)"]
+  A -- "initiates process" --> IT1
+  IT1 -- "unstructured/intermediate results" --> A
 
-  %% Visual differentiation
-  classDef agentNode stroke-width:2px
-  classDef intermediateToolNode stroke-dasharray:3,3
-  classDef structuredToolNode stroke-width:2px
-  classDef outputNode stroke-width:2px
+  A -- "calls another intermediate tool" --> IT2
+  IT2 -- "unstructured/intermediate results" --> A
 
-  class AI agentNode
-  class IT1,IT2 intermediateToolNode
-  class SOT structuredToolNode
-  class FO outputNode
+  %% Loop back to the start of intermediate calls
+  A -- "continues loop<br/>(calls more intermediate tools)" --> IT1
+
+  %% Final step in the loop
+  A -- "final step: calls for<br/>structured output" --> FST
+  FST -- "generates structured data" --> SO
+  SO -- "received by" --> A
+
+  %% Visual grouping
+  classDef agent stroke-width:2px
+  classDef intermediateTool stroke-dasharray:3,3
+  classDef finalTool stroke-width:2px,stroke-dasharray:5,5
+  class A agent
+  class IT1,IT2 intermediateTool
+  class FST finalTool
 ```
-Image 3: A diagram illustrating an AI agent calling multiple tools in a loop, where only the final tool call is for structured outputs using a Pydantic model.
+Image 3: A flowchart illustrating an AI agent calling multiple tools in a loop, with the final step involving a tool call for structured outputs using a Pydantic model.
 
 Let's see how to implement this.
 
-1.  First, we define our `DocumentMetadata` Pydantic model, just as we did in Lesson 4.
+1. We define our `DocumentMetadata` Pydantic model, just as we did in Lesson 4.
     ```python
     class DocumentMetadata(BaseModel):
         """A class to hold structured metadata for a document."""
-    
         summary: str = Field(description="A concise, 1-2 sentence summary of the document.")
         tags: list[str] = Field(description="A list of 3-5 high-level tags relevant to the document.")
         keywords: list[str] = Field(description="A list of specific keywords or concepts mentioned.")
@@ -757,7 +716,7 @@ Let's see how to implement this.
         growth_rate: str = Field(description="The growth rate of the company described in the document (e.g., 10%).")
     ```
 
-2.  We then create a tool declaration where the parameters are defined by the Pydantic model's JSON schema. This effectively turns our Pydantic model into a callable tool named `extract_metadata`.
+2. We create a tool declaration for a function named `extract_metadata`. The key step here is using `DocumentMetadata.model_json_schema()` as the `parameters` for this function. This tells the LLM that the arguments for this "function" must conform to our Pydantic model's schema.
     ```python
     extraction_tool = types.Tool(
         function_declarations=[
@@ -774,69 +733,73 @@ Let's see how to implement this.
     )
     ```
 
-3.  We prompt the model to analyze the document and extract the metadata.
+3. We prompt the model to analyze the document and extract the metadata.
     ```python
     prompt = f"""
     Please analyze the following document and extract its metadata.
-    
     Document:
     --- 
     {DOCUMENT}
     --- 
     """
-    
     response = client.models.generate_content(model=MODEL_ID, contents=prompt, config=config)
     ```
 
-4.  The model responds with a `function_call` to our `extract_metadata` tool, with the arguments populated according to the document's content.
+4. The model responds with a call to our `extract_metadata` function, and its arguments are a JSON object matching the `DocumentMetadata` schema.
+    ```python
+    function_call = response.candidates[0].content.parts[0].function_call
+    ```
+    It outputs:
     ```text
-    Function Name: `extract_metadata
+    Function Name: `extract_metadata`
     Function Arguments: `{
         "growth_rate": "20%",
-        "summary": "The Q3 2023 earnings report shows a 20% increase in revenue and 15% growth in user engagement, driven by successful product strategy and market expansion. This performance provides a strong foundation for continued growth.",
+        "summary": "The Q3 2023 earnings report shows a 20% increase in revenue and 15% growth in user engagement...",
         "quarter": "Q3 2023",
-        "keywords": [
-          "Revenue",
-          "User Engagement",
-          ...
-        ],
-        "tags": [
-          "Financials",
-          "Earnings",
-          ...
-        ]
+        "keywords": ["Revenue", "User Engagement", ...],
+        "tags": ["Financials", "Earnings", ...]
     }`
     ```
 
-5.  Finally, we validate the arguments by instantiating our `DocumentMetadata` model. If the data conforms to the schema, we get a clean, type-safe Python object.
+5. We can now validate these arguments and parse them directly into our Pydantic model.
     ```python
-    function_call = response.candidates[0].content.parts[0].function_call
     try:
         document_metadata = DocumentMetadata(**function_call.args)
         print("Validation successful!")
     except Exception as e:
         print(f"Validation failed: {e}")
     ```
-    This pattern is frequently used in AI agents that require reliable, structured data as their final output.
+    It outputs:
+    ```text
+    Validation successful!
+    ```
+This pattern provides a reliable way to get structured data exactly when you need it in a multi-step agentic process.
 
-## The Downsides of Running Tools in a Loop
+## The downsides of running tools in a loop
 
-So far, we have focused on single-turn interactions. The next logical step is to build agents that can perform multi-step tasks by running tools in a loop. This allows the LLM to chain multiple actions, using the output of one tool to inform the input of the next. This is the final piece of the puzzle needed to build a true AI agent.
+So far, we have focused on single-turn interactions. However, many tasks require a sequence of actions. This brings us to running tools in a loop, allowing an agent to chain multiple tool calls and decide the next step based on the output of the previous one. This capability is a key step toward building a functional AI agent.
+
+The loop, shown in Image 4, is simple: the agent calls a tool, gets a result, and decides whether to call another tool or generate a final answer. This gives the agent flexibility and adaptability to handle complex, multi-step tasks.
 
 ```mermaid
 flowchart LR
-    A["User Prompt"] -- "initiates" --> B["Tool Call 1"]
-    B -- "produces" --> C["Tool Result 1"]
-    C -- "informs next" --> D["Tool Call 2"]
-    D -- "produces" --> E["Tool Result 2"]
-    E -- "feeds into" --> F["... (further iterations)"]
-    F -- "culminates in" --> G["Final Response"]
+  A["User Prompt"]
+  B["Tool Call"]
+  C["Tool Result"]
+  D{"Stopping Condition Met?"}
+  E["Final Response"]
+
+  A --> B
+  B --> C
+  C --> D
+  D -- "No" --> B
+  D -- "Yes" --> E
 ```
-Image 4: A flowchart illustrating a sequential tool calling loop with multiple iterations.
+Image 4: A flowchart illustrating a sequential tool calling loop, showing the iterative interaction between an agent and tools until a final response is generated.
 
-This approach offers flexibility and adaptability, enabling agents to handle complex workflows. Let's implement a loop for our Google Drive and Discord example.
+Let's implement this loop for our Google Drive and Discord example.
 
-1.  We configure the model with all three of our tools.
+1. We configure our model with all three tools.
     ```python
     tools = [
         types.Tool(
@@ -853,7 +816,7 @@ This approach offers flexibility and adaptability, enabling agents to handle com
     )
     ```
 
-2.  The user asks the agent to find a report, summarize it, and send the summary to Discord.
+2. We start with the user's multi-step request and an empty message history.
     ```python
     USER_PROMPT = """
     Please find the Q3 earnings report on Google Drive and send a summary of it to 
@@ -862,7 +825,7 @@ This approach offers flexibility and adaptability, enabling agents to handle com
     messages = [USER_PROMPT]
     ```
 
-3.  We initiate the first call to the LLM.
+3. We make the first call to the LLM.
     ```python
     response = client.models.generate_content(
         model=MODEL_ID,
@@ -872,9 +835,14 @@ This approach offers flexibility and adaptability, enabling agents to handle com
     response_message_part = response.candidates[0].content.parts[0]
     messages.append(response.candidates[0].content)
     ```
-    The model correctly identifies the first step: `search_google_drive`.
+    The model correctly identifies the first step: searching Google Drive.
+    It outputs:
+    ```text
+    Function Name: `search_google_drive`
+    Function Arguments: `{"query": "Q3 earnings report"}`
+    ```
 
-4.  We then enter a loop that continues as long as the model requests tool calls. In each iteration, we execute the requested tool, append the result to our message history, and call the model again to determine the next step.
+4. Now we enter a loop that continues as long as the model requests tool calls. Inside the loop, we execute the tool, append the result to our message history, and call the model again.
     ```python
     max_iterations = 3
     while hasattr(response_message_part, "function_call") and max_iterations > 0:
@@ -896,111 +864,90 @@ This approach offers flexibility and adaptability, enabling agents to handle com
         messages.append(response.candidates[0].content)
         max_iterations -= 1
     ```
-    The agent successfully executes the three-step plan:
-    *   **Call 1:** `search_google_drive`
-    *   **Call 2:** `summarize_financial_report`
-    *   **Call 3:** `send_discord_message`
+    The loop executes as follows:
+    - **Iteration 1:** Calls `search_google_drive`, gets the document. The next LLM call requests `summarize_financial_report`.
+    - **Iteration 2:** Calls `summarize_financial_report`, gets the summary. The next LLM call requests `send_discord_message`.
+    - **Iteration 3:** Calls `send_discord_message`. The next LLM call does not request a tool, so the loop terminates.
 
-However, this simple sequential loop has significant limitations [[9]](https://myengineeringpath.dev/genai-engineer/agentic-patterns/), [[10]](https://blogs.oracle.com/developers/what-is-the-ai-agent-loop-the-core-architecture-behind-autonomous-ai-systems). It does not allow the LLM to interpret the output of each tool before deciding on the next action. The agent immediately moves to the next function call without pausing to think about what it has learned or whether it should adjust its strategy. This lack of a feedback loop means it cannot recover from a failed tool call, adapt its plan based on an unexpected result, or handle tasks with complex dependencies. This can lead to inefficient tool usage or getting stuck in loops.
+However, this simple sequential loop has significant limitations [[9]](https://myengineeringpath.dev/genai-engineer/agentic-patterns/). This process mirrors the perception-action cycles found in robotics, where an agent observes the environment, acts, and then observes the result before deciding its next move [[39]](https://arxiv.org/pdf/2603.26730). But in our simple loop, the agent doesn't get a chance to "reason" about the observation. It does not allow the LLM to pause and interpret the output of each tool before deciding on the next action. The agent immediately moves to the next function call without "thinking" about what it has learned or whether its initial plan is still valid. This can lead to inefficient tool use or getting stuck in loops if a tool fails or returns unexpected results [[10]](https://blogs.oracle.com/developers/what-is-the-ai-agent-loop-the-core-architecture-behind-autonomous-ai-systems).
 
-For tasks where tools are independent, we can run them in parallel to reduce latency. For example, an agent could fetch financial news from Salesforce and stock prices from Snowflake simultaneously. By executing these calls concurrently, the total wait time is reduced from the sum of all tool execution times to the time of the single slowest tool [[42]](https://airbyte.com/agentic-data/parallel-tool-calls-llm). But for dependent tasks, this sequential approach lacks a crucial element: reasoning.
+One of the most common failure modes in multi-turn conversations is context saturation. As the dialogue history and tool outputs accumulate, they can quickly exhaust even large context windows (e.g., 128K+ tokens), degrading the model's ability to follow instructions. This has led to memory management strategies like caching tool outputs or intelligently pruning the history to preserve context space for the most relevant information [[63]](https://www.emergentmind.com/topics/multi-turn-tool-calling-llms).
 
-These limitations motivated the development of more sophisticated patterns like **ReAct (Reasoning and Acting)**, which explicitly interleaves reasoning steps with tool calls. We will explore the theory behind ReAct in Lesson 7 and implement it in Lesson 8.
+For tasks where tools are independent, such as fetching data from multiple sources like Salesforce and Snowflake, we can run them in parallel to reduce latency [[42]](https://airbyte.com/agentic-data/parallel-tool-calls-llm). Instead of the total latency being the sum of all tool execution times, it becomes the time of the slowest tool. Modern LLM APIs support requesting multiple tool calls in a single turn, which our application can then execute concurrently [[41]](https://www.codeant.ai/blogs/parallel-tool-calling). However, for dependent tasks like ours, a sequential approach is necessary.
 
-## Popular Tools Used Within the Industry
+These limitations motivated the development of more sophisticated agentic patterns like **ReAct** (Reason + Act). ReAct explicitly interleaves reasoning steps with tool calls, allowing the agent to think through problems more deliberately. We will explore this powerful pattern in detail in Lessons 7 and 8.
 
-To ground this lesson in real-world applications, let's review some of the most common categories of tools used by AI agents today.
+## Popular tools used within the industry
 
-### Knowledge & Memory Access
+To ground this lesson in the real world, let's look at some of the most common categories of tools that AI engineers build and deploy today.
 
-These tools connect the agent to external knowledge sources, overcoming the limitations of its training data. This is a core component of most agentic systems.
+1.  **Knowledge & Memory Access:** These tools connect the agent to external knowledge sources, overcoming the limitations of its training data. This includes querying vector databases for RAG, document stores, or even traditional SQL/NoSQL databases like PostgreSQL and MongoDB through "text-to-SQL" tools that translate natural language into database queries [[13]](https://promethium.ai/guides/text-to-sql-basics-benefits/). These patterns are fundamental to building knowledge-intensive agents, and we will cover them in depth in Lesson 9 (Memory) and Lesson 10 (RAG) [[12]](https://www.ruh.ai/blogs/how-vector-databases-are-rewiring-the-tech-industry). This goes beyond simple retrieval. Some agents use function calls to actively manage memory tiers, moving information between short-term and long-term storage instead of just relying on a large context window [[45]](https://atlan.com/know/agent-memory-architectures/). Others expose memory directly through tools like `remember` and `recall`, giving the agent explicit control over its knowledge base [[47]](https://blog.cloudflare.com/introducing-agent-memory/).
 
-*   **Vector Databases:** Tools that query vector databases like Pinecone, Weaviate, or Qdrant to retrieve relevant documents or context for the LLM. This is a key part of RAG systems.
-*   **Text-to-SQL:** These tools translate natural language into SQL queries, allowing agents to interact with traditional relational databases like PostgreSQL or MySQL. This pattern has become so popular it's a field of its own, democratizing data access for non-technical users [[13]](https://promethium.ai/guides/text-to-sql-basics-benefits/).
-*   **Long-Term Memory:** These tools connect to various data stores (vector, graph, or relational) that act as the agent's long-term memory, allowing it to recall facts and user preferences across sessions. Advanced agents use structured memory architectures with different tiers (e.g., in-context, short-term, long-term) to avoid context window saturation, actively managing what to remember [[12]](https://www.ruh.ai/blogs/how-vector-databases-are-rewiring-the-tech-industry), [[45]](https://atlan.com/know/agent-memory-architectures/), [[46]](https://www.emergentmind.com/topics/multi-turn-tool-calling-llms). Some systems even expose memory management directly through tools like `remember` and `recall` [[47]](https://blog.cloudflare.com/introducing-agent-memory/).
+2.  **Web Search & Browsing:** These are some of the most common tools, enabling agents to access up-to-date information from the internet. This category includes tools that interface with search engine APIs (like the Google Search API or Bing Search API) and web scraping tools that can fetch and parse content directly from web pages [[17]](https://mantraideas.com/llm-web-search/). You see these in action in almost every modern chatbot and research agent.
 
-We will dive deeper into memory and Retrieval-Augmented Generation (RAG) in Lessons 9 and 10.
+3.  **Code Execution:** A powerful class of tools gives agents the ability to write and execute code, typically in a sandboxed environment. A Python interpreter, for example, allows an agent to perform precise calculations, manipulate data with libraries like Pandas, or even create visualizations with Matplotlib [[18]](https://medium.com/@anicomanesh/how-llm-reasoning-powers-the-agentic-ai-revolution-cbefd10ebf3f). While Python is the most common, this pattern can be adapted for other languages like JavaScript.
 
-### Web Search & Browsing
-
-These tools give agents access to the live internet, enabling them to retrieve up-to-the-minute information and overcome the "stale knowledge" problem of static training data.
-
-*   **Search APIs:** Integrations with search engines like Google, Bing, or Brave allow agents to perform web searches and get ranked results [[17]](https://mantraideas.com/llm-web-search/).
-*   **Web Scraping:** Tools that can fetch and parse the content of web pages, extracting specific information requested by the user or needed for a task.
-
-### Code Execution
-
-Code interpreters are powerful tools that allow agents to perform complex calculations, data analysis, and visualization with high precision.
-
-*   **Python Interpreter:** A sandboxed environment where the agent can write and execute Python code. This is invaluable for "executable reasoning," where the model "thinks" by running code rather than just matching patterns, enabling it to solve mathematical problems, run simulations, or validate logic empirically [[18]](https://medium.com/@anicomanesh/how-llm-reasoning-powers-the-agentic-ai-revolution-cbefd10ebf3f).
-*   **Other Languages:** While Python is the most common, interpreters for other languages like JavaScript are also used.
-
-### Other Popular Tools
-
-*   **External APIs:** Tools that interact with third-party APIs for calendars, email, project management systems, and more. These are essential for building enterprise AI applications that integrate with existing workflows [[20]](https://medium.com/@yugalnandurkar5/llm-engineering-part-i-fa48d4307d26).
-*   **File System Operations:** Tools that allow agents to read, write, and list files on a local or remote file system, common in productivity-focused AI apps.
+4.  **Other Popular Tools:** The possibilities are nearly endless. Enterprise AI applications frequently use tools to interact with external APIs for calendars (Google Calendar API), email, and project management systems (Slack API). Productivity apps might use tools for file system operations like reading and writing files. Essentially, any action that can be scripted can be turned into a tool for an AI agent [[20]](https://medium.com/@yugalnandurkar5/llm-engineering-part-i-fa48d4307d26).
 
 ## Conclusion
 
-Tool calling is a foundational skill in AI engineering. It is the mechanism that elevates an LLM from a text-in, text-out system to an active agent capable of interacting with the world. Understanding how to define, implement, and orchestrate tools—from scratch and with production APIs—is essential for building, monitoring, and debugging robust AI applications.
+Tool calling is a foundational concept in AI Engineering. It is what transforms a passive text generator into an active agent capable of interacting with its environment. By deeply understanding how to define, call, and orchestrate tools—from scratch and with modern APIs—you gain the ability to build, monitor, and debug reliable and effective AI applications.
 
-In our next lesson, we will build on this foundation by exploring the theory behind planning and reasoning. You will learn about the ReAct pattern, a powerful technique that addresses the limitations of simple tool loops by enabling agents to "think" between actions. This will be a key step toward building more intelligent and autonomous systems.
+In this lesson, we have seen the entire lifecycle of a tool call. We started by manually crafting schemas and prompts, built a small framework to automate the process, and finally, leveraged the native power of the Gemini API. We also saw how these tool calls can be chained together and recognized the limitations of simple loops. This naturally leads us to our next topic: more advanced agentic reasoning. In Lesson 7, we will explore the theory behind planning and the ReAct pattern, which gives agents the ability to "think" between actions.
 
 ## References
 
-- [1] Function calling with the Gemini API. (n.d.). Google AI for Developers. https://ai.google.dev/gemini-api/docs/function-calling
-- [2] Function calling with OpenAI's API. (n.d.). OpenAI Platform. https://platform.openai.com/docs/guides/function-calling
-- [3] Tool Calling Agent From Scratch. (2025, July 22). YouTube. https://www.youtube.com/watch?v=ApoDzZP8_ck
-- [4] Gao, Y., et al. (2024). Efficient Tool Use with Chain-of-Abstraction Reasoning. arXiv. https://arxiv.org/pdf/2401.17464v3
-- [5] Output. (n.d.). Pydantic. https://pydantic.dev/docs/ai/core-concepts/output/
-- [6] Multi-Agent Applications. (n.d.). Pydantic. https://pydantic.dev/docs/ai/guides/multi-agent-applications/
-- [7] Response schema from Pydantic. (2025, July 15). Google AI. https://discuss.ai.google.dev/t/response-schema-from-pydantic/50028
-- [8] Function Tools. (n.d.). Pydantic. https://pydantic.dev/docs/ai/tools-toolsets/tools/
-- [9] Agentic Design Patterns — Visual Architecture Guide. (n.d.). My Engineering Path. https://myengineeringpath.dev/genai-engineer/agentic-patterns/
-- [10] What Is the AI Agent Loop? The Core Architecture Behind Autonomous AI Systems. (2026, March 16). Oracle Blogs. https://blogs.oracle.com/developers/what-is-the-ai-agent-loop-the-core-architecture-behind-autonomous-ai-systems
-- [11] Building AI Agents from scratch - Part 1: Tool use. (2024, December 21). Swirl AI. https://www.newsletter.swirlai.com/p/building-ai-agents-from-scratch-part
-- [12] How Vector Databases Are Rewiring the Tech Industry. (n.d.). Ruh.ai. https://www.ruh.ai/blogs/how-vector-databases-are-rewiring-the-tech-industry
-- [13] Text-to-SQL: What It Is, How It Works, and Why It Matters in 2025. (2025, November 13). Promethium. https://promethium.ai/guides/text-to-sql-basics-benefits/
-- [14] What is Tool Calling? Connecting LLMs to Your Data. (2025, July 19). YouTube. https://www.youtube.com/watch?v=h8gMhXYAv1k
-- [15] Top 10 Open Source Vector Databases. (n.d.). Instaclustr. https://www.instaclustr.com/education/vector-database/top-10-open-source-vector-databases/
-- [16] A Comprehensive Survey on Tool-augmented Large Language Models. (2025, July 8). arXiv. https://arxiv.org/html/2507.08034v1
-- [17] How LLMs Use Web Search to Answer Your Questions. (n.d.). Mantra Ideas. https://mantraideas.com/llm-web-search/
-- [18] How LLM Reasoning Powers the Agentic AI Revolution. (2025, July 15). Medium. https://medium.com/@anicomanesh/how-llm-reasoning-powers-the-agentic-ai-revolution-cbefd10ebf3f
-- [19] Extending the Capabilities of Large Language Models by Integrating External APIs. (2025). LNU Diva Portal. https://lnu.diva-portal.org/smash/get/diva2:1801354/FULLTEXT01.pdf
-- [20] LLM Engineering: Part I. (2025, July 26). Medium. https://medium.com/@yugalnandurkar5/llm-engineering-part-i-fa48d4307d26
-- [21] Prompting best practices for tool use / function calling. (2025, July 19). OpenAI Community. https://community.openai.com/t/prompting-best-practices-for-tool-use-function-calling/1123036
-- [22] Building Production-Ready LLM Applications: Bulletproof LLM Tool Calling with Advanced JSON. (2025, July 20). Medium. https://medium.com/@hariomshahu101/building-production-ready-llm-applications-bulletproof-llm-tool-calling-with-advanced-json-b95ce8889f4e
-- [23] LLM Output Parsing and Structured Generation. (n.d.). Tetrate. https://tetrate.io/learn/ai/llm-output-parsing-structured-generation
-- [24] Tool Input and Output Schemas. (n.d.). APXML. https://apxml.com/courses/building-advanced-llm-agent-tools/chapter-1-llm-agent-tooling-foundations/tool-input-output-schemas
-- [25] Function Calling: How LLMs Can Use Structured Tools. (n.d.). mbrenndoerfer.com. https://mbrenndoerfer.com/writing/function-calling-llm-structured-tools
-- [26] Tools. (n.d.). OpenAI Agents Python. https://openai.github.io/openai-agents-python/tools/
-- [27] Custom Tools. (n.d.). Strands Agents. https://strandsagents.com/docs/user-guide/concepts/tools/custom-tools/
-- [28] Function Tools. (n.d.). Pydantic. https://pydantic.dev/docs/ai/tools-toolsets/tools/
-- [29] LangChain Tools. (n.d.). LangChain. https://docs.langchain.com/oss/python/langchain/tools
-- [30] langchain_core.tools.convert.tool. (n.d.). LangChain. https://reference.langchain.com/python/langchain-core/tools/convert/tool
-- [31] ReAct vs Plan-and-Execute: A Practical Comparison of LLM Agent Patterns. (2025, July 19). DEV Community. https://dev.to/jamesli/react-vs-plan-and-execute-a-practical-comparison-of-llm-agent-patterns-4gh9
-- [32] Building effective agents. (2025, July 16). Anthropic. https://www.anthropic.com/research/building-effective-agents
-- [33] Best Practices to Build LLM Tools in 2025. (2025, June 9). TechInfoTech. https://techinfotech.tech.blog/2025/06/09/best-practices-to-build-llm-tools-in-2025/
-- [34] Agentic Design Patterns Part 3, Tool Use. (2025, July 19). DeepLearning.AI. https://www.deeplearning.ai/the-batch/agentic-design-patterns-part-3-tool-use/
-- [35] Function Calling Guide: Google DeepMind Gemini 2.0 Flash. (n.d.). Phil Schmid. https://www.philschmid.de/gemini-function-calling
-- [36] Gemini Function Calling. (2023, December 22). Guillaume Laforge. https://glaforge.dev/posts/2023/12/22/gemini-function-calling/
-- [39] LLM-based Cognitive Architecture for Autonomous Robotic Manipulation. (2026). arXiv. https://arxiv.org/pdf/2603.26730
-- [40] FAEA: A Foundation Agent for Embodied AI. (2026). arXiv. https://arxiv.org/pdf/2601.20334
-- [41] Parallel Tool Calling: The Secret to Faster, More Efficient LLMs. (n.d.). Codeant.ai. https://www.codeant.ai/blogs/parallel-tool-calling
-- [42] Parallel Tool Calls: A New LLM Agent Capability. (n.d.). Airbyte. https://airbyte.com/agentic-data/parallel-tool-calls-llm
-- [43] Multi-Agent Systems for Robotic Autonomy with LLMs. (2025). The CVF. https://openaccess.thecvf.com/content/CVPR2025W/MEIS/papers/Chen_Multi-Agent_Systems_for_Robotic_Autonomy_with_LLMs_CVPRW_2025_paper.pdf
-- [44] MemAgent: A Generalist Agent for Long-Context Understanding and Reasoning. (2025). arXiv. https://arxiv.org/html/2507.02259v1
-- [45] Agent Memory Architectures: What They Are, Why They Matter. (n.d.). Atlan. https://atlan.com/know/agent-memory-architectures/
-- [46] Multi-turn Tool-Calling LLMs. (n.d.). Emergent Mind. https://www.emergentmind.com/topics/multi-turn-tool-calling-llms
-- [47] Introducing Agent Memory. (n.d.). Cloudflare. https://blog.cloudflare.com/introducing-agent-memory/
-- [48] AI Agent Architecture: How It Works & Why It Matters. (n.d.). Ruh.ai. https://www.ruh.ai/blogs/ai-agent-architecture-how-it-works-why-it-matters
-- [49] Tool Descriptions are Critical: Making Better LLM Tools. (n.d.). Towards AI. https://pub.towardsai.net/tool-descriptions-are-critical-making-better-llm-tools-research-capability-b315851471e7
-- [50] Tool Input and Output Schema Design. (n.d.). APXML. https://apxml.com/courses/building-advanced-llm-agent-tools/chapter-1-llm-agent-tooling-foundations/tool-input-output-schemas
-- [51] Function Calling: How LLMs Can Use Structured Tools. (n.d.). mbrenndoerfer.com. https://mbrenndoerfer.com/writing/function-calling-llm-structured-tools
-- [52] Underlying Factors Behind Inconsistency in LLM Responses with Multi-Tool Calling. (2025, July 17). Medium. https://medium.com/@abhaychougule0907/underlying-factors-behind-inconsistency-in-llm-responses-with-multi-tool-calling-628ce7b4de76
-- [53] How to Write Good Tool Descriptions for Large Language Models. (2025, May 29). arXiv. https://arxiv.org/html/2505.18135v2
-- [54] Tool Calling: From Scratch to Production. (n.d.). Decoding AI. https://www.decodingai.com/p/tool-calling-from-scratch-to-production
-- [55] Overview of Common LLM APIs (OpenAI, Anthropic, etc.). (n.d.). APXML. https://apxml.com/courses/prompt-engineering-llm-application-development/chapter-4-interacting-with-llm-apis/overview-common-llm-apis
-- [56] LLM Providers & Gen AI Platforms Compared. (2025, June 19). Orchestra. https://www.getorchestra.io/guides/llm-providers-gen-ai-platforms-compared
-- [57] Google Gemini Guide. (n.d.). My Engineering Path. https://myengineeringpath.dev/tools/gemini-guide/
-- [58] LLM API Differences That Break Your Code: Anthropic vs OpenAI vs Google. (n.d.). FutureSearch. https://futuresearch.ai/blog/llm-provider-quirks/
+- [1]  [AI Agents Course - Lesson 6 Notebook](https://github.com/towardsai/course-ai-agents/blob/dev/lessons/06_tools/notebook.ipynb)
+- [2]  [Function Calling Guide: Google DeepMind Gemini 2.0 Flash](https://www.philschmid.de/gemini-function-calling)
+- [3]  [Function calling with the Gemini API](https://ai.google.dev/gemini-api/docs/function-calling)
+- [4]  [Tool Calling Agent From Scratch](https://www.youtube.com/watch?v=ApoDzZP8_ck)
+- [5]  [Agentic Design Patterns Part 3, Tool Use](https://www.deeplearning.ai/the-batch/agentic-design-patterns-part-3-tool-use/)
+- [6]  [Output - Pydantic AI](https://pydantic.dev/docs/ai/core-concepts/output/)
+- [7]  [Function Tools - Pydantic AI](https://pydantic.dev/docs/ai/tools-toolsets/tools/)
+- [8]  [What is Tool Calling? Connecting LLMs to Your Data](https://www.youtube.com/watch?v=h8gMhXYAv1k)
+- [9]  [Agentic Design Patterns — Visual Architecture Guide](https://myengineeringpath.dev/genai-engineer/agentic-patterns/)
+- [10]  [What Is the AI Agent Loop? The Core Architecture Behind Autonomous AI Systems](https://blogs.oracle.com/developers/what-is-the-ai-agent-loop-the-core-architecture-behind-autonomous-ai-systems)
+- [11]  [ReAct vs Plan-and-Execute: A Practical Comparison of LLM Agent Patterns](https://dev.to/jamesli/react-vs-plan-and-execute-a-practical-comparison-of-llm-agent-patterns-4gh9)
+- [12]  [How Vector Databases Are Rewiring the Tech Industry](https://www.ruh.ai/blogs/how-vector-databases-are-rewiring-the-tech-industry)
+- [13]  [Text-to-SQL: What It Is, How It Works, and Why It Matters in 2025](https://promethium.ai/guides/text-to-sql-basics-benefits/)
+- [14]  [Top 10 Open-Source Vector Databases](https://www.instaclustr.com/education/vector-database/top-10-open-source-vector-databases/)
+- [15]  [Building AI Agents from scratch - Part 1: Tool use](https://www.newsletter.swirlai.com/p/building-ai-agents-from-scratch-part)
+- [16]  [A Survey on Large Language Model based Autonomous Agents](https://arxiv.org/html/2507.08034v1)
+- [17]  [How LLMs Use Web Search to Answer Your Questions](https://mantraideas.com/llm-web-search/)
+- [18]  [How LLM Reasoning Powers the Agentic AI Revolution](https://medium.com/@anicomanesh/how-llm-reasoning-powers-the-agentic-ai-revolution-cbefd10ebf3f)
+- [19]  [Extending Large Language Models with External Tools](https://lnu.diva-portal.org/smash/get/diva2:1801354/FULLTEXT01.pdf)
+- [20]  [LLM Engineering Part I](https://medium.com/@yugalnandurkar5/llm-engineering-part-i-fa48d4307d26)
+- [21]  [Prompting best practices for tool use / function calling](https://community.openai.com/t/prompting-best-practices-for-tool-use-function-calling/1123036)
+- [22]  [Building Production-Ready LLM Applications: Bulletproof LLM Tool Calling with Advanced JSON Validation and Retry Strategies](https://medium.com/@hariomshahu101/building-production-ready-llm-applications-bulletproof-llm-tool-calling-with-advanced-json-b95ce8889f4e)
+- [23]  [LLM Output Parsing and Structured Generation](https://tetrate.io/learn/ai/llm-output-parsing-structured-generation)
+- [24]  [Tool Input and Output Schema Design](https://apxml.com/courses/building-advanced-llm-agent-tools/chapter-1-llm-agent-tooling-foundations/tool-input-output-schemas)
+- [25]  [Function Calling is a Language Model's Structured Tool](https://mbrenndoerfer.com/writing/function-calling-llm-structured-tools)
+- [26]  [Tools - OpenAI Agents](https://openai.github.io/openai-agents-python/tools/)
+- [27]  [Custom Tools - Strands](https://strandsagents.com/docs/user-guide/concepts/tools/custom-tools/)
+- [28]  [Function Tools - Pydantic AI](https://pydantic.dev/docs/ai/tools-toolsets/tools/)
+- [29]  [Tools - LangChain](https://docs.langchain.com/oss/python/langchain/tools)
+- [30]  [langchain_core.tools.tool](https://reference.langchain.com/python/langchain-core/tools/convert/tool)
+- [31]  [Efficient Tool Use with Chain-of-Abstraction Reasoning](https://arxiv.org/pdf/2401.17464v3)
+- [32]  [Building effective agents](https://www.anthropic.com/research/building-effective-agents)
+- [33]  [Best Practices to Build LLM Tools in 2025](https://techinfotech.tech.blog/2025/06/09/best-practices-to-build-llm-tools-in-2025/)
+- [34]  [Function calling with OpenAI's API](https://platform.openai.com/docs/guides/function-calling)
+- [39]  [LLM-Based Embodied Agents for Real-World Tasks](https://arxiv.org/pdf/2603.26730)
+- [41]  [Parallel Tool Calling in LLMs](https://www.codeant.ai/blogs/parallel-tool-calling)
+- [42]  [Parallel Tool Calls in LLMs](https://airbyte.com/agentic-data/parallel-tool-calls-llm)
+- [45]  [Agent Memory Architectures](https://atlan.com/know/agent-memory-architectures/)
+- [47]  [Introducing Agent Memory](https://blog.cloudflare.com/introducing-agent-memory/)
+- [49]  [Tool Descriptions are Critical for Making Better LLM Tools](https://pub.towardsai.net/tool-descriptions-are-critical-making-better-llm-tools-research-capability-b315851471e7)
+- [50]  [Tool Input and Output Schema Design](https://apxml.com/courses/building-advanced-llm-agent-tools/chapter-1-llm-agent-tooling-foundations/tool-input-output-schemas)
+- [51]  [Function Calling is a Language Model's Structured Tool](https://mbrenndoerfer.com/writing/function-calling-llm-structured-tools)
+- [52]  [Underlying Factors Behind Inconsistency in LLM Responses with Multi-Tool Calling](https://medium.com/@abhaychougule0907/underlying-factors-behind-inconsistency-in-llm-responses-with-multi-tool-calling-628ce7b4de76)
+- [53]  [What Makes a Good Tool? A Study on the Impact of Tool Description on Large Language Models' Tool Usage](https://arxiv.org/html/2505.18135v2)
+- [54]  [Tool Calling: From Scratch to Production](https://www.decodingai.com/p/tool-calling-from-scratch-to-production)
+- [55]  [Overview of Common LLM APIs](https://apxml.com/courses/prompt-engineering-llm-application-development/chapter-4-interacting-with-llm-apis/overview-common-llm-apis)
+- [56]  [LLM Providers & Gen AI Platforms Compared](https://www.getorchestra.io/guides/llm-providers-gen-ai-platforms-compared)
+- [57]  [Google Gemini: The Complete Guide](https://myengineeringpath.dev/tools/gemini-guide/)
+- [58]  [LLM API Differences That Break Your Code](https://futuresearch.ai/blog/llm-provider-quirks/)
+- [59]  [Response schema from Pydantic](https://discuss.ai.google.dev/t/response-schema-from-pydantic/50028)
+- [60]  [Multi-Agent Applications - Pydantic AI](https://pydantic.dev/docs/ai/guides/multi-agent-applications/)
+- [61]  [Playing with Gemini function calling](glaforge.dev/posts/2023/12/22/gemini-function-calling/)
+- [62]  [Building Production-Ready LLM Applications: Bulletproof LLM Tool Calling with Advanced JSON Validation and Retry Strategies](https://medium.com/@hariomshahu101/building-production-ready-llm-applications-bulletproof-llm-tool-calling-with-advanced-json-b95ce8889f4e)
+- [63]  [Multi-turn Tool-calling LLMs](https://www.emergentmind.com/topics/multi-turn-tool-calling-llms)

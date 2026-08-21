@@ -1,0 +1,89 @@
+{
+  "version": 5,
+  "article": "06_tools",
+  "variant": "demanding",
+  "merge_source": "model_gate_candidates.py::S61_gara_only",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.52,
+        "standard": 0.6436,
+        "deep": 0.4807
+      }
+    },
+    "S2::section-2-understanding-why-agents-need-tools": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.32,
+        "standard": 0.3986,
+        "deep": 0.6307
+      }
+    },
+    "S3::section-3-implementing-tool-calls-from-scratch": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.6275,
+        "standard": 0.6436,
+        "deep": 0.4832
+      }
+    },
+    "S4::section-4-implementing-a-small-tool-calling-framework-from-scratch": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.47,
+        "standard": 0.5119,
+        "deep": 0.9489
+      }
+    },
+    "S5::section-5-implementing-production-level-tool-calls-with-gemini": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.15,
+        "light": 0.5883,
+        "standard": 0.6511,
+        "deep": 0.6382
+      }
+    },
+    "S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.7,
+        "light": 0.47,
+        "standard": 0.6436,
+        "deep": 0.7882
+      }
+    },
+    "S7::section-7-the-downsides-of-running-tools-in-a-loop": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.6275,
+        "standard": 0.6694,
+        "deep": 1.1857
+      }
+    },
+    "S8::section-8-popular-tools-used-within-the-industry": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.35,
+        "light": 0.4224,
+        "standard": 0.4511,
+        "deep": 0.4307
+      }
+    },
+    "S9::section-9-conclusion": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.55,
+        "light": 0.52,
+        "standard": 0.6436,
+        "deep": 0.4807
+      }
+    }
+  }
+}

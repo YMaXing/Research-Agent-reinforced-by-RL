@@ -62,15 +62,26 @@ _DEFAULT_ARTICLES = ["09_RAG__var_standard", "06_tools__var_standard"]
 # tier1 updated 0.55->0.35 on 2026-07-25 (G0 shipped to production, see
 # run13_rl_grok_pipeline_analysis.md Part 6 §47/§51) -- keep this in sync with
 # enhancement_reward.py's CREDIT_AT_WEIGHTED_COUNT whenever that changes again.
-# cost_coef staged recalibration: -0.06 -> -0.045 -> -0.03 (2026-07-25, Part 7,
-# I-series candidates I0-I4) -> -0.02 (2026-07-26, I6_cost_coef_020). All stages
-# fully validated via the real pipeline (full 43-article regen incl. near-tie
-# tie-break, plus replicate-majority-vote on 06_tools__var_standard staying
-# deep=2/standard=1 at every value tested) before shipping -- keep this in sync
-# with generate_episode_oracles.py's hardcoded `cost = -0.02 * nr` whenever
-# that changes again.
-_PROD_COST_COEF = -0.02
+# cost_coef staged recalibration: -0.06 -> -0.045 -> -0.03 (2026-07-25) -> -0.02
+# (2026-07-26, later found to overcorrect deep-prediction on TEST, see run17-19)
+# -> -0.03 (2026-07-29, C2 ship, reverted alongside the ga/ra redesign below).
+# Keep this in sync with generate_episode_oracles.py's hardcoded `cost = -0.03 * nr`.
+_PROD_COST_COEF = -0.03
+# RETIRED by C2 (2026-07-29): explore no longer has a separate scalar
+# multiplier -- its old *0.50 is folded into _PROD_DE_WEIGHT/_PROD_BE_WEIGHT
+# below. Kept defined (unused in the formula body) only so majority_vote_sweep()/
+# corpus_explore_mult_sweep()'s pre-C2 explore_mult grid still has a name to
+# compare against; those two functions' whole premise (a single explore scalar)
+# no longer maps onto C2's shape -- treat their sweep results as archived/pre-C2.
 _PROD_EXPLORE_MULT = 0.50
+# C2 (2026-07-29, Part 7 S53-57): explore = cp*(de_weight*de + be_weight*be),
+# ra removed entirely from the formula, ga demoted from an additive weight to
+# a flat gate penalty below the threshold. Keep in sync with
+# generate_episode_oracles.py's _section_reward/_ga_gate_penalty.
+_PROD_DE_WEIGHT = 0.45
+_PROD_BE_WEIGHT = 0.30
+_PROD_GA_GATE_THRESHOLD = 0.5
+_PROD_GA_GATE_PENALTY = -0.10
 _PROD_QUALITY_WEIGHT = {"strong": 1.00, "standard": 0.65}
 _PROD_INSTANCE_CAP = 3
 # tier2 updated 0.80->0.45 on 2026-07-25 (J0 shipped to production, see
@@ -440,14 +451,18 @@ def _recompute_from_episode_dims(
             be = _enh("ground_truth_breadth_enhancement")
             cp = _score("ground_truth_core_preservation")
             ga = _score("user_intent_guideline_adherence")
-            ra = _score("user_intent_research_anchoring")
+
+            de_weight = cfg.get("de_weight", _PROD_DE_WEIGHT)
+            be_weight = cfg.get("be_weight", _PROD_BE_WEIGHT)
+            ga_threshold = cfg.get("ga_gate_threshold", _PROD_GA_GATE_THRESHOLD)
+            ga_penalty = cfg.get("ga_gate_penalty", _PROD_GA_GATE_PENALTY)
 
             gt_base = 0.20 * cc + 0.20 * fl
-            explore = cp * (0.60 * de + 0.40 * be) * explore_mult
-            user_intent = (0.50 * ga + 0.50 * ra) * 0.30
+            explore = cp * (de_weight * de + be_weight * be)
+            ga_gate = ga_penalty if ga < ga_threshold else 0.0
             units = cost_units[preset_to_arm[p]]
             cost = cost_coef * units
-            preset_rewards[p] = gt_base + explore + user_intent + cost
+            preset_rewards[p] = gt_base + explore + ga_gate + cost
             preset_explore[p] = explore
 
         arm_rewards = {arm: preset_rewards[geo._ARM_PRESETS[arm][0]] for arm in geo._ARM_ORDER}
@@ -690,14 +705,18 @@ def _recompute_core(
             be = _enh("ground_truth_breadth_enhancement")
             cp = _score("ground_truth_core_preservation")
             ga = _score("user_intent_guideline_adherence")
-            ra = _score("user_intent_research_anchoring")
+
+            de_weight = cfg.get("de_weight", _PROD_DE_WEIGHT)
+            be_weight = cfg.get("be_weight", _PROD_BE_WEIGHT)
+            ga_threshold = cfg.get("ga_gate_threshold", _PROD_GA_GATE_THRESHOLD)
+            ga_penalty = cfg.get("ga_gate_penalty", _PROD_GA_GATE_PENALTY)
 
             gt_base = 0.20 * cc + 0.20 * fl
-            explore = cp * (0.60 * de + 0.40 * be) * explore_mult
-            user_intent = (0.50 * ga + 0.50 * ra) * 0.30
+            explore = cp * (de_weight * de + be_weight * be)
+            ga_gate = ga_penalty if ga < ga_threshold else 0.0
             units = cost_units[preset_to_arm[p]]
             cost = cost_coef * units
-            preset_rewards[p] = gt_base + explore + user_intent + cost
+            preset_rewards[p] = gt_base + explore + ga_gate + cost
             preset_explore[p] = explore
 
         arm_rewards = {arm: preset_rewards[preset_ids[0]] for arm, preset_ids in arm_presets.items()}

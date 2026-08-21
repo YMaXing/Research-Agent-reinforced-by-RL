@@ -1,0 +1,80 @@
+{
+  "version": 5,
+  "article": "11_multimodal",
+  "variant": "standard",
+  "merge_source": "model_gate_candidates.py::S61_cost_only",
+  "sections": {
+    "S1::section-1-introduction-the-need-for-multimodal-ai": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.04,
+        "standard": -0.02,
+        "deep": 0.3224
+      }
+    },
+    "S2::section-2-limitations-of-traditional-document-processing": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.28,
+        "deep": 0.22
+      }
+    },
+    "S3::section-3-foundations-of-multimodal-llms": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.28,
+        "deep": 0.22
+      }
+    },
+    "S4::section-4-applying-multimodal-llms-to-images-and-pdfs": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": -0.22,
+        "deep": 0.22
+      }
+    },
+    "S5::section-5-foundations-of-multimodal-rag": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.895,
+        "standard": 0.73,
+        "deep": 0.5275
+      }
+    },
+    "S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.3083,
+        "standard": -0.12,
+        "deep": 0.22
+      }
+    },
+    "S7::section-7-building-multimodal-ai-agents": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.3083,
+        "standard": -0.02,
+        "deep": 0.225
+      }
+    },
+    "S8::section-8-conclusion": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.2483,
+        "deep": 0.22
+      }
+    }
+  }
+}

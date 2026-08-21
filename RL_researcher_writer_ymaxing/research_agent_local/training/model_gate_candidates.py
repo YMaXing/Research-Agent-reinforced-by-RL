@@ -67,13 +67,21 @@ def _gates_pass(v, gate_dims, thresh=0.5):
 
 
 def make_candidate(name, *, cost_coef, w_cc, w_fl, w_de, w_be, w_ga, w_ra,
-                   gate_dims=(), gate_mode="none", gate_penalty=0.0):
+                   gate_dims=(), gate_mode="none", gate_penalty=0.0,
+                   raw_de_be=False, cost_units=None):
     """gate_mode: 'none' | 'hard' (fail => explore zeroed AND rest floored to cost only)
-                  | 'soft' (fail => flat gate_penalty subtracted)"""
+                  | 'soft' (fail => flat gate_penalty subtracted)
+
+    raw_de_be: use the plain grader score for de/be (pre-enhancement_credit()),
+        regardless of whether tag metadata exists -- true-Formula-B ablation (§61).
+    cost_units: {arm: units} override for the cost term's per-arm multiplier
+        (default: geo._ARM_COST_UNITS, the H0 empirical units). Pass the ordinal
+        {skip:0,light:1,standard:2,deep:3} to model the pre-H0 cost mechanism.
+    """
     def f(v, nr):
-        explore = v["cp"] * (0.60 * v["de"] + 0.40 * v["be"]) * 0.50 if w_de or w_be else 0.0
-        # re-express explore with tunable weights while keeping the cp gate + 0.5 ceiling
-        explore = v["cp"] * (w_de * v["de"] + w_be * v["be"])
+        de = v["de_raw"] if raw_de_be else v["de"]
+        be = v["be_raw"] if raw_de_be else v["be"]
+        explore = v["cp"] * (w_de * de + w_be * be)
         rest = w_cc * v["cc"] + w_fl * v["fl"] + w_ga * v["ga"] + w_ra * v["ra"]
         cost = cost_coef * nr
         if gate_dims:
@@ -85,6 +93,7 @@ def make_candidate(name, *, cost_coef, w_cc, w_fl, w_de, w_be, w_ga, w_ra,
                     rest -= gate_penalty
         return rest + cost, explore
     f.__name__ = name
+    f._cost_units = cost_units
     return f
 
 
@@ -144,6 +153,86 @@ CANDIDATES["F_hard_trio_drop_ga_cc"] = make_candidate(
     "F", cost_coef=-0.03, w_cc=0.0, w_fl=0.30, w_de=0.50, w_be=0.35, w_ga=0.0, w_ra=0.0,
     gate_dims=("cp", "ra", "gsp"), gate_mode="hard")
 
+# ---------------------------------------------------------------------------
+# S61 Stage 0: 2x2x2 factorial isolating the 3 real differences between C2
+# (shipped) and the TRUE original Formula B (bases_ORACLE_BACKUP_20260708_231117):
+#   (1) cost mechanism   : C2 = cost_coef=-0.03 * H0 empirical units
+#                          FormulaB = cost_coef=-0.06 * ordinal round count {0,1,2,3}
+#   (2) de/be shape       : C2 = enhancement_credit() saturating curve
+#                          FormulaB = raw grader score (pre-enhancement-tag)
+#   (3) ga/ra treatment  : C2 = ga-only soft gate (penalty 0.10), ra dropped
+#                          FormulaB = additive (0.50*ga+0.50*ra)*0.30, no gate
+# "only" / pairwise cells hold the OTHER two dimensions at C2's production
+# values (0.45/0.30 de/be weight throughout) so each cell isolates exactly the
+# named dimension(s) -- they are deliberately not real shippable formulas.
+# ---------------------------------------------------------------------------
+_ORDINAL_UNITS = {"skip": 0.0, "light": 1.0, "standard": 2.0, "deep": 3.0}
+_H0_UNITS = {"skip": 0.0, "light": 1.00, "standard": 1.88, "deep": 2.31}
+
+CANDIDATES["S61_C2_baseline"] = make_candidate(
+    "S61_C2_baseline", cost_coef=-0.03, w_cc=0.20, w_fl=0.20, w_de=0.45, w_be=0.30,
+    w_ga=0.0, w_ra=0.0, gate_dims=("ga",), gate_mode="soft", gate_penalty=0.10,
+    cost_units=_H0_UNITS)
+CANDIDATES["S61_cost_only"] = make_candidate(
+    "S61_cost_only", cost_coef=-0.06, w_cc=0.20, w_fl=0.20, w_de=0.45, w_be=0.30,
+    w_ga=0.0, w_ra=0.0, gate_dims=("ga",), gate_mode="soft", gate_penalty=0.10,
+    cost_units=_ORDINAL_UNITS)
+CANDIDATES["S61_debe_only"] = make_candidate(
+    "S61_debe_only", cost_coef=-0.03, w_cc=0.20, w_fl=0.20, w_de=0.45, w_be=0.30,
+    w_ga=0.0, w_ra=0.0, gate_dims=("ga",), gate_mode="soft", gate_penalty=0.10,
+    cost_units=_H0_UNITS, raw_de_be=True)
+CANDIDATES["S61_gara_only"] = make_candidate(
+    "S61_gara_only", cost_coef=-0.03, w_cc=0.20, w_fl=0.20, w_de=0.45, w_be=0.30,
+    w_ga=0.15, w_ra=0.15, gate_dims=(), gate_mode="none",
+    cost_units=_H0_UNITS)
+CANDIDATES["S61_cost_debe"] = make_candidate(
+    "S61_cost_debe", cost_coef=-0.06, w_cc=0.20, w_fl=0.20, w_de=0.45, w_be=0.30,
+    w_ga=0.0, w_ra=0.0, gate_dims=("ga",), gate_mode="soft", gate_penalty=0.10,
+    cost_units=_ORDINAL_UNITS, raw_de_be=True)
+CANDIDATES["S61_cost_gara"] = make_candidate(
+    "S61_cost_gara", cost_coef=-0.06, w_cc=0.20, w_fl=0.20, w_de=0.45, w_be=0.30,
+    w_ga=0.15, w_ra=0.15, gate_dims=(), gate_mode="none",
+    cost_units=_ORDINAL_UNITS)
+CANDIDATES["S61_debe_gara"] = make_candidate(
+    "S61_debe_gara", cost_coef=-0.03, w_cc=0.20, w_fl=0.20, w_de=0.45, w_be=0.30,
+    w_ga=0.15, w_ra=0.15, gate_dims=(), gate_mode="none",
+    cost_units=_H0_UNITS, raw_de_be=True)
+CANDIDATES["S61_all_three_C2weights"] = make_candidate(
+    "S61_all_three_C2weights", cost_coef=-0.06, w_cc=0.20, w_fl=0.20, w_de=0.45, w_be=0.30,
+    w_ga=0.15, w_ra=0.15, gate_dims=(), gate_mode="none",
+    cost_units=_ORDINAL_UNITS, raw_de_be=True)
+# The REAL true-Formula-B formula (exact weights, for the Stage 0.1 bit-exact
+# validation against bases_ORACLE_BACKUP_20260708_231117 -- NOT part of the
+# clean-isolation factorial above, since its de/be weights differ from C2's).
+CANDIDATES["S61_TRUE_FORMULAB_EXACT"] = make_candidate(
+    "S61_TRUE_FORMULAB_EXACT", cost_coef=-0.06, w_cc=0.20, w_fl=0.20, w_de=0.30, w_be=0.20,
+    w_ga=0.15, w_ra=0.15, gate_dims=(), gate_mode="none",
+    cost_units=_ORDINAL_UNITS, raw_de_be=True)
+
+# ---------------------------------------------------------------------------
+# §61 Stage 2 preview (2026-08-06): cost_coef MAGNITUDE sweep, holding C2's shape
+# otherwise fixed (de/be curve+weights, ga-gate) -- run26_costcoef_only showed
+# cost_coef=-0.06+ordinal-units is the single dominant TEST-generalization lever,
+# but at the cost of severe deep-scarcity (TRAIN deep count 6->2). Before
+# committing another real retrain to -0.06, preview whether an intermediate
+# value recovers most of the floor%/margin sharpness without as much
+# deep/standard scarcity. Two unit conventions swept in parallel:
+#   *_H0  -- keeps production's H0 empirical cost units (only the coefficient
+#            magnitude changes, exactly the user's "C2 + larger cost_coef" ask)
+#   *_ORD -- ordinal units too (matching run26_costcoef_only's exact mechanism
+#            at a smaller magnitude), for comparison only
+# ---------------------------------------------------------------------------
+for _cc in (-0.035, -0.04, -0.045, -0.05, -0.055, -0.06):
+    _tag = str(_cc).replace("-0.", "").replace(".", "")
+    CANDIDATES[f"S61_cost{_tag}_H0"] = make_candidate(
+        f"S61_cost{_tag}_H0", cost_coef=_cc, w_cc=0.20, w_fl=0.20, w_de=0.45, w_be=0.30,
+        w_ga=0.0, w_ra=0.0, gate_dims=("ga",), gate_mode="soft", gate_penalty=0.10,
+        cost_units=_H0_UNITS)
+    CANDIDATES[f"S61_cost{_tag}_ORD"] = make_candidate(
+        f"S61_cost{_tag}_ORD", cost_coef=_cc, w_cc=0.20, w_fl=0.20, w_de=0.45, w_be=0.30,
+        w_ga=0.0, w_ra=0.0, gate_dims=("ga",), gate_mode="soft", gate_penalty=0.10,
+        cost_units=_ORDINAL_UNITS)
+
 
 # ---------------------------------------------------------------------------
 
@@ -190,6 +279,10 @@ def load_corpus():
                         enh = geo._get_enhancement(entries, snorm, idx)
                         vals[short] = geo._get_score(entries, snorm, idx) if enh is None \
                             else enhancement_credit(enh[1])
+                        # raw pre-enhancement-tag score, for the true-Formula-B ablation
+                        # (§61 Stage 0) -- always the plain grader score, independent of
+                        # whether tag metadata exists.
+                        vals[f"{short}_raw"] = geo._get_score(entries, snorm, idx)
                     else:
                         vals[short] = geo._get_score(entries, snorm, idx)
                 per_arm[arm] = vals
@@ -218,10 +311,11 @@ def evaluate(corpus, fn):
         acc_rest = {a: 0.0 for a in ARMS}
         acc_expl = {a: 0.0 for a in ARMS}
         tot_w = 0
+        cost_units = getattr(fn, "_cost_units", None) or geo._ARM_COST_UNITS
         for sid, tw, per_arm in secs:
             rewards, explores = {}, {}
             for arm in ARMS:
-                nr = geo._ARM_COST_UNITS[arm]
+                nr = cost_units[arm]
                 rest, expl = fn(per_arm[arm], nr)
                 rewards[arm] = rest + expl
                 explores[arm] = expl

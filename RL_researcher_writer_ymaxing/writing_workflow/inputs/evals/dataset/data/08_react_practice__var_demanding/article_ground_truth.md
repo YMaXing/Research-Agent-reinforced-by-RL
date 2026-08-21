@@ -51,7 +51,7 @@ def search(query: str) -> str:
 
     Args:
         query (str): The search query or topic to look up.
-    """
+    """ 
     query_lower = query.lower()
 
     # Predefined responses for demonstration

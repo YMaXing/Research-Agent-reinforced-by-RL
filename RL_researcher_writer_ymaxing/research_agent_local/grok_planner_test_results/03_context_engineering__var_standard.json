@@ -10,22 +10,22 @@
   "oracle_preset": 2,
   "oracle_name": "standard",
   "r_w_rewards": [
-    0.5696,
-    0.6105,
-    0.6738,
-    0.5679
+    0.2729,
+    0.3393,
+    0.4209,
+    0.2817
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.1358,
-  "confidence": 0.7003,
+  "entropy_bits": 0.788,
+  "confidence": 0.7642,
   "floor_applied": false,
   "rl_agg_probs": [
     0.0,
-    0.0828,
-    0.7003,
-    0.2169
+    0.2358,
+    0.7642,
+    0.0
   ],
   "grok_override": null,
   "grok_reasoning": null,

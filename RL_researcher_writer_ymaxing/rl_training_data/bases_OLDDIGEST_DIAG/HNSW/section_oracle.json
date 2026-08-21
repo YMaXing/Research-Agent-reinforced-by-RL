@@ -1,0 +1,161 @@
+{
+  "version": 5,
+  "article": "HNSW",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.33825,
+        "standard": 0.1436,
+        "deep": 0.19895
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.06825,
+        "standard": 0.0,
+        "deep": 0.06825
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S2::section-2-foundations-of-hnsw": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.1,
+        "light": 0.45675,
+        "standard": 0.23035,
+        "deep": 0.2332
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.18675,
+        "standard": 0.18675,
+        "deep": 0.2025
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S3::section-3-graph-construction": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.37,
+        "standard": 0.2436,
+        "deep": 0.433075
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.102375
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S4::section-4-implementation-of-hnsw": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.5275,
+        "standard": 0.606975,
+        "deep": 0.5757
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.1575,
+        "standard": 0.363375,
+        "deep": 0.345
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "skip",
+    "S2::section-2-foundations-of-hnsw": "light",
+    "S3::section-3-graph-construction": "deep",
+    "S4::section-4-implementation-of-hnsw": "standard"
+  }
+}

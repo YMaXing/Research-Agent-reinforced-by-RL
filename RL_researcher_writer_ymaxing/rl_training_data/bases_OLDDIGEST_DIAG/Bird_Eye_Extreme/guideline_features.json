@@ -1,0 +1,29 @@
+{
+  "external_evidence_policy": "allowed",
+  "sections": {
+    "S1::section-1-introduction-the-avascular-retina-paradox": {
+      "target_words": 400,
+      "mandatory_bullets": 7,
+      "must_cover_depth": 4,
+      "must_stay_brief": 0
+    },
+    "S2::section-2-oxygenated-life-the-great-oxidation-event-and-metabolic-trade-offs": {
+      "target_words": 400,
+      "mandatory_bullets": 7,
+      "must_cover_depth": 3,
+      "must_stay_brief": 0
+    },
+    "S3::section-3-a-mysterious-structure-the-pecten-oculi-and-chronic-anoxia": {
+      "target_words": 600,
+      "mandatory_bullets": 10,
+      "must_cover_depth": 6,
+      "must_stay_brief": 0
+    },
+    "S4::section-4-eyes-like-a-hawk-evolutionary-origins-selective-pressures-and-implications": {
+      "target_words": 650,
+      "mandatory_bullets": 7,
+      "must_cover_depth": 4,
+      "must_stay_brief": 0
+    }
+  }
+}

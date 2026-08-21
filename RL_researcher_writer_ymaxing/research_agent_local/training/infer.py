@@ -34,8 +34,8 @@ _LOCAL_MODEL_DIR = _REPO_ROOT / "models" / "Qwen3-4B"
 # Fall back to HuggingFace Hub when the local weights are not present
 # (e.g. after a fresh clone — the base model is too large for git).
 _DEFAULT_MODEL_DIR: Path | str = _LOCAL_MODEL_DIR if _LOCAL_MODEL_DIR.exists() else "Qwen/Qwen3-4B"
-_DEFAULT_ADAPTER_DIR = _REPO_ROOT / "rl_training_data" / "checkpoints" / "tasks" / "run15_recalibrated" / "best"
-
+# _DEFAULT_ADAPTER_DIR = _REPO_ROOT / "rl_training_data" / "checkpoints" / "tasks" / "run26_costcoef_only" / "test"
+_DEFAULT_ADAPTER_DIR = _REPO_ROOT / "rl_training_data" / "checkpoints" / "tasks" / "run29_costcoef05" / "best"
 # ---------------------------------------------------------------------------
 # Shared preset vocabulary and system prompt
 # ---------------------------------------------------------------------------
