@@ -6619,28 +6619,37 @@ apples-to-apples comparison. Re-run after the correction pass; all numbers below
 
 ### A.14.1 Section-level GRPO signal quality, corpus aggregate (171 TRAIN sections)
 
+> **Re-verified 2026-08-21** by re-running `reward_signal_quality_report.py` after A.16.0's two
+> section-level bug fixes (explore-split aggregation, ordinal-index misalignment) landed — this
+> table's numbers moved only slightly and the conclusion is unchanged.
+
 | metric | single-draw | averaged (N=3) |
 |---|---:|---:|
 | flat-drop rate (spread < `sigma_floor`) | 0.0% | 3.5% (6 sections) |
-| floored rate, of kept (std < `sigma_floor`) | 21.1% | 26.7% |
+| floored rate, of kept (std < `sigma_floor`) | 21.1% | 27.3% |
 | near-tie rate (2+ arms within `near_tie_margin`) | 55.0% | **58.5%** |
-| mean margin | 0.0961 | 0.0657 |
-| **median margin** | 0.0446 | **0.0491** |
-| mean normalized advantage (real GRPO gradient scale) | 1.216 | **1.234** |
-| arm distribution (skip/light/standard/deep) | 49/50/39/33 | 45/53/37/36 |
+| mean margin | 0.0961 | 0.0656 |
+| **median margin** | 0.0446 | **0.0453** |
+| mean normalized advantage (real GRPO gradient scale) | 1.216 | **1.229** |
+| arm distribution (skip/light/standard/deep) | 49/50/39/33 | 49/54/33/35 |
 
 (Pre-correction these were flat-drop 0.0%→2.3%, floored 22.2%→25.7%, near-tie 58.5%→56.7%, mean
 margin 0.0974→0.0680, median margin 0.0393→0.0501, normAdv 1.200→1.235, dist 50/49/38/34→46/54/34/37
-— broadly the same story, shuffled by the 11 corrected articles.)
+— broadly the same story, shuffled by the 11 corrected articles. The 2026-08-20 grade-correction-era
+numbers just above were 1.216→1.234/0.0657/0.0491/45-53-37-36 — A.16.0's bug fixes moved these by
+≤0.006 in every case, not enough to change any conclusion below.)
 
 **Mean margin drops but median margin rises — a real, informative dissociation, not noise.** The
 single-draw distribution has a fatter right tail (some sections look decisively separated purely by
 chance — the same regression-to-the-mean pattern A.7/A.11/A.13 already documented for individual
 articles); averaging pulls those inflated outliers down (lowering the mean) while genuinely
 clarifying the *typical* section (raising the median). **Mean normalized advantage — the number that
-actually scales the GRPO policy gradient — still improves slightly (1.216→1.234) despite more groups
-being denominator-clamped (floored 21.1%→26.7%)**: averaging remains, net, not hurting trainability,
-unchanged conclusion from pre-correction. **Near-tie rate now RISES slightly under averaging
+actually scales the GRPO policy gradient — still improves slightly (1.216→1.229, +1.1%) despite more
+groups being denominator-clamped (floored 21.1%→27.3%)**: averaging remains, net, not hurting
+trainability, unchanged conclusion from pre-correction, though the effect is small enough to call a
+wash rather than a strengthening — see A.16.2's `mean |advantage|` (all 4 arms, not just the winner)
+for the complementary metric that goes the other way (0.8188→0.8061). **Near-tie rate now RISES
+slightly under averaging
 (55.0%→58.5%)** — the opposite direction from the pre-correction reading (58.5%→56.7%) — but this
 flip is small (both close to the ~55-58% range) and better attributed to which specific sections'
 grades moved than to any systematic change in what averaging does. **Deep-representation still rises**
@@ -6853,10 +6862,8 @@ The 3 remaining articles, finalized now by majority vote (2/3) rather than defer
    `light` label stands on strictly stronger evidence than when it was chosen.
 
 **Net result: all 5 flagged articles are now finalized** — 2 by direct grade correction (`standard`,
-`deep`), 3 by majority vote (`light`, `skip`, `light`). None of this has been written to production
-`section_oracle.json`/`article_oracle.json` yet — see A.15.5 for what's still needed before these
-can actually reach a retrain, and confirm before I apply them (same sign-off discipline as every
-prior label/formula change this investigation).
+`deep`), 3 by majority vote (`light`, `skip`, `light`). **APPLIED to production 2026-08-20 (A.16.7
+Phase 1)** — see A.15.5.
 
 ### A.15.3 N=5 expansion — declined; N=3 accepted as final for all 24 TRAIN articles (2026-08-17)
 
@@ -7014,6 +7021,7 @@ TEST oracle labels under the same discipline as A.15.2's TRAIN corrections: `Ear
 `Insects_Consciousness` (light→deep). Only **`07_reasoning_planning`** remains unresolved (genuine
 3-way split: skip/deep/light) — leave it at its original production label (`skip`) for now, flagged
 `needs_review`, pending N=5 expansion or manual grading review for this one article specifically.
+**APPLIED to production 2026-08-20 (A.16.7 Phase 1)** — see A.15.5.
 
 #### A.15.4 follow-up: does TEST show TRAIN's ga mean-drop, and does a lower gate threshold help? (2026-08-20)
 
@@ -7134,15 +7142,18 @@ content-generation instability concentrated in two sections.
   since article R_w aggregates many low-noise sections whose small individual biases can still
   combine into a real net direction shift.
 
-### A.15.5 Technical prerequisites still outstanding (from A.12, unchanged)
+### A.15.5 Technical prerequisites — DONE (2026-08-20, A.16.7 Phase 1)
 
-Regardless of how much of A.15.2-A.15.4 gets done, A.12 steps 2/3 remain unbuilt and are required
-before any of this data can influence a retrain: (2) `train_grpo.py::load_section_groups()` needs a
-read path for `section_oracle_averaged.json` (e.g. `--use-averaged-oracle`), falling back to the
-single-draw file for TEST/non-replicated articles; (3) an `_averaged` variant of
-`compute_article_oracle.py` to recompute article-level `oracle_arm`/margins from averaged section
-rewards, needed to actually apply A.15.2's corrections rather than leave them as `needs_review`
-flags. Pure code work, zero generation cost, independent of A.15.3/A.15.4's data collection.
+Built: (2) `train_grpo.py --use-averaged-oracle` — `load_section_groups()` reads
+`section_oracle_averaged.json` when present, falling back to the single-draw file per-article; (3)
+`compute_article_oracle.py --use-averaged` — recomputes article-level `oracle_arm`/margins from
+averaged section rewards into a sibling `article_oracle_averaged.json`, run for all 24 TRAIN + 12
+replicated TEST articles. All 5 TRAIN + 4 TEST corrections applied to production `article_oracle.json`
+(backed up first to `bases_PRE_A16_LABELCORRECTIONS_20260820/`); `07_reasoning_planning` flagged
+`needs_review` with oracle_arm left unchanged. See A.16.7 for the full account, including why the 7
+non-already-correct corrections needed `compute_article_oracle.py`'s `_MANUAL_OVERRIDES` mechanism
+rather than trusting the automated `--use-averaged` recompute (its S3/S4/S5 near-tie tie-break still
+disagreed with the majority-vote-governed decision for these exact articles).
 
 ### A.15.6 Recommended sequence and the honest cost/time trade-off (updated 2026-08-17: N=5 declined, TEST replication now sequenced first)
 
@@ -7152,8 +7163,8 @@ flags. Pure code work, zero generation cost, independent of A.15.3/A.15.4's data
 | 1b (**done**, 2026-08-17) | N=5 declined; all 5 flagged TRAIN articles finalized at N=3 via majority vote (A.15.2) | zero further cost — complete | No |
 | 2 (**done**, 2026-08-18) | N=3 TEST replication, 12 CRITICAL/HIGH articles (A.15.4, 96 cycles) | 96 write+grade cycles — complete | No further (done) |
 | 3 (**done**, 2026-08-20) | TEST signal evaluation (A.15.4's 4-step plan): re-merged, re-audited margins, checked the light↔deep confusion cluster specifically. A 2nd tooling bug (explore-split aggregation, see A.15.4) was found+fixed mid-analysis; corrected result: 7 confirmed, 4 corrected (`Earth_Oceans_Origin`→deep, `Gravity_Entropy`→light, `13_agent_framework`→light, `Insects_Consciousness`→deep), 1 unresolved 3-way split (`07_reasoning_planning` — left at production label pending N=5/manual review). ga-gate-threshold follow-up: TEST does not replicate TRAIN's ga mean-drop, and threshold sweeps (0.5-0.2) show zero classification sensitivity — no gate recalibration warranted | zero cost, pure analysis — complete | No further (done) |
-| 1c (**next**) | Build A.12 steps 2/3 (`train_grpo.py --use-averaged-oracle` loader flag + `compute_article_oracle.py` `_averaged` variant); apply the 5 finalized TRAIN labels + 4 finalized TEST corrections to production (pending go-ahead) | zero generation cost, some engineering | Yes |
-| 4 (GPU) | The joint retrain (A.12 step 6): `run26`'s formula + finalized TRAIN labels | one training run | — |
+| 1c (**done**, 2026-08-20) | Built A.12 steps 2/3 (`train_grpo.py --use-averaged-oracle` loader flag + `--section-weight confidence` + `compute_article_oracle.py --use-averaged` variant); applied the 5 finalized TRAIN labels + 4 finalized TEST corrections to production `article_oracle.json` (A.16.7 Phase 1/2) | zero generation cost, engineering complete | No further (done) |
+| 4 (GPU, **ready to launch**) | The joint retrain (A.12 step 6): C2 (not `run26`'s ordinal mechanism, per A.16.4/A.16.5) + finalized TRAIN labels + averaged oracle + confidence weighting | one training run | — |
 
 **Sequencing note**: phases 2-3 (TEST) don't structurally need to precede 1c/4 — TEST labels feed
 §61 Stage 1's model-ranking comparisons, not the GRPO training target itself. The user has chosen
@@ -7351,25 +7362,48 @@ questions negatively. **The one cheap, well-evidenced experiment still worth run
 
 ### A.16.4 The finding that should change the retrain plan: `run26`'s mechanism is badly mismatched to the corrected TEST distribution
 
-`run26_costcoef_only` (C2 + `cost_coef=-0.06` in **ordinal** units) is §61's designated winner and
-A.12 step 6's planned formula. Applied to the N=3-averaged TRAIN labels it produces
-**`sk/li/st/dp = 70/66/25/9`** — `deep` collapses to **9/170 = 5.3%** of sections, label entropy
-falls to 1.688 bits (vs C2's 1.974), and **the strict trivial-predictor bar rises to 41.2%**.
+**Correction (2026-08-20, prompted by a direct user question): the comparison below was originally
+built on mismatched units and has been redone.** The first pass compared `run26`'s TRAIN
+**section-level** `deep` share (9/170 = 5.3%, a raw tally of each of the ~170 individual GRPO
+training groups' own best arm) against the corrected TEST **article-level** `deep` share (4/16 =
+25%, `article_oracle.json`'s single `oracle_arm` per article, itself the argmax of a
+target-words-weighted R_w aggregated across ALL of that article's sections). These are not the same
+unit: an article's `oracle_arm` is not a majority vote of its sections' individual winners, so a low
+section-level share does not mechanically imply a low article-level share, or vice versa. New tool
+`_article_level_formula_check.py` redoes this at a consistent unit — for each candidate formula,
+aggregate each of the 24 TRAIN articles' N=3-averaged section rewards into an article-level R_w
+(target-words-weighted mean of "rest" + simple mean of "explore", the real Candidate E aggregation,
+matching `compute_article_oracle.py::_compute_r_w()` — not a naive flat mean), take the argmax per
+article, and tally that distribution — the proper TRAIN-side analogue of TEST's article-level share.
 
-Set that against the **corrected** TEST distribution from A.15.4 (`sk/li/st/dp = 2/7/3/4`), where
-`deep` is **4/16 = 25%**:
+**Result: the corrected, apples-to-apples comparison is even more extreme than the original, not less.**
 
-| label set | `deep` share |
-|---|---:|
-| `run26_ORD_cost-0.06` on averaged TRAIN | **5.3%** |
-| `C2_shipped` on averaged TRAIN | 20.6% |
-| **corrected TEST (A.15.4)** | **25.0%** |
+| label set (unit: articles, n=24 TRAIN / n=16 TEST) | sk/li/st/dp | `deep` share |
+|---|---|---:|
+| `run26_ORD_cost-0.06` on averaged TRAIN, **article-level** | 9/15/0/0 | **0.0%** |
+| `C2_shipped` on averaged TRAIN, **article-level** | 5/11/4/4 | **16.7%** |
+| **corrected TEST (A.15.4), article-level** | 2/7/3/4 | **25.0%** |
 
-**Training on a label set where `deep` is 5.3% of sections and evaluating on one where it is 25% is
-a 4.7× distribution mismatch — and A.15.4's corrections made it *worse*, since they moved TEST from
-3 `deep` articles to 4.** This is a mechanistic explanation for `run26`'s already-documented failure
-mode (it missed 2 of the 3 `deep` TEST articles by predicting `light`). The shipped `C2` formula's
-20.6% is by far the closest match to TEST's 25%.
+**Under `run26`'s ordinal-cost mechanism, `deep` wins the article-level aggregate for ZERO of the 24
+TRAIN articles** — not even `standard` survives (0 articles land on `standard` either; every article
+collapses to `skip` or `light`). This is a starker version of the same mechanism already documented
+corpus-wide (§54.7 onward, Stage 0.2's warning that this exact variant is "the one most likely to
+reproduce deep-representation collapse") — the harsher ordinal per-round cost (a full unit step
+`skip:0→light:1→standard:2→deep:3`, vs H0's diminishing-marginal-cost units `light:1.00→
+standard:1.88→deep:2.31`) doesn't just under-represent `deep` at the margin, it eliminates it (and
+`standard`) entirely as an article-level winner on this TRAIN corpus. `C2_shipped`'s 16.7% is still
+below TEST's 25%, but it is the only one of the two formulas that produces a `deep`-representative
+TRAIN label set at all — training `run26`'s formula against a TEST set that is 25% `deep` means the
+model would never see an article-level `deep` training target, full stop, not merely a scarce one.
+
+*(Sanity-checked one case directly: `10_memory_knowledge_access__var_demanding` — corrected to
+`deep` in production under the shipped `C2` formula (A.15.2/A.16.7) — recomputes to `light` under
+`run26`'s formula (R_w: skip=0.211, light=0.281, standard=0.250, deep=0.242), consistent with the
+harsher cost term suppressing `deep` even where the shipped formula clearly favors it.)*
+
+This is a mechanistic explanation for `run26`'s already-documented failure mode (it missed 2 of the
+3 `deep` TEST articles by predicting `light`) — one that survives, and is reinforced by, fixing the
+original section/article unit mismatch.
 
 ### A.16.5 Re-scoring §61 Stage 1 under the corrected TEST labels — `run26`'s claimed superiority does not survive
 
@@ -7452,22 +7486,51 @@ live formula) — regenerate them via `generate_episode_oracles.py` before using
 exclude them from any corpus-wide sweep until then. **The 24 TRAIN + 16 TEST core corpus is fully
 verified reproducible (100%).**
 
-**Phase 1 — apply the finalized labels (zero GPU, needs sign-off).** Write A.15.2's 5 TRAIN
-corrections and A.15.4's 4 TEST corrections to production. Leave `07_reasoning_planning` at `skip`,
-flagged `needs_review` (A.15.4's sole unresolved 3-way split; A.16.1 explains why it will not
-resolve cheaply — its cross-draw spread is 3× the corpus norm). Build A.12 steps 2/3
-(`train_grpo.py --use-averaged-oracle`, `compute_article_oracle.py` `_averaged` variant).
+**Phase 1 — apply the finalized labels (zero GPU, needs sign-off). DONE (2026-08-20).** Backed up
+affected `article_oracle.json` files to `bases_PRE_A16_LABELCORRECTIONS_20260820/`, then applied.
+Of A.15.2's 5 TRAIN corrections, 2 (`10_memory_knowledge_access__var_demanding`→deep,
+`02_workflows_vs_agents__var_demanding`→standard) were already correct in production (fixed at the
+data layer by the 2026-08-16 grade correction, confirmed unchanged) — no write needed. The other 3
+(`08_react_practice__var_demanding`→light, `11_multimodal__var_standard`→skip,
+`06_tools__var_demanding`→light) plus all 4 of A.15.4's TEST corrections
+(`Earth_Oceans_Origin`→deep, `Gravity_Entropy`→light, `13_agent_framework`→light,
+`Insects_Consciousness`→deep) needed an actual write. `07_reasoning_planning` left at `skip`,
+`needs_review` set `True` with a note explaining the unresolved 3-way split.
 
-**Phase 2 — build A.8's confidence weighting (zero GPU).** `--section-weight confidence`, keyed on
-`margin / max(reward_sd, sigma_floor)` from `section_oracle_averaged.json`. This is the highest-value
-remaining code-only change and, per A.16.6, better-evidenced than any remaining formula tweak.
+**Important finding while applying**: `compute_article_oracle.py --use-averaged`'s own automated
+near-tie tie-break (S3/S4/S5, reading a single arm's article text) still disagreed with the
+majority-vote-governed decision for these exact 7 articles even after the A.16.0 ordinal-index fix
+(e.g. it picks `deep` for both `06_tools__var_demanding` and `13_agent_framework`, not `light`) —
+confirming the pre-registered majority-vote rule was necessary, not just a historical artifact of
+the earlier bugs. The 7 corrections were therefore applied via `compute_article_oracle.py`'s
+existing `_MANUAL_OVERRIDES` mechanism (same pattern as its 3 pre-existing entries), not by trusting
+the automated recompute — this also makes the corrections durable: any future `--force` regeneration
+(single-draw OR `--use-averaged`) reproduces the same corrected label instead of reverting.
+
+Built A.12 steps 2/3:
+- `compute_article_oracle.py --use-averaged`: sources R_w from `section_oracle_averaged.json`
+  instead of the single-draw file, writing a **sibling** `article_oracle_averaged.json` (production
+  `article_oracle.json` never touched by this flag). Run for all 24 TRAIN + 12 replicated TEST
+  articles — the general-purpose "A.12 step 3" artifact now exists for the whole replicated corpus.
+- `train_grpo.py --use-averaged-oracle`: `load_section_groups()` now reads
+  `section_oracle_averaged.json` when present (falling back to single-draw per-article), and
+  exposes each group's winning-arm cross-draw `reward_sd` for Phase 2.
+
+**Phase 2 — build A.8's confidence weighting (zero GPU). DONE (2026-08-20).** Added
+`--section-weight confidence` to `train_grpo.py`: `wordcount × (margin / max(reward_sd,
+sigma_floor))`, where `margin = max(R) − 2nd-best(R)` and `reward_sd` is the winning arm's cross-draw
+std (0.0 / degrades to margin-only when `--use-averaged-oracle` isn't also passed — a warning is
+logged if `confidence` is requested without it). Validated the arithmetic against real
+`06_tools__var_standard` data: weights span **12 to 1610** (>100× spread) between the noisiest
+low-margin section and the cleanest high-margin one — behaving exactly as intended, not degenerate.
 
 **Phase 3 — the retrain, with three changes from the current plan:**
 1. **Use `C2` (`cost_coef=-0.03`, H0 units), NOT `run26`'s ordinal `-0.06`.** A.16.4 shows `run26`'s
-   mechanism drives `deep` to 5.3% of averaged TRAIN sections against a 25% corrected-TEST `deep`
-   share, and A.16.5 shows its claimed superiority over `run29` does not survive the label
-   correction. Its apparent Stage 1 win was measured on labels now known to be wrong on 4 of 16
-   articles, and baseline-relative it ties a run §61 had already rejected.
+   mechanism produces `deep` as the article-level winner for **0 of the 24** averaged TRAIN articles
+   (vs `C2`'s 16.7%) against a 25% corrected-TEST `deep` share, and A.16.5 shows its claimed
+   superiority over `run29` does not survive the label correction. Its apparent Stage 1 win was
+   measured on labels now known to be wrong on 4 of 16 articles, and baseline-relative it ties a run
+   §61 had already rejected.
 2. **Train on averaged labels + confidence weighting together**, not averaged labels alone —
    A.16.2 is explicit that averaging by itself does not strengthen the signal.
 3. **Judge it baseline-relative from the start** (§60.12): the averaged label set's own bars are

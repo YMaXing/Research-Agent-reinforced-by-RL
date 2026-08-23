@@ -34,14 +34,15 @@ _LOCAL_MODEL_DIR = _REPO_ROOT / "models" / "Qwen3-4B"
 # Fall back to HuggingFace Hub when the local weights are not present
 # (e.g. after a fresh clone — the base model is too large for git).
 _DEFAULT_MODEL_DIR: Path | str = _LOCAL_MODEL_DIR if _LOCAL_MODEL_DIR.exists() else "Qwen/Qwen3-4B"
-# _DEFAULT_ADAPTER_DIR = _REPO_ROOT / "rl_training_data" / "checkpoints" / "tasks" / "run26_costcoef_only" / "test"
-_DEFAULT_ADAPTER_DIR = _REPO_ROOT / "rl_training_data" / "checkpoints" / "tasks" / "run29_costcoef05" / "best"
+# Kept in _infer_config.py (no heavy deps) so preset_infer_handler.py can read
+# the current default without importing torch -- edit it there, not here.
+if str(_THIS_DIR) not in sys.path:
+    sys.path.insert(0, str(_THIS_DIR))
+from _infer_config import DEFAULT_ADAPTER_DIR as _DEFAULT_ADAPTER_DIR  # noqa: E402
 # ---------------------------------------------------------------------------
 # Shared preset vocabulary and system prompt
 # ---------------------------------------------------------------------------
 # Import from _rl_preset.py (no API-key guard, no heavy dependencies).
-if str(_THIS_DIR) not in sys.path:
-    sys.path.insert(0, str(_THIS_DIR))
 from _rl_preset import (  # noqa: E402
     _RL_INPUT_SYSTEM,
     NUM_PRESETS as _NUM_PRESETS,
@@ -332,6 +333,10 @@ class ExplorationStrategySelector:
         self._model = PeftModel.from_pretrained(base_model, str(adapter_dir))
         self._model.eval()
         self._temperature: float = temperature
+        # Resolved, absolute path -- exposed via GET /health so callers can
+        # verify a long-lived --serve process is actually serving the
+        # checkpoint they think it is (see run13_rl_grok_pipeline_analysis.md A.17).
+        self.adapter_dir: str = str(adapter_dir.resolve())
 
     # ------------------------------------------------------------------
     # Public API
@@ -883,7 +888,7 @@ def _run_serve(selector: ExplorationStrategySelector, port: int) -> None:
 
         def do_GET(self):  # noqa: N802
             if self.path == "/health":
-                self._send_json({"status": "ok"})
+                self._send_json({"status": "ok", "adapter_dir": selector.adapter_dir})
             else:
                 self._send_json({"error": "Not found"}, 404)
 
@@ -932,6 +937,7 @@ def _run_serve(selector: ExplorationStrategySelector, port: int) -> None:
 
     server = HTTPServer(("127.0.0.1", port), _Handler)
     print(f"Inference server ready on http://127.0.0.1:{port}")
+    print(f"  Serving adapter: {selector.adapter_dir}")
     print("  POST /predict       {\"digest\": \"<text>\", \"verbose\": true}")
     print("  POST /predict-file  {\"path\": \"path/to/digest.md\", \"verbose\": true}")
     print("  GET  /health")

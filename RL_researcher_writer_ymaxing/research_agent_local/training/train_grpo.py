@@ -162,6 +162,18 @@ class Group:
     # one preset is uniquely great scores higher than one with symmetric spread.
     # Used by the 'regret-hybrid' weighting mode.
     raw_reward_regret: float = 0.0
+    # margin = max(R) - second_highest(R), the same "decisiveness" measure used
+    # throughout run13_rl_grok_pipeline_analysis.md (compute_article_oracle.py,
+    # audit_oracle_margins.py). Paired with raw_reward_sd for the 'confidence'
+    # weighting mode (A.8/A.16.6): down-weight sections whose margin is small
+    # relative to their OWN measured cross-draw noise, not just symmetric spread.
+    raw_margin: float = 0.0
+    # Cross-draw std of the winning arm's reward, from section_oracle_averaged.json's
+    # "reward_sd" field (merge_replicate_oracles.py). 0.0 when unavailable (no
+    # replicate data for this article, or --use-averaged-oracle not passed) --
+    # the 'confidence' mode then falls back to sigma_floor as the denominator,
+    # degrading gracefully to a margin-only weighting.
+    raw_reward_sd: float = 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -537,6 +549,7 @@ def load_section_groups(
     section_weight: str = "hybrid",
     inv_freq_temp: float = 0.5,
     near_tie_margin: float | None = None,
+    use_averaged_oracle: bool = False,
 ) -> list[Group]:
     """Load section-level GRPO groups from section_oracle.json.
 
@@ -549,6 +562,13 @@ def load_section_groups(
     rewards), falls back to the ordinal-distance proxy from
     ``compute_oracle_reward``.
 
+    ``use_averaged_oracle`` (A.12 step 2 / A.16.7 Phase 1): when True, reads
+    the sibling ``section_oracle_averaged.json`` (N=3 replicated rewards,
+    written by merge_replicate_oracles.py) for any article that has one,
+    falling back to the single-draw ``section_oracle.json`` otherwise. Also
+    makes each group's ``raw_reward_sd`` available (the winning arm's
+    cross-draw reward std) for the ``confidence`` section-weight mode.
+
     ``section_weight`` controls how each section's loss contribution is
     weighted within an article.  Each article always contributes equally
     overall (its sections' weights sum to ``1 / num_articles``).
@@ -558,6 +578,11 @@ def load_section_groups(
     * ``variance``      — weight by std(R) across the 4 arms.
     * ``hybrid``        — wordcount × std(R).
     * ``regret-hybrid`` — wordcount × (max(R) − mean(R)).  Preferred: upside-aware.
+    * ``confidence``    — wordcount × (margin / max(reward_sd, sigma_floor)).
+      Down-weights sections whose margin is small RELATIVE TO THEIR OWN
+      measured cross-draw noise (A.8/A.16.6) rather than just symmetric
+      spread — requires ``use_averaged_oracle=True`` for real reward_sd data;
+      degrades to a margin-only weighting (denominator=sigma_floor) otherwise.
     * ``uniform``       — equal weight per section.
 
     ``near_tie_margin`` controls the near-tie acceptance window used to
@@ -570,16 +595,30 @@ def load_section_groups(
     """
     if near_tie_margin is None:
         near_tie_margin = sigma_floor
+    if section_weight == "confidence" and not use_averaged_oracle:
+        log.warning(
+            "  --section-weight confidence without --use-averaged-oracle: no real "
+            "reward_sd data available, every group's denominator falls back to "
+            "sigma_floor (degrades to a margin-only weighting)."
+        )
     groups: list[Group] = []
 
     for article in ARTICLES:
+        averaged_path = _BASES_DIR / article / "section_oracle_averaged.json"
         oracle_path = _BASES_DIR / article / "section_oracle.json"
-        if not oracle_path.exists():
-            log.warning(f"  {article}: section_oracle.json not found, skipping")
+        used_averaged = use_averaged_oracle and averaged_path.exists()
+        if use_averaged_oracle and not used_averaged:
+            log.info(f"  {article}: no section_oracle_averaged.json, using single-draw section_oracle.json")
+        read_path = averaged_path if used_averaged else oracle_path
+        if not read_path.exists():
+            log.warning(f"  {article}: {read_path.name} not found, skipping")
             continue
 
-        oracle_data = json.loads(oracle_path.read_text(encoding="utf-8"))
-        oracle_version = oracle_data.get("version", 1)
+        oracle_data = json.loads(read_path.read_text(encoding="utf-8"))
+        # section_oracle_averaged.json's own "version" numbers the merge format
+        # (always 1), not the section_oracle.json v1-v5 schema -- treat it as
+        # v2+ unconditionally since its "sections"/"rewards" shape matches.
+        oracle_version = 2 if used_averaged else oracle_data.get("version", 1)
 
         # Version 2+: use pre-computed per-arm rewards from episode runs.
         # Version 1 (legacy): fall back to ordinal-distance proxy.
@@ -596,6 +635,9 @@ def load_section_groups(
                 sid: [info["rewards"].get(PRESET_NAMES[i], 0.0) for i in range(NUM_PRESETS)]
                 for sid, info in sections_v2.items()
             }
+            oracle_reward_sd: dict[str, dict[str, float]] = {
+                sid: info.get("reward_sd", {}) for sid, info in sections_v2.items()
+            }
         else:
             # Legacy format
             oracle_presets = oracle_data.get("presets", {})
@@ -603,6 +645,7 @@ def load_section_groups(
                 log.warning(f"  {article}: oracle is empty, skipping")
                 continue
             oracle_rewards = {}  # will compute from compute_oracle_reward below
+            oracle_reward_sd = {}
 
         digest_path = _BASES_DIR / article / "research_digest.md"
         if not digest_path.exists():
@@ -708,6 +751,11 @@ def load_section_groups(
                 i for i, r in enumerate(rewards) if r >= _max_r - near_tie_margin
             ]
 
+            group.raw_margin = _max_r - sorted(rewards, reverse=True)[1]
+            group.raw_reward_sd = oracle_reward_sd.get(sec_id, {}).get(
+                PRESET_NAMES[rewards.index(_max_r)], 0.0
+            )
+
             mean_r  = sum(rewards) / len(rewards)
             raw_std = (
                 sum((r - mean_r) ** 2 for r in rewards) / len(rewards)
@@ -736,6 +784,11 @@ def load_section_groups(
             raw_weights = [g.word_weight * g.raw_reward_std for g in article_groups]
         elif section_weight == "regret-hybrid":
             raw_weights = [g.word_weight * g.raw_reward_regret for g in article_groups]
+        elif section_weight == "confidence":
+            raw_weights = [
+                g.word_weight * (g.raw_margin / max(g.raw_reward_sd, sigma_floor))
+                for g in article_groups
+            ]
         elif section_weight == "uniform":
             raw_weights = [1.0] * len(article_groups)
         else:  # "wordcount" — matches inference aggregation
@@ -1094,18 +1147,19 @@ def train(
         scheduler.load_state_dict(resume_state["scheduler"])
         _move_optimizer_state_to_device(optimizer, device)
         log.info(
-            f"Resumed task '{task_id}' from epoch {start_epoch} "
+            f"Resumed task '{task_id}' from epoch {start_epoch + 1} "
             f"(best E[R]={best_expected_reward:.4f}, "
             f"best strict={best_strict_top1:.4f}, "
             f"best near-tie={best_neartie_top1:.4f}, "
             f"patience={patience_counter})"
         )
-        if start_epoch >= args.epochs:
-            log.info(
-                f"Nothing to train: resume epoch {start_epoch} >= target epochs {args.epochs}."
-            )
-            writer.close()
-            return
+
+    if start_epoch >= args.epochs:
+        log.info(
+            f"Nothing to train: start epoch {start_epoch + 1} > target epochs {args.epochs}."
+        )
+        writer.close()
+        return
 
     t_start = time.time()
 
@@ -1270,22 +1324,21 @@ def train(
             n_strict = sum(1 for m in epoch_metrics.values() if m["strict_top1"])
             n_neartie = sum(1 for m in epoch_metrics.values() if m["top1_correct"])
 
-            # ---------- console (every 10 epochs + last) ----------
-            if epoch % 10 == 0 or epoch == args.epochs - 1:
-                elapsed = time.time() - t_start
-                vram_mb = torch.cuda.memory_allocated() / 1024**2
-                log.info(
-                    f"Epoch {epoch:>4d}/{args.epochs} | "
-                    f"loss={epoch_loss_total:.4f} "
-                    f"(grpo={epoch_loss_grpo:.4f} kl={epoch_loss_kl:.4f} ent={epoch_loss_entropy:.4f}) | "
-                    f"E[R]={mean_er:.4f} | "
-                    f"strict={n_strict}/{num_groups}({strict_top1_acc:.0%}) | "
-                    f"near={n_neartie}/{num_groups}({top1_acc:.0%}) | "
-                    f"H={mean_entropy:.3f} | "
-                    f"‖g‖={grad_norm:.4f} | lr={current_lr:.2e} | "
-                    f"epoch={epoch_wall_s:.0f}s | total={elapsed:.0f}s | "
-                    f"VRAM={vram_mb:.0f}MB"
-                )
+            # ---------- console (every epoch) ----------
+            elapsed = time.time() - t_start
+            vram_mb = torch.cuda.memory_allocated() / 1024**2
+            log.info(
+                f"Epoch {epoch + 1:>4d}/{args.epochs} done | "
+                f"loss={epoch_loss_total:.4f} "
+                f"(grpo={epoch_loss_grpo:.4f} kl={epoch_loss_kl:.4f} ent={epoch_loss_entropy:.4f}) | "
+                f"E[R]={mean_er:.4f} | "
+                f"strict={n_strict}/{num_groups}({strict_top1_acc:.0%}) | "
+                f"near={n_neartie}/{num_groups}({top1_acc:.0%}) | "
+                f"H={mean_entropy:.3f} | "
+                f"‖g‖={grad_norm:.4f} | lr={current_lr:.2e} | "
+                f"epoch={epoch_wall_s:.0f}s | total={elapsed:.0f}s | "
+                f"VRAM={vram_mb:.0f}MB"
+            )
 
             # ---------- checkpointing ----------
             # Track four independently-tracked best checkpoints. For each
@@ -1368,6 +1421,14 @@ def train(
             latest_dir.mkdir(parents=True, exist_ok=True)
             model.save_pretrained(str(latest_dir))
 
+            # Optional: keep a per-epoch checkpoint history from a given epoch onward
+            # (1-indexed; large disk usage). Training itself always runs the full
+            # [start_epoch, args.epochs) range regardless of this threshold.
+            if args.save_every_epoch and (epoch + 1) >= args.checkpoint_from_epoch:
+                epoch_dir = task_dir / "epochs" / f"epoch_{epoch:04d}"
+                epoch_dir.mkdir(parents=True, exist_ok=True)
+                model.save_pretrained(str(epoch_dir))
+
             _save_resume_state(
                 state_path=state_path,
                 task_id=task_id,
@@ -1419,7 +1480,7 @@ def main() -> None:
     parser.add_argument("--beta", type=float, default=0.1, help="KL penalty coefficient")
     parser.add_argument("--entropy-coef", type=float, default=0.15, help="Entropy bonus coefficient")
     parser.add_argument(
-        "--entropy-healthy-floor", type=float, default=0.15,
+        "--entropy-healthy-floor", type=float, default=0.05,
         help=(
             "Minimum mean_entropy (bits) for an epoch to be eligible for the "
             "best_strict_healthy checkpoint -- guards against selecting a checkpoint "
@@ -1449,6 +1510,23 @@ def main() -> None:
     parser.add_argument("--weight-decay", type=float, default=0.01)
     parser.add_argument("--patience", type=int, default=40, help="Early stopping patience")
     parser.add_argument(
+        "--save-every-epoch", action="store_true",
+        help=(
+            "Save a checkpoint for every epoch under task_dir/epochs/epoch_NNNN/, "
+            "in addition to the best_*/latest checkpoints. Uses substantial disk "
+            "space over long runs (one PEFT adapter per epoch)."
+        ),
+    )
+    parser.add_argument(
+        "--checkpoint-from-epoch", type=int, default=1,
+        help=(
+            "1-indexed epoch number from which --save-every-epoch starts writing "
+            "per-epoch checkpoints (epochs before this are not individually saved). "
+            "Does not affect where training itself starts -- training always covers "
+            "the full requested epoch range (or resumes from --resume state)."
+        ),
+    )
+    parser.add_argument(
         "--inv-freq-temp", type=float, default=0.5,
         help=(
             "Temperature for inverse-frequency class reweighting. "
@@ -1469,7 +1547,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--section-weight",
-        choices=["wordcount", "variance", "hybrid", "regret-hybrid", "uniform"],
+        choices=["wordcount", "variance", "hybrid", "regret-hybrid", "confidence", "uniform"],
         default="hybrid",
         help=(
             "How to weight section groups in the loss (section granularity only). "
@@ -1479,7 +1557,19 @@ def main() -> None:
             "'regret-hybrid': wordcount x regret where regret=max(R)-mean(R); "
             "upside-aware — focuses gradient on sections where one clear winner exists, "
             "not just sections with high symmetric spread (recommended). "
+            "'confidence': wordcount x (margin / max(reward_sd, sigma_floor)) -- down-weights "
+            "sections whose margin is small relative to their OWN measured cross-draw noise "
+            "(A.8/A.16.6); pair with --use-averaged-oracle for real reward_sd data. "
             "'uniform': equal weight per section (original behaviour)."
+        ),
+    )
+    parser.add_argument(
+        "--use-averaged-oracle",
+        action="store_true",
+        help=(
+            "Read section_oracle_averaged.json (N=3 replicated rewards) instead of the "
+            "single-draw section_oracle.json, for any article that has one (falls back to "
+            "single-draw otherwise). Section granularity only. See A.12 step 2 / A.16.7 Phase 1."
         ),
     )
     parser.add_argument(
@@ -1545,6 +1635,8 @@ def main() -> None:
         sys.exit("ERROR: --resume and --init-adapter are mutually exclusive.")
     if args.init_adapter is not None and not args.init_adapter.exists():
         sys.exit(f"ERROR: init adapter not found: {args.init_adapter}")
+    if args.checkpoint_from_epoch < 1:
+        sys.exit("ERROR: --checkpoint-from-epoch must be >= 1.")
     if not args.resume and task_dir.exists():
         log.warning(
             f"Task directory already exists: {task_dir}. "
@@ -1560,7 +1652,11 @@ def main() -> None:
         log.info(f"--bases-dir override: reading section_oracle.json/digests from {_BASES_DIR}")
     log.info(f"\n--- Step 1: Load training data (granularity={args.granularity}) ---")
     if args.granularity == "section":
-        groups = load_section_groups(args.sigma_floor, section_weight=args.section_weight, inv_freq_temp=args.inv_freq_temp, near_tie_margin=args.near_tie_margin)
+        groups = load_section_groups(
+            args.sigma_floor, section_weight=args.section_weight,
+            inv_freq_temp=args.inv_freq_temp, near_tie_margin=args.near_tie_margin,
+            use_averaged_oracle=args.use_averaged_oracle,
+        )
     else:
         groups = load_groups(args.sigma_floor, near_tie_margin=args.near_tie_margin)
 

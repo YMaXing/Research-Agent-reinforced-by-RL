@@ -1,0 +1,234 @@
+{
+  "version": 3,
+  "article": "07_reasoning_planning",
+  "variant": "no_variant",
+  "computed_at": "2026-07-30T02:01:42.475431+00:00",
+  "oracle_arm": "skip",
+  "oracle_arm_idx": 0,
+  "runner_up_arm": "deep",
+  "runner_up_arm_idx": 3,
+  "margin": 0.01275,
+  "reward_spread": 0.055197,
+  "r_w_rewards": {
+    "skip": 0.007087,
+    "light": -0.04811,
+    "standard": -0.026476,
+    "deep": -0.005663
+  },
+  "r_w_rewards_list": [
+    0.007087,
+    -0.04811,
+    -0.026476,
+    -0.005663
+  ],
+  "decision_path": [
+    "near-tie band=['skip', 'deep'] R_w=[skip:0.0071, deep:-0.0057]",
+    "active signals: [S4(\u0394\u22650.05), S5(\u0394\u22650.05)]  winner=skip  S4={skip:1.000, deep:0.867}  S5={skip:0.572, deep:0.954}"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "gate_diagnostics": {
+    "skip": {
+      "cp": 0.5,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "light": {
+      "cp": 0.5,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "standard": {
+      "cp": 0.625,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "deep": {
+      "cp": 0.625,
+      "ra": 1.0,
+      "gsp": 1.0
+    }
+  },
+  "low_signal_flag": true,
+  "n_sections": 8,
+  "n_sections_with_target": 8,
+  "total_target_words": 3175,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-what-a-non-reasoning-model-does-and-why-it-fails-on-complex-tasks",
+      "title": "what a non reasoning model does and why it fails on complex tasks",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.09449,
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.17,
+        "standard": 0.1436,
+        "deep": 0.1307
+      },
+      "rewards_by_preset": [
+        0.2,
+        0.17,
+        0.1436,
+        0.1307
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-teaching-models-to-think-chain-of-thought-and-its-limits",
+      "title": "teaching models to think chain of thought and its limits",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.09449,
+      "rewards": {
+        "skip": 0.0,
+        "light": -0.13,
+        "standard": 0.1436,
+        "deep": 0.1307
+      },
+      "rewards_by_preset": [
+        0.0,
+        -0.13,
+        0.1436,
+        0.1307
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-separating-planning-from-answering-foundations-of-react-and-plan-and-execute",
+      "title": "separating planning from answering foundations of react and plan and execute",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.06299,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.37,
+        "standard": 0.3436,
+        "deep": 0.3882
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.37,
+        0.3436,
+        0.3882
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-react-in-depth-loop-evolving-example-pros-and-cons",
+      "title": "react in depth loop evolving example pros and cons",
+      "target_words": 450,
+      "weight_words": 450,
+      "weight_frac": 0.14173,
+      "rewards": {
+        "skip": 0.0,
+        "light": -0.13,
+        "standard": -0.0564,
+        "deep": -0.1693
+      },
+      "rewards_by_preset": [
+        0.0,
+        -0.13,
+        -0.0564,
+        -0.1693
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-plan-and-execute-in-depth-plan-execution-pros-and-cons",
+      "title": "plan and execute in depth plan execution pros and cons",
+      "target_words": 700,
+      "weight_words": 700,
+      "weight_frac": 0.22047,
+      "rewards": {
+        "skip": -0.1,
+        "light": -0.03,
+        "standard": -0.1564,
+        "deep": -0.1693
+      },
+      "rewards_by_preset": [
+        -0.1,
+        -0.03,
+        -0.1564,
+        -0.1693
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-where-this-shows-up-in-practice-deep-research-style-systems",
+      "title": "where this shows up in practice deep research style systems",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.07874,
+      "rewards": {
+        "skip": -0.1,
+        "light": -0.13,
+        "standard": -0.0564,
+        "deep": -0.0643
+      },
+      "rewards_by_preset": [
+        -0.1,
+        -0.13,
+        -0.0564,
+        -0.0643
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::section-7-modern-reasoning-models-thinking-vs-answer-streams-and-interleaved-thinking",
+      "title": "modern reasoning models thinking vs answer streams and interleaved thinking",
+      "target_words": 750,
+      "weight_words": 750,
+      "weight_frac": 0.23622,
+      "rewards": {
+        "skip": 0.0,
+        "light": -0.13,
+        "standard": -0.1564,
+        "deep": -0.0693
+      },
+      "rewards_by_preset": [
+        0.0,
+        -0.13,
+        -0.1564,
+        -0.0693
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 8,
+      "sec_id": "S8::section-8-advanced-agent-capabilities-enabled-by-planning-goal-decomposition-and-self-correction",
+      "title": "advanced agent capabilities enabled by planning goal decomposition and self correction",
+      "target_words": 225,
+      "weight_words": 225,
+      "weight_frac": 0.07087,
+      "rewards": {
+        "skip": -0.1,
+        "light": -0.13,
+        "standard": 0.0011,
+        "deep": 0.0332
+      },
+      "rewards_by_preset": [
+        -0.1,
+        -0.13,
+        0.0011,
+        0.0332
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    }
+  ]
+}

@@ -11,6 +11,7 @@ from __future__ import annotations
 import json as _json
 import logging
 import math
+import os
 import subprocess
 import threading
 import time
@@ -26,6 +27,14 @@ logger = logging.getLogger(__name__)
 _TRAINING_DIR = Path(__file__).resolve().parents[3] / "training"
 _TRAINING_PYTHON = _TRAINING_DIR / ".venv" / "bin" / "python"
 _INFER_SCRIPT = _TRAINING_DIR / "infer.py"
+
+# _infer_config.py has zero heavy deps (stdlib only), so it can be imported
+# directly into the mcp_server's own venv -- this is how ensure_infer_server()
+# knows what infer.py's CURRENT default checkpoint is without needing torch.
+import sys as _sys  # noqa: E402
+if str(_TRAINING_DIR) not in _sys.path:
+    _sys.path.insert(0, str(_TRAINING_DIR))
+from _infer_config import DEFAULT_ADAPTER_DIR as _INFER_DEFAULT_ADAPTER_DIR  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # 4-preset vocabulary (mirrors _rl_preset.py)
@@ -43,8 +52,20 @@ CONFIDENCE_MODERATE: float = 0.40
 _INFER_PORT = 8787
 _INFER_STARTUP_TIMEOUT = 1800  # seconds — Qwen3-4B NF4 over /mnt/f/ can take >5 min
 
+# Override which checkpoint the infer server loads without editing infer.py's
+# hardcoded _DEFAULT_ADAPTER_DIR -- e.g.
+#   RL_INFER_ADAPTER_DIR=/path/to/checkpoints/tasks/run30_.../best uv run ...
+_ADAPTER_ENV_VAR = "RL_INFER_ADAPTER_DIR"
+
 _infer_proc: subprocess.Popen | None = None
 _infer_lock = threading.Lock()
+# Adapter path the CURRENTLY RUNNING subprocess reported via /health at startup
+# -- the source of truth ensure_infer_server() compares future requests against
+# so a checkpoint change (new --adapter-dir, new RL_INFER_ADAPTER_DIR, or an
+# edited _DEFAULT_ADAPTER_DIR) triggers a restart instead of silently reusing
+# stale weights (see run13_rl_grok_pipeline_analysis.md A.17 -- this exact bug
+# made two "different checkpoint" evals return byte-identical predictions).
+_infer_adapter_dir: str | None = None
 
 # Collects stderr from the infer subprocess so the OS pipe never blocks.
 _infer_stderr_lines: list[str] = []
@@ -64,8 +85,40 @@ def _drain_stderr(proc: subprocess.Popen) -> None:
                 _infer_stderr_lines.pop(0)
 
 
-def ensure_infer_server() -> str:
-    """Start the infer.py HTTP server subprocess if not already running.
+def _query_health(base_url: str, timeout: float = 2.0) -> dict | None:
+    try:
+        with urllib.request.urlopen(f"{base_url}/health", timeout=timeout) as resp:
+            if resp.status == 200:
+                return _json.loads(resp.read())
+    except Exception:  # noqa: BLE001
+        pass
+    return None
+
+
+def _terminate_infer_proc() -> None:
+    global _infer_proc, _infer_adapter_dir
+    if _infer_proc is not None and _infer_proc.poll() is None:
+        logger.info("Stopping stale infer server (adapter changed)…")
+        _infer_proc.terminate()
+        try:
+            _infer_proc.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            _infer_proc.kill()
+            _infer_proc.wait(timeout=10)
+    _infer_proc = None
+    _infer_adapter_dir = None
+
+
+def ensure_infer_server(adapter_dir: str | None = None) -> str:
+    """Start the infer.py HTTP server subprocess if not already running with
+    the requested adapter checkpoint.
+
+    ``adapter_dir`` (optional): resolves in this order: the argument, then the
+    ``RL_INFER_ADAPTER_DIR`` env var, then ``None`` (infer.py's own hardcoded
+    default). If a server is already running with a DIFFERENT adapter than
+    requested, it is terminated and restarted -- this is the fix for the bug
+    where a long-lived server silently kept serving a stale checkpoint across
+    unrelated eval runs (A.17).
 
     Uses the training venv's Python (which has torch/transformers installed).
     Blocks until the /health endpoint responds or the startup timeout is reached.
@@ -74,18 +127,34 @@ def ensure_infer_server() -> str:
     stderr is drained by a background thread to prevent pipe-buffer stalls
     (bitsandbytes / transformers can emit hundreds of KB during model load).
     """
-    global _infer_proc
+    global _infer_proc, _infer_adapter_dir
     base_url = f"http://127.0.0.1:{_INFER_PORT}"
-    health_url = f"{base_url}/health"
 
-    # Fast path — already running
+    # Resolve what SHOULD be running: an explicit override (arg or env var) if
+    # given, otherwise infer.py's own current default -- NOT "don't care".
+    # Falling back to None here was the bug (2026-08-21): it made "no override
+    # given" skip the stale-checkpoint check entirely, so editing infer.py's
+    # _DEFAULT_ADAPTER_DIR and restarting a caller that never passes an
+    # explicit adapter_dir (e.g. test_grok_planner.py) kept reusing whatever
+    # checkpoint the server happened to load first.
+    requested = adapter_dir or os.environ.get(_ADAPTER_ENV_VAR) or str(_INFER_DEFAULT_ADAPTER_DIR)
+    requested_resolved = str(Path(requested).resolve())
+
+    # Fast path — already running with the requested adapter.
     if _infer_proc is not None and _infer_proc.poll() is None:
-        return base_url
+        if requested_resolved == _infer_adapter_dir:
+            return base_url
 
     with _infer_lock:
         # Re-check after acquiring lock
         if _infer_proc is not None and _infer_proc.poll() is None:
-            return base_url
+            if requested_resolved == _infer_adapter_dir:
+                return base_url
+            logger.warning(
+                "Infer server is running adapter '%s' but '%s' was requested -- restarting.",
+                _infer_adapter_dir, requested_resolved,
+            )
+            _terminate_infer_proc()
 
         logger.info(
             "Starting infer.py HTTP server (this will load the model — "
@@ -94,13 +163,10 @@ def ensure_infer_server() -> str:
         with _infer_stderr_lock:
             _infer_stderr_lines.clear()
 
+        cmd = [str(_TRAINING_PYTHON), str(_INFER_SCRIPT), "--serve", "--port", str(_INFER_PORT),
+               "--adapter-dir", requested]
         _infer_proc = subprocess.Popen(
-            [
-                str(_TRAINING_PYTHON),
-                str(_INFER_SCRIPT),
-                "--serve",
-                "--port", str(_INFER_PORT),
-            ],
+            cmd,
             cwd=str(_TRAINING_DIR),
             stdout=subprocess.DEVNULL,
             stderr=subprocess.PIPE,
@@ -120,13 +186,17 @@ def ensure_infer_server() -> str:
                 raise RuntimeError(
                     f"Infer server process exited unexpectedly during startup.\n{stderr}"
                 )
-            try:
-                with urllib.request.urlopen(health_url, timeout=2) as resp:
-                    if resp.status == 200:
-                        logger.info("Infer server is ready.")
-                        return base_url
-            except Exception as exc:  # noqa: BLE001
-                last_exc = exc
+            health = _query_health(base_url)
+            if health is not None:
+                _infer_adapter_dir = health.get("adapter_dir")
+                logger.info("Infer server is ready. Serving adapter: %s", _infer_adapter_dir)
+                if _infer_adapter_dir != requested_resolved:
+                    logger.warning(
+                        "Requested adapter '%s' but server reports '%s' -- "
+                        "check infer.py's --adapter-dir handling.",
+                        requested_resolved, _infer_adapter_dir,
+                    )
+                return base_url
             time.sleep(2)
 
         with _infer_stderr_lock:
@@ -138,14 +208,17 @@ def ensure_infer_server() -> str:
         )
 
 
-def call_infer_server(digest: str) -> tuple[int, list[float], list[dict]]:
+def call_infer_server(digest: str, adapter_dir: str | None = None) -> tuple[int, list[float], list[dict]]:
     """Send the digest to the running infer server and return structured results.
+
+    ``adapter_dir``: optional override, see ensure_infer_server(). Most callers
+    should leave this None and control the checkpoint via RL_INFER_ADAPTER_DIR.
 
     Returns ``(preset, aggregate_probs, section_details)``.
     Each ``section_details`` entry carries: title (=sec_id), probs, chosen,
     target_words, word_count, margin, confidence, weight.
     """
-    base_url = ensure_infer_server()
+    base_url = ensure_infer_server(adapter_dir)
     payload = _json.dumps({"digest": digest, "verbose": True}).encode()
     req = urllib.request.Request(
         f"{base_url}/predict",

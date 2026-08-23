@@ -203,6 +203,29 @@ _MANUAL_OVERRIDES: dict[str, str] = {
     # NOTE: 03_context_engineering__var_minimal removed — now covered by the
     #       external_evidence_policy=forbidden → skip hard constraint.
     "09_RAG__var_demanding":               "deep",
+
+    # --- A.15.2/A.15.4 N=3-replication majority-vote corrections (2026-08-20,
+    #     A.16.7 Phase 1). Decided by the pre-registered majority-vote-of-
+    #     per-draw-arm-winners rule (production + 2 replicates), which takes
+    #     precedence over compute_article_oracle's own automated near-tie S3/
+    #     S4/S5 tie-break precisely because that tie-break reads only ONE
+    #     arm's single-draw article text and has no cross-draw evidence.
+    #     Confirmed the automated decision still disagrees with these three
+    #     even after the A.16.0 ordinal-index fix (--use-averaged alone picks
+    #     'deep' for both 06_tools__var_demanding and 13_agent_framework via
+    #     S3/S4/S5, not the majority-vote-governed 'light') -- see
+    #     run13_rl_grok_pipeline_analysis.md A.15.2/A.15.4/A.16.0.
+    #     (10_memory_knowledge_access__var_demanding and
+    #     02_workflows_vs_agents__var_demanding needed NO override: their
+    #     2026-08-16 grade correction already made the automated decision
+    #     correct at the data layer.)
+    "08_react_practice__var_demanding":    "light",
+    "11_multimodal__var_standard":         "skip",
+    "06_tools__var_demanding":             "light",
+    "Earth_Oceans_Origin":                 "deep",
+    "Gravity_Entropy":                     "light",
+    "13_agent_framework":                  "light",
+    "Insects_Consciousness":               "deep",
 }
 
 # ---------------------------------------------------------------------------
@@ -270,18 +293,28 @@ def _episode_dir(article: str, arm: str) -> Path:
 # File loaders
 # ---------------------------------------------------------------------------
 
-def _load_section_oracle(article: str) -> dict:
-    """Load and validate section_oracle.json (v2 or v3) for *article*."""
-    path = _BASES_DIR / article / "section_oracle.json"
+def _load_section_oracle(article: str, use_averaged: bool = False) -> dict:
+    """Load and validate section_oracle.json (v2+) for *article*.
+
+    ``use_averaged=True`` loads the sibling ``section_oracle_averaged.json``
+    (written by merge_replicate_oracles.py) instead -- its own "version" field
+    numbers the merge format, not the section_oracle.json schema, so the v2+
+    check is skipped for it.
+    """
+    fname = "section_oracle_averaged.json" if use_averaged else "section_oracle.json"
+    path = _BASES_DIR / article / fname
+    if not path.exists():
+        raise FileNotFoundError(f"{fname} not found for '{article}'")
     data = json.loads(path.read_text(encoding="utf-8"))
-    v = data.get("version", 1)
-    if v < 2:
-        raise ValueError(
-            f"section_oracle.json for '{article}' is version {v}; "
-            "version 2+ required. Re-run generate_episode_oracles.py."
-        )
+    if not use_averaged:
+        v = data.get("version", 1)
+        if v < 2:
+            raise ValueError(
+                f"section_oracle.json for '{article}' is version {v}; "
+                "version 2+ required. Re-run generate_episode_oracles.py."
+            )
     if not data.get("sections"):
-        raise ValueError(f"section_oracle.json for '{article}' has no sections.")
+        raise ValueError(f"{fname} for '{article}' has no sections.")
     return data
 
 
@@ -644,14 +677,21 @@ def _variant_of(article: str) -> str:
     return "no_variant"  # no-variant test articles
 
 
-def compute_article_oracle(article: str) -> dict:
+def compute_article_oracle(article: str, use_averaged: bool = False) -> dict:
     """Compute the full article-level oracle record for one variant.
+
+    ``use_averaged=True`` sources R_w from section_oracle_averaged.json's N=3
+    averaged rewards instead of the single-draw section_oracle.json -- the
+    A.12 step 3 / A.16.7 Phase 1 "_averaged variant". S3/S4/S5's near-tie
+    tie-break signals are unaffected: they read the arms' actual generated
+    article.md text, which exists once per arm regardless of how many draws
+    were used to grade it.
 
     Returns a dict ready for JSON serialisation matching the schema in
     this module's docstring.
     """
     # --- load inputs ---
-    oracle_data = _load_section_oracle(article)
+    oracle_data = _load_section_oracle(article, use_averaged=use_averaged)
     oracle_sections: dict[str, dict] = oracle_data["sections"]
 
     feat_data = _load_guideline_features(article)
@@ -693,6 +733,7 @@ def compute_article_oracle(article: str) -> dict:
         "article": article,
         "variant": _variant_of(article),
         "computed_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "computed_from": "section_oracle_averaged.json" if use_averaged else "section_oracle.json",
         "oracle_arm": oracle_arm,
         "oracle_arm_idx": oracle_arm_idx,
         "runner_up_arm": runner_up_arm,
@@ -747,16 +788,33 @@ def main() -> None:
         action="store_true",
         help="Overwrite existing article_oracle.json files (default: skip if already present).",
     )
+    parser.add_argument(
+        "--use-averaged",
+        action="store_true",
+        help=(
+            "Source R_w from section_oracle_averaged.json (N=3 replicated articles) instead of "
+            "the single-draw section_oracle.json, and write to a SIBLING article_oracle_averaged.json "
+            "-- production article_oracle.json is never touched by this flag. Default targets become "
+            "every article-variant that HAS a section_oracle_averaged.json (use --articles to override)."
+        ),
+    )
     args = parser.parse_args()
 
     if args.articles:
         targets = args.articles
     elif args.article:
         targets = [args.article]
+    elif args.use_averaged:
+        targets = sorted(
+            d.name for d in _BASES_DIR.iterdir()
+            if d.is_dir() and (d / "section_oracle_averaged.json").exists()
+        )
     else:
         targets = ALL_ARTICLES
 
     mode = "DRY-RUN" if args.dry_run else ("FORCE" if args.force else "WRITE")
+    if args.use_averaged:
+        mode += " / AVERAGED"
     print(
         f"compute_article_oracle.py  [{mode}]  "
         f"4-arm scheme (skip/light/standard/deep)\n"
@@ -769,7 +827,7 @@ def main() -> None:
     for article in targets:
         try:
             print(f"  {article} ...", end=" ", flush=True)
-            data = compute_article_oracle(article)
+            data = compute_article_oracle(article, use_averaged=args.use_averaged)
             results.append(data)
 
             flag = " ★OVERRIDE" if data["manual_override"] else ""
@@ -785,7 +843,8 @@ def main() -> None:
             )
 
             if not args.dry_run:
-                out_path = _BASES_DIR / article / "article_oracle.json"
+                out_name = "article_oracle_averaged.json" if args.use_averaged else "article_oracle.json"
+                out_path = _BASES_DIR / article / out_name
                 if out_path.exists() and not args.force:
                     print(f"  SKIP (already exists; use --force to overwrite): {out_path.name}")
                 else:
@@ -819,8 +878,9 @@ def main() -> None:
             )
 
     if not args.dry_run and results:
+        out_label = "article_oracle_averaged.json" if args.use_averaged else "article_oracle.json"
         print(
-            f"\n  Wrote {len(results)} article_oracle.json file(s) "
+            f"\n  Wrote {len(results)} {out_label} file(s) "
             f"under rl_training_data/bases/{'  (--force active)' if args.force else ''}"
         )
 
