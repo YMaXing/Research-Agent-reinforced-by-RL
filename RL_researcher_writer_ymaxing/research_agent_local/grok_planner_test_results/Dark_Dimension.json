@@ -6,14 +6,14 @@
   "rl_preset": 3,
   "grok_preset": null,
   "chosen_preset": 3,
-  "chosen_by": "RL",
+  "chosen_by": "RL+guards",
   "oracle_preset": 3,
   "oracle_name": "deep",
   "r_w_rewards": [
-    0.38,
-    0.4856,
-    0.4592,
-    0.4882
+    0.3411,
+    0.5167,
+    0.5114,
+    0.5588
   ],
   "verdict": "EXACT",
   "regret": 0.0,

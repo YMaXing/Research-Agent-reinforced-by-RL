@@ -309,20 +309,29 @@ def guidance(preset: int, confidence: float, h: float, floor_applied: bool) -> s
 # ---------------------------------------------------------------------------
 # Cost-sensitive decision rule (empirical, fit from train-set oracle rewards)
 # ---------------------------------------------------------------------------
-# Cost[c][a] = E[R_w(true class c) - R_w(action a)], fit from the 16 non-forbidden
-# train-set article oracles (2026-07-10 backtest — see
-# grok_planner_test_results/run13_rl_grok_pipeline_analysis.md Part 2 §9/§13).
-# Encodes the reward asymmetry the raw argmax ignores: under-shooting (picking
-# too cheap) costs far more than a 1-level over-shoot at the P0/P1 boundary
-# (0.147 vs 0.015); the reverse but smaller asymmetry favors P1 over P2 unless
-# the vote is fairly confident (P1/P2: over-cost 0.132 vs under-cost 0.077);
-# P2/P3 is roughly symmetric (0.080 vs 0.079) so plain argmax is fine there.
+# Cost[c][a] = E[R_w(true class c) - R_w(action a)], fit from the 24 TRAIN-set
+# article oracles (excluding forbidden-policy articles), refit 2026-08-25
+# against the N=3-replication-corrected oracle data (article_oracle_averaged.json
+# where present) -- superseding the original 2026-07-10 fit, which pre-dated the
+# ordinal-index/explore-split bug fixes and the replication-vote label
+# corrections applied 2026-08-20 (see grok_planner_test_results/
+# _backtest_cost_matrix.py and run13_rl_grok_pipeline_analysis.md A.17/A.25).
+# Re-verification found the matrix values had drifted materially (e.g.
+# true=light/action=deep: 0.1730->0.0499) but the resulting DECISIONS are
+# unchanged on TEST (byte-identical to the prior matrix, 9/16 exact either
+# way) and a small, mixed trade on TRAIN (11/24 exact vs 13/24, but max regret
+# 0.0401 vs 0.0672) -- shipped anyway on correctness grounds: the matrix should
+# reflect the actual current reward structure, not a stale one, independent of
+# whether today's held-out set happens to be sensitive to the difference.
+# CAVEAT: the true=skip row is fit from only 1 non-forbidden TRAIN article (8
+# of 9 skip-labeled TRAIN articles are policy=forbidden and excluded by this
+# fitting convention) -- treat that row as noisy regardless of which fit is used.
 _COST_MATRIX: list[list[float]] = [
     # action:    skip     light  standard    deep
-    [0.0000, 0.0148, 0.0551, 0.1223],  # true = skip
-    [0.1467, 0.0000, 0.1317, 0.1730],  # true = light
-    [0.1693, 0.0768, 0.0000, 0.0797],  # true = standard
-    [0.0666, 0.0578, 0.0794, 0.0000],  # true = deep
+    [0.0000, 0.0356, 0.1384, 0.0179],  # true = skip  (n=1, noisy -- see caveat above)
+    [0.1096, 0.0000, 0.0616, 0.0499],  # true = light
+    [0.0810, 0.0233, 0.0000, 0.0539],  # true = standard
+    [0.1067, 0.0369, 0.0436, 0.0000],  # true = deep
 ]
 
 #: Never let the rule move more than this many preset levels from the raw
@@ -342,11 +351,13 @@ def apply_cost_sensitive_rule(raw_preset: int, probs: list[float]) -> int:
     ``E[cost | a] = sum_c probs[c] * _COST_MATRIX[c][a]``, restricted to
     candidates within `_COST_RULE_MAX_STEP` of ``raw_preset``.
 
-    Backtest result (2026-07-10, against saved run13_formulaB aggregate
-    distributions): TEST exact 7->10 (44%->62%), near 9->6, miss 0->0 (stays
-    zero), ordinal MAE 0.562->0.375, reward-regret mean 0.0779->0.0384 (-51%),
-    regret max 0.3192->0.1700 (-47%). TRAIN exact 19->20, miss unchanged at 2
-    (both pre-existing label-near-tie artifacts, not affected by this rule).
+    Backtest result (2026-08-25, refit against N=3-replication-corrected
+    oracle data): TEST exact 8->9 (50%->56%), near 5->4, miss unchanged at 3,
+    MAE 0.6875->0.625, reward-regret mean 0.0176->0.0134, regret max unchanged
+    at 0.0666 -- identical to the prior (pre-refit) matrix's TEST decisions.
+    TRAIN exact 13->11 (54%->46%, 2 additional NEARs), regret mean
+    0.0198->0.0111, regret max 0.0774->0.0401 -- a small, mixed trade (fewer
+    exact hits, lower worst-case regret) versus the prior matrix's 13/24 exact.
     """
     lo = max(0, raw_preset - _COST_RULE_MAX_STEP)
     hi = min(NUM_PRESETS - 1, raw_preset + _COST_RULE_MAX_STEP)

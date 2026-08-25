@@ -353,6 +353,11 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
         # RL-only baseline / policy-guard ablation: skip the Grok stage entirely.
         grok_recommendation = None
         logger.info("rl_only=True; skipping Grok planner stage.")
+    elif settings.preset_planner_skip_grok:
+        # A.17.9: measured worse than RL+guards on this checkpoint; scoped opt-out
+        # that leaves XAI_API_KEY available for the other Grok-backed features.
+        logger.info("PRESET_PLANNER_SKIP_GROK=true; using deterministic fallback aggregator.")
+        grok_recommendation = fallback_aggregator(evidence)
     elif settings.xai_api_key is not None:
         try:
             grok_recommendation = await call_grok_planner(

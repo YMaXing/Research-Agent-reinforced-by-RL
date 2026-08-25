@@ -30,11 +30,13 @@ PRESET_NAMES = ["skip", "light", "standard", "deep"]
 
 # The matrix currently shipped in preset_infer_handler.py (copied verbatim for
 # side-by-side comparison; keep in sync if that file changes).
+# Refit 2026-08-25 against N=3-replication-corrected oracle data -- see
+# preset_infer_handler.py::_COST_MATRIX and run13_rl_grok_pipeline_analysis.md A.25.
 SHIPPED_COST_MATRIX: list[list[float]] = [
-    [0.0000, 0.0148, 0.0551, 0.1223],
-    [0.1467, 0.0000, 0.1317, 0.1730],
-    [0.1693, 0.0768, 0.0000, 0.0797],
-    [0.0666, 0.0578, 0.0794, 0.0000],
+    [0.0000, 0.0356, 0.1384, 0.0179],
+    [0.1096, 0.0000, 0.0616, 0.0499],
+    [0.0810, 0.0233, 0.0000, 0.0539],
+    [0.1067, 0.0369, 0.0436, 0.0000],
 ]
 MAX_STEP = 1
 

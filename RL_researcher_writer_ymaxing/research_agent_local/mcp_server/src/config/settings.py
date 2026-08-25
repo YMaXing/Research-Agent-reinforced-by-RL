@@ -38,6 +38,19 @@ class Settings(BaseSettings):
     n_exploration_queries_per_round: int = Field(default=4, alias="N_EXPLORATION_QUERIES_PER_ROUND", description="Number of exploration queries to generate per exploration round. Only applicable if maximum_exploration_rounds > 0.")
     maximum_sources_to_scrape: int = Field(default=6, alias="MAXIMUM_SOURCES_TO_SCRAPE", description="Maximum number of sources to scrape fully during research")
     enable_content_dedup: bool = Field(default=False, alias="ENABLE_CONTENT_DEDUP", description="Whether to run the content deduplication step (step 7). Set to false to feed the full raw research into the final file.")
+    preset_planner_skip_grok: bool = Field(
+        default=True,
+        alias="PRESET_PLANNER_SKIP_GROK",
+        description=(
+            "Skip the Grok 4.2 stage in predict_exploration_preset_tool and use the "
+            "deterministic RL+guards fallback_aggregator instead. Defaults to True: "
+            "measured evidence (run13_rl_grok_pipeline_analysis.md A.17-A.17.9) shows "
+            "the Grok stage adds no value over RL+guards on this checkpoint, so the "
+            "Grok pipeline is retired from production. Set to False to re-enable it "
+            "for a future re-evaluation (XAI_API_KEY is shared with other Grok-backed "
+            "features and must stay set for those regardless of this flag)."
+        ),
+    )
     
     # LLM Configuration
     youtube_transcription_model: str = Field(default="gemini-2.5-flash", description="Model for YouTube transcription, only supported Gemini models")

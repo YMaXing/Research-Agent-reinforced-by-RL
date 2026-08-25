@@ -6,26 +6,26 @@
   "rl_preset": 1,
   "grok_preset": null,
   "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_by": "RL+guards",
   "oracle_preset": 1,
   "oracle_name": "light",
   "r_w_rewards": [
-    0.2415,
-    0.3752,
-    0.3355,
-    0.2479
+    0.2748,
+    0.3614,
+    0.3692,
+    0.2892
   ],
   "verdict": "EXACT",
   "regret": 0.0,
   "regret_counted": 0.0,
-  "entropy_bits": 1.4732,
-  "confidence": 0.2927,
+  "entropy_bits": 1.4719,
+  "confidence": 0.5141,
   "floor_applied": true,
   "rl_agg_probs": [
-    0.5122,
-    0.2927,
-    0.1951,
-    0.0
+    0.1955,
+    0.5141,
+    0.0,
+    0.2904
   ],
   "grok_override": null,
   "grok_reasoning": null,

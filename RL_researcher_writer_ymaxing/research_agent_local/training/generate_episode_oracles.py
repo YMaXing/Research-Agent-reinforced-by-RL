@@ -129,6 +129,28 @@ _ARM_ORDER = ["skip", "light", "standard", "deep"]
 # of what "rounds" means for cost -- cost_coef itself (-0.06) is unchanged.
 _ARM_COST_UNITS: dict[str, float] = {"skip": 0.0, "light": 1.00, "standard": 1.88, "deep": 2.31}
 
+# EXPERIMENTAL, NOT SHIPPED (2026-08-25) -- "Design C": a non-uniform per-arm
+# cost, steepening skip->light and light->standard to run26_costcoef_only's
+# full ordinal-unit strength (-0.06 each step) while leaving standard->deep at
+# HALF of C2's own (already small) gap, rather than steepening it too. Zero-cost
+# preview against N=3-corrected TRAIN data (see run13_rl_grok_pipeline_analysis.md
+# A.25/A.26) found this captures most of run26's section-level signal-quality
+# gain (floored-fraction 27.3%->19.5%, near run26's 11.8%) while preserving
+# 100% of TRAIN's `deep`-labeled articles (run26 alone zeroes them out).
+# Justification beyond label balance: (1) the de/be explore term already
+# SATURATES near standard/deep via enhancement_credit()'s curve, so a cost term
+# that is ALSO steep there double-penalizes a region where marginal value is
+# already capped -- steepness is better spent where explore-value is still
+# rising (skip->standard), the region genuinely ambiguous decisions live in;
+# (2) the real-world harm of under-provisioning is front-loaded -- skipping
+# exploration entirely when even light research was needed risks a categorical,
+# uncorrected content gap, whereas stopping at standard instead of deep is a
+# question of thoroughness, not coverage; (3) every checkpoint measured this
+# session systematically UNDER-predicts deep already -- a cost curve that keeps
+# sharpening exactly that boundary compounds a known bias instead of correcting
+# it. Selected via --cost-formula design_c (default remains "c2", unchanged).
+_DESIGN_C_COST: dict[str, float] = {"skip": 0.0, "light": -0.06, "standard": -0.12, "deep": -0.1265}
+
 # Dimensions used in the reward formula (same as _REWARD_DIMS in train_grpo.py)
 _REWARD_DIMS = [
     "ground_truth_core_content",      # cc
@@ -322,6 +344,7 @@ def _section_reward(
     cp: float, ga: float, ra: float,
     nr: float,
     variant: str,
+    cost_override: float | None = None,
 ) -> float:
     """Compute section-level reward with a UNIFIED formula (Formula "B", C2-revised).
 
@@ -377,7 +400,7 @@ def _section_reward(
     """
     gt_base = 0.20 * cc + 0.20 * fl
     explore = cp * (0.45 * de + 0.30 * be)
-    cost    = -0.03 * nr  # cost_coef: -0.06->-0.045->-0.03->-0.02 (2026-07-26) -> -0.03 (2026-07-29, C2 ship)
+    cost    = -0.03 * nr if cost_override is None else cost_override  # cost_coef: -0.06->-0.045->-0.03->-0.02 (2026-07-26) -> -0.03 (2026-07-29, C2 ship)
     return gt_base + explore + _ga_gate_penalty(ga) + cost
 
 
@@ -386,6 +409,7 @@ def _section_reward_components(
     cp: float, ga: float, ra: float,
     nr: float,
     variant: str,
+    cost_override: float | None = None,
 ) -> tuple[float, float]:
     """Same formula as _section_reward(), but returns (rest, explore) separately
     instead of their sum -- ``rest + explore == _section_reward(...)`` exactly.
@@ -410,7 +434,7 @@ def _section_reward_components(
     """
     gt_base = 0.20 * cc + 0.20 * fl
     explore = cp * (0.45 * de + 0.30 * be)
-    cost    = -0.03 * nr  # cost_coef: -0.06->-0.045->-0.03->-0.02 (2026-07-26) -> -0.03 (2026-07-29, C2 ship)
+    cost    = -0.03 * nr if cost_override is None else cost_override  # cost_coef: -0.06->-0.045->-0.03->-0.02 (2026-07-26) -> -0.03 (2026-07-29, C2 ship)
     rest = gt_base + _ga_gate_penalty(ga) + cost
     return rest, explore
 
@@ -459,6 +483,7 @@ def process_article_variant(
     variant: str | None,
     dry_run: bool = False,
     return_data: bool = False,
+    cost_formula: str = "c2",
 ) -> bool | tuple[bool, dict | None]:
     """Derive and write the section oracle for one (article, variant) pair.
 
@@ -466,6 +491,12 @@ def process_article_variant(
     episode directories carry no variant suffix, e.g.
     ``bases/<article>/`` and ``episodes/<article>__preset{p}/``.
     The reward formula will use the ``'standard'`` variant in that case.
+
+    ``cost_formula``: "c2" (default, shipped) uses the H0-empirical-unit cost
+    term unchanged. "design_c" substitutes the experimental non-uniform
+    per-arm cost (``_DESIGN_C_COST``) instead -- see that constant's docstring
+    for the mechanism and justification. Selecting "design_c" does not affect
+    any other part of the formula (gt_base/explore/ga_penalty are identical).
 
     ``return_data=True`` returns ``(ok, sections_output)`` instead of just
     ``ok`` -- ``sections_output`` is ``None`` on failure. Used by
@@ -587,6 +618,7 @@ def process_article_variant(
         for p in _ACTIVE_PRESETS:
             ep = episode_dims[p]
             nr = _ARM_COST_UNITS[_preset_to_arm[p]]
+            cost_override = _DESIGN_C_COST[_preset_to_arm[p]] if cost_formula == "design_c" else None
 
             def _score(dim: str, _ep=ep, _sn=sec_norm, _si=sec_idx) -> float:
                 return _get_score(_ep.get(dim, []), _sn, _si)
@@ -616,6 +648,7 @@ def process_article_variant(
                 ra=ra_val,
                 nr=nr,
                 variant=variant_short,
+                cost_override=cost_override,
             )
             preset_rewards[p] = rest + explore
             preset_explore[p] = explore
@@ -704,6 +737,29 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help="Parse and compute rewards but do NOT write oracle files.",
     )
+    parser.add_argument(
+        "--cost-formula",
+        choices=["c2", "design_c"],
+        default="c2",
+        help=(
+            "Reward cost mechanism. 'c2' (default) is the shipped H0-unit cost "
+            "-- unchanged production behaviour. 'design_c' is the experimental "
+            "non-uniform per-arm cost (see _DESIGN_C_COST); always combine with "
+            "--bases-dir to avoid writing over production bases/."
+        ),
+    )
+    parser.add_argument(
+        "--bases-dir",
+        type=Path,
+        default=None,
+        help=(
+            "Override the bases root to read episodes/write section_oracle.json "
+            "into (default: production rl_training_data/bases/). Use a separate "
+            "directory (e.g. bases_design_c/, pre-populated with the same "
+            "research_digest.md/guideline_features.json) when experimenting so "
+            "production bases/ is never touched."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -711,7 +767,11 @@ def main() -> int:
     args = _parse_args()
     articles = args.articles if args.articles else _ALL_ARTICLES
 
-    log.info("=== generate_episode_oracles  dry_run=%s ===", args.dry_run)
+    if args.bases_dir is not None:
+        global _BASES_DIR
+        _BASES_DIR = args.bases_dir
+
+    log.info("=== generate_episode_oracles  dry_run=%s  cost_formula=%s ===", args.dry_run, args.cost_formula)
     log.info("Episodes dir: %s", _EPISODES_DIR)
     log.info("Bases dir:    %s", _BASES_DIR)
     log.info("Articles: %s", articles)
@@ -740,7 +800,7 @@ def main() -> int:
                 log.info("Processing %s__%s", article, variant)
             else:
                 log.info("Processing %s (no-variant)", article)
-            if process_article_variant(article, variant, dry_run=args.dry_run):
+            if process_article_variant(article, variant, dry_run=args.dry_run, cost_formula=args.cost_formula):
                 ok += 1
             else:
                 fail += 1

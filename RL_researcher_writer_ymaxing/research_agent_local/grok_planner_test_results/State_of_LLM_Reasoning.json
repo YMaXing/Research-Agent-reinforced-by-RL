@@ -5,8 +5,8 @@
   "policy": "forbidden",
   "rl_preset": 1,
   "grok_preset": null,
-  "chosen_preset": 1,
-  "chosen_by": "RL",
+  "chosen_preset": 0,
+  "chosen_by": "RL+guards",
   "oracle_preset": 0,
   "oracle_name": "skip",
   "r_w_rewards": [
@@ -15,17 +15,17 @@
     0.1719,
     0.1722
   ],
-  "verdict": "NEAR",
-  "regret": 0.0132,
+  "verdict": "EXACT",
+  "regret": 0.0,
   "regret_counted": null,
-  "entropy_bits": 1.3121,
-  "confidence": 0.5977,
-  "floor_applied": true,
+  "entropy_bits": 1.7974,
+  "confidence": 0.2454,
+  "floor_applied": false,
   "rl_agg_probs": [
-    0.0242,
-    0.5977,
-    0.33,
-    0.048
+    0.358,
+    0.2454,
+    0.0589,
+    0.3377
   ],
   "grok_override": null,
   "grok_reasoning": null,

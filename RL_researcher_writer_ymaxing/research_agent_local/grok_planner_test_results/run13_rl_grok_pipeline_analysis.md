@@ -8143,6 +8143,144 @@ not a mistunable constant, so no threshold adjustment closes this gap. Given the
 contribution to the overall regret picture is small next to A.17.9's dominant findings. No further
 action recommended on this item; the corpus-expansion lever (A.9) remains the higher-value target.
 
+## A.18 Reward-formula reconsideration: "Design C" — a non-uniform cost mechanism (2026-08-25)
+
+**Context.** Everything trained and evaluated in A.17 (`run31/ep109`, `run33/ep81`) uses the shipped
+"Formula B, C2-revised" reward (`generate_episode_oracles.py::_section_reward()`, dated 2026-07-29):
+
+```
+R(section, arm) = 0.20·cc + 0.20·fl + cp·(0.45·de + 0.30·be) + ga_gate(ga) − 0.03·nr
+```
+
+where `nr` is the arm's empirically-measured exploration-effort unit (H0, `_ARM_COST_UNITS`:
+skip=0, light=1.00, standard=1.88, deep=2.31 — not raw ordinal round counts). `ra` (research
+anchoring) was removed entirely (96.8% constant, ~2% of signal); `ga` was demoted from an additive
+weight to a soft satisficing gate (flat −0.10 if `ga<0.5`) after its raw signal was found to be
+~97% noise.
+
+### A.18.1 A previously-unshipped alternative: `run26_costcoef_only`
+
+An earlier Stage-1 isolated-variable search (§61, 2026-08-04 to 08-07) tested reverting the cost
+term to plain **ordinal units** `{skip:0, light:1, standard:2, deep:3}` with a larger coefficient
+(`−0.06`, vs. C2's `−0.03·nr_H0`). This was the single best result of that entire search:
+
+| variant | TEST exact | TEST miss | MAE | regret_mean |
+|---|---:|---:|---:|---:|
+| `run27_debecurve_only` (de/be reverted to raw binary) | 25% | 38% | 1.250 | 0.0231 |
+| `run28_garatreat_only` (ga/ra reverted to additive) | 38% | 38% | 1.125 | 0.0257 |
+| `run29_costcoef05` (H0 units, coef=−0.05 — milder version of run26's idea) | 44% | 25% | 0.812 | 0.0194 |
+| **`run26_costcoef_only`** (ordinal units, coef=−0.06) @ep146 | **50%** | **12.5%** | **0.625** | **0.0144** |
+
+**Why `run26` was never actually shipped: it hit the same wall as every other checkpoint in this
+investigation, not a documented rejection.** Its own health-gated ceiling (38.0% strict, computed at
+the last entropy-healthy epoch, ~34) sits *below* its own trivial constant-predictor baseline
+(41.5%) — extending §60.12's invariant ("no run has ever beaten its own baseline while genuinely
+healthy") to this formula variant too. The 50% TEST number comes from deep in its entropy-collapsed
+regime (epoch 146, entropy settled at 0.02-0.05 from ~epoch 40 onward). `run26` was killed for
+practical reasons (TRAIN plateaued, GPU time better spent elsewhere) at the same time attention moved
+to the N=3 replication effort (Appendix A) — its "Stage 2/3: consolidate and ship" follow-up never
+happened. It remains a genuinely open, never-fully-closed thread, not a proven failure.
+
+### A.18.2 Re-preview against N=3-corrected data: the signal-quality gain is real, but so is a severe deep-scarcity cost
+
+Since the cost term is a pure per-arm constant added to the rest of the (section-content-dependent)
+reward, `R_run26[arm] = R_C2[arm] + delta[arm]` **exactly**, where `delta[arm] = cost_run26[arm] −
+cost_C2[arm]` — no raw dimension data is needed to preview an alternate cost mechanism, and (because
+`delta` is a per-arm constant) this identity holds at the article level too (a weighted mean of a
+constant is itself). This makes a zero-cost preview against today's fully-corrected N=3 data
+(`section_oracle_averaged.json`, post the ordinal-index/explore-split bug fixes and the replication
+label corrections — none of which existed when `run26` was originally tested) cheap and exact.
+
+Section-level GRPO signal quality, all 171 TRAIN sections, using `reward_signal_quality_report.py`'s
+own methodology (`SIGMA_FLOOR=0.04`, `NEAR_TIE_MARGIN=0.06` — `train_grpo.py`'s own defaults):
+
+| formula | flat-drop | floored (kept) | near-tie | mean margin | mean norm-adv | sk/li/st/de | TRAIN `deep` articles |
+|---|---:|---:|---:|---:|---:|---|---:|
+| C2 (shipped) | 3.5% | 27.3% | 58.5% | 0.0656 | 1.229 | 49/54/33/35 | **4** |
+| `run26` mechanism (ordinal, −0.06) | 0.6% | 11.8% | 51.5% | 0.0796 | 1.265 | 70/66/25/10 | **0** |
+
+`run26`'s signal-quality improvement (fewer untrainable/floored groups, wider margins) reproduces
+cleanly on corrected data — it was not an artifact of stale labels. But **9 of 24 TRAIN articles
+(37.5%) have their raw R_w argmax flip, every single one toward a *cheaper* preset**, and `deep`'s
+TRAIN article-level representation collapses from 4 to 0. This directly compounds a bias already
+measured in this checkpoint (A.17.9, and the per-oracle-class breakdown below A.18): `deep` is
+already this model's weakest class on both splits.
+
+**Coefficient sweep (ordinal units, coefficients between C2's implicit −0.03 and `run26`'s −0.06)
+found no usable middle ground — it is a step function, not a dial:**
+
+| coef | flat-drop | floored | TRAIN `deep` articles |
+|---:|---:|---:|---:|
+| C2 exact (H0 units, −0.03) | 3.5% | 27.3% | 4 |
+| ordinal, −0.035 | 2.3% | 28.1% | 4 |
+| ordinal, −0.040 | 0.6% | 21.8% | 1 |
+| ordinal, −0.045 | 0.0% | 18.1% | 0 |
+| ordinal, −0.060 (`run26`) | 0.6% | 11.8% | 0 |
+
+`deep` collapses from 4→1→0 between coefficients 0.035 and 0.045 — a narrow window crossed *before*
+the floored-fraction improvement (which keeps accruing smoothly out to 0.06) delivers much benefit.
+A single global coefficient cannot trade off signal quality against `deep`-representation; it can
+only pick a point on a curve where `deep` is already gone.
+
+### A.18.3 Design C: a non-uniform cost vector
+
+Rather than one coefficient, each step (`skip→light`, `light→standard`, `standard→deep`) was
+controlled independently, steepening the bottom two toward `run26`'s strength while leaving the top
+step close to C2's own (already small) gap:
+
+| design | flat-drop | floored | near-tie | mean margin | norm-adv | sk/li/st/de | TRAIN `deep` articles |
+|---|---:|---:|---:|---:|---:|---|---:|
+| C2 (shipped) | 3.5% | 27.3% | 58.5% | 0.0656 | 1.229 | 49/54/33/35 | 4 |
+| A: steps(−.045,−.045) + C2's own top step | 0.6% | 24.1% | 56.1% | 0.0704 | 1.265 | 61/58/25/27 | **4** |
+| B: steps(−.06,−.06) + C2's own top step | 1.2% | 17.2% | 53.2% | 0.0754 | 1.285 | 65/59/21/26 | 3 |
+| **C: steps(−.06,−.06) + half of C2's top step** | **1.2%** | **19.5%** | **53.8%** | **0.0750** | **1.285** | 65/58/21/27 | **4** |
+| D: steps(−.05,−.04) + C2's own top step | 1.8% | 22.6% | 56.7% | 0.0706 | 1.279 | 61/55/27/28 | 4 |
+| E: steps(−.07,−.05) + C2's own top step | 1.8% | 16.7% | 46.8% | 0.0759 | 1.298 | 72/49/23/27 | 3 |
+
+**Design C** (`skip:0, light:−0.06, standard:−0.12, deep:−0.1265`) is the strongest candidate that
+fully preserves `deep`: floored drops 27.3%→19.5% (most of `run26`'s 27.3%→11.8%), flat-drop nearly
+vanishes (3.5%→1.2%), norm-adv improves to 1.285 (better than `run26`'s 1.265) — **and all 4 of
+TRAIN's `deep`-labeled articles survive intact**.
+
+### A.18.4 Justification for Design C beyond label balance
+
+Reward design is a values choice, not just a metric-fitting exercise, so the non-uniform *shape* —
+not just its effect on label counts — needs its own justification:
+
+1. **Cost steepness should track where marginal value is still rising, not just where absolute
+   effort is highest.** The `de`/`be` explore term already *saturates* near standard/deep via
+   `enhancement_credit()`'s curve. A cost term that is *also* steep in that already-saturated region
+   double-penalizes a decision where the model's own reward signal has already plateaued; steepness
+   is better spent where explore-value is still rising and genuinely ambiguous (skip→standard).
+2. **The real-world harm of under- vs. over-provisioning is asymmetric and front-loaded.** Skipping
+   exploration entirely when even light research was warranted risks a categorical, uncorrected
+   content gap. Stopping at `standard` instead of `deep` is a difference in thoroughness on an
+   article already receiving substantial investment, not a difference in kind. Penalizing the lower
+   boundary harder matches where a wrong decision's real cost concentrates.
+3. **It corrects, rather than compounds, a bias already measured in this checkpoint.** Every
+   configuration evaluated this session under-predicts `deep`. A cost curve that keeps sharpening
+   exactly that boundary reinforces a known failure mode; one that is deliberately gentler there is a
+   considered counterweight.
+
+The label-balance outcome (4/4 `deep` articles preserved) is evidence these arguments hold in
+practice on this corpus — it is not, by itself, the justification.
+
+### A.18.5 Implementation status (2026-08-25): wired, not shipped
+
+`_DESIGN_C_COST` and a `cost_formula`/`cost_override` parameter were added to
+`generate_episode_oracles.py::_section_reward()`/`_section_reward_components()` (default `"c2"`,
+unchanged production behaviour), with matching `--cost-formula {c2,design_c}` / `--bases-dir` CLI
+flags threaded through `generate_episode_oracles.py`, `measure_replicate_noise.py`,
+`merge_replicate_oracles.py`, and `compute_article_oracle.py` (`train_grpo.py` already supported
+`--bases-dir`). Verified via `--dry-run` that `--cost-formula c2` reproduces production's exact
+section distribution and `design_c` reproduces the preview's shifted distribution. Production
+`bases/` is untouched; running the actual experiment requires a separate `--bases-dir` (e.g.
+`bases_design_c/`) through the full `generate_episode_oracles.py` → `merge_replicate_oracles.py` →
+`compute_article_oracle.py --use-averaged` → `train_grpo.py` chain, all pointed at that same
+override directory. **No training run has been executed yet.** Per §60.12, any real result from this
+would still need to clear the same health-gated-ceiling bar that no formula (C2 or `run26`) has
+cleared to date — this is a well-evidenced candidate for one further try, not a proven improvement.
+
 
 
 

@@ -71,8 +71,19 @@ Usage (from research_agent_local/)
   # Specific articles (bare test slug → no expansion; bare train slug → 3 variants)
   uv run python -m mcp_client.src.test_grok_planner --articles 04_structured_outputs,09_RAG
 
-  # Save per-variant JSON results
+  # Save per-variant JSON results (written next to the checkpoint that
+  # produced them: <adapter_dir>/rl_only_results|rl_guard_results|
+  # grok_only_results|rl_and_grok_results/, per RL_INFER_ADAPTER_DIR or the
+  # current default checkpoint)
   uv run python -m mcp_client.src.test_grok_planner --save-json
+
+  # Override which checkpoint the infer server loads, as a path relative to
+  # rl_training_data/checkpoints/ (no need to edit _infer_config.py or export
+  # RL_INFER_ADAPTER_DIR by hand) 
+  For example, to test the run31_averaged_confidence/epoch_0109 checkpoint:
+  uv run python -m mcp_client.src.test_grok_planner \
+      --adapter-dir tasks/run31_averaged_confidence/epochs/epoch_0109 \
+      --rl-guards-only --save-json
 """
 
 from __future__ import annotations
@@ -81,6 +92,8 @@ import argparse
 import asyncio
 import json
 import logging
+import os
+import sys as _sys
 from pathlib import Path
 
 from mcp_agent.app import MCPApp
@@ -101,6 +114,17 @@ _CLIENT_DIR = _THIS_DIR.parent                    # mcp_client/
 _AGENT_DIR = _CLIENT_DIR.parent                   # research_agent_local/
 _REPO_ROOT = _AGENT_DIR.parent                    # RL_researcher_writer_ymaxing/
 _BASES_DIR = _REPO_ROOT / "rl_training_data" / "bases"
+_CHECKPOINTS_ROOT = _REPO_ROOT / "rl_training_data" / "checkpoints"
+
+# _infer_config.py is stdlib-only (see its own docstring), so it's safe to
+# import here too -- lets --save-json mirror ensure_infer_server()'s own
+# checkpoint resolution (RL_INFER_ADAPTER_DIR env var, else the current
+# default) instead of guessing, so results always land next to the
+# checkpoint that actually served them.
+_TRAINING_DIR = _AGENT_DIR / "training"
+if str(_TRAINING_DIR) not in _sys.path:
+    _sys.path.insert(0, str(_TRAINING_DIR))
+from _infer_config import DEFAULT_ADAPTER_DIR as _DEFAULT_ADAPTER_DIR  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # 4-preset vocabulary (mirrors _rl_preset.py)
@@ -209,6 +233,25 @@ _mcp_settings.mcp.servers["research_agent"].args = [
     "run", "python", "-m", "src.server", "--transport", "stdio",
 ]
 app = MCPApp(name="GrokPlannerTest", settings=_mcp_settings)
+
+
+def _resolve_adapter_dir(subdir: str) -> Path:
+    """Resolve a ``--adapter-dir`` value (relative to rl_training_data/checkpoints/)
+    to an absolute, validated checkpoint directory.
+
+    Rejects paths that escape the checkpoints root (path traversal) or that
+    don't exist, so a typo fails fast instead of silently falling back to
+    whatever checkpoint the infer server already happens to have loaded.
+    """
+    checkpoints_root = _CHECKPOINTS_ROOT.resolve()
+    candidate = (checkpoints_root / subdir).resolve()
+    if not candidate.is_relative_to(checkpoints_root):
+        raise ValueError(
+            f"--adapter-dir must be a subdirectory of {checkpoints_root} (got '{subdir}')"
+        )
+    if not candidate.is_dir():
+        raise ValueError(f"--adapter-dir directory not found: {candidate}")
+    return candidate
 
 
 # ---------------------------------------------------------------------------
@@ -704,6 +747,31 @@ def _print_summary(
         )
 
 
+_MODE_SUBDIR = {
+    "rl_only": "rl_only_results",
+    "rl_guards_only": "rl_guard_results",
+    "grok_only": "grok_only_results",
+    "rl_and_grok": "rl_and_grok_results",
+}
+
+
+def _resolve_output_dir(rl_only: bool, grok_only: bool, rl_guards_only: bool) -> Path:
+    """Save results next to the checkpoint that generated them rather than the
+    shared grok_planner_test_results/ dir, so results from different
+    checkpoints never get silently conflated (this is what made the
+    run31/ep109 vs run33/ep81 comparison stale -- see A.17/A.25)."""
+    adapter_dir = Path(os.environ.get("RL_INFER_ADAPTER_DIR") or _DEFAULT_ADAPTER_DIR)
+    if rl_only:
+        mode_key = "rl_only"
+    elif rl_guards_only:
+        mode_key = "rl_guards_only"
+    elif grok_only:
+        mode_key = "grok_only"
+    else:
+        mode_key = "rl_and_grok"
+    return adapter_dir / _MODE_SUBDIR[mode_key]
+
+
 def _save_results(results: list[dict], out_dir: Path) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     for r in results:
@@ -779,6 +847,16 @@ async def main() -> None:
         ),
     )
     parser.add_argument("--save-json", action="store_true", help="Save per-variant JSON results.")
+    parser.add_argument(
+        "--adapter-dir", type=str, default=None,
+        metavar="SUBDIR",
+        help=(
+            "Override which RL checkpoint the infer server loads, as a path "
+            "relative to rl_training_data/checkpoints/ (e.g. "
+            "tasks/run31_averaged_confidence/epochs/epoch_0109). "
+            "Equivalent to exporting RL_INFER_ADAPTER_DIR, but scoped to this run."
+        ),
+    )
     args = parser.parse_args()
 
     n_modes = sum([args.rl_only, args.grok_only, args.rl_guards_only])
@@ -788,6 +866,25 @@ async def main() -> None:
     if args.train_only and args.test_only:
         print("ERROR: --train-only and --test-only are mutually exclusive.")
         return
+
+    resolved_adapter_dir: Path | None = None
+    if args.adapter_dir:
+        try:
+            resolved_adapter_dir = _resolve_adapter_dir(args.adapter_dir)
+        except ValueError as exc:
+            print(f"ERROR: {exc}")
+            return
+        # os.environ: consumed by _resolve_output_dir() in THIS process for
+        # --save-json's output path. The stdio MCP transport only forwards a
+        # curated env subset to the server subprocess (see mcp.client.stdio's
+        # get_default_environment()), so it would NOT see this var just from
+        # os.environ -- it must also be set explicitly on the server config
+        # below for the infer server to actually load this checkpoint.
+        os.environ["RL_INFER_ADAPTER_DIR"] = str(resolved_adapter_dir)
+        _mcp_settings.mcp.servers["research_agent"].env = {
+            **(_mcp_settings.mcp.servers["research_agent"].env or {}),
+            "RL_INFER_ADAPTER_DIR": str(resolved_adapter_dir),
+        }
 
     # Build variant list
     if args.articles:
@@ -821,6 +918,8 @@ async def main() -> None:
 
     print(f"\nPreset Planner Test  ({len(variant_list)} variants)")
     print(f"  Mode     : {mode}")
+    if resolved_adapter_dir is not None:
+        print(f"  Adapter  : {resolved_adapter_dir}  (--adapter-dir override)")
     print(f"  Variants : {variant_list}")
 
     async with app.run():
@@ -860,7 +959,7 @@ async def main() -> None:
     _print_summary(results, rl_only, grok_only, rl_guards_only)
 
     if args.save_json:
-        out_dir = _AGENT_DIR / "grok_planner_test_results"
+        out_dir = _resolve_output_dir(rl_only, grok_only, rl_guards_only)
         _save_results(results, out_dir)
 
 

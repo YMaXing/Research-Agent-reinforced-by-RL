@@ -798,7 +798,18 @@ def main() -> None:
             "every article-variant that HAS a section_oracle_averaged.json (use --articles to override)."
         ),
     )
+    parser.add_argument(
+        "--bases-dir",
+        type=Path,
+        default=None,
+        help="Override the bases root (default: production rl_training_data/bases/). "
+             "Must match generate_episode_oracles.py's --bases-dir for the same experiment.",
+    )
     args = parser.parse_args()
+
+    if args.bases_dir is not None:
+        global _BASES_DIR
+        _BASES_DIR = args.bases_dir
 
     if args.articles:
         targets = args.articles
