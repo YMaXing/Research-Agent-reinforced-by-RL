@@ -215,15 +215,29 @@ app = MCPApp(name="GrokPlannerTest", settings=_mcp_settings)
 # Oracle: read from article_oracle.json  (version 2)
 # ---------------------------------------------------------------------------
 def _read_oracle(variant_name: str) -> tuple[int, list[float]]:
-    """Return (oracle_arm_idx, r_w_rewards_list[0..3]) from article_oracle.json.
+    """Return (oracle_arm_idx, r_w_rewards_list[0..3]).
 
-    Raises FileNotFoundError when the file is absent.
+    oracle_arm_idx always comes from article_oracle.json (the canonical label,
+    including A.15.2/A.15.4 manual overrides). r_w_rewards prefers the sibling
+    article_oracle_averaged.json when it exists (N=3-replicated articles) --
+    using the single-draft R_w here made regret internally inconsistent with
+    the label for every replication-corrected article (the label was decided
+    from the averaged/replicated evidence, not the single draft; see
+    run13_rl_grok_pipeline_analysis.md A.17.4, 2026-08-24 addendum). The two
+    files never disagree on oracle_arm_idx (manual overrides apply
+    unconditionally to both), so this cannot introduce a new label/R_w split.
+
+    Raises FileNotFoundError when article_oracle.json is absent.
     """
     oracle_path = _BASES_DIR / variant_name / "article_oracle.json"
     if not oracle_path.exists():
         raise FileNotFoundError(f"Missing article_oracle.json: {oracle_path}")
     data = json.loads(oracle_path.read_text(encoding="utf-8"))
-    return int(data["oracle_arm_idx"]), data["r_w_rewards_list"]
+    r_w_rewards = data["r_w_rewards_list"]
+    averaged_path = _BASES_DIR / variant_name / "article_oracle_averaged.json"
+    if averaged_path.exists():
+        r_w_rewards = json.loads(averaged_path.read_text(encoding="utf-8"))["r_w_rewards_list"]
+    return int(data["oracle_arm_idx"]), r_w_rewards
 
 
 def _apply_policy_guards(preset: int, policy: str) -> int:

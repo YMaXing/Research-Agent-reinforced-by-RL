@@ -8,6 +8,7 @@ are shared between the infer handler and the planner handler.
 
 from __future__ import annotations
 
+import atexit
 import json as _json
 import logging
 import math
@@ -171,6 +172,10 @@ def ensure_infer_server(adapter_dir: str | None = None) -> str:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.PIPE,
         )
+        # Without this, the child outlives an mcp_server process killed by its
+        # stdio client (e.g. test_grok_planner.py exiting) and becomes an
+        # orphan still bound to the port for the next invocation to collide with.
+        atexit.register(_terminate_infer_proc)
 
         _stderr_thread = threading.Thread(
             target=_drain_stderr, args=(_infer_proc,), daemon=True
@@ -188,6 +193,26 @@ def ensure_infer_server(adapter_dir: str | None = None) -> str:
                 )
             health = _query_health(base_url)
             if health is not None:
+                # A stale/orphaned infer.py process left bound to the same port
+                # (e.g. from a crashed prior session) can answer /health almost
+                # instantly with the OLD adapter, well before our freshly-spawned
+                # child could possibly have loaded a model -- this previously
+                # caused ensure_infer_server() to report "ready" while silently
+                # still serving the wrong checkpoint. Verify the PID matches our
+                # own child before trusting the response. No backward-compat
+                # allowance for a missing pid: every infer.py from this fix
+                # onward always reports one, so an absent pid IS a stale/pre-fix
+                # orphan and must never be trusted either.
+                health_pid = health.get("pid")
+                if health_pid != _infer_proc.pid:
+                    logger.warning(
+                        "Health check on port %d answered from pid %s, not our "
+                        "spawned pid %s -- a stale server is still bound to this "
+                        "port; waiting for it to vacate before trusting readiness.",
+                        _INFER_PORT, health_pid, _infer_proc.pid,
+                    )
+                    time.sleep(2)
+                    continue
                 _infer_adapter_dir = health.get("adapter_dir")
                 logger.info("Infer server is ready. Serving adapter: %s", _infer_adapter_dir)
                 if _infer_adapter_dir != requested_resolved:

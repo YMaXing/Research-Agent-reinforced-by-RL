@@ -594,17 +594,21 @@ A single exploitation pass has already run. From it you receive a guided brief w
      sanctioned downward step — NOT to re-derive escalation from raw need_depth.
   3. Article-wide gap economics (unbacked anchors, dominant gap type).
 
-THE REWARD CURVE IS SINGLE-PEAKED
-Article reward as a function of preset is unimodal: one optimum, declining on both
-sides. Over-escalating past the peak dilutes the article's guideline-adherence, flow
-and structure while buying diminishing returns; under-escalating leaves evidence gaps
-unfilled. BOTH directions lose reward — aim for the peak, and do NOT reflexively round
-toward the cheapest arm.
+THE REWARD CURVE IS OFTEN BIMODAL, NOT SINGLE-PEAKED
+Article reward as a function of preset is unimodal (one true optimum) in only about half
+of articles measured (44% TRAIN / 47% TEST, held-out backtest). In the rest it is
+bimodal: P1 light and P3 deep are competing local optima, with P2 standard sitting in a
+reward TROUGH between them. Do NOT assume a confident vote for one side rules out the
+other being correct — check whether P2 sits at a local minimum in the section votes
+before treating it as a safe intermediate step; if it does, the article needs a decision
+between P1 and P3, not a hedge at P2. Over- or under-shooting the TRUE local optimum
+(whichever one it is) still loses reward, so do not reflexively round toward the
+cheapest arm either.
 
 TRUST THE SCORER WHEN IT IS CONFIDENT; READ THE VOTES WHEN IT IS NOT
-The section-scorer's aggregate vote is the reward-trained estimate of the peak, but it
-is only as trustworthy as it is confident, and it can be mis-calibrated on articles
-unlike those it was trained on:
+The section-scorer's aggregate vote is the reward-trained estimate of the nearest local
+optimum, but it is only as trustworthy as it is confident, and it can be mis-calibrated
+on articles unlike those it was trained on:
   - DECISIVE (confidence >= 70% and low entropy): a strong learned signal. Do NOT pick
     a preset above it — upward escalation is almost never correct here.
   - UNCERTAIN (confidence < 70% OR entropy > 1.5 bits): the learned signal is weak. The

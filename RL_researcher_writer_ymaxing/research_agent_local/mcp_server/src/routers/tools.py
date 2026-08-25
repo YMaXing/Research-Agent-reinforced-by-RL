@@ -541,11 +541,12 @@ def register_mcp_tools(mcp: FastMCP) -> None:
           Reviews the RL aggregate vote together with the article guideline and
           coverage gap profile, then either confirms or overrides the RL preset
           following an asymmetric, downside-averse override policy (the reward
-          curve is single-peaked; the planner is instructed never to escalate
-          above a P1+ RL vote and only applies a single sanctioned P0→P1 nudge
-          when specific conditions are met). Hard policy guards (forbidden → P0
-          skip, required → ≥ P1 light) are applied deterministically to Grok's
-          output after it returns.
+          curve is frequently bimodal rather than single-peaked — see
+          run13_rl_grok_pipeline_analysis.md A.17.6/A.17.8 — so the planner is
+          instructed never to escalate above a P1+ RL vote and only applies a
+          single sanctioned P0→P1 nudge when specific conditions are met). Hard
+          policy guards (forbidden → P0 skip, required → ≥ P1 light) are applied
+          deterministically to Grok's output after it returns.
           Set grok_only=True to skip Stage 1 and have Grok decide from the
           article guideline and gap profile alone (useful as a baseline to
           measure the RL model's marginal contribution).

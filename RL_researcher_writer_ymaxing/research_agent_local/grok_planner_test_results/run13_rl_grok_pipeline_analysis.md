@@ -7550,6 +7550,600 @@ remaining untested hypothesis from §60.12: the input representation** (what `bu
 the model), plus A.9's structural limits (8 TRAIN topics, `n=16` TEST) — neither of which any amount
 of formula or replication work can address.
 
+---
+
+## A.17 Post-retrain evaluation: `run31/ep109` and `run33/ep81` — failure modes and the real headroom for a downstream LLM corrector (2026-08-24)
+
+Phase 3 ran three times (`run30`, `run31`, `run33`). This section analyses the two checkpoints the
+user selected as each run's best-on-TEST-ordinal-MAE: `run31_averaged_confidence/epochs/epoch_0109`
+and `run33_averaged_confidence/epochs/epoch_0081`. All numbers below are re-derived from the saved
+report files by `_run31_run33_failure_analysis.py` (new this pass), which reparses every per-article
+block and recomputes every headline metric rather than trusting the report footer. **Self-check: the
+recomputed exact/near/miss, MAE and regret figures reproduce both reports' own footers exactly, and
+the recomputed R_w top-2 margins reproduce A.15.1's margin audit to 4 decimal places** — the parser
+is measuring the same quantities the rest of this investigation measures.
+
+### A.17.0 Provenance — why these two numbers are trustworthy where `run30`'s were not
+
+Both reports contain an explicit `Infer server is ready. Serving adapter: .../epochs/epoch_0109`
+(resp. `epoch_0081`) line, and `run33`'s log additionally shows `Stopping stale infer server (adapter
+changed)…` firing at the end of the sweep. This is the `_infer_config.py` fix working as intended.
+It matters because the preceding `run30` round produced two eval files that were later proven
+byte-identical (a stale infer subprocess silently served an older adapter across two "different"
+evaluations), which invalidated a full round of conclusions. **Every number in A.17 is
+adapter-attributed at the log level; `run30`'s pre-fix numbers should not be compared against them.**
+
+**Second correction (2026-08-24): `_read_oracle()` sourced R_w from the wrong file for every
+replication-corrected article, and this section's regret figures have been recomputed.** The eval
+harness's regret metric compared each model's choice against `article_oracle.json`'s R_w — the
+original single, un-replicated production draft — even for the 9 articles whose `oracle_arm` was
+decided from replicated/averaged evidence instead. Fixed in `test_grok_planner.py::_read_oracle()`
+to prefer `article_oracle_averaged.json`'s R_w when present (same file the label itself was decided
+from); `oracle_arm_idx` is unaffected (always read from `article_oracle.json`, and the two files never
+disagree on the label since manual overrides apply to both unconditionally). **Exact/near/miss/MAE
+are untouched by this fix (label-only, no R_w involved); every regret number in A.17 below has been
+recomputed and superseded** — no new inference was needed, since the models' choices don't change,
+only which R_w they're scored against. See A.17.5 for the material consequence: the regret budget's
+composition changes enough to reverse one of A.17.8's original recommendations.
+
+### A.17.1 Headline results, baseline-relative (§60.12 discipline)
+
+The trivial predictor for each split is the majority-class constant: TRAIN → always `P0 skip` (9/24),
+TEST → always `P1 light` (7/16). Regret aggregates exclude forbidden-policy articles throughout,
+matching `test_grok_planner.py`. **Regret figures below are post-fix (2026-08-24); see the A.17.0
+addendum above.**
+
+| | TRAIN baseline | `run31/ep109` TRAIN | `run33/ep81` TRAIN | TEST baseline | `run31/ep109` TEST | `run33/ep81` TEST |
+|---|---:|---:|---:|---:|---:|---:|
+| exact | 9/24 (37.5%) | 9/24 (37.5%) | **13/24 (54.2%)** | 7/16 (43.8%) | 8/16 (50.0%) | **9/16 (56.2%)** |
+| ordinal MAE | 1.083 | 0.750 | **0.583** | 0.812 | **0.625** | **0.625** |
+| regret mean | +0.0967 | +0.0205 | +0.0109 | +0.0196 | +0.0153 | **+0.0134** |
+| regret max | +0.1661 | +0.1051 | +0.0672 | +0.0648 | +0.0667 | +0.0667 |
+
+Three honest observations:
+
+1. **Post-fix, both checkpoints beat the trivial TEST baseline on MAE and regret mean, but NOT on
+   regret max.** MAE improves clearly (0.812 → 0.625); regret mean improves (0.0196 → 0.0134/0.0153);
+   `run33` also improves exact (43.8% → 56.2%). But regret max is now marginally *worse* than baseline
+   for both checkpoints (0.0648 → 0.0667) — a small, single-article-driven swing (see A.17.5), but it
+   means the original "beats baseline on every metric simultaneously" claim does not survive the R_w
+   fix. The improvement is real but narrower than first reported.
+2. **It is not statistically significant.** Exact McNemar on TEST vs the baseline gives
+   `run33`: 4 model-right/baseline-wrong vs 1 baseline-right/model-wrong, one-sided p = **0.188**;
+   `run31`: 4 vs 2, p = **0.344**. At `n=16` a 2–3 article swing simply cannot clear significance.
+   This is A.9's structural limit reasserting itself, not a defect of this run.
+3. **`run31/ep109` is a `TRAIN`-underperformer that matches `run33` on TEST MAE.** It scores *at* the
+   TRAIN baseline (37.5%) while achieving the same 0.625 TEST MAE. Two checkpoints reaching identical
+   held-out MAE from very different TRAIN fits is itself evidence that TEST MAE at this sample size
+   is a coarse instrument.
+
+**Cross-run stability.** The two checkpoints agree on **14/16 TEST** predictions (88%) but only
+**17/24 TRAIN** (71%). Held-out behaviour is more reproducible across runs than in-sample behaviour —
+consistent with both checkpoints having converged onto the same coarse, largely preset-`P1` policy,
+and differing mainly in which TRAIN articles they happened to memorise.
+
+**The simple majority-class baseline itself, in full (corrected 2026-08-24).** The baseline rows in
+the table above are the always-predict-the-majority-class constant (TRAIN → `P0`, TEST → `P1`),
+scored the same way as every model: ordinal MAE over all articles, regret mean/max over the
+non-forbidden subset. Worth stating on its own because the fix changes it asymmetrically — MAE is
+untouched (label-only), but regret moves in *different directions* on the two splits:
+
+| | TRAIN baseline | TEST baseline |
+|---|---:|---:|
+| ordinal MAE | 1.0833 (unaffected by the fix) | 0.8125 (unaffected by the fix) |
+| regret mean | +0.1233 → **+0.0967** (−22%) | +0.0147 → **+0.0196** (+33%) |
+| regret max | +0.2740 → **+0.1661** (−39%) | +0.0810 → **+0.0648** (−20%) |
+
+TRAIN's baseline regret shrinks under the corrected R_w; TEST's baseline regret *mean* grows
+slightly while its *max* shrinks — there is no single "the fix made regret bigger/smaller" story,
+because each article's R_w moves independently depending on whether/how much its single-draft and
+averaged rewards differ. This is the number every model in A.17 is being compared against; it is not
+itself a fixed target and moves with the same fix as everything else.
+
+### A.17.2 The single largest correctable defect is not in the model — it is that `--rl-only` bypasses the policy guard
+
+`test_grok_planner.py --rl-only` reads `rl_recommendation.preset` directly. That value is
+cost-rule-adjusted (`apply_cost_sensitive_rule`) but **not** policy-guarded. Every production path is
+guarded: `preset_planner_handler.fallback_aggregator` forces `P0` under `policy=forbidden`, and
+`_apply_policy_guards` clamps Grok's output the same way. **No production path can ever emit the
+numbers in A.17.1.**
+
+The `forbidden → P0` rule is a hard guideline constraint, not a learned one, and
+`compute_article_oracle.py` implements it as a pre-argmax short-circuit ("-1. Hard constraint:
+forbidden policy → skip, regardless of R_w"). It holds **9/9** across the corpus (8 TRAIN + 1 TEST)
+and is derivable from TRAIN alone at 8/8. Critically, `_rl_preset.py::build_rl_input()` **strips the
+`external_evidence_policy` flag from the model's input by design** (see A.17.3) — so the RL stage is
+architecturally incapable of applying this rule, and the guard is not a patch over a model weakness
+but the component that was always meant to own the constraint. Applying it costs nothing and leaks
+nothing:
+
+| | `run31/ep109` TRAIN | `run33/ep81` TRAIN | `run31/ep109` TEST | `run33/ep81` TEST |
+|---|---:|---:|---:|---:|
+| exact, RL-only | 9/24 (37.5%) | 13/24 (54.2%) | 8/16 (50.0%) | 9/16 (56.2%) |
+| exact, **RL + guards** | **17/24 (70.8%)** | **20/24 (83.3%)** | **9/16 (56.2%)** | **10/16 (62.5%)** |
+| MAE, RL-only | 0.750 | 0.583 | 0.625 | 0.625 |
+| MAE, **RL + guards** | **0.417** | **0.208** | **0.562** | **0.562** |
+
+The TRAIN gain is enormous (+8 and +7 articles) because 8 of the 24 TRAIN articles are
+forbidden-policy `var_minimal` variants and the model gets **0/8** (`run31`) or **1/8** (`run33`) of
+them right unaided — it predicts `P1 light` on essentially every one. The TEST gain is a single
+article (`State_of_LLM_Reasoning`) because TEST contains only one forbidden-policy article.
+
+> **Reporting correction going forward:** `--rl-guards-only` — which already exists and already
+> implements exactly this clamp — is the correct RL benchmark. The `--rl-only` figure is a lower
+> bound on a configuration that is never shipped, and quoting it understates the RL stage by 33
+> percentage points on TRAIN.
+
+### A.17.3 Failure modes — TRAIN
+
+Signed error (`pick − oracle`) decomposed by policy:
+
+| checkpoint | scope | n | over | exact | under | mean signed |
+|---|---|---:|---:|---:|---:|---:|
+| `run31/ep109` | forbidden | 8 | 8 | 0 | 0 | +1.000 |
+| `run31/ep109` | non-forbidden | 16 | 3 | 9 | 4 | −0.250 |
+| `run33/ep81` | forbidden | 8 | 7 | 1 | 0 | +1.125 |
+| `run33/ep81` | non-forbidden | 16 | 2 | 12 | 2 | −0.062 |
+
+**TRAIN failure mode 1 — the `forbidden` subset is not a model failure at all; it is a measurement
+artefact.** Mean signed error is `+1.0` on the forbidden subset for `run31` and `+1.125` for
+`run33`, i.e. the model never encodes the constraint. **Verified root cause:** `_rl_preset.py::
+build_rl_input()` *deliberately strips the flag before the model ever sees it* —
+
+> ```python
+> # external_evidence_policy is article-level: "forbidden" short-circuits the
+> # entire exploration phase upstream (before the section-level model is called);
+> # "allowed"/"required" are passed to the downstream article-level aggregator.
+> # Strip it here so the section-level model sees only per-section signals.
+> digest_meta = re.sub(r"\s*<external_evidence_policy>[^<]*</external_evidence_policy>", "", digest_meta)
+> ```
+
+This is **correct architecture, not a defect**: the section-level scorer is designed to score
+sections, and the article-level hard constraint is deliberately delegated to the downstream policy
+guard. The model is therefore being scored, under `--rl-only`, on information it was architecturally
+denied — and it is doing the only thing it can. **`--rl-only` is measuring a configuration that is
+not merely unshipped but incoherent by design.** This makes A.17.2 not an optional improvement but a
+correction of an invalid measurement.
+
+> **Superseded claim.** An earlier draft of this section read this as "a strong, concrete instance of
+> §60.12's input-representation hypothesis." That was wrong, and the code above refutes it: the flag
+> is not missing by oversight, it is removed on purpose. No input-representation change is warranted
+> here.
+
+**TRAIN failure mode 2 — mild under-prediction on the remaining 16.** Once the forbidden articles
+are removed, the signed error is slightly *negative* (−0.25 / −0.06) — the opposite direction. The
+model is not globally biased; the `+0.167` / `+0.333` all-TRAIN mean is entirely an artefact of the
+forbidden subset.
+
+**Prediction concentration (TRAIN):** `run33` predicts `P0=1, P1=15, P2=5, P3=3` against an oracle
+distribution of `P0=9, P1=8, P2=3, P3=4`. The model emits `P0` once in 24 attempts against 9 true
+`P0` labels — the `skip` class is effectively collapsed.
+
+### A.17.4 Failure modes — TEST
+
+**Prediction concentration (TEST):** `run33` predicts `P0=0, P1=11, P2=1, P3=4` against an oracle of
+`P0=2, P1=7, P2=3, P3=4`. `run31` predicts `P0=0, P1=9, P2=3, P3=4`. Neither checkpoint ever emits
+`P0` on TEST, and `run33` emits `P2` exactly once.
+
+**TEST failure mode 1 — the policy is ~2/3 the trivial baseline by construction.** `run33`'s TEST
+predictions are **identical to the always-`P1` baseline on 11/16 articles (69%)**; `run31`'s on 9/16
+(56%). Decomposed against the baseline, `run33` **gains** exactly three articles the baseline misses
+(`Dark_Dimension` P3, `Earth_Oceans_Origin` P3, `Understanding_Reasoning_LLMs` P2) and **loses**
+exactly one the baseline gets (`29_evaluation_metrics`, true `P1`, predicted `P3`). Net +2. `run31`
+gains the same three and loses two (`13_agent_framework`, `29_evaluation_metrics`). **The entire
+measured skill of these checkpoints over the trivial predictor is three articles, and it is the same
+three in both runs** — which is mildly reassuring about their reality, and severely limiting about
+their magnitude.
+
+**TEST failure mode 2 — errors concentrate on near-tied labels (margins recomputed 2026-08-24 with
+the corrected R_w).** The originally-reported margins here used the pre-fix single-draft R_w for
+every article; recomputed against `article_oracle_averaged.json` where it exists, the tiers shift:
+
+| article | margin (corrected) | tier |
+|---|---:|---|
+| `04_structured_outputs` | 0.0000 | CRITICAL |
+| `07_reasoning_planning` | 0.0167 | CRITICAL |
+| `Distinct_AI_Models` | 0.0036 | CRITICAL |
+| `14_agent_system_design` | 0.0279 | HIGH |
+| `Insects_Consciousness` | 0.0599 | MODERATE |
+| `29_evaluation_metrics` | 0.0667 | MODERATE |
+
+Now **3 CRITICAL, 1 HIGH, 2 MODERATE** (was 3 CRITICAL / 2 HIGH / 1 MODERATE under the pre-fix
+numbers — the specific articles in each tier changed, not just the counts: `14_agent_system_design`
+moves CRITICAL→HIGH and `Insects_Consciousness` moves from an unscored regret-artefact to a genuine
+MODERATE-margin error). Against A.13.1's √3-shrunk averaged noise floor of **0.0538** (the correct
+comparator now that these margins are themselves computed from averaged R_w), 4 of 6 sit inside it
+and 2 (`Insects_Consciousness`, `29_evaluation_metrics`) sit just outside — **most errors are still
+inside the oracle's own measurement noise, but the two now clearly outside it are exactly the two
+biggest regret contributors** (A.17.5), meaning the genuinely-informative errors and the
+noise-floor-blurred ones are no longer the same set the pre-fix analysis implied.
+
+**TEST failure mode 3 — two errors trace to manual-override labels, but the two are NOT the same
+kind of case (checked directly against `article_oracle.json` provenance, 2026-08-24).** Both
+`13_agent_framework` and `Insects_Consciousness` have `oracle ≠ argmax(R_w)`:
+
+| article | oracle | argmax(R_w) | `run33` pick | regret of the model's pick |
+|---|---|---|---|---:|
+| `13_agent_framework` | P1 (override) | P3 | P1 | 0.0000 (exact) |
+| `Insects_Consciousness` | P3 (override) | P1 | P1 | **−0.0460** |
+
+**Correction (2026-08-24): this is not a case of "the downstream LLM should catch what a
+section-level scorer missed," and the original wording below overstated that.** Both overrides come
+from the same source — `compute_article_oracle.py`'s `_MANUAL_OVERRIDES`, applied per A.15.4's
+**majority-vote-of-replicated-draws** rule (production draw + 2 independent replicate re-draws of
+the full write-and-grade pipeline at all four presets; see A.15.4's vote table): `Insects_Consciousness`
+was `light, deep, deep` → majority **deep** (2/3), overturning the single production draw's own
+`light`. This is a different mechanism from the two genuinely-inspection-based overrides in the same
+dict (`06_tools__var_minimal`, `11_multimodal__var_demanding`, commented "R_w winner overridden after
+inspection") — Insects_Consciousness's correction is pure cross-draw noise-averaging, not qualitative
+judgment.
+
+Three pieces of direct evidence show this specific correction is not something a downstream
+reasoner (Grok or otherwise) could have derived, even with full article-level context:
+
+1. **The replication data that flipped the label does not exist at inference time, for any article.**
+   Producing it means writing and grading two *additional* complete hypothetical drafts at all four
+   presets (`measure_replicate_noise.py` consumes `noise_experiment/<article>__replicateR__preset{P}/
+   reasoning.json` — full alternate write-and-grade runs, not a re-read of the same digest). This is
+   an offline, expensive, label-construction-only procedure run once against the fixed 40-article
+   corpus. Neither the RL model nor Grok ever has access to it live — both only ever see the single
+   production draft's *pre-exploration* evidence (digest, gap profile, coverage table). There is no
+   channel through which "examining article-level context" could recover a 2-vs-1 replicate outcome
+   that was never shown to either component.
+2. **The evidence that *is* available (the single production draft's own section breakdown) already
+   agrees with `light`, not `deep`** — checked directly against `bases/Insects_Consciousness/
+   article_oracle.json`'s per-section `rewards`: S2 ("a growing awareness", 44.7% of article weight,
+   the single largest section) favours `light` over `deep` by 0.6325 vs 0.4882; S3 ("mindful
+   relations", 23.7% weight) favours `light` 0.6775 vs 0.5382. Only S1 (the intro, 31.6% weight)
+   favours `deep`. The article-level aggregate of the *same* evidence Grok's guided brief is built
+   from is internally coherent with the RL model's pick — there is no separate article-level signal
+   sitting in that evidence for a downstream stage to notice.
+3. **Independent corroborating signals that this is noise, not signal:** `article_oracle.json` already
+   carries `"low_signal_flag": true` for this article (a pre-existing, unrelated methodology flag
+   from `compute_article_oracle.py`, set when any gate diagnostic sits below threshold); the article
+   is thin (`n_sections=3`, 1,900 target words — a small aggregate is intrinsically more volatile);
+   and the flip is a bare 2/3 majority, not unanimous. All of this is consistent with A.16.1's
+   corpus-wide finding that single-draw label reliability is only κ≈0.28 ("fair") — a 2-1 flip on a
+   thin article is the expected behaviour of that noise floor, not an anomaly requiring an
+   explanatory story about missed context.
+
+**Revised conclusion:** on `Insects_Consciousness` specifically, the RL model's `P1` pick is not
+"secretly correct" (A.16's whole discipline is not to over-read a single R_w comparison that way),
+but the `P3` label it is scored against is a low-confidence, noise-driven correction that neither the
+RL model nor Grok could have reproduced from the context either one actually receives. This one
+article should be treated as an unreliable evaluation point (a plausible `needs_review` candidate,
+matching the treatment already given to `07_reasoning_planning`'s genuine 3-way split), not as
+evidence of a downstream-correction opportunity. `13_agent_framework`'s override shares the same
+majority-vote provenance and warrants the same caveat, though there the model happens to land on the
+corrected label anyway (exact hit, regret 0.0000), so it does not affect A.17.5's regret accounting.
+
+**Addendum (2026-08-24): the "noise-driven" framing above overstated the case; hard-vote and
+soft-vote actually agree here.** Checking `article_oracle_averaged.json`'s own un-overridden
+`r_w_rewards` (soft-vote: R_w from `section_oracle_averaged.json`'s cell-averaged rewards, computed
+independently of the manual-override mechanism) gives **deep=0.579 vs light=0.519** — the
+continuous-averaging method *also* picks `deep`, agreeing with the discrete majority vote
+(`light, deep, deep` → 2/3). Two independent aggregation methods converge on `deep`; only the
+single, un-replicated production draft (n=1) dissents. This is better evidence for `deep` than a bare
+2-1 split would be, and the earlier "probably noise" framing should be softened accordingly. The
+structural point stands regardless: both methods require the offline replicate drafts, which are
+unavailable to the RL model or Grok at live inference time either way — so this remains an
+unreliable-for-scoring, not a downstream-correctable, case; it's now better described as "probably a
+real but inference-time-unrecoverable label" than "probably noise."
+
+**Third addendum (2026-08-24): the eval harness itself was scoring this article against the wrong
+R_w, and this is now fixed — the exact-match/regret "conflict" for `Insects_Consciousness` is
+resolved, not just re-explained.** `test_grok_planner.py::_read_oracle()` was reading R_w from
+`article_oracle.json` (the single production draft) even where `article_oracle_averaged.json`
+exists — meaning the harness computed regret against the *same* draft that originally (wrongly)
+favoured `light`, regardless of which evidence actually justified the `deep` label. Fixed to prefer
+the averaged file's R_w when present (§ A.17.0). Recomputed for this article: regret goes from the
+originally-reported **−0.0460** (implying the model's `light` pick "beats" the oracle) to
+**+0.0599** (the model's pick genuinely costs reward relative to `deep`) — now in full agreement
+with the MISS verdict. **This was never really a case of "exact-match and regret disagree"; it was
+a data-plumbing bug making them disagree.** All regret figures elsewhere in A.17 have been
+recomputed on the same basis — see A.17.5.
+
+<details>
+<summary>Original wording (2026-08-24, superseded above — kept for the record)</summary>
+
+On `Insects_Consciousness` the model is scored a **MISS** for choosing the arm that actually earns
+*more* measured reward than the labelled oracle arm. Any downstream corrector that "fixes" this
+article improves exact-match while making the pipeline measurably worse on the objective the reward
+function encodes. **Exact-match accuracy and reward-regret genuinely disagree on this corpus**, and
+that disagreement is created by the hand-assigned labels, not by the model.
+
+</details>
+
+### A.17.5 Where the regret actually lives — revised after the `_read_oracle()` fix (2026-08-24)
+
+**Superseded: this whole section originally reported +0.1180 total regret and concluded the
+escalation guard should stay. Both numbers and the conclusion have changed.** The original figures
+used the pre-fix, single-draft R_w; recomputed with the same fix as A.17.0/A.17.1 (averaged R_w when
+available), total TEST regret after guards for `run33/ep81` is **+0.2003** across the 15
+non-forbidden articles (was +0.1180) — not a rounding change, since `Insects_Consciousness` alone
+flips from −0.0460 to +0.0599 (a swing of +0.106).
+
+| article | regret | share of budget | transition needed | reachable by Grok today? |
+|---|---:|---:|---|---|
+| `29_evaluation_metrics` | +0.0667 | **+33.3%** | P3 → P1 | yes (demotion) |
+| `Insects_Consciousness` | +0.0599 | **+29.9%** | P1 → P3 | **no — escalation guard** |
+| `07_reasoning_planning` | +0.0495 | **+24.7%** | P1 → P0 | yes (demotion) |
+| `14_agent_system_design` | +0.0279 | +13.9% | P1 → P2 | **no — escalation guard** |
+| `04_structured_outputs` | −0.0000 | −0.0% | (exact, fixed) | — |
+| `Distinct_AI_Models` | −0.0036 | −1.8% | P1 → P3 | **no — escalation guard** |
+
+**Four articles now account for essentially the entire budget** (33.3+29.9+24.7+13.9 = 101.8%,
+`Distinct_AI_Models`'s −1.8% closing the gap). `04_structured_outputs`, previously reported as a
+demotable +0.018 contributor, drops to ~0 under the corrected R_w — its label was itself a
+single-draft/averaged near-tie, now resolved to agree with the model's pick.
+
+Two of the four real contributors are **demotions** (already permitted by the pipeline).
+`29_evaluation_metrics` still requires a **two-level** demotion (P3 → P1): `_COST_RULE_MAX_STEP = 1`
+structurally forbids the RL-side cost rule from making it, and demoting only one level to `P2` makes
+regret *worse* (R_w: P1 = 0.439, P2 = 0.369, P3 = 0.373 — `P2` is a local trough). This part of
+A.17.8 item 4 is unaffected by the fix.
+
+**The escalation-guard recommendation reverses.** The three blocked errors
+(`Distinct_AI_Models`, `14_agent_system_design`, `Insects_Consciousness`) now carry a *combined*
+regret of **+0.0842** (was −0.021) — unblocking all three would **reduce** total TEST regret
+(0.2003 → 0.1161) **and** raise exact-match (10/16 → 13/16, 62.5% → 81%). Under the corrected
+accounting, both metrics now agree that the guard is actively costing this checkpoint reward, not
+protecting it. This is the direct opposite of the pre-fix conclusion, and the reversal traces to a
+single article (`Insects_Consciousness`) whose corrected regret is large enough to flip the net sign
+of the other two combined. **This does not mean the guard was wrong to add in 2026-07-10** — it was
+validated against a real over-escalation failure in a different checkpoint's error profile — but for
+`run33`'s current profile (collapsed onto `P1`, under-predicting), it is now net-harmful by both
+measures. See A.17.8 items 5–6 for the revised recommendation.
+
+### A.17.6 Two load-bearing assumptions in the Grok planner prompt that the data contradicts
+
+
+**(a) "THE REWARD CURVE IS SINGLE-PEAKED."** The `_PLANNER_SYSTEM` prompt asserts that article reward
+as a function of preset is unimodal, and instructs Grok to reason toward "the peak". Testing this
+directly on the R_w vectors (checkpoint-independent; **corrected 2026-08-24** — the original TRAIN
+figure below was mis-tabulated in an earlier pass and has been re-verified directly against the
+on-disk report, along with the R_w-sourcing fix; the TEST figure was already correct and unchanged
+by the fix):
+
+| split | single-peaked | share |
+|---|---:|---:|
+| TRAIN (non-forbidden) | 7/16 | **44%** |
+| TEST (non-forbidden) | 7/15 | **47%** |
+
+**The assumption fails on the majority of TEST articles.** `29_evaluation_metrics`
+(0.241 / 0.439 / 0.369 / 0.373) is the canonical counterexample and is also the single largest regret
+source: it rises to `P1`, dips at `P2`, rises again at `P3`. A planner told to hill-climb toward a
+single peak, and shown a confident `P3` RL vote, has no licence to jump back down across the `P2`
+trough to `P1` — which is precisely the move needed. The prompt is teaching Grok a model of the
+objective that is wrong about half the time, and wrong in exactly the place that costs the most.
+
+**(b) "DO NOT ESCALATE / trust the scorer when it is confident."** Confidence is not calibrated
+against correctness here. On `run33`'s TEST errors, `14_agent_system_design` is wrong at **88%
+confidence / H=0.54 bits** and `Insects_Consciousness` at **76% / 0.79 bits** — both firmly inside
+the prompt's "DECISIVE ... do NOT pick a preset above it" band. Meanwhile `07_reasoning_planning` is
+wrong at 31% confidence. Instructing Grok to defer to high-confidence RL votes is not a safe rule on
+this checkpoint.
+
+### A.17.7 Can a TRAIN-fit downstream corrector help? — the fittability ceiling says mostly no
+
+Two independent tests, both fit strictly on TRAIN and scored held-out on TEST.
+
+**Test 1 — confidence-gated post-hoc rules.** Swept both directions (`demote P2+ if conf < θ`,
+`escalate P1 if conf < θ`) over θ ∈ {0.30, 0.40, 0.50, 0.60, 0.70} on TRAIN, selected the
+TRAIN-optimum, and applied it to TEST:
+
+| checkpoint | best TRAIN rule | TRAIN exact (vs guards-only) | **TEST exact (vs guards-only)** |
+|---|---|---:|---:|
+| `run31/ep109` | demote P2+ if conf < 0.30 | 18/24 vs 17/24 | **9/16 vs 9/16 — no change** |
+| `run33/ep81` | escalate P1 if conf < 0.30 | 20/24 vs 20/24 | **10/16 vs 10/16 — no change** |
+
+Every rule that helps on TRAIN transfers **exactly zero** benefit to TEST. Nothing in the confidence
+signal generalises.
+
+**Test 2 — the fittability ceiling (the decisive one).** After the policy guards are applied, the
+complete corpus available to fit *any* downstream corrector is the set of remaining TRAIN errors:
+
+| checkpoint | TRAIN correctable errors | transition types present in TRAIN | transition types needed on TEST |
+|---|---:|---|---|
+| `run31/ep109` | **7** of 16 | P0→P3, P1→P0, P1→P2, P1→P3, P2→P1 ×2, P2→P3 | P1→P0, P1→P2, P1→P3, P2→P1, P2→P3, **P3→P1**, **P3→P2** |
+| `run33/ep81` | **4** of 16 | P1→P0, P1→P3, P2→P1, P2→P3 | P1→P0, P1→P2, P1→P3 ×2, **P3→P1**, **P3→P2** |
+
+**The dominant TEST failure mode — over-prediction from `P3` — has zero instances in TRAIN, in both
+checkpoints.** `29_evaluation_metrics` (P3→P1) alone is **33%** of the (corrected, A.17.5) TEST
+regret budget, and no TRAIN article exhibits that transition for a corrector to learn from. This is
+not a matter of choosing a better rule family or a smarter prompt: **the training signal for the
+correction simply does not exist in the split we are permitted to fit on.** With `run33` offering 4
+error examples in total, any corrector fit on them is fitting noise.
+
+**Conclusion.** A downstream corrector that is a *function of the RL output* (rule, refit cost
+matrix, or prompt heuristic keyed on preset/confidence/entropy) has essentially no legitimate
+headroom on this corpus. The one exception is deterministic hard constraints derivable from the
+guideline rather than from error statistics — i.e. the policy guards of A.17.2, which are already
+implemented and already worth +33 pp TRAIN / +6 pp TEST.
+
+### A.17.9 Item 1 measured (2026-08-24): the full pipeline is worse than `RL + guards`, and Grok-only collapses onto `P2`
+
+All four configurations run on `run33/ep81`, same checkpoint, same corpus:
+
+| | TEST exact | TEST MAE | TEST regret mean | TEST regret max | TRAIN exact |
+|---|---:|---:|---:|---:|---:|
+| `--rl-only` | 9/16 (56.2%) | 0.625 | +0.0134 | +0.0667 | 13/24 (54.2%) |
+| `--rl-guards-only` | **10/16 (62.5%)** | **0.562** | **+0.0134** | +0.0667 | 20/24 (83.3%) |
+| default (RL → Grok, **the real shipped pipeline**) | 9/16 (56.2%) | 0.625 | +0.0155 | +0.0667 | 20/24 (83.3%) |
+| `--grok-only` (no RL signal at all) | 4/16 (25.0%) | 0.812 | +0.0452 | +0.1273 | 11/24 (45.8%) |
+
+**Finding 1 — Grok-only collapses almost completely onto `P2 standard`.** Its TEST confusion matrix
+predicts `standard` for every single article except the one forced to `P0` by the forbidden-policy
+hard constraint — 15 of 16 predictions are `P2`, regardless of the true oracle class (`P0`, `P1`, or
+`P3`). Every reasoning trace independently constructs a plausible-sounding justification for `P2`
+(residual depth gaps, must-ev counts, unbacked anchors — always present, per A.17.6's own warning
+about raw gap counts), which is a textbook case of the prompt teaching confabulated-but-confident
+reasoning rather than calibrated judgment. This settles A.17.8 item 1's original question
+decisively: **the RL stage is not redundant with Grok's own reasoning — without it, Grok has no real
+discriminative signal and defaults to a single class.**
+
+**Finding 2 — the real shipped pipeline (RL → Grok) is measurably worse than `RL + guards` alone, on
+every TEST metric.** Not a close call: 56.2% vs 62.5% exact, 0.625 vs 0.562 MAE, +0.0155 vs +0.0134
+regret. TRAIN is unaffected (both 83.3%, identical per-article picks — Grok changes nothing on
+TRAIN). **The entire TEST gap traces to a single article**: `Understanding_Reasoning_LLMs`. RL (after
+guards) picks `P2 standard`, which is the exact oracle label. Grok overrides it to `P3 deep`:
+
+> reason: P2->P3 escalation triggered by uncertain vote + deep mass >=30% per override policy (S5 dominance)
+> ... RL pick=P2, and deep-vote mass=45% (>=30% threshold); decisive driver is S5 (45% budget, RL=deep, ...)
+
+This is the `OVERRIDE POLICY`'s `SANCTIONED UPWARD ESCALATION` rule (`_ESCALATION_MASS_THRESHOLD =
+0.30` in `preset_planner_handler.py`) firing exactly as designed — uncertain vote (49% top-pick),
+RL pick `P2`, deep-vote mass 45% ≥ 30%. It is also wrong: R_w for this article is
+`skip:0.250 light:0.383 standard:0.400 deep:0.368` — **`standard` is already the true peak**, and the
+curve is genuinely unimodal (not an instance of A.17.6's bimodal problem). The escalation rule cost
++0.032 regret and turned an exact hit into a near miss for no compensating gain anywhere else in the
+corpus.
+
+**This means the single-peaked prompt fix (item 3), while independently justified by A.17.6's 44-47%
+measurement, will not by itself prevent this specific failure mode** — it addresses Grok's *belief*
+about curve shape, not the *numeric threshold* that triggered the escalation regardless of that
+belief. A separate fix (item 9) is needed for the escalation-mass threshold itself. See A.17.8 items
+3, 8, and 9 for the resulting recommendation changes.
+
+**Re-measured after the single-peaked fix (2026-08-24): confirmed zero effect, not just on this
+article — on the entire corpus.** Diffing the `Chosen` decision for all 40 articles between the
+pre-fix and post-fix runs, for both `--grok-only` and the full `RL → Grok` pipeline: **no decision
+changed anywhere.** Every headline number (exact/near/miss, MAE, regret) is identical to 4 decimal
+places. `Understanding_Reasoning_LLMs` still escalates `P2 → P3` with the same reasoning, citing the
+same `deep-vote mass 45% ≥ 30%` rule, same regret (+0.0320). This confirms the prediction and
+generalizes it: Grok's actual decisions run almost entirely through the `OVERRIDE POLICY`'s explicit
+numeric vote-mass gates (cited mechanically in nearly every reasoning trace), not through the softer
+conceptual framing paragraph that was edited. **The single-peaked fix was necessary (A.17.6's
+measurement is real and worth Grok knowing) but is evidently not sufficient to change behavior on
+this corpus** — item 9 is not an optional follow-up, it is the only lever that has been shown to
+touch actual decisions.
+
+**Before changing `_ESCALATION_MASS_THRESHOLD`, get more than n=1.** The one concrete misfire
+(`Understanding_Reasoning_LLMs`) is not enough evidence to justify moving a numeric threshold —
+doing so risks exactly the kind of single-example overfitting this investigation has repeatedly
+warned against (A.16.2, A.17.7). The right next diagnostic is cheap and code-only: count how often
+the `P2 → P3` sanctioned-escalation clause actually fires across the full 24 TRAIN + 16 TEST corpus
+(from the saved reasoning traces already collected, or by re-deriving each article's deep-vote mass
+from `section_oracle_averaged.json` the same way the RL aggregate is built) and check, for each
+firing, whether `R_w[deep] > R_w[standard]` actually held.
+
+**Done (2026-08-24): checkpoint-independent backtest against the full corpus — the threshold is not
+obviously miscalibrated, and this specific miss is not fixable by moving it.** Rather than rely on
+the single observed real firing, computed a **label-based** deep-vote-mass for all 40 articles
+(target-words-weighted share of sections whose own `section_oracle` argmax is `deep`, from
+`section_oracle_averaged.json`/`section_oracle.json` directly — this is what the RL model's vote mass
+is *estimating*, without that estimate's own noise) and checked it against each article's R_w:
+
+| | count | correct (`R_w[deep] > R_w[standard]`) | hit rate |
+|---|---:|---:|---:|
+| label-based deep-mass ≥ 30% ("would fire") | 13 / 40 | 11 | **85%** |
+
+**Two false positives exist even with perfect label information**: `02_workflows_vs_agents__var_standard`
+(deep-mass 42.9%, but `R_w[standard]=0.424 > R_w[deep]=0.347`; this article's own RL pick was never
+actually P2 for this checkpoint, so it never fired in practice — a latent risk, not an observed one)
+and `Understanding_Reasoning_LLMs` (deep-mass **67%** by true label — notably higher than the 45%
+the RL model itself estimated in the real firing, showing the model's own estimate is itself noisy
+relative to ground truth — yet `R_w[standard]=0.363 > R_w[deep]=0.320` even at the true value).
+**Critically, no single threshold value can separate these 2 wrong cases from the 11 correct ones**:
+`02_workflows_vs_agents__var_standard`'s 42.9% sits between correctly-firing `Dark_Dimension` (34%)
+and `Distinct_AI_Models` (50%); `Understanding_Reasoning_LLMs`'s 67% sits below correctly-firing
+`Insects_Consciousness` (76%). Raising the gate to exclude the bad cases would also exclude several
+good ones; lowering it doesn't help either. **This is a single-feature-proxy ceiling, not a
+mistunable constant** — deep-vote-mass (however precisely measured) cannot, by itself, perfectly
+predict article-level R_w, because article-level reward blends across all sections by word weight in
+a way a simple vote share does not capture (the same structural point A.17.6 makes about curve
+shape, one level down).
+
+**Recommendation: leave `_ESCALATION_MASS_THRESHOLD` at 0.30.** The evidence argues against tuning
+it (85% hit rate on the feature that exists, and the known failures aren't separable by any cutoff),
+not for it. This also downgrades item 9's priority: the rule only fires on `RL pick = P2` articles,
+which this checkpoint produces rarely (1 of 40), so its ceiling contribution to the collapsed-P1
+checkpoint's overall regret is small relative to A.17.9's dominant findings (Grok-only's near-total
+`P2` collapse, and the corpus-expansion ceiling from A.9). Further investment here has low expected
+value; the corpus-expansion lever remains the dominant one.
+
+### A.17.8 Recommended changes, ranked by evidence strength
+
+**1. DONE (2026-08-24) — measured, not modified.** Ran all four sweeps on `run33/ep81`: `--rl-only`,
+`--rl-guards-only`, default (RL → Grok, the real shipped pipeline), and `--grok-only`. Results and
+their consequences are in **A.17.9** below — this materially changes the picture, see item 8.
+
+**2. Adopt `--rl-guards-only` as the reported RL benchmark (documentation/reporting, no code).** Per
+A.17.2 the guards are already in every production path; quoting `--rl-only` understates the stage by
+33 pp on TRAIN and misattributes a solved constraint as a model failure.
+
+**3. DONE (2026-08-24), re-measured, confirmed zero behavioral effect.** Replaced `_PLANNER_SYSTEM`'s
+"THE REWARD CURVE IS SINGLE-PEAKED" section in `preset_planner_handler.py` with "THE REWARD CURVE IS
+OFTEN BIMODAL, NOT SINGLE-PEAKED" (+ matching `routers/tools.py` docstring). Re-ran both
+Grok-invoking sweeps (`--grok-only`, default `RL → Grok`) on the identical corpus: **every one of the
+40 decisions is unchanged**, including `Understanding_Reasoning_LLMs`'s escalation. Independently
+still worth keeping (the 44-47% unimodal measurement is real, and giving Grok accurate framing is
+correct regardless of whether this corpus's decisions moved), but it did not touch the `OVERRIDE
+POLICY`'s mechanical vote-mass gates, which is what actually drives Grok's choices — see A.17.9's
+addendum for the recommended next diagnostic before touching item 9.
+
+**4. Allow a two-level demotion path for `P3` picks (small code change, weakly evidenced).** The
+`P3 → P1` move that `29_evaluation_metrics` needs is currently unreachable: `_COST_RULE_MAX_STEP = 1`
+blocks it on the RL side and the prompt's unimodality claim discourages it on the Grok side. Removing
+the cap is *not* recommended (the 1-step restriction was validated in 2026-07-10 backtesting and
+prevented a real misfire); instead permit the specific `P3 → P1` transition when the RL distribution
+places non-trivial mass on `P1`. **Flagged honestly: TRAIN contains no `P3 →` error at all, so this
+cannot be validated before shipping.** Gate it behind the A.17.8-item-1 measurement.
+
+**5. REVERSED (2026-08-24): loosen `_apply_escalation_guard` for this failure profile, gated on real
+measurement — do not leave it as-is.** Originally recommended keeping the guard untouched. Per
+A.17.5's corrected regret accounting, the three blocked errors (`Distinct_AI_Models`,
+`14_agent_system_design`, `Insects_Consciousness`) now carry a *combined* regret of **+0.0842**, not
+the originally-reported −0.021 — the `Insects_Consciousness` swing (−0.046 → +0.060) alone reverses
+the sign. Unblocking all three raises exact-match 10/16 → 13/16 (81%) **and** lowers total regret
+0.2003 → 0.1161. Both metrics that previously conflicted on this question now agree. This does not
+mean deleting the guard outright is risk-free — it was added in 2026-07-10 to fix a real
+over-escalation failure in a *different* checkpoint's error profile, and that failure mode could
+recur in a future run with the opposite bias. Recommended action: re-run item 1's measurements with
+the guard loosened (e.g. permit P1→P3 specifically, mirroring item 4's targeted P3→P1 exception)
+and compare, rather than assume either the 2026-07-10 justification or this reversal generalizes.
+
+**6. The exact-match / regret conflict is resolved, not just relocated — no label-layer decision is
+needed for `Insects_Consciousness` anymore.** The original "conflict" (model scored MISS while
+"beating" the oracle's own reward) was a data-plumbing bug: regret was computed against the wrong
+R_w file. Fixed (A.17.0), and both metrics now agree `Insects_Consciousness` is a genuine model
+error (regret +0.0599). `13_agent_framework` still has `oracle ≠ argmax(R_w)` in principle, but the
+model lands on the oracle in practice (exact hit, zero regret either way), so it was never a live
+conflict. **No re-opening of either override is warranted by this evidence** — the remaining
+question (whether to trust a 2/3 replicate-majority label at all) is a data-quality question, not a
+metric-disagreement one, and is lower priority now that the metrics themselves are consistent.
+
+**7. §60.12's input-representation hypothesis is NOT supported by the forbidden-policy evidence — do
+not spend on it for that reason.** The obvious reading of A.17.3 ("the model fails a deterministic
+single-flag constraint, therefore the input representation is deficient") was checked against
+`build_rl_input()` and **refuted**: the flag is stripped on purpose, because the constraint belongs
+to the article-level aggregator, not the section-level scorer. Adding it back would be an
+architectural regression — it would let the section scorer learn an article-level shortcut that the
+guard already enforces deterministically and perfectly. §60.12's hypothesis may still be correct,
+but it needs different evidence; this is not it.
+
+**8. What the honest post-A.17 picture is (updated 2026-08-24, now with the real shipped pipeline
+measured — see A.17.9).** The configuration that actually ships is **RL → Grok (default mode)**, not
+`RL + guards` — and it now measures **worse** than `RL + guards` alone: 56.2% exact / 0.625 MAE /
++0.0155 regret vs `RL + guards`'s 62.5% / 0.562 / +0.0134, both against a 43.8% / 0.812 / +0.0196
+trivial baseline. The entire gap is one article (A.17.9). This reframes the priority: fixing Grok's
+current net-negative contribution (items 3 and 9) is now at least as urgent as chasing the
+RL-side regret concentration, and until it's re-measured post-fix, **`--rl-guards-only` is not just
+the honest benchmark (item 2) but arguably the better thing to actually ship.** The remaining
+headroom in the corpus itself (A.9: 8 TRAIN topics, `n=16` TEST) is separately large and untouched.
+
+**9. RESOLVED (2026-08-24): re-validated `_ESCALATION_MASS_THRESHOLD = 0.30` against the full corpus
+— leave it as-is, do not tune it.** The `Understanding_Reasoning_LLMs` misfire is real, but a
+checkpoint-independent, label-based backtest across all 40 articles (A.17.9) found the threshold
+correct 11/13 times (85%) when it would fire, and — decisively — **the 2 known-wrong cases cannot be
+separated from the 11 correct ones by any choice of cutoff** (their deep-vote-mass values are
+interleaved with correctly-firing articles). This is a ceiling on the single-feature proxy itself,
+not a mistunable constant, so no threshold adjustment closes this gap. Given the rule only fires on
+`RL pick = P2` articles (rare for this collapsed-onto-`P1` checkpoint — 1 of 40 here), its
+contribution to the overall regret picture is small next to A.17.9's dominant findings. No further
+action recommended on this item; the corpus-expansion lever (A.9) remains the higher-value target.
+
+
 
 
 

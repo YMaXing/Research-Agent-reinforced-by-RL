@@ -18,6 +18,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 from pathlib import Path
@@ -888,7 +889,9 @@ def _run_serve(selector: ExplorationStrategySelector, port: int) -> None:
 
         def do_GET(self):  # noqa: N802
             if self.path == "/health":
-                self._send_json({"status": "ok", "adapter_dir": selector.adapter_dir})
+                # pid lets ensure_infer_server() verify a stale/orphaned server
+                # on the same port isn't being mistaken for the freshly-spawned one.
+                self._send_json({"status": "ok", "adapter_dir": selector.adapter_dir, "pid": os.getpid()})
             else:
                 self._send_json({"error": "Not found"}, 404)
 

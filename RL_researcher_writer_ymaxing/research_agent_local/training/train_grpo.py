@@ -1358,7 +1358,7 @@ def train(
                 patience_counter = 0 if is_new_best_strict else patience_counter + 1
                 _save_metric_checkpoint(
                     task_dir / "best_strict_epochs", task_dir / "best_strict",
-                    epoch, model, is_new_best=is_new_best_strict,
+                    epoch + 1, model, is_new_best=is_new_best_strict,
                 )
                 # "best/" is the legacy alias of "best_strict/".
                 (task_dir / "best").mkdir(parents=True, exist_ok=True)
@@ -1366,7 +1366,7 @@ def train(
                 log.info(
                     f"  ★ {'New best' if is_new_best_strict else 'Tied best'} strict="
                     f"{best_strict_top1:.4f} ({n_strict}/{num_groups}) — saved to "
-                    f"best/, best_strict/, best_strict_epochs/epoch_{epoch:04d}/"
+                    f"best/, best_strict/, best_strict_epochs/epoch_{epoch + 1:04d}/"
                 )
             else:
                 patience_counter += 1
@@ -1376,12 +1376,12 @@ def train(
                 best_expected_reward = mean_er
                 _save_metric_checkpoint(
                     task_dir / "best_er_epochs", task_dir / "best_er",
-                    epoch, model, is_new_best=is_new_best_er,
+                    epoch + 1, model, is_new_best=is_new_best_er,
                 )
                 log.info(
                     f"  ★ {'New best' if is_new_best_er else 'Tied best'} E[R]="
                     f"{best_expected_reward:.4f} — saved to best_er/, "
-                    f"best_er_epochs/epoch_{epoch:04d}/"
+                    f"best_er_epochs/epoch_{epoch + 1:04d}/"
                 )
 
             if top1_acc >= best_neartie_top1:
@@ -1389,12 +1389,12 @@ def train(
                 best_neartie_top1 = top1_acc
                 _save_metric_checkpoint(
                     task_dir / "best_neartie_epochs", task_dir / "best_neartie",
-                    epoch, model, is_new_best=is_new_best_neartie,
+                    epoch + 1, model, is_new_best=is_new_best_neartie,
                 )
                 log.info(
                     f"  ★ {'New best' if is_new_best_neartie else 'Tied best'} near-tie top1="
                     f"{best_neartie_top1:.4f} — saved to best_neartie/, "
-                    f"best_neartie_epochs/epoch_{epoch:04d}/"
+                    f"best_neartie_epochs/epoch_{epoch + 1:04d}/"
                 )
 
             # best_strict_healthy/ -- same strict top-1 tracking as best_strict/,
@@ -1407,12 +1407,12 @@ def train(
                 best_strict_healthy_top1 = strict_top1_acc
                 _save_metric_checkpoint(
                     task_dir / "best_strict_healthy_epochs", task_dir / "best_strict_healthy",
-                    epoch, model, is_new_best=is_new_best_healthy,
+                    epoch + 1, model, is_new_best=is_new_best_healthy,
                 )
                 log.info(
                     f"  ★ {'New best' if is_new_best_healthy else 'Tied best'} healthy strict="
                     f"{best_strict_healthy_top1:.4f} (H={mean_entropy:.4f}) — saved to "
-                    f"best_strict_healthy/, best_strict_healthy_epochs/epoch_{epoch:04d}/"
+                    f"best_strict_healthy/, best_strict_healthy_epochs/epoch_{epoch + 1:04d}/"
                 )
 
             # Overwrite latest/ every epoch so there is always a recoverable
@@ -1425,7 +1425,7 @@ def train(
             # (1-indexed; large disk usage). Training itself always runs the full
             # [start_epoch, args.epochs) range regardless of this threshold.
             if args.save_every_epoch and (epoch + 1) >= args.checkpoint_from_epoch:
-                epoch_dir = task_dir / "epochs" / f"epoch_{epoch:04d}"
+                epoch_dir = task_dir / "epochs" / f"epoch_{epoch + 1:04d}"
                 epoch_dir.mkdir(parents=True, exist_ok=True)
                 model.save_pretrained(str(epoch_dir))
 
