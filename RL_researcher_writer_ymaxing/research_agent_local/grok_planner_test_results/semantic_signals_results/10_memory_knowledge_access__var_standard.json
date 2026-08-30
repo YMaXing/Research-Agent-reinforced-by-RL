@@ -1,0 +1,54 @@
+{
+  "article": "10_memory_knowledge_access__var_standard",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place",
+        "scripted_example_fraction": 0.15,
+        "argumentative_risk": 0.55,
+        "risk_rationale": "Guideline dictates specific framing (LLM limitations as 'continual learning' problem, intern-with-amnesia analogy, context-window as RAM with 'lost in the middle'), normative claims on memory tools as temporary solution, and a real-world example, but depth_checklist lacks case_studies_metrics."
+      },
+      {
+        "sec_id": "S2::section-2-the-layers-of-memory-internal-short-term-and-long-term",
+        "scripted_example_fraction": 0.05,
+        "argumentative_risk": 0.25,
+        "risk_rationale": "Primarily descriptive definitions of internal/short-term/long-term layers and a mandated Mermaid diagram drawn from cognitive-science terminology, well-supported by cited sources with low interpretive leaps."
+      },
+      {
+        "sec_id": "S3::section-3-long-term-memory-semantic-episodic-and-procedural",
+        "scripted_example_fraction": 0.5,
+        "argumentative_risk": 0.45,
+        "risk_rationale": "Guideline verbatim dictates multiple invented illustrations (e.g. brother-Mark frustration episode with exact timestamp, MonthlyReportIntent procedural steps, vegetarian/allergy JSON entities) plus biology-to-agent mappings, while depth_checklist misses case_studies_metrics."
+      },
+      {
+        "sec_id": "S4::section-4-storing-memories-pros-and-cons-of-different-approaches",
+        "scripted_example_fraction": 0.3,
+        "argumentative_risk": 0.7,
+        "risk_rationale": "Section makes evaluative claims on pros/cons and trade-offs of raw strings vs JSON entities vs graphs (with specific invented cases like 'brother is no longer a lawyer' or graph triples), framed as architectural decisions, despite some source gaps in historical_context."
+      },
+      {
+        "sec_id": "S5::section-5-memory-implementations-with-code-examples",
+        "scripted_example_fraction": 0.8,
+        "argumentative_risk": 0.15,
+        "risk_rationale": "Guideline explicitly mandates 'use the code from the provided Notebook. Do not come up with new code' along with verbatim extraction prompts, input/output examples (e.g. cabin-booking learn_procedure), and mem0 usage, making it a pre-scripted implementation walkthrough."
+      },
+      {
+        "sec_id": "S6::section-6-real-world-lessons-challenges-and-best-practices",
+        "scripted_example_fraction": 0.25,
+        "argumentative_risk": 0.8,
+        "risk_rationale": "Prescribes normative best practices (lean toward less compression, avoid user 'memory gardening', product-first design) and interpretive lessons on evolving context windows, with cross-domain claims only thinly tied to the high-level sources listed."
+      },
+      {
+        "sec_id": "S7::section-7-conclusion",
+        "scripted_example_fraction": 0.0,
+        "argumentative_risk": 0.4,
+        "risk_rationale": "Positions memory as core to 'personalized agents that learn' and temporary workaround for continual learning while previewing future lessons, but remains mostly summative with light interpretive connection to the AI Engineering field."
+      }
+    ],
+    "source_independence": 0.55,
+    "topic_canonicity": 0.75,
+    "overall_notes": "High scripted_example_fraction in S5 (notebook-dictated code and examples) contrasts with elevated argumentative_risk in S4/S6 around evaluative pros/cons and normative best practices; sources overlap on CoALA-inspired taxonomy yielding moderate independence but high canonicity for the semantic/episodic/procedural framing, explaining persistent depth gaps in case studies despite tavily saturation."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Guideline dictates specific framing (LLM limitations as 'continual learning' problem, intern-with-amnesia analogy, context-window as RAM with 'lost in the middle'), normative claims on memory tools as temporary solution, and a real-world example, but depth_checklist lacks case_studies_metrics.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-layers-of-memory-internal-short-term-and-long-term\",\n      \"scripted_example_fraction\": 0.05,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Primarily descriptive definitions of internal/short-term/long-term layers and a mandated Mermaid diagram drawn from cognitive-science terminology, well-supported by cited sources with low interpretive leaps.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-long-term-memory-semantic-episodic-and-procedural\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Guideline verbatim dictates multiple invented illustrations (e.g. brother-Mark frustration episode with exact timestamp, MonthlyReportIntent procedural steps, vegetarian/allergy JSON entities) plus biology-to-agent mappings, while depth_checklist misses case_studies_metrics.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-storing-memories-pros-and-cons-of-different-approaches\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Section makes evaluative claims on pros/cons and trade-offs of raw strings vs JSON entities vs graphs (with specific invented cases like 'brother is no longer a lawyer' or graph triples), framed as architectural decisions, despite some source gaps in historical_context.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-memory-implementations-with-code-examples\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Guideline explicitly mandates 'use the code from the provided Notebook. Do not come up with new code' along with verbatim extraction prompts, input/output examples (e.g. cabin-booking learn_procedure), and mem0 usage, making it a pre-scripted implementation walkthrough.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-real-world-lessons-challenges-and-best-practices\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Prescribes normative best practices (lean toward less compression, avoid user 'memory gardening', product-first design) and interpretive lessons on evolving context windows, with cross-domain claims only thinly tied to the high-level sources listed.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-conclusion\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Positions memory as core to 'personalized agents that learn' and temporary workaround for continual learning while previewing future lessons, but remains mostly summative with light interpretive connection to the AI Engineering field.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.75,\n  \"overall_notes\": \"High scripted_example_fraction in S5 (notebook-dictated code and examples) contrasts with elevated argumentative_risk in S4/S6 around evaluative pros/cons and normative best practices; sources overlap on CoALA-inspired taxonomy yielding moderate independence but high canonicity for the semantic/episodic/procedural framing, explaining persistent depth gaps in case studies despite tavily saturation.\"\n}\n```",
+  "parse_ok": true
+}

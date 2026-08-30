@@ -1,0 +1,54 @@
+{
+  "article": "10_memory_knowledge_access__var_minimal",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place",
+        "scripted_example_fraction": 0.45,
+        "argumentative_risk": 0.4,
+        "risk_rationale": "Guideline mandates specific LLM limitations framing, intern-with-amnesia analogy, context-window counterpoint on growing sizes, and early agent-building example, layering motivational claims atop sources that are mostly descriptive of statelessness."
+      },
+      {
+        "sec_id": "S2::section-2-the-layers-of-memory-internal-short-term-and-long-term",
+        "scripted_example_fraction": 0.65,
+        "argumentative_risk": 0.55,
+        "risk_rationale": "Section script dictates exact layer definitions, cognitive-science value explanation, dynamic retrieval pipeline, Mermaid diagram, and usefulness categorization that cross-applies biology terminology with thin direct source backing for agent-specific interplay."
+      },
+      {
+        "sec_id": "S3::section-3-long-term-memory-semantic-episodic-and-procedural",
+        "scripted_example_fraction": 0.8,
+        "argumentative_risk": 0.65,
+        "risk_rationale": "Guideline supplies verbatim detailed examples (enterprise vs personal assistant, Mark's birthday timestamped episode, MonthlyReportIntent steps) that invent fictional narratives for each memory type while sources remain high-level on CoALA taxonomy."
+      },
+      {
+        "sec_id": "S4::section-4-storing-memories-pros-and-cons-of-different-approaches",
+        "scripted_example_fraction": 0.85,
+        "argumentative_risk": 0.75,
+        "risk_rationale": "Pros/cons lists and concrete invented illustrations (\"brother job\" raw-string failure, \"petting my cat\" nuance loss, graph triples with dates) are fully dictated, advancing normative storage trade-off claims beyond what overlapping sources explicitly compare."
+      },
+      {
+        "sec_id": "S5::section-5-memory-implementations-with-code-examples",
+        "scripted_example_fraction": 0.9,
+        "argumentative_risk": 0.25,
+        "risk_rationale": "Instruction explicitly requires using only the provided Notebook's code, exact extraction prompts, and output examples (e.g. Mark software-engineer bullets, learn_procedure tool output), making the section almost entirely pre-scripted illustration rather than sourced claims."
+      },
+      {
+        "sec_id": "S6::section-6-real-world-lessons-challenges-and-best-practices",
+        "scripted_example_fraction": 0.75,
+        "argumentative_risk": 0.85,
+        "risk_rationale": "Section prescribes normative best practices on reduced compression with raw logs, product-specific design (Q&A bot vs companion), and autonomous \"human factor\" gardening avoidance, with examples like \"User has a new bike\" that exceed thin, mostly descriptive source support."
+      },
+      {
+        "sec_id": "S7::section-7-conclusion",
+        "scripted_example_fraction": 0.35,
+        "argumentative_risk": 0.35,
+        "risk_rationale": "Conclusion enumerates future lessons and positions memory as temporary continual-learning workaround per global context, but remains largely summative with lower original interpretive leaps than preceding sections."
+      }
+    ],
+    "source_independence": 0.55,
+    "topic_canonicity": 0.8,
+    "overall_notes": "The guideline heavily scripts invented examples and specific narratives (especially S3-S5) that cannot be improved by external evidence, aligning with high scripted fractions. Sources overlap significantly on CoALA-derived semantic/episodic/procedural taxonomy and storage trade-offs, confirming canonical saturation where further search yields restatements. Dominant signal is elevated argumentative risk in normative best-practice sections (S4, S6) that extrapolate cross-domain analogies and policy-like recommendations beyond what the provided sources directly substantiate."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline mandates specific LLM limitations framing, intern-with-amnesia analogy, context-window counterpoint on growing sizes, and early agent-building example, layering motivational claims atop sources that are mostly descriptive of statelessness.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-layers-of-memory-internal-short-term-and-long-term\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Section script dictates exact layer definitions, cognitive-science value explanation, dynamic retrieval pipeline, Mermaid diagram, and usefulness categorization that cross-applies biology terminology with thin direct source backing for agent-specific interplay.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-long-term-memory-semantic-episodic-and-procedural\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Guideline supplies verbatim detailed examples (enterprise vs personal assistant, Mark's birthday timestamped episode, MonthlyReportIntent steps) that invent fictional narratives for each memory type while sources remain high-level on CoALA taxonomy.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-storing-memories-pros-and-cons-of-different-approaches\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.75,\n      \"risk_rationale\": \"Pros/cons lists and concrete invented illustrations (\\\"brother job\\\" raw-string failure, \\\"petting my cat\\\" nuance loss, graph triples with dates) are fully dictated, advancing normative storage trade-off claims beyond what overlapping sources explicitly compare.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-memory-implementations-with-code-examples\",\n      \"scripted_example_fraction\": 0.9,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Instruction explicitly requires using only the provided Notebook's code, exact extraction prompts, and output examples (e.g. Mark software-engineer bullets, learn_procedure tool output), making the section almost entirely pre-scripted illustration rather than sourced claims.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-real-world-lessons-challenges-and-best-practices\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.85,\n      \"risk_rationale\": \"Section prescribes normative best practices on reduced compression with raw logs, product-specific design (Q&A bot vs companion), and autonomous \\\"human factor\\\" gardening avoidance, with examples like \\\"User has a new bike\\\" that exceed thin, mostly descriptive source support.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-conclusion\",\n      \"scripted_example_fraction\": 0.35,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Conclusion enumerates future lessons and positions memory as temporary continual-learning workaround per global context, but remains largely summative with lower original interpretive leaps than preceding sections.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"The guideline heavily scripts invented examples and specific narratives (especially S3-S5) that cannot be improved by external evidence, aligning with high scripted fractions. Sources overlap significantly on CoALA-derived semantic/episodic/procedural taxonomy and storage trade-offs, confirming canonical saturation where further search yields restatements. Dominant signal is elevated argumentative risk in normative best-practice sections (S4, S6) that extrapolate cross-domain analogies and policy-like recommendations beyond what the provided sources directly substantiate.\"\n}\n```",
+  "parse_ok": true
+}

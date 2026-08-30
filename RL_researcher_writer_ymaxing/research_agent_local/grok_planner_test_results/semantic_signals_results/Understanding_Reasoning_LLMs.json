@@ -1,0 +1,60 @@
+{
+  "article": "Understanding_Reasoning_LLMs",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-methods-and-strategies-for-building-and-refining-reasoning-models",
+        "scripted_example_fraction": 0.4,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Guideline mandates positioning reasoning models as the key 2025 specialization trend beyond RAG/domain fine-tuning plus verbatim roadmap and specific drawbacks clarification, creating interpretive framing with 5 orphan depth anchors only partially supported by sources."
+      },
+      {
+        "sec_id": "S2::section-2-how-do-we-define-reasoning-model",
+        "scripted_example_fraction": 0.4,
+        "argumentative_risk": 0.2,
+        "risk_rationale": "Section is mostly descriptive definition plus spectrum mapping drawn from Zero-Shot Reasoners and DeepSeek papers, with the 'simple example' being illustrative but not carrying high normative weight."
+      },
+      {
+        "sec_id": "S3::section-3-when-should-we-use-reasoning-models",
+        "scripted_example_fraction": 0.3,
+        "argumentative_risk": 0.6,
+        "risk_rationale": "Guideline requires normative catalog of when models deliver value vs. inefficiency plus concrete downsides (e.g. overthinking on arithmetic), which carries evaluative weight relative to limitations coverage in DeepSeek and O1-Journey sources."
+      },
+      {
+        "sec_id": "S4::section-4-a-brief-look-at-the-deepseek-training-pipeline",
+        "scripted_example_fraction": 0.2,
+        "argumentative_risk": 0.2,
+        "risk_rationale": "Primarily descriptive introduction of R1 variants, cold-start, and distillation nuances taken directly from the DeepSeek paper, with low interpretive leaps."
+      },
+      {
+        "sec_id": "S5::section-5-the-4-main-ways-to-build-and-improve-reasoning-models",
+        "scripted_example_fraction": 0.2,
+        "argumentative_risk": 0.7,
+        "risk_rationale": "Requires speculation on o1/o3 expense drivers, one-sentence summaries per approach, 'insights on effectiveness' of distillation vs RL, and 'at least two useful additional comparisons' for the report table; 16+ orphan anchors indicate thin support for these original interpretive elements."
+      },
+      {
+        "sec_id": "S6::section-6-thoughts-about-deepseek-r1",
+        "scripted_example_fraction": 0.1,
+        "argumentative_risk": 0.65,
+        "risk_rationale": "Section evaluates significance, head-to-head o1 comparison (despite guideline stressing unknown o1 details like size and technique mix), and positions as open milestone, creating high interpretive/normative weight vs. source gaps on undisclosed o1 elements."
+      },
+      {
+        "sec_id": "S7::section-7-developing-reasoning-models-on-a-limited-budget",
+        "scripted_example_fraction": 0.3,
+        "argumentative_risk": 0.4,
+        "risk_rationale": "Outlines budget projects and 'future directions' combining Sky-T1/TinyZero/journey learning into hybrids; draws on O1-Journey but extends to prescriptive robustness contrasts and strategic balancing."
+      },
+      {
+        "sec_id": "S8::section-8-conclusion",
+        "scripted_example_fraction": 0.2,
+        "argumentative_risk": 0.7,
+        "risk_rationale": "Recaps with characterizations, forecasts hybrid future underlying o1/o3, and delivers normative strategic guidance for engineers on matching techniques to constraints, exceeding direct source support."
+      }
+    ],
+    "source_independence": 0.85,
+    "topic_canonicity": 0.45,
+    "overall_notes": "Four golden sources are fully independent primary arXiv papers (DeepSeek-R1 technical report supplies the central case study, others address CoT, test-time scaling, and o1-replication journey learning) with no redundancy. Topic mixes canonical CoT foundations with fast-moving 2024-2025 releases on emergence, cold-start RL, and budget distillation, so further search could still surface non-redundant material. Dominant signal is elevated argumentative risk plus high prescriptive scripting (especially S5 with 49 depth gaps and 16 orphans) where normative forecasts, speculations on o1 costs, and author-added comparisons exceed what the sources directly underwrite."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-methods-and-strategies-for-building-and-refining-reasoning-models\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline mandates positioning reasoning models as the key 2025 specialization trend beyond RAG/domain fine-tuning plus verbatim roadmap and specific drawbacks clarification, creating interpretive framing with 5 orphan depth anchors only partially supported by sources.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-how-do-we-define-reasoning-model\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Section is mostly descriptive definition plus spectrum mapping drawn from Zero-Shot Reasoners and DeepSeek papers, with the 'simple example' being illustrative but not carrying high normative weight.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-when-should-we-use-reasoning-models\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline requires normative catalog of when models deliver value vs. inefficiency plus concrete downsides (e.g. overthinking on arithmetic), which carries evaluative weight relative to limitations coverage in DeepSeek and O1-Journey sources.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-a-brief-look-at-the-deepseek-training-pipeline\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Primarily descriptive introduction of R1 variants, cold-start, and distillation nuances taken directly from the DeepSeek paper, with low interpretive leaps.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-the-4-main-ways-to-build-and-improve-reasoning-models\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Requires speculation on o1/o3 expense drivers, one-sentence summaries per approach, 'insights on effectiveness' of distillation vs RL, and 'at least two useful additional comparisons' for the report table; 16+ orphan anchors indicate thin support for these original interpretive elements.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-thoughts-about-deepseek-r1\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Section evaluates significance, head-to-head o1 comparison (despite guideline stressing unknown o1 details like size and technique mix), and positions as open milestone, creating high interpretive/normative weight vs. source gaps on undisclosed o1 elements.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-developing-reasoning-models-on-a-limited-budget\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Outlines budget projects and 'future directions' combining Sky-T1/TinyZero/journey learning into hybrids; draws on O1-Journey but extends to prescriptive robustness contrasts and strategic balancing.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-conclusion\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Recaps with characterizations, forecasts hybrid future underlying o1/o3, and delivers normative strategic guidance for engineers on matching techniques to constraints, exceeding direct source support.\"\n    }\n  ],\n  \"source_independence\": 0.85,\n  \"topic_canonicity\": 0.45,\n  \"overall_notes\": \"Four golden sources are fully independent primary arXiv papers (DeepSeek-R1 technical report supplies the central case study, others address CoT, test-time scaling, and o1-replication journey learning) with no redundancy. Topic mixes canonical CoT foundations with fast-moving 2024-2025 releases on emergence, cold-start RL, and budget distillation, so further search could still surface non-redundant material. Dominant signal is elevated argumentative risk plus high prescriptive scripting (especially S5 with 49 depth gaps and 16 orphans) where normative forecasts, speculations on o1 costs, and author-added comparisons exceed what the sources directly underwrite.\"\n}\n```",
+  "parse_ok": true
+}

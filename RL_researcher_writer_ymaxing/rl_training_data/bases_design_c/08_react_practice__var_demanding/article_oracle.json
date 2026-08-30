@@ -1,0 +1,170 @@
+{
+  "version": 3,
+  "article": "08_react_practice__var_demanding",
+  "variant": "var_demanding",
+  "computed_at": "2026-08-26T07:07:02.687219+00:00",
+  "computed_from": "section_oracle_averaged.json",
+  "n_draws_used": 3,
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "skip",
+  "runner_up_arm_idx": 0,
+  "margin": 0.02816,
+  "reward_spread": 0.089266,
+  "r_w_rewards": {
+    "skip": 0.169732,
+    "light": 0.197892,
+    "standard": 0.108626,
+    "deep": 0.140764
+  },
+  "r_w_rewards_list": [
+    0.169732,
+    0.197892,
+    0.108626,
+    0.140764
+  ],
+  "decision_path": [
+    "manual override \u2192 light"
+  ],
+  "manual_override": true,
+  "needs_review": false,
+  "gate_diagnostics": null,
+  "low_signal_flag": false,
+  "n_sections": 6,
+  "n_sections_with_target": 6,
+  "total_target_words": 4350,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-setup-and-environment",
+      "title": "setup and environment",
+      "target_words": 400,
+      "weight_words": 400,
+      "weight_frac": 0.09195,
+      "rewards": {
+        "skip": 0.233333,
+        "light": 0.273333,
+        "standard": 0.18,
+        "deep": 0.326
+      },
+      "rewards_by_preset": [
+        0.233333,
+        0.273333,
+        0.18,
+        0.326
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-tool-layer-mock-search-implementation",
+      "title": "tool layer mock search implementation",
+      "target_words": 650,
+      "weight_words": 650,
+      "weight_frac": 0.14943,
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.394083,
+        "standard": 0.299167,
+        "deep": 0.346
+      },
+      "rewards_by_preset": [
+        0.3,
+        0.394083,
+        0.299167,
+        0.346
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-thought-phase-prompt-construction-and-generation",
+      "title": "thought phase prompt construction and generation",
+      "target_words": 600,
+      "weight_words": 600,
+      "weight_frac": 0.13793,
+      "rewards": {
+        "skip": -0.1,
+        "light": -0.16,
+        "standard": -0.22,
+        "deep": -0.193167
+      },
+      "rewards_by_preset": [
+        -0.1,
+        -0.16,
+        -0.22,
+        -0.193167
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-action-phase-function-calling-and-parsing",
+      "title": "action phase function calling and parsing",
+      "target_words": 800,
+      "weight_words": 800,
+      "weight_frac": 0.18391,
+      "rewards": {
+        "skip": 0.166667,
+        "light": 0.245792,
+        "standard": 0.134167,
+        "deep": 0.132042
+      },
+      "rewards_by_preset": [
+        0.166667,
+        0.245792,
+        0.134167,
+        0.132042
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-control-loop-messages-scratchpad-orchestration",
+      "title": "control loop messages scratchpad orchestration",
+      "target_words": 1200,
+      "weight_words": 1200,
+      "weight_frac": 0.27586,
+      "rewards": {
+        "skip": 0.1,
+        "light": 0.146958,
+        "standard": 0.131667,
+        "deep": -0.006542
+      },
+      "rewards_by_preset": [
+        0.1,
+        0.146958,
+        0.131667,
+        -0.006542
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-tests-and-traces-success-and-graceful-fallback",
+      "title": "tests and traces success and graceful fallback",
+      "target_words": 700,
+      "weight_words": 700,
+      "weight_frac": 0.16092,
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.427417,
+        "standard": 0.299167,
+        "deep": 0.412667
+      },
+      "rewards_by_preset": [
+        0.366667,
+        0.427417,
+        0.299167,
+        0.412667
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

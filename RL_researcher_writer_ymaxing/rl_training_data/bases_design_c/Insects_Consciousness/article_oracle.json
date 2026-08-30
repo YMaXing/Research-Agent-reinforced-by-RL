@@ -1,0 +1,104 @@
+{
+  "version": 3,
+  "article": "Insects_Consciousness",
+  "variant": "no_variant",
+  "computed_at": "2026-08-26T07:07:04.530899+00:00",
+  "computed_from": "section_oracle_averaged.json",
+  "n_draws_used": 3,
+  "oracle_arm": "deep",
+  "oracle_arm_idx": 3,
+  "runner_up_arm": "light",
+  "runner_up_arm_idx": 1,
+  "margin": 0.032671,
+  "reward_spread": 0.162101,
+  "r_w_rewards": {
+    "skip": 0.359649,
+    "light": 0.489079,
+    "standard": 0.409443,
+    "deep": 0.52175
+  },
+  "r_w_rewards_list": [
+    0.359649,
+    0.489079,
+    0.409443,
+    0.52175
+  ],
+  "decision_path": [
+    "manual override \u2192 deep"
+  ],
+  "manual_override": true,
+  "needs_review": false,
+  "gate_diagnostics": null,
+  "low_signal_flag": false,
+  "n_sections": 3,
+  "n_sections_with_target": 3,
+  "total_target_words": 1900,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 600,
+      "weight_words": 600,
+      "weight_frac": 0.31579,
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.306667,
+        "standard": 0.315,
+        "deep": 0.422417
+      },
+      "rewards_by_preset": [
+        0.366667,
+        0.306667,
+        0.315,
+        0.422417
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-a-growing-awareness",
+      "title": "a growing awareness",
+      "target_words": 850,
+      "weight_words": 850,
+      "weight_frac": 0.44737,
+      "rewards": {
+        "skip": 0.333333,
+        "light": 0.6175,
+        "standard": 0.438167,
+        "deep": 0.662667
+      },
+      "rewards_by_preset": [
+        0.333333,
+        0.6175,
+        0.438167,
+        0.662667
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-mindful-relations",
+      "title": "mindful relations",
+      "target_words": 450,
+      "weight_words": 450,
+      "weight_frac": 0.23684,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.531667,
+        "standard": 0.476917,
+        "deep": 0.480167
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.531667,
+        0.476917,
+        0.480167
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

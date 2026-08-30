@@ -84,6 +84,16 @@ Usage (from research_agent_local/)
   uv run python -m mcp_client.src.test_grok_planner \
       --adapter-dir tasks/run31_averaged_confidence/epochs/epoch_0109 \
       --rl-guards-only --save-json
+
+  # Score a Design-C-trained checkpoint against Design C's own oracle labels
+  # and rewards (rl_training_data/bases_design_c/), not production C2's --
+  # --cost-formula also switches the server's cost-sensitive decision rule
+  # (--rl-guards-only mode doesn't apply that rule, but plain RL/Grok modes do):
+  uv run python -m mcp_client.src.test_grok_planner \
+      --adapter-dir tasks/run_design_c/epochs/epoch_00XX \
+      --bases-dir ../rl_training_data/bases_design_c \
+      --cost-formula design_c \
+      --rl-guards-only --save-json
 """
 
 from __future__ import annotations
@@ -113,8 +123,18 @@ _THIS_DIR = Path(__file__).resolve().parent
 _CLIENT_DIR = _THIS_DIR.parent                    # mcp_client/
 _AGENT_DIR = _CLIENT_DIR.parent                   # research_agent_local/
 _REPO_ROOT = _AGENT_DIR.parent                    # RL_researcher_writer_ymaxing/
+# Reassigned in main() by --bases-dir (e.g. to bases_design_c/ for scoring a
+# Design-C-trained checkpoint against Design C's own oracle labels/rewards
+# instead of production C2's) -- both run_variant() and _read_oracle() below
+# read this name unqualified, so the override propagates to both.
 _BASES_DIR = _REPO_ROOT / "rl_training_data" / "bases"
 _CHECKPOINTS_ROOT = _REPO_ROOT / "rl_training_data" / "checkpoints"
+
+# Must stay in sync with preset_infer_handler.py's _COST_FORMULA_ENV_VAR /
+# _COST_MATRICES -- this client process only forwards the env var to the
+# server subprocess, it never imports the server's cost-matrix module.
+_COST_FORMULA_ENV_VAR = "RL_COST_FORMULA"
+_COST_FORMULAS = {"c2", "design_c"}
 
 # _infer_config.py is stdlib-only (see its own docstring), so it's safe to
 # import here too -- lets --save-json mirror ensure_infer_server()'s own
@@ -255,20 +275,17 @@ def _resolve_adapter_dir(subdir: str) -> Path:
 
 
 # ---------------------------------------------------------------------------
-# Oracle: read from article_oracle.json  (version 2)
+# Oracle: read from article_oracle.json  (version 3)
 # ---------------------------------------------------------------------------
 def _read_oracle(variant_name: str) -> tuple[int, list[float]]:
     """Return (oracle_arm_idx, r_w_rewards_list[0..3]).
 
-    oracle_arm_idx always comes from article_oracle.json (the canonical label,
-    including A.15.2/A.15.4 manual overrides). r_w_rewards prefers the sibling
-    article_oracle_averaged.json when it exists (N=3-replicated articles) --
-    using the single-draft R_w here made regret internally inconsistent with
-    the label for every replication-corrected article (the label was decided
-    from the averaged/replicated evidence, not the single draft; see
-    run13_rl_grok_pipeline_analysis.md A.17.4, 2026-08-24 addendum). The two
-    files never disagree on oracle_arm_idx (manual overrides apply
-    unconditionally to both), so this cannot introduce a new label/R_w split.
+    Both values come directly from article_oracle.json. As of A.16
+    (2026-08-25), that file's own r_w_rewards_list already IS the mean-R_w
+    across every available draw (production + replicates) whenever replicate
+    data exists -- the earlier article_oracle_averaged.json sibling file /
+    canonical-vs-averaged split has been retired, so there is no longer a
+    second file to prefer or reconcile against.
 
     Raises FileNotFoundError when article_oracle.json is absent.
     """
@@ -276,11 +293,7 @@ def _read_oracle(variant_name: str) -> tuple[int, list[float]]:
     if not oracle_path.exists():
         raise FileNotFoundError(f"Missing article_oracle.json: {oracle_path}")
     data = json.loads(oracle_path.read_text(encoding="utf-8"))
-    r_w_rewards = data["r_w_rewards_list"]
-    averaged_path = _BASES_DIR / variant_name / "article_oracle_averaged.json"
-    if averaged_path.exists():
-        r_w_rewards = json.loads(averaged_path.read_text(encoding="utf-8"))["r_w_rewards_list"]
-    return int(data["oracle_arm_idx"]), r_w_rewards
+    return int(data["oracle_arm_idx"]), data["r_w_rewards_list"]
 
 
 def _apply_policy_guards(preset: int, policy: str) -> int:
@@ -357,6 +370,15 @@ async def run_variant(
         "external_evidence_policy", "allowed"
     )
 
+    # Section-level intermediate infer results (per-section hard-argmax choice x
+    # guideline target_words -> word-weighted vote mass per preset, e.g.
+    # rl_aggregate["deep_mass"]). Already computed by build_article_evidence() on
+    # every request; captured here so --save-json persists it going forward
+    # instead of discarding it once this function returns (None in --grok-only
+    # mode, where no RL section scoring runs).
+    rl_aggregate = evidence.get("rl_aggregate")
+    rl_section_signals = evidence.get("section_signals")
+
     # Determine which preset to evaluate
     if grok_only:
         if grok is None:
@@ -400,6 +422,8 @@ async def run_variant(
             "confidence": rl["confidence"] if rl else None,
             "floor_applied": rl["floor_correction_applied"] if rl else None,
             "rl_agg_probs": rl.get("agg_probs") if rl else None,
+            "rl_aggregate": rl_aggregate,
+            "rl_section_signals": rl_section_signals,
             "grok_override": grok.get("override") if grok else None,
             "grok_reasoning": grok.get("reasoning") if grok else None,
             "grok_override_reason": grok.get("override_reason") if grok else None,
@@ -444,6 +468,8 @@ async def run_variant(
         "confidence": rl["confidence"] if rl else None,
         "floor_applied": rl["floor_correction_applied"] if rl else None,
         "rl_agg_probs": rl.get("agg_probs") if rl else None,
+        "rl_aggregate": rl_aggregate,
+        "rl_section_signals": rl_section_signals,
         "grok_override": grok.get("override") if grok else None,
         "grok_reasoning": grok.get("reasoning") if grok else None,
         "grok_override_reason": grok.get("override_reason") if grok else None,
@@ -491,6 +517,12 @@ def _print_variant_result(r: dict) -> None:
         print(f"  RL model   : P{rl_p} {rl_name:<8}  conf={conf:.0%}  H={entropy:.2f}bits{floor_tag}")
     elif is_grok_only:
         print(f"  RL model   : (skipped — --grok-only baseline)")
+
+    rl_agg = r.get("rl_aggregate")
+    if rl_agg and rl_agg.get("section_vote_mass"):
+        vm = rl_agg["section_vote_mass"]
+        vm_str = "  ".join(f"{_PRESET_NAMES[i]}={vm[i]:.2f}" for i in range(len(vm)))
+        print(f"  Section vote mass (word-weighted hard vote): {vm_str}")
 
     if is_guards:
         print(f"  Guards     : deterministic policy clamp (forbidden→skip / required→≥light)")
@@ -857,7 +889,50 @@ async def main() -> None:
             "Equivalent to exporting RL_INFER_ADAPTER_DIR, but scoped to this run."
         ),
     )
+    parser.add_argument(
+        "--bases-dir", type=Path, default=None,
+        metavar="PATH",
+        help=(
+            "Override the bases root used for BOTH the tool's research_directory "
+            "argument AND article_oracle.json scoring (default: production "
+            "rl_training_data/bases/). Use this to score a checkpoint against an "
+            "alternate reward-formula experiment's own oracle labels/rewards, e.g. "
+            "rl_training_data/bases_design_c/ for Design C -- without it, oracle/"
+            "reward figures are always read from production C2 regardless of "
+            "which checkpoint --adapter-dir points at."
+        ),
+    )
+    parser.add_argument(
+        "--cost-formula", type=str, default=None, choices=sorted(_COST_FORMULAS),
+        help=(
+            "Select which fitted cost matrix the server's cost-sensitive decision "
+            "rule (preset_infer_handler.apply_cost_sensitive_rule) uses -- 'c2' "
+            "(default) or 'design_c'. Only affects plain RL/full pipeline modes, "
+            "not --rl-guards-only (guards don't call the cost rule). Pair with "
+            "--bases-dir rl_training_data/bases_design_c for a fully consistent "
+            "Design C evaluation."
+        ),
+    )
     args = parser.parse_args()
+
+    if args.bases_dir is not None:
+        resolved_bases_dir = args.bases_dir.resolve()
+        if not resolved_bases_dir.is_dir():
+            print(f"ERROR: --bases-dir directory not found: {resolved_bases_dir}")
+            return
+        global _BASES_DIR
+        _BASES_DIR = resolved_bases_dir
+
+    if args.cost_formula is not None:
+        # Same forwarding split as RL_INFER_ADAPTER_DIR below: os.environ for
+        # this process (unused here, but kept for symmetry/introspection) plus
+        # an explicit server env entry, since stdio's default env allowlist
+        # would otherwise drop it before it reaches the subprocess.
+        os.environ[_COST_FORMULA_ENV_VAR] = args.cost_formula
+        _mcp_settings.mcp.servers["research_agent"].env = {
+            **(_mcp_settings.mcp.servers["research_agent"].env or {}),
+            _COST_FORMULA_ENV_VAR: args.cost_formula,
+        }
 
     n_modes = sum([args.rl_only, args.grok_only, args.rl_guards_only])
     if n_modes > 1:
@@ -920,6 +995,8 @@ async def main() -> None:
     print(f"  Mode     : {mode}")
     if resolved_adapter_dir is not None:
         print(f"  Adapter  : {resolved_adapter_dir}  (--adapter-dir override)")
+    print(f"  Bases dir: {_BASES_DIR}" + ("  (--bases-dir override)" if args.bases_dir is not None else ""))
+    print(f"  Cost formula: {args.cost_formula or 'c2 (default)'}")
     print(f"  Variants : {variant_list}")
 
     async with app.run():

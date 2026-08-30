@@ -1,0 +1,183 @@
+{
+  "version": 1,
+  "merge_source": "single-draw section_oracle.json (production) + noise_experiment replicates via measure_replicate_noise.py's recompute path",
+  "article": "02_workflows_vs_agents",
+  "variant": "var_demanding",
+  "n_draws_per_arm": 3,
+  "replicate_ids_used": [
+    1,
+    2
+  ],
+  "sections": {
+    "S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.273333,
+        "standard": 0.213333,
+        "deep": 0.206833
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.057735,
+        "standard": 0.057735,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-understanding-the-spectrum-from-workflows-to-agents": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.233333,
+        "light": 0.311667,
+        "standard": 0.318333,
+        "deep": 0.186833
+      },
+      "reward_sd": {
+        "skip": 0.11547,
+        "light": 0.102966,
+        "standard": 0.057735,
+        "deep": 0.085781
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.105,
+        "standard": 0.105,
+        "deep": 0.08
+      }
+    },
+    "S3::section-3-choosing-your-path": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.166667,
+        "light": 0.281667,
+        "standard": 0.08,
+        "deep": 0.164333
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.031853,
+        "standard": 0.173205,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.175,
+        "standard": 0.0,
+        "deep": 0.1575
+      }
+    },
+    "S4::section-4-exploring-common-patterns": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.446667,
+        "standard": 0.5075,
+        "deep": 0.3915
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.050021,
+        "standard": 0.060622,
+        "deep": 0.186628
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.14,
+        "standard": 0.2275,
+        "deep": 0.218
+      }
+    },
+    "S5::section-5-zooming-in-on-our-favorite-examples": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.266667,
+        "light": 0.273333,
+        "standard": 0.318333,
+        "deep": 0.299333
+      },
+      "reward_sd": {
+        "skip": 0.152753,
+        "light": 0.057735,
+        "standard": 0.033198,
+        "deep": 0.054848
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.105,
+        "deep": 0.1925
+      }
+    },
+    "S6::section-6-conclusion-the-challenges-of-every-ai-engineer": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.333333,
+        "light": 0.586083,
+        "standard": 0.59275,
+        "deep": 0.397667
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.269697,
+        "standard": 0.212552,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.31275,
+        "standard": 0.31275,
+        "deep": 0.1575
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces": "skip",
+    "S2::section-2-understanding-the-spectrum-from-workflows-to-agents": "standard",
+    "S3::section-3-choosing-your-path": "light",
+    "S4::section-4-exploring-common-patterns": "standard",
+    "S5::section-5-zooming-in-on-our-favorite-examples": "standard",
+    "S6::section-6-conclusion-the-challenges-of-every-ai-engineer": "standard"
+  }
+}

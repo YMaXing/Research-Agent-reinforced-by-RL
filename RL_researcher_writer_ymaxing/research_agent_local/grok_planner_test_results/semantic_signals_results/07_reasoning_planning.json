@@ -1,0 +1,60 @@
+{
+  "article": "07_reasoning_planning",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-what-a-non-reasoning-model-does-and-why-it-fails-on-complex-tasks",
+        "scripted_example_fraction": 0.65,
+        "argumentative_risk": 0.35,
+        "risk_rationale": "Guideline dictates a fully invented \"Technical Research Assistant Agent\" trace plus specific consequences (superficial outputs, no iteration, missed sub-goals) and explicit linkage that workflows/structured outputs/tools are insufficient for adaptive tasks, layering interpretive weight on thin failure-mode citations."
+      },
+      {
+        "sec_id": "S2::section-2-teaching-models-to-think-chain-of-thought-and-its-limits",
+        "scripted_example_fraction": 0.55,
+        "argumentative_risk": 0.25,
+        "risk_rationale": "Section scripts a verbatim prompt and expected high-level plan for the recurring research task plus two exact limitations on parseability and lack of iterative loops; sources cover CoT foundations but the critique is lightly interpretive."
+      },
+      {
+        "sec_id": "S3::section-3-separating-planning-from-answering-foundations-of-react-and-plan-and-execute",
+        "scripted_example_fraction": 0.15,
+        "argumentative_risk": 0.2,
+        "risk_rationale": "Primarily descriptive positioning of ReAct vs Plan-and-Execute with enumerated benefits (control, iterative loops); supported by canonical sources with minimal original normative leaps."
+      },
+      {
+        "sec_id": "S4::section-4-react-in-depth-loop-evolving-example-pros-and-cons",
+        "scripted_example_fraction": 0.75,
+        "argumentative_risk": 0.4,
+        "risk_rationale": "Guideline verbatim scripts an 8-step evolving example with quoted Thoughts, exact Actions (e.g. specific search queries) and Observations for the research task, plus enumerated Pros/Cons that evaluate interpretability and predictability beyond what the ReAct paper directly quantifies for this scenario."
+      },
+      {
+        "sec_id": "S5::section-5-plan-and-execute-in-depth-plan-execution-pros-and-cons",
+        "scripted_example_fraction": 0.65,
+        "argumentative_risk": 0.45,
+        "risk_rationale": "Guideline pre-scripts a 7-item numbered plan plus execution/refinement triggers for the same fictional agent, then lists Pros/Cons on efficiency, bounding cost, and \"risk of rigid adherence\" that constitute evaluative claims only loosely tied to the cited orchestration sources."
+      },
+      {
+        "sec_id": "S6::section-6-where-this-shows-up-in-practice-deep-research-style-systems",
+        "scripted_example_fraction": 0.45,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Section maps ReAct/Plan-and-Execute onto \"Deep Research–Style Systems\" via the recurring example's micro-cycles and explicit prompts for verification; this cross-system analogy carries interpretive weight relative to the sparse, partially matching sources."
+      },
+      {
+        "sec_id": "S7::section-7-modern-reasoning-models-thinking-vs-answer-streams-and-interleaved-thinking",
+        "scripted_example_fraction": 0.25,
+        "argumentative_risk": 0.6,
+        "risk_rationale": "Guideline asserts normative implications for system design (still need guardrails/prompts/state despite implicit planning in o3/o4-style streams) and continued usefulness of separation for debugging; these claims exceed direct support from the interleaved-thinking and 2025 expectations sources."
+      },
+      {
+        "sec_id": "S8::section-8-advanced-agent-capabilities-enabled-by-planning-goal-decomposition-and-self-correction",
+        "scripted_example_fraction": 0.5,
+        "argumentative_risk": 0.55,
+        "risk_rationale": "Continues the scripted recurring example with conflicting adoption rates to illustrate self-correction, then argues why explicit patterns \"still matter with strong models\" for debuggability/pedagogy; this evaluative claim linking to future lessons is thinly anchored in the cited agent guides."
+      }
+    ],
+    "source_independence": 0.5,
+    "topic_canonicity": 0.8,
+    "overall_notes": "High scripted-example fractions dominate in S1/S4/S5 because the guideline verbatim dictates a recurring fictional Technical Research Assistant trace with quoted thoughts, exact search queries, numbered plans and conflict-resolution steps that require no external evidence. The topic is highly canonical (foundational ReAct/CoT/Plan-and-Execute literature since 2022), producing redundant restatements across IBM, Google and arXiv sources. Argumentative risk peaks in later sections that evaluate modern-model implications and assert why explicit patterns remain essential, signals only partially matched by the digest's coverage gaps."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-what-a-non-reasoning-model-does-and-why-it-fails-on-complex-tasks\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Guideline dictates a fully invented \\\"Technical Research Assistant Agent\\\" trace plus specific consequences (superficial outputs, no iteration, missed sub-goals) and explicit linkage that workflows/structured outputs/tools are insufficient for adaptive tasks, layering interpretive weight on thin failure-mode citations.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-teaching-models-to-think-chain-of-thought-and-its-limits\",\n      \"scripted_example_fraction\": 0.55,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Section scripts a verbatim prompt and expected high-level plan for the recurring research task plus two exact limitations on parseability and lack of iterative loops; sources cover CoT foundations but the critique is lightly interpretive.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-separating-planning-from-answering-foundations-of-react-and-plan-and-execute\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Primarily descriptive positioning of ReAct vs Plan-and-Execute with enumerated benefits (control, iterative loops); supported by canonical sources with minimal original normative leaps.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-react-in-depth-loop-evolving-example-pros-and-cons\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline verbatim scripts an 8-step evolving example with quoted Thoughts, exact Actions (e.g. specific search queries) and Observations for the research task, plus enumerated Pros/Cons that evaluate interpretability and predictability beyond what the ReAct paper directly quantifies for this scenario.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-plan-and-execute-in-depth-plan-execution-pros-and-cons\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Guideline pre-scripts a 7-item numbered plan plus execution/refinement triggers for the same fictional agent, then lists Pros/Cons on efficiency, bounding cost, and \\\"risk of rigid adherence\\\" that constitute evaluative claims only loosely tied to the cited orchestration sources.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-where-this-shows-up-in-practice-deep-research-style-systems\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Section maps ReAct/Plan-and-Execute onto \\\"Deep Research–Style Systems\\\" via the recurring example's micro-cycles and explicit prompts for verification; this cross-system analogy carries interpretive weight relative to the sparse, partially matching sources.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-modern-reasoning-models-thinking-vs-answer-streams-and-interleaved-thinking\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline asserts normative implications for system design (still need guardrails/prompts/state despite implicit planning in o3/o4-style streams) and continued usefulness of separation for debugging; these claims exceed direct support from the interleaved-thinking and 2025 expectations sources.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-advanced-agent-capabilities-enabled-by-planning-goal-decomposition-and-self-correction\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Continues the scripted recurring example with conflicting adoption rates to illustrate self-correction, then argues why explicit patterns \\\"still matter with strong models\\\" for debuggability/pedagogy; this evaluative claim linking to future lessons is thinly anchored in the cited agent guides.\"\n    }\n  ],\n  \"source_independence\": 0.5,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"High scripted-example fractions dominate in S1/S4/S5 because the guideline verbatim dictates a recurring fictional Technical Research Assistant trace with quoted thoughts, exact search queries, numbered plans and conflict-resolution steps that require no external evidence. The topic is highly canonical (foundational ReAct/CoT/Plan-and-Execute literature since 2022), producing redundant restatements across IBM, Google and arXiv sources. Argumentative risk peaks in later sections that evaluate modern-model implications and assert why explicit patterns remain essential, signals only partially matched by the digest's coverage gaps.\"\n}\n```",
+  "parse_ok": true
+}

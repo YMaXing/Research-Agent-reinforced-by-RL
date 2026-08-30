@@ -1,4 +1,4 @@
-yxing@YMX-Raider:/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local$ uv run python -m mcp_client.src.test_grok_planner --grok-only
+xing@YMX-Raider:/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local$ uv run python -m mcp_client.src.test_grok_planner --grok-only
 
 Preset Planner Test  (24 variants)
   Mode     : Grok-only standalone (--grok-only)

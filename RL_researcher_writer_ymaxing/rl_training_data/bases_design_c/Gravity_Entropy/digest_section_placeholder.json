@@ -1,0 +1,9 @@
+{
+  "presets": {
+    "S1::section-1-introduction": "deep",
+    "S2::section-2-a-force-emerges": "deep",
+    "S3::section-3-apparent-attraction": "deep",
+    "S4::section-4-strengths-and-weaknesses": "deep",
+    "S5::section-5-testing-entropic-gravity": "deep"
+  }
+}

@@ -75,15 +75,14 @@ def parse(path: Path) -> list[dict]:
 
 
 def _corrected_r_w(variant: str) -> list[float] | None:
-    """Re-derive R_w the way the fixed `_read_oracle()` does: prefer
-    article_oracle_averaged.json when present, else the single-draft file.
-    Returns None if neither file is found (should not happen for corpus articles)."""
+    """Read R_w directly from article_oracle.json. As of A.16 (2026-08-25),
+    that file's own r_w_rewards_list already IS the mean-R_w across every
+    available draw -- the article_oracle_averaged.json sibling file this
+    used to prefer has been retired. Returns None if the file is missing
+    (should not happen for corpus articles)."""
     import json as _json
 
     single = _BASES_DIR / variant / "article_oracle.json"
-    averaged = _BASES_DIR / variant / "article_oracle_averaged.json"
-    if averaged.exists():
-        return _json.loads(averaged.read_text(encoding="utf-8"))["r_w_rewards_list"]
     if single.exists():
         return _json.loads(single.read_text(encoding="utf-8"))["r_w_rewards_list"]
     return None

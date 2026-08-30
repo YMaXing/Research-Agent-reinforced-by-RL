@@ -1,0 +1,48 @@
+{
+  "article": "08_react_practice__var_demanding",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-setup-and-environment",
+        "scripted_example_fraction": 0.65,
+        "argumentative_risk": 0.3,
+        "risk_rationale": "Guideline prescribes exact notebook code cells ([2]-[5]), expected stderr output, and specific imports/utilities; 'must cover in depth' pydantic/enum benefits adds explanatory content but remains tied to the pre-scripted environment setup."
+      },
+      {
+        "sec_id": "S2::section-2-tool-layer-mock-search-implementation",
+        "scripted_example_fraction": 0.7,
+        "argumentative_risk": 0.4,
+        "risk_rationale": "Walk-through of notebook search function, docstring, structured mock responses for query types, and fallback behavior are verbatim from the dictated implementation; production replacement examples (Google/Bing APIs, rate limiting) add some external framing."
+      },
+      {
+        "sec_id": "S3::section-3-thought-phase-prompt-construction-and-generation",
+        "scripted_example_fraction": 0.8,
+        "argumentative_risk": 0.25,
+        "risk_rationale": "Exact code cells [8]-[10], PROMPT_TEMPLATE_THOUGHT definition, build_tools_xml_description output (XML with <tool name=\"search\"> and placeholder), and generate_thought function are fully scripted with verification criteria."
+      },
+      {
+        "sec_id": "S4::section-4-action-phase-function-calling-and-parsing",
+        "scripted_example_fraction": 0.6,
+        "argumentative_risk": 0.55,
+        "risk_rationale": "Notebook-derived parsing logic, dual return formats, and system-prompt strategy analysis are scripted, but 'must cover in depth' advanced production error handling (retries, circuit breakers integrating into generate_action/observe) requires interpretive best-practice claims beyond source support."
+      },
+      {
+        "sec_id": "S5::section-5-control-loop-messages-scratchpad-orchestration",
+        "scripted_example_fraction": 0.75,
+        "argumentative_risk": 0.45,
+        "risk_rationale": "Full react_agent_loop, Message/MessageRole categories (user/thought/tool_request/observation/final_answer), scratchpad mechanics, turn bounds, and code-output analysis (reasoning through question types, error recovery) mirror notebook traces and structure exactly."
+      },
+      {
+        "sec_id": "S6::section-6-tests-and-traces-success-and-graceful-fallback",
+        "scripted_example_fraction": 0.85,
+        "argumentative_risk": 0.6,
+        "risk_rationale": "Two specific test cases ('capital of France', 'capital of Italy'), max_turns=2, and verbatim color-coded trace highlights (exact thoughts, tool requests, observations, forced final answer) are fully pre-scripted; must-cover test-suite design with SE comparisons adds higher interpretive weight."
+      }
+    ],
+    "source_independence": 0.55,
+    "topic_canonicity": 0.8,
+    "overall_notes": "Lesson is overwhelmingly a 100% practical, notebook-mirroring tutorial with dictated code cells, prompt templates, mock responses, and two verbatim test traces, producing high scripted_example fractions. Sources mix the original ReAct paper, Anthropic guidance, Gemini docs, an arXiv review, a Medium tutorial, the course notebook, and multiple IBM conceptual pages (some redundancy on agent planning/orchestration). ReAct + Gemini function-calling is a canonical, heavily documented topic (tavily_saturation=1.0, many restatements), limiting gains from deeper exploration; argumentative risk rises in sections mandating production strategies, industry anchoring, and testing analogies not fully supported by the mostly high-level sources."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-setup-and-environment\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Guideline prescribes exact notebook code cells ([2]-[5]), expected stderr output, and specific imports/utilities; 'must cover in depth' pydantic/enum benefits adds explanatory content but remains tied to the pre-scripted environment setup.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-tool-layer-mock-search-implementation\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Walk-through of notebook search function, docstring, structured mock responses for query types, and fallback behavior are verbatim from the dictated implementation; production replacement examples (Google/Bing APIs, rate limiting) add some external framing.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-thought-phase-prompt-construction-and-generation\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Exact code cells [8]-[10], PROMPT_TEMPLATE_THOUGHT definition, build_tools_xml_description output (XML with <tool name=\\\"search\\\"> and placeholder), and generate_thought function are fully scripted with verification criteria.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-action-phase-function-calling-and-parsing\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Notebook-derived parsing logic, dual return formats, and system-prompt strategy analysis are scripted, but 'must cover in depth' advanced production error handling (retries, circuit breakers integrating into generate_action/observe) requires interpretive best-practice claims beyond source support.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-control-loop-messages-scratchpad-orchestration\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Full react_agent_loop, Message/MessageRole categories (user/thought/tool_request/observation/final_answer), scratchpad mechanics, turn bounds, and code-output analysis (reasoning through question types, error recovery) mirror notebook traces and structure exactly.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-tests-and-traces-success-and-graceful-fallback\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Two specific test cases ('capital of France', 'capital of Italy'), max_turns=2, and verbatim color-coded trace highlights (exact thoughts, tool requests, observations, forced final answer) are fully pre-scripted; must-cover test-suite design with SE comparisons adds higher interpretive weight.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Lesson is overwhelmingly a 100% practical, notebook-mirroring tutorial with dictated code cells, prompt templates, mock responses, and two verbatim test traces, producing high scripted_example fractions. Sources mix the original ReAct paper, Anthropic guidance, Gemini docs, an arXiv review, a Medium tutorial, the course notebook, and multiple IBM conceptual pages (some redundancy on agent planning/orchestration). ReAct + Gemini function-calling is a canonical, heavily documented topic (tavily_saturation=1.0, many restatements), limiting gains from deeper exploration; argumentative risk rises in sections mandating production strategies, industry anchoring, and testing analogies not fully supported by the mostly high-level sources.\"\n}\n```",
+  "parse_ok": true
+}

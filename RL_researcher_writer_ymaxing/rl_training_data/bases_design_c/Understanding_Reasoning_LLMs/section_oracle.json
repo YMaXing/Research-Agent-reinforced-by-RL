@@ -1,0 +1,313 @@
+{
+  "version": 5,
+  "article": "Understanding_Reasoning_LLMs",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-methods-and-strategies-for-building-and-refining-reasoning-models": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": -0.1,
+        "light": -0.16,
+        "standard": -0.22,
+        "deep": -0.2265
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 0.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 0.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 0.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 0.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S2::section-2-how-do-we-define-reasoning-model": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.40825,
+        "standard": 0.46675,
+        "deep": 0.34175
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.06825,
+        "standard": 0.18675,
+        "deep": 0.06825
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S3::section-3-when-should-we-use-reasoning-models": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.282375,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.102375,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S4::section-4-a-brief-look-at-the-deepseek-training-pipeline": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.24,
+        "standard": 0.382375,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.102375,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S5::section-5-the-4-main-ways-to-build-and-improve-reasoning-models": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.1,
+        "light": 0.4425,
+        "standard": 0.543375,
+        "deep": 0.6235
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.2025,
+        "standard": 0.363375,
+        "deep": 0.45
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S6::section-6-thoughts-about-deepseek-r1": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.24,
+        "standard": 0.28,
+        "deep": 0.1735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S7::section-7-developing-reasoning-models-on-a-limited-budget": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.345,
+        "standard": 0.3375,
+        "deep": 0.331
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.105,
+        "standard": 0.1575,
+        "deep": 0.1575
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S8::section-8-conclusion": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.14,
+        "standard": 0.185,
+        "deep": 0.2085
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.105,
+        "deep": 0.135
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-methods-and-strategies-for-building-and-refining-reasoning-models": "skip",
+    "S2::section-2-how-do-we-define-reasoning-model": "standard",
+    "S3::section-3-when-should-we-use-reasoning-models": "skip",
+    "S4::section-4-a-brief-look-at-the-deepseek-training-pipeline": "skip",
+    "S5::section-5-the-4-main-ways-to-build-and-improve-reasoning-models": "deep",
+    "S6::section-6-thoughts-about-deepseek-r1": "skip",
+    "S7::section-7-developing-reasoning-models-on-a-limited-budget": "light",
+    "S8::section-8-conclusion": "deep"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "external_evidence_policy": "required",
+  "sections": {
+    "S1::section-1-introduction-the-need-for-multimodal-ai": {
+      "target_words": 300,
+      "mandatory_bullets": 3,
+      "must_cover_depth": 0,
+      "must_stay_brief": 0
+    },
+    "S2::section-2-limitations-of-traditional-document-processing": {
+      "target_words": 650,
+      "mandatory_bullets": 5,
+      "must_cover_depth": 1,
+      "must_stay_brief": 1
+    },
+    "S3::section-3-foundations-of-multimodal-llms": {
+      "target_words": 1350,
+      "mandatory_bullets": 9,
+      "must_cover_depth": 3,
+      "must_stay_brief": 1
+    },
+    "S4::section-4-applying-multimodal-llms-to-images-and-pdfs": {
+      "target_words": 950,
+      "mandatory_bullets": 4,
+      "must_cover_depth": 1,
+      "must_stay_brief": 0
+    },
+    "S5::section-5-foundations-of-multimodal-rag": {
+      "target_words": 750,
+      "mandatory_bullets": 7,
+      "must_cover_depth": 2,
+      "must_stay_brief": 1
+    },
+    "S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text": {
+      "target_words": 650,
+      "mandatory_bullets": 3,
+      "must_cover_depth": 1,
+      "must_stay_brief": 0
+    },
+    "S7::section-7-building-multimodal-ai-agents": {
+      "target_words": 500,
+      "mandatory_bullets": 3,
+      "must_cover_depth": 1,
+      "must_stay_brief": 0
+    },
+    "S8::section-8-conclusion": {
+      "target_words": 150,
+      "mandatory_bullets": 3,
+      "must_cover_depth": 0,
+      "must_stay_brief": 1
+    }
+  }
+}

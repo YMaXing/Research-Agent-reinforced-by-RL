@@ -1,0 +1,170 @@
+{
+  "version": 3,
+  "article": "09_RAG__var_standard",
+  "variant": "var_standard",
+  "computed_at": "2026-08-26T07:07:02.741537+00:00",
+  "computed_from": "section_oracle_averaged.json",
+  "n_draws_used": 3,
+  "oracle_arm": "deep",
+  "oracle_arm_idx": 3,
+  "runner_up_arm": "skip",
+  "runner_up_arm_idx": 0,
+  "margin": 0.004357,
+  "reward_spread": 0.049259,
+  "r_w_rewards": {
+    "skip": 0.077235,
+    "light": 0.074543,
+    "standard": 0.032333,
+    "deep": 0.081592
+  },
+  "r_w_rewards_list": [
+    0.077235,
+    0.074543,
+    0.032333,
+    0.081592
+  ],
+  "decision_path": [
+    "mean R_w argmax over 3 draw(s): deep  margin=+0.0044  1x-noise-sd threshold=0.0312  BELOW threshold, low confidence"
+  ],
+  "manual_override": false,
+  "needs_review": true,
+  "gate_diagnostics": null,
+  "low_signal_flag": false,
+  "n_sections": 6,
+  "n_sections_with_target": 6,
+  "total_target_words": 3170,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction-giving-llms-an-open-book-exam",
+      "title": "introduction giving llms an open book exam",
+      "target_words": 565,
+      "weight_words": 565,
+      "weight_frac": 0.17823,
+      "rewards": {
+        "skip": -0.033333,
+        "light": -0.093333,
+        "standard": -0.130583,
+        "deep": -0.124833
+      },
+      "rewards_by_preset": [
+        -0.033333,
+        -0.093333,
+        -0.130583,
+        -0.124833
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-the-rag-system-core-components",
+      "title": "the rag system core components",
+      "target_words": 465,
+      "weight_words": 465,
+      "weight_frac": 0.14669,
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.106667,
+        "standard": 0.013333,
+        "deep": 0.040167
+      },
+      "rewards_by_preset": [
+        0.2,
+        0.106667,
+        0.013333,
+        0.040167
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-the-rag-pipeline-ingestion-and-retrieval",
+      "title": "the rag pipeline ingestion and retrieval",
+      "target_words": 625,
+      "weight_words": 625,
+      "weight_frac": 0.19716,
+      "rewards": {
+        "skip": 0.033333,
+        "light": -0.06,
+        "standard": -0.086667,
+        "deep": -0.059833
+      },
+      "rewards_by_preset": [
+        0.033333,
+        -0.06,
+        -0.086667,
+        -0.059833
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-advanced-rag-techniques",
+      "title": "advanced rag techniques",
+      "target_words": 910,
+      "weight_words": 910,
+      "weight_frac": 0.28707,
+      "rewards": {
+        "skip": 0.0,
+        "light": 0.063292,
+        "standard": 0.250833,
+        "deep": 0.285708
+      },
+      "rewards_by_preset": [
+        0.0,
+        0.063292,
+        0.250833,
+        0.285708
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-agentic-rag",
+      "title": "agentic rag",
+      "target_words": 395,
+      "weight_words": 395,
+      "weight_frac": 0.12461,
+      "rewards": {
+        "skip": 0.166667,
+        "light": 0.290625,
+        "standard": 0.270833,
+        "deep": 0.330167
+      },
+      "rewards_by_preset": [
+        0.166667,
+        0.290625,
+        0.270833,
+        0.330167
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-conclusion",
+      "title": "conclusion",
+      "target_words": 210,
+      "weight_words": 210,
+      "weight_frac": 0.06625,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.412458,
+        "standard": 0.136083,
+        "deep": 0.339417
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.412458,
+        0.136083,
+        0.339417
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

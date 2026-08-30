@@ -1,0 +1,579 @@
+{
+  "version": 5,
+  "article": "13_agent_framework",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.28,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S2::section-2-framework-choice-under-uncertainty-and-why-some-selection-strategies-fail-in-production": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.4975,
+        "standard": 0.28,
+        "deep": 0.3785
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.1575,
+        "standard": 0.0,
+        "deep": 0.105
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S3::section-3-a-theory-for-choosing-decision-axes-instead-of-brands": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.56575,
+        "standard": 0.625,
+        "deep": 0.536
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.22575,
+        "standard": 0.345,
+        "deep": 0.2625
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S4::section-4-the-landscape-today-frameworks-philosophies-adoption-snapshot": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.14,
+        "standard": 0.08,
+        "deep": 0.1735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S5::section-5-framework-deep-dive-langgraph": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.52675,
+        "standard": 0.4375,
+        "deep": 0.431
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.18675,
+        "standard": 0.1575,
+        "deep": 0.1575
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S6::section-6-framework-deep-dive-openai-agents-sdk": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.14,
+        "standard": 0.18,
+        "deep": 0.331
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.1575
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 0.0,
+          "gsp": 0.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 0.0,
+          "gsp": 0.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S7::section-7-framework-deep-dive-agentkit": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.28,
+        "deep": 0.431
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.1575
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S8::section-8-framework-deep-dive-crewai": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.5425,
+        "deep": 0.444125
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.2625,
+        "deep": 0.170625
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S9::section-9-framework-deep-dive-pydanticai": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.28,
+        "deep": 0.444125
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.170625
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S10::section-10-framework-deep-dive-autogen": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.28,
+        "deep": 0.34175
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.06825
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S11::section-11-framework-deep-dive-claude-agent-sdk": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.28,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S12::section-12-framework-deep-dive-fastmcp": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.40825,
+        "standard": 0.34825,
+        "deep": 0.431
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.06825,
+        "standard": 0.06825,
+        "deep": 0.1575
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S13::section-13-choosing-for-your-project-decision-matrix-tentative-forecasts": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.4375,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.1575,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S14::section-14-our-capstone-pivots": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.4975,
+        "standard": 0.28,
+        "deep": 0.431
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.1575,
+        "standard": 0.0,
+        "deep": 0.1575
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S15::section-15-conclusion": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.24825,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.06825,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "skip",
+    "S2::section-2-framework-choice-under-uncertainty-and-why-some-selection-strategies-fail-in-production": "light",
+    "S3::section-3-a-theory-for-choosing-decision-axes-instead-of-brands": "standard",
+    "S4::section-4-the-landscape-today-frameworks-philosophies-adoption-snapshot": "skip",
+    "S5::section-5-framework-deep-dive-langgraph": "light",
+    "S6::section-6-framework-deep-dive-openai-agents-sdk": "deep",
+    "S7::section-7-framework-deep-dive-agentkit": "deep",
+    "S8::section-8-framework-deep-dive-crewai": "standard",
+    "S9::section-9-framework-deep-dive-pydanticai": "deep",
+    "S10::section-10-framework-deep-dive-autogen": "skip",
+    "S11::section-11-framework-deep-dive-claude-agent-sdk": "skip",
+    "S12::section-12-framework-deep-dive-fastmcp": "deep",
+    "S13::section-13-choosing-for-your-project-decision-matrix-tentative-forecasts": "standard",
+    "S14::section-14-our-capstone-pivots": "light",
+    "S15::section-15-conclusion": "skip"
+  }
+}

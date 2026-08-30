@@ -1,0 +1,237 @@
+{
+  "version": 5,
+  "article": "14_agent_system_design",
+  "variant": "no_variant",
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.285,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.105,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S2::section-2-a-general-ai-engineering-decision-framework": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.7145,
+        "standard": 0.635,
+        "deep": 0.8235
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.5745,
+        "standard": 0.555,
+        "deep": 0.75
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S3::section-3-inference-time-scaling-and-the-cost-latency-calculus": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.345,
+        "standard": 0.4825,
+        "deep": 0.076
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.105,
+        "standard": 0.2025,
+        "deep": 0.2025
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S4::section-4-our-capstone-global-system-design": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.315,
+        "deep": 0.431
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.135,
+        "deep": 0.1575
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S5::section-5-decision-matrix-defaults-for-the-capstone": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.18,
+        "deep": 0.431
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.1575
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S6::section-6-conclusion": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.40825,
+        "standard": 0.285,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.06825,
+        "standard": 0.105,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "skip",
+    "S2::section-2-a-general-ai-engineering-decision-framework": "deep",
+    "S3::section-3-inference-time-scaling-and-the-cost-latency-calculus": "standard",
+    "S4::section-4-our-capstone-global-system-design": "deep",
+    "S5::section-5-decision-matrix-defaults-for-the-capstone": "deep",
+    "S6::section-6-conclusion": "light"
+  }
+}

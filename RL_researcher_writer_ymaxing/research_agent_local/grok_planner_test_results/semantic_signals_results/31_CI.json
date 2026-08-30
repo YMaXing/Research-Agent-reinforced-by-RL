@@ -1,0 +1,66 @@
+{
+  "article": "31_CI",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-introduction",
+        "scripted_example_fraction": 0.3,
+        "argumentative_risk": 0.2,
+        "risk_rationale": "Purely anchoring/transitional text referencing prior Opik/eval lessons and shifting to CI; low interpretive weight and well-matched to course-internal context with no thin external leaps."
+      },
+      {
+        "sec_id": "S2::section-2-what-is-continuous-integration",
+        "scripted_example_fraction": 0.5,
+        "argumentative_risk": 0.6,
+        "risk_rationale": "Guideline dictates verbatim three numbered failure-mode examples, three-tier model subsections with specific cost/speed calibrations, and AI-unique Tier-3 positioning; these original contrasts and normative claims rely on orphan anchors not present in sources."
+      },
+      {
+        "sec_id": "S3::section-3-pre-commit-hooks-automated-local-guardrails",
+        "scripted_example_fraction": 0.75,
+        "argumentative_risk": 0.2,
+        "risk_rationale": "Guideline requires using exact !cat output from Brown’s .pre-commit-config.yaml plus dictated walkthroughs of validate-pyproject/prettier/ruff hooks and install steps; almost entirely self-contained project-specific illustration."
+      },
+      {
+        "sec_id": "S4::section-4-ruff-fast-python-linting-and-formatting",
+        "scripted_example_fraction": 0.8,
+        "argumentative_risk": 0.2,
+        "risk_rationale": "Hands-on examples explicitly mandate using notebook code/outputs to introduce then auto-fix broken formatting/linting snippets, plus grep’d pyproject.toml and Makefile targets; scripted demonstration over external claims."
+      },
+      {
+        "sec_id": "S5::section-5-unit-tests-for-agent-repos",
+        "scripted_example_fraction": 0.85,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Guideline inserts verbatim FakeModel class code, lists its three exact parts from Brown’s debug.yaml/get_model.py, and dictates a full test_article_writer_ainvoke_success example with mock JSON; normative preference for response-injection over HTTP mocking sits on thin support."
+      },
+      {
+        "sec_id": "S6::section-6-ci-workflows-automated-enforcement",
+        "scripted_example_fraction": 0.8,
+        "argumentative_risk": 0.3,
+        "risk_rationale": "Complete ci.yml configuration is given verbatim for inclusion, with step-by-step dissection of jobs, triggers, and “trying it out” failure scenarios all dictated from the Brown repo; low risk except for implicit claims of “exact same commands locally and in CI.”"
+      },
+      {
+        "sec_id": "S7::section-7-ai-evaluations-as-regression-tests",
+        "scripted_example_fraction": 0.65,
+        "argumentative_risk": 0.7,
+        "risk_rationale": "Illustrative eval.yml workflow_dispatch code plus concrete token-cost math example and maturity-based decision framework make normative claims on selective Tier-3 usage that exceed thin support from llm-evaluation-for-ci-cd-pipelines source."
+      },
+      {
+        "sec_id": "S8::section-8-daily-development-workflow",
+        "scripted_example_fraction": 0.6,
+        "argumentative_risk": 0.2,
+        "risk_rationale": "Numbered 6-step daily workflow is fully pre-scripted as synthesis of prior tiers; purely descriptive with no thin cross-domain or evaluative leaps."
+      },
+      {
+        "sec_id": "S9::section-9-conclusion",
+        "scripted_example_fraction": 0.2,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Positions CI as “foundational production skill” and claims upfront investment “pays off” in regression prevention; these evaluative statements have only generic ruff-docs/testing support and high orphan count."
+      }
+    ],
+    "source_independence": 0.65,
+    "topic_canonicity": 0.8,
+    "overall_notes": "Guideline is extremely prescriptive, dictating verbatim configs, code blocks, notebook outputs, and illustrative examples for Brown’s implementation across S3-S7, yielding high scripted fractions there while S1/S9 remain more transitional. CI tooling (Ruff, pre-commit, GitHub Actions) is highly canonical with independent official docs, yet the AI-specific three-tier model and FakeModel pattern are largely authored with many unreachable orphan anchors."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Purely anchoring/transitional text referencing prior Opik/eval lessons and shifting to CI; low interpretive weight and well-matched to course-internal context with no thin external leaps.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-what-is-continuous-integration\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline dictates verbatim three numbered failure-mode examples, three-tier model subsections with specific cost/speed calibrations, and AI-unique Tier-3 positioning; these original contrasts and normative claims rely on orphan anchors not present in sources.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-pre-commit-hooks-automated-local-guardrails\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Guideline requires using exact !cat output from Brown’s .pre-commit-config.yaml plus dictated walkthroughs of validate-pyproject/prettier/ruff hooks and install steps; almost entirely self-contained project-specific illustration.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-ruff-fast-python-linting-and-formatting\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Hands-on examples explicitly mandate using notebook code/outputs to introduce then auto-fix broken formatting/linting snippets, plus grep’d pyproject.toml and Makefile targets; scripted demonstration over external claims.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-unit-tests-for-agent-repos\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline inserts verbatim FakeModel class code, lists its three exact parts from Brown’s debug.yaml/get_model.py, and dictates a full test_article_writer_ainvoke_success example with mock JSON; normative preference for response-injection over HTTP mocking sits on thin support.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-ci-workflows-automated-enforcement\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Complete ci.yml configuration is given verbatim for inclusion, with step-by-step dissection of jobs, triggers, and “trying it out” failure scenarios all dictated from the Brown repo; low risk except for implicit claims of “exact same commands locally and in CI.”\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-ai-evaluations-as-regression-tests\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Illustrative eval.yml workflow_dispatch code plus concrete token-cost math example and maturity-based decision framework make normative claims on selective Tier-3 usage that exceed thin support from llm-evaluation-for-ci-cd-pipelines source.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-daily-development-workflow\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Numbered 6-step daily workflow is fully pre-scripted as synthesis of prior tiers; purely descriptive with no thin cross-domain or evaluative leaps.\"\n    },\n    {\n      \"sec_id\": \"S9::section-9-conclusion\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Positions CI as “foundational production skill” and claims upfront investment “pays off” in regression prevention; these evaluative statements have only generic ruff-docs/testing support and high orphan count.\"\n    }\n  ],\n  \"source_independence\": 0.65,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Guideline is extremely prescriptive, dictating verbatim configs, code blocks, notebook outputs, and illustrative examples for Brown’s implementation across S3-S7, yielding high scripted fractions there while S1/S9 remain more transitional. CI tooling (Ruff, pre-commit, GitHub Actions) is highly canonical with independent official docs, yet the AI-specific three-tier model and FakeModel pattern are largely authored with many unreachable orphan anchors.\"\n}\n```",
+  "parse_ok": true
+}

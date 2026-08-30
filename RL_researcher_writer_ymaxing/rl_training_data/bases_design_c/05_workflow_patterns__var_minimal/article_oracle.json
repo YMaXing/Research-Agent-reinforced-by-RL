@@ -1,0 +1,192 @@
+{
+  "version": 3,
+  "article": "05_workflow_patterns__var_minimal",
+  "variant": "var_minimal",
+  "computed_at": "2026-08-26T07:07:02.452371+00:00",
+  "computed_from": "section_oracle_averaged.json",
+  "n_draws_used": 3,
+  "oracle_arm": "skip",
+  "oracle_arm_idx": 0,
+  "runner_up_arm": "light",
+  "runner_up_arm_idx": 1,
+  "margin": 0.032256,
+  "reward_spread": 0.079863,
+  "r_w_rewards": {
+    "skip": 0.212,
+    "light": 0.179744,
+    "standard": 0.16853,
+    "deep": 0.132137
+  },
+  "r_w_rewards_list": [
+    0.212,
+    0.179744,
+    0.16853,
+    0.132137
+  ],
+  "decision_path": [
+    "policy=forbidden \u2192 skip (hard constraint)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "gate_diagnostics": null,
+  "low_signal_flag": false,
+  "n_sections": 7,
+  "n_sections_with_target": 7,
+  "total_target_words": 1250,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-the-challenge-with-complex-single-llm-calls",
+      "title": "the challenge with complex single llm calls",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.16,
+      "rewards": {
+        "skip": 0.266667,
+        "light": 0.206667,
+        "standard": 0.146667,
+        "deep": 0.140167
+      },
+      "rewards_by_preset": [
+        0.266667,
+        0.206667,
+        0.146667,
+        0.140167
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-the-power-of-modularity-why-chain-llm-calls",
+      "title": "the power of modularity why chain llm calls",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.12,
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.416917,
+        "standard": 0.413792,
+        "deep": 0.240167
+      },
+      "rewards_by_preset": [
+        0.366667,
+        0.416917,
+        0.413792,
+        0.240167
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-building-a-sequential-workflow-faq-generation-pipeline",
+      "title": "building a sequential workflow faq generation pipeline",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.2,
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.073333,
+        "standard": 0.08,
+        "deep": 0.0735
+      },
+      "rewards_by_preset": [
+        0.2,
+        0.073333,
+        0.08,
+        0.0735
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-optimizing-sequential-workflows-with-parallel-processing",
+      "title": "optimizing sequential workflows with parallel processing",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.16,
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.2205,
+        "standard": 0.233292,
+        "deep": 0.240167
+      },
+      "rewards_by_preset": [
+        0.2,
+        0.2205,
+        0.233292,
+        0.240167
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic",
+      "title": "introducing dynamic behavior routing and conditional logic",
+      "target_words": 100,
+      "weight_words": 100,
+      "weight_frac": 0.08,
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.153833,
+        "standard": 0.149958,
+        "deep": 0.040958
+      },
+      "rewards_by_preset": [
+        0.3,
+        0.153833,
+        0.149958,
+        0.040958
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-building-a-basic-routing-workflow",
+      "title": "S6::section-building-a-basic-routing-workflow",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.12,
+      "rewards": {
+        "skip": 0.066667,
+        "light": -0.126667,
+        "standard": -0.053333,
+        "deep": -0.002833
+      },
+      "rewards_by_preset": [
+        0.066667,
+        -0.126667,
+        -0.053333,
+        -0.002833
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition",
+      "title": "orchestrator worker pattern dynamic task decomposition",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.16,
+      "rewards": {
+        "skip": 0.133333,
+        "light": 0.294958,
+        "standard": 0.177333,
+        "deep": 0.148833
+      },
+      "rewards_by_preset": [
+        0.133333,
+        0.294958,
+        0.177333,
+        0.148833
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

@@ -82,7 +82,10 @@ def main() -> None:
         orig_oracle = json.loads(orig_path.read_text(encoding="utf-8"))
         orig_r_w, *_ = cao._compute_r_w(orig_oracle["sections"], feats)
         votes = [max(orig_r_w, key=orig_r_w.get)]
-        sec_ids = list(avg_sections.keys())
+        # must match merge_replicate_oracles.py's own convention -- digest-ordered
+        # ids WITH duplicates, or the ordinal fallback in _get_score lands on a
+        # different entry than production used (A.16.0).
+        sec_ids = mrn._production_sec_ids(art) or list(avg_sections.keys())
         presets_flat = mrn._arm_presets_flat_for(art)
         for r in replicates:
             prefix = mrn._NOISE_EXPERIMENT_DIR / f"{art}__replicate{r}"

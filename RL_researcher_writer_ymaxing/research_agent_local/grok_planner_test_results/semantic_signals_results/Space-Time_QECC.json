@@ -1,0 +1,42 @@
+{
+  "article": "Space-Time_QECC",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-the-quantum-computing-challenge-and-the-discovery-of-a-cosmic-connection",
+        "scripted_example_fraction": 0.3,
+        "argumentative_risk": 0.65,
+        "risk_rationale": "Guideline explicitly requires arguing bidirectional prospects ('holographic codes may yield better practical QEC while QEC language may illuminate quantum gravity puzzles'), Preskill's robustness claim, and researcher quotes that extend interpretive weight beyond the conjecture summaries in Bulk Locality and ADH sources."
+      },
+      {
+        "sec_id": "S2::section-2-how-quantum-error-correcting-codes-work",
+        "scripted_example_fraction": 0.75,
+        "argumentative_risk": 0.15,
+        "risk_rationale": "Section is almost entirely a pre-scripted illustrative toy model (explicit |000⟩/|111⟩ encoding, parity-check circuits with four syndrome outcomes, and 'slightly over half' threshold), dictated verbatim with no interpretive leaps relative to the three-qutrit recovery unitary in the golden sources."
+      },
+      {
+        "sec_id": "S3::section-3-the-holographic-principle-and-space-time-emerges-as-a-quantum-error-correcting-code",
+        "scripted_example_fraction": 0.55,
+        "argumentative_risk": 0.7,
+        "risk_rationale": "Guideline mandates a 'general lesson' that 'quantum error correction supplies the correct language for thinking about emergent geometry from entanglement' plus Preskill and Hayden quotes that synthesize cross-domain claims exceeding the RT/greedy-wedge proofs in the HaPPY paper."
+      },
+      {
+        "sec_id": "S4::section-4-black-holes-where-correctability-breaks-down",
+        "scripted_example_fraction": 0.4,
+        "argumentative_risk": 0.6,
+        "risk_rationale": "Section requires showing how 'the QEC structure thereby reconciles smoothness with unitarity' via ER=EPR wormholes as decoding maps, plus Almheiri quotes on the three-quarter threshold shift, which interpretively resolves the AMPS firewall paradox beyond direct support in the cited sources."
+      },
+      {
+        "sec_id": "S5::section-5-implications-for-our-universe-and-quantum-computing",
+        "scripted_example_fraction": 0.45,
+        "argumentative_risk": 0.8,
+        "risk_rationale": "Guideline prescribes normative conclusions on DoD-funded holographic codes for 'higher-threshold' QEC, the open dS lifting challenge, and Preskill's 'entanglement-as-glue' quote that carry high evaluative weight with only tangential support from the de-Sitter limitations noted in the sources."
+      }
+    ],
+    "source_independence": 0.75,
+    "topic_canonicity": 0.55,
+    "overall_notes": "Guideline is unusually prescriptive on specific toy models (three-qubit, HaPPY pentagons, explicit encodings) and interpretive leaps (bidirectional prospects, 'correct language', entanglement-as-glue), elevating scripted fractions and argumentative risk especially in S2/S3/S5; sources are largely independent seminal papers (ADH, HaPPY, AMPS) but the QEC-holography intersection shows moderate canonicity with persistent orphan anchors on quotes and dS extensions."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-the-quantum-computing-challenge-and-the-discovery-of-a-cosmic-connection\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Guideline explicitly requires arguing bidirectional prospects ('holographic codes may yield better practical QEC while QEC language may illuminate quantum gravity puzzles'), Preskill's robustness claim, and researcher quotes that extend interpretive weight beyond the conjecture summaries in Bulk Locality and ADH sources.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-how-quantum-error-correcting-codes-work\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Section is almost entirely a pre-scripted illustrative toy model (explicit |000⟩/|111⟩ encoding, parity-check circuits with four syndrome outcomes, and 'slightly over half' threshold), dictated verbatim with no interpretive leaps relative to the three-qutrit recovery unitary in the golden sources.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-the-holographic-principle-and-space-time-emerges-as-a-quantum-error-correcting-code\",\n      \"scripted_example_fraction\": 0.55,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Guideline mandates a 'general lesson' that 'quantum error correction supplies the correct language for thinking about emergent geometry from entanglement' plus Preskill and Hayden quotes that synthesize cross-domain claims exceeding the RT/greedy-wedge proofs in the HaPPY paper.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-black-holes-where-correctability-breaks-down\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Section requires showing how 'the QEC structure thereby reconciles smoothness with unitarity' via ER=EPR wormholes as decoding maps, plus Almheiri quotes on the three-quarter threshold shift, which interpretively resolves the AMPS firewall paradox beyond direct support in the cited sources.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-implications-for-our-universe-and-quantum-computing\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Guideline prescribes normative conclusions on DoD-funded holographic codes for 'higher-threshold' QEC, the open dS lifting challenge, and Preskill's 'entanglement-as-glue' quote that carry high evaluative weight with only tangential support from the de-Sitter limitations noted in the sources.\"\n    }\n  ],\n  \"source_independence\": 0.75,\n  \"topic_canonicity\": 0.55,\n  \"overall_notes\": \"Guideline is unusually prescriptive on specific toy models (three-qubit, HaPPY pentagons, explicit encodings) and interpretive leaps (bidirectional prospects, 'correct language', entanglement-as-glue), elevating scripted fractions and argumentative risk especially in S2/S3/S5; sources are largely independent seminal papers (ADH, HaPPY, AMPS) but the QEC-holography intersection shows moderate canonicity with persistent orphan anchors on quotes and dS extensions.\"\n}\n```",
+  "parse_ok": true
+}

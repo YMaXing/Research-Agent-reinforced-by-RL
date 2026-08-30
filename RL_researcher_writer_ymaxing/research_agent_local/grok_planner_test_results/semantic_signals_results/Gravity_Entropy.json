@@ -1,0 +1,42 @@
+{
+  "article": "Gravity_Entropy",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-introduction",
+        "scripted_example_fraction": 0.0,
+        "argumentative_risk": 0.45,
+        "risk_rationale": "Guideline requires recounting Newton's letters on action-at-a-distance absurdity, historical push models, why the minority entropic view persists despite marginal status, and swarm analogies plus Carney quotes, but these interpretive framing and historical elements lack direct support in the 3 provided sources focused on modern arXiv physics."
+      },
+      {
+        "sec_id": "S2::section-2-a-force-emerges",
+        "scripted_example_fraction": 0.0,
+        "argumentative_risk": 0.35,
+        "risk_rationale": "Guideline directs emphasis on the 'conceptual power' of Jacobson's 1995 reversal deriving gravity from heat, contrasts with holographic principle via analogy, and GR incompleteness at singularities, which adds interpretive weight beyond the direct thermodynamic derivations supplied by the Jacobson and Verlinde sources."
+      },
+      {
+        "sec_id": "S3::section-3-apparent-attraction",
+        "scripted_example_fraction": 0.0,
+        "argumentative_risk": 0.2,
+        "risk_rationale": "Section is largely descriptive of the two Carney et al. 2025 qubit models (order pockets, variable energy capacity, inverse-square emergence, epiphenomenon clarification), closely tracking the golden source's Hamiltonian and free-energy details with minimal original interpretive leaps."
+      },
+      {
+        "sec_id": "S4::section-4-strengths-and-weaknesses",
+        "scripted_example_fraction": 0.0,
+        "argumentative_risk": 0.75,
+        "risk_rationale": "Guideline requires critique of ad-hoc tuning, failure to capture equivalence principle (citing Van Raamsdonk's quote), weak-field vs strong-field contrasts, and counter-views on measurable fluctuations, which constitute high-stakes evaluative synthesis only partially supported by the Carney paper's own limitations discussion and absent from the other two sources."
+      },
+      {
+        "sec_id": "S5::section-5-testing-entropic-gravity",
+        "scripted_example_fraction": 0.0,
+        "argumentative_risk": 0.7,
+        "risk_rationale": "Guideline mandates linking to objective collapse models, tabletop experiment prospects, emphasis on value of long-shot alternatives despite holographic dominance, and philosophical reframing of gravity as statistical tendency rather than immutable law, creating normative and cross-domain analogy risks thinly backed by the Carney source's decoherence predictions."
+      }
+    ],
+    "source_independence": 0.8,
+    "topic_canonicity": 0.45,
+    "overall_notes": "All sections show zero scripted-example content as the guideline demands evidence-based historical recounting, model descriptions, critiques, and philosophical links rather than invented narratives. The three independent primary sources leave 29 orphan anchors and high depth gaps (dominant gap type), especially for historical Newton material, specific researcher quotes (e.g. Van Raamsdonk, extra Carney), equivalence critiques, and collapse connections; argumentative risk spikes in S4/S5 where normative evaluations and cross-domain analogies exceed what the sources directly underwrite."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Guideline requires recounting Newton's letters on action-at-a-distance absurdity, historical push models, why the minority entropic view persists despite marginal status, and swarm analogies plus Carney quotes, but these interpretive framing and historical elements lack direct support in the 3 provided sources focused on modern arXiv physics.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-a-force-emerges\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Guideline directs emphasis on the 'conceptual power' of Jacobson's 1995 reversal deriving gravity from heat, contrasts with holographic principle via analogy, and GR incompleteness at singularities, which adds interpretive weight beyond the direct thermodynamic derivations supplied by the Jacobson and Verlinde sources.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-apparent-attraction\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Section is largely descriptive of the two Carney et al. 2025 qubit models (order pockets, variable energy capacity, inverse-square emergence, epiphenomenon clarification), closely tracking the golden source's Hamiltonian and free-energy details with minimal original interpretive leaps.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-strengths-and-weaknesses\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.75,\n      \"risk_rationale\": \"Guideline requires critique of ad-hoc tuning, failure to capture equivalence principle (citing Van Raamsdonk's quote), weak-field vs strong-field contrasts, and counter-views on measurable fluctuations, which constitute high-stakes evaluative synthesis only partially supported by the Carney paper's own limitations discussion and absent from the other two sources.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-testing-entropic-gravity\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Guideline mandates linking to objective collapse models, tabletop experiment prospects, emphasis on value of long-shot alternatives despite holographic dominance, and philosophical reframing of gravity as statistical tendency rather than immutable law, creating normative and cross-domain analogy risks thinly backed by the Carney source's decoherence predictions.\"\n    }\n  ],\n  \"source_independence\": 0.8,\n  \"topic_canonicity\": 0.45,\n  \"overall_notes\": \"All sections show zero scripted-example content as the guideline demands evidence-based historical recounting, model descriptions, critiques, and philosophical links rather than invented narratives. The three independent primary sources leave 29 orphan anchors and high depth gaps (dominant gap type), especially for historical Newton material, specific researcher quotes (e.g. Van Raamsdonk, extra Carney), equivalence critiques, and collapse connections; argumentative risk spikes in S4/S5 where normative evaluations and cross-domain analogies exceed what the sources directly underwrite.\"\n}\n```",
+  "parse_ok": true
+}

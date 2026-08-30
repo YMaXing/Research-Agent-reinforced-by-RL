@@ -1,0 +1,146 @@
+{
+  "version": 3,
+  "article": "HNSW",
+  "variant": "no_variant",
+  "computed_at": "2026-08-25T23:39:25.385839+00:00",
+  "computed_from": "section_oracle.json",
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "deep",
+  "runner_up_arm_idx": 3,
+  "margin": 0.084462,
+  "reward_spread": 0.231556,
+  "r_w_rewards": {
+    "skip": 0.201569,
+    "light": 0.433125,
+    "standard": 0.305837,
+    "deep": 0.348663
+  },
+  "r_w_rewards_list": [
+    0.201569,
+    0.433125,
+    0.305837,
+    0.348663
+  ],
+  "decision_path": [
+    "unique reward winner (margin=+0.0845 > EPS_BAND=0.03)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "gate_diagnostics": {
+    "skip": {
+      "cp": 1.0,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "light": {
+      "cp": 1.0,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "standard": {
+      "cp": 1.0,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "deep": {
+      "cp": 1.0,
+      "ra": 1.0,
+      "gsp": 1.0
+    }
+  },
+  "low_signal_flag": false,
+  "n_sections": 4,
+  "n_sections_with_target": 4,
+  "total_target_words": 2550,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 120,
+      "weight_words": 120,
+      "weight_frac": 0.04706,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.33825,
+        "standard": 0.1436,
+        "deep": 0.19895
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.33825,
+        0.1436,
+        0.19895
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-foundations-of-hnsw",
+      "title": "foundations of hnsw",
+      "target_words": 900,
+      "weight_words": 900,
+      "weight_frac": 0.35294,
+      "rewards": {
+        "skip": 0.1,
+        "light": 0.45675,
+        "standard": 0.23035,
+        "deep": 0.2332
+      },
+      "rewards_by_preset": [
+        0.1,
+        0.45675,
+        0.23035,
+        0.2332
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-graph-construction",
+      "title": "graph construction",
+      "target_words": 350,
+      "weight_words": 350,
+      "weight_frac": 0.13725,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.37,
+        "standard": 0.2436,
+        "deep": 0.433075
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.37,
+        0.2436,
+        0.433075
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-implementation-of-hnsw",
+      "title": "implementation of hnsw",
+      "target_words": 1180,
+      "weight_words": 1180,
+      "weight_frac": 0.46275,
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.5275,
+        "standard": 0.606975,
+        "deep": 0.5757
+      },
+      "rewards_by_preset": [
+        0.2,
+        0.5275,
+        0.606975,
+        0.5757
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    }
+  ]
+}

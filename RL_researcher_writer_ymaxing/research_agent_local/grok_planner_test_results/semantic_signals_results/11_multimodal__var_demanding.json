@@ -1,0 +1,60 @@
+{
+  "article": "11_multimodal__var_demanding",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-introduction-the-need-for-multimodal-ai",
+        "scripted_example_fraction": 0.35,
+        "argumentative_risk": 0.65,
+        "risk_rationale": "Guideline opens with a personal story illustrating the problem plus mandated industry use cases/limitations (financial charts, medical docs, building sketches) that carry strong normative 'must' claims for native multimodal processing; sources provide only generic CLIP motivation with low depth_score and many breadth orphans."
+      },
+      {
+        "sec_id": "S2::section-2-limitations-of-traditional-document-processing",
+        "scripted_example_fraction": 0.15,
+        "argumentative_risk": 0.45,
+        "risk_rationale": "Strong normative critique of OCR workflows (cascading errors, fragility, specific benchmarks for nested tables/X-rays/sketches) is well-supported by dedicated OCR sources, though the mandated 'report numbers' and multi-step fragility claims add moderate interpretive weight."
+      },
+      {
+        "sec_id": "S3::section-3-foundations-of-multimodal-llms",
+        "scripted_example_fraction": 0.1,
+        "argumentative_risk": 0.6,
+        "risk_rationale": "Requires in-depth trade-off comparisons, benchmark performance for specifically named 2025 models (Llama 4, GPT-5, etc.), and distinctions vs. diffusion models; Raschka source covers current analogs but not the projected models or all mandated metrics, creating thin support for the superiority claims."
+      },
+      {
+        "sec_id": "S4::section-4-applying-multimodal-llms-to-images-and-pdfs",
+        "scripted_example_fraction": 0.75,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Highly dictated step-by-step notebook walkthrough (specific load_image_as_bytes, kitten/object-detection examples, Pydantic schemas, attention paper, base64 33% overhead, private GCS pseudocode) is mostly pre-scripted tutorial narrative; storage/security decision framework adds moderate normative risk beyond Gemini notebook coverage."
+      },
+      {
+        "sec_id": "S5::section-5-foundations-of-multimodal-rag",
+        "scripted_example_fraction": 0.1,
+        "argumentative_risk": 0.25,
+        "risk_rationale": "Primarily descriptive explanation of ColPali (late interaction, bag-of-embeddings, ViDoRe nDCG@5 gains, financial/tech doc applications) directly mirrors the primary arXiv paper and supporting sources with strong alignment and low interpretive leaps."
+      },
+      {
+        "sec_id": "S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text",
+        "scripted_example_fraction": 0.8,
+        "argumentative_risk": 0.3,
+        "risk_rationale": "Verbatim dictated explanation sequence (specific queries like 'what is the architecture of the transformer neural network?' and 'a kitten with a robot', generate_image_description rationale, mocked multimodal embedding code, in-memory index) is almost entirely pre-scripted pedagogical example; minimal original argument."
+      },
+      {
+        "sec_id": "S7::section-7-building-multimodal-ai-agents",
+        "scripted_example_fraction": 0.7,
+        "argumentative_risk": 0.35,
+        "risk_rationale": "Detailed step-by-step notebook scripting (multimodal_search_tool, create_react_agent with specific 'what color is my kitten?' query, LangGraph drop-in emphasis, intermediate ReAct steps) dominates as invented tutorial narrative; light claims on reasoning enhancement are notebook-supported."
+      },
+      {
+        "sec_id": "S8::section-8-conclusion",
+        "scripted_example_fraction": 0.1,
+        "argumentative_risk": 0.25,
+        "risk_rationale": "Purely transitional wrap-up linking to capstone project and Part 2 (MCP, LangGraph, evaluation) per anchoring guidelines; low interpretive weight and no thin analogies."
+      }
+    ],
+    "source_independence": 0.55,
+    "topic_canonicity": 0.8,
+    "overall_notes": "Code-heavy sections (S4,S6,S7) show very high scripted-example fractions due to verbatim dictated notebook walkthroughs with specific inputs (kitten queries, attention PDF, exact functions). Article-level saturation is medium: distinct primaries (ColPali arXiv, Raschka, Gemini notebook, LangGraph) exist but many blogs redundantly summarize CLIP/OCR/VLM concepts on a now-canonical topic (tavily_saturation=1.0). Argumentative risk peaks in S1/S3 where normative 'must use native multimodal' claims and 2025-model benchmarks stretch provided sources."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-the-need-for-multimodal-ai\",\n      \"scripted_example_fraction\": 0.35,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Guideline opens with a personal story illustrating the problem plus mandated industry use cases/limitations (financial charts, medical docs, building sketches) that carry strong normative 'must' claims for native multimodal processing; sources provide only generic CLIP motivation with low depth_score and many breadth orphans.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-limitations-of-traditional-document-processing\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Strong normative critique of OCR workflows (cascading errors, fragility, specific benchmarks for nested tables/X-rays/sketches) is well-supported by dedicated OCR sources, though the mandated 'report numbers' and multi-step fragility claims add moderate interpretive weight.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-foundations-of-multimodal-llms\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Requires in-depth trade-off comparisons, benchmark performance for specifically named 2025 models (Llama 4, GPT-5, etc.), and distinctions vs. diffusion models; Raschka source covers current analogs but not the projected models or all mandated metrics, creating thin support for the superiority claims.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-applying-multimodal-llms-to-images-and-pdfs\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Highly dictated step-by-step notebook walkthrough (specific load_image_as_bytes, kitten/object-detection examples, Pydantic schemas, attention paper, base64 33% overhead, private GCS pseudocode) is mostly pre-scripted tutorial narrative; storage/security decision framework adds moderate normative risk beyond Gemini notebook coverage.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-foundations-of-multimodal-rag\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Primarily descriptive explanation of ColPali (late interaction, bag-of-embeddings, ViDoRe nDCG@5 gains, financial/tech doc applications) directly mirrors the primary arXiv paper and supporting sources with strong alignment and low interpretive leaps.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Verbatim dictated explanation sequence (specific queries like 'what is the architecture of the transformer neural network?' and 'a kitten with a robot', generate_image_description rationale, mocked multimodal embedding code, in-memory index) is almost entirely pre-scripted pedagogical example; minimal original argument.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-building-multimodal-ai-agents\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Detailed step-by-step notebook scripting (multimodal_search_tool, create_react_agent with specific 'what color is my kitten?' query, LangGraph drop-in emphasis, intermediate ReAct steps) dominates as invented tutorial narrative; light claims on reasoning enhancement are notebook-supported.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-conclusion\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Purely transitional wrap-up linking to capstone project and Part 2 (MCP, LangGraph, evaluation) per anchoring guidelines; low interpretive weight and no thin analogies.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Code-heavy sections (S4,S6,S7) show very high scripted-example fractions due to verbatim dictated notebook walkthroughs with specific inputs (kitten queries, attention PDF, exact functions). Article-level saturation is medium: distinct primaries (ColPali arXiv, Raschka, Gemini notebook, LangGraph) exist but many blogs redundantly summarize CLIP/OCR/VLM concepts on a now-canonical topic (tavily_saturation=1.0). Argumentative risk peaks in S1/S3 where normative 'must use native multimodal' claims and 2025-model benchmarks stretch provided sources.\"\n}\n```",
+  "parse_ok": true
+}

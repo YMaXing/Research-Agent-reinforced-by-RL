@@ -1,0 +1,170 @@
+{
+  "version": 3,
+  "article": "14_agent_system_design",
+  "variant": "no_variant",
+  "computed_at": "2026-08-26T07:07:03.047979+00:00",
+  "computed_from": "section_oracle_averaged.json",
+  "n_draws_used": 3,
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "standard",
+  "runner_up_arm_idx": 2,
+  "margin": 0.005708,
+  "reward_spread": 0.072625,
+  "r_w_rewards": {
+    "skip": 0.267708,
+    "light": 0.340333,
+    "standard": 0.334625,
+    "deep": 0.290792
+  },
+  "r_w_rewards_list": [
+    0.267708,
+    0.340333,
+    0.334625,
+    0.290792
+  ],
+  "decision_path": [
+    "mean R_w argmax over 3 draw(s): light  margin=+0.0057  1x-noise-sd threshold=0.0312  BELOW threshold, low confidence"
+  ],
+  "manual_override": false,
+  "needs_review": true,
+  "gate_diagnostics": null,
+  "low_signal_flag": false,
+  "n_sections": 6,
+  "n_sections_with_target": 6,
+  "total_target_words": 3200,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.0625,
+      "rewards": {
+        "skip": 0.333333,
+        "light": 0.273333,
+        "standard": 0.39,
+        "deep": 0.206833
+      },
+      "rewards_by_preset": [
+        0.333333,
+        0.273333,
+        0.39,
+        0.206833
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-a-general-ai-engineering-decision-framework",
+      "title": "a general ai engineering decision framework",
+      "target_words": 1000,
+      "weight_words": 1000,
+      "weight_frac": 0.3125,
+      "rewards": {
+        "skip": 0.133333,
+        "light": 0.634833,
+        "standard": 0.435833,
+        "deep": 0.544333
+      },
+      "rewards_by_preset": [
+        0.133333,
+        0.634833,
+        0.435833,
+        0.544333
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-inference-time-scaling-and-the-cost-latency-calculus",
+      "title": "inference time scaling and the cost latency calculus",
+      "target_words": 700,
+      "weight_words": 700,
+      "weight_frac": 0.21875,
+      "rewards": {
+        "skip": 0.266667,
+        "light": 0.278333,
+        "standard": 0.41025,
+        "deep": 0.276
+      },
+      "rewards_by_preset": [
+        0.266667,
+        0.278333,
+        0.41025,
+        0.276
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-our-capstone-global-system-design",
+      "title": "our capstone global system design",
+      "target_words": 900,
+      "weight_words": 900,
+      "weight_frac": 0.28125,
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.3925,
+        "standard": 0.381667,
+        "deep": 0.432667
+      },
+      "rewards_by_preset": [
+        0.366667,
+        0.3925,
+        0.381667,
+        0.432667
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-decision-matrix-defaults-for-the-capstone",
+      "title": "decision matrix defaults for the capstone",
+      "target_words": 100,
+      "weight_words": 100,
+      "weight_frac": 0.03125,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.246667,
+        "deep": 0.326
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.34,
+        0.246667,
+        0.326
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-conclusion",
+      "title": "conclusion",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.09375,
+      "rewards": {
+        "skip": 0.333333,
+        "light": 0.352167,
+        "standard": 0.326667,
+        "deep": 0.206833
+      },
+      "rewards_by_preset": [
+        0.333333,
+        0.352167,
+        0.326667,
+        0.206833
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "article": "10_memory_knowledge_access__var_demanding",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place",
+        "scripted_example_fraction": 0.25,
+        "argumentative_risk": 0.6,
+        "risk_rationale": "Guideline mandates specific claims on continual learning impossibility, ChatGPT opt-in mechanics, lost-in-the-middle examples, and intern-with-amnesia analogy plus historical compression necessity, which exceed direct support in the vesa-alexandru and memex sources."
+      },
+      {
+        "sec_id": "S2::section-2-the-layers-of-memory-internal-short-term-and-long-term",
+        "scripted_example_fraction": 0.15,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Section requires cross-domain biology/cognitive-science analogies and specific claims on internal immutability plus retrieval pipeline dynamics that are only partially grounded in the CoALA and IBM sources."
+      },
+      {
+        "sec_id": "S3::section-3-long-term-memory-semantic-episodic-and-procedural",
+        "scripted_example_fraction": 0.65,
+        "argumentative_risk": 0.55,
+        "risk_rationale": "Guideline dictates verbatim invented examples (brother Mark episodic timestamp, MonthlyReportIntent procedural steps, entity JSON structures) and use-case-specific granularity choices that are self-contained illustrations rather than sourced claims."
+      },
+      {
+        "sec_id": "S4::section-4-storing-memories-pros-and-cons-of-different-approaches",
+        "scripted_example_fraction": 0.45,
+        "argumentative_risk": 0.75,
+        "risk_rationale": "Detailed pros/cons lists, update/conflict strategies, guardrails (low temperature, recency rules), and schema-drift moderation are normatively prescribed with only partial backing from the Mem0 arXiv and Memex sources."
+      },
+      {
+        "sec_id": "S5::section-5-memory-implementations-with-code-examples",
+        "scripted_example_fraction": 0.8,
+        "argumentative_risk": 0.3,
+        "risk_rationale": "Instruction explicitly dictates 'use the code from the provided Notebook. Do not come up with new code' along with verbatim extraction prompts, memory-created outputs, and hybrid-search steps, making it a pre-scripted worked example."
+      },
+      {
+        "sec_id": "S6::section-6-real-world-lessons-challenges-and-best-practices",
+        "scripted_example_fraction": 0.35,
+        "argumentative_risk": 0.8,
+        "risk_rationale": "Prescribes normative best practices on re-evaluating compression ('lean towards less compression'), product-driven design, and autonomous agent-managed consolidation that rest on interpretive synthesis beyond the Dots talk and Memex coverage."
+      },
+      {
+        "sec_id": "S7::section-7-conclusion",
+        "scripted_example_fraction": 0.2,
+        "argumentative_risk": 0.7,
+        "risk_rationale": "Requires speculative claims on 'temporary solution' vs true continual learning and future native-learning architecture shifts that are only loosely supported by CoALA and IBM sources."
+      }
+    ],
+    "source_independence": 0.55,
+    "topic_canonicity": 0.65,
+    "overall_notes": "The guideline is unusually prescriptive, dictating verbatim examples, pros/cons lists, specific code/notebook usage, and normative best practices across most sections, producing elevated scripted_example_fraction in S3/S4/S5 and argumentative_risk in evaluative sections (S4/S6/S7). Sources show moderate independence (distinct papers like Mem0 arXiv, CoALA, Dots talk, and notebook) but revolve around overlapping taxonomy and trade-off discussions, while the topic itself is now canonical in agent literature with limited new material likely from further search. Dominant signal is that numeric coverage scores will under-estimate argumentative and scripted content risks in later sections."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline mandates specific claims on continual learning impossibility, ChatGPT opt-in mechanics, lost-in-the-middle examples, and intern-with-amnesia analogy plus historical compression necessity, which exceed direct support in the vesa-alexandru and memex sources.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-layers-of-memory-internal-short-term-and-long-term\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Section requires cross-domain biology/cognitive-science analogies and specific claims on internal immutability plus retrieval pipeline dynamics that are only partially grounded in the CoALA and IBM sources.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-long-term-memory-semantic-episodic-and-procedural\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Guideline dictates verbatim invented examples (brother Mark episodic timestamp, MonthlyReportIntent procedural steps, entity JSON structures) and use-case-specific granularity choices that are self-contained illustrations rather than sourced claims.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-storing-memories-pros-and-cons-of-different-approaches\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.75,\n      \"risk_rationale\": \"Detailed pros/cons lists, update/conflict strategies, guardrails (low temperature, recency rules), and schema-drift moderation are normatively prescribed with only partial backing from the Mem0 arXiv and Memex sources.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-memory-implementations-with-code-examples\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Instruction explicitly dictates 'use the code from the provided Notebook. Do not come up with new code' along with verbatim extraction prompts, memory-created outputs, and hybrid-search steps, making it a pre-scripted worked example.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-real-world-lessons-challenges-and-best-practices\",\n      \"scripted_example_fraction\": 0.35,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Prescribes normative best practices on re-evaluating compression ('lean towards less compression'), product-driven design, and autonomous agent-managed consolidation that rest on interpretive synthesis beyond the Dots talk and Memex coverage.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-conclusion\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Requires speculative claims on 'temporary solution' vs true continual learning and future native-learning architecture shifts that are only loosely supported by CoALA and IBM sources.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.65,\n  \"overall_notes\": \"The guideline is unusually prescriptive, dictating verbatim examples, pros/cons lists, specific code/notebook usage, and normative best practices across most sections, producing elevated scripted_example_fraction in S3/S4/S5 and argumentative_risk in evaluative sections (S4/S6/S7). Sources show moderate independence (distinct papers like Mem0 arXiv, CoALA, Dots talk, and notebook) but revolve around overlapping taxonomy and trade-off discussions, while the topic itself is now canonical in agent literature with limited new material likely from further search. Dominant signal is that numeric coverage scores will under-estimate argumentative and scripted content risks in later sections.\"\n}\n```",
+  "parse_ok": true
+}

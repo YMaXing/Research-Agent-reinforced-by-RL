@@ -1,0 +1,66 @@
+{
+  "article": "06_tools__var_minimal",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-introduction",
+        "scripted_example_fraction": 0.3,
+        "argumentative_risk": 0.2,
+        "risk_rationale": "Guideline mandates specific quick reference to prior workflow lessons plus transition from 'What We Are Planning to Share' and 'Why We Think It's Valuable' without requiring new evidence or normative leaps."
+      },
+      {
+        "sec_id": "S2::section-2-understanding-why-agents-need-tools",
+        "scripted_example_fraction": 0.7,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Guideline dictates verbatim LLM-as-brain/tools-as-hands analogy, fundamental limitation as pattern matchers, bridge to external world, representative image, and exact list of 5 tool categories (weather, databases, memory, code, calculations)."
+      },
+      {
+        "sec_id": "S3::section-3-implementing-tool-calls-from-scratch",
+        "scripted_example_fraction": 0.95,
+        "argumentative_risk": 0.1,
+        "risk_rationale": "Guideline requires using all code from notebook section 2 with 22 enumerated steps on schemas, TOOL_CALLING_SYSTEM_PROMPT, extract_tool_call, call_tool, specific mock tools (search_google_drive etc.), USER_PROMPTs, and mermaid diagram of the exact 5-step flow."
+      },
+      {
+        "sec_id": "S4::section-4-implementing-a-tool-calling-framework-from-scratch",
+        "scripted_example_fraction": 0.9,
+        "argumentative_risk": 0.1,
+        "risk_rationale": "Guideline prescribes rewriting prior implementation with exact ToolFunction class, @tool decorator mechanics, DRY principle explanation, registry inspection points, and all code from notebook section 3."
+      },
+      {
+        "sec_id": "S5::section-5-implementing-production-level-tool-calls-with-gemini",
+        "scripted_example_fraction": 0.85,
+        "argumentative_risk": 0.2,
+        "risk_rationale": "Section is built around using all code from notebook section 4 with 14 enumerated steps on GenerateContentConfig, direct function input, call_tool simplification, and cross-API comparisons."
+      },
+      {
+        "sec_id": "S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs",
+        "scripted_example_fraction": 0.8,
+        "argumentative_risk": 0.3,
+        "risk_rationale": "Guideline dictates specific DocumentMetadata Pydantic class, extraction_tool schema from model_json_schema, mermaid of loop-with-final-structured-output, all code from notebook section 5, and connection to Lesson 4."
+      },
+      {
+        "sec_id": "S7::section-7-the-downsides-of-running-tools-in-a-loop",
+        "scripted_example_fraction": 0.75,
+        "argumentative_risk": 0.6,
+        "risk_rationale": "Guideline requires detailed sequential loop code (max_iterations, hasattr), mermaid of iterative flow, explicit limitations ('no interpretation pause', 'limited ability to plan'), parallel execution note, and transition to ReAct in lessons 7-8."
+      },
+      {
+        "sec_id": "S8::section-8-popular-tools-used-within-the-industry",
+        "scripted_example_fraction": 0.65,
+        "argumentative_risk": 0.2,
+        "risk_rationale": "Guideline supplies exact grouped list (knowledge/memory with text-to-SQL, web search/browsing, code execution with security risks, other APIs/filesystem) plus references to future Lessons 9-10."
+      },
+      {
+        "sec_id": "S9::section-9-conclusion",
+        "scripted_example_fraction": 0.4,
+        "argumentative_risk": 0.4,
+        "risk_rationale": "Guideline dictates normative claim that tool calling is 'the most important skill' for building/monitoring/debugging plus specific references only to Lesson 7 on planning/ReAct and related future concepts."
+      }
+    ],
+    "source_independence": 0.7,
+    "topic_canonicity": 0.85,
+    "overall_notes": "High scripted_example_fraction dominates in S3-S7 because the guideline verbatim dictates notebook code blocks, mock tools (search_google_drive, Discord, financial report), exact enumeration of explanation steps, schema highlights, mermaid diagrams, and USER_PROMPT flows with no room for unsourced material. Topic_canonicity is high and source_independence moderate as the 9 golden sources (official Gemini/OpenAI docs, from-scratch tutorials, arXiv CoA paper) overlap heavily on canonical function-calling mechanics. Argumentative risk stays low-to-moderate overall as most content is descriptive implementation; only S2 and S7 evaluate limitations or analogies with some orphan-anchor gaps relative to cited sources."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Guideline mandates specific quick reference to prior workflow lessons plus transition from 'What We Are Planning to Share' and 'Why We Think It's Valuable' without requiring new evidence or normative leaps.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-understanding-why-agents-need-tools\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline dictates verbatim LLM-as-brain/tools-as-hands analogy, fundamental limitation as pattern matchers, bridge to external world, representative image, and exact list of 5 tool categories (weather, databases, memory, code, calculations).\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-implementing-tool-calls-from-scratch\",\n      \"scripted_example_fraction\": 0.95,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Guideline requires using all code from notebook section 2 with 22 enumerated steps on schemas, TOOL_CALLING_SYSTEM_PROMPT, extract_tool_call, call_tool, specific mock tools (search_google_drive etc.), USER_PROMPTs, and mermaid diagram of the exact 5-step flow.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-implementing-a-tool-calling-framework-from-scratch\",\n      \"scripted_example_fraction\": 0.9,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Guideline prescribes rewriting prior implementation with exact ToolFunction class, @tool decorator mechanics, DRY principle explanation, registry inspection points, and all code from notebook section 3.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-implementing-production-level-tool-calls-with-gemini\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Section is built around using all code from notebook section 4 with 14 enumerated steps on GenerateContentConfig, direct function input, call_tool simplification, and cross-API comparisons.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Guideline dictates specific DocumentMetadata Pydantic class, extraction_tool schema from model_json_schema, mermaid of loop-with-final-structured-output, all code from notebook section 5, and connection to Lesson 4.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-the-downsides-of-running-tools-in-a-loop\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline requires detailed sequential loop code (max_iterations, hasattr), mermaid of iterative flow, explicit limitations ('no interpretation pause', 'limited ability to plan'), parallel execution note, and transition to ReAct in lessons 7-8.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-popular-tools-used-within-the-industry\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Guideline supplies exact grouped list (knowledge/memory with text-to-SQL, web search/browsing, code execution with security risks, other APIs/filesystem) plus references to future Lessons 9-10.\"\n    },\n    {\n      \"sec_id\": \"S9::section-9-conclusion\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline dictates normative claim that tool calling is 'the most important skill' for building/monitoring/debugging plus specific references only to Lesson 7 on planning/ReAct and related future concepts.\"\n    }\n  ],\n  \"source_independence\": 0.7,\n  \"topic_canonicity\": 0.85,\n  \"overall_notes\": \"High scripted_example_fraction dominates in S3-S7 because the guideline verbatim dictates notebook code blocks, mock tools (search_google_drive, Discord, financial report), exact enumeration of explanation steps, schema highlights, mermaid diagrams, and USER_PROMPT flows with no room for unsourced material. Topic_canonicity is high and source_independence moderate as the 9 golden sources (official Gemini/OpenAI docs, from-scratch tutorials, arXiv CoA paper) overlap heavily on canonical function-calling mechanics. Argumentative risk stays low-to-moderate overall as most content is descriptive implementation; only S2 and S7 evaluate limitations or analogies with some orphan-anchor gaps relative to cited sources.\"\n}\n```",
+  "parse_ok": true
+}

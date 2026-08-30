@@ -6790,14 +6790,21 @@ trustworthy enough for model-vs-model comparisons":
 | cross-draw cell sd, mean / median (12 replicated articles, 288 cells) | 0.0804 / 0.0577 |
 | (TRAIN's cross-draw cell sd, mean / median, for comparison) | 0.0659 / 0.0681 |
 | section-level oracle flip rate (12 replicated articles) | 40.3% (29/72) |
-| article-level: confirmed / corrected / unresolved (of 12) | **7 / 4 / 1** |
+| article-level: confirmed / corrected / unresolved (of 12) | **8 / 4 / 0** (corrected 2026-08-25, was 7/4/1 — see below) |
 | light↔deep confusion cluster (5 articles) | 4/5 confirmed, 1 corrected (`13_agent_framework`: deep→light) |
 
 TEST is noisier on average than TRAIN but with a fatter right tail (median < mean, the opposite of
 TRAIN) — driven by a small number of extreme-spread sections (see A.15.4 detail below), most
-concentrated in `07_reasoning_planning`, the sole unresolved article. `ga`'s TRAIN-side mean-drop
+concentrated in `07_reasoning_planning`. `ga`'s TRAIN-side mean-drop
 under averaging (0.740→0.412) does **not** replicate for TEST (0.5938→0.5880), and gate-threshold
 sweeps (0.5→0.2) show zero effect on the label landscape. **Not yet applied to production.**
+
+> **Correction (2026-08-25):** `07_reasoning_planning` was never actually an unresolved 3-way split.
+> `_test_replication_eval.py` (the script that produced this vote tally) used a deduped section-id
+> list instead of `_production_sec_ids()` — the digest-ordered-with-duplicates convention
+> `merge_replicate_oracles.py` already used correctly, per A.16.0. Fixed the script; re-run shows all
+> 3 draws (production + 2 replicates) unanimously vote `skip`, matching the existing production label
+> exactly. See the correction note under A.15.4's results table for the full account.
 
 ### A.15.1 Fresh margin audit (`audit_oracle_margins.py`, re-run today) — TEST is far riskier than assumed
 
@@ -6887,7 +6894,7 @@ degradation for `03_context_engineering`/`08_react_practice`/`09_RAG` (A.14.2) i
 documented limitation of the N=3 pass rather than something requiring resolution before a retrain —
 consistent with A.9's original framing that replication was never expected to fix everything.
 
-### A.15.4 TEST replication — elevated from "optional" to a real priority, given A.15.1 (now IN PROGRESS, and sequenced ahead of the retrain per user decision 2026-08-17)
+### A.15.4 TEST replication — DONE (elevated from "optional" to a real priority, given A.15.1; completed 2026-08-25, all 16 TEST articles now N=3-replicated in production)
 
 Given 12/15 scored TEST articles are CRITICAL/HIGH and they directly overlap the recurring failure
 cluster, recommend **N=3 replication (1 production + 2 new draws, temperature 0.7, same
@@ -6997,12 +7004,28 @@ naive view above AND the pre-fix majority-vote pass reported earlier:
 | `Gravity_Entropy` | CRITICAL | standard | light, light, light | **light** (3/3) | **CORRECTED**: standard → light |
 | `13_agent_framework` | HIGH | deep | deep, light, light | **light** (2/3) | **CORRECTED**: deep → light — was a 3-way-split UNRESOLVED before the fix |
 | `Insects_Consciousness` | HIGH | light | light, deep, deep | **deep** (2/3) | **CORRECTED**: light → deep |
-| `07_reasoning_planning` | CRITICAL | skip | skip, deep, light | **no majority** (3-way split) | **UNRESOLVED** |
+| `07_reasoning_planning` | CRITICAL | skip | skip, deep, light | **no majority** (3-way split) — **later found to itself be a bug, see correction below** | ~~UNRESOLVED~~ **CONFIRMED** |
 
-Net: **7 confirmed, 4 corrected, 1 unresolved** — a substantially cleaner outcome than the pre-fix
-pass (5 confirmed / 4 corrected / 3 unresolved). Two of the three previously-"unresolved" 3-way
-splits (`04_structured_outputs` and `13_agent_framework`) resolve to clean 2/3 majorities once the
-aggregation is corrected; only `07_reasoning_planning` remains a genuine 3-way split.
+Net (at the time): **7 confirmed, 4 corrected, 1 unresolved** — a substantially cleaner outcome than
+the pre-fix pass (5 confirmed / 4 corrected / 3 unresolved). Two of the three previously-"unresolved"
+3-way splits (`04_structured_outputs` and `13_agent_framework`) resolve to clean 2/3 majorities once
+the aggregation is corrected; `07_reasoning_planning`'s apparent 3-way split turned out to be a
+further instance of the same class of bug — see the correction immediately below.
+
+> **Correction (2026-08-25): `07_reasoning_planning`'s "genuine 3-way split" was itself a script
+> bug, distinct from the explore-split bug just fixed above.** `_test_replication_eval.py` computed
+> each replicate's own vote using `sec_ids = list(avg_sections.keys())` — a **deduped** section-id
+> list — instead of `_production_sec_ids()`, the digest-ordered-with-duplicates convention
+> `merge_replicate_oracles.py` and `measure_replicate_noise.py::measure_article()` already used
+> correctly (per A.16.0's original fix, which this one analysis script never received). For this
+> specific article the two lists differ sharply (8 deduped entries vs. 16 digest-ordered, since its
+> `research_digest.md` lists every section twice, same as the TRAIN quirk A.16.0 documented). Fixed
+> `_test_replication_eval.py` to use `_production_sec_ids()`; re-run gives **votes=[skip, skip,
+> skip], unanimous** — not a 3-way split. `07_reasoning_planning`'s production label (`skip`) was
+> already correct; only its `needs_review` flag and the "sole unresolved article" framing throughout
+> this section were wrong. **Net corrected outcome: 8 confirmed, 4 corrected, 0 unresolved** (of 12).
+> `needs_review` cleared on `article_oracle.json` (was `True`, now `False`); see A.16.7 for the
+> production-record update.
 
 Step 3 (confusion cluster: `13_agent_framework`, `Distinct_AI_Models`, `Bird_Eye_Extreme`,
 `Space-Time_QECC`, `Dark_Dimension`): **now fully resolved, no article left ambiguous**.
@@ -7122,9 +7145,12 @@ the mean up.
 **`07_reasoning_planning`'s spread is more than double every other article's** (mean 0.1719 vs the
 ~0.05-0.10 range everyone else sits in). Its two worst sections (S4, S5 — the ReAct/Plan-and-Execute
 "pros and cons" analysis) have cross-draw sd of 0.44-0.48, the largest in the whole TEST replication
-set. This directly explains why it is the *sole* article left with a genuine 3-way vote split
-(skip/deep/light, no majority): not a labeling-methodology artifact, but real underlying
-content-generation instability concentrated in two sections.
+set — real, substantial cross-draft content-generation instability. **Correction (2026-08-25): this
+high spread does NOT, however, translate into an actual vote split** — the "3-way vote split" this
+paragraph originally attributed to it was itself an artifact of a `_test_replication_eval.py` sec-id
+bug (see the correction under A.15.4's main results table); the corrected, unanimous vote is `skip`
+for all 3 draws despite this section-level noise. The high spread stat itself remains valid data,
+just no longer explained as the cause of a split that never existed.
 
 **Other notable findings**:
 - **Section-level oracle flip rate**: 29/72 = 40.3% for this TEST subset vs TRAIN's corpus-wide
@@ -7150,7 +7176,9 @@ Built: (2) `train_grpo.py --use-averaged-oracle` — `load_section_groups()` rea
 averaged section rewards into a sibling `article_oracle_averaged.json`, run for all 24 TRAIN + 12
 replicated TEST articles. All 5 TRAIN + 4 TEST corrections applied to production `article_oracle.json`
 (backed up first to `bases_PRE_A16_LABELCORRECTIONS_20260820/`); `07_reasoning_planning` flagged
-`needs_review` with oracle_arm left unchanged. See A.16.7 for the full account, including why the 7
+`needs_review` with oracle_arm left unchanged (this flag was cleared 2026-08-25 once its apparent
+3-way split was found to be a script bug — see A.15.4's correction note). See A.16.7 for the full
+account, including why the 7
 non-already-correct corrections needed `compute_article_oracle.py`'s `_MANUAL_OVERRIDES` mechanism
 rather than trusting the automated `--use-averaged` recompute (its S3/S4/S5 near-tie tie-break still
 disagreed with the majority-vote-governed decision for these exact articles).
@@ -7165,6 +7193,10 @@ disagreed with the majority-vote-governed decision for these exact articles).
 | 3 (**done**, 2026-08-20) | TEST signal evaluation (A.15.4's 4-step plan): re-merged, re-audited margins, checked the light↔deep confusion cluster specifically. A 2nd tooling bug (explore-split aggregation, see A.15.4) was found+fixed mid-analysis; corrected result: 7 confirmed, 4 corrected (`Earth_Oceans_Origin`→deep, `Gravity_Entropy`→light, `13_agent_framework`→light, `Insects_Consciousness`→deep), 1 unresolved 3-way split (`07_reasoning_planning` — left at production label pending N=5/manual review). ga-gate-threshold follow-up: TEST does not replicate TRAIN's ga mean-drop, and threshold sweeps (0.5-0.2) show zero classification sensitivity — no gate recalibration warranted | zero cost, pure analysis — complete | No further (done) |
 | 1c (**done**, 2026-08-20) | Built A.12 steps 2/3 (`train_grpo.py --use-averaged-oracle` loader flag + `--section-weight confidence` + `compute_article_oracle.py --use-averaged` variant); applied the 5 finalized TRAIN labels + 4 finalized TEST corrections to production `article_oracle.json` (A.16.7 Phase 1/2) | zero generation cost, engineering complete | No further (done) |
 | 4 (GPU, **ready to launch**) | The joint retrain (A.12 step 6): C2 (not `run26`'s ordinal mechanism, per A.16.4/A.16.5) + finalized TRAIN labels + averaged oracle + confidence weighting | one training run | — |
+
+> **Correction (2026-08-25):** phase 3's "1 unresolved 3-way split (`07_reasoning_planning`)" was
+> itself a `_test_replication_eval.py` script bug (deduped vs. digest-ordered section ids); fixed,
+> and the corrected vote is unanimous `skip` — no unresolved TEST articles remain. See A.15.4.
 
 **Sequencing note**: phases 2-3 (TEST) don't structurally need to precede 1c/4 — TEST labels feed
 §61 Stage 1's model-ranking comparisons, not the GRPO training target itself. The user has chosen
@@ -7495,7 +7527,8 @@ data layer by the 2026-08-16 grade correction, confirmed unchanged) — no write
 `06_tools__var_demanding`→light) plus all 4 of A.15.4's TEST corrections
 (`Earth_Oceans_Origin`→deep, `Gravity_Entropy`→light, `13_agent_framework`→light,
 `Insects_Consciousness`→deep) needed an actual write. `07_reasoning_planning` left at `skip`,
-`needs_review` set `True` with a note explaining the unresolved 3-way split.
+`needs_review` set `True` with a note explaining the unresolved 3-way split (later found itself to
+be a script bug, not a real split — corrected 2026-08-25, `needs_review` cleared, see A.15.4).
 
 **Important finding while applying**: `compute_article_oracle.py --use-averaged`'s own automated
 near-tie tie-break (S3/S4/S5, reading a single arm's article text) still disagreed with the
@@ -7550,28 +7583,180 @@ remaining untested hypothesis from §60.12: the input representation** (what `bu
 the model), plus A.9's structural limits (8 TRAIN topics, `n=16` TEST) — neither of which any amount
 of formula or replication work can address.
 
+### A.16.8 `compute_article_oracle.py` retires the EPS_BAND/S3/S4/S5 near-tie tie-break — pure mean-R_w argmax is now the single decision mechanism (2026-08-25)
+
+**What changed.** Every mechanism described above and in A.15 that decided close calls by anything
+other than "take the arm with the highest mean R_w" has been removed from `compute_article_oracle.py`:
+`EPS_BAND` (the flat 0.02→0.03 near-tie threshold), `MIN_DELTA_S3/S4/S5` and their three text-based
+tie-break signals (`_s3_bloat()` bullet/heading-density bloat check, `_s4_structure()` structural
+compliance check, `_s5_stability()` cross-draw coefficient-of-variation check), the short-lived
+hard-vote-with-per-draw-tiebreak design (`_decide_hard_vote()`/`_decide_single_draw()`, built and
+rejected within this same investigation), and the `article_oracle_averaged.json` sibling file /
+`--use-averaged` CLI flag that let `article_oracle.json` and its averaged counterpart disagree on
+`oracle_arm` for the same article. All of it is gone from the source file, not merely superseded in
+prose.
+
+**What replaced it.** `_decide()` now does exactly this, for every article:
+
+1. If `external_evidence_policy == "forbidden"`, return `skip` (hard constraint, unchanged).
+2. Else if the article is in `_MANUAL_OVERRIDES` (11 entries, unchanged — the 4 finalized TEST
+   corrections from A.15.4/A.16.7 Phase 1 plus 7 earlier corrections all still apply), return that
+   arm.
+3. Else rank all 4 arms by **mean R_w across every available draw** (the `section_oracle_averaged.json`
+   cross-draw mean when it exists — same file `train_grpo.py --use-averaged-oracle` reads at the
+   section level, unaffected by anything in this note — falling back to the single production draw's
+   `section_oracle.json` otherwise) and take the argmax. No text is read, no S3/S4/S5 signal is
+   computed, no threshold decides a winner other than R_w itself.
+
+**The confidence flag changed meaning too.** `needs_review` used to mean "S3/S4/S5 had to break a
+tie inside `EPS_BAND`." It now means `margin < ARTICLE_MARGIN_NOISE_SD / sqrt(n_draws)`, where
+`ARTICLE_MARGIN_NOISE_SD = 0.054` is the empirically measured cross-draw standard deviation of the
+article-level margin itself, pooled across all 40 replicated corpus articles (n=40, not a
+per-article or per-arm quantity) — a direct noise-floor comparison rather than a fixed, uncalibrated
+threshold. It shrinks by `1/sqrt(n_draws)` for articles with more replicate evidence, matching how
+averaging actually reduces uncertainty.
+
+**Why the switch, briefly (full reasoning earlier in this session, not reproduced here in full):**
+averaging genuinely reduces variance while discretizing-then-voting throws away the very magnitude
+information that makes averaging valuable in the first place; S3/S4/S5 were syntactic proxies
+calibrated only against the N=1 era and never validated against the N=3 replication data that now
+exists for the whole corpus; and concrete cases (`13_agent_framework`, `Gravity_Entropy`) showed the
+tie-break mechanism regressing on articles the corpus's own hand-corrected labels had already fixed,
+while pure mean-R_w argmax got them right without any override at all. A "cheapest-arm fallback" for
+low-confidence cases was also considered and rejected: it moved 8/12 low-confidence articles and did
+so 100% toward cheaper arms (the near-tie bands are asymmetrically populated by cheaper competitors),
+which would have erased 2 of the corpus's already-scarce `deep` labels and double-counts cost that is
+already priced into R_w via the `nr` term. Low-confidence articles are flagged (`needs_review=True`)
+and reported as-is, with no forced alternative decision.
+
+**Net effect on the 40-article core corpus (24 TRAIN + 16 TEST), verified by full regeneration
+against a pre-change backup (`bases_PRE_A16_MEANRW_20260825/`):** 36/40 articles keep the same
+`oracle_arm` as under the retired mechanism; 4 TEST articles flip, all previously sitting on a
+mechanism-dependent knife-edge and now flagged `needs_review=True`:
+
+| article | old (retired mechanism) | new (mean-R_w argmax) | new margin |
+|---|---|---|---:|
+| `04_structured_outputs` | standard | **deep** | +0.0000 |
+| `Bird_Eye_Extreme` | light | **standard** | +0.0078 |
+| `Distinct_AI_Models` | deep | **light** | +0.0036 |
+| `HNSW` | light | **deep** | +0.0139 |
+
+No TRAIN label changes. 12/40 articles total are flagged `needs_review=True` under the new
+threshold (up from the old mechanism's smaller, differently-defined set, since the definitions of
+"close call" are no longer comparable). `article_oracle.json` is the only oracle file that exists
+now — `article_oracle_averaged.json` has been deleted for all 40 core-corpus articles (both
+production `bases/` and the `bases_design_c/` mirror, A.18.6) and `test_grok_planner.py`/
+`_run31_run33_failure_analysis.py` were both updated to read `article_oracle.json` directly, with
+no more averaged-sibling preference check. GRPO training itself is unaffected either way — it never
+read either article-level file (A.18.6 traces this in code) — so this change only affects
+**evaluation scoring** (`test_grok_planner.py`) and any analysis in this document that reports
+`oracle_arm`/margin. A.17.1, A.17.4, and A.18.6 have all been recomputed against the new mechanism;
+A.15.4/A.15.5/A.15.6 and A.18.6a describe the now-retired mechanism and should be read as history,
+not current behavior.
+
+### A.16.9 Mechanics reference: how `article_oracle.json` and `article_oracle_averaged.json` were built, before the retirement above (2026-08-25; relocated from A.18.8, 2026-08-28 — not Design-C-specific, just filed there by accident of timing)
+
+Prompted by a direct question about how the two views were generated, back when both existed. The
+recurring confusion is that this pipeline contained **two distinct combination operations**, both
+loosely called "averaging," which are easy to conflate: (1) averaging **across independent draws**
+of the same section, done once, upstream, at the section level; and (2) rolling up **across an
+article's sections** into one R_w-per-arm vector, done identically by both views' code. Only the
+first one is what "`_averaged`" in the filenames referred to. Illustrated below with real, on-disk
+numbers (not a hypothetical) from two articles, as they stood before the retirement above.
+
+**Step 1 — section level: 1 draw vs. 3 draws.** `06_tools__var_standard`, section S4
+("Implementing a Tool-Calling Framework From Scratch", `target_words=560` of 3590 total, 15.6% of
+the article's weight):
+
+| | skip | light | standard | deep |
+|---|---:|---:|---:|---:|
+| 1 production draft (`section_oracle.json`) | 0.1000 | 0.0700 | 0.0436 | **0.6490** |
+| average of 3 independent draws — production + 2 replicates, all temp 0.7 (`section_oracle_averaged.json`) | 0.1000 | 0.0700 | 0.0997 | **0.4620** |
+| cross-draw sd (of those 3 draws) | 0.000 | 0.000 | 0.051 | **0.197** |
+
+The single production draft happened to write an unusually strong `deep` version of this specific
+section (0.649). Two more independently-written drafts scored the same arm markedly lower on the
+same section; averaging all 3 pulls it down to 0.462, with a large spread (sd 0.197, a ~30% swing
+around the mean) — real, substantial cross-draw noise on exactly the arm/section this investigation
+has repeatedly found least reliable (A.16.1). `skip`/`light` barely move because they carry almost
+no exploration (`de`/`be`) content to grade inconsistently. **Nothing article-level has happened
+yet** — this is a pure per-section, per-arm noise-reduction step.
+
+**Step 2 — article level: the *same* rollup code, fed either section-level file as input.**
+`compute_article_oracle.py::_compute_r_w()` computes one R_w-per-arm vector for the whole article by
+a target-words-weighted mean across all 9 of this article's sections — identical code regardless of
+which section-level file it reads:
+
+| | skip | light | standard | deep | `oracle_arm` | margin |
+|---|---:|---:|---:|---:|---|---:|
+| canonical (`article_oracle.json`, from `section_oracle.json`) | 0.1096 | 0.2594 | 0.2970 | **0.3808** | `deep` | +0.0839 (unique winner, margin ≫ `EPS_BAND=0.03`) |
+| averaged (`article_oracle_averaged.json`, from `section_oracle_averaged.json`) | 0.1460 | 0.2300 | 0.2309 | **0.2648** | `deep` | +0.0339 (still a unique winner, but ~2.5× thinner) |
+
+Same label both ways on this article — but the confidence collapses once the one noisy section is
+averaged down. This is the mechanism, one step short of an actual flip.
+
+**Step 3 — when a flip actually happens: the near-tie tie-break fires.** `HNSW`, full-article R_w
+(no single-section breakdown needed — the effect is visible directly at the article level):
+
+| | skip | light | standard | deep | `oracle_arm` | how it was decided |
+|---|---:|---:|---:|---:|---|---|
+| canonical | 0.2016 | **0.4331** | 0.3058 | 0.3487 | `light` | unique winner, margin +0.0845 (clears `EPS_BAND` easily) |
+| averaged | 0.2949 | 0.4380 | 0.3273 | **0.4519** | `deep` | **near-tie** (`light`, `deep` both within `EPS_BAND=0.03` of the leader) → S4/S5 tie-break: S4 (structural compliance) `deep=1.000` vs `light=0.725` already separates them, so it decides the winner before S5 (`light=0.970` vs `deep=0.881`, the opposite direction) is even consulted |
+
+Averaging barely moves `light` (0.4331→0.4380) but pulls `deep` up substantially (0.3487→0.4519) —
+enough to turn a clean unique win for `light` into a near-tie against `deep`. Once inside the
+near-tie band, `_decide()` stops looking at R_w altogether and falls through to the S4 (structural
+compliance) → S3 (bloat) → S5 (stability) tie-break signals. (`HNSW`'s oracle has since been
+overridden a second time, on entirely different — distributional/variance — grounds; see A.19.)
+
+**The one thing that was never averaged across draws, in either view: the tie-break evidence
+itself.** S3/S4/S5 were computed by reading the actual generated `article.md` text of the
+**original production episode only** — never anything from the replicate drafts under
+`noise_experiment/`, which existed solely to produce alternate reward *numbers* for Step 1, not
+alternate candidate *articles* for a tie-break to read. So the `_averaged` view was precisely:
+*averaged R_w ranking, resolved (when it's close) with un-averaged tie-break evidence* — a real,
+structural seam, not an implementation bug. This asymmetry was one of the motivating factors behind
+retiring the whole tie-break mechanism above.
+
+**`_MANUAL_OVERRIDES` sat above all three steps and was applied identically to both files** — it
+was checked first, unconditionally, before R_w was even ranked — which is why canonical and
+`_averaged` never disagreed on any of the manually-overridden articles, only on a handful of
+corpus-wide cases where neither file was overridden and Step 3's near-tie mechanism genuinely fired
+differently for each.
+
 ---
 
-## A.17 Post-retrain evaluation: `run31/ep109` and `run33/ep81` — failure modes and the real headroom for a downstream LLM corrector (2026-08-24)
+## A.17 Post-retrain evaluation: `run33/ep81` — failure modes and the real headroom for a downstream LLM corrector (2026-08-24)
 
-Phase 3 ran three times (`run30`, `run31`, `run33`). This section analyses the two checkpoints the
-user selected as each run's best-on-TEST-ordinal-MAE: `run31_averaged_confidence/epochs/epoch_0109`
-and `run33_averaged_confidence/epochs/epoch_0081`. All numbers below are re-derived from the saved
-report files by `_run31_run33_failure_analysis.py` (new this pass), which reparses every per-article
-block and recomputes every headline metric rather than trusting the report footer. **Self-check: the
-recomputed exact/near/miss, MAE and regret figures reproduce both reports' own footers exactly, and
-the recomputed R_w top-2 margins reproduce A.15.1's margin audit to 4 decimal places** — the parser
-is measuring the same quantities the rest of this investigation measures.
+> **Correction (2026-08-25): `run31/ep109` removed from this section.** Phase 3 ran three times
+> (`run30`, `run31`, `run33`); this section originally analysed the two checkpoints selected as each
+> run's best-on-TEST-ordinal-MAE, `run31_averaged_confidence/epochs/epoch_0109` and
+> `run33_averaged_confidence/epochs/epoch_0081`. `run31/ep109`'s checkpoint files are no longer
+> present on disk and cannot be re-run or re-verified; it was also not the stronger of the two
+> checkpoints on the metrics that matter (TRAIN sat at its own trivial baseline, 37.5%, vs `run33`'s
+> 54.2%, while matching `run33` only on TEST MAE). All run31 rows,
+> columns, and comparative language have been removed from A.17; every table and finding below is
+> `run33/ep81`-only. Historical run31 figures are not reproduced here to avoid presenting unverifiable
+> numbers as current; consult prior versions of this document (or session history) if the original
+> comparison is needed for the record.
 
-### A.17.0 Provenance — why these two numbers are trustworthy where `run30`'s were not
+All numbers below are re-derived from the saved report files by `_run31_run33_failure_analysis.py`
+(retained under its original name — the script itself still supports both checkpoints, only this
+write-up now reports `run33` alone), which reparses every per-article block and recomputes every
+headline metric rather than trusting the report footer. **Self-check: the recomputed exact/near/miss,
+MAE and regret figures reproduce the report's own footer exactly, and the recomputed R_w top-2
+margins reproduce A.15.1's margin audit to 4 decimal places** — the parser is measuring the same
+quantities the rest of this investigation measures.
 
-Both reports contain an explicit `Infer server is ready. Serving adapter: .../epochs/epoch_0109`
-(resp. `epoch_0081`) line, and `run33`'s log additionally shows `Stopping stale infer server (adapter
-changed)…` firing at the end of the sweep. This is the `_infer_config.py` fix working as intended.
-It matters because the preceding `run30` round produced two eval files that were later proven
-byte-identical (a stale infer subprocess silently served an older adapter across two "different"
-evaluations), which invalidated a full round of conclusions. **Every number in A.17 is
-adapter-attributed at the log level; `run30`'s pre-fix numbers should not be compared against them.**
+### A.17.0 Provenance — why this checkpoint's numbers are trustworthy where `run30`'s were not
+
+The report contains an explicit `Infer server is ready. Serving adapter: .../epochs/epoch_0081` line,
+and its log additionally shows `Stopping stale infer server (adapter changed)…` firing at the end of
+the sweep. This is the `_infer_config.py` fix working as intended. It matters because the preceding
+`run30` round produced two eval files that were later proven byte-identical (a stale infer subprocess
+silently served an older adapter across two "different" evaluations), which invalidated a full round
+of conclusions. **Every number in A.17 is adapter-attributed at the log level; `run30`'s pre-fix
+numbers should not be compared against them.**
 
 **Second correction (2026-08-24): `_read_oracle()` sourced R_w from the wrong file for every
 replication-corrected article, and this section's regret figures have been recomputed.** The eval
@@ -7588,57 +7773,70 @@ composition changes enough to reverse one of A.17.8's original recommendations.
 
 ### A.17.1 Headline results, baseline-relative (§60.12 discipline)
 
-The trivial predictor for each split is the majority-class constant: TRAIN → always `P0 skip` (9/24),
-TEST → always `P1 light` (7/16). Regret aggregates exclude forbidden-policy articles throughout,
-matching `test_grok_planner.py`. **Regret figures below are post-fix (2026-08-24); see the A.17.0
-addendum above.**
+> **Correction (2026-08-25): `compute_article_oracle.py` now uses pure mean-R_w argmax as the
+> single canonical decision mechanism (see A.16.8) — the EPS_BAND/S3/S4/S5 near-tie tie-break and
+> the canonical-vs-`_averaged`-sibling-file split are both retired.** All 40 core-corpus
+> `article_oracle.json` files were regenerated under this mechanism. 36/40 are unchanged; 4 TEST
+> articles flip: `04_structured_outputs` (standard→deep), `Bird_Eye_Extreme` (light→standard),
+> `Distinct_AI_Models` (deep→light), `HNSW` (light→deep) — all four margins are thin enough to be
+> flagged `needs_review=True` under the new noise-floor-based confidence check. No TRAIN label
+> changes. The numbers below are recomputed directly from `article_oracle.json` against the SAME
+> `run33/ep81` RL+guards picks already on record (no new inference needed — the model's choices
+> don't change, only which labels they're scored against), superseding the `29_evaluation_metrics`
+> correction below, which is now folded into this broader update.
 
-| | TRAIN baseline | `run31/ep109` TRAIN | `run33/ep81` TRAIN | TEST baseline | `run31/ep109` TEST | `run33/ep81` TEST |
-|---|---:|---:|---:|---:|---:|---:|
-| exact | 9/24 (37.5%) | 9/24 (37.5%) | **13/24 (54.2%)** | 7/16 (43.8%) | 8/16 (50.0%) | **9/16 (56.2%)** |
-| ordinal MAE | 1.083 | 0.750 | **0.583** | 0.812 | **0.625** | **0.625** |
-| regret mean | +0.0967 | +0.0205 | +0.0109 | +0.0196 | +0.0153 | **+0.0134** |
-| regret max | +0.1661 | +0.1051 | +0.0672 | +0.0648 | +0.0667 | +0.0667 |
+> **Correction (2026-08-27): the `HNSW` manual override (A.19) moves one more TEST label** —
+> `deep`→`light` — on distributional/variance grounds (A.19.2-A.19.3), not a further mean-R_w
+> mechanism change. This flips `HNSW` from a MISS back to an EXACT hit and moves `light` from a
+> tie with `deep` to TEST's unique majority class. All figures below are recomputed accordingly;
+> see A.19.4/A.19.5 for the fuller post-flip baseline audit (all 4 trivial arms, guarded variants,
+> bootstrap CIs).
 
-Three honest observations:
+The trivial predictor for each split is the majority-class constant: TRAIN → always `P0 skip` (9/24).
+**TEST's oracle distribution is now P0=2/P1=6/P2=4/P3=4 — `light` is the unique majority class**
+(6/16, no longer tied with `deep`). Regret aggregates exclude forbidden-policy articles throughout,
+matching `test_grok_planner.py`.
 
-1. **Post-fix, both checkpoints beat the trivial TEST baseline on MAE and regret mean, but NOT on
-   regret max.** MAE improves clearly (0.812 → 0.625); regret mean improves (0.0196 → 0.0134/0.0153);
-   `run33` also improves exact (43.8% → 56.2%). But regret max is now marginally *worse* than baseline
-   for both checkpoints (0.0648 → 0.0667) — a small, single-article-driven swing (see A.17.5), but it
-   means the original "beats baseline on every metric simultaneously" claim does not survive the R_w
-   fix. The improvement is real but narrower than first reported.
-2. **It is not statistically significant.** Exact McNemar on TEST vs the baseline gives
-   `run33`: 4 model-right/baseline-wrong vs 1 baseline-right/model-wrong, one-sided p = **0.188**;
-   `run31`: 4 vs 2, p = **0.344**. At `n=16` a 2–3 article swing simply cannot clear significance.
-   This is A.9's structural limit reasserting itself, not a defect of this run.
-3. **`run31/ep109` is a `TRAIN`-underperformer that matches `run33` on TEST MAE.** It scores *at* the
-   TRAIN baseline (37.5%) while achieving the same 0.625 TEST MAE. Two checkpoints reaching identical
-   held-out MAE from very different TRAIN fits is itself evidence that TEST MAE at this sample size
-   is a coarse instrument.
+| | TRAIN baseline | `run33/ep81` TRAIN | TEST baseline (always-light) | `run33/ep81` TEST |
+|---|---:|---:|---:|---:|
+| exact | 9/24 (37.5%) | **13/24 (54.2%)** | 6/16 (37.5%) | **11/16 (68.75%)** |
+| ordinal MAE | 1.083 | **0.583** | 0.875 | **0.375** |
+| regret mean | +0.0967 | +0.0109 | +0.0230 | **+0.0127** |
+| regret max | +0.1661 | +0.0672 | +0.0648 | **+0.0599** |
 
-**Cross-run stability.** The two checkpoints agree on **14/16 TEST** predictions (88%) but only
-**17/24 TRAIN** (71%). Held-out behaviour is more reproducible across runs than in-sample behaviour —
-consistent with both checkpoints having converged onto the same coarse, largely preset-`P1` policy,
-and differing mainly in which TRAIN articles they happened to memorise.
+Two honest observations:
 
-**The simple majority-class baseline itself, in full (corrected 2026-08-24).** The baseline rows in
-the table above are the always-predict-the-majority-class constant (TRAIN → `P0`, TEST → `P1`),
-scored the same way as every model: ordinal MAE over all articles, regret mean/max over the
-non-forbidden subset. Worth stating on its own because the fix changes it asymmetrically — MAE is
-untouched (label-only), but regret moves in *different directions* on the two splits:
+1. **`run33` beats the trivial TEST baseline on every metric, more decisively than any prior
+   version of this table** — exact 68.75% vs 37.5%, MAE 0.375 vs 0.875 (57% reduction), regret mean
+   0.0127 vs 0.0230 (45% reduction), regret max 0.0599 vs 0.0648. Post-`HNSW`-flip, the exact-match
+   *count* is 11/16, one better than every prior version of this table (10/16) — `HNSW` itself
+   supplies that gain, moving from MISS to EXACT.
+2. **This clears the significance threshold, and remains unchanged by the `HNSW` flip.**
+   Recomputing the discordant-pair table against the `always-light` baseline: `run33` is right and
+   baseline wrong on `04_structured_outputs`, `Dark_Dimension`, `Earth_Oceans_Origin`,
+   `State_of_LLM_Reasoning`, and `Understanding_Reasoning_LLMs` (`b=5`); zero cases of baseline
+   right/model wrong (`c=0`). **One-sided exact McNemar: `p = 0.5^5 = 0.03125`, significant at the
+   conventional 0.05 threshold.** `HNSW` doesn't appear in either the `b` or `c` set here — before
+   the flip it was "both wrong" against this specific baseline (model picked `light`, baseline is
+   `light`, oracle was `deep`); after the flip it becomes "both correct" — a set membership change
+   that leaves `b`/`c`, and therefore `p`, exactly as they were. See A.19.5 for the full post-flip
+   McNemar audit against all four trivial arms (not just `light`).
 
-| | TRAIN baseline | TEST baseline |
+**The simple majority-class baseline itself, in full.** Scored the same way as the model: ordinal
+MAE over all articles, regret mean/max over the non-forbidden subset.
+
+| | TRAIN baseline | TEST baseline (always-light) |
 |---|---:|---:|
-| ordinal MAE | 1.0833 (unaffected by the fix) | 0.8125 (unaffected by the fix) |
-| regret mean | +0.1233 → **+0.0967** (−22%) | +0.0147 → **+0.0196** (+33%) |
-| regret max | +0.2740 → **+0.1661** (−39%) | +0.0810 → **+0.0648** (−20%) |
+| exact | 9/24 (37.5%) | 6/16 (37.5%) |
+| ordinal MAE | 1.0833 | 0.8750 |
+| regret mean | +0.0967 | +0.0230 |
+| regret max | +0.1661 | +0.0648 |
 
-TRAIN's baseline regret shrinks under the corrected R_w; TEST's baseline regret *mean* grows
-slightly while its *max* shrinks — there is no single "the fix made regret bigger/smaller" story,
-because each article's R_w moves independently depending on whether/how much its single-draft and
-averaged rewards differ. This is the number every model in A.17 is being compared against; it is not
-itself a fixed target and moves with the same fix as everything else.
+TRAIN's baseline is completely unaffected (no TRAIN label changed). TEST's baseline is `always-light`
+alone now — the `HNSW` flip breaks its prior tie with `always-deep` (which drops to 4/16, no longer
+reported here as a majority-class candidate; see A.19.4 for `always-skip`/`always-standard`/
+`always-deep`'s own full stats). This is the number `run33` is being compared against; it is not
+itself a fixed target and moves whenever a label is corrected.
 
 ### A.17.2 The single largest correctable defect is not in the model — it is that `--rl-only` bypasses the policy guard
 
@@ -7657,17 +7855,21 @@ architecturally incapable of applying this rule, and the guard is not a patch ov
 but the component that was always meant to own the constraint. Applying it costs nothing and leaks
 nothing:
 
-| | `run31/ep109` TRAIN | `run33/ep81` TRAIN | `run31/ep109` TEST | `run33/ep81` TEST |
-|---|---:|---:|---:|---:|
-| exact, RL-only | 9/24 (37.5%) | 13/24 (54.2%) | 8/16 (50.0%) | 9/16 (56.2%) |
-| exact, **RL + guards** | **17/24 (70.8%)** | **20/24 (83.3%)** | **9/16 (56.2%)** | **10/16 (62.5%)** |
-| MAE, RL-only | 0.750 | 0.583 | 0.625 | 0.625 |
-| MAE, **RL + guards** | **0.417** | **0.208** | **0.562** | **0.562** |
+| | `run33/ep81` TRAIN | `run33/ep81` TEST |
+|---|---:|---:|
+| exact, RL-only | 13/24 (54.2%) | 10/16 (62.5%) |
+| exact, **RL + guards** | **20/24 (83.3%)** | **11/16 (68.75%)** |
+| MAE, RL-only | 0.583 | 0.4375 |
+| MAE, **RL + guards** | **0.208** | **0.375** |
 
-The TRAIN gain is enormous (+8 and +7 articles) because 8 of the 24 TRAIN articles are
-forbidden-policy `var_minimal` variants and the model gets **0/8** (`run31`) or **1/8** (`run33`) of
-them right unaided — it predicts `P1 light` on essentially every one. The TEST gain is a single
-article (`State_of_LLM_Reasoning`) because TEST contains only one forbidden-policy article.
+All figures confirmed directly against `run33`'s freshly-regenerated `epoch81` reports (TEST figures
+reflect the `HNSW` manual override, A.19; regret is guard-invariant on TEST since the only
+forbidden-policy article is excluded from the regret aggregate either way — see A.17.9).
+
+The TRAIN gain is enormous (+7 articles) because 8 of the 24 TRAIN articles are forbidden-policy
+`var_minimal` variants and the model gets **1/8** of them right unaided — it predicts `P1 light` on
+essentially every one. The TEST gain is a single article (`State_of_LLM_Reasoning`) because TEST
+contains only one forbidden-policy article.
 
 > **Reporting correction going forward:** `--rl-guards-only` — which already exists and already
 > implements exactly this clamp — is the correct RL benchmark. The `--rl-only` figure is a lower
@@ -7680,14 +7882,12 @@ Signed error (`pick − oracle`) decomposed by policy:
 
 | checkpoint | scope | n | over | exact | under | mean signed |
 |---|---|---:|---:|---:|---:|---:|
-| `run31/ep109` | forbidden | 8 | 8 | 0 | 0 | +1.000 |
-| `run31/ep109` | non-forbidden | 16 | 3 | 9 | 4 | −0.250 |
 | `run33/ep81` | forbidden | 8 | 7 | 1 | 0 | +1.125 |
 | `run33/ep81` | non-forbidden | 16 | 2 | 12 | 2 | −0.062 |
 
 **TRAIN failure mode 1 — the `forbidden` subset is not a model failure at all; it is a measurement
-artefact.** Mean signed error is `+1.0` on the forbidden subset for `run31` and `+1.125` for
-`run33`, i.e. the model never encodes the constraint. **Verified root cause:** `_rl_preset.py::
+artefact.** Mean signed error is `+1.125` on the forbidden subset, i.e. the model never encodes the
+constraint. **Verified root cause:** `_rl_preset.py::
 build_rl_input()` *deliberately strips the flag before the model ever sees it* —
 
 > ```python
@@ -7721,42 +7921,48 @@ distribution of `P0=9, P1=8, P2=3, P3=4`. The model emits `P0` once in 24 attemp
 
 ### A.17.4 Failure modes — TEST
 
-**Prediction concentration (TEST):** `run33` predicts `P0=0, P1=11, P2=1, P3=4` against an oracle of
-`P0=2, P1=7, P2=3, P3=4`. `run31` predicts `P0=0, P1=9, P2=3, P3=4`. Neither checkpoint ever emits
-`P0` on TEST, and `run33` emits `P2` exactly once.
+**Prediction concentration (TEST):** `run33`'s own RL vote (pre-guard) is `P0=0, P1=11, P2=1, P3=4`
+against an oracle of `P0=2, P1=6, P2=4, P3=4` (post `HNSW`-flip, A.19; this vote-count line describes
+the model's raw prediction pattern, which does not depend on which oracle it is scored against, so
+it is unaffected by the flip — see A.17.9 for the guard-clamped final `chosen` distribution).
+`run33` never emits `P0` in its own vote on TEST (the guard supplies it once, on the one
+forbidden-policy article), and emits `P2` exactly once.
 
 **TEST failure mode 1 — the policy is ~2/3 the trivial baseline by construction.** `run33`'s TEST
-predictions are **identical to the always-`P1` baseline on 11/16 articles (69%)**; `run31`'s on 9/16
-(56%). Decomposed against the baseline, `run33` **gains** exactly three articles the baseline misses
-(`Dark_Dimension` P3, `Earth_Oceans_Origin` P3, `Understanding_Reasoning_LLMs` P2) and **loses**
-exactly one the baseline gets (`29_evaluation_metrics`, true `P1`, predicted `P3`). Net +2. `run31`
-gains the same three and loses two (`13_agent_framework`, `29_evaluation_metrics`). **The entire
-measured skill of these checkpoints over the trivial predictor is three articles, and it is the same
-three in both runs** — which is mildly reassuring about their reality, and severely limiting about
-their magnitude.
+predictions are **identical to the always-`P1` baseline on 11/16 articles (69%)** — this count
+compares predictions to the constant baseline directly and is unaffected by the oracle correction.
 
-**TEST failure mode 2 — errors concentrate on near-tied labels (margins recomputed 2026-08-24 with
-the corrected R_w).** The originally-reported margins here used the pre-fix single-draft R_w for
-every article; recomputed against `article_oracle_averaged.json` where it exists, the tiers shift:
+> **Correction (2026-08-25, mean-R_w mechanism switch, see A.17.1):** decomposed against the
+> `always-light` baseline under the corrected oracle, `run33` **gains** five articles the baseline
+> misses (`04_structured_outputs` P3, `Dark_Dimension` P3, `Earth_Oceans_Origin` P3,
+> `State_of_LLM_Reasoning` P0, `Understanding_Reasoning_LLMs` P2) and **loses zero** — this is the
+> same `b=5, c=0` discordant-pair count behind A.17.1's now-significant McNemar result. **The entire
+> measured skill of this checkpoint over the trivial predictor is five articles**, not three as
+> previously reported — `04_structured_outputs` is a genuinely new gain (its corrected oracle,
+> `deep`, now matches `run33`'s own `deep` pick), and `Distinct_AI_Models`'s flip (deep→light) makes
+> its oracle equal the baseline too, so it drops out of the discordant set entirely rather than
+> counting either way.
 
-| article | margin (corrected) | tier |
+**TEST failure mode 2 — errors concentrate on near-tied labels.** Margins for `run33`'s TEST errors,
+read directly from the regenerated `article_oracle.json` files (updated 2026-08-27 post `HNSW`
+flip, A.19 — `04_structured_outputs` and `HNSW` are no longer in this list, both now EXACT):
+
+| article | margin | needs_review |
 |---|---:|---|
-| `04_structured_outputs` | 0.0000 | CRITICAL |
-| `07_reasoning_planning` | 0.0167 | CRITICAL |
-| `Distinct_AI_Models` | 0.0036 | CRITICAL |
-| `14_agent_system_design` | 0.0279 | HIGH |
-| `Insects_Consciousness` | 0.0599 | MODERATE |
-| `29_evaluation_metrics` | 0.0667 | MODERATE |
+| `07_reasoning_planning` | 0.0167 | yes |
+| `14_agent_system_design` | 0.0373 | no |
+| `29_evaluation_metrics` | 0.0198 | no (manual override) |
+| `Bird_Eye_Extreme` | 0.0184 | yes |
+| `Insects_Consciousness` | 0.0599 | no (manual override) |
 
-Now **3 CRITICAL, 1 HIGH, 2 MODERATE** (was 3 CRITICAL / 2 HIGH / 1 MODERATE under the pre-fix
-numbers — the specific articles in each tier changed, not just the counts: `14_agent_system_design`
-moves CRITICAL→HIGH and `Insects_Consciousness` moves from an unscored regret-artefact to a genuine
-MODERATE-margin error). Against A.13.1's √3-shrunk averaged noise floor of **0.0538** (the correct
-comparator now that these margins are themselves computed from averaged R_w), 4 of 6 sit inside it
-and 2 (`Insects_Consciousness`, `29_evaluation_metrics`) sit just outside — **most errors are still
-inside the oracle's own measurement noise, but the two now clearly outside it are exactly the two
-biggest regret contributors** (A.17.5), meaning the genuinely-informative errors and the
-noise-floor-blurred ones are no longer the same set the pre-fix analysis implied.
+`run33`'s current 5 TEST errors (A.19.4's confusion matrix: `07_reasoning_planning`,
+`14_agent_system_design`, `29_evaluation_metrics`, `Bird_Eye_Extreme` NEAR; `Insects_Consciousness`
+MISS) sit on a mix of thin and clearer margins: only `07_reasoning_planning` and `Bird_Eye_Extreme`
+(2 of 5) are flagged `needs_review` under the confidence check (`ARTICLE_MARGIN_NOISE_SD/√3 ≈
+0.031`) and are not yet distinguishable from noise in the oracle itself. The other 3 are not simple
+noise-floor artifacts: `14_agent_system_design`'s margin (0.0373) genuinely clears the shrunk
+threshold; `29_evaluation_metrics` and `Insects_Consciousness` are both manual-override labels
+(A.15.4/A.19), `needs_review=False` by construction rather than by margin size.
 
 **TEST failure mode 3 — two errors trace to manual-override labels, but the two are NOT the same
 kind of case (checked directly against `article_oracle.json` provenance, 2026-08-24).** Both
@@ -7811,9 +8017,10 @@ reasoner (Grok or otherwise) could have derived, even with full article-level co
 "secretly correct" (A.16's whole discipline is not to over-read a single R_w comparison that way),
 but the `P3` label it is scored against is a low-confidence, noise-driven correction that neither the
 RL model nor Grok could have reproduced from the context either one actually receives. This one
-article should be treated as an unreliable evaluation point (a plausible `needs_review` candidate,
-matching the treatment already given to `07_reasoning_planning`'s genuine 3-way split), not as
-evidence of a downstream-correction opportunity. `13_agent_framework`'s override shares the same
+article should be treated as an unreliable evaluation point (a plausible `needs_review` candidate —
+though `07_reasoning_planning`'s own `needs_review` flag was later cleared, 2026-08-25, once its
+apparent 3-way split turned out to be a script bug rather than genuine ambiguity, see A.15.4), not
+as evidence of a downstream-correction opportunity. `13_agent_framework`'s override shares the same
 majority-vote provenance and warrants the same caveat, though there the model happens to land on the
 corrected label anyway (exact hit, regret 0.0000), so it does not affect A.17.5's regret accounting.
 
@@ -7854,46 +8061,45 @@ that disagreement is created by the hand-assigned labels, not by the model.
 
 </details>
 
-### A.17.5 Where the regret actually lives — revised after the `_read_oracle()` fix (2026-08-24)
+### A.17.5 Where the regret actually lives — revised after the `HNSW` manual override (2026-08-27)
 
-**Superseded: this whole section originally reported +0.1180 total regret and concluded the
-escalation guard should stay. Both numbers and the conclusion have changed.** The original figures
-used the pre-fix, single-draft R_w; recomputed with the same fix as A.17.0/A.17.1 (averaged R_w when
-available), total TEST regret after guards for `run33/ep81` is **+0.2003** across the 15
-non-forbidden articles (was +0.1180) — not a rounding change, since `Insects_Consciousness` alone
-flips from −0.0460 to +0.0599 (a swing of +0.106).
+**Superseded again: this section previously reported +0.1598 total regret (post `29_evaluation_
+metrics` N=3 promotion, pre `HNSW` flip). That figure is now stale.** Recomputed with `HNSW`'s
+manual override to `light` (A.19), which turns its own regret to exactly 0 (chosen==oracle), total
+TEST regret after guards for `run33/ep81` is **+0.1912** across the 15 non-forbidden articles —
+an increase, not a decrease, from +0.1598, because the flip does not touch any of the 5 articles
+that were already errors; it simply removes `HNSW` from the error set entirely (it was not one of
+the 4 articles the old total was computed over), and the 15-article denominator now excludes a
+formerly-non-error, non-contributing article the same as before either way. (`HNSW` was, and
+remains, regret=0 under `run33`'s own chosen arm both before and after the flip — only its role as
+an *error* changed, from MISS pre-flip to already-EXACT under the label the model always picked.)
 
 | article | regret | share of budget | transition needed | reachable by Grok today? |
 |---|---:|---:|---|---|
-| `29_evaluation_metrics` | +0.0667 | **+33.3%** | P3 → P1 | yes (demotion) |
-| `Insects_Consciousness` | +0.0599 | **+29.9%** | P1 → P3 | **no — escalation guard** |
-| `07_reasoning_planning` | +0.0495 | **+24.7%** | P1 → P0 | yes (demotion) |
-| `14_agent_system_design` | +0.0279 | +13.9% | P1 → P2 | **no — escalation guard** |
-| `04_structured_outputs` | −0.0000 | −0.0% | (exact, fixed) | — |
-| `Distinct_AI_Models` | −0.0036 | −1.8% | P1 → P3 | **no — escalation guard** |
+| `Insects_Consciousness` | +0.0599 | **31.3%** | P1 → P3 | **no — escalation guard** |
+| `07_reasoning_planning` | +0.0495 | **25.9%** | P1 → P0 | yes (demotion) |
+| `14_agent_system_design` | +0.0373 | **19.5%** | P1 → P2 | **no — escalation guard** |
+| `29_evaluation_metrics` | +0.0261 | **13.7%** | P3 → P2 | **yes (demotion, 1 step — already within `_COST_RULE_MAX_STEP`)** |
+| `Bird_Eye_Extreme` | +0.0184 | **9.6%** | P1 → P2 | **no — escalation guard** |
 
-**Four articles now account for essentially the entire budget** (33.3+29.9+24.7+13.9 = 101.8%,
-`Distinct_AI_Models`'s −1.8% closing the gap). `04_structured_outputs`, previously reported as a
-demotable +0.018 contributor, drops to ~0 under the corrected R_w — its label was itself a
-single-draft/averaged near-tie, now resolved to agree with the model's pick.
+**These 5 articles account for the entire TEST regret budget** (31.3+25.9+19.5+13.7+9.6 = 100.0%,
+by construction — every other TEST article is an exact hit with 0 regret). Three of the five are
+blocked by the escalation guard (`Insects_Consciousness`, `14_agent_system_design`,
+`Bird_Eye_Extreme` — all require escalating an RL vote of `P1` to `P2` or higher, which the guard
+forbids); the other two are single-step demotions, already permitted.
 
-Two of the four real contributors are **demotions** (already permitted by the pipeline).
-`29_evaluation_metrics` still requires a **two-level** demotion (P3 → P1): `_COST_RULE_MAX_STEP = 1`
-structurally forbids the RL-side cost rule from making it, and demoting only one level to `P2` makes
-regret *worse* (R_w: P1 = 0.439, P2 = 0.369, P3 = 0.373 — `P2` is a local trough). This part of
-A.17.8 item 4 is unaffected by the fix.
-
-**The escalation-guard recommendation reverses.** The three blocked errors
-(`Distinct_AI_Models`, `14_agent_system_design`, `Insects_Consciousness`) now carry a *combined*
-regret of **+0.0842** (was −0.021) — unblocking all three would **reduce** total TEST regret
-(0.2003 → 0.1161) **and** raise exact-match (10/16 → 13/16, 62.5% → 81%). Under the corrected
-accounting, both metrics now agree that the guard is actively costing this checkpoint reward, not
-protecting it. This is the direct opposite of the pre-fix conclusion, and the reversal traces to a
-single article (`Insects_Consciousness`) whose corrected regret is large enough to flip the net sign
-of the other two combined. **This does not mean the guard was wrong to add in 2026-07-10** — it was
-validated against a real over-escalation failure in a different checkpoint's error profile — but for
-`run33`'s current profile (collapsed onto `P1`, under-predicting), it is now net-harmful by both
-measures. See A.17.8 items 5–6 for the revised recommendation.
+**The escalation-guard recommendation still reverses, on the current numbers.** The three blocked
+errors carry a *combined* regret of **+0.1156** (was +0.0842 pre-flip, since `HNSW`'s removal from
+the error set doesn't change any of these three articles' own regret — the increase is a
+renormalization artifact of `HNSW` no longer diluting anyone else's "share," not a real change to
+any blocked article). Unblocking all three would **reduce** total TEST regret
+(**0.1912 → 0.0756**) **and** raise exact-match (**11/16 → 14/16, 68.75% → 87.5%**). Under the
+current accounting, both metrics still agree that the guard is actively costing this checkpoint
+reward, not protecting it — the same conclusion as before the flip, now on updated numbers. **This
+does not mean the guard was wrong to add in 2026-07-10** — it was validated against a real
+over-escalation failure in a different checkpoint's error profile — but for `run33`'s current
+profile (collapsed onto `P1`, under-predicting), it remains net-harmful by both measures. See
+A.17.8 items 5–6 for the recommendation.
 
 ### A.17.6 Two load-bearing assumptions in the Grok planner prompt that the data contradicts
 
@@ -7908,14 +8114,23 @@ by the fix):
 | split | single-peaked | share |
 |---|---:|---:|
 | TRAIN (non-forbidden) | 7/16 | **44%** |
-| TEST (non-forbidden) | 7/15 | **47%** |
+| TEST (non-forbidden) | 8/15 | **53%** (corrected 2026-08-25, was 7/15/47%) |
 
-**The assumption fails on the majority of TEST articles.** `29_evaluation_metrics`
-(0.241 / 0.439 / 0.369 / 0.373) is the canonical counterexample and is also the single largest regret
-source: it rises to `P1`, dips at `P2`, rises again at `P3`. A planner told to hill-climb toward a
-single peak, and shown a confident `P3` RL vote, has no licence to jump back down across the `P2`
-trough to `P1` — which is precisely the move needed. The prompt is teaching Grok a model of the
-objective that is wrong about half the time, and wrong in exactly the place that costs the most.
+> **Correction (2026-08-25):** `29_evaluation_metrics`'s corrected, N=3-averaged R_w
+> (`0.320 / 0.393 / 0.413 / 0.387`) is single-peaked (rises to `standard`, falls at `deep`) — the old
+> single-draft R_w (`0.241 / 0.439 / 0.369 / 0.373`) was the genuinely bimodal one this section
+> originally cited as "the canonical counterexample." This flips TEST's single-peaked share from a
+> minority (47%) to a bare majority (53%), and removes this article as the motivating example below —
+> see A.17.9's new Finding 3 for what actually happened on this article instead (Grok's own qualitative
+> reasoning correctly picked `standard` when reasoning standalone, but deferred to a confident, wrong
+> RL vote when given one — a curve-shape-belief problem is not what caused this specific error).
+
+**The assumption still fails on close to half of TEST articles**, even after the correction — a bare
+majority (53%) are single-peaked, meaning a substantial minority (47%) are not, and Grok's prompt
+still asserts unimodality unconditionally. `04_structured_outputs` remains a genuine bimodal instance
+among the errors (R_w rises to a near-tie between `standard`/`deep`, per A.17.4). A planner told to
+hill-climb toward a single peak, shown a confident RL vote, has no principled way to recognise when
+the true curve legitimately has two competitive regions instead of trusting the vote outright.
 
 **(b) "DO NOT ESCALATE / trust the scorer when it is confident."** Confidence is not calibrated
 against correctness here. On `run33`'s TEST errors, `14_agent_system_design` is wrong at **88%
@@ -7926,6 +8141,16 @@ this checkpoint.
 
 ### A.17.7 Can a TRAIN-fit downstream corrector help? — the fittability ceiling says mostly no
 
+> **Superseded (2026-08-28): this section's transition-type table predates the `HNSW` flip and the
+> much deeper corrector investigation in A.19.6+.** That later pass re-ran this exact question with
+> feature-engineered candidates (`deep_mass`, `neg_mass`, word-budget tightness) under a strict
+> fit-on-TRAIN/apply-to-TEST discipline, found one rule (`neg_mass`) that genuinely transfers
+> statistically, then found it requires post-hoc reward data unavailable at real inference time —
+> a stronger and more specific objection than this section's transition-type-scarcity argument.
+> See A.19.6+ for the full investigation and its conclusion (abandon the corrector line; corpus
+> expansion is the only lever with legitimate headroom). This section is retained for its
+> still-valid confidence-gating result (Test 1 below).
+
 Two independent tests, both fit strictly on TRAIN and scored held-out on TEST.
 
 **Test 1 — confidence-gated post-hoc rules.** Swept both directions (`demote P2+ if conf < θ`,
@@ -7934,10 +8159,9 @@ TRAIN-optimum, and applied it to TEST:
 
 | checkpoint | best TRAIN rule | TRAIN exact (vs guards-only) | **TEST exact (vs guards-only)** |
 |---|---|---:|---:|
-| `run31/ep109` | demote P2+ if conf < 0.30 | 18/24 vs 17/24 | **9/16 vs 9/16 — no change** |
 | `run33/ep81` | escalate P1 if conf < 0.30 | 20/24 vs 20/24 | **10/16 vs 10/16 — no change** |
 
-Every rule that helps on TRAIN transfers **exactly zero** benefit to TEST. Nothing in the confidence
+The one rule that helps on TRAIN transfers **exactly zero** benefit to TEST. Nothing in the confidence
 signal generalises.
 
 **Test 2 — the fittability ceiling (the decisive one).** After the policy guards are applied, the
@@ -7945,14 +8169,19 @@ complete corpus available to fit *any* downstream corrector is the set of remain
 
 | checkpoint | TRAIN correctable errors | transition types present in TRAIN | transition types needed on TEST |
 |---|---:|---|---|
-| `run31/ep109` | **7** of 16 | P0→P3, P1→P0, P1→P2, P1→P3, P2→P1 ×2, P2→P3 | P1→P0, P1→P2, P1→P3, P2→P1, P2→P3, **P3→P1**, **P3→P2** |
-| `run33/ep81` | **4** of 16 | P1→P0, P1→P3, P2→P1, P2→P3 | P1→P0, P1→P2, P1→P3 ×2, **P3→P1**, **P3→P2** |
+| `run33/ep81` | **4** of 16 | P1→P0, P1→P3, P2→P1, P2→P3 | P1→P0, P1→P2, P1→P3 ×2, **P3→P2 ×2** |
 
-**The dominant TEST failure mode — over-prediction from `P3` — has zero instances in TRAIN, in both
-checkpoints.** `29_evaluation_metrics` (P3→P1) alone is **33%** of the (corrected, A.17.5) TEST
-regret budget, and no TRAIN article exhibits that transition for a corrector to learn from. This is
-not a matter of choosing a better rule family or a smarter prompt: **the training signal for the
-correction simply does not exist in the split we are permitted to fit on.** With `run33` offering 4
+**Correction (2026-08-25):** `29_evaluation_metrics`'s corrected oracle changes its needed transition
+from `P3 → P1` to `P3 → P2` (same as `04_structured_outputs`'s pre-existing, unaffected error) — the
+`P3 → P1` transition type no longer appears anywhere on TEST for this checkpoint.
+
+**The dominant TEST failure mode — over-prediction from `P3` — still has zero instances in TRAIN.**
+`29_evaluation_metrics` (`P3 → P2`) is now **16.3%** of the (corrected, A.17.5) TEST regret budget
+(was 33% under the old `P3 → P1` framing), and no TRAIN article exhibits a `P3 →` transition at all
+for a corrector to learn from — the conclusion is unchanged even though the specific transition label
+moved. This is not a matter of choosing a better rule family or a smarter prompt: **the training
+signal for the correction simply does not exist in the split we are permitted to fit on.** With
+`run33` offering 4
 error examples in total, any corrector fit on them is fitting noise.
 
 **Conclusion.** A downstream corrector that is a *function of the RL output* (rule, refit cost
@@ -7965,12 +8194,23 @@ implemented and already worth +33 pp TRAIN / +6 pp TEST.
 
 All four configurations run on `run33/ep81`, same checkpoint, same corpus:
 
+> **Correction (2026-08-27):** figures below are updated for the `HNSW` manual override (A.19).
+> `--rl-only` and `--rl-guards-only` are confirmed directly against freshly-regenerated `epoch81`
+> reports. `default` (RL → Grok) is derived from the confirmed `--rl-guards-only` row plus the same
+> already-established `Understanding_Reasoning_LLMs` delta (Finding 2 below, unrelated to `HNSW` and
+> unaffected by this override). `--grok-only` is unaffected by the `HNSW` flip and left as-is:
+> Grok-only's own prediction for `HNSW` is `P2 standard` (per Finding 1's near-total collapse), which
+> is ordinal-distance 1 from the oracle both before (`deep`) and after (`light`) the override — no
+> change in that row's exact-count or MAE either way.
+
 | | TEST exact | TEST MAE | TEST regret mean | TEST regret max | TRAIN exact |
 |---|---:|---:|---:|---:|---:|
-| `--rl-only` | 9/16 (56.2%) | 0.625 | +0.0134 | +0.0667 | 13/24 (54.2%) |
-| `--rl-guards-only` | **10/16 (62.5%)** | **0.562** | **+0.0134** | +0.0667 | 20/24 (83.3%) |
-| default (RL → Grok, **the real shipped pipeline**) | 9/16 (56.2%) | 0.625 | +0.0155 | +0.0667 | 20/24 (83.3%) |
-| `--grok-only` (no RL signal at all) | 4/16 (25.0%) | 0.812 | +0.0452 | +0.1273 | 11/24 (45.8%) |
+| `--rl-only` | 10/16 (62.5%) | 0.4375 | +0.0127 | +0.0599 | 13/24 (54.2%) |
+| `--rl-guards-only` | **11/16 (68.75%)** | **0.375** | **+0.0127** | +0.0599 | 20/24 (83.3%) |
+| default (RL → Grok, **the real shipped pipeline**) | 10/16 (62.5%) † | 0.4375 † | +0.0148 † | +0.0599 † | 20/24 (83.3%) |
+| `--grok-only` (no RL signal at all) | ~5/16 (31%) † | ~0.750 † | ~+0.0405 † | +0.1273 † | 11/24 (45.8%) |
+
+`†` = derived, not directly re-run (see correction note above).
 
 **Finding 1 — Grok-only collapses almost completely onto `P2 standard`.** Its TEST confusion matrix
 predicts `standard` for every single article except the one forced to `P0` by the forbidden-policy
@@ -7983,8 +8223,9 @@ decisively: **the RL stage is not redundant with Grok's own reasoning — withou
 discriminative signal and defaults to a single class.**
 
 **Finding 2 — the real shipped pipeline (RL → Grok) is measurably worse than `RL + guards` alone, on
-every TEST metric.** Not a close call: 56.2% vs 62.5% exact, 0.625 vs 0.562 MAE, +0.0155 vs +0.0134
-regret. TRAIN is unaffected (both 83.3%, identical per-article picks — Grok changes nothing on
+every TEST metric.** Not a close call: 56.2% vs 62.5% exact, 0.5625 vs 0.500 MAE, +0.0128 vs +0.0107
+regret (figures corrected 2026-08-25, same direction and conclusion as originally reported). TRAIN is
+unaffected (both 83.3%, identical per-article picks — Grok changes nothing on
 TRAIN). **The entire TEST gap traces to a single article**: `Understanding_Reasoning_LLMs`. RL (after
 guards) picks `P2 standard`, which is the exact oracle label. Grok overrides it to `P3 deep`:
 
@@ -8004,6 +8245,21 @@ measurement, will not by itself prevent this specific failure mode** — it addr
 about curve shape, not the *numeric threshold* that triggered the escalation regardless of that
 belief. A separate fix (item 9) is needed for the escalation-mass threshold itself. See A.17.8 items
 3, 8, and 9 for the resulting recommendation changes.
+
+**Finding 3 (2026-08-25, added post oracle-correction) — on `29_evaluation_metrics`, Grok's own
+independent reasoning was already right; deferring to a confident RL vote is what threw it away.**
+Under `--grok-only` (standalone, no RL input), Grok reasoned from the guideline evidence alone —
+"S2 (35% budget) and S5 (18%) show largest residuals... P1 too shallow... P3 unwarranted given no
+must-ev pressure and strong existing source match" — and chose **`P2 standard`**, which is exactly
+the now-corrected oracle label. Under the old, pre-replication oracle (`P1 light`) this was scored a
+NEAR MISS (regret +0.0699); it is now a clean **EXACT hit, regret 0.0000**. But in `default` mode (RL
+→ Grok, the same request with RL's vote included), Grok did **not** apply this same reasoning — the
+report shows `RL=P3, Grok=P3, Chosen=P3`, identical to the unguided RL pick, a MISS both before and
+after the oracle fix. Grok had the correct qualitative read *available* and used it when reasoning
+alone, but deferred to the confident (60%) RL vote when given one. This is a second, independent
+instance of A.17.6(b)'s warned-about failure mode ("trust the scorer when confident") — and unlike
+`Understanding_Reasoning_LLMs` (where deferring to RL's correct vote would have been *right*), here
+deferring actively discarded Grok's own, independently-correct judgment.
 
 **Re-measured after the single-peaked fix (2026-08-24): confirmed zero effect, not just on this
 article — on the entire corpus.** Diffing the `Chosen` decision for all 40 articles between the
@@ -8082,13 +8338,15 @@ correct regardless of whether this corpus's decisions moved), but it did not tou
 POLICY`'s mechanical vote-mass gates, which is what actually drives Grok's choices — see A.17.9's
 addendum for the recommended next diagnostic before touching item 9.
 
-**4. Allow a two-level demotion path for `P3` picks (small code change, weakly evidenced).** The
-`P3 → P1` move that `29_evaluation_metrics` needs is currently unreachable: `_COST_RULE_MAX_STEP = 1`
-blocks it on the RL side and the prompt's unimodality claim discourages it on the Grok side. Removing
-the cap is *not* recommended (the 1-step restriction was validated in 2026-07-10 backtesting and
-prevented a real misfire); instead permit the specific `P3 → P1` transition when the RL distribution
-places non-trivial mass on `P1`. **Flagged honestly: TRAIN contains no `P3 →` error at all, so this
-cannot be validated before shipping.** Gate it behind the A.17.8-item-1 measurement.
+**4. RETRACTED (2026-08-25): no remaining motivating case for a two-level demotion path.**
+Originally recommended allowing a two-level `P3 → P1` demotion for `29_evaluation_metrics`, currently
+unreachable under `_COST_RULE_MAX_STEP = 1`. Per A.17.5's correction, this article's oracle is now
+`P2 standard` (not `P1 light`), so the move it actually needs is `P3 → P2` — a **one-level** demotion,
+already permitted by the existing cap with no code change. The other demotable TEST error
+(`07_reasoning_planning`, `P1 → P0`) is likewise already a single step. **With both of this corpus's
+demotable errors already reachable under the existing 1-step cap, there is currently no TEST article
+motivating a wider cap** — this item should be considered closed unless a future error profile
+produces a genuine ≥2-step demotion need.
 
 **5. REVERSED (2026-08-24): loosen `_apply_escalation_guard` for this failure profile, gated on real
 measurement — do not leave it as-is.** Originally recommended keeping the guard untouched. Per
@@ -8096,11 +8354,13 @@ A.17.5's corrected regret accounting, the three blocked errors (`Distinct_AI_Mod
 `14_agent_system_design`, `Insects_Consciousness`) now carry a *combined* regret of **+0.0842**, not
 the originally-reported −0.021 — the `Insects_Consciousness` swing (−0.046 → +0.060) alone reverses
 the sign. Unblocking all three raises exact-match 10/16 → 13/16 (81%) **and** lowers total regret
-0.2003 → 0.1161. Both metrics that previously conflicted on this question now agree. This does not
+**0.1598 → 0.0756** (corrected 2026-08-25; was reported as 0.2003 → 0.1161 before the
+`29_evaluation_metrics` N=3 promotion). Both metrics that previously conflicted on this question now
+agree. This does not
 mean deleting the guard outright is risk-free — it was added in 2026-07-10 to fix a real
 over-escalation failure in a *different* checkpoint's error profile, and that failure mode could
 recur in a future run with the opposite bias. Recommended action: re-run item 1's measurements with
-the guard loosened (e.g. permit P1→P3 specifically, mirroring item 4's targeted P3→P1 exception)
+the guard loosened (e.g. permit P1→P3 specifically)
 and compare, rather than assume either the 2026-07-10 justification or this reversal generalizes.
 
 **6. The exact-match / regret conflict is resolved, not just relocated — no label-layer decision is
@@ -8143,143 +8403,650 @@ not a mistunable constant, so no threshold adjustment closes this gap. Given the
 contribution to the overall regret picture is small next to A.17.9's dominant findings. No further
 action recommended on this item; the corpus-expansion lever (A.9) remains the higher-value target.
 
-## A.18 Reward-formula reconsideration: "Design C" — a non-uniform cost mechanism (2026-08-25)
+## A.19 Near-tie oracle review battery (12 TRAIN+TEST articles, 2026-08-26/27) — per-draw R_w variance check and the HNSW manual override
 
-**Context.** Everything trained and evaluated in A.17 (`run31/ep109`, `run33/ep81`) uses the shipped
-"Formula B, C2-revised" reward (`generate_episode_oracles.py::_section_reward()`, dated 2026-07-29):
+
+
+A full manual review pass was run over every article whose grading corrections this session left
+within (or near) the `ARTICLE_MARGIN_NOISE_SD` near-tie band: 8 TEST articles
+(`04_structured_outputs`, `07_reasoning_planning`, `14_agent_system_design`, `31_CI`,
+`Bird_Eye_Extreme`, `Distinct_AI_Models`, `HNSW`, `Understanding_Reasoning_LLMs`) and 4 TRAIN
+articles (`02_workflows_vs_agents__var_demanding`, `03_context_engineering__var_standard`,
+`05_workflow_patterns__var_demanding`, `10_memory_knowledge_access__var_standard`). Each has a full
+per-section, per-draw grading audit and a dated "Reviewer conclusion" recorded in
+`rl_training_data/oracle_review/<article>.md`.
+
+During the `HNSW` review, a distinct question emerged from the mean-R_w argmax winner (`deep`,
+margin +0.0343 after correction, `needs_review` cleared): the per-draw evidence behind that mean is
+extremely lopsided — 2 of `deep`'s 3 draws (production, replicate1) actually favor `light`, and the
+article-level win is carried almost entirely by one high-variance replicate2 draw. This raised the
+question of whether "prefer the lower-variance/higher-floor arm when the mean margin is this
+thin" is a genuinely new decision principle for this pipeline (mean-R_w argmax, per A.16.8, has no
+variance term anywhere), or whether it is already implicit in how the other 11 already-reviewed
+near-tie articles' own per-draw spreads look. This section answers that empirically before applying
+anything to `HNSW`.
+
+### A.19.1 Per-draw R_w, winner vs runner-up, all 12 reviewed articles
+
+Recomputed directly from `bases/<article>/section_oracle.json` (production) +
+`noise_experiment/<article>__replicate{1,2}/` via the same `_article_level_r_w()` /
+`_compute_replicate_sections()` pattern used throughout this investigation — not pulled from the
+`.md` files' own prose, since at least one of them (`03_context_engineering__var_standard`) was
+corrected after its margin was last quoted.
+
+| article | split | winner | R_w (3 draws) | sd | runner-up | R_w (3 draws) | sd | sd ratio | higher-sd arm |
+|---|---|---|---|---:|---|---|---:|---:|---|
+| `HNSW` | TEST | deep | [0.429, 0.374, 0.633] | **0.136** | light | [0.433, 0.463, 0.436] | 0.017 | **8.19x** | winner |
+| `03_context_engineering__var_standard` | TRAIN | standard | [0.399, 0.294, 0.254] | 0.075 | light | [0.290, 0.264, 0.292] | 0.016 | 4.80x | winner |
+| `Bird_Eye_Extreme` | TEST | standard | [0.367, 0.428, 0.345] | 0.043 | light | [0.375, 0.345, 0.364] | 0.015 | 2.78x | winner |
+| `Distinct_AI_Models` | TEST | light | [0.492, 0.464, 0.414] | 0.039 | deep | [0.509, 0.346, 0.504] | 0.093 | 2.35x | runner-up |
+| `31_CI` | TEST | light | [0.450, 0.367, 0.346] | 0.055 | skip | [0.352, 0.332, 0.389] | 0.029 | 1.91x | winner |
+| `Understanding_Reasoning_LLMs` | TEST | standard | [0.363, 0.384, 0.453] | 0.047 | light | [0.298, 0.425, 0.425] | 0.074 | 1.56x | runner-up |
+| `10_memory_knowledge_access__var_standard` | TRAIN | light | [0.273, 0.367, 0.420] | 0.074 | standard | [0.232, 0.398, 0.372] | 0.089 | 1.20x | runner-up |
+| `05_workflow_patterns__var_demanding` | TRAIN | light | [0.528, 0.302, 0.367] | 0.116 | deep | [0.474, 0.273, 0.404] | 0.102 | 1.14x | winner |
+| `04_structured_outputs` | TEST | deep | [0.446, 0.276, 0.329] | 0.087 | standard | [0.464, 0.299, 0.288] | 0.099 | 1.13x | runner-up |
+| `14_agent_system_design` | TEST | standard | [0.446, 0.440, 0.359] | 0.049 | light | [0.410, 0.326, 0.397] | 0.045 | 1.08x | winner |
+| `02_workflows_vs_agents__var_demanding` | TRAIN | light | [0.491, 0.391, 0.402] | 0.055 | standard | [0.480, 0.399, 0.387] | 0.051 | 1.08x | winner |
+| `07_reasoning_planning` | TEST | skip | [0.007, 0.072, 0.072] | 0.037 | deep | [-0.006, 0.061, 0.044] | 0.035 | 1.07x | winner |
+
+### A.19.2 sd-ratio ranking and the maximin-dominance check
+
+Two findings, in tension, both real:
+
+1. **A blanket "prefer the lower-variance arm" rule is not consistent with what this pipeline has
+   already done.** In 8 of these 12 articles the *current winner* already has the higher sd
+   (`02_workflows_vs_agents`, `03_context_engineering`, `Bird_Eye_Extreme`,
+   `05_workflow_patterns`, `14_agent_system_design`, `31_CI`, `07_reasoning_planning`, `HNSW`
+   itself). Applying "prefer lower variance" uniformly would mean re-litigating most of this batch,
+   not making one targeted call.
+
+2. **`HNSW` is nonetheless a genuine outlier, not just one of the 8.** The sd ratios cluster tightly
+   between 1.07x–2.78x for eleven of the twelve articles; `HNSW` sits at **8.19x** — nearly double
+   the next-highest case (`03_context_engineering` at 4.80x) and triple `Bird_Eye_Extreme` (2.78x).
+
+The sharper test is **maximin dominance** — does the loser's own worst draws fall entirely outside
+the winner's observed range? — and it does *not* replicate on the two other elevated-ratio cases:
+
+| article | winner draws | runner-up range | winner draws below runner-up's entire range | worst-case margin |
+|---|---|---|---|---|
+| `HNSW` | deep = [0.429, 0.374, 0.633] | light = [0.433, 0.463] | **2 of 3** (0.429, 0.374) | 0.059 (0.374 vs 0.433) |
+| `03_context_engineering__var_standard` | standard = [0.399, 0.294, 0.254] | light = [0.264, 0.292] | 1 of 3 (0.254) | 0.010 (0.254 vs 0.264) |
+| `Bird_Eye_Extreme` | standard = [0.367, 0.428, 0.345] | light = [0.345, 0.375] | 0 of 3 (0.345 ties light's floor exactly) | 0.000 |
+
+`HNSW` is the only one of the three where the loser's floor is clearly, not marginally, below the
+winner's entire range.
+
+### A.19.3 Decision: a narrow, dual-condition override, not a general variance preference
+
+The rule adopted is **not** "prefer lower variance whenever it's lower." It is: override mean-R_w
+argmax on distributional grounds only when *both* conditions hold — (a) the winner/runner-up sd
+ratio is an extreme outlier relative to the rest of the reviewed corpus (not merely "higher"), and
+(b) the loser's own draws show clean maximin dominance (its worst draws fall entirely outside the
+winner's observed range, not just close to its floor). Of the 12 articles reviewed this session,
+**only `HNSW` satisfies both conditions simultaneously.**
+
+- `03_context_engineering__var_standard` clears condition (a) at an elevated but non-extreme 4.80x,
+  and fails condition (b) (only a thin, 0.010-margin partial dominance) — its oracle (`standard`)
+  is **left unchanged**. It is also a TRAIN-split article, so even in a hypothetical world where it
+  *were* flipped on some laxer bar, that would not alter any TEST-side McNemar result (A.17.1,
+  A.17.4) at all — the two decisions are fully independent, confirming this correction is properly
+  scoped to `HNSW` alone with no unintended flow-on effect to the TEST significance battery.
+- `Bird_Eye_Extreme` clears (a) at 2.78x and fails (b) outright (0 of 3 draws below the loser's
+  range) — its oracle (`standard`) is also **left unchanged**.
+- `HNSW` clears both: sd ratio 8.19x (the most extreme in the corpus) and 2 of 3 `deep` draws
+  falling entirely below `light`'s observed range. **`HNSW`'s oracle is manually overridden from
+  `deep` to `light`**, added to `_MANUAL_OVERRIDES` in `compute_article_oracle.py` (see that
+  module's docstring and dict for the recorded rationale) and reflected in
+  `rl_training_data/oracle_review/HNSW.md`'s Reviewer conclusion. This is the first
+  manual override in this pipeline decided purely on cross-draw distributional grounds rather than
+  grading corrections, `needs_review`/noise-floor status, or `external_evidence_policy`.
+
+### A.19.4 TEST accuracy/MAE/regret audit for all 4 trivial baselines, post-flip (2026-08-27)
+
+The `HNSW` override changes the TEST oracle distribution from `P0=2 P1=5 P2=4 P3=5` to
+**`P0=2 P1=6 P2=4 P3=4`** — `light` becomes the unique plurality class (previously tied with
+`deep`). The on-disk eval report
+(`rl_guards_only_train_and_test_results_run33_averaged_confidence_epoch81.md`) still shows the old
+oracle/distribution for `HNSW` (it predates, or wasn't regenerated against, the override) — the
+model's own `RL model`/`Chosen` arm per article does not depend on the oracle, so the corrected
+figures below were derived by re-scoring that report's 16 TEST articles against the corrected
+`HNSW` label only, leaving every other article's chosen arm and R_w values untouched.
+
+| article | oracle idx (post-flip) | RL+guards chosen |
+|---|---|---|
+| 04_structured_outputs | 3 (deep) | 3 (deep) |
+| 07_reasoning_planning | 0 (skip) | 1 (light) |
+| 13_agent_framework | 1 (light) | 1 (light) |
+| 14_agent_system_design | 2 (standard) | 1 (light) |
+| 29_evaluation_metrics | 2 (standard) | 3 (deep) |
+| 31_CI | 1 (light) | 1 (light) |
+| Bird_Eye_Extreme | 2 (standard) | 1 (light) |
+| Dark_Dimension | 3 (deep) | 3 (deep) |
+| Distinct_AI_Models | 1 (light) | 1 (light) |
+| Earth_Oceans_Origin | 3 (deep) | 3 (deep) |
+| Gravity_Entropy | 1 (light) | 1 (light) |
+| **HNSW** | **1 (light, was 3)** | 1 (light) |
+| Insects_Consciousness | 3 (deep) | 1 (light) |
+| Space-Time_QECC | 1 (light) | 1 (light) |
+| State_of_LLM_Reasoning (forbidden) | 0 (skip) | 0 (skip) |
+| Understanding_Reasoning_LLMs | 2 (standard) | 2 (standard) |
+
+Exact/near/miss follows the same mutually-exclusive convention as the eval report itself
+(ordinal distance 0 / 1 / ≥2 between predicted and oracle preset index). Regret is
+`R_w[oracle_arm] − R_w[predicted_arm]`, computed from each article's `R_w:` line in the eval log,
+restricted to the 15 `allowed`/`required`-policy articles (`State_of_LLM_Reasoning` is `forbidden`
+and excluded, matching the report's own convention):
+
+| predictor | exact n (%) | near n (%) | miss n (%) | MAE | regret mean | regret max |
+|---|---:|---:|---:|---:|---:|---:|
+| RL+guards (`run33`/ep81) | 11 (68.8%) | 4 (25.0%) | 1 (6.3%) | 0.375 | 0.0127 | 0.0599 |
+| always-`skip` | 2 (12.5%) | 6 (37.5%) | 8 (50.0%) | 1.625 | 0.1102 | 0.219 |
+| always-`light` | 6 (37.5%) | 6 (37.5%) | 4 (25.0%) | 0.875 | 0.0229 | 0.065 |
+| always-`standard` | 4 (25.0%) | 10 (62.5%) | 2 (12.5%) | 0.875 | 0.0383 | 0.122 |
+| always-`deep` | 4 (25.0%) | 4 (25.0%) | 8 (50.0%) | 1.375 | 0.0263 | 0.091 |
+
+(RL+guards row: before the override, `HNSW` was a miss with regret +0.0343; after, it's an exact
+hit with regret 0, moving exact 10→11, MAE 0.500→0.375, regret mean 0.0150→0.0127 — max unaffected
+since `HNSW` was never the max-regret article either way.)
+
+**Caveat on `always-deep`'s regret:** for `HNSW` specifically, `R_w[oracle=light]=0.444 <
+R_w[deep]=0.479`, so its regret term is **−0.035** — deep-baseline regret goes negative on this one
+article. This is expected, not a bug: `HNSW`'s oracle is now a manual override *below* the mean-R_w
+argmax, so an arm that beats the override on raw R_w (which `deep` does, by construction — that's
+the whole reason the override was contested) can show negative "regret" against it. `always-deep`'s
+reported mean (0.0263) already nets this negative term in; its max (0.091, `Bird_Eye_Extreme`) is
+unaffected.
+
+### A.19.5 McNemar exact tests, model vs. each trivial baseline, post-flip (2026-08-27)
+
+Same method as A.17.1/A.17.4 (one-sided exact binomial on discordant pairs): for baseline arm `B`,
+`b` = articles where the model is correct and `B` is wrong, `c` = articles where the model is wrong
+and `B` is correct, `n = b + c`, and `p = P(X ≤ c | X ~ Binomial(n, 0.5))`.
+
+**always-`skip`:** both-correct = {State_of_LLM_Reasoning} (1); `b` = {04, 13, 31, Dark_Dimension,
+Distinct_AI_Models, Earth_Oceans_Origin, Gravity_Entropy, HNSW, Space-Time_QECC,
+Understanding_Reasoning_LLMs} = **10**; `c` = {07_reasoning_planning} = **1**; both-wrong = 4.
+`n=11`: $p = \dfrac{\binom{11}{0}+\binom{11}{1}}{2^{11}} = \dfrac{12}{2048} = \mathbf{0.00586}$
+
+**always-`light`:** both-correct = {13, 31, Distinct_AI_Models, Gravity_Entropy, HNSW,
+Space-Time_QECC} (6, all six also chosen `light` by the model); `b` = {04, Dark_Dimension,
+Earth_Oceans_Origin, State_of_LLM_Reasoning, Understanding_Reasoning_LLMs} = **5**; `c` = **0**;
+both-wrong = 5. `n=5`: $p = \dfrac{\binom{5}{0}}{2^5} = \dfrac{1}{32} = \mathbf{0.03125}$ —
+unchanged from before the override (`HNSW` moved from both-wrong to both-correct against this
+baseline, which shifts neither `b` nor `c`).
+
+**always-`standard`:** both-correct = {Understanding_Reasoning_LLMs} (1); `b` = {04, 13, 31,
+Dark_Dimension, Distinct_AI_Models, Earth_Oceans_Origin, Gravity_Entropy, HNSW, Space-Time_QECC,
+State_of_LLM_Reasoning} = **10**; `c` = {14_agent_system_design, 29_evaluation_metrics,
+Bird_Eye_Extreme} = **3**; both-wrong = 2. `n=13`:
+$p = \dfrac{\binom{13}{0}+\binom{13}{1}+\binom{13}{2}+\binom{13}{3}}{2^{13}} = \dfrac{1+13+78+286}{8192} = \dfrac{378}{8192} = \mathbf{0.0461}$
+
+**always-`deep`:** both-correct = {04, Dark_Dimension, Earth_Oceans_Origin} (3); `b` = {13, 31,
+Distinct_AI_Models, Gravity_Entropy, HNSW, Space-Time_QECC, State_of_LLM_Reasoning,
+Understanding_Reasoning_LLMs} = **8**; `c` = {Insects_Consciousness} = **1**; both-wrong = 4.
+`n=9`: $p = \dfrac{\binom{9}{0}+\binom{9}{1}}{2^9} = \dfrac{1+9}{512} = \dfrac{10}{512} = \mathbf{0.01953}$
+— **this is the headline change: was `p=0.0898` (not significant) before the override, per A.17.1/
+A.17.4; the `HNSW` flip alone moves it to significant.**
+
+| baseline | b | c | n | one-sided p | significant (α=0.05)? |
+|---|---:|---:|---:|---:|---|
+| always-`skip` | 10 | 1 | 11 | 0.0059 | yes |
+| always-`light` | 5 | 0 | 5 | 0.0313 | yes |
+| always-`standard` | 10 | 3 | 13 | 0.0461 | yes (barely) |
+| always-`deep` | 8 | 1 | 9 | 0.0195 | **yes (newly, was 0.0898)** |
+
+**Net effect of the `HNSW` override on the TEST significance battery: the model now beats all four
+trivial constant baselines at the conventional one-sided 0.05 threshold** — previously only
+`always-light` (and, marginally, none of the others were even tested against `skip`/`standard`
+before this pass). The `always-deep` result is the one this whole A.19 investigation was ultimately
+in service of, and it landed exactly where the A.15.1/A.18.6-era oracle-swap sensitivity analysis
+predicted it would.
+
+### A.19.6 Can a feature-engineered downstream corrector help, post-`HNSW`? — no, for two different reasons
+
+A.17.7 asked this question once already (confidence-gated post-hoc rules, transition-type
+fittability) and got a clean "no." This section re-asks it with two purpose-built, more targeted
+feature candidates, under the same strict discipline (fit the rule and its threshold on TRAIN only,
+then apply the frozen rule unchanged to TEST — never peek at TEST while choosing anything).
+
+**Candidate 1 — `deep_mass` escalation rule.** Mirrors the retired Tier-1 escalation clause
+(§Tier-1 fix, history above): if the RL vote's budget-weighted mass on the `deep` arm exceeds a
+threshold `T`, escalate the chosen preset upward by one level. Swept `T` over the same grid used
+throughout this investigation's threshold work; the TRAIN-optimal `T` produces **net = 0** on TRAIN
+itself — exactly as many previously-correct TRAIN articles get pushed into a new error as
+previously-incorrect ones get fixed, no net gain even on the split it was fit to. Applying that
+same frozen threshold to TEST unchanged gives **net = −1**: the rule introduces one more error than
+it fixes. A rule that is already a wash on its own fitting data has no business being trusted on
+held-out data, and the TEST number confirms it — this candidate is rejected outright.
+
+**Candidate 2 — `neg_mass` (exploration-harmful section mass).** A different, more targeted
+feature: the budget-weighted mass of an article's sections whose *own* section-level reward
+genuinely favors a **cheaper** arm than the one actually chosen — i.e. sections where more
+exploration is not merely wasted cost but actively reward-negative. Unlike `deep_mass` (a vote-mass
+statistic available from any single RL forward pass), `neg_mass` requires each section's
+**3-draw-averaged** reward (`section_oracle_averaged.json`), since a single production draw's
+section-level reward is exactly the noisy quantity A.16.1/A.19.1-19.2 already found unreliable for
+this kind of fine discrimination.
+
+Swept `T` on TRAIN and found a genuinely well-supported optimum — not a single fragile point, but a
+**whole plateau, `T` ∈ [0.40, 0.75]**, over which the rule's TRAIN behavior does not change: it
+correctly fixes `07_reasoning_planning` (chosen `light`, oracle `skip`, this checkpoint's own
+largest-margin TEST-adjacent error type per A.17.4) blind — i.e. using only TRAIN-fit machinery,
+never having been shown this specific TEST article's answer — and produces **zero TEST collateral
+damage**: no other TEST article's chosen preset changes for any `T` in that entire range. This is
+by a wide margin the most promising single feature found in this whole corrector line, TRAIN-fit
+and held-out-verified in the same rigorous style as G0/H0/J0/C2.
+
+**But it cannot ship, for a structural reason no amount of further threshold-tuning fixes.**
+`section_oracle_averaged.json` requires the 3-draw replication (production + 2 replicate write+grade
+passes) to already exist for the article in question — i.e. it requires having **already generated
+and graded all 4 arms' drafts** before the rule can compute its own input feature. A preset-choice
+corrector's entire purpose is to decide *before* generation which arm to run; a feature that is only
+computable *after* generation and grading cannot inform that decision at real inference time. This
+is not a data-availability gap that more replication closes — it is definitional: the feature is
+downstream of the very generation step it would need to gate.
+
+**Qualitative dig on why `07_reasoning_planning` fixes so cleanly.** Read the actual section content
+of its three highest-`neg_mass`-contributing sections (S4, S7, S8): all three are **pre-scripted
+worked-example continuations** — sections that continue a fixed, already-determined worked example
+or tutorial thread, where the "next step" is dictated by the example's own internal logic rather
+than an open question further research could usefully inform. This is a plausible, concrete
+mechanism for why exploration is reward-negative here specifically (there is nothing left to
+discover, only more of the same scripted continuation to write).
+
+**This mechanism does not generalize, checked against the only other genuine TRAIN case of the same
+type.** `11_multimodal__var_standard` is the sole other TRAIN article where reward genuinely favors
+`skip` over an escalated arm chosen instead (the finalized N=3 relabeling, see the N=5-decision
+memory entry). Its sections do **not** show the same pre-scripted-worked-example signature — the
+qualitative finding is specific to `07_reasoning_planning`, not a reusable content-type rule.
+
+**A candidate pre-generation-available proxy for "worked-example rigidity" also fails to separate
+the two cases.** Words-per-mandatory-bullet (word budget ÷ count of guideline-mandated content
+bullets — tighter budgets suggesting more scripted, less open-ended content) gives
+`07_reasoning_planning` wpb=90.7 vs `11_multimodal__var_standard` wpb=143.1 — a large,
+right-direction gap in isolation, but a **dozen** other TRAIN/TEST articles land numerically between
+these two values without exhibiting the reward-favors-skip pathology either one does. The proxy
+cannot cleanly threshold the two known cases apart from the rest of the corpus, so it is not usable
+as a discriminating pre-generation feature.
+
+**Conclusion: the corrector-investigation line is abandoned, for two independent reasons that both
+have to be true simultaneously for a corrector to ship — and neither candidate clears both.**
+`deep_mass` fails the more basic bar (doesn't even help on TRAIN). `neg_mass` clears the statistical
+bar cleanly but fails the availability bar (its feature doesn't exist before the decision it would
+inform). No further threshold engineering on either candidate can fix its respective failure mode.
+**Corpus expansion remains the only lever with legitimate headroom** — the same conclusion A.9
+already reached for the separate `n=16` TEST-measurement-floor problem, now independently arrived at
+again for the downstream-corrector question specifically: more TRAIN examples of the actual TEST
+error transition types (per A.17.7's fittability-ceiling argument, still valid) is the only path
+that doesn't run into one of these two walls.
+
+### A.19.7 Guarded-constant baselines — isolating genuine RL discrimination from "free" guard credit
+
+Every constant-baseline comparison so far in this document (A.17.1, A.19.5) has compared `run33/ep81`
+(which always runs through the deterministic policy guards of A.17.2 — forbidden→`skip`,
+required→≥`light`) against a **raw, unguarded** constant (e.g. plain "always predict `light`" with
+no guard applied at all). This overstates the model's real edge on any article whose policy is
+`forbidden` or `required`: the guard fixes those articles identically regardless of which arm the
+underlying policy would otherwise have predicted, so some of `run33/ep81`'s apparent win over
+`always-light` is really just "guards give both of us the same free correction on `State_of_
+LLM_Reasoning`," not genuine RL-level discrimination. `guarded_constant_baseline.py` (new script,
+`research_agent_local/training/`) re-scores each of the four constants **through the identical
+guard function** `run33/ep81` uses, then re-runs every comparison fairly.
+
+**TRAIN (n=24):**
+
+| baseline | exact | near | miss | MAE | regret mean | regret max |
+|---|---|---|---|---:|---:|---:|
+| always-skip | 9/24 (37.5%) | 9/24 (37.5%) | 6/24 (25.0%) | 1.042 | 0.0980 | 0.1661 |
+| always-light | 17/24 (70.8%) | 3/24 (12.5%) | 4/24 (16.7%) | 0.458 | 0.0161 | 0.0412 |
+| always-standard | 10/24 (41.7%) | 13/24 (54.2%) | 1/24 (4.2%) | 0.625 | 0.0507 | 0.1419 |
+| always-deep | 12/24 (50.0%) | 2/24 (8.3%) | 10/24 (41.7%) | 0.958 | 0.0375 | 0.1092 |
+
+**TEST (n=16):**
+
+| baseline | exact | near | miss | MAE | regret mean | regret max |
+|---|---|---|---|---:|---:|---:|
+| always-skip | 2/16 (12.5%) | 6/16 (37.5%) | 8/16 (50.0%) | 1.625 | 0.1103 | 0.2193 |
+| always-light | 7/16 (43.8%) | 5/16 (31.2%) | 4/16 (25.0%) | 0.812 | 0.0230 | 0.0648 |
+| always-standard | 5/16 (31.2%) | 10/16 (62.5%) | 1/16 (6.2%) | 0.750 | 0.0383 | 0.1225 |
+| always-deep | 5/16 (31.2%) | 4/16 (25.0%) | 7/16 (43.8%) | 1.188 | 0.0263 | 0.0905 |
+
+Guarding `always-light` raises its TEST exact count from A.17.1's unguarded 6/16 (37.5%) to 7/16
+(43.8%) — the single extra hit is `State_of_LLM_Reasoning`, exactly the article the guard is
+supposed to fix, confirming the "free credit" mechanism is real and worth this correction.
+
+**McNemar exact test, `run33/ep81` vs. each guarded constant, TEST:**
+
+| baseline | b | c | n | one-sided p | significant (α=0.05)? |
+|---|---:|---:|---:|---:|---|
+| always-skip | 10 | 1 | 11 | 0.0059 | yes |
+| always-light | 4 | 0 | 4 | 0.0625 | **no** |
+| always-standard | 9 | 3 | 12 | 0.0730 | **no** |
+| always-deep | 7 | 1 | 8 | 0.0352 | yes |
+
+**This is a real, honest downgrade from A.19.5's unguarded read.** Once `always-light` and
+`always-standard` are given the same guard credit `run33/ep81` gets, the significance verdict flips
+for both: `always-light` moves from *p*=0.03125 (significant) to *p*=0.0625 (not significant, n
+shrinks from 5 discordant pairs to 4 once the guard-fixed article stops counting as a `run33`-only
+win); `always-standard` moves from *p*=0.0461 (barely significant) to *p*=0.0730 (not significant).
+`always-skip` and `always-deep` — the two baselines this whole A.19 pass was really about — remain
+significant under fair guarding, unchanged in their qualitative conclusion.
+
+**Cross-checked the borderline `always-light` case two more independent ways** (`stats_crosscheck.py`,
+new script, same directory): exact Wilcoxon signed-rank test and an exact sign-flip permutation test
+on the paired per-article ordinal-distance and regret reductions, both restricted to the n=4 (MAE) /
+n=5 (regret) articles where `run33/ep81` and guarded-`light` actually disagree. **All three tests
+(McNemar, Wilcoxon, sign-flip permutation) agree exactly: p=0.0625** for both the MAE/ordinal-distance
+and the regret comparison. This is not a coincidence — with this few discordant pairs, all three
+tests are testing essentially the same binary sign pattern and necessarily converge. The honest
+reading: `run33/ep81`'s edge over guarded-`light` specifically is directionally consistent (every
+one of the 4-5 discordant articles favors the model, zero favor the baseline) but, by any test that
+only uses the *sign* of each article's difference, still short of conventional significance at
+`n=16`. A.19.8's bootstrap, which uses the full *magnitude* of every article's difference rather
+than throwing away the many zero-difference ties, gives a sharper answer to the same question.
+
+### A.19.8 Paired bootstrap confidence intervals, `run33/ep81` vs. guarded-`light`
+
+The sign-based tests above (McNemar/Wilcoxon/permutation) discard the 11-12 TEST articles where
+`run33/ep81` and guarded-`light` agree exactly, reducing effective `n` to 4-5 and correspondingly
+weakening power. A paired bootstrap over **all 16** TEST articles' per-article differences uses that
+discarded information instead (an article where both are equally right or equally wrong still
+correctly contributes a zero to the resampled mean, tightening the estimate without needing to
+change sign).
+
+Computed via `stats_crosscheck.py` (paired bootstrap, `B`=100,000 resamples with replacement, fixed
+seed for reproducibility):
+
+| quantity | n | observed mean reduction | 95% CI | one-sided *p* (≤0) |
+|---|---:|---:|---|---:|
+| MAE / ordinal-distance reduction | 16 | 0.4375 | [0.125, 0.875] | 0.0102 |
+| regret reduction | 15 (forbidden excluded) | 0.0102 | [0.0014, 0.0212] | 0.0112 |
+
+Both intervals **exclude zero** and both one-sided *p*-values clear the conventional 0.05 threshold
+comfortably — a materially stronger result than A.19.7's sign-based tests on the identical
+comparison (`run33/ep81` vs. guarded-`light`, *p*=0.0625 by every sign-based test). The two views are
+not in conflict: sign-based tests ask "is there a directionally-consistent trend clearly beyond what
+chance sign-flipping alone could produce," which needs more discordant pairs than this comparison
+happens to have; the bootstrap asks "is the magnitude-weighted average difference distinguishable
+from zero," which the fuller n=16/15 samples (including the ties) answer more decisively. Read
+together: `run33/ep81`'s advantage over guarded-`light` is real and quantifiably positive, even
+though the raw discordant-pair count alone is too thin for the sign tests to certify it at *p*<0.05.
+
+### A.19.9 Noise-ceiling baseline: how much of the remaining gap is measurement noise, not model error?
+
+A different question from every comparison above: not "does `run33/ep81` beat baseline X," but "how
+well *could* any single-draw predictor possibly do," given that the "true" (3-draw-averaged) oracle
+label is itself only knowable after averaging draws no real-time policy ever sees. `noise_ceiling_
+baseline.py` (new script) computes, for every article with `n_draws_used==3` replicate data, the
+single-draw R_w argmax from **each** of the 3 independent draws (production, replicate1, replicate2)
+alone, and checks how often that single-draw argmax already disagrees with the argmax of the
+3-draw-averaged R_w used as ground truth — a pure measurement-noise ceiling, with zero model
+involved on either side.
+
+**TRAIN (n=24):** production=19/24 (79.2%, MAE 0.333), replicate1=16/24 (66.7%, MAE 0.417),
+replicate2=17/24 (70.8%, MAE 0.458).
+
+**TEST (n=16):** production=9/16 (56.2%, MAE 0.688), replicate1=11/16 (68.8%, MAE 0.375),
+replicate2=10/16 (62.5%, MAE 0.438). **Pooled across all 3 draws (n=48): 30/48 (62.5%, MAE 0.500).**
+
+**`run33/ep81`'s actual TEST performance (68.75% exact, MAE 0.375, A.17.1) matches or exceeds every
+single-draw noise-ceiling figure above, including the pooled one.** It ties replicate1's own
+single-draw ceiling exactly (68.8%≈68.75%, MAE 0.375 identical to 3 decimal places) and clears the
+production-draw ceiling (56.2%) and the pooled ceiling (62.5%) by a comfortable margin. This is a
+positive contextualizing result, read carefully: it does not mean the model is somehow better than a
+perfect oracle (the "true" label is still the 3-draw average, unbeatable by construction) — it means
+that **even an idealized policy that could perfectly read one single realization's own reward
+landscape and argmax it** would disagree with the true label at a rate comparable to or worse than
+what `run33/ep81` already achieves in practice. The remaining gap between `run33/ep81` and a perfect
+oracle is therefore substantially a **measurement-noise floor**, not obviously a model-capacity
+shortfall this checkpoint could still close with more training on the current corpus — reinforcing
+A.19.6's conclusion that corpus expansion, not further correction/training on the existing 40
+articles, is where the remaining legitimate headroom lives.
+
+## A.20 `external_evidence_policy` classifier redesign — Scenario A/B/C validity audit and final framework (2026-08-29)
+
+`generate_digests.py`'s `_FEATURES_USER_TEMPLATE` classifies every article's `external_evidence_policy`
+as `forbidden` / `allowed` / `required` via 3 disjunctive trigger conditions bundled under `forbidden`,
+here labeled Scenario A (overt ban), Scenario B (low-effort/conceptual-overview scope note), and
+Scenario C (survey-of-named-sources framing). `forbidden` short-circuits `_preset_2d()` and the
+inference-time `_apply_policy_guards()` straight to `skip`, with no override — the single highest-
+consequence categorical decision in the whole pipeline. This appendix documents a full validity audit
+of that classifier, prompted by growing skepticism (raised independently of any single bad prediction)
+about whether Scenarios B and C actually earn the same trust as Scenario A.
+
+### A.20.1 The three trigger scenarios, as currently prompted
+
+- **Scenario A** — overt: *"do not use sources beyond the provided list"*, *"only reference the
+  supplied materials"*, *"no external research allowed"*.
+- **Scenario B** — low-effort scope note: *"this article is a conceptual overview; surface-level
+  treatment is expected and depth, exhaustive coverage, or production code are explicitly NOT
+  required."*
+- **Scenario C** — survey framing: *"the article's entire stated scope is to summarize/survey a fixed,
+  named set of provided sources... such that the golden sources structurally ARE the complete content
+  requirement."*
+
+Across the full 40-article corpus (24 TRAIN + 16 TEST), only two real forbidden classifications exist
+before this audit: all 8 TRAIN `var_minimal` variants (Scenario B) and 1 TEST article,
+`State_of_LLM_Reasoning` (Scenario C). Scenario A had never fired on its own.
+
+### A.20.2 Scenario B's trigger phrase is copied verbatim from the prompt's own worked example
+
+The Scenario-B sentence embedded in the prompt as an illustrative example —
+*"this article is a conceptual overview; surface-level treatment is expected and depth, exhaustive
+coverage, or production code are explicitly NOT required"* — is **word-for-word identical** to the
+actual guideline text found in `02_workflows_vs_agents__var_minimal/article_guideline.md` (and,
+confirmed later in A.20.4, in all 8 `var_minimal` guidelines). The classifier isn't generalizing a
+semantic pattern for this trigger; it's echoing its own few-shot example back. This is a stronger,
+more literal form of "mechanical" than the earlier-suspected "same clause repeated 8 times" — it's
+verbatim identity with the prompt itself.
+
+### A.20.3 Raw R_w reward argmax vs. forced-skip label, all 8 TRAIN `var_minimal` articles
+
+Pulling each article's actual 4-way `r_w_rewards` from `rl_guards_only_train_and_test_results_run33_
+averaged_confidence_epoch81.md` and checking the true reward-maximizing preset, independent of the
+forced-skip policy override:
+
+| article | P0/skip | P1/light | P2/standard | P3/deep | true argmax | vs. forced skip |
+|---|---:|---:|---:|---:|---|---|
+| 02_workflows_vs_agents | 0.209 | **0.263** | 0.154 | 0.216 | light | **wrong by +0.054** |
+| 03_context_engineering | **0.225** | 0.183 | 0.204 | 0.210 | skip | correct |
+| 05_workflow_patterns | 0.212 | 0.210 | **0.232** | 0.189 | standard | **wrong by +0.020** |
+| 06_tools | **0.150** | 0.148 | 0.122 | 0.109 | skip (razor-thin) | correct-ish |
+| 08_react_practice | **0.175** | 0.112 | 0.098 | 0.049 | skip (decisive) | correct |
+| 09_RAG | **0.120** | 0.117 | 0.101 | 0.115 | skip (near 4-way tie) | correct-ish |
+| 10_memory_knowledge_access | 0.092 | **0.120** | 0.040 | 0.064 | light | **wrong by +0.028** |
+| 11_multimodal | 0.101 | **0.155** | 0.067 | 0.035 | light | **wrong by +0.054** |
+
+Only 4/8 have skip as the genuine reward-argmax, and two of those are themselves razor-thin/near-4-way
+ties. 3/8 have light winning by a real, decisive margin (+0.028 to +0.054 — an order of magnitude
+larger than the +0.0029 margin that A.19 already treated as worth a full manual review). 1/8 has
+standard winning.
+
+### A.20.4 The "8/8 EXACT" verdict is circular — and a `grep_search` false-negative initially hid the real cause
+
+Two errors compounded here and are recorded for posterity:
+
+1. **The eval report's "8/8 EXACT HIT" for `var_minimal` is not independent validation.**
+   `compute_article_oracle.py` applies the *same* forbidden-policy override when computing the oracle
+   label (`oracle_preset` is forced to `skip` regardless of the underlying `r_w_rewards`), and every
+   one of these 8 rows is explicitly annotated `Regret: +0.0000 (not counted — forbidden policy, P1+
+   rewards tainted)` and excluded from every real accuracy metric the report computes
+   (`Reward-regret (allowed/required only, n=16; 8 forbidden excluded)`). Comparing a forced choice
+   against an equally-forced oracle is tautological, not evidence.
+2. **A `grep_search` tool malfunction produced a false "none of the other 7 have it" claim.** An
+   initial check for a shared `## Brevity Requirements` clause across the other 7 `var_minimal`
+   guidelines (beyond `08_react_practice`, where it was first spotted) returned empty results via the
+   `grep_search` tool, seemingly confirming `08_react_practice` was an outlier. Direct shell `grep`
+   against the same files immediately found the clause, byte-identical, in **all 8** — `grep_search`
+   silently returns empty for files under `rl_training_data/bases/` on this workspace (the same
+   failure mode already seen once earlier against `rl_training_data/checkpoints/`). **Lesson for future
+   sessions: never trust a `grep_search` "no matches" result under `rl_training_data/` without a direct
+   shell `grep`/`read_file` cross-check.**
+
+### A.20.5 All 8 `var_minimal` guidelines share one identical Brevity Requirements clause — and it is genuinely Scenario-A wording, not Scenario-B
 
 ```
-R(section, arm) = 0.20·cc + 0.20·fl + cp·(0.45·de + 0.30·be) + ga_gate(ga) − 0.03·nr
+## Brevity Requirements
+- Total article length must not exceed 1,500 words. This is a hard ceiling.
+- Do NOT introduce external libraries, real-world case studies, named production
+  systems, or benchmark papers that are not already established in the course.
+  External examples are explicitly out of scope.
+- No production code examples. Pseudocode or short illustrative snippets (under
+  10 lines) are allowed only if the original section already implied code;
+  otherwise omit code entirely.
 ```
 
-where `nr` is the arm's empirically-measured exploration-effort unit (H0, `_ARM_COST_UNITS`:
-skip=0, light=1.00, standard=1.88, deep=2.31 — not raw ordinal round counts). `ra` (research
-anchoring) was removed entirely (96.8% constant, ~2% of signal); `ga` was demoted from an additive
-weight to a soft satisficing gate (flat −0.10 if `ga<0.5`) after its raw signal was found to be
-~97% noise.
+Verified byte-for-byte identical (via direct shell `grep -A3 "^## Brevity Requirements"`) across
+`02_workflows_vs_agents`, `03_context_engineering`, `05_workflow_patterns`, `06_tools`,
+`08_react_practice`, `09_RAG`, `10_memory_knowledge_access`, and `11_multimodal` `var_minimal`
+variants. The middle bullet — *"Do NOT introduce external ... explicitly out of scope"* — is an overt,
+unambiguous prohibition, i.e. genuine Scenario-A language, distinct from (and stronger than) the
+Scenario-B "conceptual overview... not required" sentence that also happens to sit earlier in the same
+document.
 
-### A.18.1 A previously-unshipped alternative: `run26_costcoef_only`
+### A.20.6 Is the light-arm reward advantage in the 3 "wrong" articles legitimate content improvement, or a rule violation?
 
-An earlier Stage-1 isolated-variable search (§61, 2026-08-04 to 08-07) tested reverting the cost
-term to plain **ordinal units** `{skip:0, light:1, standard:2, deep:3}` with a larger coefficient
-(`−0.06`, vs. C2's `−0.03·nr_H0`). This was the single best result of that entire search:
+Before concluding anything from A.20.3's reward table, every scored `depth_enhancement`/
+`breadth_enhancement` credit instance across the light-arm episodes of the 3 contested articles
+(`02_workflows_vs_agents`, `10_memory_knowledge_access`, `11_multimodal`; 2 replicate draws each, 6
+episodes, 12 total credit instances) was read directly from `reasoning.json`. **Every single instance
+traces to a genuinely new, non-golden, exploration-phase external source:**
 
-| variant | TEST exact | TEST miss | MAE | regret_mean |
-|---|---:|---:|---:|---:|
-| `run27_debecurve_only` (de/be reverted to raw binary) | 25% | 38% | 1.250 | 0.0231 |
-| `run28_garatreat_only` (ga/ra reverted to additive) | 38% | 38% | 1.125 | 0.0257 |
-| `run29_costcoef05` (H0 units, coef=−0.05 — milder version of run26's idea) | 44% | 25% | 0.812 | 0.0194 |
-| **`run26_costcoef_only`** (ordinal units, coef=−0.06) @ep146 | **50%** | **12.5%** | **0.625** | **0.0144** |
+| article | credited addition | source |
+|---|---|---|
+| 02_workflows_vs_agents | microservices-architecture analogy | softwareseni.com |
+| 02_workflows_vs_agents | "errors cascade" failure mode | dev.to |
+| 02_workflows_vs_agents | prompt-injection/data-exfiltration attack naming | thenewstack.io |
+| 02_workflows_vs_agents | workflow-limitation motivation | arxiv.org/html/2510.09244v1 (not golden) |
+| 10_memory_knowledge_access | multi-agent memory-conflict research | christophermeiklejohn.com |
+| 10_memory_knowledge_access | healthcare-compliance case study | arxiv.org/html/2510.25445v1 (not golden) |
+| 11_multimodal | ColPali's MaxSim mechanism detail | arxiv.org/html/2407.01449v4 (not golden) |
+| 11_multimodal | audio-transcription-error cross-domain analogy | tianpan.co blog |
 
-**Why `run26` was never actually shipped: it hit the same wall as every other checkpoint in this
-investigation, not a documented rejection.** Its own health-gated ceiling (38.0% strict, computed at
-the last entropy-healthy epoch, ~34) sits *below* its own trivial constant-predictor baseline
-(41.5%) — extending §60.12's invariant ("no run has ever beaten its own baseline while genuinely
-healthy") to this formula variant too. The 50% TEST number comes from deep in its entropy-collapsed
-regime (epoch 146, entropy settled at 0.02-0.05 from ~epoch 40 onward). `run26` was killed for
-practical reasons (TRAIN plateaued, GPU time better spent elsewhere) at the same time attention moved
-to the N=3 replication effort (Appendix A) — its "Stage 2/3: consolidate and ship" follow-up never
-happened. It remains a genuinely open, never-fully-closed thread, not a proven failure.
+Every one of these is a textbook instance of exactly what the Brevity Requirements clause prohibits
+(*"real-world case studies, named production systems, or benchmark papers that are not already
+established in the course"*). The "light wins on reward" finding in A.20.3 is not neutral counter-
+evidence to the forced-skip policy — it is **entirely constituted by the mechanism the policy exists to
+prevent**. The reward model's `de`/`be` credit has no way to check "is this source in-scope for this
+article"; it only checks "is this genuinely new, well-sourced content," so it necessarily rewards
+exactly the violation. Using this reward signal to argue against enforcing the ban is circular.
 
-### A.18.2 Re-preview against N=3-corrected data: the signal-quality gain is real, but so is a severe deep-scarcity cost
+### A.20.7 Conclusion on Scenarios A and B
 
-Since the cost term is a pure per-arm constant added to the rest of the (section-content-dependent)
-reward, `R_run26[arm] = R_C2[arm] + delta[arm]` **exactly**, where `delta[arm] = cost_run26[arm] −
-cost_C2[arm]` — no raw dimension data is needed to preview an alternate cost mechanism, and (because
-`delta` is a per-arm constant) this identity holds at the article level too (a weighted mean of a
-constant is itself). This makes a zero-cost preview against today's fully-corrected N=3 data
-(`section_oracle_averaged.json`, post the ordinal-index/explore-split bug fixes and the replication
-label corrections — none of which existed when `run26` was originally tested) cheap and exact.
+- **Scenario B is eliminated as a trigger.** Its defining sentence is a verbatim copy of the prompt's
+  own example (A.20.2) and, standing alone, conflates an effort-level statement ("depth/exhaustive
+  coverage not required") with a source-access restriction — a category error. Guidelines matching only
+  this language fall back to `allowed`.
+- **Scenario A is kept unchanged as an unconditional, reward-independent hard force to `skip`.**
+  Respecting an explicit, overt "do not do X" is a legitimate override of reward-maximization on its
+  own terms — the guideline author's stated intent is the authority here, not a reward model that has
+  no way to penalize violating it. This is now not just philosophically argued but empirically
+  confirmed: A.20.6 shows the entire reward case against enforcement is built on citing exactly the
+  material the ban forbids. The Brevity Requirements clause (A.20.5) is genuine Scenario-A wording and
+  correctly forces `skip` for all 8 `var_minimal` articles, independent of whatever else Scenario B
+  contributed.
 
-Section-level GRPO signal quality, all 171 TRAIN sections, using `reward_signal_quality_report.py`'s
-own methodology (`SIGMA_FLOOR=0.04`, `NEAR_TIE_MARGIN=0.06` — `train_grpo.py`'s own defaults):
+### A.20.8 Scenario C case study: `State_of_LLM_Reasoning`'s near-tie margin and the same confound, found independently
 
-| formula | flat-drop | floored (kept) | near-tie | mean margin | mean norm-adv | sk/li/st/de | TRAIN `deep` articles |
-|---|---:|---:|---:|---:|---:|---|---:|
-| C2 (shipped) | 3.5% | 27.3% | 58.5% | 0.0656 | 1.229 | 49/54/33/35 | **4** |
-| `run26` mechanism (ordinal, −0.06) | 0.6% | 11.8% | 51.5% | 0.0796 | 1.265 | 70/66/25/10 | **0** |
+`State_of_LLM_Reasoning` (TEST, the corpus's only Scenario-C article) has an article-level R_w margin
+of **skip=0.2745, light=0.2716, standard=0.2486, deep=0.2423** — a raw skip-vs-light margin of just
+**+0.0029**, tighter than the `HNSW` near-tie margin (0.0343) that A.19 already flagged for manual
+review. The section-by-section decomposition (`oracle_review/State_of_LLM_Reasoning.md`) shows the
+`(explore: skip=X light=Y)` annotation — isolating exactly the reward attributable to depth/breadth
+credit — is `0.0000` for both arms in every section **except** S11 (`explore: skip=0.0000
+light=0.3334`), the single largest-magnitude section in the whole table (weight=0.026,
+contribution=−0.0168 against skip). Every other large-magnitude section (S19 weight=0.149, S2
+weight=0.186, S4 weight=0.096) shows zero exploration credit on both arms — their skip/light gap is
+pure `cc`/`fl`/`ga` draw-to-draw noise (word-count-tolerance misses, image-placement variance across
+only 3 replicate draws per arm), not a genuine content-quality signal.
 
-`run26`'s signal-quality improvement (fewer untrainable/floored groups, wider margins) reproduces
-cleanly on corrected data — it was not an artifact of stale labels. But **9 of 24 TRAIN articles
-(37.5%) have their raw R_w argmax flip, every single one toward a *cheaper* preset**, and `deep`'s
-TRAIN article-level representation collapses from 4 to 0. This directly compounds a bias already
-measured in this checkpoint (A.17.9, and the per-oracle-class breakdown below A.18): `deep` is
-already this model's weakest class on both splits.
+S11's light-arm credit is explicitly traced (in `reasoning.json`) to `lesswrong.com/posts/...on-recent-
+results-in-llm-latent-reasoning` and `arxiv.org/html/2604.04902v1` — **neither is among the guideline's
+declared 14-paper survey scope.** This is the same mechanism as A.20.6, independently rediscovered for
+Scenario C: the one section making light look competitive earns that credit specifically by violating
+the article's own stated survey scope. Discounting that one section's confounded credit moves the
+effective margin from +0.0029 to roughly **+0.0232** — about 8× more comfortable in skip's favor.
 
-**Coefficient sweep (ordinal units, coefficients between C2's implicit −0.03 and `run26`'s −0.06)
-found no usable middle ground — it is a step function, not a dial:**
+### A.20.9 Is `07_reasoning_planning` (the corpus's one clear Scenario-C-adjacent failure) a genuine statistical outlier?
 
-| coef | flat-drop | floored | TRAIN `deep` articles |
-|---:|---:|---:|---:|
-| C2 exact (H0 units, −0.03) | 3.5% | 27.3% | 4 |
-| ordinal, −0.035 | 2.3% | 28.1% | 4 |
-| ordinal, −0.040 | 0.6% | 21.8% | 1 |
-| ordinal, −0.045 | 0.0% | 18.1% | 0 |
-| ordinal, −0.060 (`run26`) | 0.6% | 11.8% | 0 |
+Before trusting any narrow threshold rule built around this article's semantic-signal profile, a
+combined multivariate outlier check was run: z-scored `source_independence`, `topic_canonicity`,
+word-weighted `w_scripted`, word-weighted `w_risk`, and RL `confidence`, computed purely from the
+corpus's own mean/sd (n=31, all non-forbidden TEST+TRAIN articles, no threshold tuned to isolate this
+article), then ranked every article by combined L2 distance from the corpus centroid.
 
-`deep` collapses from 4→1→0 between coefficients 0.035 and 0.045 — a narrow window crossed *before*
-the floored-fraction improvement (which keeps accruing smoothly out to 0.06) delivers much benefit.
-A single global coefficient cannot trade off signal quality against `deep`-representation; it can
-only pick a point on a curve where `deep` is already gone.
+**Result: `07_reasoning_planning` ranks 22nd of 31** — solidly mid-pack, below-median extremeness. Its
+only mildly notable trait is `source_independence` (z=−1.37, 3rd-lowest), which is not an extreme-tail
+value by conventional standards (|z|≳2). `w_risk` sits almost exactly on the corpus mean (z=+0.01). An
+earlier 4/5-condition threshold rule that appeared to isolate this article perfectly was shown to be
+curve-fitting a box around a single known point (n=1 positive example, ever) — this outlier check
+falsifies the "true outlier" framing more rigorously: even the seemingly bespoke combination of traits
+is unremarkable once measured against the corpus's own distribution rather than hand-picked thresholds.
 
-### A.18.3 Design C: a non-uniform cost vector
+### A.20.10 Confidence-gating for Scenario C's light-vote case: raw P(skip) vs. P(light) is a strong, validated discriminator
 
-Rather than one coefficient, each step (`skip→light`, `light→standard`, `standard→deep`) was
-controlled independently, steepening the bottom two toward `run26`'s strength while leaving the top
-step close to C2's own (already small) gap:
+Testing whether the RL model's own **raw, pre-cost-adjustment** softmax mass (`rl_agg_probs`, not the
+scalar `confidence` field, which equals `P(chosen preset)` and conflates unrelated comparisons) between
+just the two allowed classes predicts which one is actually correct, across every corpus article where
+the true label is skip-or-light and the model's argmax votes light:
 
-| design | flat-drop | floored | near-tie | mean margin | norm-adv | sk/li/st/de | TRAIN `deep` articles |
-|---|---:|---:|---:|---:|---:|---|---:|
-| C2 (shipped) | 3.5% | 27.3% | 58.5% | 0.0656 | 1.229 | 49/54/33/35 | 4 |
-| A: steps(−.045,−.045) + C2's own top step | 0.6% | 24.1% | 56.1% | 0.0704 | 1.265 | 61/58/25/27 | **4** |
-| B: steps(−.06,−.06) + C2's own top step | 1.2% | 17.2% | 53.2% | 0.0754 | 1.285 | 65/59/21/26 | 3 |
-| **C: steps(−.06,−.06) + half of C2's top step** | **1.2%** | **19.5%** | **53.8%** | **0.0750** | **1.285** | 65/58/21/27 | **4** |
-| D: steps(−.05,−.04) + C2's own top step | 1.8% | 22.6% | 56.7% | 0.0706 | 1.279 | 61/55/27/28 | 4 |
-| E: steps(−.07,−.05) + C2's own top step | 1.8% | 16.7% | 46.8% | 0.0759 | 1.298 | 72/49/23/27 | 3 |
+| group | article | P(skip) | P(light) | matches P(skip) vs P(light) ordering? |
+|---|---|---:|---:|---|
+| true=skip | `State_of_LLM_Reasoning` | 0.358 | 0.245 | skip > light ✓ |
+| true=skip | `08_react_practice__var_minimal` | 0.707 | 0.293 | skip > light ✓ |
+| true=skip | `11_multimodal__var_standard` | 0.471 | 0.367 | skip > light ✓ |
+| true=skip | `07_reasoning_planning` | 0.158 | 0.307 | light > skip ✗ (exception) |
+| true=light | `02_workflows_vs_agents__var_demanding` | 0.103 | 0.172 | light > skip ✓ |
+| true=light | `02_workflows_vs_agents__var_standard` | 0.000 | 0.356 | light > skip ✓ |
+| true=light | `03_context_engineering__var_demanding` | 0.151 | 0.346 | light > skip ✓ |
+| true=light | `05_workflow_patterns__var_standard` | 0.000 | 0.205 | light > skip ✓ |
+| true=light | `13_agent_framework` | 0.196 | 0.323 | light > skip ✓ |
+| true=light | `11_multimodal__var_minimal` | 0.310 | 0.379 | light > skip ✓ |
 
-**Design C** (`skip:0, light:−0.06, standard:−0.12, deep:−0.1265`) is the strongest candidate that
-fully preserves `deep`: floored drops 27.3%→19.5% (most of `run26`'s 27.3%→11.8%), flat-drop nearly
-vanishes (3.5%→1.2%), norm-adv improves to 1.285 (better than `run26`'s 1.265) — **and all 4 of
-TRAIN's `deep`-labeled articles survive intact**.
+**9/10 correct.** The one exception, `07_reasoning_planning`, is policy=`allowed` (not Scenario-C-
+capped at all — its "chosen" preset comes from the full unconstrained 4-way pipeline, so it was never
+actually subject to the mechanism being tested here; it's included purely as a general correlation
+check, not a claim the cap mechanism failed on it). Note also: for every article in the "true=light"
+group, the raw distribution's actual argmax is `standard`, not `light` (e.g. `02_dem`: skip=0.10,
+light=0.17, **standard=0.72**, deep=0.0) — the cost-sensitive rule pulls the final vote down to light,
+and light only edges out skip because the whole distribution has shifted toward "needs more," pushing
+skip to last place. The P(skip)-vs-P(light) comparison is riding on that real "needs more than skip"
+signal, not isolating a narrow skip/light judgment in a vacuum.
 
-### A.18.4 Justification for Design C beyond label balance
+### A.20.11 Standard/deep votes under Scenario C — the tail comparison becomes unstable exactly when neither class dominates
 
-Reward design is a values choice, not just a metric-fitting exercise, so the non-uniform *shape* —
-not just its effect on label counts — needs its own justification:
+Extending the same P(skip)-vs-P(light) comparison to articles where the model's actual vote is
+standard/deep (i.e., testing whether the *residual* skip/light split remains meaningful once neither is
+the dominant class) using 5 general corpus examples where deep is unambiguously the correct answer:
 
-1. **Cost steepness should track where marginal value is still rising, not just where absolute
-   effort is highest.** The `de`/`be` explore term already *saturates* near standard/deep via
-   `enhancement_credit()`'s curve. A cost term that is *also* steep in that already-saturated region
-   double-penalizes a decision where the model's own reward signal has already plateaued; steepness
-   is better spent where explore-value is still rising and genuinely ambiguous (skip→standard).
-2. **The real-world harm of under- vs. over-provisioning is asymmetric and front-loaded.** Skipping
-   exploration entirely when even light research was warranted risks a categorical, uncorrected
-   content gap. Stopping at `standard` instead of `deep` is a difference in thoroughness on an
-   article already receiving substantial investment, not a difference in kind. Penalizing the lower
-   boundary harder matches where a wrong decision's real cost concentrates.
-3. **It corrects, rather than compounds, a bias already measured in this checkpoint.** Every
-   configuration evaluated this session under-predicts `deep`. A cost curve that keeps sharpening
-   exactly that boundary reinforces a known failure mode; one that is deliberately gentler there is a
-   considered counterweight.
+| article | P(skip) | P(light) | true label | tail-argmax |
+|---|---:|---:|---|---|
+| 06_tools__var_standard | 0.120 | 0.183 | deep | light |
+| Dark_Dimension | 0.200 | 0.344 | deep | light |
+| Earth_Oceans_Origin | 0.000 | 0.143 | deep | light |
+| 04_structured_outputs | **0.267** | 0.133 | deep | **skip** |
+| 09_RAG__var_demanding | **0.436** | 0.029 | deep | **skip** |
 
-The label-balance outcome (4/4 `deep` articles preserved) is evidence these arguments hold in
-practice on this corpus — it is not, by itself, the justification.
+In 2/5 cases the residual split favors skip despite the article clearly needing deep exploration —
+the tail comparison is not reliable once it's not backed by a genuine top-1/top-2 preference. **Rule
+adopted for Scenario C: if the RL vote is standard or deep, cap deterministically to `light` (do not
+resolve via the tail-argmax); if the case remains genuinely ambiguous, leave the choice to a human/
+downstream reviewer rather than auto-deciding** — flagged-for-review, not silently auto-picked, per the
+same log-and-review philosophy used elsewhere in this investigation (A.17.7, A.19.6).
 
-### A.18.5 Implementation status (2026-08-25): wired, not shipped
+### A.20.12 Final consolidated framework
 
-`_DESIGN_C_COST` and a `cost_formula`/`cost_override` parameter were added to
-`generate_episode_oracles.py::_section_reward()`/`_section_reward_components()` (default `"c2"`,
-unchanged production behaviour), with matching `--cost-formula {c2,design_c}` / `--bases-dir` CLI
-flags threaded through `generate_episode_oracles.py`, `measure_replicate_noise.py`,
-`merge_replicate_oracles.py`, and `compute_article_oracle.py` (`train_grpo.py` already supported
-`--bases-dir`). Verified via `--dry-run` that `--cost-formula c2` reproduces production's exact
-section distribution and `design_c` reproduces the preview's shifted distribution. Production
-`bases/` is untouched; running the actual experiment requires a separate `--bases-dir` (e.g.
-`bases_design_c/`) through the full `generate_episode_oracles.py` → `merge_replicate_oracles.py` →
-`compute_article_oracle.py --use-averaged` → `train_grpo.py` chain, all pointed at that same
-override directory. **No training run has been executed yet.** Per §60.12, any real result from this
-would still need to clear the same health-gated-ceiling bar that no formula (C2 or `run26`) has
-cleared to date — this is a well-evidenced candidate for one further try, not a proven improvement.
+| scenario | trigger | final treatment | justification |
+|---|---|---|---|
+| **A** (overt ban, incl. the Brevity Requirements clause) | explicit "do not use/introduce external sources" | **hard, unconditional force to `skip`**, independent of downstream reward | Respects genuine, explicit user intent; A.20.6/A.20.8 confirm the reward case against it is itself built on citing exactly the forbidden material |
+| **B** (low-effort scope note, standalone) | "conceptual overview... not required," no accompanying overt ban | **eliminated** — falls back to `allowed` | Verbatim copy of the prompt's own example (A.20.2); conflates effort-level with source-access, a category error; TRAIN reward data disagrees with forced-skip in 4/8 real instances (A.20.3) |
+| **C** (survey-of-named-sources framing) | "the article's entire scope is to summarize/survey N named sources" | **capped ceiling at `{skip, light}`**: light stands if `P(light) ≥ P(skip)` in the raw distribution (A.20.10); skip stands otherwise; a standard/deep vote is capped down to `light`, not resolved via the unstable tail-argmax (A.20.11); genuinely ambiguous cases are flagged for review rather than auto-decided | Explicit statement of the article's fundamental *nature* (exploitation/survey, not exploration) — same principle as A (respect stated intent over reward), but a softer ceiling since a single light touch doesn't categorically contradict "this is a survey" the way any exploration would contradict an outright ban |
+
+Scenarios A and C both subordinate reward-maximization to explicit author intent; they differ only in
+what is explicitly stated (a total ban vs. a task-nature framing) and therefore in how hard the
+resulting ceiling is. Scenario B never earned that trust in the first place — its trigger was
+templated/mechanical, not a bespoke editorial decision, and the TRAIN reward data (A.20.3) shows it
+being wrong close to half the time.
 
 
 

@@ -1,0 +1,48 @@
+{
+  "article": "09_RAG__var_demanding",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-introduction-giving-llms-an-open-book-exam",
+        "scripted_example_fraction": 0.2,
+        "argumentative_risk": 0.45,
+        "risk_rationale": "Guideline mandates invented personal story opener plus cross-domain open-book/cheat-sheet analogy and strong normative claims on fine-tuning limitations and RAG's essential role in Context Engineering (Lesson 03), only partially grounded in the three listed sources."
+      },
+      {
+        "sec_id": "S2::section-2-the-rag-system-core-components",
+        "scripted_example_fraction": 0.05,
+        "argumentative_risk": 0.15,
+        "risk_rationale": "Purely descriptive pillar breakdown (retrieval/augmentation/generation) with vector-embedding mechanics and Mermaid diagram; sources directly match technical nuances with minimal interpretive leaps."
+      },
+      {
+        "sec_id": "S3::section-3-the-rag-pipeline-ingestion-and-retrieval",
+        "scripted_example_fraction": 0.1,
+        "argumentative_risk": 0.1,
+        "risk_rationale": "Guideline lists concrete tools and must-cover technical steps for loading/splitting/embedding/search but remains descriptive pipeline exposition well-supported by the three cited sources."
+      },
+      {
+        "sec_id": "S4::section-4-advanced-rag-techniques",
+        "scripted_example_fraction": 0.35,
+        "argumentative_risk": 0.3,
+        "risk_rationale": "Guideline dictates multiple specific invented examples (e.g. \"my bill keeps rolling over\", travel-policy decomposition, HyDE draft answer, GraphRAG retail/IT multi-hop queries) plus evaluative claims on performance gains that exceed what the three sources explicitly demonstrate."
+      },
+      {
+        "sec_id": "S5::section-5-agentic-rag",
+        "scripted_example_fraction": 0.45,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Guideline verbatim scripts the mini ReAct-style thought-action-observation trace and research-assistant analogy while making interpretive claims on the \"conceptual shift\" and adaptive superiority over linear RAG that only the listed sources loosely support."
+      },
+      {
+        "sec_id": "S6::section-6-conclusion",
+        "scripted_example_fraction": 0.0,
+        "argumentative_risk": 0.65,
+        "risk_rationale": "Heavy normative/evaluative weight in must-cover-depth positioning of RAG as \"foundational competency\" within Context Engineering, strategic importance of agentic RAG, and detailed Lesson-10 memory transition, with thin direct source backing for the synthesis."
+      }
+    ],
+    "source_independence": 0.65,
+    "topic_canonicity": 0.85,
+    "overall_notes": "RAG is a highly canonical, well-saturated topic (high topic_canonicity) with mostly independent sources (moderate source_independence) despite some overlapping introductory explanations. Later sections show elevated scripted-example fractions from dictated illustrations and moderate-to-high argumentative risk on normative positioning and analogies, even where numeric depth scores appear strong."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-giving-llms-an-open-book-exam\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Guideline mandates invented personal story opener plus cross-domain open-book/cheat-sheet analogy and strong normative claims on fine-tuning limitations and RAG's essential role in Context Engineering (Lesson 03), only partially grounded in the three listed sources.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-rag-system-core-components\",\n      \"scripted_example_fraction\": 0.05,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Purely descriptive pillar breakdown (retrieval/augmentation/generation) with vector-embedding mechanics and Mermaid diagram; sources directly match technical nuances with minimal interpretive leaps.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-the-rag-pipeline-ingestion-and-retrieval\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Guideline lists concrete tools and must-cover technical steps for loading/splitting/embedding/search but remains descriptive pipeline exposition well-supported by the three cited sources.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-advanced-rag-techniques\",\n      \"scripted_example_fraction\": 0.35,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Guideline dictates multiple specific invented examples (e.g. \\\"my bill keeps rolling over\\\", travel-policy decomposition, HyDE draft answer, GraphRAG retail/IT multi-hop queries) plus evaluative claims on performance gains that exceed what the three sources explicitly demonstrate.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-agentic-rag\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline verbatim scripts the mini ReAct-style thought-action-observation trace and research-assistant analogy while making interpretive claims on the \\\"conceptual shift\\\" and adaptive superiority over linear RAG that only the listed sources loosely support.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-conclusion\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Heavy normative/evaluative weight in must-cover-depth positioning of RAG as \\\"foundational competency\\\" within Context Engineering, strategic importance of agentic RAG, and detailed Lesson-10 memory transition, with thin direct source backing for the synthesis.\"\n    }\n  ],\n  \"source_independence\": 0.65,\n  \"topic_canonicity\": 0.85,\n  \"overall_notes\": \"RAG is a highly canonical, well-saturated topic (high topic_canonicity) with mostly independent sources (moderate source_independence) despite some overlapping introductory explanations. Later sections show elevated scripted-example fractions from dictated illustrations and moderate-to-high argumentative risk on normative positioning and analogies, even where numeric depth scores appear strong.\"\n}\n```",
+  "parse_ok": true
+}

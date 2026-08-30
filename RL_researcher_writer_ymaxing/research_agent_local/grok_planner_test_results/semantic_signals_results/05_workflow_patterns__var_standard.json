@@ -1,0 +1,54 @@
+{
+  "article": "05_workflow_patterns__var_standard",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-the-challenge-with-complex-single-llm-calls",
+        "scripted_example_fraction": 0.5,
+        "argumentative_risk": 0.3,
+        "risk_rationale": "Guideline mandates specific mock webpage variables, complex single-call prompt code, and output excerpt from the notebook plus interpretive claims on inaccuracies (e.g. single vs. multi-source misses), which exceed the partial limitations_failure_modes coverage in sources."
+      },
+      {
+        "sec_id": "S2::section-2-the-power-of-modularity-why-chain-llm-calls",
+        "scripted_example_fraction": 0.05,
+        "argumentative_risk": 0.45,
+        "risk_rationale": "Pure-theory guideline lists exact benefits (modularity, accuracy, debugging) and downsides (information loss across steps, cost, latency) that interpret Anthropic-style patterns with evaluative weight not fully matched by the sources' case_studies_metrics gaps."
+      },
+      {
+        "sec_id": "S3::section-3-building-a-sequential-workflow-faq-generation-pipeline",
+        "scripted_example_fraction": 0.7,
+        "argumentative_risk": 0.15,
+        "risk_rationale": "Guideline scripts verbatim 3-step FAQ chain (Generate Questions → Answer Questions → Find Sources), notebook code execution, timing highlight, and mermaid diagram as a fully dictated illustrative workflow on mock data."
+      },
+      {
+        "sec_id": "S4::section-4-optimizing-sequential-workflows-with-parallel-processing",
+        "scripted_example_fraction": 0.6,
+        "argumentative_risk": 0.35,
+        "risk_rationale": "Practice guideline requires specific notebook parallel code, sequential vs. parallel runtime comparison, explicit trade-off bullets, and rate-limit warning whose normative framing on real-world handling sits atop moderate implementation_tradeoffs coverage."
+      },
+      {
+        "sec_id": "S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic",
+        "scripted_example_fraction": 0.25,
+        "argumentative_risk": 0.55,
+        "risk_rationale": "Theory guideline directs normative claims on routing necessity, LLM-based decisions, branching preference over single prompts, and a tasks-style example that extrapolates beyond the generic motivation and technical_nuances in sources."
+      },
+      {
+        "sec_id": "S6::section-building-a-basic-routing-workflow",
+        "scripted_example_fraction": 0.65,
+        "argumentative_risk": 0.2,
+        "risk_rationale": "Guideline prescribes customer-service intent classification use case, exact notebook code references, conditional handlers for Technical Support/Billing/General, and mermaid diagram as a pre-scripted worked example."
+      },
+      {
+        "sec_id": "S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition",
+        "scripted_example_fraction": 0.55,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Mixed section per guideline asserts when to use orchestrator-worker for unpredictable subtasks, key flexibility difference from parallelization, specific complex customer query example, notebook code, and mermaid that carries interpretive weight relative to partial theoretical_foundations support."
+      }
+    ],
+    "source_independence": 0.55,
+    "topic_canonicity": 0.8,
+    "overall_notes": "Practical sections show high scripted_example_fraction because the guideline verbatim dictates notebook code demos, mock data, specific pipelines (FAQ, routing, orchestrator-worker), and mermaid diagrams. The topic is highly canonical with overlapping Anthropic-derived coverage across golden sources, producing redundant facts and low marginal value from deeper search; argumentative risk is elevated only in theory sections that normatively justify trade-offs and use cases beyond what the cited sources directly anchor."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-the-challenge-with-complex-single-llm-calls\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Guideline mandates specific mock webpage variables, complex single-call prompt code, and output excerpt from the notebook plus interpretive claims on inaccuracies (e.g. single vs. multi-source misses), which exceed the partial limitations_failure_modes coverage in sources.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-power-of-modularity-why-chain-llm-calls\",\n      \"scripted_example_fraction\": 0.05,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Pure-theory guideline lists exact benefits (modularity, accuracy, debugging) and downsides (information loss across steps, cost, latency) that interpret Anthropic-style patterns with evaluative weight not fully matched by the sources' case_studies_metrics gaps.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-building-a-sequential-workflow-faq-generation-pipeline\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Guideline scripts verbatim 3-step FAQ chain (Generate Questions → Answer Questions → Find Sources), notebook code execution, timing highlight, and mermaid diagram as a fully dictated illustrative workflow on mock data.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-optimizing-sequential-workflows-with-parallel-processing\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Practice guideline requires specific notebook parallel code, sequential vs. parallel runtime comparison, explicit trade-off bullets, and rate-limit warning whose normative framing on real-world handling sits atop moderate implementation_tradeoffs coverage.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Theory guideline directs normative claims on routing necessity, LLM-based decisions, branching preference over single prompts, and a tasks-style example that extrapolates beyond the generic motivation and technical_nuances in sources.\"\n    },\n    {\n      \"sec_id\": \"S6::section-building-a-basic-routing-workflow\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Guideline prescribes customer-service intent classification use case, exact notebook code references, conditional handlers for Technical Support/Billing/General, and mermaid diagram as a pre-scripted worked example.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition\",\n      \"scripted_example_fraction\": 0.55,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Mixed section per guideline asserts when to use orchestrator-worker for unpredictable subtasks, key flexibility difference from parallelization, specific complex customer query example, notebook code, and mermaid that carries interpretive weight relative to partial theoretical_foundations support.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Practical sections show high scripted_example_fraction because the guideline verbatim dictates notebook code demos, mock data, specific pipelines (FAQ, routing, orchestrator-worker), and mermaid diagrams. The topic is highly canonical with overlapping Anthropic-derived coverage across golden sources, producing redundant facts and low marginal value from deeper search; argumentative risk is elevated only in theory sections that normatively justify trade-offs and use cases beyond what the cited sources directly anchor.\"\n}\n```",
+  "parse_ok": true
+}

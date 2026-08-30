@@ -1,0 +1,102 @@
+{
+  "article": "13_agent_framework",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-introduction",
+        "scripted_example_fraction": 0.4,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Guideline scripts verbatim anchoring to Nova/Brown capstones, specific risks of late framework choice, mandated introduction of LangGraph interrupts/MCP, architecture preview, and image with exact caption, layering interpretive framing beyond available source gaps in motivation/theoretical_foundations."
+      },
+      {
+        "sec_id": "S2::section-2-framework-choice-under-uncertainty-and-why-some-selection-strategies-fail-in-production",
+        "scripted_example_fraction": 0.6,
+        "argumentative_risk": 0.7,
+        "risk_rationale": "Section mandates a verbatim personal story about abandoning static LangGraph for MCP on the research agent (and opposite for writing agent), plus explicit failure modes of hype/hello-world selection, creating normative illustration that outruns the cited layer-distinction sources."
+      },
+      {
+        "sec_id": "S3::section-3-a-theory-for-choosing-decision-axes-instead-of-brands",
+        "scripted_example_fraction": 0.3,
+        "argumentative_risk": 0.8,
+        "risk_rationale": "Guideline dictates original four axes (control-flow vs autonomy, reliability primitives, abstraction/DX, interoperability with MCP-as-USB-C analogy) plus explicit mapping to capstone needs, advancing interpretive claims thinly supported by the persistence/durable-execution citations."
+      },
+      {
+        "sec_id": "S4::section-4-the-landscape-today-frameworks-philosophies-adoption-snapshot",
+        "scripted_example_fraction": 0.2,
+        "argumentative_risk": 0.6,
+        "risk_rationale": "Prescribes specific philosophies, download numbers (e.g. LangGraph 400K-500K), verbatim callout boxes contrasting LangGraph/LangChain and AgentKit/SDK, hybrid-pattern warnings, and GitHub-stars image, injecting evaluative maturity-proxy claims beyond individual framework sources."
+      },
+      {
+        "sec_id": "S5::section-5-framework-deep-dive-langgraph",
+        "scripted_example_fraction": 0.2,
+        "argumentative_risk": 0.4,
+        "risk_rationale": "Guideline specifies graph modeling, interrupts/checkpointing/time-travel, API-style contrasts, and when-it-is-overkill framing for the writing agent, but remains mostly descriptive of persistence/workflows-and-agents sources with modest interpretive trade-off weight."
+      },
+      {
+        "sec_id": "S6::section-6-framework-deep-dive-openai-agents-sdk",
+        "scripted_example_fraction": 0.1,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Mandates mapping of minimal primitives (agents/tools/guardrails/handoffs/sessions), Python-native loop vs compiled-graph contrast, and reliability trade-off for lightweight orchestration, adding moderate normative evaluation relative to the single openai-agents-sdk source."
+      },
+      {
+        "sec_id": "S7::section-7-framework-deep-dive-agentkit",
+        "scripted_example_fraction": 0.2,
+        "argumentative_risk": 0.4,
+        "risk_rationale": "Specifies lifecycle-toolkit positioning on top of SDK, enumerated visual-builder/Connector-Registry/ChatKit/evals components, ecosystem trade-off, and when-it-adds-value, staying largely descriptive of openai-agents-sdk/fastmcp sources."
+      },
+      {
+        "sec_id": "S8::section-8-framework-deep-dive-crewai",
+        "scripted_example_fraction": 0.2,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Requires dual crews/flows description, typical progression pattern, DX emphasis, sweet-spot in handoffs, and opinionated-construct trade-off, with modest normative weight on top of CrewAI-introduction/build-your-first-flow coverage."
+      },
+      {
+        "sec_id": "S9::section-9-framework-deep-dive-pydanticai",
+        "scripted_example_fraction": 0.1,
+        "argumentative_risk": 0.4,
+        "risk_rationale": "Dictates FastAPI-like philosophy, durable-execution integrations, schema ergonomics, learning-curve cost, and best-fit for writing-agent auditability, remaining close to the single PydanticAI-durable-execution source."
+      },
+      {
+        "sec_id": "S10::section-10-framework-deep-dive-autogen",
+        "scripted_example_fraction": 0.2,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Specifies layered Studio/AgentChat/Core design, typical workflow, explicit research-prototype disclaimer, R&D-laboratory strength, and exploration-to-production trade-off, adding interpretive framing atop autogen/studio-user-guide sources."
+      },
+      {
+        "sec_id": "S11::section-11-framework-deep-dive-claude-agent-sdk",
+        "scripted_example_fraction": 0.1,
+        "argumentative_risk": 0.6,
+        "risk_rationale": "Requires tight-integration philosophy, ergonomic tool-calling, smaller-ecosystem trade-offs, opportunity-vs-risk framing, and Anthropic-stack use case, advancing evaluative claims with limited dedicated sources (relying on openai-agents-sdk overlap)."
+      },
+      {
+        "sec_id": "S12::section-12-framework-deep-dive-fastmcp",
+        "scripted_example_fraction": 0.4,
+        "argumentative_risk": 0.4,
+        "risk_rationale": "Mandates non-runtime clarification, interoperability benefit, capstone usage pattern, tools-as-workflows callout box with specific Brown examples, and decorator-based DX snippet from quickstart, mixing scripted illustration with source material."
+      },
+      {
+        "sec_id": "S13::section-13-choosing-for-your-project-decision-matrix-tentative-forecasts",
+        "scripted_example_fraction": 0.5,
+        "argumentative_risk": 0.7,
+        "risk_rationale": "Guideline supplies a verbatim decision-matrix table with specific feature/framework mappings, evolving-nature caveat, grounded forecasts, and hybrid-pattern illustrations, creating original synthesis that exceeds individual source support."
+      },
+      {
+        "sec_id": "S14::section-14-our-capstone-pivots",
+        "scripted_example_fraction": 0.7,
+        "argumentative_risk": 0.8,
+        "risk_rationale": "Section scripts specific initial-plan vs reality contrast, hybrid Nova-as-FastMCP-server/Brown-as-LangGraph-with-coarse-tools outcome, emergent wrapping pattern, and SDK deprioritization rationale, functioning as a high-weight invented illustrative narrative."
+      },
+      {
+        "sec_id": "S15::section-15-conclusion",
+        "scripted_example_fraction": 0.3,
+        "argumentative_risk": 0.7,
+        "risk_rationale": "Prescribes core takeaway on stable concepts over brands, MCP as high-leverage reading, practical selection process, migration-path example from AutoGen to LangGraph/PydanticAI, and forward reference to system-design/capstone builds, advancing normative conclusions."
+      }
+    ],
+    "source_independence": 0.8,
+    "topic_canonicity": 0.7,
+    "overall_notes": "Guideline is unusually prescriptive, dictating verbatim stories, callouts, decision matrix, capstone pivots, and image captions, producing elevated scripted_example_fraction in S2/S12-S14. Argumentative risk peaks in theory, landscape, matrix, pivots, and conclusion sections that advance original axes, failure modes, forecasts, and hybrid recommendations beyond what the distinct but framework-specific golden sources directly underwrite. Topic is canonical within AI engineering with abundant comparisons already available."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline scripts verbatim anchoring to Nova/Brown capstones, specific risks of late framework choice, mandated introduction of LangGraph interrupts/MCP, architecture preview, and image with exact caption, layering interpretive framing beyond available source gaps in motivation/theoretical_foundations.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-framework-choice-under-uncertainty-and-why-some-selection-strategies-fail-in-production\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Section mandates a verbatim personal story about abandoning static LangGraph for MCP on the research agent (and opposite for writing agent), plus explicit failure modes of hype/hello-world selection, creating normative illustration that outruns the cited layer-distinction sources.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-a-theory-for-choosing-decision-axes-instead-of-brands\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Guideline dictates original four axes (control-flow vs autonomy, reliability primitives, abstraction/DX, interoperability with MCP-as-USB-C analogy) plus explicit mapping to capstone needs, advancing interpretive claims thinly supported by the persistence/durable-execution citations.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-the-landscape-today-frameworks-philosophies-adoption-snapshot\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Prescribes specific philosophies, download numbers (e.g. LangGraph 400K-500K), verbatim callout boxes contrasting LangGraph/LangChain and AgentKit/SDK, hybrid-pattern warnings, and GitHub-stars image, injecting evaluative maturity-proxy claims beyond individual framework sources.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-framework-deep-dive-langgraph\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline specifies graph modeling, interrupts/checkpointing/time-travel, API-style contrasts, and when-it-is-overkill framing for the writing agent, but remains mostly descriptive of persistence/workflows-and-agents sources with modest interpretive trade-off weight.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-framework-deep-dive-openai-agents-sdk\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Mandates mapping of minimal primitives (agents/tools/guardrails/handoffs/sessions), Python-native loop vs compiled-graph contrast, and reliability trade-off for lightweight orchestration, adding moderate normative evaluation relative to the single openai-agents-sdk source.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-framework-deep-dive-agentkit\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Specifies lifecycle-toolkit positioning on top of SDK, enumerated visual-builder/Connector-Registry/ChatKit/evals components, ecosystem trade-off, and when-it-adds-value, staying largely descriptive of openai-agents-sdk/fastmcp sources.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-framework-deep-dive-crewai\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Requires dual crews/flows description, typical progression pattern, DX emphasis, sweet-spot in handoffs, and opinionated-construct trade-off, with modest normative weight on top of CrewAI-introduction/build-your-first-flow coverage.\"\n    },\n    {\n      \"sec_id\": \"S9::section-9-framework-deep-dive-pydanticai\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Dictates FastAPI-like philosophy, durable-execution integrations, schema ergonomics, learning-curve cost, and best-fit for writing-agent auditability, remaining close to the single PydanticAI-durable-execution source.\"\n    },\n    {\n      \"sec_id\": \"S10::section-10-framework-deep-dive-autogen\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Specifies layered Studio/AgentChat/Core design, typical workflow, explicit research-prototype disclaimer, R&D-laboratory strength, and exploration-to-production trade-off, adding interpretive framing atop autogen/studio-user-guide sources.\"\n    },\n    {\n      \"sec_id\": \"S11::section-11-framework-deep-dive-claude-agent-sdk\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Requires tight-integration philosophy, ergonomic tool-calling, smaller-ecosystem trade-offs, opportunity-vs-risk framing, and Anthropic-stack use case, advancing evaluative claims with limited dedicated sources (relying on openai-agents-sdk overlap).\"\n    },\n    {\n      \"sec_id\": \"S12::section-12-framework-deep-dive-fastmcp\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Mandates non-runtime clarification, interoperability benefit, capstone usage pattern, tools-as-workflows callout box with specific Brown examples, and decorator-based DX snippet from quickstart, mixing scripted illustration with source material.\"\n    },\n    {\n      \"sec_id\": \"S13::section-13-choosing-for-your-project-decision-matrix-tentative-forecasts\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Guideline supplies a verbatim decision-matrix table with specific feature/framework mappings, evolving-nature caveat, grounded forecasts, and hybrid-pattern illustrations, creating original synthesis that exceeds individual source support.\"\n    },\n    {\n      \"sec_id\": \"S14::section-14-our-capstone-pivots\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Section scripts specific initial-plan vs reality contrast, hybrid Nova-as-FastMCP-server/Brown-as-LangGraph-with-coarse-tools outcome, emergent wrapping pattern, and SDK deprioritization rationale, functioning as a high-weight invented illustrative narrative.\"\n    },\n    {\n      \"sec_id\": \"S15::section-15-conclusion\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Prescribes core takeaway on stable concepts over brands, MCP as high-leverage reading, practical selection process, migration-path example from AutoGen to LangGraph/PydanticAI, and forward reference to system-design/capstone builds, advancing normative conclusions.\"\n    }\n  ],\n  \"source_independence\": 0.8,\n  \"topic_canonicity\": 0.7,\n  \"overall_notes\": \"Guideline is unusually prescriptive, dictating verbatim stories, callouts, decision matrix, capstone pivots, and image captions, producing elevated scripted_example_fraction in S2/S12-S14. Argumentative risk peaks in theory, landscape, matrix, pivots, and conclusion sections that advance original axes, failure modes, forecasts, and hybrid recommendations beyond what the distinct but framework-specific golden sources directly underwrite. Topic is canonical within AI engineering with abundant comparisons already available.\"\n}\n```",
+  "parse_ok": true
+}

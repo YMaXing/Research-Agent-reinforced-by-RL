@@ -1,0 +1,212 @@
+{
+  "version": 3,
+  "article": "04_structured_outputs",
+  "variant": "no_variant",
+  "computed_at": "2026-07-30T02:01:42.393967+00:00",
+  "oracle_arm": "standard",
+  "oracle_arm_idx": 2,
+  "runner_up_arm": "deep",
+  "runner_up_arm_idx": 3,
+  "margin": 0.017954,
+  "reward_spread": 0.130892,
+  "r_w_rewards": {
+    "skip": 0.333333,
+    "light": 0.383214,
+    "standard": 0.464225,
+    "deep": 0.446271
+  },
+  "r_w_rewards_list": [
+    0.333333,
+    0.383214,
+    0.464225,
+    0.446271
+  ],
+  "decision_path": [
+    "near-tie band=['standard', 'deep'] R_w=[standard:0.4642, deep:0.4463]",
+    "active signals: [S5(\u0394\u22650.05)]  winner=standard  S4={standard:0.961, deep:0.935}  S5={standard:0.979, deep:0.910}"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "gate_diagnostics": {
+    "skip": {
+      "cp": 0.857143,
+      "ra": 0.857143,
+      "gsp": 0.857143
+    },
+    "light": {
+      "cp": 0.857143,
+      "ra": 0.857143,
+      "gsp": 0.857143
+    },
+    "standard": {
+      "cp": 0.857143,
+      "ra": 0.857143,
+      "gsp": 0.857143
+    },
+    "deep": {
+      "cp": 0.857143,
+      "ra": 0.857143,
+      "gsp": 0.857143
+    }
+  },
+  "low_signal_flag": false,
+  "n_sections": 7,
+  "n_sections_with_target": 7,
+  "total_target_words": 2250,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.06667,
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.17,
+        "standard": 0.1436,
+        "deep": 0.233075
+      },
+      "rewards_by_preset": [
+        0.2,
+        0.17,
+        0.1436,
+        0.233075
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-understanding-why-structured-outputs-are-critical",
+      "title": "understanding why structured outputs are critical",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.13333,
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.27,
+        "standard": 0.5061,
+        "deep": 0.3882
+      },
+      "rewards_by_preset": [
+        0.3,
+        0.27,
+        0.5061,
+        0.3882
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-implementing-structured-outputs-from-scratch-using-json",
+      "title": "implementing structured outputs from scratch using json",
+      "target_words": 450,
+      "weight_words": 450,
+      "weight_frac": 0.2,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.472375,
+        "standard": 0.5146,
+        "deep": 0.3307
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.472375,
+        0.5146,
+        0.3307
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-implementing-structured-outputs-from-scratch-using-pydantic",
+      "title": "implementing structured outputs from scratch using pydantic",
+      "target_words": 900,
+      "weight_words": 900,
+      "weight_frac": 0.4,
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.633375,
+        "standard": 0.6936,
+        "deep": 0.694075
+      },
+      "rewards_by_preset": [
+        0.3,
+        0.633375,
+        0.6936,
+        0.694075
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-implementing-structured-outputs-using-gemini-and-pydantic",
+      "title": "implementing structured outputs using gemini and pydantic",
+      "target_words": 300,
+      "weight_words": 300,
+      "weight_frac": 0.13333,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.45675,
+        "standard": 0.606975,
+        "deep": 0.594075
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.45675,
+        0.606975,
+        0.594075
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-conclusion-structured-outputs-are-everywhere",
+      "title": "conclusion structured outputs are everywhere",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.06667,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.37,
+        "standard": 0.5011,
+        "deep": 0.433075
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.37,
+        0.5011,
+        0.433075
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::lesson-code",
+      "title": "S7::lesson-code",
+      "target_words": 0,
+      "weight_words": 0,
+      "weight_frac": 0.0,
+      "rewards": {
+        "skip": -0.1,
+        "light": -0.13,
+        "standard": -0.1564,
+        "deep": -0.1693
+      },
+      "rewards_by_preset": [
+        -0.1,
+        -0.13,
+        -0.1564,
+        -0.1693
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    }
+  ]
+}

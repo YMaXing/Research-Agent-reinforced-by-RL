@@ -1,0 +1,313 @@
+{
+  "version": 5,
+  "article": "11_multimodal",
+  "variant": "var_demanding",
+  "sections": {
+    "S1::section-1-introduction-the-need-for-multimodal-ai": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.0,
+        "light": 0.04,
+        "standard": 0.34825,
+        "deep": -0.1265
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.06825,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 0.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 0.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S2::section-2-limitations-of-traditional-document-processing": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.28,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S3::section-3-foundations-of-multimodal-llms": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.5875,
+        "deep": 0.34175
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.3075,
+        "deep": 0.06825
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S4::section-4-applying-multimodal-llms-to-images-and-pdfs": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.14,
+        "standard": -0.02,
+        "deep": 0.431
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.1575
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S5::section-5-foundations-of-multimodal-rag": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.79,
+        "standard": 0.4375,
+        "deep": 0.79175
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.45,
+        "standard": 0.1575,
+        "deep": 0.51825
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.34825,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.06825,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S7::section-7-building-multimodal-ai-agents": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.4975,
+        "standard": 0.385,
+        "deep": 0.2785
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.1575,
+        "standard": 0.105,
+        "deep": 0.105
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S8::section-8-conclusion": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.28,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction-the-need-for-multimodal-ai": "standard",
+    "S2::section-2-limitations-of-traditional-document-processing": "skip",
+    "S3::section-3-foundations-of-multimodal-llms": "standard",
+    "S4::section-4-applying-multimodal-llms-to-images-and-pdfs": "deep",
+    "S5::section-5-foundations-of-multimodal-rag": "deep",
+    "S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text": "skip",
+    "S7::section-7-building-multimodal-ai-agents": "light",
+    "S8::section-8-conclusion": "skip"
+  }
+}

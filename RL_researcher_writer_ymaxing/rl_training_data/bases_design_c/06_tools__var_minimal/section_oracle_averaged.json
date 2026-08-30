@@ -1,0 +1,267 @@
+{
+  "version": 1,
+  "merge_source": "single-draw section_oracle.json (production) + noise_experiment replicates via measure_replicate_noise.py's recompute path",
+  "article": "06_tools",
+  "variant": "var_minimal",
+  "n_draws_per_arm": 3,
+  "replicate_ids_used": [
+    1,
+    2
+  ],
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "light",
+      "rewards": {
+        "skip": -0.033333,
+        "light": 0.206667,
+        "standard": 0.013333,
+        "deep": -0.059833
+      },
+      "reward_sd": {
+        "skip": 0.11547,
+        "light": 0.11547,
+        "standard": 0.057735,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-understanding-why-agents-need-tools": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.133333,
+        "light": 0.074125,
+        "standard": 0.013333,
+        "deep": -0.0265
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.059106,
+        "standard": 0.057735,
+        "deep": 0.0
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.034125,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S3::section-3-implementing-tool-calls-from-scratch": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.133333,
+        "light": 0.159958,
+        "standard": 0.115708,
+        "deep": 0.162875
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.106282,
+        "standard": 0.057735,
+        "deep": 0.150688
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.086625,
+        "standard": 0.102375,
+        "deep": 0.189375
+      }
+    },
+    "S4::section-4-implementing-a-tool-calling-framework-from-scratch": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.133333,
+        "light": 0.006667,
+        "standard": -0.029667,
+        "deep": 0.006833
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.152753,
+        "standard": 0.185689,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.057,
+        "deep": 0.0
+      }
+    },
+    "S5::section-5-implementing-production-level-tool-calls-with-gemini": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.033333,
+        "light": 0.04,
+        "standard": 0.046667,
+        "deep": -0.00375
+      },
+      "reward_sd": {
+        "skip": 0.23094,
+        "light": 0.2,
+        "standard": 0.23094,
+        "deep": 0.234953
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.02275
+      }
+    },
+    "S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.206667,
+        "standard": 0.146667,
+        "deep": 0.1735
+      },
+      "reward_sd": {
+        "skip": 0.1,
+        "light": 0.152753,
+        "standard": 0.152753,
+        "deep": 0.0
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S7::section-7-the-downsides-of-running-tools-in-a-loop": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.19775,
+        "standard": 0.115,
+        "deep": 0.107625
+      },
+      "reward_sd": {
+        "skip": 0.1,
+        "light": 0.128507,
+        "standard": 0.056347,
+        "deep": 0.116162
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.05775,
+        "standard": 0.035,
+        "deep": 0.034125
+      }
+    },
+    "S8::section-8-popular-tools-used-within-the-industry": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.176583,
+        "standard": 0.136083,
+        "deep": 0.106833
+      },
+      "reward_sd": {
+        "skip": 0.1,
+        "light": 0.061319,
+        "standard": 0.051098,
+        "deep": 0.152753
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.10325,
+        "standard": 0.02275,
+        "deep": 0.0
+      }
+    },
+    "S9::section-9-conclusion": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.266667,
+        "light": 0.206667,
+        "standard": 0.113333,
+        "deep": 0.0735
+      },
+      "reward_sd": {
+        "skip": 0.152753,
+        "light": 0.152753,
+        "standard": 0.208167,
+        "deep": 0.264575
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "light",
+    "S2::section-2-understanding-why-agents-need-tools": "skip",
+    "S3::section-3-implementing-tool-calls-from-scratch": "deep",
+    "S4::section-4-implementing-a-tool-calling-framework-from-scratch": "skip",
+    "S5::section-5-implementing-production-level-tool-calls-with-gemini": "standard",
+    "S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs": "light",
+    "S7::section-7-the-downsides-of-running-tools-in-a-loop": "skip",
+    "S8::section-8-popular-tools-used-within-the-industry": "skip",
+    "S9::section-9-conclusion": "skip"
+  }
+}

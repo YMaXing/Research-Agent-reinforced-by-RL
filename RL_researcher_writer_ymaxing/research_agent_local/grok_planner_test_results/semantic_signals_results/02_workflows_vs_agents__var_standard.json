@@ -1,0 +1,48 @@
+{
+  "article": "02_workflows_vs_agents__var_standard",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces",
+        "scripted_example_fraction": 0.5,
+        "argumentative_risk": 0.6,
+        "risk_rationale": "Guideline scripts a verbatim personal story plus five specific catastrophic outcomes (rigid system, unpredictable agent, wasted months, frustrated users/executives) and billion-dollar startup claims that extend beyond the partial coverage of motivation/limitations in sources like kQxr-uOxw2o."
+      },
+      {
+        "sec_id": "S2::section-2-understanding-the-spectrum-from-workflows-to-agents",
+        "scripted_example_fraction": 0.3,
+        "argumentative_risk": 0.2,
+        "risk_rationale": "Section is mostly definitional with dictated analogies (factory assembly line, skilled human expert) and future-lesson flags that align closely with theoretical foundations in building-effective-agents, keeping interpretive weight low."
+      },
+      {
+        "sec_id": "S3::section-3-choosing-your-path",
+        "scripted_example_fraction": 0.2,
+        "argumentative_risk": 0.7,
+        "risk_rationale": "Extensive lists of when-to-use examples, strengths/weaknesses (including finance/health predictability claims and funny Replit/Claude deletion story), autonomy slider, and hybrid conclusions draw normative leaps only partially supported by trade-off coverage in exploring-the-difference-between-agents-and-workflows."
+      },
+      {
+        "sec_id": "S4::section-4-exploring-common-patterns",
+        "scripted_example_fraction": 0.25,
+        "argumentative_risk": 0.4,
+        "risk_rationale": "Guideline prescribes high-level explanations, mermaid diagrams, and intuition-building for chaining/routing/orchestrator/evaluator/ReAct (with RAM analogy and future-lesson flags) that add mild interpretive framing beyond the theoretical foundations in what-is-an-ai-agent and kQxr-uOxw2o."
+      },
+      {
+        "sec_id": "S5::section-5-zooming-in-on-our-favorite-examples",
+        "scripted_example_fraction": 0.6,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Highly dictated step-by-step narratives for Gemini CLI (context gathering to loop decision) and Perplexity Deep Research (planning to refinement, explicitly noted as 'oversimplified' assumptions) function as illustrative worked examples only loosely grounded in gemini-cli and introducing-perplexity-deep-research sources."
+      },
+      {
+        "sec_id": "S6::section-6-conclusion-the-challenges-of-every-ai-engineer",
+        "scripted_example_fraction": 0.1,
+        "argumentative_risk": 0.65,
+        "risk_rationale": "Normative framing of 'the reality' every AI engineer faces, enumerated daily challenges, 'good news' solvability, and course path-forward claims carry evaluative weight only thinly matched by limitations in TRjq7t2Ms5I and building-effective-agents."
+      }
+    ],
+    "source_independence": 0.55,
+    "topic_canonicity": 0.8,
+    "overall_notes": "Moderate scripted_example_fraction is concentrated in S1 and S5 due to verbatim personal story and oversimplified step-by-step illustrative narratives dictated by the guideline. Argumentative risk is elevated in comparative/recommendation sections (S3, S6) where normative claims on trade-offs, domains, and engineer challenges outpace direct source support. The workflows-vs-agents topic is highly canonical with recurring Anthropic-inspired patterns across sources, yielding only moderate source independence."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline scripts a verbatim personal story plus five specific catastrophic outcomes (rigid system, unpredictable agent, wasted months, frustrated users/executives) and billion-dollar startup claims that extend beyond the partial coverage of motivation/limitations in sources like kQxr-uOxw2o.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-understanding-the-spectrum-from-workflows-to-agents\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Section is mostly definitional with dictated analogies (factory assembly line, skilled human expert) and future-lesson flags that align closely with theoretical foundations in building-effective-agents, keeping interpretive weight low.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-choosing-your-path\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Extensive lists of when-to-use examples, strengths/weaknesses (including finance/health predictability claims and funny Replit/Claude deletion story), autonomy slider, and hybrid conclusions draw normative leaps only partially supported by trade-off coverage in exploring-the-difference-between-agents-and-workflows.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-exploring-common-patterns\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline prescribes high-level explanations, mermaid diagrams, and intuition-building for chaining/routing/orchestrator/evaluator/ReAct (with RAM analogy and future-lesson flags) that add mild interpretive framing beyond the theoretical foundations in what-is-an-ai-agent and kQxr-uOxw2o.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-zooming-in-on-our-favorite-examples\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Highly dictated step-by-step narratives for Gemini CLI (context gathering to loop decision) and Perplexity Deep Research (planning to refinement, explicitly noted as 'oversimplified' assumptions) function as illustrative worked examples only loosely grounded in gemini-cli and introducing-perplexity-deep-research sources.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-conclusion-the-challenges-of-every-ai-engineer\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Normative framing of 'the reality' every AI engineer faces, enumerated daily challenges, 'good news' solvability, and course path-forward claims carry evaluative weight only thinly matched by limitations in TRjq7t2Ms5I and building-effective-agents.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Moderate scripted_example_fraction is concentrated in S1 and S5 due to verbatim personal story and oversimplified step-by-step illustrative narratives dictated by the guideline. Argumentative risk is elevated in comparative/recommendation sections (S3, S6) where normative claims on trade-offs, domains, and engineer challenges outpace direct source support. The workflows-vs-agents topic is highly canonical with recurring Anthropic-inspired patterns across sources, yielding only moderate source independence.\"\n}\n```",
+  "parse_ok": true
+}

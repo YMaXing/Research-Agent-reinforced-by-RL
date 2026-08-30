@@ -1,0 +1,730 @@
+2026-08-25 15:09:09,740 [INFO] =================================================================
+2026-08-25 15:09:09,740 [INFO]   Offline GRPO + QLoRA Training Pipeline
+2026-08-25 15:09:09,741 [INFO] =================================================================
+2026-08-25 15:09:09,991 [INFO] GPU: NVIDIA GeForce RTX 4090 Laptop GPU
+2026-08-25 15:09:09,992 [INFO] VRAM: 16.0 GB total, 14.7 GB free
+2026-08-25 15:09:09,997 [WARNING] Task directory already exists: /mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/checkpoints/tasks/run34_design_c. Starting a fresh run may overwrite metrics in this task id.
+2026-08-25 15:09:09,997 [INFO] --bases-dir override: reading section_oracle.json/digests from /mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/bases_design_c
+2026-08-25 15:09:10,000 [INFO] 
+--- Step 1: Load training data (granularity=section) ---
+2026-08-25 15:09:10,046 [INFO]   02_workflows_vs_agents__var_minimal__S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces (oracle=skip): R=['0.300', '0.240', '0.247', '0.274'] best=skip accept=[0, 1, 2, 3]
+2026-08-25 15:09:10,048 [INFO]   02_workflows_vs_agents__var_minimal__S2::section-2-understanding-the-spectrum-from-workflows-to-agents (oracle=skip): R=['0.367', '0.259', '0.147', '0.238'] best=skip accept=[0]
+2026-08-25 15:09:10,050 [INFO]   02_workflows_vs_agents__var_minimal__S3::section-3-choosing-your-path (oracle=deep): R=['0.167', '0.040', '0.018', '0.182'] best=deep accept=[0, 3]
+2026-08-25 15:09:10,051 [INFO]   02_workflows_vs_agents__var_minimal__S4::section-4-exploring-common-patterns (oracle=light): R=['0.067', '0.199', '-0.031', '-0.025'] best=light accept=[1]
+2026-08-25 15:09:10,053 [INFO]   02_workflows_vs_agents__var_minimal__S5::section-5-zooming-in-on-our-favorite-examples (oracle=light): R=['0.167', '0.251', '0.115', '0.123'] best=light accept=[1]
+2026-08-25 15:09:10,054 [INFO]   02_workflows_vs_agents__var_minimal__S6::section-6-conclusion-the-challenges-of-every-ai-engineer (oracle=light): R=['0.300', '0.506', '0.180', '0.355'] best=light accept=[1]
+2026-08-25 15:09:10,068 [INFO]   02_workflows_vs_agents__var_standard__S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces (oracle=skip): R=['0.367', '0.307', '0.266', '0.173'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,069 [INFO]   02_workflows_vs_agents__var_standard__S2::section-2-understanding-the-spectrum-from-workflows-to-agents (oracle=deep): R=['0.267', '0.173', '0.183', '0.279'] best=deep accept=[0, 3]
+2026-08-25 15:09:10,069 [INFO]   02_workflows_vs_agents__var_standard__S3::section-3-choosing-your-path (oracle=light): R=['0.333', '0.569', '0.301', '0.140'] best=light accept=[1]
+2026-08-25 15:09:10,070 [INFO]   02_workflows_vs_agents__var_standard__S4::section-4-exploring-common-patterns (oracle=light): R=['0.333', '0.547', '0.350', '0.242'] best=light accept=[1]
+2026-08-25 15:09:10,071 [INFO]   02_workflows_vs_agents__var_standard__S5::section-5-zooming-in-on-our-favorite-examples (oracle=deep): R=['0.300', '0.403', '0.308', '0.492'] best=deep accept=[3]
+2026-08-25 15:09:10,071 [INFO]   02_workflows_vs_agents__var_standard__S6::section-6-conclusion-the-challenges-of-every-ai-engineer (oracle=light): R=['0.333', '0.632', '0.577', '0.519'] best=light accept=[1, 2]
+2026-08-25 15:09:10,084 [INFO]   02_workflows_vs_agents__var_demanding__S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces (oracle=skip): R=['0.300', '0.273', '0.213', '0.207'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,085 [INFO]   02_workflows_vs_agents__var_demanding__S2::section-2-understanding-the-spectrum-from-workflows-to-agents (oracle=standard): R=['0.233', '0.312', '0.318', '0.187'] best=standard accept=[1, 2]
+2026-08-25 15:09:10,085 [INFO]   02_workflows_vs_agents__var_demanding__S3::section-3-choosing-your-path (oracle=light): R=['0.167', '0.282', '0.080', '0.164'] best=light accept=[1]
+2026-08-25 15:09:10,086 [INFO]   02_workflows_vs_agents__var_demanding__S4::section-4-exploring-common-patterns (oracle=standard): R=['0.367', '0.447', '0.507', '0.392'] best=standard accept=[2]
+2026-08-25 15:09:10,086 [INFO]   02_workflows_vs_agents__var_demanding__S5::section-5-zooming-in-on-our-favorite-examples (oracle=standard): R=['0.267', '0.273', '0.318', '0.299'] best=standard accept=[0, 1, 2, 3]
+2026-08-25 15:09:10,087 [INFO]   02_workflows_vs_agents__var_demanding__S6::section-6-conclusion-the-challenges-of-every-ai-engineer (oracle=standard): R=['0.333', '0.586', '0.593', '0.398'] best=standard accept=[1, 2]
+2026-08-25 15:09:10,106 [INFO]   03_context_engineering__var_minimal__S1::section-1-introduction-when-prompt-engineering-breaks (oracle=skip): R=['0.333', '0.240', '0.280', '0.240'] best=skip accept=[0, 2]
+2026-08-25 15:09:10,107 [INFO]   03_context_engineering__var_minimal__S2::section-2-from-prompt-to-context-engineering (oracle=deep): R=['0.300', '0.240', '0.280', '0.326'] best=deep accept=[0, 2, 3]
+2026-08-25 15:09:10,108 [INFO]   03_context_engineering__var_minimal__S3::section-3-understanding-context-engineering (oracle=skip): R=['0.200', '0.107', '0.080', '0.108'] best=skip accept=[0]
+2026-08-25 15:09:10,109 [INFO]   03_context_engineering__var_minimal__S4::section-4-what-makes-up-the-context (oracle=skip): R=['0.133', '0.107', '0.047', '0.040'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,109 [INFO]   03_context_engineering__var_minimal__S5::section-5-production-implementation-challenges (oracle=deep): R=['0.367', '0.359', '0.376', '0.446'] best=deep accept=[3]
+2026-08-25 15:09:10,110 [INFO]   03_context_engineering__var_minimal__S6::section-6-key-strategies-for-context-optimization (oracle=skip): R=['0.367', '0.275', '0.354', '0.303'] best=skip accept=[0, 2]
+2026-08-25 15:09:10,112 [INFO]   03_context_engineering__var_minimal__S7::section-7-here-is-an-example (oracle=skip): R=['-0.067', '-0.127', '-0.187', '-0.193'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,113 [INFO]   03_context_engineering__var_minimal__S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering (oracle=skip): R=['0.267', '0.140', '0.080', '0.108'] best=skip accept=[0]
+2026-08-25 15:09:10,126 [INFO]   03_context_engineering__var_standard__S1::section-1-introduction-when-prompt-engineering-breaks (oracle=skip): R=['0.367', '0.207', '0.280', '0.293'] best=skip accept=[0]
+2026-08-25 15:09:10,126 [INFO]   03_context_engineering__var_standard__S2::section-2-from-prompt-to-context-engineering (oracle=standard): R=['0.400', '0.393', '0.404', '0.326'] best=standard accept=[0, 1, 2]
+2026-08-25 15:09:10,127 [INFO]   03_context_engineering__var_standard__S3::section-3-understanding-context-engineering: dropped (flat, max-min=0.0282 < sigma_floor)
+2026-08-25 15:09:10,127 [INFO]   03_context_engineering__var_standard__S4::section-4-what-makes-up-the-context (oracle=deep): R=['0.133', '0.107', '0.048', '0.182'] best=deep accept=[0, 3]
+2026-08-25 15:09:10,128 [INFO]   03_context_engineering__var_standard__S5::section-5-production-implementation-challenges (oracle=standard): R=['0.400', '0.542', '0.599', '0.461'] best=standard accept=[1, 2]
+2026-08-25 15:09:10,128 [INFO]   03_context_engineering__var_standard__S6::section-6-key-strategies-for-context-optimization (oracle=light): R=['0.367', '0.597', '0.518', '0.385'] best=light accept=[1]
+2026-08-25 15:09:10,129 [INFO]   03_context_engineering__var_standard__S7::section-7-here-is-an-example (oracle=skip): R=['-0.033', '-0.127', '-0.120', '-0.127'] best=skip accept=[0]
+2026-08-25 15:09:10,130 [INFO]   03_context_engineering__var_standard__S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering (oracle=light): R=['0.367', '0.427', '0.421', '0.399'] best=light accept=[1, 2, 3]
+2026-08-25 15:09:10,162 [INFO]   03_context_engineering__var_demanding__S1::section-1-introduction-when-prompt-engineering-breaks (oracle=skip): R=['0.333', '0.307', '0.213', '0.207'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,163 [INFO]   03_context_engineering__var_demanding__S2::section-2-from-prompt-to-context-engineering (oracle=skip): R=['0.333', '0.307', '0.180', '0.240'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,164 [INFO]   03_context_engineering__var_demanding__S3::section-3-understanding-context-engineering (oracle=skip): R=['0.133', '0.073', '0.066', '0.077'] best=skip accept=[0, 3]
+2026-08-25 15:09:10,165 [INFO]   03_context_engineering__var_demanding__S4::section-4-what-makes-up-the-context (oracle=standard): R=['0.133', '0.143', '0.148', '0.094'] best=standard accept=[0, 1, 2, 3]
+2026-08-25 15:09:10,167 [INFO]   03_context_engineering__var_demanding__S5::section-5-production-implementation-challenges (oracle=deep): R=['0.333', '0.497', '0.490', '0.512'] best=deep accept=[1, 2, 3]
+2026-08-25 15:09:10,169 [INFO]   03_context_engineering__var_demanding__S6::section-6-key-strategies-for-context-optimization (oracle=light): R=['0.267', '0.682', '0.353', '0.411'] best=light accept=[1]
+2026-08-25 15:09:10,175 [INFO]   03_context_engineering__var_demanding__S7::section-7-here-is-an-example (oracle=skip): R=['-0.067', '-0.127', '-0.187', '-0.193'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,176 [INFO]   03_context_engineering__var_demanding__S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering (oracle=standard): R=['0.300', '0.307', '0.324', '0.275'] best=standard accept=[0, 1, 2, 3]
+2026-08-25 15:09:10,203 [INFO]   05_workflow_patterns__var_minimal__S1::section-1-the-challenge-with-complex-single-llm-calls (oracle=skip): R=['0.267', '0.207', '0.147', '0.140'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,204 [INFO]   05_workflow_patterns__var_minimal__S2::section-2-the-power-of-modularity-why-chain-llm-calls (oracle=light): R=['0.367', '0.417', '0.414', '0.240'] best=light accept=[0, 1, 2]
+2026-08-25 15:09:10,205 [INFO]   05_workflow_patterns__var_minimal__S3::section-3-building-a-sequential-workflow-faq-generation-pipeline (oracle=skip): R=['0.200', '0.073', '0.080', '0.073'] best=skip accept=[0]
+2026-08-25 15:09:10,206 [INFO]   05_workflow_patterns__var_minimal__S4::section-4-optimizing-sequential-workflows-with-parallel-processing (oracle=deep): R=['0.200', '0.221', '0.233', '0.240'] best=deep accept=[0, 1, 2, 3]
+2026-08-25 15:09:10,207 [INFO]   05_workflow_patterns__var_minimal__S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic (oracle=skip): R=['0.300', '0.154', '0.150', '0.041'] best=skip accept=[0]
+2026-08-25 15:09:10,208 [INFO]   05_workflow_patterns__var_minimal__S6::section-building-a-basic-routing-workflow (oracle=skip): R=['0.067', '-0.127', '-0.053', '-0.003'] best=skip accept=[0]
+2026-08-25 15:09:10,209 [INFO]   05_workflow_patterns__var_minimal__S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition (oracle=light): R=['0.133', '0.295', '0.177', '0.149'] best=light accept=[1]
+2026-08-25 15:09:10,226 [INFO]   05_workflow_patterns__var_standard__S1::section-1-the-challenge-with-complex-single-llm-calls (oracle=deep): R=['0.300', '0.340', '0.213', '0.431'] best=deep accept=[3]
+2026-08-25 15:09:10,229 [INFO]   05_workflow_patterns__var_standard__S2::section-2-the-power-of-modularity-why-chain-llm-calls (oracle=light): R=['0.367', '0.409', '0.314', '0.389'] best=light accept=[0, 1, 3]
+2026-08-25 15:09:10,230 [INFO]   05_workflow_patterns__var_standard__S3::section-3-building-a-sequential-workflow-faq-generation-pipeline (oracle=skip): R=['0.200', '0.140', '0.147', '0.073'] best=skip accept=[0, 1, 2]
+2026-08-25 15:09:10,231 [INFO]   05_workflow_patterns__var_standard__S4::section-4-optimizing-sequential-workflows-with-parallel-processing (oracle=light): R=['0.200', '0.307', '0.266', '0.140'] best=light accept=[1, 2]
+2026-08-25 15:09:10,231 [INFO]   05_workflow_patterns__var_standard__S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic (oracle=light): R=['0.200', '0.680', '0.314', '0.378'] best=light accept=[1]
+2026-08-25 15:09:10,232 [INFO]   05_workflow_patterns__var_standard__S6::section-building-a-basic-routing-workflow (oracle=light): R=['0.067', '0.281', '0.067', '0.075'] best=light accept=[1]
+2026-08-25 15:09:10,233 [INFO]   05_workflow_patterns__var_standard__S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition (oracle=standard): R=['0.000', '0.163', '0.254', '0.228'] best=standard accept=[2, 3]
+2026-08-25 15:09:10,278 [INFO]   05_workflow_patterns__var_demanding__S1::section-1-the-challenge-with-complex-single-llm-calls (oracle=light): R=['0.367', '0.403', '0.247', '0.308'] best=light accept=[0, 1]
+2026-08-25 15:09:10,278 [INFO]   05_workflow_patterns__var_demanding__S2::section-2-the-power-of-modularity-why-chain-llm-calls (oracle=deep): R=['0.400', '0.451', '0.422', '0.486'] best=deep accept=[1, 3]
+2026-08-25 15:09:10,289 [INFO]   05_workflow_patterns__var_demanding__S3::section-3-building-a-sequential-workflow-faq-generation-pipeline (oracle=standard): R=['0.200', '0.207', '0.213', '0.140'] best=standard accept=[0, 1, 2]
+2026-08-25 15:09:10,299 [INFO]   05_workflow_patterns__var_demanding__S4::section-4-optimizing-sequential-workflows-with-parallel-processing (oracle=light): R=['0.267', '0.396', '0.318', '0.312'] best=light accept=[1]
+2026-08-25 15:09:10,300 [INFO]   05_workflow_patterns__var_demanding__S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic (oracle=light): R=['0.133', '0.312', '0.271', '0.251'] best=light accept=[1, 2]
+2026-08-25 15:09:10,302 [INFO]   05_workflow_patterns__var_demanding__S6::section-building-a-basic-routing-workflow (oracle=light): R=['0.133', '0.310', '0.115', '0.207'] best=light accept=[1]
+2026-08-25 15:09:10,304 [INFO]   05_workflow_patterns__var_demanding__S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition (oracle=deep): R=['0.133', '0.532', '0.483', '0.572'] best=deep accept=[1, 3]
+2026-08-25 15:09:10,326 [INFO]   06_tools__var_minimal__S1::section-1-introduction (oracle=light): R=['-0.033', '0.207', '0.013', '-0.060'] best=light accept=[1]
+2026-08-25 15:09:10,327 [INFO]   06_tools__var_minimal__S2::section-2-understanding-why-agents-need-tools (oracle=skip): R=['0.133', '0.074', '0.013', '-0.026'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,328 [INFO]   06_tools__var_minimal__S3::section-3-implementing-tool-calls-from-scratch (oracle=deep): R=['0.133', '0.160', '0.116', '0.163'] best=deep accept=[0, 1, 2, 3]
+2026-08-25 15:09:10,329 [INFO]   06_tools__var_minimal__S4::section-4-implementing-a-tool-calling-framework-from-scratch (oracle=skip): R=['0.133', '0.007', '-0.030', '0.007'] best=skip accept=[0]
+2026-08-25 15:09:10,330 [INFO]   06_tools__var_minimal__S5::section-5-implementing-production-level-tool-calls-with-gemini (oracle=standard): R=['0.033', '0.040', '0.047', '-0.004'] best=standard accept=[0, 1, 2, 3]
+2026-08-25 15:09:10,330 [INFO]   06_tools__var_minimal__S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs (oracle=light): R=['0.200', '0.207', '0.147', '0.173'] best=light accept=[0, 1, 2, 3]
+2026-08-25 15:09:10,331 [INFO]   06_tools__var_minimal__S7::section-7-the-downsides-of-running-tools-in-a-loop (oracle=skip): R=['0.200', '0.198', '0.115', '0.108'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,332 [INFO]   06_tools__var_minimal__S8::section-8-popular-tools-used-within-the-industry (oracle=skip): R=['0.300', '0.177', '0.136', '0.107'] best=skip accept=[0]
+2026-08-25 15:09:10,333 [INFO]   06_tools__var_minimal__S9::section-9-conclusion (oracle=skip): R=['0.267', '0.207', '0.113', '0.073'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,473 [INFO]   06_tools__var_standard__S1::section-1-introduction (oracle=light): R=['0.100', '0.107', '0.013', '0.007'] best=light accept=[0, 1]
+2026-08-25 15:09:10,475 [INFO]   06_tools__var_standard__S2::section-2-understanding-why-agents-need-tools (oracle=standard): R=['0.167', '0.173', '0.267', '0.108'] best=standard accept=[2]
+2026-08-25 15:09:10,479 [INFO]   06_tools__var_standard__S3::section-3-implementing-tool-calls-from-scratch (oracle=deep): R=['0.100', '0.073', '0.148', '0.317'] best=deep accept=[3]
+2026-08-25 15:09:10,486 [INFO]   06_tools__var_standard__S4::section-4-implementing-a-tool-calling-framework-from-scratch (oracle=deep): R=['0.100', '0.040', '0.036', '0.405'] best=deep accept=[3]
+2026-08-25 15:09:10,491 [INFO]   06_tools__var_standard__S5::section-5-implementing-production-level-tool-calls-with-gemini (oracle=deep): R=['0.100', '0.173', '0.266', '0.331'] best=deep accept=[3]
+2026-08-25 15:09:10,496 [INFO]   06_tools__var_standard__S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs (oracle=deep): R=['0.200', '0.307', '0.247', '0.379'] best=deep accept=[3]
+2026-08-25 15:09:10,499 [INFO]   06_tools__var_standard__S7::section-7-the-downsides-of-running-tools-in-a-loop (oracle=light): R=['0.233', '0.599', '0.303', '0.409'] best=light accept=[1]
+2026-08-25 15:09:10,503 [INFO]   06_tools__var_standard__S8::section-8-popular-tools-used-within-the-industry (oracle=light): R=['0.167', '0.274', '0.232', '-0.091'] best=light accept=[1, 2]
+2026-08-25 15:09:10,506 [INFO]   06_tools__var_standard__S9::section-9-conclusion (oracle=skip): R=['0.333', '0.240', '0.180', '0.173'] best=skip accept=[0]
+2026-08-25 15:09:10,578 [INFO]   06_tools__var_demanding__S1::section-1-introduction (oracle=light): R=['0.200', '0.240', '0.113', '0.140'] best=light accept=[0, 1]
+2026-08-25 15:09:10,580 [INFO]   06_tools__var_demanding__S2::section-2-understanding-why-agents-need-tools (oracle=light): R=['0.267', '0.292', '0.050', '0.201'] best=light accept=[0, 1]
+2026-08-25 15:09:10,582 [INFO]   06_tools__var_demanding__S3::section-3-implementing-tool-calls-from-scratch (oracle=light): R=['0.133', '0.314', '0.133', '0.237'] best=light accept=[1]
+2026-08-25 15:09:10,585 [INFO]   06_tools__var_demanding__S4::section-4-implementing-a-small-tool-calling-framework-from-scratch (oracle=light): R=['-0.100', '0.029', '-0.187', '-0.227'] best=light accept=[1]
+2026-08-25 15:09:10,587 [INFO]   06_tools__var_demanding__S5::section-5-implementing-production-level-tool-calls-with-gemini (oracle=standard): R=['0.167', '0.240', '0.338', '0.159'] best=standard accept=[2]
+2026-08-25 15:09:10,589 [INFO]   06_tools__var_demanding__S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs (oracle=skip): R=['0.333', '0.207', '0.247', '0.293'] best=skip accept=[0, 3]
+2026-08-25 15:09:10,591 [INFO]   06_tools__var_demanding__S7::section-7-the-downsides-of-running-tools-in-a-loop (oracle=deep): R=['0.233', '0.297', '0.199', '0.392'] best=deep accept=[3]
+2026-08-25 15:09:10,593 [INFO]   06_tools__var_demanding__S8::section-8-popular-tools-used-within-the-industry (oracle=deep): R=['0.167', '0.312', '0.205', '0.449'] best=deep accept=[3]
+2026-08-25 15:09:10,594 [INFO]   06_tools__var_demanding__S9::section-9-conclusion (oracle=skip): R=['0.333', '0.240', '0.213', '0.173'] best=skip accept=[0]
+2026-08-25 15:09:10,639 [INFO]   08_react_practice__var_minimal__S1::section-1-setup-and-environment (oracle=skip): R=['0.267', '0.173', '0.180', '0.207'] best=skip accept=[0, 3]
+2026-08-25 15:09:10,641 [INFO]   08_react_practice__var_minimal__S2::section-2-tool-layer-mock-search-implementation (oracle=skip): R=['0.267', '0.173', '0.113', '0.126'] best=skip accept=[0]
+2026-08-25 15:09:10,642 [INFO]   08_react_practice__var_minimal__S3::section-3-thought-phase-prompt-construction-and-generation (oracle=skip): R=['0.100', '-0.160', '-0.053', '-0.174'] best=skip accept=[0]
+2026-08-25 15:09:10,643 [INFO]   08_react_practice__var_minimal__S4::section-4-action-phase-function-calling-and-parsing (oracle=skip): R=['0.400', '0.173', '0.214', '0.141'] best=skip accept=[0]
+2026-08-25 15:09:10,644 [INFO]   08_react_practice__var_minimal__S5::section-5-control-loop-messages-scratchpad-orchestration (oracle=light): R=['0.033', '0.241', '-0.041', '-0.160'] best=light accept=[1]
+2026-08-25 15:09:10,646 [INFO]   08_react_practice__var_minimal__S6::section-6-tests-and-traces-success-and-graceful-fallback (oracle=skip): R=['0.133', '-0.060', '-0.053', '-0.007'] best=skip accept=[0]
+2026-08-25 15:09:10,670 [INFO]   08_react_practice__var_standard__S1::section-1-setup-and-environment (oracle=skip): R=['0.333', '0.273', '0.213', '0.207'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,671 [INFO]   08_react_practice__var_standard__S2::section-2-tool-layer-mock-search-implementation (oracle=light): R=['0.333', '0.340', '0.213', '0.331'] best=light accept=[0, 1, 3]
+2026-08-25 15:09:10,674 [INFO]   08_react_practice__var_standard__S3::section-3-thought-phase-prompt-construction-and-generation (oracle=skip): R=['-0.033', '-0.127', '-0.120', '-0.160'] best=skip accept=[0]
+2026-08-25 15:09:10,675 [INFO]   08_react_practice__var_standard__S4::section-4-action-phase-function-calling-and-parsing (oracle=light): R=['0.300', '0.395', '0.285', '0.242'] best=light accept=[1]
+2026-08-25 15:09:10,676 [INFO]   08_react_practice__var_standard__S5::section-5-control-loop-messages-scratchpad-orchestration (oracle=light): R=['0.033', '0.450', '-0.127', '0.072'] best=light accept=[1]
+2026-08-25 15:09:10,677 [INFO]   08_react_practice__var_standard__S6::section-6-tests-and-traces-success-and-graceful-fallback (oracle=skip): R=['0.400', '0.273', '0.280', '0.298'] best=skip accept=[0]
+2026-08-25 15:09:10,697 [INFO]   08_react_practice__var_demanding__S1::section-1-setup-and-environment (oracle=deep): R=['0.233', '0.273', '0.180', '0.326'] best=deep accept=[1, 3]
+2026-08-25 15:09:10,698 [INFO]   08_react_practice__var_demanding__S2::section-2-tool-layer-mock-search-implementation (oracle=light): R=['0.300', '0.394', '0.299', '0.346'] best=light accept=[1, 3]
+2026-08-25 15:09:10,699 [INFO]   08_react_practice__var_demanding__S3::section-3-thought-phase-prompt-construction-and-generation (oracle=skip): R=['-0.100', '-0.160', '-0.220', '-0.193'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,700 [INFO]   08_react_practice__var_demanding__S4::section-4-action-phase-function-calling-and-parsing (oracle=light): R=['0.167', '0.246', '0.134', '0.132'] best=light accept=[1]
+2026-08-25 15:09:10,701 [INFO]   08_react_practice__var_demanding__S5::section-5-control-loop-messages-scratchpad-orchestration (oracle=light): R=['0.100', '0.147', '0.132', '-0.007'] best=light accept=[0, 1, 2]
+2026-08-25 15:09:10,702 [INFO]   08_react_practice__var_demanding__S6::section-6-tests-and-traces-success-and-graceful-fallback (oracle=light): R=['0.367', '0.427', '0.299', '0.413'] best=light accept=[1, 3]
+2026-08-25 15:09:10,720 [INFO]   09_RAG__var_minimal__S1::section-1-introduction-giving-llms-an-open-book-exam (oracle=skip): R=['0.167', '0.040', '0.099', '0.007'] best=skip accept=[0]
+2026-08-25 15:09:10,721 [INFO]   09_RAG__var_minimal__S2::section-2-the-rag-system-core-components (oracle=light): R=['0.133', '0.140', '0.080', '0.007'] best=light accept=[0, 1]
+2026-08-25 15:09:10,722 [INFO]   09_RAG__var_minimal__S3::section-3-the-rag-pipeline-ingestion-and-retrieval (oracle=skip): R=['0.133', '-0.060', '-0.053', '0.026'] best=skip accept=[0]
+2026-08-25 15:09:10,724 [INFO]   09_RAG__var_minimal__S4::section-4-advanced-rag-techniques (oracle=deep): R=['-0.067', '-0.041', '-0.090', '-0.026'] best=deep accept=[0, 1, 3]
+2026-08-25 15:09:10,724 [INFO]   09_RAG__var_minimal__S5::section-5-agentic-rag (oracle=light): R=['0.233', '0.362', '0.146', '0.347'] best=light accept=[1, 3]
+2026-08-25 15:09:10,725 [INFO]   09_RAG__var_minimal__S6::section-6-conclusion (oracle=skip): R=['0.300', '0.296', '0.216', '0.140'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,754 [INFO]   09_RAG__var_standard__S1::section-1-introduction-giving-llms-an-open-book-exam (oracle=skip): R=['-0.033', '-0.093', '-0.131', '-0.125'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,755 [INFO]   09_RAG__var_standard__S2::section-2-the-rag-system-core-components (oracle=skip): R=['0.200', '0.107', '0.013', '0.040'] best=skip accept=[0]
+2026-08-25 15:09:10,758 [INFO]   09_RAG__var_standard__S3::section-3-the-rag-pipeline-ingestion-and-retrieval (oracle=skip): R=['0.033', '-0.060', '-0.087', '-0.060'] best=skip accept=[0]
+2026-08-25 15:09:10,762 [INFO]   09_RAG__var_standard__S4::section-4-advanced-rag-techniques (oracle=deep): R=['0.000', '0.063', '0.251', '0.286'] best=deep accept=[2, 3]
+2026-08-25 15:09:10,763 [INFO]   09_RAG__var_standard__S5::section-5-agentic-rag (oracle=deep): R=['0.167', '0.291', '0.271', '0.330'] best=deep accept=[1, 2, 3]
+2026-08-25 15:09:10,763 [INFO]   09_RAG__var_standard__S6::section-6-conclusion (oracle=light): R=['0.400', '0.412', '0.136', '0.339'] best=light accept=[0, 1]
+2026-08-25 15:09:10,778 [INFO]   09_RAG__var_demanding__S1::section-1-introduction-giving-llms-an-open-book-exam (oracle=skip): R=['0.200', '0.042', '0.050', '0.103'] best=skip accept=[0]
+2026-08-25 15:09:10,778 [INFO]   09_RAG__var_demanding__S2::section-2-the-rag-system-core-components (oracle=skip): R=['0.133', '0.108', '0.047', '0.040'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,779 [INFO]   09_RAG__var_demanding__S3::section-3-the-rag-pipeline-ingestion-and-retrieval (oracle=deep): R=['0.000', '0.007', '-0.087', '0.055'] best=deep accept=[0, 1, 3]
+2026-08-25 15:09:10,780 [INFO]   09_RAG__var_demanding__S4::section-4-advanced-rag-techniques (oracle=deep): R=['0.067', '0.208', '0.060', '0.348'] best=deep accept=[3]
+2026-08-25 15:09:10,781 [INFO]   09_RAG__var_demanding__S5::section-5-agentic-rag (oracle=light): R=['0.100', '0.398', '0.361', '0.363'] best=light accept=[1, 2, 3]
+2026-08-25 15:09:10,781 [INFO]   09_RAG__var_demanding__S6::section-6-conclusion (oracle=skip): R=['0.367', '0.282', '0.322', '0.254'] best=skip accept=[0, 2]
+2026-08-25 15:09:10,802 [INFO]   10_memory_knowledge_access__var_minimal__S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place (oracle=skip): R=['0.133', '-0.027', '0.013', '-0.060'] best=skip accept=[0]
+2026-08-25 15:09:10,803 [INFO]   10_memory_knowledge_access__var_minimal__S2::section-2-the-layers-of-memory-internal-short-term-and-long-term (oracle=light): R=['0.133', '0.242', '0.013', '0.207'] best=light accept=[1, 3]
+2026-08-25 15:09:10,803 [INFO]   10_memory_knowledge_access__var_minimal__S3::section-3-long-term-memory-semantic-episodic-and-procedural (oracle=skip): R=['0.267', '0.140', '0.080', '0.107'] best=skip accept=[0]
+2026-08-25 15:09:10,804 [INFO]   10_memory_knowledge_access__var_minimal__S4::section-4-storing-memories-pros-and-cons-of-different-approaches (oracle=skip): R=['0.033', '-0.059', '-0.087', '-0.092'] best=skip accept=[0]
+2026-08-25 15:09:10,805 [INFO]   10_memory_knowledge_access__var_minimal__S5::section-5-memory-implementations-with-code-examples (oracle=light): R=['0.067', '0.273', '0.013', '0.140'] best=light accept=[1]
+2026-08-25 15:09:10,806 [INFO]   10_memory_knowledge_access__var_minimal__S6::section-6-real-world-lessons-challenges-and-best-practices (oracle=skip): R=['-0.067', '-0.127', '-0.187', '-0.193'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,806 [INFO]   10_memory_knowledge_access__var_minimal__S7::section-7-conclusion (oracle=light): R=['0.233', '0.264', '0.113', '0.073'] best=light accept=[0, 1]
+2026-08-25 15:09:10,851 [INFO]   10_memory_knowledge_access__var_standard__S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place (oracle=standard): R=['0.400', '0.359', '0.420', '0.345'] best=standard accept=[0, 2]
+2026-08-25 15:09:10,852 [INFO]   10_memory_knowledge_access__var_standard__S2::section-2-the-layers-of-memory-internal-short-term-and-long-term (oracle=light): R=['0.367', '0.431', '0.388', '0.329'] best=light accept=[1, 2]
+2026-08-25 15:09:10,853 [INFO]   10_memory_knowledge_access__var_standard__S3::section-3-long-term-memory-semantic-episodic-and-procedural (oracle=light): R=['0.333', '0.491', '0.213', '0.347'] best=light accept=[1]
+2026-08-25 15:09:10,853 [INFO]   10_memory_knowledge_access__var_standard__S4::section-4-storing-memories-pros-and-cons-of-different-approaches (oracle=light): R=['0.033', '0.398', '0.033', '0.062'] best=light accept=[1]
+2026-08-25 15:09:10,854 [INFO]   10_memory_knowledge_access__var_standard__S5::section-5-memory-implementations-with-code-examples (oracle=standard): R=['0.233', '0.140', '0.234', '0.040'] best=standard accept=[0, 2]
+2026-08-25 15:09:10,857 [INFO]   10_memory_knowledge_access__var_standard__S6::section-6-real-world-lessons-challenges-and-best-practices (oracle=standard): R=['0.233', '0.261', '0.448', '0.291'] best=standard accept=[2]
+2026-08-25 15:09:10,859 [INFO]   10_memory_knowledge_access__var_standard__S7::section-7-conclusion (oracle=deep): R=['0.267', '0.229', '0.182', '0.298'] best=deep accept=[0, 3]
+2026-08-25 15:09:10,931 [INFO]   10_memory_knowledge_access__var_demanding__S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place (oracle=standard): R=['0.200', '0.364', '0.388', '0.379'] best=standard accept=[1, 2, 3]
+2026-08-25 15:09:10,932 [INFO]   10_memory_knowledge_access__var_demanding__S2::section-2-the-layers-of-memory-internal-short-term-and-long-term (oracle=standard): R=['0.400', '0.445', '0.504', '0.460'] best=standard accept=[1, 2, 3]
+2026-08-25 15:09:10,933 [INFO]   10_memory_knowledge_access__var_demanding__S3::section-3-long-term-memory-semantic-episodic-and-procedural: dropped (flat, max-min=0.0340 < sigma_floor)
+2026-08-25 15:09:10,935 [INFO]   10_memory_knowledge_access__var_demanding__S4::section-4-storing-memories-pros-and-cons-of-different-approaches (oracle=standard): R=['0.000', '-0.060', '0.196', '0.127'] best=standard accept=[2]
+2026-08-25 15:09:10,936 [INFO]   10_memory_knowledge_access__var_demanding__S5::section-5-memory-implementations-with-code-examples (oracle=light): R=['0.367', '0.427', '0.266', '0.274'] best=light accept=[1]
+2026-08-25 15:09:10,937 [INFO]   10_memory_knowledge_access__var_demanding__S6::section-6-real-world-lessons-challenges-and-best-practices (oracle=light): R=['-0.033', '0.190', '-0.153', '0.157'] best=light accept=[1, 3]
+2026-08-25 15:09:10,938 [INFO]   10_memory_knowledge_access__var_demanding__S7::section-7-conclusion (oracle=deep): R=['0.233', '0.193', '0.252', '0.279'] best=deep accept=[0, 2, 3]
+2026-08-25 15:09:10,969 [INFO]   11_multimodal__var_minimal__S1::section-1-introduction-the-need-for-multimodal-ai (oracle=light): R=['0.133', '0.196', '0.113', '0.040'] best=light accept=[1]
+2026-08-25 15:09:10,970 [INFO]   11_multimodal__var_minimal__S2::section-2-limitations-of-traditional-document-processing (oracle=skip): R=['0.367', '0.307', '0.269', '0.207'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,971 [INFO]   11_multimodal__var_minimal__S3::section-3-foundations-of-multimodal-llms (oracle=light): R=['-0.033', '0.096', '0.069', '-0.093'] best=light accept=[1, 2]
+2026-08-25 15:09:10,973 [INFO]   11_multimodal__var_minimal__S4::section-4-applying-multimodal-llms-to-images-and-pdfs (oracle=light): R=['0.000', '0.107', '-0.120', '-0.160'] best=light accept=[1]
+2026-08-25 15:09:10,974 [INFO]   11_multimodal__var_minimal__S5::section-5-foundations-of-multimodal-rag (oracle=light): R=['0.033', '0.103', '-0.168', '0.007'] best=light accept=[1]
+2026-08-25 15:09:10,975 [INFO]   11_multimodal__var_minimal__S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text (oracle=skip): R=['0.033', '-0.027', '-0.220', '-0.160'] best=skip accept=[0]
+2026-08-25 15:09:10,976 [INFO]   11_multimodal__var_minimal__S7::section-7-building-multimodal-ai-agents (oracle=light): R=['0.100', '0.107', '-0.029', '-0.093'] best=light accept=[0, 1]
+2026-08-25 15:09:10,977 [INFO]   11_multimodal__var_minimal__S8::section-8-conclusion (oracle=skip): R=['0.333', '0.173', '0.192', '0.207'] best=skip accept=[0]
+2026-08-25 15:09:10,997 [INFO]   11_multimodal__var_standard__S1::section-1-introduction-the-need-for-multimodal-ai (oracle=skip): R=['0.400', '0.107', '0.047', '0.274'] best=skip accept=[0]
+2026-08-25 15:09:10,998 [INFO]   11_multimodal__var_standard__S2::section-2-limitations-of-traditional-document-processing (oracle=skip): R=['0.333', '0.273', '0.213', '0.207'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,998 [INFO]   11_multimodal__var_standard__S3::section-3-foundations-of-multimodal-llms (oracle=skip): R=['0.333', '0.296', '0.147', '0.242'] best=skip accept=[0, 1]
+2026-08-25 15:09:10,999 [INFO]   11_multimodal__var_standard__S4::section-4-applying-multimodal-llms-to-images-and-pdfs (oracle=skip): R=['0.400', '0.273', '-0.020', '0.274'] best=skip accept=[0]
+2026-08-25 15:09:11,000 [INFO]   11_multimodal__var_standard__S5::section-5-foundations-of-multimodal-rag (oracle=deep): R=['0.200', '0.325', '0.365', '0.394'] best=deep accept=[2, 3]
+2026-08-25 15:09:11,001 [INFO]   11_multimodal__var_standard__S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text (oracle=skip): R=['0.300', '0.196', '-0.018', '0.140'] best=skip accept=[0]
+2026-08-25 15:09:11,001 [INFO]   11_multimodal__var_standard__S7::section-7-building-multimodal-ai-agents (oracle=skip): R=['0.167', '0.129', '-0.017', '0.110'] best=skip accept=[0, 1, 3]
+2026-08-25 15:09:11,002 [INFO]   11_multimodal__var_standard__S8::section-8-conclusion (oracle=skip): R=['0.400', '0.163', '0.069', '0.274'] best=skip accept=[0]
+2026-08-25 15:09:11,103 [INFO]   11_multimodal__var_demanding__S1::section-1-introduction-the-need-for-multimodal-ai (oracle=standard): R=['0.200', '0.173', '0.271', '0.073'] best=standard accept=[2]
+2026-08-25 15:09:11,106 [INFO]   11_multimodal__var_demanding__S2::section-2-limitations-of-traditional-document-processing (oracle=light): R=['0.267', '0.273', '0.266', '0.207'] best=light accept=[0, 1, 2]
+2026-08-25 15:09:11,108 [INFO]   11_multimodal__var_demanding__S3::section-3-foundations-of-multimodal-llms (oracle=standard): R=['0.333', '0.273', '0.591', '0.252'] best=standard accept=[2]
+2026-08-25 15:09:11,112 [INFO]   11_multimodal__var_demanding__S4::section-4-applying-multimodal-llms-to-images-and-pdfs (oracle=skip): R=['0.333', '0.140', '0.047', '0.245'] best=skip accept=[0]
+2026-08-25 15:09:11,115 [INFO]   11_multimodal__var_demanding__S5::section-5-foundations-of-multimodal-rag (oracle=light): R=['0.200', '0.430', '0.350', '0.396'] best=light accept=[1, 3]
+2026-08-25 15:09:11,116 [INFO]   11_multimodal__var_demanding__S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text (oracle=skip): R=['0.267', '0.207', '0.169', '0.207'] best=skip accept=[0, 1, 3]
+2026-08-25 15:09:11,118 [INFO]   11_multimodal__var_demanding__S7::section-7-building-multimodal-ai-agents (oracle=skip): R=['0.200', '0.193', '0.168', '0.120'] best=skip accept=[0, 1, 2]
+2026-08-25 15:09:11,119 [INFO]   11_multimodal__var_demanding__S8::section-8-conclusion (oracle=skip): R=['0.300', '0.207', '0.103', '0.073'] best=skip accept=[0]
+2026-08-25 15:09:11,120 [INFO]   Inverse-freq class multipliers (temp=0.5): skip=0.806  light=0.869  standard=1.418  deep=1.251  (counts: skip:65  light:56  standard:21  deep:27)
+2026-08-25 15:09:11,121 [INFO]   Total section-level groups: 169 (33 with raw_std < sigma_floor; std clamped to sigma_floor)
+2026-08-25 15:09:11,121 [INFO] 
+--- Step 2: Load tokenizer ---
+2026-08-25 15:09:11,977 [INFO]   'skip' -> token_id=20599 -> decoded='skip'
+2026-08-25 15:09:11,977 [INFO]   'light' -> token_id=4145 -> decoded='light'
+2026-08-25 15:09:11,978 [INFO]   'standard' -> token_id=20270 -> decoded='standard'
+2026-08-25 15:09:11,978 [INFO]   'deep' -> token_id=32880 -> decoded='deep'
+2026-08-25 15:09:11,979 [INFO] 
+--- Step 3: Tokenize prompts ---
+2026-08-25 15:09:11,991 [INFO]   02_workflows_vs_agents__var_minimal__S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces: 2190 tokens
+2026-08-25 15:09:11,995 [INFO]   02_workflows_vs_agents__var_minimal__S2::section-2-understanding-the-spectrum-from-workflows-to-agents: 2238 tokens
+2026-08-25 15:09:12,002 [INFO]   02_workflows_vs_agents__var_minimal__S3::section-3-choosing-your-path: 2266 tokens
+2026-08-25 15:09:12,005 [INFO]   02_workflows_vs_agents__var_minimal__S4::section-4-exploring-common-patterns: 2011 tokens
+2026-08-25 15:09:12,008 [INFO]   02_workflows_vs_agents__var_minimal__S5::section-5-zooming-in-on-our-favorite-examples: 2010 tokens
+2026-08-25 15:09:12,013 [INFO]   02_workflows_vs_agents__var_minimal__S6::section-6-conclusion-the-challenges-of-every-ai-engineer: 2021 tokens
+2026-08-25 15:09:12,016 [INFO]   02_workflows_vs_agents__var_standard__S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces: 2215 tokens
+2026-08-25 15:09:12,019 [INFO]   02_workflows_vs_agents__var_standard__S2::section-2-understanding-the-spectrum-from-workflows-to-agents: 2235 tokens
+2026-08-25 15:09:12,022 [INFO]   02_workflows_vs_agents__var_standard__S3::section-3-choosing-your-path: 2274 tokens
+2026-08-25 15:09:12,025 [INFO]   02_workflows_vs_agents__var_standard__S4::section-4-exploring-common-patterns: 2049 tokens
+2026-08-25 15:09:12,028 [INFO]   02_workflows_vs_agents__var_standard__S5::section-5-zooming-in-on-our-favorite-examples: 2046 tokens
+2026-08-25 15:09:12,031 [INFO]   02_workflows_vs_agents__var_standard__S6::section-6-conclusion-the-challenges-of-every-ai-engineer: 2060 tokens
+2026-08-25 15:09:12,034 [INFO]   02_workflows_vs_agents__var_demanding__S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces: 2354 tokens
+2026-08-25 15:09:12,039 [INFO]   02_workflows_vs_agents__var_demanding__S2::section-2-understanding-the-spectrum-from-workflows-to-agents: 2261 tokens
+2026-08-25 15:09:12,056 [INFO]   02_workflows_vs_agents__var_demanding__S3::section-3-choosing-your-path: 2214 tokens
+2026-08-25 15:09:12,060 [INFO]   02_workflows_vs_agents__var_demanding__S4::section-4-exploring-common-patterns: 2028 tokens
+2026-08-25 15:09:12,063 [INFO]   02_workflows_vs_agents__var_demanding__S5::section-5-zooming-in-on-our-favorite-examples: 2147 tokens
+2026-08-25 15:09:12,067 [INFO]   02_workflows_vs_agents__var_demanding__S6::section-6-conclusion-the-challenges-of-every-ai-engineer: 2046 tokens
+2026-08-25 15:09:12,070 [INFO]   03_context_engineering__var_minimal__S1::section-1-introduction-when-prompt-engineering-breaks: 2108 tokens
+2026-08-25 15:09:12,073 [INFO]   03_context_engineering__var_minimal__S2::section-2-from-prompt-to-context-engineering: 2076 tokens
+2026-08-25 15:09:12,076 [INFO]   03_context_engineering__var_minimal__S3::section-3-understanding-context-engineering: 2110 tokens
+2026-08-25 15:09:12,082 [INFO]   03_context_engineering__var_minimal__S4::section-4-what-makes-up-the-context: 2137 tokens
+2026-08-25 15:09:12,090 [INFO]   03_context_engineering__var_minimal__S5::section-5-production-implementation-challenges: 2044 tokens
+2026-08-25 15:09:12,093 [INFO]   03_context_engineering__var_minimal__S6::section-6-key-strategies-for-context-optimization: 2079 tokens
+2026-08-25 15:09:12,096 [INFO]   03_context_engineering__var_minimal__S7::section-7-here-is-an-example: 2228 tokens
+2026-08-25 15:09:12,099 [INFO]   03_context_engineering__var_minimal__S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering: 2099 tokens
+2026-08-25 15:09:12,102 [INFO]   03_context_engineering__var_standard__S1::section-1-introduction-when-prompt-engineering-breaks: 2154 tokens
+2026-08-25 15:09:12,105 [INFO]   03_context_engineering__var_standard__S2::section-2-from-prompt-to-context-engineering: 2140 tokens
+2026-08-25 15:09:12,108 [INFO]   03_context_engineering__var_standard__S4::section-4-what-makes-up-the-context: 2207 tokens
+2026-08-25 15:09:12,113 [INFO]   03_context_engineering__var_standard__S5::section-5-production-implementation-challenges: 1994 tokens
+2026-08-25 15:09:12,116 [INFO]   03_context_engineering__var_standard__S6::section-6-key-strategies-for-context-optimization: 2020 tokens
+2026-08-25 15:09:12,119 [INFO]   03_context_engineering__var_standard__S7::section-7-here-is-an-example: 2039 tokens
+2026-08-25 15:09:12,123 [INFO]   03_context_engineering__var_standard__S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering: 2006 tokens
+2026-08-25 15:09:12,126 [INFO]   03_context_engineering__var_demanding__S1::section-1-introduction-when-prompt-engineering-breaks: 2169 tokens
+2026-08-25 15:09:12,130 [INFO]   03_context_engineering__var_demanding__S2::section-2-from-prompt-to-context-engineering: 2211 tokens
+2026-08-25 15:09:12,133 [INFO]   03_context_engineering__var_demanding__S3::section-3-understanding-context-engineering: 2312 tokens
+2026-08-25 15:09:12,137 [INFO]   03_context_engineering__var_demanding__S4::section-4-what-makes-up-the-context: 2110 tokens
+2026-08-25 15:09:12,143 [INFO]   03_context_engineering__var_demanding__S5::section-5-production-implementation-challenges: 2091 tokens
+2026-08-25 15:09:12,146 [INFO]   03_context_engineering__var_demanding__S6::section-6-key-strategies-for-context-optimization: 2083 tokens
+2026-08-25 15:09:12,150 [INFO]   03_context_engineering__var_demanding__S7::section-7-here-is-an-example: 2202 tokens
+2026-08-25 15:09:12,153 [INFO]   03_context_engineering__var_demanding__S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering: 2128 tokens
+2026-08-25 15:09:12,157 [INFO]   05_workflow_patterns__var_minimal__S1::section-1-the-challenge-with-complex-single-llm-calls: 2249 tokens
+2026-08-25 15:09:12,163 [INFO]   05_workflow_patterns__var_minimal__S2::section-2-the-power-of-modularity-why-chain-llm-calls: 2214 tokens
+2026-08-25 15:09:12,166 [INFO]   05_workflow_patterns__var_minimal__S3::section-3-building-a-sequential-workflow-faq-generation-pipeline: 2114 tokens
+2026-08-25 15:09:12,169 [INFO]   05_workflow_patterns__var_minimal__S4::section-4-optimizing-sequential-workflows-with-parallel-processing: 2143 tokens
+2026-08-25 15:09:12,171 [INFO]   05_workflow_patterns__var_minimal__S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic: 2019 tokens
+2026-08-25 15:09:12,174 [INFO]   05_workflow_patterns__var_minimal__S6::section-building-a-basic-routing-workflow: 2029 tokens
+2026-08-25 15:09:12,176 [INFO]   05_workflow_patterns__var_minimal__S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition: 2047 tokens
+2026-08-25 15:09:12,179 [INFO]   05_workflow_patterns__var_standard__S1::section-1-the-challenge-with-complex-single-llm-calls: 2216 tokens
+2026-08-25 15:09:12,185 [INFO]   05_workflow_patterns__var_standard__S2::section-2-the-power-of-modularity-why-chain-llm-calls: 2199 tokens
+2026-08-25 15:09:12,188 [INFO]   05_workflow_patterns__var_standard__S3::section-3-building-a-sequential-workflow-faq-generation-pipeline: 2087 tokens
+2026-08-25 15:09:12,190 [INFO]   05_workflow_patterns__var_standard__S4::section-4-optimizing-sequential-workflows-with-parallel-processing: 2125 tokens
+2026-08-25 15:09:12,193 [INFO]   05_workflow_patterns__var_standard__S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic: 2071 tokens
+2026-08-25 15:09:12,201 [INFO]   05_workflow_patterns__var_standard__S6::section-building-a-basic-routing-workflow: 2069 tokens
+2026-08-25 15:09:12,209 [INFO]   05_workflow_patterns__var_standard__S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition: 2119 tokens
+2026-08-25 15:09:12,214 [INFO]   05_workflow_patterns__var_demanding__S1::section-1-the-challenge-with-complex-single-llm-calls: 2377 tokens
+2026-08-25 15:09:12,220 [INFO]   05_workflow_patterns__var_demanding__S2::section-2-the-power-of-modularity-why-chain-llm-calls: 2362 tokens
+2026-08-25 15:09:12,223 [INFO]   05_workflow_patterns__var_demanding__S3::section-3-building-a-sequential-workflow-faq-generation-pipeline: 1997 tokens
+2026-08-25 15:09:12,225 [INFO]   05_workflow_patterns__var_demanding__S4::section-4-optimizing-sequential-workflows-with-parallel-processing: 2034 tokens
+2026-08-25 15:09:12,228 [INFO]   05_workflow_patterns__var_demanding__S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic: 2032 tokens
+2026-08-25 15:09:12,230 [INFO]   05_workflow_patterns__var_demanding__S6::section-building-a-basic-routing-workflow: 2017 tokens
+2026-08-25 15:09:12,233 [INFO]   05_workflow_patterns__var_demanding__S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition: 2030 tokens
+2026-08-25 15:09:12,235 [INFO]   06_tools__var_minimal__S1::section-1-introduction: 2051 tokens
+2026-08-25 15:09:12,241 [INFO]   06_tools__var_minimal__S2::section-2-understanding-why-agents-need-tools: 2181 tokens
+2026-08-25 15:09:12,244 [INFO]   06_tools__var_minimal__S3::section-3-implementing-tool-calls-from-scratch: 2281 tokens
+2026-08-25 15:09:12,246 [INFO]   06_tools__var_minimal__S4::section-4-implementing-a-tool-calling-framework-from-scratch: 2188 tokens
+2026-08-25 15:09:12,249 [INFO]   06_tools__var_minimal__S5::section-5-implementing-production-level-tool-calls-with-gemini: 2054 tokens
+2026-08-25 15:09:12,251 [INFO]   06_tools__var_minimal__S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs: 2070 tokens
+2026-08-25 15:09:12,255 [INFO]   06_tools__var_minimal__S7::section-7-the-downsides-of-running-tools-in-a-loop: 2063 tokens
+2026-08-25 15:09:12,258 [INFO]   06_tools__var_minimal__S8::section-8-popular-tools-used-within-the-industry: 2048 tokens
+2026-08-25 15:09:12,262 [INFO]   06_tools__var_minimal__S9::section-9-conclusion: 2012 tokens
+2026-08-25 15:09:12,268 [INFO]   06_tools__var_standard__S1::section-1-introduction: 2060 tokens
+2026-08-25 15:09:12,271 [INFO]   06_tools__var_standard__S2::section-2-understanding-why-agents-need-tools: 2211 tokens
+2026-08-25 15:09:12,275 [INFO]   06_tools__var_standard__S3::section-3-implementing-tool-calls-from-scratch: 2280 tokens
+2026-08-25 15:09:12,278 [INFO]   06_tools__var_standard__S4::section-4-implementing-a-tool-calling-framework-from-scratch: 2183 tokens
+2026-08-25 15:09:12,283 [INFO]   06_tools__var_standard__S5::section-5-implementing-production-level-tool-calls-with-gemini: 2078 tokens
+2026-08-25 15:09:12,286 [INFO]   06_tools__var_standard__S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs: 2089 tokens
+2026-08-25 15:09:12,288 [INFO]   06_tools__var_standard__S7::section-7-the-downsides-of-running-tools-in-a-loop: 2077 tokens
+2026-08-25 15:09:12,291 [INFO]   06_tools__var_standard__S8::section-8-popular-tools-used-within-the-industry: 2064 tokens
+2026-08-25 15:09:12,294 [INFO]   06_tools__var_standard__S9::section-9-conclusion: 2025 tokens
+2026-08-25 15:09:12,297 [INFO]   06_tools__var_demanding__S1::section-1-introduction: 2054 tokens
+2026-08-25 15:09:12,300 [INFO]   06_tools__var_demanding__S2::section-2-understanding-why-agents-need-tools: 2184 tokens
+2026-08-25 15:09:12,303 [INFO]   06_tools__var_demanding__S3::section-3-implementing-tool-calls-from-scratch: 2449 tokens
+2026-08-25 15:09:12,306 [INFO]   06_tools__var_demanding__S4::section-4-implementing-a-small-tool-calling-framework-from-scratch: 2316 tokens
+2026-08-25 15:09:12,310 [INFO]   06_tools__var_demanding__S5::section-5-implementing-production-level-tool-calls-with-gemini: 2120 tokens
+2026-08-25 15:09:12,312 [INFO]   06_tools__var_demanding__S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs: 2297 tokens
+2026-08-25 15:09:12,316 [INFO]   06_tools__var_demanding__S7::section-7-the-downsides-of-running-tools-in-a-loop: 2181 tokens
+2026-08-25 15:09:12,319 [INFO]   06_tools__var_demanding__S8::section-8-popular-tools-used-within-the-industry: 2034 tokens
+2026-08-25 15:09:12,322 [INFO]   06_tools__var_demanding__S9::section-9-conclusion: 2048 tokens
+2026-08-25 15:09:12,326 [INFO]   08_react_practice__var_minimal__S1::section-1-setup-and-environment: 2134 tokens
+2026-08-25 15:09:12,329 [INFO]   08_react_practice__var_minimal__S2::section-2-tool-layer-mock-search-implementation: 2179 tokens
+2026-08-25 15:09:12,331 [INFO]   08_react_practice__var_minimal__S3::section-3-thought-phase-prompt-construction-and-generation: 2112 tokens
+2026-08-25 15:09:12,334 [INFO]   08_react_practice__var_minimal__S4::section-4-action-phase-function-calling-and-parsing: 2224 tokens
+2026-08-25 15:09:12,337 [INFO]   08_react_practice__var_minimal__S5::section-5-control-loop-messages-scratchpad-orchestration: 2033 tokens
+2026-08-25 15:09:12,341 [INFO]   08_react_practice__var_minimal__S6::section-6-tests-and-traces-success-and-graceful-fallback: 2034 tokens
+2026-08-25 15:09:12,345 [INFO]   08_react_practice__var_standard__S1::section-1-setup-and-environment: 2133 tokens
+2026-08-25 15:09:12,347 [INFO]   08_react_practice__var_standard__S2::section-2-tool-layer-mock-search-implementation: 2179 tokens
+2026-08-25 15:09:12,349 [INFO]   08_react_practice__var_standard__S3::section-3-thought-phase-prompt-construction-and-generation: 2121 tokens
+2026-08-25 15:09:12,352 [INFO]   08_react_practice__var_standard__S4::section-4-action-phase-function-calling-and-parsing: 2211 tokens
+2026-08-25 15:09:12,355 [INFO]   08_react_practice__var_standard__S5::section-5-control-loop-messages-scratchpad-orchestration: 2037 tokens
+2026-08-25 15:09:12,357 [INFO]   08_react_practice__var_standard__S6::section-6-tests-and-traces-success-and-graceful-fallback: 2026 tokens
+2026-08-25 15:09:12,360 [INFO]   08_react_practice__var_demanding__S1::section-1-setup-and-environment: 2333 tokens
+2026-08-25 15:09:12,362 [INFO]   08_react_practice__var_demanding__S2::section-2-tool-layer-mock-search-implementation: 2232 tokens
+2026-08-25 15:09:12,365 [INFO]   08_react_practice__var_demanding__S3::section-3-thought-phase-prompt-construction-and-generation: 2263 tokens
+2026-08-25 15:09:12,367 [INFO]   08_react_practice__var_demanding__S4::section-4-action-phase-function-calling-and-parsing: 2335 tokens
+2026-08-25 15:09:12,370 [INFO]   08_react_practice__var_demanding__S5::section-5-control-loop-messages-scratchpad-orchestration: 2481 tokens
+2026-08-25 15:09:12,373 [INFO]   08_react_practice__var_demanding__S6::section-6-tests-and-traces-success-and-graceful-fallback: 2414 tokens
+2026-08-25 15:09:12,375 [INFO]   09_RAG__var_minimal__S1::section-1-introduction-giving-llms-an-open-book-exam: 2177 tokens
+2026-08-25 15:09:12,378 [INFO]   09_RAG__var_minimal__S2::section-2-the-rag-system-core-components: 2167 tokens
+2026-08-25 15:09:12,380 [INFO]   09_RAG__var_minimal__S3::section-3-the-rag-pipeline-ingestion-and-retrieval: 2276 tokens
+2026-08-25 15:09:12,382 [INFO]   09_RAG__var_minimal__S4::section-4-advanced-rag-techniques: 2213 tokens
+2026-08-25 15:09:12,385 [INFO]   09_RAG__var_minimal__S5::section-5-agentic-rag: 2141 tokens
+2026-08-25 15:09:12,387 [INFO]   09_RAG__var_minimal__S6::section-6-conclusion: 2015 tokens
+2026-08-25 15:09:12,389 [INFO]   09_RAG__var_standard__S1::section-1-introduction-giving-llms-an-open-book-exam: 2222 tokens
+2026-08-25 15:09:12,391 [INFO]   09_RAG__var_standard__S2::section-2-the-rag-system-core-components: 2120 tokens
+2026-08-25 15:09:12,398 [INFO]   09_RAG__var_standard__S3::section-3-the-rag-pipeline-ingestion-and-retrieval: 2252 tokens
+2026-08-25 15:09:12,400 [INFO]   09_RAG__var_standard__S4::section-4-advanced-rag-techniques: 2273 tokens
+2026-08-25 15:09:12,403 [INFO]   09_RAG__var_standard__S5::section-5-agentic-rag: 2187 tokens
+2026-08-25 15:09:12,405 [INFO]   09_RAG__var_standard__S6::section-6-conclusion: 1990 tokens
+2026-08-25 15:09:12,409 [INFO]   09_RAG__var_demanding__S1::section-1-introduction-giving-llms-an-open-book-exam: 2437 tokens
+2026-08-25 15:09:12,414 [INFO]   09_RAG__var_demanding__S2::section-2-the-rag-system-core-components: 2194 tokens
+2026-08-25 15:09:12,420 [INFO]   09_RAG__var_demanding__S3::section-3-the-rag-pipeline-ingestion-and-retrieval: 2339 tokens
+2026-08-25 15:09:12,425 [INFO]   09_RAG__var_demanding__S4::section-4-advanced-rag-techniques: 2197 tokens
+2026-08-25 15:09:12,432 [INFO]   09_RAG__var_demanding__S5::section-5-agentic-rag: 2415 tokens
+2026-08-25 15:09:12,438 [INFO]   09_RAG__var_demanding__S6::section-6-conclusion: 2181 tokens
+2026-08-25 15:09:12,443 [INFO]   10_memory_knowledge_access__var_minimal__S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place: 2179 tokens
+2026-08-25 15:09:12,446 [INFO]   10_memory_knowledge_access__var_minimal__S2::section-2-the-layers-of-memory-internal-short-term-and-long-term: 2108 tokens
+2026-08-25 15:09:12,451 [INFO]   10_memory_knowledge_access__var_minimal__S3::section-3-long-term-memory-semantic-episodic-and-procedural: 2190 tokens
+2026-08-25 15:09:12,456 [INFO]   10_memory_knowledge_access__var_minimal__S4::section-4-storing-memories-pros-and-cons-of-different-approaches: 2507 tokens
+2026-08-25 15:09:12,460 [INFO]   10_memory_knowledge_access__var_minimal__S5::section-5-memory-implementations-with-code-examples: 2050 tokens
+2026-08-25 15:09:12,465 [INFO]   10_memory_knowledge_access__var_minimal__S6::section-6-real-world-lessons-challenges-and-best-practices: 2031 tokens
+2026-08-25 15:09:12,469 [INFO]   10_memory_knowledge_access__var_minimal__S7::section-7-conclusion: 2014 tokens
+2026-08-25 15:09:12,472 [INFO]   10_memory_knowledge_access__var_standard__S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place: 2181 tokens
+2026-08-25 15:09:12,475 [INFO]   10_memory_knowledge_access__var_standard__S2::section-2-the-layers-of-memory-internal-short-term-and-long-term: 2146 tokens
+2026-08-25 15:09:12,478 [INFO]   10_memory_knowledge_access__var_standard__S3::section-3-long-term-memory-semantic-episodic-and-procedural: 2163 tokens
+2026-08-25 15:09:12,481 [INFO]   10_memory_knowledge_access__var_standard__S4::section-4-storing-memories-pros-and-cons-of-different-approaches: 2226 tokens
+2026-08-25 15:09:12,484 [INFO]   10_memory_knowledge_access__var_standard__S5::section-5-memory-implementations-with-code-examples: 2055 tokens
+2026-08-25 15:09:12,487 [INFO]   10_memory_knowledge_access__var_standard__S6::section-6-real-world-lessons-challenges-and-best-practices: 2029 tokens
+2026-08-25 15:09:12,490 [INFO]   10_memory_knowledge_access__var_standard__S7::section-7-conclusion: 2005 tokens
+2026-08-25 15:09:15,881 [INFO]   10_memory_knowledge_access__var_demanding__S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place: 2306 tokens
+2026-08-25 15:09:15,884 [INFO]   10_memory_knowledge_access__var_demanding__S2::section-2-the-layers-of-memory-internal-short-term-and-long-term: 2229 tokens
+2026-08-25 15:09:15,888 [INFO]   10_memory_knowledge_access__var_demanding__S4::section-4-storing-memories-pros-and-cons-of-different-approaches: 2196 tokens
+2026-08-25 15:09:15,894 [INFO]   10_memory_knowledge_access__var_demanding__S5::section-5-memory-implementations-with-code-examples: 2152 tokens
+2026-08-25 15:09:15,904 [INFO]   10_memory_knowledge_access__var_demanding__S6::section-6-real-world-lessons-challenges-and-best-practices: 2086 tokens
+2026-08-25 15:09:15,912 [INFO]   10_memory_knowledge_access__var_demanding__S7::section-7-conclusion: 2087 tokens
+2026-08-25 15:09:15,919 [INFO]   11_multimodal__var_minimal__S1::section-1-introduction-the-need-for-multimodal-ai: 2202 tokens
+2026-08-25 15:09:15,922 [INFO]   11_multimodal__var_minimal__S2::section-2-limitations-of-traditional-document-processing: 2155 tokens
+2026-08-25 15:09:15,937 [INFO]   11_multimodal__var_minimal__S3::section-3-foundations-of-multimodal-llms: 2213 tokens
+2026-08-25 15:09:15,962 [INFO]   11_multimodal__var_minimal__S4::section-4-applying-multimodal-llms-to-images-and-pdfs: 2029 tokens
+2026-08-25 15:09:15,970 [INFO]   11_multimodal__var_minimal__S5::section-5-foundations-of-multimodal-rag: 2029 tokens
+2026-08-25 15:09:15,973 [INFO]   11_multimodal__var_minimal__S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text: 2067 tokens
+2026-08-25 15:09:15,977 [INFO]   11_multimodal__var_minimal__S7::section-7-building-multimodal-ai-agents: 2004 tokens
+2026-08-25 15:09:15,981 [INFO]   11_multimodal__var_minimal__S8::section-8-conclusion: 1998 tokens
+2026-08-25 15:09:15,985 [INFO]   11_multimodal__var_standard__S1::section-1-introduction-the-need-for-multimodal-ai: 2263 tokens
+2026-08-25 15:09:15,989 [INFO]   11_multimodal__var_standard__S2::section-2-limitations-of-traditional-document-processing: 2170 tokens
+2026-08-25 15:09:15,995 [INFO]   11_multimodal__var_standard__S3::section-3-foundations-of-multimodal-llms: 2256 tokens
+2026-08-25 15:09:16,000 [INFO]   11_multimodal__var_standard__S4::section-4-applying-multimodal-llms-to-images-and-pdfs: 2176 tokens
+2026-08-25 15:09:16,008 [INFO]   11_multimodal__var_standard__S5::section-5-foundations-of-multimodal-rag: 2130 tokens
+2026-08-25 15:09:16,015 [INFO]   11_multimodal__var_standard__S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text: 2150 tokens
+2026-08-25 15:09:16,021 [INFO]   11_multimodal__var_standard__S7::section-7-building-multimodal-ai-agents: 2071 tokens
+2026-08-25 15:09:16,025 [INFO]   11_multimodal__var_standard__S8::section-8-conclusion: 2014 tokens
+2026-08-25 15:09:16,037 [INFO]   11_multimodal__var_demanding__S1::section-1-introduction-the-need-for-multimodal-ai: 2224 tokens
+2026-08-25 15:09:16,050 [INFO]   11_multimodal__var_demanding__S2::section-2-limitations-of-traditional-document-processing: 2163 tokens
+2026-08-25 15:09:16,053 [INFO]   11_multimodal__var_demanding__S3::section-3-foundations-of-multimodal-llms: 2291 tokens
+2026-08-25 15:09:16,057 [INFO]   11_multimodal__var_demanding__S4::section-4-applying-multimodal-llms-to-images-and-pdfs: 2191 tokens
+2026-08-25 15:09:16,061 [INFO]   11_multimodal__var_demanding__S5::section-5-foundations-of-multimodal-rag: 2503 tokens
+2026-08-25 15:09:16,064 [INFO]   11_multimodal__var_demanding__S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text: 2134 tokens
+2026-08-25 15:09:16,067 [INFO]   11_multimodal__var_demanding__S7::section-7-building-multimodal-ai-agents: 2163 tokens
+2026-08-25 15:09:16,070 [INFO]   11_multimodal__var_demanding__S8::section-8-conclusion: 2065 tokens
+2026-08-25 15:09:16,072 [INFO] 
+--- Step 4: Load model (NF4 quantized) ---
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:04<30:07,  4.55s/it]Loading weights:   1%|          | 3/398 [00:04<08:42,  1.32s/it]Loading weights:   1%|          | 4/398 [00:05<06:26,  1.02it/s]Loading weights:   1%|▏         | 5/398 [00:05<04:40,  1.40it/s]Loading weights:   2%|▏         | 9/398 [00:05<01:43,  3.75it/s]Loading weights:   3%|▎         | 11/398 [00:05<01:16,  5.04it/s]Loading weights:   4%|▎         | 14/398 [00:05<01:01,  6.20it/s]Loading weights:   4%|▍         | 16/398 [00:06<01:21,  4.68it/s]Loading weights:   5%|▌         | 20/398 [00:06<00:52,  7.26it/s]Loading weights:   6%|▌         | 22/398 [00:07<00:46,  8.16it/s]Loading weights:   6%|▋         | 25/398 [00:07<00:40,  9.30it/s]Loading weights:   7%|▋         | 27/398 [00:08<01:09,  5.34it/s]Loading weights:   8%|▊         | 31/398 [00:08<00:46,  7.94it/s]Loading weights:   8%|▊         | 33/398 [00:08<00:42,  8.54it/s]Loading weights:   9%|▉         | 36/398 [00:08<00:41,  8.81it/s]Loading weights:  10%|▉         | 38/398 [00:09<00:55,  6.43it/s]Loading weights:  11%|█         | 42/398 [00:09<00:38,  9.20it/s]Loading weights:  11%|█         | 44/398 [00:09<00:35, 10.04it/s]Loading weights:  12%|█▏        | 47/398 [00:10<00:37,  9.26it/s]Loading weights:  12%|█▏        | 49/398 [00:10<00:50,  6.90it/s]Loading weights:  13%|█▎        | 53/398 [00:10<00:37,  9.14it/s]Loading weights:  14%|█▍        | 55/398 [00:10<00:34, 10.08it/s]Loading weights:  14%|█▍        | 57/398 [00:11<00:30, 11.26it/s]Loading weights:  15%|█▍        | 59/398 [00:11<00:52,  6.45it/s]Loading weights:  15%|█▌        | 61/398 [00:11<00:51,  6.51it/s]Loading weights:  16%|█▌        | 64/398 [00:12<00:40,  8.21it/s]Loading weights:  17%|█▋        | 66/398 [00:12<00:35,  9.26it/s]Loading weights:  17%|█▋        | 69/398 [00:12<00:36,  9.10it/s]Loading weights:  18%|█▊        | 71/398 [00:13<01:01,  5.28it/s]Loading weights:  19%|█▉        | 75/398 [00:13<00:41,  7.85it/s]Loading weights:  19%|█▉        | 77/398 [00:13<00:37,  8.48it/s]Loading weights:  20%|██        | 80/398 [00:14<00:41,  7.61it/s]Loading weights:  21%|██        | 82/398 [00:15<01:11,  4.45it/s]Loading weights:  22%|██▏       | 86/398 [00:15<00:50,  6.20it/s]Loading weights:  22%|██▏       | 88/398 [00:15<00:43,  7.18it/s]Loading weights:  23%|██▎       | 91/398 [00:16<00:40,  7.58it/s]Loading weights:  23%|██▎       | 93/398 [00:17<01:11,  4.27it/s]Loading weights:  24%|██▍       | 96/398 [00:17<00:50,  5.98it/s]Loading weights:  25%|██▍       | 98/398 [00:17<00:43,  6.83it/s]Loading weights:  25%|██▌       | 100/398 [00:17<00:38,  7.65it/s]Loading weights:  26%|██▌       | 102/398 [00:17<00:38,  7.74it/s]Loading weights:  26%|██▌       | 104/398 [00:18<00:52,  5.64it/s]Loading weights:  27%|██▋       | 108/398 [00:18<00:32,  8.89it/s]Loading weights:  28%|██▊       | 111/398 [00:18<00:25, 11.14it/s]Loading weights:  28%|██▊       | 113/398 [00:19<00:29,  9.64it/s]Loading weights:  29%|██▉       | 115/398 [00:19<00:47,  5.97it/s]Loading weights:  30%|██▉       | 118/398 [00:19<00:33,  8.27it/s]Loading weights:  30%|███       | 120/398 [00:20<00:33,  8.31it/s]Loading weights:  31%|███       | 122/398 [00:20<00:31,  8.85it/s]Loading weights:  31%|███       | 124/398 [00:20<00:41,  6.68it/s]Loading weights:  32%|███▏      | 126/398 [00:22<01:19,  3.42it/s]Loading weights:  33%|███▎      | 130/398 [00:22<00:50,  5.27it/s]Loading weights:  33%|███▎      | 133/398 [00:22<00:37,  7.07it/s]Loading weights:  34%|███▍      | 135/398 [00:22<00:40,  6.52it/s]Loading weights:  34%|███▍      | 137/398 [00:24<01:14,  3.52it/s]Loading weights:  35%|███▌      | 141/398 [00:24<00:47,  5.43it/s]Loading weights:  36%|███▌      | 143/398 [00:24<00:41,  6.11it/s]Loading weights:  37%|███▋      | 146/398 [00:25<00:53,  4.74it/s]Loading weights:  37%|███▋      | 147/398 [00:26<01:14,  3.38it/s]Loading weights:  37%|███▋      | 148/398 [00:26<01:25,  2.94it/s]Loading weights:  38%|███▊      | 151/398 [00:27<00:52,  4.66it/s]Loading weights:  38%|███▊      | 153/398 [00:27<00:44,  5.49it/s]Loading weights:  39%|███▉      | 155/398 [00:27<00:39,  6.16it/s]Loading weights:  39%|███▉      | 157/398 [00:28<00:57,  4.20it/s]Loading weights:  40%|███▉      | 158/398 [00:29<01:36,  2.48it/s]Loading weights:  40%|███▉      | 159/398 [00:30<01:56,  2.06it/s]Loading weights:  41%|████      | 163/398 [00:30<01:03,  3.68it/s]Loading weights:  41%|████▏     | 165/398 [00:30<00:51,  4.55it/s]Loading weights:  42%|████▏     | 168/398 [00:31<00:54,  4.22it/s]Loading weights:  42%|████▏     | 169/398 [00:36<03:19,  1.15it/s]Loading weights:  43%|████▎     | 170/398 [00:36<03:18,  1.15it/s]Loading weights:  44%|████▎     | 174/398 [00:37<01:46,  2.11it/s]Loading weights:  44%|████▍     | 176/398 [00:37<01:30,  2.45it/s]Loading weights:  44%|████▍     | 177/398 [00:37<01:20,  2.74it/s]Loading weights:  45%|████▍     | 179/398 [00:38<01:13,  3.00it/s]Loading weights:  45%|████▌     | 180/398 [00:39<01:38,  2.20it/s]Loading weights:  45%|████▌     | 181/398 [00:39<01:42,  2.11it/s]Loading weights:  46%|████▋     | 185/398 [00:40<00:59,  3.55it/s]Loading weights:  47%|████▋     | 187/398 [00:40<00:48,  4.32it/s]Loading weights:  48%|████▊     | 190/398 [00:41<00:50,  4.09it/s]Loading weights:  48%|████▊     | 191/398 [00:41<00:58,  3.54it/s]Loading weights:  48%|████▊     | 192/398 [00:42<01:02,  3.27it/s]Loading weights:  49%|████▉     | 196/398 [00:42<00:35,  5.73it/s]Loading weights:  50%|████▉     | 198/398 [00:42<00:30,  6.46it/s]Loading weights:  51%|█████     | 201/398 [00:43<00:35,  5.57it/s]Loading weights:  51%|█████     | 202/398 [00:43<00:41,  4.72it/s]Loading weights:  51%|█████     | 203/398 [00:44<00:48,  4.03it/s]Loading weights:  52%|█████▏    | 207/398 [00:44<00:33,  5.67it/s]Loading weights:  53%|█████▎    | 209/398 [00:45<00:34,  5.46it/s]Loading weights:  53%|█████▎    | 212/398 [00:46<00:43,  4.23it/s]Loading weights:  54%|█████▎    | 213/398 [00:46<00:54,  3.37it/s]Loading weights:  54%|█████▍    | 214/398 [00:47<01:23,  2.21it/s]Loading weights:  55%|█████▍    | 217/398 [00:48<00:51,  3.50it/s]Loading weights:  55%|█████▍    | 218/398 [00:48<00:49,  3.66it/s]Loading weights:  55%|█████▌    | 220/398 [00:48<00:48,  3.69it/s]Loading weights:  56%|█████▌    | 221/398 [00:48<00:42,  4.19it/s]Loading weights:  56%|█████▌    | 223/398 [00:49<00:59,  2.92it/s]Loading weights:  56%|█████▋    | 224/398 [00:50<01:01,  2.83it/s]Loading weights:  57%|█████▋    | 225/398 [00:50<01:11,  2.43it/s]Loading weights:  57%|█████▋    | 228/398 [00:51<00:38,  4.40it/s]Loading weights:  58%|█████▊    | 230/398 [00:51<00:39,  4.23it/s]Loading weights:  58%|█████▊    | 231/398 [00:52<00:44,  3.71it/s]Loading weights:  59%|█████▉    | 234/398 [00:52<00:38,  4.23it/s]Loading weights:  59%|█████▉    | 235/398 [00:53<00:50,  3.23it/s]Loading weights:  59%|█████▉    | 236/398 [00:53<00:54,  2.99it/s]Loading weights:  60%|██████    | 240/398 [00:54<00:32,  4.82it/s]Loading weights:  61%|██████    | 242/398 [00:54<00:27,  5.69it/s]Loading weights:  62%|██████▏   | 245/398 [00:54<00:27,  5.57it/s]Loading weights:  62%|██████▏   | 246/398 [00:55<00:33,  4.47it/s]Loading weights:  62%|██████▏   | 247/398 [00:55<00:41,  3.67it/s]Loading weights:  63%|██████▎   | 251/398 [00:55<00:23,  6.24it/s]Loading weights:  64%|██████▎   | 253/398 [00:56<00:19,  7.45it/s]Loading weights:  64%|██████▍   | 256/398 [00:56<00:18,  7.53it/s]Loading weights:  65%|██████▍   | 258/398 [00:57<00:26,  5.35it/s]Loading weights:  66%|██████▌   | 262/398 [00:57<00:18,  7.53it/s]Loading weights:  66%|██████▋   | 264/398 [00:57<00:15,  8.61it/s]Loading weights:  67%|██████▋   | 267/398 [00:57<00:16,  8.12it/s]Loading weights:  68%|██████▊   | 269/398 [00:59<00:29,  4.32it/s]Loading weights:  69%|██████▊   | 273/398 [00:59<00:19,  6.34it/s]Loading weights:  69%|██████▉   | 275/398 [00:59<00:16,  7.34it/s]Loading weights:  70%|██████▉   | 278/398 [00:59<00:16,  7.43it/s]Loading weights:  70%|███████   | 280/398 [01:00<00:22,  5.13it/s]Loading weights:  71%|███████▏  | 284/398 [01:00<00:15,  7.53it/s]Loading weights:  72%|███████▏  | 286/398 [01:00<00:14,  7.72it/s]Loading weights:  72%|███████▏  | 288/398 [01:01<00:12,  9.07it/s]Loading weights:  73%|███████▎  | 290/398 [01:02<00:22,  4.83it/s]Loading weights:  73%|███████▎  | 292/398 [01:02<00:23,  4.49it/s]Loading weights:  74%|███████▍  | 295/398 [01:02<00:17,  5.88it/s]Loading weights:  75%|███████▍  | 297/398 [01:03<00:15,  6.57it/s]Loading weights:  75%|███████▌  | 300/398 [01:03<00:14,  6.73it/s]Loading weights:  76%|███████▌  | 301/398 [01:03<00:18,  5.28it/s]Loading weights:  76%|███████▌  | 302/398 [01:04<00:21,  4.40it/s]Loading weights:  77%|███████▋  | 306/398 [01:04<00:13,  6.82it/s]Loading weights:  77%|███████▋  | 308/398 [01:04<00:12,  7.50it/s]Loading weights:  78%|███████▊  | 309/398 [01:04<00:11,  7.54it/s]Loading weights:  78%|███████▊  | 311/398 [01:05<00:14,  6.17it/s]Loading weights:  78%|███████▊  | 312/398 [01:06<00:25,  3.39it/s]Loading weights:  79%|███████▊  | 313/398 [01:11<01:43,  1.22s/it]Loading weights:  79%|███████▉  | 316/398 [01:11<00:57,  1.43it/s]Loading weights:  80%|███████▉  | 317/398 [01:11<00:53,  1.53it/s]Loading weights:  80%|████████  | 319/398 [01:12<00:44,  1.77it/s]Loading weights:  80%|████████  | 320/398 [01:12<00:38,  2.04it/s]Loading weights:  81%|████████  | 322/398 [01:13<00:36,  2.08it/s]Loading weights:  81%|████████  | 323/398 [01:14<00:37,  2.01it/s]Loading weights:  81%|████████▏ | 324/398 [01:14<00:32,  2.28it/s]Loading weights:  82%|████████▏ | 327/398 [01:14<00:17,  4.10it/s]Loading weights:  82%|████████▏ | 328/398 [01:14<00:16,  4.27it/s]Loading weights:  84%|████████▎ | 333/398 [01:15<00:09,  6.82it/s]Loading weights:  84%|████████▍ | 334/398 [01:15<00:09,  6.56it/s]Loading weights:  84%|████████▍ | 335/398 [01:16<00:16,  3.79it/s]Loading weights:  85%|████████▌ | 339/398 [01:16<00:08,  6.73it/s]Loading weights:  86%|████████▌ | 341/398 [01:16<00:07,  7.40it/s]Loading weights:  86%|████████▌ | 343/398 [01:16<00:06,  8.41it/s]Loading weights:  87%|████████▋ | 345/398 [01:17<00:12,  4.16it/s]Loading weights:  87%|████████▋ | 346/398 [01:18<00:15,  3.43it/s]Loading weights:  88%|████████▊ | 350/398 [01:18<00:08,  5.85it/s]Loading weights:  88%|████████▊ | 352/398 [01:18<00:06,  6.92it/s]Loading weights:  89%|████████▉ | 355/398 [01:19<00:07,  5.57it/s]Loading weights:  90%|████████▉ | 357/398 [01:19<00:07,  5.28it/s]Loading weights:  91%|█████████ | 363/398 [01:20<00:03,  9.45it/s]Loading weights:  92%|█████████▏| 366/398 [01:20<00:04,  7.25it/s]Loading weights:  92%|█████████▏| 368/398 [01:21<00:05,  5.20it/s]Loading weights:  93%|█████████▎| 372/398 [01:21<00:03,  6.69it/s]Loading weights:  94%|█████████▍| 374/398 [01:22<00:03,  7.04it/s]Loading weights:  95%|█████████▍| 377/398 [01:22<00:03,  6.95it/s]Loading weights:  95%|█████████▍| 378/398 [01:22<00:03,  5.67it/s]Loading weights:  95%|█████████▌| 379/398 [01:23<00:04,  4.65it/s]Loading weights:  96%|█████████▌| 383/398 [01:23<00:02,  6.72it/s]Loading weights:  97%|█████████▋| 385/398 [01:23<00:01,  8.06it/s]Loading weights:  97%|█████████▋| 388/398 [01:24<00:01,  7.74it/s]Loading weights:  98%|█████████▊| 390/398 [01:25<00:01,  4.59it/s]Loading weights:  99%|█████████▉| 394/398 [01:25<00:00,  7.23it/s]Loading weights: 100%|█████████▉| 397/398 [01:25<00:00,  9.35it/s]Loading weights: 100%|██████████| 398/398 [01:25<00:00,  4.67it/s]
+2026-08-25 15:10:41,985 [INFO] Model loaded. VRAM used: 2.47 GB
+2026-08-25 15:10:41,986 [INFO] 
+--- Step 5: Compute reference log-probs ---
+2026-08-25 15:10:41,987 [INFO] Computing reference log-probs (base model, no LoRA)...
+2026-08-25 15:10:43,331 [INFO]   02_workflows_vs_agents__var_minimal__S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces: ref_probs=['0.0000', '0.0000', '0.0601', '0.9399']
+2026-08-25 15:10:43,604 [INFO]   02_workflows_vs_agents__var_minimal__S2::section-2-understanding-the-spectrum-from-workflows-to-agents: ref_probs=['0.0000', '0.0000', '0.7311', '0.2689']
+2026-08-25 15:10:43,882 [INFO]   02_workflows_vs_agents__var_minimal__S3::section-3-choosing-your-path: ref_probs=['0.0000', '0.0000', '0.2227', '0.7773']
+2026-08-25 15:10:44,130 [INFO]   02_workflows_vs_agents__var_minimal__S4::section-4-exploring-common-patterns: ref_probs=['0.0000', '0.0000', '0.9399', '0.0601']
+2026-08-25 15:10:44,383 [INFO]   02_workflows_vs_agents__var_minimal__S5::section-5-zooming-in-on-our-favorite-examples: ref_probs=['0.0000', '0.0000', '1.0000', '0.0000']
+2026-08-25 15:10:44,634 [INFO]   02_workflows_vs_agents__var_minimal__S6::section-6-conclusion-the-challenges-of-every-ai-engineer: ref_probs=['0.0000', '0.0000', '1.0000', '0.0000']
+2026-08-25 15:10:44,910 [INFO]   02_workflows_vs_agents__var_standard__S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces: ref_probs=['0.0000', '0.0000', '0.9890', '0.0110']
+2026-08-25 15:10:45,188 [INFO]   02_workflows_vs_agents__var_standard__S2::section-2-understanding-the-spectrum-from-workflows-to-agents: ref_probs=['0.0000', '0.0000', '0.6792', '0.3208']
+2026-08-25 15:10:45,474 [INFO]   02_workflows_vs_agents__var_standard__S3::section-3-choosing-your-path: ref_probs=['0.0000', '0.0000', '0.2227', '0.7773']
+2026-08-25 15:10:45,739 [INFO]   02_workflows_vs_agents__var_standard__S4::section-4-exploring-common-patterns: ref_probs=['0.0000', '0.0000', '0.9948', '0.0052']
+2026-08-25 15:10:45,988 [INFO]   02_workflows_vs_agents__var_standard__S5::section-5-zooming-in-on-our-favorite-examples: ref_probs=['0.0000', '0.0000', '0.9993', '0.0007']
+2026-08-25 15:10:46,252 [INFO]   02_workflows_vs_agents__var_standard__S6::section-6-conclusion-the-challenges-of-every-ai-engineer: ref_probs=['0.0000', '0.0000', '1.0000', '0.0000']
+2026-08-25 15:10:46,549 [INFO]   02_workflows_vs_agents__var_demanding__S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces: ref_probs=['0.0000', '0.0000', '0.0019', '0.9981']
+2026-08-25 15:10:46,829 [INFO]   02_workflows_vs_agents__var_demanding__S2::section-2-understanding-the-spectrum-from-workflows-to-agents: ref_probs=['0.0000', '0.0000', '0.5622', '0.4378']
+2026-08-25 15:10:47,109 [INFO]   02_workflows_vs_agents__var_demanding__S3::section-3-choosing-your-path: ref_probs=['0.0000', '0.0000', '0.0002', '0.9998']
+2026-08-25 15:10:47,360 [INFO]   02_workflows_vs_agents__var_demanding__S4::section-4-exploring-common-patterns: ref_probs=['0.0000', '0.0000', '0.9999', '0.0001']
+2026-08-25 15:10:47,627 [INFO]   02_workflows_vs_agents__var_demanding__S5::section-5-zooming-in-on-our-favorite-examples: ref_probs=['0.0000', '0.0000', '0.8519', '0.1480']
+2026-08-25 15:10:47,879 [INFO]   02_workflows_vs_agents__var_demanding__S6::section-6-conclusion-the-challenges-of-every-ai-engineer: ref_probs=['0.0000', '0.0000', '0.1192', '0.8808']
+2026-08-25 15:10:48,149 [INFO]   03_context_engineering__var_minimal__S1::section-1-introduction-when-prompt-engineering-breaks: ref_probs=['0.0000', '0.0000', '0.9997', '0.0003']
+2026-08-25 15:10:48,413 [INFO]   03_context_engineering__var_minimal__S2::section-2-from-prompt-to-context-engineering: ref_probs=['0.0000', '0.0000', '0.6225', '0.3775']
+2026-08-25 15:10:48,680 [INFO]   03_context_engineering__var_minimal__S3::section-3-understanding-context-engineering: ref_probs=['0.0000', '0.0000', '0.5622', '0.4378']
+2026-08-25 15:10:48,953 [INFO]   03_context_engineering__var_minimal__S4::section-4-what-makes-up-the-context: ref_probs=['0.0000', '0.0000', '0.7311', '0.2689']
+2026-08-25 15:10:49,204 [INFO]   03_context_engineering__var_minimal__S5::section-5-production-implementation-challenges: ref_probs=['0.0000', '0.0000', '0.7310', '0.2689']
+2026-08-25 15:10:49,466 [INFO]   03_context_engineering__var_minimal__S6::section-6-key-strategies-for-context-optimization: ref_probs=['0.0000', '0.0000', '0.8519', '0.1480']
+2026-08-25 15:10:49,746 [INFO]   03_context_engineering__var_minimal__S7::section-7-here-is-an-example: ref_probs=['0.0000', '0.0000', '0.4378', '0.5622']
+2026-08-25 15:10:50,011 [INFO]   03_context_engineering__var_minimal__S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering: ref_probs=['0.0000', '0.0000', '0.9984', '0.0015']
+2026-08-25 15:10:50,280 [INFO]   03_context_engineering__var_standard__S1::section-1-introduction-when-prompt-engineering-breaks: ref_probs=['0.0000', '0.0000', '0.9933', '0.0067']
+2026-08-25 15:10:50,550 [INFO]   03_context_engineering__var_standard__S2::section-2-from-prompt-to-context-engineering: ref_probs=['0.0000', '0.0000', '0.9399', '0.0601']
+2026-08-25 15:10:50,829 [INFO]   03_context_engineering__var_standard__S4::section-4-what-makes-up-the-context: ref_probs=['0.0000', '0.0000', '0.0601', '0.9399']
+2026-08-25 15:10:51,080 [INFO]   03_context_engineering__var_standard__S5::section-5-production-implementation-challenges: ref_probs=['0.0000', '0.0000', '0.9959', '0.0041']
+2026-08-25 15:10:51,330 [INFO]   03_context_engineering__var_standard__S6::section-6-key-strategies-for-context-optimization: ref_probs=['0.0000', '0.0000', '0.9993', '0.0007']
+2026-08-25 15:10:51,585 [INFO]   03_context_engineering__var_standard__S7::section-7-here-is-an-example: ref_probs=['0.0000', '0.0000', '1.0000', '0.0000']
+2026-08-25 15:10:51,840 [INFO]   03_context_engineering__var_standard__S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering: ref_probs=['0.0000', '0.0000', '1.0000', '0.0000']
+2026-08-25 15:10:52,111 [INFO]   03_context_engineering__var_demanding__S1::section-1-introduction-when-prompt-engineering-breaks: ref_probs=['0.0000', '0.0000', '0.9241', '0.0759']
+2026-08-25 15:10:52,391 [INFO]   03_context_engineering__var_demanding__S2::section-2-from-prompt-to-context-engineering: ref_probs=['0.0000', '0.0000', '0.4378', '0.5622']
+2026-08-25 15:10:52,685 [INFO]   03_context_engineering__var_demanding__S3::section-3-understanding-context-engineering: ref_probs=['0.0000', '0.0000', '0.0003', '0.9997']
+2026-08-25 15:10:52,952 [INFO]   03_context_engineering__var_demanding__S4::section-4-what-makes-up-the-context: ref_probs=['0.0000', '0.0000', '0.0007', '0.9993']
+2026-08-25 15:10:53,220 [INFO]   03_context_engineering__var_demanding__S5::section-5-production-implementation-challenges: ref_probs=['0.0000', '0.0000', '0.1480', '0.8519']
+2026-08-25 15:10:53,487 [INFO]   03_context_engineering__var_demanding__S6::section-6-key-strategies-for-context-optimization: ref_probs=['0.0000', '0.0000', '0.0000', '1.0000']
+2026-08-25 15:10:53,766 [INFO]   03_context_engineering__var_demanding__S7::section-7-here-is-an-example: ref_probs=['0.0000', '0.0000', '0.0474', '0.9526']
+2026-08-25 15:10:54,035 [INFO]   03_context_engineering__var_demanding__S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering: ref_probs=['0.0000', '0.0000', '0.6225', '0.3775']
+2026-08-25 15:10:54,331 [INFO]   05_workflow_patterns__var_minimal__S1::section-1-the-challenge-with-complex-single-llm-calls: ref_probs=['0.0000', '0.0000', '0.5000', '0.5000']
+2026-08-25 15:10:54,610 [INFO]   05_workflow_patterns__var_minimal__S2::section-2-the-power-of-modularity-why-chain-llm-calls: ref_probs=['0.0000', '0.0000', '0.2227', '0.7773']
+2026-08-25 15:10:54,880 [INFO]   05_workflow_patterns__var_minimal__S3::section-3-building-a-sequential-workflow-faq-generation-pipeline: ref_probs=['0.0000', '0.0000', '0.9046', '0.0953']
+2026-08-25 15:10:55,156 [INFO]   05_workflow_patterns__var_minimal__S4::section-4-optimizing-sequential-workflows-with-parallel-processing: ref_probs=['0.0000', '0.0000', '0.9770', '0.0230']
+2026-08-25 15:10:55,412 [INFO]   05_workflow_patterns__var_minimal__S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic: ref_probs=['0.0000', '0.0000', '0.9046', '0.0953']
+2026-08-25 15:10:55,664 [INFO]   05_workflow_patterns__var_minimal__S6::section-building-a-basic-routing-workflow: ref_probs=['0.0000', '0.0000', '0.7773', '0.2227']
+2026-08-25 15:10:55,922 [INFO]   05_workflow_patterns__var_minimal__S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition: ref_probs=['0.0000', '0.0000', '0.9241', '0.0759']
+2026-08-25 15:10:56,206 [INFO]   05_workflow_patterns__var_standard__S1::section-1-the-challenge-with-complex-single-llm-calls: ref_probs=['0.0000', '0.0000', '0.7311', '0.2689']
+2026-08-25 15:10:56,485 [INFO]   05_workflow_patterns__var_standard__S2::section-2-the-power-of-modularity-why-chain-llm-calls: ref_probs=['0.0000', '0.0000', '0.3208', '0.6792']
+2026-08-25 15:10:56,755 [INFO]   05_workflow_patterns__var_standard__S3::section-3-building-a-sequential-workflow-faq-generation-pipeline: ref_probs=['0.0000', '0.0000', '0.9994', '0.0006']
+2026-08-25 15:10:57,029 [INFO]   05_workflow_patterns__var_standard__S4::section-4-optimizing-sequential-workflows-with-parallel-processing: ref_probs=['0.0000', '0.0000', '0.9770', '0.0230']
+2026-08-25 15:10:57,298 [INFO]   05_workflow_patterns__var_standard__S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic: ref_probs=['0.0000', '0.0000', '0.9627', '0.0373']
+2026-08-25 15:10:57,569 [INFO]   05_workflow_patterns__var_standard__S6::section-building-a-basic-routing-workflow: ref_probs=['0.0000', '0.0000', '0.6792', '0.3208']
+2026-08-25 15:10:57,842 [INFO]   05_workflow_patterns__var_standard__S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition: ref_probs=['0.0000', '0.0000', '0.9859', '0.0141']
+2026-08-25 15:10:58,152 [INFO]   05_workflow_patterns__var_demanding__S1::section-1-the-challenge-with-complex-single-llm-calls: ref_probs=['0.0000', '0.0000', '0.0019', '0.9981']
+2026-08-25 15:10:58,453 [INFO]   05_workflow_patterns__var_demanding__S2::section-2-the-power-of-modularity-why-chain-llm-calls: ref_probs=['0.0000', '0.0000', '0.0001', '0.9999']
+2026-08-25 15:10:58,711 [INFO]   05_workflow_patterns__var_demanding__S3::section-3-building-a-sequential-workflow-faq-generation-pipeline: ref_probs=['0.0000', '0.0000', '0.9981', '0.0019']
+2026-08-25 15:10:58,971 [INFO]   05_workflow_patterns__var_demanding__S4::section-4-optimizing-sequential-workflows-with-parallel-processing: ref_probs=['0.0000', '0.0000', '0.9959', '0.0041']
+2026-08-25 15:10:59,224 [INFO]   05_workflow_patterns__var_demanding__S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic: ref_probs=['0.0000', '0.0000', '0.9933', '0.0067']
+2026-08-25 15:11:02,884 [INFO]   05_workflow_patterns__var_demanding__S6::section-building-a-basic-routing-workflow: ref_probs=['0.0000', '0.0000', '0.9890', '0.0110']
+2026-08-25 15:11:03,142 [INFO]   05_workflow_patterns__var_demanding__S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition: ref_probs=['0.0000', '0.0000', '0.0601', '0.9399']
+2026-08-25 15:11:03,407 [INFO]   06_tools__var_minimal__S1::section-1-introduction: ref_probs=['0.0000', '0.0000', '0.9526', '0.0474']
+2026-08-25 15:11:03,691 [INFO]   06_tools__var_minimal__S2::section-2-understanding-why-agents-need-tools: ref_probs=['0.0000', '0.0000', '0.2227', '0.7773']
+2026-08-25 15:11:03,981 [INFO]   06_tools__var_minimal__S3::section-3-implementing-tool-calls-from-scratch: ref_probs=['0.0000', '0.0000', '0.0953', '0.9046']
+2026-08-25 15:11:04,263 [INFO]   06_tools__var_minimal__S4::section-4-implementing-a-tool-calling-framework-from-scratch: ref_probs=['0.0000', '0.0000', '0.7310', '0.2689']
+2026-08-25 15:11:04,529 [INFO]   06_tools__var_minimal__S5::section-5-implementing-production-level-tool-calls-with-gemini: ref_probs=['0.0000', '0.0000', '1.0000', '0.0000']
+2026-08-25 15:11:04,799 [INFO]   06_tools__var_minimal__S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs: ref_probs=['0.0000', '0.0000', '0.8808', '0.1192']
+2026-08-25 15:11:05,069 [INFO]   06_tools__var_minimal__S7::section-7-the-downsides-of-running-tools-in-a-loop: ref_probs=['0.0000', '0.0000', '0.9859', '0.0141']
+2026-08-25 15:11:05,323 [INFO]   06_tools__var_minimal__S8::section-8-popular-tools-used-within-the-industry: ref_probs=['0.0000', '0.0000', '1.0000', '0.0000']
+2026-08-25 15:11:05,577 [INFO]   06_tools__var_minimal__S9::section-9-conclusion: ref_probs=['0.0000', '0.0000', '0.9399', '0.0601']
+2026-08-25 15:11:05,845 [INFO]   06_tools__var_standard__S1::section-1-introduction: ref_probs=['0.0000', '0.0000', '0.5622', '0.4378']
+2026-08-25 15:11:06,130 [INFO]   06_tools__var_standard__S2::section-2-understanding-why-agents-need-tools: ref_probs=['0.0000', '0.0000', '0.6792', '0.3208']
+2026-08-25 15:11:06,419 [INFO]   06_tools__var_standard__S3::section-3-implementing-tool-calls-from-scratch: ref_probs=['0.0000', '0.0000', '0.0002', '0.9998']
+2026-08-25 15:11:06,706 [INFO]   06_tools__var_standard__S4::section-4-implementing-a-tool-calling-framework-from-scratch: ref_probs=['0.0000', '0.0000', '0.0759', '0.9241']
+2026-08-25 15:11:06,987 [INFO]   06_tools__var_standard__S5::section-5-implementing-production-level-tool-calls-with-gemini: ref_probs=['0.0000', '0.0000', '0.3775', '0.6225']
+2026-08-25 15:11:07,254 [INFO]   06_tools__var_standard__S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs: ref_probs=['0.0000', '0.0000', '0.8808', '0.1192']
+2026-08-25 15:11:07,524 [INFO]   06_tools__var_standard__S7::section-7-the-downsides-of-running-tools-in-a-loop: ref_probs=['0.0000', '0.0000', '0.3775', '0.6225']
+2026-08-25 15:11:07,795 [INFO]   06_tools__var_standard__S8::section-8-popular-tools-used-within-the-industry: ref_probs=['0.0000', '0.0000', '0.9399', '0.0601']
+2026-08-25 15:11:08,049 [INFO]   06_tools__var_standard__S9::section-9-conclusion: ref_probs=['0.0000', '0.0000', '0.9968', '0.0032']
+2026-08-25 15:11:08,316 [INFO]   06_tools__var_demanding__S1::section-1-introduction: ref_probs=['0.0000', '0.0000', '0.6224', '0.3775']
+2026-08-25 15:11:08,601 [INFO]   06_tools__var_demanding__S2::section-2-understanding-why-agents-need-tools: ref_probs=['0.0000', '0.0000', '0.9820', '0.0180']
+2026-08-25 15:11:08,922 [INFO]   06_tools__var_demanding__S3::section-3-implementing-tool-calls-from-scratch: ref_probs=['0.0000', '0.0000', '0.0002', '0.9998']
+2026-08-25 15:11:09,222 [INFO]   06_tools__var_demanding__S4::section-4-implementing-a-small-tool-calling-framework-from-scratch: ref_probs=['0.0000', '0.0000', '0.0759', '0.9241']
+2026-08-25 15:11:09,495 [INFO]   06_tools__var_demanding__S5::section-5-implementing-production-level-tool-calls-with-gemini: ref_probs=['0.0000', '0.0000', '0.5622', '0.4378']
+2026-08-25 15:11:09,782 [INFO]   06_tools__var_demanding__S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs: ref_probs=['0.0000', '0.0000', '0.1192', '0.8808']
+2026-08-25 15:11:10,067 [INFO]   06_tools__var_demanding__S7::section-7-the-downsides-of-running-tools-in-a-loop: ref_probs=['0.0000', '0.0000', '0.9968', '0.0032']
+2026-08-25 15:11:10,323 [INFO]   06_tools__var_demanding__S8::section-8-popular-tools-used-within-the-industry: ref_probs=['0.0000', '0.0000', '0.9999', '0.0001']
+2026-08-25 15:11:10,581 [INFO]   06_tools__var_demanding__S9::section-9-conclusion: ref_probs=['0.0000', '0.0000', '0.8808', '0.1192']
+2026-08-25 15:11:10,856 [INFO]   08_react_practice__var_minimal__S1::section-1-setup-and-environment: ref_probs=['0.0000', '0.0000', '0.0041', '0.9959']
+2026-08-25 15:11:11,142 [INFO]   08_react_practice__var_minimal__S2::section-2-tool-layer-mock-search-implementation: ref_probs=['0.0000', '0.0000', '0.6225', '0.3775']
+2026-08-25 15:11:11,413 [INFO]   08_react_practice__var_minimal__S3::section-3-thought-phase-prompt-construction-and-generation: ref_probs=['0.0000', '0.0000', '0.1480', '0.8520']
+2026-08-25 15:11:11,697 [INFO]   08_react_practice__var_minimal__S4::section-4-action-phase-function-calling-and-parsing: ref_probs=['0.0000', '0.0000', '0.0012', '0.9988']
+2026-08-25 15:11:11,953 [INFO]   08_react_practice__var_minimal__S5::section-5-control-loop-messages-scratchpad-orchestration: ref_probs=['0.0000', '0.0000', '0.0032', '0.9968']
+2026-08-25 15:11:12,211 [INFO]   08_react_practice__var_minimal__S6::section-6-tests-and-traces-success-and-graceful-fallback: ref_probs=['0.0000', '0.0000', '0.7311', '0.2689']
+2026-08-25 15:11:12,488 [INFO]   08_react_practice__var_standard__S1::section-1-setup-and-environment: ref_probs=['0.0000', '0.0000', '0.9859', '0.0141']
+2026-08-25 15:11:12,771 [INFO]   08_react_practice__var_standard__S2::section-2-tool-layer-mock-search-implementation: ref_probs=['0.0000', '0.0000', '0.0012', '0.9988']
+2026-08-25 15:11:13,043 [INFO]   08_react_practice__var_standard__S3::section-3-thought-phase-prompt-construction-and-generation: ref_probs=['0.0000', '0.0000', '0.9770', '0.0230']
+2026-08-25 15:11:13,328 [INFO]   08_react_practice__var_standard__S4::section-4-action-phase-function-calling-and-parsing: ref_probs=['0.0000', '0.0000', '0.0004', '0.9996']
+2026-08-25 15:11:13,586 [INFO]   08_react_practice__var_standard__S5::section-5-control-loop-messages-scratchpad-orchestration: ref_probs=['0.0000', '0.0000', '0.0000', '1.0000']
+2026-08-25 15:11:13,842 [INFO]   08_react_practice__var_standard__S6::section-6-tests-and-traces-success-and-graceful-fallback: ref_probs=['0.0000', '0.0000', '0.0000', '1.0000']
+2026-08-25 15:11:14,147 [INFO]   08_react_practice__var_demanding__S1::section-1-setup-and-environment: ref_probs=['0.0000', '0.0000', '0.4378', '0.5622']
+2026-08-25 15:11:14,430 [INFO]   08_react_practice__var_demanding__S2::section-2-tool-layer-mock-search-implementation: ref_probs=['0.0000', '0.0000', '0.8808', '0.1192']
+2026-08-25 15:11:14,717 [INFO]   08_react_practice__var_demanding__S3::section-3-thought-phase-prompt-construction-and-generation: ref_probs=['0.0000', '0.0000', '0.0001', '0.9999']
+2026-08-25 15:11:15,017 [INFO]   08_react_practice__var_demanding__S4::section-4-action-phase-function-calling-and-parsing: ref_probs=['0.0000', '0.0000', '0.0293', '0.9707']
+2026-08-25 15:11:15,338 [INFO]   08_react_practice__var_demanding__S5::section-5-control-loop-messages-scratchpad-orchestration: ref_probs=['0.0000', '0.0000', '0.0000', '1.0000']
+2026-08-25 15:11:15,652 [INFO]   08_react_practice__var_demanding__S6::section-6-tests-and-traces-success-and-graceful-fallback: ref_probs=['0.0000', '0.0000', '0.0052', '0.9948']
+2026-08-25 15:11:15,932 [INFO]   09_RAG__var_minimal__S1::section-1-introduction-giving-llms-an-open-book-exam: ref_probs=['0.0000', '0.0000', '0.0953', '0.9046']
+2026-08-25 15:11:16,207 [INFO]   09_RAG__var_minimal__S2::section-2-the-rag-system-core-components: ref_probs=['0.0000', '0.0000', '0.4378', '0.5622']
+2026-08-25 15:11:16,492 [INFO]   09_RAG__var_minimal__S3::section-3-the-rag-pipeline-ingestion-and-retrieval: ref_probs=['0.0000', '0.0000', '0.0000', '1.0000']
+2026-08-25 15:11:16,773 [INFO]   09_RAG__var_minimal__S4::section-4-advanced-rag-techniques: ref_probs=['0.0000', '0.0000', '0.3775', '0.6225']
+2026-08-25 15:11:17,048 [INFO]   09_RAG__var_minimal__S5::section-5-agentic-rag: ref_probs=['0.0000', '0.0000', '0.9993', '0.0007']
+2026-08-25 15:11:17,305 [INFO]   09_RAG__var_minimal__S6::section-6-conclusion: ref_probs=['0.0000', '0.0000', '0.8808', '0.1192']
+2026-08-25 15:11:17,588 [INFO]   09_RAG__var_standard__S1::section-1-introduction-giving-llms-an-open-book-exam: ref_probs=['0.0000', '0.0000', '0.9859', '0.0141']
+2026-08-25 15:11:17,864 [INFO]   09_RAG__var_standard__S2::section-2-the-rag-system-core-components: ref_probs=['0.0000', '0.0000', '0.9046', '0.0953']
+2026-08-25 15:11:18,152 [INFO]   09_RAG__var_standard__S3::section-3-the-rag-pipeline-ingestion-and-retrieval: ref_probs=['0.0000', '0.0000', '0.0000', '1.0000']
+2026-08-25 15:11:18,436 [INFO]   09_RAG__var_standard__S4::section-4-advanced-rag-techniques: ref_probs=['0.0000', '0.0000', '0.0141', '0.9859']
+2026-08-25 15:11:18,721 [INFO]   09_RAG__var_standard__S5::section-5-agentic-rag: ref_probs=['0.0000', '0.0000', '0.9933', '0.0067']
+2026-08-25 15:11:18,973 [INFO]   09_RAG__var_standard__S6::section-6-conclusion: ref_probs=['0.0000', '0.0001', '0.9999', '0.0000']
+2026-08-25 15:11:19,293 [INFO]   09_RAG__var_demanding__S1::section-1-introduction-giving-llms-an-open-book-exam: ref_probs=['0.0000', '0.0000', '0.2227', '0.7773']
+2026-08-25 15:11:19,575 [INFO]   09_RAG__var_demanding__S2::section-2-the-rag-system-core-components: ref_probs=['0.0000', '0.0000', '0.2689', '0.7311']
+2026-08-25 15:11:19,877 [INFO]   09_RAG__var_demanding__S3::section-3-the-rag-pipeline-ingestion-and-retrieval: ref_probs=['0.0000', '0.0000', '0.0007', '0.9993']
+2026-08-25 15:11:20,160 [INFO]   09_RAG__var_demanding__S4::section-4-advanced-rag-techniques: ref_probs=['0.0000', '0.0000', '0.0759', '0.9241']
+2026-08-25 15:11:20,469 [INFO]   09_RAG__var_demanding__S5::section-5-agentic-rag: ref_probs=['0.0000', '0.0000', '0.9707', '0.0293']
+2026-08-25 15:11:20,751 [INFO]   09_RAG__var_demanding__S6::section-6-conclusion: ref_probs=['0.0000', '0.0000', '0.4378', '0.5622']
+2026-08-25 15:11:21,040 [INFO]   10_memory_knowledge_access__var_minimal__S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place: ref_probs=['0.0000', '0.0000', '0.9526', '0.0474']
+2026-08-25 15:11:21,308 [INFO]   10_memory_knowledge_access__var_minimal__S2::section-2-the-layers-of-memory-internal-short-term-and-long-term: ref_probs=['0.0000', '0.0000', '0.9770', '0.0230']
+2026-08-25 15:11:21,596 [INFO]   10_memory_knowledge_access__var_minimal__S3::section-3-long-term-memory-semantic-episodic-and-procedural: ref_probs=['0.0000', '0.0000', '0.2689', '0.7311']
+2026-08-25 15:11:21,919 [INFO]   10_memory_knowledge_access__var_minimal__S4::section-4-storing-memories-pros-and-cons-of-different-approaches: ref_probs=['0.0000', '0.0000', '0.0180', '0.9820']
+2026-08-25 15:11:22,190 [INFO]   10_memory_knowledge_access__var_minimal__S5::section-5-memory-implementations-with-code-examples: ref_probs=['0.0000', '0.0000', '0.9994', '0.0006']
+2026-08-25 15:11:22,443 [INFO]   10_memory_knowledge_access__var_minimal__S6::section-6-real-world-lessons-challenges-and-best-practices: ref_probs=['0.0000', '0.0000', '0.9914', '0.0086']
+2026-08-25 15:11:22,695 [INFO]   10_memory_knowledge_access__var_minimal__S7::section-7-conclusion: ref_probs=['0.0000', '0.0000', '0.9997', '0.0003']
+2026-08-25 15:11:22,976 [INFO]   10_memory_knowledge_access__var_standard__S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place: ref_probs=['0.0000', '0.0000', '0.9859', '0.0141']
+2026-08-25 15:11:23,251 [INFO]   10_memory_knowledge_access__var_standard__S2::section-2-the-layers-of-memory-internal-short-term-and-long-term: ref_probs=['0.0000', '0.0000', '0.9998', '0.0002']
+2026-08-25 15:11:23,524 [INFO]   10_memory_knowledge_access__var_standard__S3::section-3-long-term-memory-semantic-episodic-and-procedural: ref_probs=['0.0000', '0.0000', '0.9981', '0.0019']
+2026-08-25 15:11:23,808 [INFO]   10_memory_knowledge_access__var_standard__S4::section-4-storing-memories-pros-and-cons-of-different-approaches: ref_probs=['0.0000', '0.0000', '0.2227', '0.7773']
+2026-08-25 15:11:24,075 [INFO]   10_memory_knowledge_access__var_standard__S5::section-5-memory-implementations-with-code-examples: ref_probs=['0.0000', '0.0000', '1.0000', '0.0000']
+2026-08-25 15:11:24,332 [INFO]   10_memory_knowledge_access__var_standard__S6::section-6-real-world-lessons-challenges-and-best-practices: ref_probs=['0.0000', '0.0000', '1.0000', '0.0000']
+2026-08-25 15:11:24,584 [INFO]   10_memory_knowledge_access__var_standard__S7::section-7-conclusion: ref_probs=['0.0000', '0.0000', '1.0000', '0.0000']
+2026-08-25 15:11:24,881 [INFO]   10_memory_knowledge_access__var_demanding__S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place: ref_probs=['0.0000', '0.0000', '0.7773', '0.2227']
+2026-08-25 15:11:25,168 [INFO]   10_memory_knowledge_access__var_demanding__S2::section-2-the-layers-of-memory-internal-short-term-and-long-term: ref_probs=['0.0000', '0.0000', '0.0601', '0.9399']
+2026-08-25 15:11:25,450 [INFO]   10_memory_knowledge_access__var_demanding__S4::section-4-storing-memories-pros-and-cons-of-different-approaches: ref_probs=['0.0000', '0.0000', '0.0474', '0.9526']
+2026-08-25 15:11:25,723 [INFO]   10_memory_knowledge_access__var_demanding__S5::section-5-memory-implementations-with-code-examples: ref_probs=['0.0000', '0.0000', '0.1480', '0.8520']
+2026-08-25 15:11:25,991 [INFO]   10_memory_knowledge_access__var_demanding__S6::section-6-real-world-lessons-challenges-and-best-practices: ref_probs=['0.0000', '0.0000', '0.8519', '0.1480']
+2026-08-25 15:11:26,264 [INFO]   10_memory_knowledge_access__var_demanding__S7::section-7-conclusion: ref_probs=['0.0000', '0.0000', '0.4378', '0.5622']
+2026-08-25 15:11:26,546 [INFO]   11_multimodal__var_minimal__S1::section-1-introduction-the-need-for-multimodal-ai: ref_probs=['0.0000', '0.0000', '0.0041', '0.9959']
+2026-08-25 15:11:26,822 [INFO]   11_multimodal__var_minimal__S2::section-2-limitations-of-traditional-document-processing: ref_probs=['0.0000', '0.0000', '0.3775', '0.6225']
+2026-08-25 15:11:27,105 [INFO]   11_multimodal__var_minimal__S3::section-3-foundations-of-multimodal-llms: ref_probs=['0.0000', '0.0000', '0.0953', '0.9046']
+2026-08-25 15:11:27,371 [INFO]   11_multimodal__var_minimal__S4::section-4-applying-multimodal-llms-to-images-and-pdfs: ref_probs=['0.0000', '0.0000', '0.9859', '0.0141']
+2026-08-25 15:11:27,623 [INFO]   11_multimodal__var_minimal__S5::section-5-foundations-of-multimodal-rag: ref_probs=['0.0000', '0.0000', '0.9914', '0.0086']
+2026-08-25 15:11:27,891 [INFO]   11_multimodal__var_minimal__S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text: ref_probs=['0.0000', '0.0000', '0.5622', '0.4378']
+2026-08-25 15:11:28,146 [INFO]   11_multimodal__var_minimal__S7::section-7-building-multimodal-ai-agents: ref_probs=['0.0000', '0.0000', '0.9241', '0.0759']
+2026-08-25 15:11:28,401 [INFO]   11_multimodal__var_minimal__S8::section-8-conclusion: ref_probs=['0.0000', '0.0000', '0.9890', '0.0110']
+2026-08-25 15:11:28,685 [INFO]   11_multimodal__var_standard__S1::section-1-introduction-the-need-for-multimodal-ai: ref_probs=['0.0000', '0.0000', '0.5622', '0.4378']
+2026-08-25 15:11:28,959 [INFO]   11_multimodal__var_standard__S2::section-2-limitations-of-traditional-document-processing: ref_probs=['0.0000', '0.0000', '0.2689', '0.7311']
+2026-08-25 15:11:29,252 [INFO]   11_multimodal__var_standard__S3::section-3-foundations-of-multimodal-llms: ref_probs=['0.0000', '0.0000', '0.9046', '0.0953']
+2026-08-25 15:11:29,526 [INFO]   11_multimodal__var_standard__S4::section-4-applying-multimodal-llms-to-images-and-pdfs: ref_probs=['0.0000', '0.0000', '0.9975', '0.0025']
+2026-08-25 15:11:29,796 [INFO]   11_multimodal__var_standard__S5::section-5-foundations-of-multimodal-rag: ref_probs=['0.0000', '0.0000', '1.0000', '0.0000']
+2026-08-25 15:11:30,069 [INFO]   11_multimodal__var_standard__S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text: ref_probs=['0.0000', '0.0000', '0.9999', '0.0001']
+2026-08-25 15:11:30,336 [INFO]   11_multimodal__var_standard__S7::section-7-building-multimodal-ai-agents: ref_probs=['0.0000', '0.0000', '0.9998', '0.0002']
+2026-08-25 15:11:30,599 [INFO]   11_multimodal__var_standard__S8::section-8-conclusion: ref_probs=['0.0000', '0.0000', '0.9526', '0.0474']
+2026-08-25 15:11:30,885 [INFO]   11_multimodal__var_demanding__S1::section-1-introduction-the-need-for-multimodal-ai: ref_probs=['0.0000', '0.0000', '0.0474', '0.9526']
+2026-08-25 15:11:31,161 [INFO]   11_multimodal__var_demanding__S2::section-2-limitations-of-traditional-document-processing: ref_probs=['0.0000', '0.0000', '0.0032', '0.9968']
+2026-08-25 15:11:31,449 [INFO]   11_multimodal__var_demanding__S3::section-3-foundations-of-multimodal-llms: ref_probs=['0.0000', '0.0000', '0.2689', '0.7311']
+2026-08-25 15:11:31,730 [INFO]   11_multimodal__var_demanding__S4::section-4-applying-multimodal-llms-to-images-and-pdfs: ref_probs=['0.0000', '0.0000', '0.5000', '0.5000']
+2026-08-25 15:11:32,055 [INFO]   11_multimodal__var_demanding__S5::section-5-foundations-of-multimodal-rag: ref_probs=['0.0000', '0.0000', '0.0180', '0.9820']
+2026-08-25 15:11:32,329 [INFO]   11_multimodal__var_demanding__S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text: ref_probs=['0.0000', '0.0000', '0.9770', '0.0230']
+2026-08-25 15:11:32,603 [INFO]   11_multimodal__var_demanding__S7::section-7-building-multimodal-ai-agents: ref_probs=['0.0000', '0.0000', '0.9859', '0.0141']
+2026-08-25 15:11:32,871 [INFO]   11_multimodal__var_demanding__S8::section-8-conclusion: ref_probs=['0.0000', '0.0000', '0.9399', '0.0601']
+2026-08-25 15:11:32,878 [INFO] 
+--- Step 6: Apply LoRA adapters ---
+trainable params: 33,030,144 || all params: 4,055,498,240 || trainable%: 0.8145
+2026-08-25 15:11:33,452 [INFO] VRAM after LoRA: 3.33 GB
+2026-08-25 15:11:33,452 [INFO] 
+--- Step 7: GRPO Training ---
+2026-08-25 15:11:33,515 [INFO] TensorBoard log dir: /mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/checkpoints/tasks/run34_design_c/runs/run_20260825_151133
+2026-08-25 15:11:33,516 [INFO]   Task id: run34_design_c
+2026-08-25 15:11:33,533 [INFO]   Launch with: tensorboard --logdir /mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/checkpoints/tasks/run34_design_c/runs
+2026-08-25 15:11:33,543 [INFO] Uniform-random E[R] = 0.1961
+2026-08-25 15:11:33,544 [INFO] Oracle E[R]          = 0.2929
+2026-08-25 15:11:33,545 [INFO] Training: 200 epochs, lr=5e-05, β=0.15, patience=50
+2026-08-25 15:11:40,544 [INFO]   [ep 1] group 1/169 (02_workflows_vs_agents__var_minimal__S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces): E[R]=0.2722 top1=OK kl=0.0014 (6.99s)
+2026-08-25 15:11:43,607 [INFO]   [ep 1] group 2/169 (02_workflows_vs_agents__var_minimal__S2::section-2-understanding-the-spectrum-from-workflows-to-agents): E[R]=0.1797 top1=-- kl=0.0202 (3.06s)
+2026-08-25 15:11:46,725 [INFO]   [ep 1] group 3/169 (02_workflows_vs_agents__var_minimal__S3::section-3-choosing-your-path): E[R]=0.1457 top1=OK kl=0.0000 (3.12s)
+2026-08-25 15:11:49,290 [INFO]   [ep 1] group 4/169 (02_workflows_vs_agents__var_minimal__S4::section-4-exploring-common-patterns): E[R]=-0.0301 top1=-- kl=0.0024 (2.56s)
+2026-08-25 15:11:51,830 [INFO]   [ep 1] group 5/169 (02_workflows_vs_agents__var_minimal__S5::section-5-zooming-in-on-our-favorite-examples): E[R]=0.1150 top1=-- kl=0.0000 (2.54s)
+2026-08-25 15:11:54,389 [INFO]   [ep 1] group 6/169 (02_workflows_vs_agents__var_minimal__S6::section-6-conclusion-the-challenges-of-every-ai-engineer): E[R]=0.1800 top1=-- kl=0.0000 (2.56s)
+2026-08-25 15:11:57,398 [INFO]   [ep 1] group 7/169 (02_workflows_vs_agents__var_standard__S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces): E[R]=0.2643 top1=-- kl=0.0010 (3.01s)
+2026-08-25 15:12:00,437 [INFO]   [ep 1] group 8/169 (02_workflows_vs_agents__var_standard__S2::section-2-understanding-the-spectrum-from-workflows-to-agents): E[R]=0.2140 top1=-- kl=0.0000 (3.04s)
+2026-08-25 15:12:03,545 [INFO]   [ep 1] group 9/169 (02_workflows_vs_agents__var_standard__S3::section-3-choosing-your-path): E[R]=0.1800 top1=-- kl=0.0018 (3.1s)
+2026-08-25 15:12:06,225 [INFO]   [ep 1] group 10/169 (02_workflows_vs_agents__var_standard__S4::section-4-exploring-common-patterns): E[R]=0.3495 top1=-- kl=0.0001 (2.67s)
+2026-08-25 15:12:08,832 [INFO]   [ep 1] group 11/169 (02_workflows_vs_agents__var_standard__S5::section-5-zooming-in-on-our-favorite-examples): E[R]=0.3079 top1=-- kl=0.0000 (2.6s)
+2026-08-25 15:12:14,953 [INFO]   [ep 1] group 12/169 (02_workflows_vs_agents__var_standard__S6::section-6-conclusion-the-challenges-of-every-ai-engineer): E[R]=0.5772 top1=OK kl=0.0000 (6.12s)
+2026-08-25 15:12:18,266 [INFO]   [ep 1] group 13/169 (02_workflows_vs_agents__var_demanding__S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces): E[R]=0.2068 top1=-- kl=0.0000 (3.31s)
+2026-08-25 15:12:21,387 [INFO]   [ep 1] group 14/169 (02_workflows_vs_agents__var_demanding__S2::section-2-understanding-the-spectrum-from-workflows-to-agents): E[R]=0.2456 top1=-- kl=0.0266 (3.11s)
+2026-08-25 15:12:24,424 [INFO]   [ep 1] group 15/169 (02_workflows_vs_agents__var_demanding__S3::section-3-choosing-your-path): E[R]=0.1643 top1=-- kl=0.0000 (3.03s)
+2026-08-25 15:12:26,958 [INFO]   [ep 1] group 16/169 (02_workflows_vs_agents__var_demanding__S4::section-4-exploring-common-patterns): E[R]=0.5075 top1=OK kl=0.0000 (2.53s)
+2026-08-25 15:12:29,824 [INFO]   [ep 1] group 17/169 (02_workflows_vs_agents__var_demanding__S5::section-5-zooming-in-on-our-favorite-examples): E[R]=0.3163 top1=OK kl=0.0077 (2.86s)
+2026-08-25 15:12:32,417 [INFO]   [ep 1] group 18/169 (02_workflows_vs_agents__var_demanding__S6::section-6-conclusion-the-challenges-of-every-ai-engineer): E[R]=0.4277 top1=-- kl=0.0054 (2.59s)
+2026-08-25 15:12:35,140 [INFO]   [ep 1] group 19/169 (03_context_engineering__var_minimal__S1::section-1-introduction-when-prompt-engineering-breaks): E[R]=0.2800 top1=OK kl=0.0000 (2.72s)
+2026-08-25 15:12:37,814 [INFO]   [ep 1] group 20/169 (03_context_engineering__var_minimal__S2::section-2-from-prompt-to-context-engineering): E[R]=0.3004 top1=OK kl=0.0092 (2.67s)
+2026-08-25 15:12:40,611 [INFO]   [ep 1] group 21/169 (03_context_engineering__var_minimal__S3::section-3-understanding-context-engineering): E[R]=0.0934 top1=-- kl=0.0044 (2.79s)
+2026-08-25 15:12:43,478 [INFO]   [ep 1] group 22/169 (03_context_engineering__var_minimal__S4::section-4-what-makes-up-the-context): E[R]=0.0449 top1=-- kl=0.0000 (2.86s)
+2026-08-25 15:12:46,046 [INFO]   [ep 1] group 23/169 (03_context_engineering__var_minimal__S5::section-5-production-implementation-challenges): E[R]=0.3964 top1=-- kl=0.0008 (2.56s)
+2026-08-25 15:12:52,310 [INFO]   [ep 1] group 24/169 (03_context_engineering__var_minimal__S6::section-6-key-strategies-for-context-optimization): E[R]=0.3422 top1=OK kl=0.0222 (6.26s)
+2026-08-25 15:12:55,287 [INFO]   [ep 1] group 25/169 (03_context_engineering__var_minimal__S7::section-7-here-is-an-example): E[R]=-0.1906 top1=-- kl=0.0041 (2.97s)
+2026-08-25 15:12:58,092 [INFO]   [ep 1] group 26/169 (03_context_engineering__var_minimal__S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering): E[R]=0.0800 top1=-- kl=0.0000 (2.8s)
+2026-08-25 15:13:00,986 [INFO]   [ep 1] group 27/169 (03_context_engineering__var_standard__S1::section-1-introduction-when-prompt-engineering-breaks): E[R]=0.2801 top1=-- kl=0.0011 (2.89s)
+2026-08-25 15:13:03,762 [INFO]   [ep 1] group 28/169 (03_context_engineering__var_standard__S2::section-2-from-prompt-to-context-engineering): E[R]=0.3961 top1=OK kl=0.0135 (2.77s)
+2026-08-25 15:13:06,768 [INFO]   [ep 1] group 29/169 (03_context_engineering__var_standard__S4::section-4-what-makes-up-the-context): E[R]=0.1777 top1=OK kl=0.0092 (3.0s)
+2026-08-25 15:13:09,300 [INFO]   [ep 1] group 30/169 (03_context_engineering__var_standard__S5::section-5-production-implementation-challenges): E[R]=0.5986 top1=OK kl=0.0000 (2.53s)
+2026-08-25 15:13:11,822 [INFO]   [ep 1] group 31/169 (03_context_engineering__var_standard__S6::section-6-key-strategies-for-context-optimization): E[R]=0.5181 top1=-- kl=0.0008 (2.52s)
+2026-08-25 15:13:14,410 [INFO]   [ep 1] group 32/169 (03_context_engineering__var_standard__S7::section-7-here-is-an-example): E[R]=-0.1200 top1=-- kl=0.0000 (2.59s)
+2026-08-25 15:13:16,957 [INFO]   [ep 1] group 33/169 (03_context_engineering__var_standard__S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering): E[R]=0.4208 top1=OK kl=0.0000 (2.54s)
+2026-08-25 15:13:19,862 [INFO]   [ep 1] group 34/169 (03_context_engineering__var_demanding__S1::section-1-introduction-when-prompt-engineering-breaks): E[R]=0.2130 top1=-- kl=0.0085 (2.9s)
+2026-08-25 15:13:26,372 [INFO]   [ep 1] group 35/169 (03_context_engineering__var_demanding__S2::section-2-from-prompt-to-context-engineering): E[R]=0.2104 top1=-- kl=0.0065 (6.51s)
+2026-08-25 15:13:29,506 [INFO]   [ep 1] group 36/169 (03_context_engineering__var_demanding__S3::section-3-understanding-context-engineering): E[R]=0.0768 top1=OK kl=0.0000 (3.13s)
+2026-08-25 15:13:32,312 [INFO]   [ep 1] group 37/169 (03_context_engineering__var_demanding__S4::section-4-what-makes-up-the-context): E[R]=0.0944 top1=OK kl=0.0001 (2.8s)
+2026-08-25 15:13:35,087 [INFO]   [ep 1] group 38/169 (03_context_engineering__var_demanding__S5::section-5-production-implementation-challenges): E[R]=0.5090 top1=OK kl=0.0016 (2.77s)
+2026-08-25 15:13:37,844 [INFO]   [ep 1] group 39/169 (03_context_engineering__var_demanding__S6::section-6-key-strategies-for-context-optimization): E[R]=0.4110 top1=-- kl=0.0000 (2.75s)
+2026-08-25 15:13:40,835 [INFO]   [ep 1] group 40/169 (03_context_engineering__var_demanding__S7::section-7-here-is-an-example): E[R]=-0.1930 top1=-- kl=0.0038 (2.99s)
+2026-08-25 15:13:43,603 [INFO]   [ep 1] group 41/169 (03_context_engineering__var_demanding__S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering): E[R]=0.3088 top1=OK kl=0.0115 (2.75s)
+2026-08-25 15:13:46,679 [INFO]   [ep 1] group 42/169 (05_workflow_patterns__var_minimal__S1::section-1-the-challenge-with-complex-single-llm-calls): E[R]=0.1446 top1=-- kl=0.0654 (3.07s)
+2026-08-25 15:13:49,694 [INFO]   [ep 1] group 43/169 (05_workflow_patterns__var_minimal__S2::section-2-the-power-of-modularity-why-chain-llm-calls): E[R]=0.2789 top1=-- kl=0.0000 (3.01s)
+2026-08-25 15:13:52,500 [INFO]   [ep 1] group 44/169 (05_workflow_patterns__var_minimal__S3::section-3-building-a-sequential-workflow-faq-generation-pipeline): E[R]=0.0794 top1=-- kl=0.0001 (2.8s)
+2026-08-25 15:13:55,366 [INFO]   [ep 1] group 45/169 (05_workflow_patterns__var_minimal__S4::section-4-optimizing-sequential-workflows-with-parallel-processing): E[R]=0.2334 top1=OK kl=0.0006 (2.86s)
+2026-08-25 15:14:01,509 [INFO]   [ep 1] group 46/169 (05_workflow_patterns__var_minimal__S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic): E[R]=0.1364 top1=-- kl=0.0045 (6.14s)
+2026-08-25 15:14:04,084 [INFO]   [ep 1] group 47/169 (05_workflow_patterns__var_minimal__S6::section-building-a-basic-routing-workflow): E[R]=-0.0394 top1=-- kl=0.0078 (2.57s)
+2026-08-25 15:14:06,687 [INFO]   [ep 1] group 48/169 (05_workflow_patterns__var_minimal__S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition): E[R]=0.1752 top1=-- kl=0.0000 (2.6s)
+2026-08-25 15:14:09,627 [INFO]   [ep 1] group 49/169 (05_workflow_patterns__var_standard__S1::section-1-the-challenge-with-complex-single-llm-calls): E[R]=0.2939 top1=-- kl=0.0244 (2.94s)
+2026-08-25 15:14:12,625 [INFO]   [ep 1] group 50/169 (05_workflow_patterns__var_standard__S2::section-2-the-power-of-modularity-why-chain-llm-calls): E[R]=0.3581 top1=OK kl=0.0179 (2.99s)
+2026-08-25 15:14:15,392 [INFO]   [ep 1] group 51/169 (05_workflow_patterns__var_standard__S3::section-3-building-a-sequential-workflow-faq-generation-pipeline): E[R]=0.1466 top1=OK kl=0.0000 (2.76s)
+2026-08-25 15:14:18,225 [INFO]   [ep 1] group 52/169 (05_workflow_patterns__var_standard__S4::section-4-optimizing-sequential-workflows-with-parallel-processing): E[R]=0.2633 top1=OK kl=0.0002 (2.83s)
+2026-08-25 15:14:20,965 [INFO]   [ep 1] group 53/169 (05_workflow_patterns__var_standard__S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic): E[R]=0.3195 top1=-- kl=0.0220 (2.74s)
+2026-08-25 15:14:23,707 [INFO]   [ep 1] group 54/169 (05_workflow_patterns__var_standard__S6::section-building-a-basic-routing-workflow): E[R]=0.0694 top1=-- kl=0.0000 (2.74s)
+2026-08-25 15:14:26,527 [INFO]   [ep 1] group 55/169 (05_workflow_patterns__var_standard__S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition): E[R]=0.2538 top1=OK kl=0.0001 (2.82s)
+2026-08-25 15:14:29,875 [INFO]   [ep 1] group 56/169 (05_workflow_patterns__var_demanding__S1::section-1-the-challenge-with-complex-single-llm-calls): E[R]=0.3075 top1=-- kl=0.0000 (3.34s)
+2026-08-25 15:14:33,187 [INFO]   [ep 1] group 57/169 (05_workflow_patterns__var_demanding__S2::section-2-the-power-of-modularity-why-chain-llm-calls): E[R]=0.4857 top1=OK kl=0.0000 (3.31s)
+2026-08-25 15:14:39,304 [INFO]   [ep 1] group 58/169 (05_workflow_patterns__var_demanding__S3::section-3-building-a-sequential-workflow-faq-generation-pipeline): E[R]=0.2131 top1=OK kl=0.0006 (6.11s)
+2026-08-25 15:14:41,887 [INFO]   [ep 1] group 59/169 (05_workflow_patterns__var_demanding__S4::section-4-optimizing-sequential-workflows-with-parallel-processing): E[R]=0.3183 top1=-- kl=0.0002 (2.58s)
+2026-08-25 15:14:44,421 [INFO]   [ep 1] group 60/169 (05_workflow_patterns__var_demanding__S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic): E[R]=0.2706 top1=OK kl=0.0006 (2.53s)
+2026-08-25 15:14:46,980 [INFO]   [ep 1] group 61/169 (05_workflow_patterns__var_demanding__S6::section-building-a-basic-routing-workflow): E[R]=0.1161 top1=-- kl=0.0001 (2.56s)
+2026-08-25 15:14:49,559 [INFO]   [ep 1] group 62/169 (05_workflow_patterns__var_demanding__S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition): E[R]=0.5635 top1=OK kl=0.0120 (2.57s)
+2026-08-25 15:14:52,250 [INFO]   [ep 1] group 63/169 (06_tools__var_minimal__S1::section-1-introduction): E[R]=0.0095 top1=-- kl=0.0002 (2.69s)
+2026-08-25 15:14:55,215 [INFO]   [ep 1] group 64/169 (06_tools__var_minimal__S2::section-2-understanding-why-agents-need-tools): E[R]=-0.0193 top1=-- kl=0.0055 (2.96s)
+2026-08-25 15:14:58,348 [INFO]   [ep 1] group 65/169 (06_tools__var_minimal__S3::section-3-implementing-tool-calls-from-scratch): E[R]=0.1560 top1=OK kl=0.0133 (3.13s)
+2026-08-25 15:15:01,245 [INFO]   [ep 1] group 66/169 (06_tools__var_minimal__S4::section-4-implementing-a-tool-calling-framework-from-scratch): E[R]=-0.0203 top1=-- kl=0.0004 (2.89s)
+2026-08-25 15:15:03,940 [INFO]   [ep 1] group 67/169 (06_tools__var_minimal__S5::section-5-implementing-production-level-tool-calls-with-gemini): E[R]=0.0467 top1=OK kl=0.0000 (2.69s)
+2026-08-25 15:15:06,679 [INFO]   [ep 1] group 68/169 (06_tools__var_minimal__S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs): E[R]=0.1488 top1=OK kl=0.0086 (2.74s)
+2026-08-25 15:15:09,414 [INFO]   [ep 1] group 69/169 (06_tools__var_minimal__S7::section-7-the-downsides-of-running-tools-in-a-loop): E[R]=0.1148 top1=-- kl=0.0016 (2.73s)
+2026-08-25 15:15:15,559 [INFO]   [ep 1] group 70/169 (06_tools__var_minimal__S8::section-8-popular-tools-used-within-the-industry): E[R]=0.1361 top1=-- kl=0.0000 (6.14s)
+2026-08-25 15:15:18,073 [INFO]   [ep 1] group 71/169 (06_tools__var_minimal__S9::section-9-conclusion): E[R]=0.1106 top1=-- kl=0.0006 (2.51s)
+2026-08-25 15:15:20,732 [INFO]   [ep 1] group 72/169 (06_tools__var_standard__S1::section-1-introduction): E[R]=0.0113 top1=-- kl=0.0321 (2.66s)
+2026-08-25 15:15:23,751 [INFO]   [ep 1] group 73/169 (06_tools__var_standard__S2::section-2-understanding-why-agents-need-tools): E[R]=0.2269 top1=OK kl=0.0115 (3.02s)
+2026-08-25 15:15:26,794 [INFO]   [ep 1] group 74/169 (06_tools__var_standard__S3::section-3-implementing-tool-calls-from-scratch): E[R]=0.3165 top1=OK kl=0.0002 (3.04s)
+2026-08-25 15:15:29,767 [INFO]   [ep 1] group 75/169 (06_tools__var_standard__S4::section-4-implementing-a-tool-calling-framework-from-scratch): E[R]=0.3688 top1=OK kl=0.0031 (2.97s)
+2026-08-25 15:15:32,522 [INFO]   [ep 1] group 76/169 (06_tools__var_standard__S5::section-5-implementing-production-level-tool-calls-with-gemini): E[R]=0.2997 top1=OK kl=0.0216 (2.75s)
+2026-08-25 15:15:35,295 [INFO]   [ep 1] group 77/169 (06_tools__var_standard__S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs): E[R]=0.2605 top1=-- kl=0.0011 (2.77s)
+2026-08-25 15:15:38,046 [INFO]   [ep 1] group 78/169 (06_tools__var_standard__S7::section-7-the-downsides-of-running-tools-in-a-loop): E[R]=0.3690 top1=-- kl=0.0000 (2.75s)
+2026-08-25 15:15:40,703 [INFO]   [ep 1] group 79/169 (06_tools__var_standard__S8::section-8-popular-tools-used-within-the-industry): E[R]=0.2231 top1=OK kl=0.0112 (2.66s)
+2026-08-25 15:15:43,278 [INFO]   [ep 1] group 80/169 (06_tools__var_standard__S9::section-9-conclusion): E[R]=0.1800 top1=-- kl=0.0001 (2.57s)
+2026-08-25 15:15:49,560 [INFO]   [ep 1] group 81/169 (06_tools__var_demanding__S1::section-1-introduction): E[R]=0.1213 top1=-- kl=0.0139 (6.28s)
+2026-08-25 15:15:52,468 [INFO]   [ep 1] group 82/169 (06_tools__var_demanding__S2::section-2-understanding-why-agents-need-tools): E[R]=0.0528 top1=-- kl=0.0000 (2.91s)
+2026-08-25 15:15:56,071 [INFO]   [ep 1] group 83/169 (06_tools__var_demanding__S3::section-3-implementing-tool-calls-from-scratch): E[R]=0.2374 top1=-- kl=0.0000 (3.6s)
+2026-08-25 15:15:59,246 [INFO]   [ep 1] group 84/169 (06_tools__var_demanding__S4::section-4-implementing-a-small-tool-calling-framework-from-scratch): E[R]=-0.2246 top1=-- kl=0.0065 (3.17s)
+2026-08-25 15:16:01,998 [INFO]   [ep 1] group 85/169 (06_tools__var_demanding__S5::section-5-implementing-production-level-tool-calls-with-gemini): E[R]=0.2625 top1=OK kl=0.0006 (2.74s)
+2026-08-25 15:16:05,157 [INFO]   [ep 1] group 86/169 (06_tools__var_demanding__S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs): E[R]=0.2830 top1=OK kl=0.0337 (3.16s)
+2026-08-25 15:16:08,139 [INFO]   [ep 1] group 87/169 (06_tools__var_demanding__S7::section-7-the-downsides-of-running-tools-in-a-loop): E[R]=0.1994 top1=-- kl=0.0000 (2.96s)
+2026-08-25 15:16:10,724 [INFO]   [ep 1] group 88/169 (06_tools__var_demanding__S8::section-8-popular-tools-used-within-the-industry): E[R]=0.2047 top1=-- kl=0.0000 (2.58s)
+2026-08-25 15:16:13,281 [INFO]   [ep 1] group 89/169 (06_tools__var_demanding__S9::section-9-conclusion): E[R]=0.2097 top1=-- kl=0.0041 (2.55s)
+2026-08-25 15:16:16,131 [INFO]   [ep 1] group 90/169 (08_react_practice__var_minimal__S1::section-1-setup-and-environment): E[R]=0.2067 top1=OK kl=0.0001 (2.85s)
+2026-08-25 15:16:19,091 [INFO]   [ep 1] group 91/169 (08_react_practice__var_minimal__S2::section-2-tool-layer-mock-search-implementation): E[R]=0.1184 top1=-- kl=0.0013 (2.96s)
+2026-08-25 15:16:25,319 [INFO]   [ep 1] group 92/169 (08_react_practice__var_minimal__S3::section-3-thought-phase-prompt-construction-and-generation): E[R]=-0.1340 top1=-- kl=0.1052 (6.22s)
+2026-08-25 15:16:28,328 [INFO]   [ep 1] group 93/169 (08_react_practice__var_minimal__S4::section-4-action-phase-function-calling-and-parsing): E[R]=0.1411 top1=-- kl=0.0001 (2.98s)
+2026-08-25 15:16:30,951 [INFO]   [ep 1] group 94/169 (08_react_practice__var_minimal__S5::section-5-control-loop-messages-scratchpad-orchestration): E[R]=-0.1595 top1=-- kl=0.0000 (2.6s)
+2026-08-25 15:16:33,565 [INFO]   [ep 1] group 95/169 (08_react_practice__var_minimal__S6::section-6-tests-and-traces-success-and-graceful-fallback): E[R]=-0.0457 top1=-- kl=0.0297 (2.61s)
+2026-08-25 15:16:36,418 [INFO]   [ep 1] group 96/169 (08_react_practice__var_standard__S1::section-1-setup-and-environment): E[R]=0.2131 top1=-- kl=0.0075 (2.85s)
+2026-08-25 15:16:39,387 [INFO]   [ep 1] group 97/169 (08_react_practice__var_standard__S2::section-2-tool-layer-mock-search-implementation): E[R]=0.3309 top1=OK kl=0.0002 (2.96s)
+2026-08-25 15:16:42,215 [INFO]   [ep 1] group 98/169 (08_react_practice__var_standard__S3::section-3-thought-phase-prompt-construction-and-generation): E[R]=-0.1211 top1=-- kl=0.0006 (2.82s)
+2026-08-25 15:16:45,235 [INFO]   [ep 1] group 99/169 (08_react_practice__var_standard__S4::section-4-action-phase-function-calling-and-parsing): E[R]=0.2419 top1=-- kl=0.0000 (3.02s)
+2026-08-25 15:16:47,826 [INFO]   [ep 1] group 100/169 (08_react_practice__var_standard__S5::section-5-control-loop-messages-scratchpad-orchestration): E[R]=0.0723 top1=-- kl=-0.0000 (2.58s)
+2026-08-25 15:16:50,399 [INFO]   [ep 1] group 101/169 (08_react_practice__var_standard__S6::section-6-tests-and-traces-success-and-graceful-fallback): E[R]=0.2977 top1=-- kl=0.0000 (2.57s)
+2026-08-25 15:16:53,664 [INFO]   [ep 1] group 102/169 (08_react_practice__var_demanding__S1::section-1-setup-and-environment): E[R]=0.2529 top1=-- kl=0.0080 (3.26s)
+2026-08-25 15:16:56,631 [INFO]   [ep 1] group 103/169 (08_react_practice__var_demanding__S2::section-2-tool-layer-mock-search-implementation): E[R]=0.3041 top1=-- kl=0.0010 (2.96s)
+2026-08-25 15:17:03,242 [INFO]   [ep 1] group 104/169 (08_react_practice__var_demanding__S3::section-3-thought-phase-prompt-construction-and-generation): E[R]=-0.1932 top1=-- kl=0.0001 (6.61s)
+2026-08-25 15:17:06,544 [INFO]   [ep 1] group 105/169 (08_react_practice__var_demanding__S4::section-4-action-phase-function-calling-and-parsing): E[R]=0.1321 top1=-- kl=0.0033 (3.29s)
+2026-08-25 15:17:10,205 [INFO]   [ep 1] group 106/169 (08_react_practice__var_demanding__S5::section-5-control-loop-messages-scratchpad-orchestration): E[R]=-0.0065 top1=-- kl=0.0002 (3.65s)
+2026-08-25 15:17:13,641 [INFO]   [ep 1] group 107/169 (08_react_practice__var_demanding__S6::section-6-tests-and-traces-success-and-graceful-fallback): E[R]=0.4091 top1=OK kl=0.0306 (3.43s)
+2026-08-25 15:17:16,636 [INFO]   [ep 1] group 108/169 (09_RAG__var_minimal__S1::section-1-introduction-giving-llms-an-open-book-exam): E[R]=0.0204 top1=-- kl=0.0132 (2.98s)
+2026-08-25 15:17:19,543 [INFO]   [ep 1] group 109/169 (09_RAG__var_minimal__S2::section-2-the-rag-system-core-components): E[R]=0.0331 top1=-- kl=0.0128 (2.9s)
+2026-08-25 15:17:22,580 [INFO]   [ep 1] group 110/169 (09_RAG__var_minimal__S3::section-3-the-rag-pipeline-ingestion-and-retrieval): E[R]=0.0260 top1=-- kl=0.0000 (3.03s)
+2026-08-25 15:17:25,599 [INFO]   [ep 1] group 111/169 (09_RAG__var_minimal__S4::section-4-advanced-rag-techniques): E[R]=-0.0442 top1=OK kl=0.0179 (3.02s)
+2026-08-25 15:17:28,459 [INFO]   [ep 1] group 112/169 (09_RAG__var_minimal__S5::section-5-agentic-rag): E[R]=0.1461 top1=-- kl=0.0000 (2.86s)
+2026-08-25 15:17:31,015 [INFO]   [ep 1] group 113/169 (09_RAG__var_minimal__S6::section-6-conclusion): E[R]=0.2037 top1=-- kl=0.0074 (2.55s)
+2026-08-25 15:17:37,496 [INFO]   [ep 1] group 114/169 (09_RAG__var_standard__S1::section-1-introduction-giving-llms-an-open-book-exam): E[R]=-0.1305 top1=-- kl=0.0001 (6.48s)
+2026-08-25 15:17:40,284 [INFO]   [ep 1] group 115/169 (09_RAG__var_standard__S2::section-2-the-rag-system-core-components): E[R]=0.0172 top1=-- kl=0.0115 (2.78s)
+2026-08-25 15:17:43,326 [INFO]   [ep 1] group 116/169 (09_RAG__var_standard__S3::section-3-the-rag-pipeline-ingestion-and-retrieval): E[R]=-0.0598 top1=-- kl=0.0000 (3.04s)
+2026-08-25 15:17:46,489 [INFO]   [ep 1] group 117/169 (09_RAG__var_standard__S4::section-4-advanced-rag-techniques): E[R]=0.2854 top1=OK kl=0.0007 (3.16s)
+2026-08-25 15:17:49,517 [INFO]   [ep 1] group 118/169 (09_RAG__var_standard__S5::section-5-agentic-rag): E[R]=0.2713 top1=OK kl=0.0001 (3.01s)
+2026-08-25 15:17:52,080 [INFO]   [ep 1] group 119/169 (09_RAG__var_standard__S6::section-6-conclusion): E[R]=0.1361 top1=-- kl=0.0000 (2.56s)
+2026-08-25 15:17:55,653 [INFO]   [ep 1] group 120/169 (09_RAG__var_demanding__S1::section-1-introduction-giving-llms-an-open-book-exam): E[R]=0.0892 top1=-- kl=0.0037 (3.55s)
+2026-08-25 15:17:58,635 [INFO]   [ep 1] group 121/169 (09_RAG__var_demanding__S2::section-2-the-rag-system-core-components): E[R]=0.0422 top1=-- kl=0.0033 (2.98s)
+2026-08-25 15:18:01,916 [INFO]   [ep 1] group 122/169 (09_RAG__var_demanding__S3::section-3-the-rag-pipeline-ingestion-and-retrieval): E[R]=0.0548 top1=OK kl=0.0001 (3.27s)
+2026-08-25 15:18:04,910 [INFO]   [ep 1] group 123/169 (09_RAG__var_demanding__S4::section-4-advanced-rag-techniques): E[R]=0.3247 top1=OK kl=0.0002 (2.99s)
+2026-08-25 15:18:08,324 [INFO]   [ep 1] group 124/169 (09_RAG__var_demanding__S5::section-5-agentic-rag): E[R]=0.3614 top1=OK kl=0.0003 (3.41s)
+2026-08-25 15:18:14,662 [INFO]   [ep 1] group 125/169 (09_RAG__var_demanding__S6::section-6-conclusion): E[R]=0.2795 top1=-- kl=0.0080 (6.34s)
+2026-08-25 15:18:17,661 [INFO]   [ep 1] group 126/169 (10_memory_knowledge_access__var_minimal__S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place): E[R]=0.0085 top1=-- kl=0.0035 (3.0s)
+2026-08-25 15:18:20,423 [INFO]   [ep 1] group 127/169 (10_memory_knowledge_access__var_minimal__S2::section-2-the-layers-of-memory-internal-short-term-and-long-term): E[R]=0.0192 top1=-- kl=0.0011 (2.76s)
+2026-08-25 15:18:23,442 [INFO]   [ep 1] group 128/169 (10_memory_knowledge_access__var_minimal__S3::section-3-long-term-memory-semantic-episodic-and-procedural): E[R]=0.0981 top1=-- kl=0.0080 (3.02s)
+2026-08-25 15:18:27,155 [INFO]   [ep 1] group 129/169 (10_memory_knowledge_access__var_minimal__S4::section-4-storing-memories-pros-and-cons-of-different-approaches): E[R]=-0.0922 top1=-- kl=0.0005 (3.71s)
+2026-08-25 15:18:29,859 [INFO]   [ep 1] group 130/169 (10_memory_knowledge_access__var_minimal__S5::section-5-memory-implementations-with-code-examples): E[R]=0.0135 top1=-- kl=0.0001 (2.7s)
+2026-08-25 15:18:32,442 [INFO]   [ep 1] group 131/169 (10_memory_knowledge_access__var_minimal__S6::section-6-real-world-lessons-challenges-and-best-practices): E[R]=-0.1867 top1=-- kl=0.0002 (2.58s)
+2026-08-25 15:18:34,998 [INFO]   [ep 1] group 132/169 (10_memory_knowledge_access__var_minimal__S7::section-7-conclusion): E[R]=0.1133 top1=-- kl=0.0000 (2.55s)
+2026-08-25 15:18:37,967 [INFO]   [ep 1] group 133/169 (10_memory_knowledge_access__var_standard__S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place): E[R]=0.4197 top1=OK kl=0.0046 (2.96s)
+2026-08-25 15:18:40,853 [INFO]   [ep 1] group 134/169 (10_memory_knowledge_access__var_standard__S2::section-2-the-layers-of-memory-internal-short-term-and-long-term): E[R]=0.3883 top1=OK kl=0.0000 (2.87s)
+2026-08-25 15:18:43,748 [INFO]   [ep 1] group 135/169 (10_memory_knowledge_access__var_standard__S3::section-3-long-term-memory-semantic-episodic-and-procedural): E[R]=0.2136 top1=-- kl=0.0000 (2.89s)
+2026-08-25 15:18:50,190 [INFO]   [ep 1] group 136/169 (10_memory_knowledge_access__var_standard__S4::section-4-storing-memories-pros-and-cons-of-different-approaches): E[R]=0.0570 top1=-- kl=0.0100 (6.43s)
+2026-08-25 15:18:52,940 [INFO]   [ep 1] group 137/169 (10_memory_knowledge_access__var_standard__S5::section-5-memory-implementations-with-code-examples): E[R]=0.2342 top1=OK kl=0.0000 (2.73s)
+2026-08-25 15:18:55,551 [INFO]   [ep 1] group 138/169 (10_memory_knowledge_access__var_standard__S6::section-6-real-world-lessons-challenges-and-best-practices): E[R]=0.4483 top1=OK kl=-0.0000 (2.61s)
+2026-08-25 15:18:58,126 [INFO]   [ep 1] group 139/169 (10_memory_knowledge_access__var_standard__S7::section-7-conclusion): E[R]=0.1817 top1=-- kl=0.0000 (2.57s)
+2026-08-25 15:19:01,387 [INFO]   [ep 1] group 140/169 (10_memory_knowledge_access__var_demanding__S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place): E[R]=0.3847 top1=OK kl=0.0805 (3.25s)
+2026-08-25 15:19:04,461 [INFO]   [ep 1] group 141/169 (10_memory_knowledge_access__var_demanding__S2::section-2-the-layers-of-memory-internal-short-term-and-long-term): E[R]=0.4635 top1=OK kl=0.0033 (3.07s)
+2026-08-25 15:19:07,371 [INFO]   [ep 1] group 142/169 (10_memory_knowledge_access__var_demanding__S4::section-4-storing-memories-pros-and-cons-of-different-approaches): E[R]=0.1292 top1=-- kl=0.0021 (2.91s)
+2026-08-25 15:19:10,176 [INFO]   [ep 1] group 143/169 (10_memory_knowledge_access__var_demanding__S5::section-5-memory-implementations-with-code-examples): E[R]=0.2724 top1=-- kl=0.0000 (2.8s)
+2026-08-25 15:19:12,964 [INFO]   [ep 1] group 144/169 (10_memory_knowledge_access__var_demanding__S6::section-6-real-world-lessons-challenges-and-best-practices): E[R]=-0.1002 top1=-- kl=0.0020 (2.78s)
+2026-08-25 15:19:15,750 [INFO]   [ep 1] group 145/169 (10_memory_knowledge_access__var_demanding__S7::section-7-conclusion): E[R]=0.2649 top1=OK kl=0.0137 (2.78s)
+2026-08-25 15:19:18,748 [INFO]   [ep 1] group 146/169 (11_multimodal__var_minimal__S1::section-1-introduction-the-need-for-multimodal-ai): E[R]=0.0405 top1=-- kl=0.0001 (3.0s)
+2026-08-25 15:19:25,008 [INFO]   [ep 1] group 147/169 (11_multimodal__var_minimal__S2::section-2-limitations-of-traditional-document-processing): E[R]=0.2232 top1=-- kl=0.0301 (6.26s)
+2026-08-25 15:19:28,054 [INFO]   [ep 1] group 148/169 (11_multimodal__var_minimal__S3::section-3-foundations-of-multimodal-llms): E[R]=-0.0692 top1=-- kl=0.0137 (3.04s)
+2026-08-25 15:19:30,655 [INFO]   [ep 1] group 149/169 (11_multimodal__var_minimal__S4::section-4-applying-multimodal-llms-to-images-and-pdfs): E[R]=-0.1207 top1=-- kl=0.0003 (2.6s)
+2026-08-25 15:19:33,262 [INFO]   [ep 1] group 150/169 (11_multimodal__var_minimal__S5::section-5-foundations-of-multimodal-rag): E[R]=-0.1659 top1=-- kl=0.0000 (2.6s)
+2026-08-25 15:19:36,025 [INFO]   [ep 1] group 151/169 (11_multimodal__var_minimal__S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text): E[R]=-0.1908 top1=-- kl=0.0047 (2.76s)
+2026-08-25 15:19:38,555 [INFO]   [ep 1] group 152/169 (11_multimodal__var_minimal__S7::section-7-building-multimodal-ai-agents): E[R]=-0.0326 top1=-- kl=0.0027 (2.53s)
+2026-08-25 15:19:41,093 [INFO]   [ep 1] group 153/169 (11_multimodal__var_minimal__S8::section-8-conclusion): E[R]=0.1923 top1=-- kl=0.0001 (2.54s)
+2026-08-25 15:19:44,203 [INFO]   [ep 1] group 154/169 (11_multimodal__var_standard__S1::section-1-introduction-the-need-for-multimodal-ai): E[R]=0.1270 top1=-- kl=0.0150 (3.11s)
+2026-08-25 15:19:47,111 [INFO]   [ep 1] group 155/169 (11_multimodal__var_standard__S2::section-2-limitations-of-traditional-document-processing): E[R]=0.2105 top1=-- kl=0.1860 (2.91s)
+2026-08-25 15:19:50,113 [INFO]   [ep 1] group 156/169 (11_multimodal__var_standard__S3::section-3-foundations-of-multimodal-llms): E[R]=0.1591 top1=-- kl=0.0065 (3.0s)
+2026-08-25 15:19:52,947 [INFO]   [ep 1] group 157/169 (11_multimodal__var_standard__S4::section-4-applying-multimodal-llms-to-images-and-pdfs): E[R]=-0.0195 top1=-- kl=0.0001 (2.83s)
+2026-08-25 15:19:59,216 [INFO]   [ep 1] group 158/169 (11_multimodal__var_standard__S5::section-5-foundations-of-multimodal-rag): E[R]=0.3650 top1=OK kl=0.0000 (6.27s)
+2026-08-25 15:20:02,130 [INFO]   [ep 1] group 159/169 (11_multimodal__var_standard__S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text): E[R]=-0.0183 top1=-- kl=0.0000 (2.91s)
+2026-08-25 15:20:04,908 [INFO]   [ep 1] group 160/169 (11_multimodal__var_standard__S7::section-7-building-multimodal-ai-agents): E[R]=-0.0166 top1=-- kl=0.0000 (2.77s)
+2026-08-25 15:20:07,496 [INFO]   [ep 1] group 161/169 (11_multimodal__var_standard__S8::section-8-conclusion): E[R]=0.0781 top1=-- kl=0.0003 (2.58s)
+2026-08-25 15:20:10,487 [INFO]   [ep 1] group 162/169 (11_multimodal__var_demanding__S1::section-1-introduction-the-need-for-multimodal-ai): E[R]=0.0786 top1=-- kl=0.0061 (2.99s)
+2026-08-25 15:20:13,431 [INFO]   [ep 1] group 163/169 (11_multimodal__var_demanding__S2::section-2-limitations-of-traditional-document-processing): E[R]=0.2069 top1=-- kl=0.0005 (2.94s)
+2026-08-25 15:20:16,593 [INFO]   [ep 1] group 164/169 (11_multimodal__var_demanding__S3::section-3-foundations-of-multimodal-llms): E[R]=0.3425 top1=-- kl=0.0000 (3.16s)
+2026-08-25 15:20:19,572 [INFO]   [ep 1] group 165/169 (11_multimodal__var_demanding__S4::section-4-applying-multimodal-llms-to-images-and-pdfs): E[R]=0.1537 top1=-- kl=0.0031 (2.98s)
+2026-08-25 15:20:23,234 [INFO]   [ep 1] group 166/169 (11_multimodal__var_demanding__S5::section-5-foundations-of-multimodal-rag): E[R]=0.3956 top1=OK kl=0.0002 (3.66s)
+2026-08-25 15:20:26,086 [INFO]   [ep 1] group 167/169 (11_multimodal__var_demanding__S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text): E[R]=0.1703 top1=-- kl=0.0000 (2.85s)
+2026-08-25 15:20:29,017 [INFO]   [ep 1] group 168/169 (11_multimodal__var_demanding__S7::section-7-building-multimodal-ai-agents): E[R]=0.1667 top1=OK kl=0.0001 (2.93s)
+2026-08-25 15:20:35,128 [INFO]   [ep 1] group 169/169 (11_multimodal__var_demanding__S8::section-8-conclusion): E[R]=0.1011 top1=-- kl=0.0002 (6.1s)
+2026-08-25 15:20:40,369 [INFO] Epoch    1/200 done | loss=2.4596 (grpo=2.5150 kl=0.0051 ent=0.2553) | E[R]=0.1714 | strict=27/169(16%) | near=54/169(32%) | H=0.256 | ‖g‖=9.6078 | lr=0.00e+00 | epoch=542s | total=547s | VRAM=3614MB
+2026-08-25 15:20:53,823 [INFO]   ★ New best strict=0.1598 (27/169) — saved to best/, best_strict/, best_strict_epochs/epoch_0001/
+2026-08-25 15:21:00,806 [INFO]   ★ New best E[R]=0.1714 — saved to best_er/, best_er_epochs/epoch_0001/
+2026-08-25 15:21:10,398 [INFO]   ★ New best near-tie top1=0.3195 — saved to best_neartie/, best_neartie_epochs/epoch_0001/
+2026-08-25 15:21:17,496 [INFO]   ★ New best healthy strict=0.1598 (H=0.2563) — saved to best_strict_healthy/, best_strict_healthy_epochs/epoch_0001/
+Traceback (most recent call last):
+  File "/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local/training/train_grpo.py", line 1794, in <module>
+    main()
+  File "/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local/training/train_grpo.py", line 1781, in main
+    train(
+  File "/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/research_agent_local/training/train_grpo.py", line 1212, in train
+    epoch_loss_grpo += loss_grpo.item() * group.word_weight
+                       ^^^^^^^^^^^^^^^^
+KeyboardInterrupt

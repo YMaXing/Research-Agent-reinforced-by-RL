@@ -1,0 +1,275 @@
+{
+  "version": 5,
+  "article": "05_workflow_patterns",
+  "variant": "var_minimal",
+  "sections": {
+    "S1::section-1-the-challenge-with-complex-single-llm-calls": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.14,
+        "standard": 0.08,
+        "deep": 0.0735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S2::section-2-the-power-of-modularity-why-chain-llm-calls": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.6025,
+        "standard": 0.385,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.2625,
+        "standard": 0.105,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S3::section-3-building-a-sequential-workflow-faq-generation-pipeline": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.14,
+        "standard": 0.28,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S4::section-4-optimizing-sequential-workflows-with-parallel-processing": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.245,
+        "standard": 0.2375,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.105,
+        "standard": 0.1575,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.245,
+        "standard": 0.14825,
+        "deep": 0.0735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.105,
+        "standard": 0.06825,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S6::section-building-a-basic-routing-workflow": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": -0.06,
+        "standard": 0.28,
+        "deep": 0.2735
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.41075,
+        "standard": 0.185,
+        "deep": 0.29925
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.27075,
+        "standard": 0.105,
+        "deep": 0.22575
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-the-challenge-with-complex-single-llm-calls": "skip",
+    "S2::section-2-the-power-of-modularity-why-chain-llm-calls": "light",
+    "S3::section-3-building-a-sequential-workflow-faq-generation-pipeline": "skip",
+    "S4::section-4-optimizing-sequential-workflows-with-parallel-processing": "deep",
+    "S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic": "light",
+    "S6::section-building-a-basic-routing-workflow": "skip",
+    "S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition": "light"
+  }
+}

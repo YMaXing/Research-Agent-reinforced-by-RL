@@ -1,0 +1,48 @@
+{
+  "article": "02_workflows_vs_agents__var_minimal",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces",
+        "scripted_example_fraction": 0.65,
+        "argumentative_risk": 0.7,
+        "risk_rationale": "Guideline dictates a verbatim personal story opening, lists 5 specific catastrophic failure modes, and asserts billion-dollar startup success/failure hinges on this decision, with several depth orphans lacking direct source evidence."
+      },
+      {
+        "sec_id": "S2::section-2-understanding-the-spectrum-from-workflows-to-agents",
+        "scripted_example_fraction": 0.55,
+        "argumentative_risk": 0.3,
+        "risk_rationale": "Section supplies exact definitions, characteristics, factory-line and human-expert analogies plus orchestration nuance directly from the guideline, mostly aligned with building-effective-agents but still partly illustrative rather than open evidence-seeking."
+      },
+      {
+        "sec_id": "S3::section-3-choosing-your-path",
+        "scripted_example_fraction": 0.6,
+        "argumentative_risk": 0.65,
+        "risk_rationale": "Guideline enumerates concrete workflow/agent use-case lists, bullet-point strengths/weaknesses, enterprise/regulatory preferences, autonomy slider, and Cursor/Perplexity illustrations that carry normative weight with multiple breadth orphans and thin source mapping for finance/health claims."
+      },
+      {
+        "sec_id": "S4::section-4-exploring-common-patterns",
+        "scripted_example_fraction": 0.45,
+        "argumentative_risk": 0.25,
+        "risk_rationale": "High-level 1-2 sentence descriptions of chaining/routing, orchestrator-worker, evaluator-optimizer, and ReAct components are prescribed but remain introductory and descriptive, with sources providing adequate theoretical foundations."
+      },
+      {
+        "sec_id": "S5::section-5-zooming-in-on-our-favorite-examples",
+        "scripted_example_fraction": 0.75,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Guideline pre-scripts detailed step-by-step operational flows, problem statements, mermaid structures, and 'oversimplified version' for Gemini CLI and Perplexity Deep Research (explicitly noted as assumptions for closed-source system), functioning as illustrative narrative."
+      },
+      {
+        "sec_id": "S6::section-6-conclusion-the-challenges-of-every-ai-engineer",
+        "scripted_example_fraction": 0.4,
+        "argumentative_risk": 0.45,
+        "risk_rationale": "Lists 5 specific reliability/context/cost/security challenges framed as 'the reality every AI engineer faces' plus forward-looking claims about solvability in future lessons, drawing from source limitations but adding interpretive synthesis."
+      }
+    ],
+    "source_independence": 0.75,
+    "topic_canonicity": 0.8,
+    "overall_notes": "Guideline is unusually prescriptive with verbatim stories, enumerated examples, and step-by-step illustrative flows (especially S1/S3/S5), elevating scripted fractions despite the conceptual-overview intent. Sources are largely independent documents from Anthropic/Google/OpenAI/Perplexity but the workflows-vs-agents tradeoff is now canonical in 2024-2025 AI engineering literature, so additional exploration yields mostly redundant restatements; argumentative risk is moderately elevated in prescriptive decision and startup-impact sections where normative claims outpace direct source support."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Guideline dictates a verbatim personal story opening, lists 5 specific catastrophic failure modes, and asserts billion-dollar startup success/failure hinges on this decision, with several depth orphans lacking direct source evidence.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-understanding-the-spectrum-from-workflows-to-agents\",\n      \"scripted_example_fraction\": 0.55,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Section supplies exact definitions, characteristics, factory-line and human-expert analogies plus orchestration nuance directly from the guideline, mostly aligned with building-effective-agents but still partly illustrative rather than open evidence-seeking.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-choosing-your-path\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Guideline enumerates concrete workflow/agent use-case lists, bullet-point strengths/weaknesses, enterprise/regulatory preferences, autonomy slider, and Cursor/Perplexity illustrations that carry normative weight with multiple breadth orphans and thin source mapping for finance/health claims.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-exploring-common-patterns\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"High-level 1-2 sentence descriptions of chaining/routing, orchestrator-worker, evaluator-optimizer, and ReAct components are prescribed but remain introductory and descriptive, with sources providing adequate theoretical foundations.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-zooming-in-on-our-favorite-examples\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline pre-scripts detailed step-by-step operational flows, problem statements, mermaid structures, and 'oversimplified version' for Gemini CLI and Perplexity Deep Research (explicitly noted as assumptions for closed-source system), functioning as illustrative narrative.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-conclusion-the-challenges-of-every-ai-engineer\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Lists 5 specific reliability/context/cost/security challenges framed as 'the reality every AI engineer faces' plus forward-looking claims about solvability in future lessons, drawing from source limitations but adding interpretive synthesis.\"\n    }\n  ],\n  \"source_independence\": 0.75,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Guideline is unusually prescriptive with verbatim stories, enumerated examples, and step-by-step illustrative flows (especially S1/S3/S5), elevating scripted fractions despite the conceptual-overview intent. Sources are largely independent documents from Anthropic/Google/OpenAI/Perplexity but the workflows-vs-agents tradeoff is now canonical in 2024-2025 AI engineering literature, so additional exploration yields mostly redundant restatements; argumentative risk is moderately elevated in prescriptive decision and startup-impact sections where normative claims outpace direct source support.\"\n}\n```",
+  "parse_ok": true
+}

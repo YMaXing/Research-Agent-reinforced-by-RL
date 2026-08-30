@@ -93,7 +93,7 @@ To see how these levers multiply, consider two designs for a research task.
 *   **Calculation:** (50,000 * $75/M + 4,000 * $150/M) * 5 runs = **$21.75 per task**.
 
 **A budgeted design might:**
-*   **Model:** Use a fast, cheap model for initial summarization (e.g., Gemini 2.5 Flash at $0.30/M input tokens) and a mid-tier model for the final answer (e.g., GPT-4o at $2.50/M input tokens).
+*   **Model:** Use a fast, cheap model for initial summarization (e.g., Gemini 2.5 Flash at \$0.30/M input tokens) and a mid-tier model for the final answer (e.g., GPT-4o at \$2.50/M input tokens).
 *   **Input Tokens:** Use RAG to retrieve the 5 most relevant chunks (approx. 2,000 tokens).
 *   **Output Tokens:** Generate a concise answer (e.g., 1,000 tokens).
 *   **Number of Parallel Runs:** Use a single run.

@@ -1,0 +1,123 @@
+{
+  "version": 3,
+  "article": "Insects_Consciousness__mixeddepth",
+  "variant": "no_variant",
+  "computed_at": "2026-07-30T02:01:43.335288+00:00",
+  "oracle_arm": "deep",
+  "oracle_arm_idx": 3,
+  "runner_up_arm": "standard",
+  "runner_up_arm_idx": 2,
+  "margin": 0.272656,
+  "reward_spread": 0.896256,
+  "r_w_rewards": {
+    "skip": 0.337778,
+    "light": -0.13,
+    "standard": 0.4936,
+    "deep": 0.766256
+  },
+  "r_w_rewards_list": [
+    0.337778,
+    -0.13,
+    0.4936,
+    0.766256
+  ],
+  "decision_path": [
+    "unique reward winner (margin=+0.2727 > EPS_BAND=0.03)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "gate_diagnostics": {
+    "skip": {
+      "cp": 1.0,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "light": {
+      "cp": 0.0,
+      "ra": 0.0,
+      "gsp": 0.0
+    },
+    "standard": {
+      "cp": 1.0,
+      "ra": 1.0,
+      "gsp": 1.0
+    },
+    "deep": {
+      "cp": 1.0,
+      "ra": 1.0,
+      "gsp": 1.0
+    }
+  },
+  "low_signal_flag": true,
+  "n_sections": 3,
+  "n_sections_with_target": 3,
+  "total_target_words": 2250,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 600,
+      "weight_words": 600,
+      "weight_frac": 0.26667,
+      "rewards": {
+        "skip": 0.3,
+        "light": -0.13,
+        "standard": 0.2436,
+        "deep": 0.2307
+      },
+      "rewards_by_preset": [
+        0.3,
+        -0.13,
+        0.2436,
+        0.2307
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-a-growing-awareness",
+      "title": "a growing awareness",
+      "target_words": 850,
+      "weight_words": 850,
+      "weight_frac": 0.37778,
+      "rewards": {
+        "skip": 0.4,
+        "light": -0.13,
+        "standard": 0.6936,
+        "deep": 0.9807
+      },
+      "rewards_by_preset": [
+        0.4,
+        -0.13,
+        0.6936,
+        0.9807
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-mindful-relations",
+      "title": "mindful relations",
+      "target_words": 800,
+      "weight_words": 800,
+      "weight_frac": 0.35556,
+      "rewards": {
+        "skip": 0.3,
+        "light": -0.13,
+        "standard": 0.5436,
+        "deep": 1.0807
+      },
+      "rewards_by_preset": [
+        0.3,
+        -0.13,
+        0.5436,
+        1.0807
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    }
+  ]
+}

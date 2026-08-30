@@ -11,43 +11,45 @@ Reads
     module is agnostic to that distinction since it only reads the already-
     computed per-arm reward floats, not the underlying grader dimensions.
 
-``rl_training_data/bases/<article>/guideline_features.json``
-    Per-section ``target_words`` (weighting) and structural constraints
-    (``mandatory_bullets``, ``must_cover_depth``).
+``rl_training_data/bases/<article>/section_oracle_averaged.json``  (optional)
+    Same shape, but each (section, arm) cell already averaged across the
+    production draw + every graded ``noise_experiment/`` replicate, written
+    by ``merge_replicate_oracles.py``. Used automatically instead of the
+    single-draw file whenever it exists -- not a caller choice (A.16,
+    2026-08-25).
 
-``rl_training_data/episodes/<article>__preset<N>/article.md``
-    Generated article text for each arm.  Used by signals S3 / S4 / S5.
-    ARM → episode mapping:  skip=0  light=1  standard=3  deep=5
+``rl_training_data/bases/<article>/guideline_features.json``
+    Per-section ``target_words`` (weighting).
 
 Decision scheme
----------------
-1.  Compute **R_w** — target-words-weighted mean of per-arm rewards from
-    ``section_oracle.json``.  This is the primary oracle signal.
+----------------
+1.  Compute **R_w** -- target-words-weighted mean of per-arm rewards,
+    sourced from whichever file above is available (averaged across every
+    draw when replicate data exists). This is the sole oracle signal.
 
-2.  **Unique winner**: all arms are further than ``EPS_BAND = 0.02`` from the
-    R_w leader → oracle = R_w leader.  No secondary signals needed.
+2.  **oracle_arm = argmax(R_w)**. ``margin`` (winner − runner-up) is compared
+    against ``ARTICLE_MARGIN_NOISE_SD`` -- the corpus-measured cross-draw
+    noise floor -- shrunk by ``sqrt(n_draws)``. Below this, ``needs_review``
+    is flagged, but the argmax answer is still reported: no forced
+    alternative decision from unvalidated heuristics (A.16, 2026-08-25,
+    retiring the earlier EPS_BAND/S3/S4/S5 text-based near-tie tie-break --
+    see run13_rl_grok_pipeline_analysis.md A.16 for why: averaging is the
+    statistically principled way to reduce noise once real replicated reward
+    data exists, and the retired signals were unvalidated syntactic proxies
+    calibrated only as a single-draw-era stopgap).
 
-3.  **Near-tie band** (≥2 arms within EPS_BAND of the leader):
-    Apply signals in priority order, each with its own min-delta guard:
-      S4  structural compliance  (mandatory_bullets + depth markers vs guideline)
-      S3  article bloat          (word count / total target_words)
-      S5  generation stability   (CV across 3 runs)
-    A signal is applied as the decisive tiebreaker only when its spread across
-    band arms ≥ its threshold.  ``needs_review=True`` when no signal clears
-    its threshold; the cheapest arm in the band is used as a fallback.
-
-4.  **Manual overrides** (analysis confirmed 2026-06-05):
-    Four near-tie cases where the embedding-based S1 knee signal (not
-    implemented here) was the decisive signal, and three where manual review
-    overrode the automated result.  All verdicts are hard-coded and take
-    absolute precedence over steps 1-3.
+3.  **Manual overrides** (see ``_MANUAL_OVERRIDES``): take absolute
+    precedence over 1-2. Two categories, both still legitimate since they
+    encode information R_w cannot see at all: cases needing the
+    embedding-based S1 marginal-novelty signal (not implemented here) or
+    direct human review, and a set of pre-2026-08-25 N=3-replication
+    majority-vote corrections kept as independently-validated, not
+    automatically re-derived by this refactor.
 
 Note on S1 / S2: the marginal-novelty knee (S1) and intra-article redundancy
 (S2) signals both require an embedding model and are not computed here.
 For the current 24-variant training set every near-tie case where S1/S2 were
-decisive is covered by the hard-coded manual overrides below.  If new
-article-variants are added, re-run ``prototype_oracle_signals.py --all``
-to get the full signal breakdown before updating this file.
+decisive is covered by the hard-coded manual overrides below.
 
 Output schema  (article_oracle.json, version 3)
 -----------------------------------------------
@@ -55,17 +57,19 @@ version               int   3
 article               str   "10_memory_knowledge_access__var_standard"
 variant               str   "var_minimal" | "var_standard" | "var_demanding"
 computed_at           str   ISO-8601 UTC
+computed_from         str   "section_oracle_averaged.json" | "section_oracle.json"
+n_draws_used          int   how many draws contributed to r_w_rewards (1 = single-draw only)
 oracle_arm            str   "skip" | "light" | "standard" | "deep"
 oracle_arm_idx        int   0-3  (skip=0, light=1, standard=2, deep=3)
 runner_up_arm         str
 runner_up_arm_idx     int
 margin                float oracle_r_w − runner_up_r_w
 reward_spread         float max_r_w − min_r_w
-r_w_rewards           dict  {arm: float}  (target-words-weighted)
+r_w_rewards           dict  {arm: float}  (target-words-weighted, averaged over n_draws_used draws)
 r_w_rewards_list      list  [skip, light, standard, deep]  (indexed 0-3)
 decision_path         list  human-readable trace of the decision
 manual_override       bool
-needs_review          bool
+needs_review          bool  True when margin < ARTICLE_MARGIN_NOISE_SD/sqrt(n_draws_used)
 gate_diagnostics      dict|None {arm: {cp,ra,gsp: float}} mean satisficing
                       metrics per arm (None if section_oracle.json predates
                       the "diagnostics" field) -- informational only, does
@@ -100,8 +104,6 @@ _THIS_DIR = Path(__file__).resolve().parent
 _AGENT_DIR = _THIS_DIR.parent               # research_agent_local/
 _REPO_ROOT = _AGENT_DIR.parent              # RL_researcher_writer_ymaxing/
 _BASES_DIR = _REPO_ROOT / "rl_training_data" / "bases"
-_EPISODES_DIR = _REPO_ROOT / "rl_training_data" / "episodes"
-_TEST_EPISODES_DIR = _REPO_ROOT / "rl_training_data" / "test_episodes"
 
 # ---------------------------------------------------------------------------
 # Preset / arm constants  (mirrors _rl_preset.py)
@@ -111,12 +113,6 @@ ARMS: list[str] = ["skip", "light", "standard", "deep"]
 
 #: Arm name → 0-based ordinal index.
 ARM_IDX: dict[str, int] = {a: i for i, a in enumerate(ARMS)}
-
-#: Arm name → episode preset ID used to generate its articles.
-ARM_EPISODE: dict[str, int] = {"skip": 0, "light": 1, "standard": 3, "deep": 5}
-
-#: Test-article (no-variant) arm → episode preset ID in test_episodes/
-_TEST_ARM_EPISODE: dict[str, int] = {"skip": 0, "light": 1, "standard": 2, "deep": 3}
 
 #: Total number of arms.
 NUM_ARMS: int = 4
@@ -143,56 +139,42 @@ ALL_ARTICLES: list[str] = [
 ]
 
 # ---------------------------------------------------------------------------
-# Decision constants  (must match prototype_oracle_signals.py)
+# Decision constants
 # ---------------------------------------------------------------------------
-# EPS_BAND recalibrated 0.02->0.03 on 2026-07-25 using the measured pure-noise
-# (temp=0.25, no formula/content change) article-margin floor from the
-# 2-article replicate experiment (see run13_rl_grok_pipeline_analysis.md Part
-# 7): 06_tools__var_standard's margin swung up to 0.067 across 3 independent
-# regenerations. 0.03 (not the full measured ceiling) was chosen because
-# simulating wider values (0.05+) showed non-monotonic side effects -- once the
-# near-tie band grows to include 3+ arms, the S3/S4/S5 tie-break winner can
-# flip AGAIN, including 06_tools__var_standard (the one article with the
-# deepest independent replicate validation) flipping AWAY from its
-# replicate-majority-confirmed answer. 0.03 produces only 4 corpus-wide flips
-# and leaves that article unchanged. Keep audit_oracle_margins.py's _EPS_BAND
-# and prototype_oracle_signals.py's EPS_BAND in sync with this value.
-EPS_BAND: float = 0.03      # near-tie tolerance: arms within this margin form the band
-MIN_DELTA_S4: float = 0.05  # min structure signal spread to use S4 as tiebreaker
-# MIN_DELTA_S3 recalibrated 0.10->0.15 on 2026-07-26: a corpus-wide scan of the
-# S3 bloat-ratio (words/target_words) gap between every arm-pair found mean
-# gap=0.182, median=0.144 -- the old 0.10 threshold sat BELOW the median
-# natural gap, so it activated on 62.1% of all arm-pairs corpus-wide (240
-# pairs checked), functioning closer to constant noise than a meaningful
-# discriminator. 0.15 sits near the median instead. Motivated by the
-# 10_memory_knowledge_access__var_goldremoved golden-source-removal pilot,
-# where S3 (not a real content signal) blocked an article whose raw R_w
-# already favored deep, and whose S4/S5 signals also favored deep once S3
-# stopped dominating. Validated: flips ONLY the pilot (light->deep); 0/40
-# corpus-wide flips on the existing 40 production articles; both deeply-
-# validated reference articles (06_tools__var_standard, 09_RAG__var_standard)
-# byte-identical margins before/after. Keep prototype_oracle_signals.py's
-# MIN_DELTA_S3 in sync with this value.
-MIN_DELTA_S3: float = 0.15  # min bloat signal spread to use S3 as tiebreaker
-MIN_DELTA_S5: float = 0.05  # min stability signal spread to use S5 as tiebreaker
+# ARTICLE_MARGIN_NOISE_SD replaces EPS_BAND/S3/S4/S5's near-tie tie-break
+# (retired 2026-08-25 -- run13_rl_grok_pipeline_analysis.md A.16). Measured
+# directly as the cross-draw sd of the ARTICLE-level margin itself (winner
+# R_w minus runner-up R_w, both fixed by the mean across draws), pooled
+# across all 40 replicated corpus articles (production + 2 replicates each,
+# temp=0.7): mean=0.0540 (n=40 articles). This is the single-draw (N=1)
+# noise floor; for an article whose R_w is averaged over N draws, the
+# confidence threshold shrinks by sqrt(N) -- same convention as A.7/A.11's
+# defensible-share analysis (an N-draw average is less noisy than one draw).
+ARTICLE_MARGIN_NOISE_SD: float = 0.054
 
 # Below this, an arm's mean cp/ra/gsp (see _compute_gate_diagnostics) is
 # reported via low_signal_flag -- informational only, never affects oracle_arm.
 DIAG_LOW_SIGNAL_THRESHOLD: float = 0.85
 
 # ---------------------------------------------------------------------------
-# Manual overrides (all confirmed by 2026-06-05 session analysis)
+# Manual overrides
 #
 # Key: article variant name  →  Value: confirmed oracle arm
 #
-# These take absolute precedence over every automated signal.
-# Seven cases total:
-#   · Two "manual review" cases where the automated signals were ambiguous
-#     (needs_review=True) or the R_w winner was overridden after inspection.
-#   · Two near-tie cases where the embedding-based S1 marginal-novelty knee
-#     was the decisive signal.  Without the embedder, the production tiebreaker
-#     (cheapest arm in band) would give a wrong answer, so the S1-confirmed
-#     verdict is hard-coded here.
+# These take absolute precedence over the mean-R_w computation (A.16,
+# 2026-08-25 -- the near-tie tie-break these were originally validated
+# against, EPS_BAND/S3/S4/S5, has since been retired; see this module's
+# docstring). Two categories, both still legitimate since they encode
+# information R_w cannot see at all:
+#   · Original 2026-06-05 cases: manual review (needs_review=True or the R_w
+#     winner overridden after inspection), and near-tie cases where the
+#     embedding-based S1 marginal-novelty knee (not implemented in this
+#     module) was decisive.
+#   · 2026-08-20/25 N=3-replication majority-vote corrections (A.15.2/
+#     A.15.4): derived by majority vote of each draw's own raw R_w argmax,
+#     BEFORE this module's default mechanism became mean-R_w itself -- kept
+#     as independently-validated corrections, not re-derived automatically
+#     by this refactor.
 # ---------------------------------------------------------------------------
 _MANUAL_OVERRIDES: dict[str, str] = {
     # --- manual review (needs_review=True or human inspection) ---
@@ -226,68 +208,39 @@ _MANUAL_OVERRIDES: dict[str, str] = {
     "Gravity_Entropy":                     "light",
     "13_agent_framework":                  "light",
     "Insects_Consciousness":               "deep",
-}
 
-# ---------------------------------------------------------------------------
-# Text helpers  (must match prototype_oracle_signals.py)
-# ---------------------------------------------------------------------------
-_BULLET_RE = re.compile(r"^\s*([-*+]|\d+[.)])\s+\S", re.MULTILINE)
-_HEADING_RE = re.compile(r"^(#{1,6})\s+\S", re.MULTILINE)
-_SUBHEAD_RE = re.compile(r"^#{3,6}\s+\S", re.MULTILINE)
-_CODEFENCE_RE = re.compile(r"```")
-
-
-def _read_text(path: Path) -> str:
-    try:
-        return path.read_text(encoding="utf-8")
-    except UnicodeDecodeError:
-        return path.read_text(encoding="utf-8", errors="ignore")
-    except FileNotFoundError:
-        return ""
-
-
-def _word_count(text: str) -> int:
-    return len(text.split())
-
-
-# ---------------------------------------------------------------------------
-# Episode directory helper
-# ---------------------------------------------------------------------------
-
-def _episode_dir(article: str, arm: str) -> Path:
-    """Return the episode directory for *arm* of *article*.
-
-    No-variant articles use sequential preset IDs 0-3 (_TEST_ARM_EPISODE);
-    training variants use ``episodes/`` with preset IDs 0, 1, 3, 5 (ARM_EPISODE).
-    These are two INDEPENDENT decisions -- which preset-NUMBERING scheme
-    applies (train vs no-variant) is decided by ``_variant_of()`` using the
-    canonical ``__var_minimal``/``__var_standard``/``__var_demanding`` suffixes;
-    which DIRECTORY ROOT holds the episodes is decided separately by checking
-    where preset0 actually exists, mirroring generate_episode_oracles.py's own
-    dual-check (its process_article_variant() docstring/comment documents this
-    exact scenario: one-off ablation variants like "<topic>__var_goldremoved"
-    are no-variant by suffix but their episodes live under episodes/ not
-    test_episodes/, since rl_data_generator.py places them there).
-
-    IMPORTANT: do NOT use a loose ``"__var_" in article`` substring check for
-    either decision -- that previously caused this function to silently
-    misroute an ablation-pilot article (whose name happens to contain
-    "__var_" without being a real training variant) to the wrong preset-ID
-    scheme, reading an unrelated or non-existent episode directory for
-    "standard"/"deep" and silently corrupting the S3/S4/S5 tie-break signals
-    with empty text (found via 10_memory_knowledge_access__var_goldremoved's
-    pilot: deep's S4 came back as an impossible 0.000 because ARM_EPISODE's
-    deep->preset5 doesn't exist for this no-variant article).
-    """
-    if _variant_of(article) != "no_variant":
-        return _EPISODES_DIR / f"{article}__preset{ARM_EPISODE[arm]}"
-    preset = _TEST_ARM_EPISODE[arm]
-    if (_EPISODES_DIR / f"{article}__preset0").exists() and not (
-        _TEST_EPISODES_DIR / f"{article}__preset0"
-    ).exists():
-        return _EPISODES_DIR / f"{article}__preset{preset}"
-    return _TEST_EPISODES_DIR / f"{article}__preset{preset}"
-
+    # --- 2026-08-25: N=3 promotion for 4 TEST articles that had replicate
+    #     draws in noise_experiment/ but were never merged into production
+    #     (assessed MODERATE risk-tier in A.15.1, lower priority than the 12
+    #     CRITICAL/HIGH articles replicated in A.15.4). Decided by the SAME
+    #     majority-vote-of-per-draw-raw-argmax rule as the block above (not
+    #     the averaged-R_w argmax, and not compute_article_oracle's own
+    #     --use-averaged tie-break output, which the A.15.4 precedent already
+    #     established as untrustworthy here since S3/S4/S5 read only the
+    #     single production draft's text). Votes: 29_evaluation_metrics =
+    #     [light, standard, standard] -> standard (2/3, flips); HNSW =
+    #     [light, light, deep] -> light (2/3, confirms, no override needed);
+    #     31_CI = [light, light, skip] -> light (2/3, confirms, no override
+    #     needed); State_of_LLM_Reasoning = [skip, skip, light] -> skip (2/3,
+    #     confirms, and policy-forced regardless). See A.18.6 addendum.
+    "29_evaluation_metrics":               "standard",
+    # --- 2026-08-27: near-tie oracle review battery, distributional override
+    #     (A.19). Mean-R_w argmax picks `deep` for HNSW (margin +0.0343 after
+    #     this session's grading corrections, needs_review cleared), but the
+    #     per-draw evidence behind that mean is not comparable to `light`'s:
+    #     deep=[0.429, 0.374, 0.633] (sd=0.136) vs light=[0.433, 0.463, 0.436]
+    #     (sd=0.017) -- an 8.19x sd ratio, the most extreme of the 12
+    #     near-tie articles reviewed this session -- and 2 of deep's 3 draws
+    #     fall entirely below light's observed range (clean maximin
+    #     dominance for light; light's floor 0.433 > deep's floor 0.374).
+    #     A.19 confirms this specific combination (extreme sd-ratio outlier
+    #     + clean maximin dominance) does NOT replicate on the corpus's next
+    #     two highest sd-ratio cases (03_context_engineering__var_standard
+    #     4.80x, Bird_Eye_Extreme 2.78x, both left unchanged), so this is a
+    #     narrow, dual-condition override scoped to HNSW only -- not a
+    #     blanket lower-variance preference. See A.19 for the full
+    #     distribution table and rule.
+    "HNSW":                                "light",}
 
 # ---------------------------------------------------------------------------
 # File loaders
@@ -322,26 +275,6 @@ def _load_guideline_features(article: str) -> dict:
     """Load guideline_features.json for *article*."""
     path = _BASES_DIR / article / "guideline_features.json"
     return json.loads(path.read_text(encoding="utf-8"))
-
-
-def _read_article(article: str, arm: str) -> str:
-    """Read the final article.md for *arm* (canonical run2, with fallbacks)."""
-    ep_dir = _episode_dir(article, arm)
-    for name in ("article.md", "article_002.md", "article_001.md", "article_000.md"):
-        p = ep_dir / name
-        if p.exists():
-            return _read_text(p)
-    return ""
-
-
-def _read_article_runs(article: str, arm: str) -> list[str]:
-    """Read all 3 generation runs for *arm* (for stability signal S5)."""
-    ep_dir = _episode_dir(article, arm)
-    return [
-        _read_text(ep_dir / name)
-        for name in ("article_000.md", "article_001.md", "article_002.md")
-        if (ep_dir / name).exists()
-    ]
 
 
 # ---------------------------------------------------------------------------
@@ -443,104 +376,23 @@ def _compute_gate_diagnostics(
 
 
 # ---------------------------------------------------------------------------
-# Signal S3: article length bloat  (article words / total target_words)
-# ---------------------------------------------------------------------------
-
-def _s3_bloat(article: str, total_target_words: int) -> dict[str, float]:
-    """Lower is better (closer to target → less bloat)."""
-    denom = max(total_target_words, 1)
-    return {
-        arm: round(_word_count(_read_article(article, arm)) / denom, 4)
-        for arm in ARMS
-    }
-
-
-# ---------------------------------------------------------------------------
-# Signal S4: structural compliance  (bullets + depth markers vs guideline)
-# ---------------------------------------------------------------------------
-
-def _s4_structure(
-    article: str,
-    features_sections: dict[str, dict],
-) -> dict[str, float]:
-    """Higher is better (closer to expected structural content).
-
-    score = 0.6 × min(found_bullets / exp_bullets, 1)
-          + 0.4 × min(depth_markers / exp_depth, 1)
-    Both exp_bullets and exp_depth are clamped to ≥1 to avoid division by zero.
-    depth_markers = subheadings (###-level) + code fences / 2.
-    """
-    exp_b = max(
-        sum(int(f.get("mandatory_bullets", 0)) for f in features_sections.values()), 1
-    )
-    exp_d = max(
-        sum(int(f.get("must_cover_depth", 0)) for f in features_sections.values()), 1
-    )
-    result: dict[str, float] = {}
-    for arm in ARMS:
-        text = _read_article(article, arm)
-        found_b = len(_BULLET_RE.findall(text))
-        depth_m = (
-            len(_SUBHEAD_RE.findall(text))
-            + (len(_CODEFENCE_RE.findall(text)) // 2)
-        )
-        b_score = min(1.0, found_b / exp_b)
-        d_score = min(1.0, depth_m / exp_d)
-        result[arm] = round(0.6 * b_score + 0.4 * d_score, 4)
-    return result
-
-
-# ---------------------------------------------------------------------------
-# Signal S5: generation stability  (1 − mean CV across 3 runs)
-# ---------------------------------------------------------------------------
-
-def _cv(values: list[float]) -> float:
-    mu = statistics.mean(values)
-    return statistics.stdev(values) / mu if mu > 0 and len(values) > 1 else 0.0
-
-
-def _s5_stability(article: str) -> dict[str, float]:
-    """Higher is better (more consistent output across runs)."""
-    result: dict[str, float] = {}
-    for arm in ARMS:
-        runs = _read_article_runs(article, arm)
-        if len(runs) < 2:
-            result[arm] = 1.0
-            continue
-        wc = [_word_count(r) for r in runs]
-        hc = [len(_HEADING_RE.findall(r)) for r in runs]
-        bc = [len(_BULLET_RE.findall(r)) for r in runs]
-        cvs = [_cv(wc), _cv(hc), _cv(bc)]
-        result[arm] = round(max(0.0, 1.0 - statistics.mean(cvs)), 4)
-    return result
-
-
-# ---------------------------------------------------------------------------
-# Min-delta guard
-# ---------------------------------------------------------------------------
-
-def _has_actionable_delta(
-    band: list[str], signal: dict[str, float], min_delta: float
-) -> bool:
-    """True iff signal spread across band arms ≥ min_delta (not within noise)."""
-    vals = [signal[a] for a in band if signal[a] == signal[a]]  # skip NaN
-    return len(vals) >= 2 and (max(vals) - min(vals)) >= min_delta
-
-
-# ---------------------------------------------------------------------------
 # Oracle decision
 # ---------------------------------------------------------------------------
 
 def _decide(
     article: str,
     r_w: dict[str, float],
-    features_sections: dict[str, dict],
-    total_target_words: int,
+    n_draws: int = 1,
     external_evidence_policy: str = "allowed",
 ) -> tuple[str, bool, bool, list[str]]:
     """Return (oracle_arm, manual_override, needs_review, decision_path).
 
-    decision_path is a human-readable list of strings tracing the decision.
+    Pure mean-R_w argmax (A.16, 2026-08-25) -- retires the EPS_BAND/S3/S4/S5
+    near-tie tie-break entirely. ``r_w`` is expected to already be the mean
+    across every available draw (production + replicates, via
+    section_oracle_averaged.json when it exists); ``n_draws`` says how many
+    contributed, so the confidence check can shrink ARTICLE_MARGIN_NOISE_SD
+    by sqrt(n_draws) -- an averaged margin is less noisy than a single draw's.
     """
     # -1. Hard constraint: forbidden policy → skip, regardless of R_w.
     #     External evidence cannot be used in the final article, so the only
@@ -548,75 +400,22 @@ def _decide(
     if external_evidence_policy == "forbidden":
         return "skip", False, False, ["policy=forbidden → skip (hard constraint)"]
 
-    # 0.  Manual override: absolute precedence over all signals.
+    # 0.  Manual override: absolute precedence over the mean-R_w computation.
     if article in _MANUAL_OVERRIDES:
         arm = _MANUAL_OVERRIDES[article]
         return arm, True, False, [f"manual override → {arm}"]
 
-    # 1.  Sort all arms by R_w descending.
     ranked = sorted(ARMS, key=lambda a: r_w[a], reverse=True)
     best_arm = ranked[0]
-    best_r = r_w[best_arm]
-
-    # 2.  Build near-tie band: all arms within EPS_BAND of the leader.
-    band = [a for a in ARMS if best_r - r_w[a] <= EPS_BAND]
-
-    if len(band) == 1:
-        margin = best_r - r_w[ranked[1]]
-        return best_arm, False, False, [
-            f"unique reward winner (margin={margin:+.4f} > EPS_BAND={EPS_BAND})"
-        ]
-
-    # 3.  Near-tie: compute text-based signals and apply them in priority order.
-    path: list[str] = [
-        f"near-tie band={band} "
-        f"R_w=[{', '.join(f'{a}:{r_w[a]:.4f}' for a in band)}]"
+    margin = r_w[best_arm] - r_w[ranked[1]]
+    threshold = ARTICLE_MARGIN_NOISE_SD / (n_draws ** 0.5)
+    needs_review = margin < threshold
+    path = [
+        f"mean R_w argmax over {n_draws} draw(s): {best_arm}  "
+        f"margin={margin:+.4f}  1x-noise-sd threshold={threshold:.4f}  "
+        f"{'BELOW threshold, low confidence' if needs_review else 'confident'}"
     ]
-
-    s4 = _s4_structure(article, features_sections)
-    s3 = _s3_bloat(article, total_target_words)
-    s5 = _s5_stability(article)
-
-    s4_active = _has_actionable_delta(band, s4, MIN_DELTA_S4)
-    s3_active = _has_actionable_delta(band, s3, MIN_DELTA_S3)
-    s5_active = _has_actionable_delta(band, s5, MIN_DELTA_S5)
-    any_active = s4_active or s3_active or s5_active
-
-    def _safe(x: float, default: float = 0.0) -> float:
-        return default if x != x else x  # NaN → default
-
-    # Priority key: (S4 higher-is-better, S3 lower-is-better, S5 higher-is-better,
-    #                cheapest arm as final tie-breaker)
-    def _key(arm: str) -> tuple:
-        return (
-            -(_safe(s4[arm]) if s4_active else 0.0),
-            (_safe(s3[arm], 9.9) if s3_active else 0.0),
-            -(_safe(s5[arm]) if s5_active else 0.0),
-            ARMS.index(arm),   # cheaper arm (lower index) wins on full tie
-        )
-
-    winner = min(band, key=_key)
-
-    active_labels = [
-        lbl for lbl, flag in [
-            (f"S4(Δ≥{MIN_DELTA_S4})", s4_active),
-            (f"S3(Δ≥{MIN_DELTA_S3})", s3_active),
-            (f"S5(Δ≥{MIN_DELTA_S5})", s5_active),
-        ] if flag
-    ]
-    if active_labels:
-        path.append(
-            f"active signals: [{', '.join(active_labels)}]  winner={winner}  "
-            f"S4={{{', '.join(f'{a}:{s4[a]:.3f}' for a in band)}}}  "
-            f"S5={{{', '.join(f'{a}:{s5[a]:.3f}' for a in band)}}}"
-        )
-    else:
-        path.append(
-            f"no signal cleared its threshold → needs_review=True  "
-            f"fallback=cheapest arm in band ({winner})"
-        )
-
-    return winner, False, not any_active, path
+    return best_arm, False, needs_review, path
 
 
 # ---------------------------------------------------------------------------
@@ -677,22 +476,24 @@ def _variant_of(article: str) -> str:
     return "no_variant"  # no-variant test articles
 
 
-def compute_article_oracle(article: str, use_averaged: bool = False) -> dict:
+def compute_article_oracle(article: str) -> dict:
     """Compute the full article-level oracle record for one variant.
 
-    ``use_averaged=True`` sources R_w from section_oracle_averaged.json's N=3
-    averaged rewards instead of the single-draw section_oracle.json -- the
-    A.12 step 3 / A.16.7 Phase 1 "_averaged variant". S3/S4/S5's near-tie
-    tie-break signals are unaffected: they read the arms' actual generated
-    article.md text, which exists once per arm regardless of how many draws
-    were used to grade it.
+    Sources R_w from ``section_oracle_averaged.json`` (mean across production
+    + every graded replicate) whenever it exists, falling back to the
+    single-draw ``section_oracle.json`` otherwise -- automatic, not a caller
+    choice (A.16, 2026-08-25). This retires the earlier canonical-vs-
+    ``_averaged``-sibling-file split entirely: there is no remaining reason
+    to privilege the single production draw once more draws are available.
 
     Returns a dict ready for JSON serialisation matching the schema in
     this module's docstring.
     """
     # --- load inputs ---
+    use_averaged = (_BASES_DIR / article / "section_oracle_averaged.json").exists()
     oracle_data = _load_section_oracle(article, use_averaged=use_averaged)
     oracle_sections: dict[str, dict] = oracle_data["sections"]
+    n_draws = oracle_data.get("n_draws_per_arm", 1) if use_averaged else 1
 
     feat_data = _load_guideline_features(article)
     features_sections: dict[str, dict] = feat_data.get("sections", {})
@@ -704,7 +505,7 @@ def compute_article_oracle(article: str, use_averaged: bool = False) -> dict:
 
     # --- decision ---
     oracle_arm, manual_override, needs_review, decision_path = _decide(
-        article, r_w, features_sections, total_tw,
+        article, r_w, n_draws=n_draws,
         external_evidence_policy=feat_data.get("external_evidence_policy", "allowed"),
     )
     oracle_arm_idx = ARM_IDX[oracle_arm]
@@ -734,6 +535,7 @@ def compute_article_oracle(article: str, use_averaged: bool = False) -> dict:
         "variant": _variant_of(article),
         "computed_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "computed_from": "section_oracle_averaged.json" if use_averaged else "section_oracle.json",
+        "n_draws_used": n_draws,
         "oracle_arm": oracle_arm,
         "oracle_arm_idx": oracle_arm_idx,
         "runner_up_arm": runner_up_arm,
@@ -789,16 +591,6 @@ def main() -> None:
         help="Overwrite existing article_oracle.json files (default: skip if already present).",
     )
     parser.add_argument(
-        "--use-averaged",
-        action="store_true",
-        help=(
-            "Source R_w from section_oracle_averaged.json (N=3 replicated articles) instead of "
-            "the single-draw section_oracle.json, and write to a SIBLING article_oracle_averaged.json "
-            "-- production article_oracle.json is never touched by this flag. Default targets become "
-            "every article-variant that HAS a section_oracle_averaged.json (use --articles to override)."
-        ),
-    )
-    parser.add_argument(
         "--bases-dir",
         type=Path,
         default=None,
@@ -815,17 +607,10 @@ def main() -> None:
         targets = args.articles
     elif args.article:
         targets = [args.article]
-    elif args.use_averaged:
-        targets = sorted(
-            d.name for d in _BASES_DIR.iterdir()
-            if d.is_dir() and (d / "section_oracle_averaged.json").exists()
-        )
     else:
         targets = ALL_ARTICLES
 
     mode = "DRY-RUN" if args.dry_run else ("FORCE" if args.force else "WRITE")
-    if args.use_averaged:
-        mode += " / AVERAGED"
     print(
         f"compute_article_oracle.py  [{mode}]  "
         f"4-arm scheme (skip/light/standard/deep)\n"
@@ -838,7 +623,7 @@ def main() -> None:
     for article in targets:
         try:
             print(f"  {article} ...", end=" ", flush=True)
-            data = compute_article_oracle(article, use_averaged=args.use_averaged)
+            data = compute_article_oracle(article)
             results.append(data)
 
             flag = " ★OVERRIDE" if data["manual_override"] else ""
@@ -854,8 +639,7 @@ def main() -> None:
             )
 
             if not args.dry_run:
-                out_name = "article_oracle_averaged.json" if args.use_averaged else "article_oracle.json"
-                out_path = _BASES_DIR / article / out_name
+                out_path = _BASES_DIR / article / "article_oracle.json"
                 if out_path.exists() and not args.force:
                     print(f"  SKIP (already exists; use --force to overwrite): {out_path.name}")
                 else:
@@ -889,9 +673,8 @@ def main() -> None:
             )
 
     if not args.dry_run and results:
-        out_label = "article_oracle_averaged.json" if args.use_averaged else "article_oracle.json"
         print(
-            f"\n  Wrote {len(results)} {out_label} file(s) "
+            f"\n  Wrote {len(results)} article_oracle.json file(s) "
             f"under rl_training_data/bases/{'  (--force active)' if args.force else ''}"
         )
 

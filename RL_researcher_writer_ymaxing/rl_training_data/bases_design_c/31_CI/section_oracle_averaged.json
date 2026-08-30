@@ -1,0 +1,267 @@
+{
+  "version": 1,
+  "merge_source": "single-draw section_oracle.json (production) + noise_experiment replicates via measure_replicate_noise.py's recompute path",
+  "article": "31_CI",
+  "variant": "no_variant",
+  "n_draws_per_arm": 3,
+  "replicate_ids_used": [
+    1,
+    2
+  ],
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.306667,
+        "standard": 0.28,
+        "deep": 0.006833
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.057735,
+        "standard": 0.0,
+        "deep": 0.251661
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-what-is-continuous-integration": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.36275,
+        "standard": 0.318333,
+        "deep": 0.394333
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.039404,
+        "standard": 0.033198,
+        "deep": 0.031754
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.02275,
+        "standard": 0.105,
+        "deep": 0.1875
+      }
+    },
+    "S3::section-3-pre-commit-hooks-automated-local-guardrails": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.333333,
+        "light": 0.34,
+        "standard": 0.213333,
+        "deep": 0.240167
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.0,
+        "standard": 0.057735,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S4::section-4-ruff-fast-python-linting-and-formatting": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.273333,
+        "standard": 0.213333,
+        "deep": 0.240167
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.057735,
+        "standard": 0.057735,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S5::section-5-unit-tests-for-agent-repos": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.576625,
+        "standard": 0.28,
+        "deep": 0.2735
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.186832,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.236625,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S6::section-6-ci-workflows-automated-enforcement": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.333333,
+        "light": 0.306667,
+        "standard": 0.213333,
+        "deep": 0.275167
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.057735,
+        "standard": 0.057735,
+        "deep": 0.10251
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.035
+      }
+    },
+    "S7::section-7-ai-evaluations-as-regression-tests": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.333333,
+        "light": 0.440792,
+        "standard": 0.487792,
+        "deep": 0.467167
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.172524,
+        "standard": 0.137517,
+        "deep": 0.019788
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.134125,
+        "standard": 0.241125,
+        "deep": 0.227
+      }
+    },
+    "S8::section-8-daily-development-workflow": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.173333,
+        "standard": 0.213333,
+        "deep": 0.206833
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.11547,
+        "standard": 0.057735,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S9::section-9-conclusion": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.34,
+        "standard": 0.28,
+        "deep": 0.2735
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "skip",
+    "S2::section-2-what-is-continuous-integration": "deep",
+    "S3::section-3-pre-commit-hooks-automated-local-guardrails": "light",
+    "S4::section-4-ruff-fast-python-linting-and-formatting": "skip",
+    "S5::section-5-unit-tests-for-agent-repos": "light",
+    "S6::section-6-ci-workflows-automated-enforcement": "skip",
+    "S7::section-7-ai-evaluations-as-regression-tests": "standard",
+    "S8::section-8-daily-development-workflow": "skip",
+    "S9::section-9-conclusion": "skip"
+  }
+}

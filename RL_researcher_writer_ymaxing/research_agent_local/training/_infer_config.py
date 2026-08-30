@@ -19,6 +19,5 @@ _REPO_ROOT = _THIS_DIR.parent.parent  # RL_researcher_writer_ymaxing/
 # default and preset_infer_handler.py's stale-server detection read it.
 DEFAULT_ADAPTER_DIR: Path = (
     _REPO_ROOT / "rl_training_data" / "checkpoints" / "tasks"
-    / "run31_averaged_confidence" / "epochs" / "epoch_0109"
+    / "run33_averaged_confidence" / "epochs" / "epoch_0081"
 )
-

@@ -1,0 +1,1316 @@
+[
+  {
+    "article": "02_workflows_vs_agents__var_minimal",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Guideline dictates a verbatim personal story opening, lists 5 specific catastrophic failure modes, and asserts billion-dollar startup success/failure hinges on this decision, with several depth orphans lacking direct source evidence."
+        },
+        {
+          "sec_id": "S2::section-2-understanding-the-spectrum-from-workflows-to-agents",
+          "scripted_example_fraction": 0.55,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Section supplies exact definitions, characteristics, factory-line and human-expert analogies plus orchestration nuance directly from the guideline, mostly aligned with building-effective-agents but still partly illustrative rather than open evidence-seeking."
+        },
+        {
+          "sec_id": "S3::section-3-choosing-your-path",
+          "scripted_example_fraction": 0.6,
+          "argumentative_risk": 0.65,
+          "risk_rationale": "Guideline enumerates concrete workflow/agent use-case lists, bullet-point strengths/weaknesses, enterprise/regulatory preferences, autonomy slider, and Cursor/Perplexity illustrations that carry normative weight with multiple breadth orphans and thin source mapping for finance/health claims."
+        },
+        {
+          "sec_id": "S4::section-4-exploring-common-patterns",
+          "scripted_example_fraction": 0.45,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "High-level 1-2 sentence descriptions of chaining/routing, orchestrator-worker, evaluator-optimizer, and ReAct components are prescribed but remain introductory and descriptive, with sources providing adequate theoretical foundations."
+        },
+        {
+          "sec_id": "S5::section-5-zooming-in-on-our-favorite-examples",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Guideline pre-scripts detailed step-by-step operational flows, problem statements, mermaid structures, and 'oversimplified version' for Gemini CLI and Perplexity Deep Research (explicitly noted as assumptions for closed-source system), functioning as illustrative narrative."
+        },
+        {
+          "sec_id": "S6::section-6-conclusion-the-challenges-of-every-ai-engineer",
+          "scripted_example_fraction": 0.4,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Lists 5 specific reliability/context/cost/security challenges framed as 'the reality every AI engineer faces' plus forward-looking claims about solvability in future lessons, drawing from source limitations but adding interpretive synthesis."
+        }
+      ],
+      "source_independence": 0.75,
+      "topic_canonicity": 0.8,
+      "overall_notes": "Guideline is unusually prescriptive with verbatim stories, enumerated examples, and step-by-step illustrative flows (especially S1/S3/S5), elevating scripted fractions despite the conceptual-overview intent. Sources are largely independent documents from Anthropic/Google/OpenAI/Perplexity but the workflows-vs-agents tradeoff is now canonical in 2024-2025 AI engineering literature, so additional exploration yields mostly redundant restatements; argumentative risk is moderately elevated in prescriptive decision and startup-impact sections where normative claims outpace direct source support."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Guideline dictates a verbatim personal story opening, lists 5 specific catastrophic failure modes, and asserts billion-dollar startup success/failure hinges on this decision, with several depth orphans lacking direct source evidence.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-understanding-the-spectrum-from-workflows-to-agents\",\n      \"scripted_example_fraction\": 0.55,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Section supplies exact definitions, characteristics, factory-line and human-expert analogies plus orchestration nuance directly from the guideline, mostly aligned with building-effective-agents but still partly illustrative rather than open evidence-seeking.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-choosing-your-path\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Guideline enumerates concrete workflow/agent use-case lists, bullet-point strengths/weaknesses, enterprise/regulatory preferences, autonomy slider, and Cursor/Perplexity illustrations that carry normative weight with multiple breadth orphans and thin source mapping for finance/health claims.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-exploring-common-patterns\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"High-level 1-2 sentence descriptions of chaining/routing, orchestrator-worker, evaluator-optimizer, and ReAct components are prescribed but remain introductory and descriptive, with sources providing adequate theoretical foundations.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-zooming-in-on-our-favorite-examples\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline pre-scripts detailed step-by-step operational flows, problem statements, mermaid structures, and 'oversimplified version' for Gemini CLI and Perplexity Deep Research (explicitly noted as assumptions for closed-source system), functioning as illustrative narrative.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-conclusion-the-challenges-of-every-ai-engineer\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Lists 5 specific reliability/context/cost/security challenges framed as 'the reality every AI engineer faces' plus forward-looking claims about solvability in future lessons, drawing from source limitations but adding interpretive synthesis.\"\n    }\n  ],\n  \"source_independence\": 0.75,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Guideline is unusually prescriptive with verbatim stories, enumerated examples, and step-by-step illustrative flows (especially S1/S3/S5), elevating scripted fractions despite the conceptual-overview intent. Sources are largely independent documents from Anthropic/Google/OpenAI/Perplexity but the workflows-vs-agents tradeoff is now canonical in 2024-2025 AI engineering literature, so additional exploration yields mostly redundant restatements; argumentative risk is moderately elevated in prescriptive decision and startup-impact sections where normative claims outpace direct source support.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "02_workflows_vs_agents__var_standard",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces",
+          "scripted_example_fraction": 0.5,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Guideline scripts a verbatim personal story plus five specific catastrophic outcomes (rigid system, unpredictable agent, wasted months, frustrated users/executives) and billion-dollar startup claims that extend beyond the partial coverage of motivation/limitations in sources like kQxr-uOxw2o."
+        },
+        {
+          "sec_id": "S2::section-2-understanding-the-spectrum-from-workflows-to-agents",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Section is mostly definitional with dictated analogies (factory assembly line, skilled human expert) and future-lesson flags that align closely with theoretical foundations in building-effective-agents, keeping interpretive weight low."
+        },
+        {
+          "sec_id": "S3::section-3-choosing-your-path",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Extensive lists of when-to-use examples, strengths/weaknesses (including finance/health predictability claims and funny Replit/Claude deletion story), autonomy slider, and hybrid conclusions draw normative leaps only partially supported by trade-off coverage in exploring-the-difference-between-agents-and-workflows."
+        },
+        {
+          "sec_id": "S4::section-4-exploring-common-patterns",
+          "scripted_example_fraction": 0.25,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Guideline prescribes high-level explanations, mermaid diagrams, and intuition-building for chaining/routing/orchestrator/evaluator/ReAct (with RAM analogy and future-lesson flags) that add mild interpretive framing beyond the theoretical foundations in what-is-an-ai-agent and kQxr-uOxw2o."
+        },
+        {
+          "sec_id": "S5::section-5-zooming-in-on-our-favorite-examples",
+          "scripted_example_fraction": 0.6,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Highly dictated step-by-step narratives for Gemini CLI (context gathering to loop decision) and Perplexity Deep Research (planning to refinement, explicitly noted as 'oversimplified' assumptions) function as illustrative worked examples only loosely grounded in gemini-cli and introducing-perplexity-deep-research sources."
+        },
+        {
+          "sec_id": "S6::section-6-conclusion-the-challenges-of-every-ai-engineer",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.65,
+          "risk_rationale": "Normative framing of 'the reality' every AI engineer faces, enumerated daily challenges, 'good news' solvability, and course path-forward claims carry evaluative weight only thinly matched by limitations in TRjq7t2Ms5I and building-effective-agents."
+        }
+      ],
+      "source_independence": 0.55,
+      "topic_canonicity": 0.8,
+      "overall_notes": "Moderate scripted_example_fraction is concentrated in S1 and S5 due to verbatim personal story and oversimplified step-by-step illustrative narratives dictated by the guideline. Argumentative risk is elevated in comparative/recommendation sections (S3, S6) where normative claims on trade-offs, domains, and engineer challenges outpace direct source support. The workflows-vs-agents topic is highly canonical with recurring Anthropic-inspired patterns across sources, yielding only moderate source independence."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline scripts a verbatim personal story plus five specific catastrophic outcomes (rigid system, unpredictable agent, wasted months, frustrated users/executives) and billion-dollar startup claims that extend beyond the partial coverage of motivation/limitations in sources like kQxr-uOxw2o.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-understanding-the-spectrum-from-workflows-to-agents\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Section is mostly definitional with dictated analogies (factory assembly line, skilled human expert) and future-lesson flags that align closely with theoretical foundations in building-effective-agents, keeping interpretive weight low.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-choosing-your-path\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Extensive lists of when-to-use examples, strengths/weaknesses (including finance/health predictability claims and funny Replit/Claude deletion story), autonomy slider, and hybrid conclusions draw normative leaps only partially supported by trade-off coverage in exploring-the-difference-between-agents-and-workflows.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-exploring-common-patterns\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline prescribes high-level explanations, mermaid diagrams, and intuition-building for chaining/routing/orchestrator/evaluator/ReAct (with RAM analogy and future-lesson flags) that add mild interpretive framing beyond the theoretical foundations in what-is-an-ai-agent and kQxr-uOxw2o.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-zooming-in-on-our-favorite-examples\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Highly dictated step-by-step narratives for Gemini CLI (context gathering to loop decision) and Perplexity Deep Research (planning to refinement, explicitly noted as 'oversimplified' assumptions) function as illustrative worked examples only loosely grounded in gemini-cli and introducing-perplexity-deep-research sources.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-conclusion-the-challenges-of-every-ai-engineer\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Normative framing of 'the reality' every AI engineer faces, enumerated daily challenges, 'good news' solvability, and course path-forward claims carry evaluative weight only thinly matched by limitations in TRjq7t2Ms5I and building-effective-agents.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Moderate scripted_example_fraction is concentrated in S1 and S5 due to verbatim personal story and oversimplified step-by-step illustrative narratives dictated by the guideline. Argumentative risk is elevated in comparative/recommendation sections (S3, S6) where normative claims on trade-offs, domains, and engineer challenges outpace direct source support. The workflows-vs-agents topic is highly canonical with recurring Anthropic-inspired patterns across sources, yielding only moderate source independence.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "02_workflows_vs_agents__var_demanding",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces",
+          "scripted_example_fraction": 0.45,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Guideline scripts a verbatim personal story opener plus exact lists of catastrophic outcomes (rigid systems, unpredictable agents, wasted months, frustrated executives) that carry normative weight on billion-dollar startup success/failure, exceeding the general tradeoffs in cited sources like kQxr-uOxw2o."
+        },
+        {
+          "sec_id": "S2::section-2-understanding-the-spectrum-from-workflows-to-agents",
+          "scripted_example_fraction": 0.25,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Mostly descriptive definitions, prescribed analogies (factory line, human expert), and orchestration contrasts are well-supported by building-effective-agents and LCEmiRjPEtQ with low interpretive leaps."
+        },
+        {
+          "sec_id": "S3::section-3-choosing-your-path",
+          "scripted_example_fraction": 0.35,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Guideline dictates exhaustive when-to-use lists, elaborated strengths/weaknesses, enterprise/regulatory preferences, MVP hardcoding, cost-per-request claims, autonomy slider with Cursor/Perplexity examples, and a funny Replit story that make normative recommendations thinly backed by the hybrid spectrum sources."
+        },
+        {
+          "sec_id": "S4::section-4-exploring-common-patterns",
+          "scripted_example_fraction": 0.55,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Detailed intuitive explanations of chaining/routing, orchestrator-worker, evaluator-optimizer, and ReAct components (with RAM analogy, mermaid diagrams, and must-cover intuitions) are largely pre-scripted illustrations rather than open evidence-seeking, but remain mostly descriptive per what-is-an-ai-agent."
+        },
+        {
+          "sec_id": "S5::section-5-zooming-in-on-our-favorite-examples",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Section is almost entirely dictated step-by-step flows for Gemini CLI (context gathering through loop decision) and oversimplified Perplexity Deep Research (orchestrator decomposition through refinement), presented as \"this is how it works\" despite closed-source caveats and high-level 7-year-old explanations."
+        },
+        {
+          "sec_id": "S6::section-6-conclusion-the-challenges-of-every-ai-engineer",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Guideline asserts these exact reliability, context, data, cost, and security challenges are faced by \"every AI Engineer\" with compounding failures and economic unfeasibility claims that carry evaluative weight relative to the high-level mitigation references in TRjq7t2Ms5I and building-effective-agents."
+        }
+      ],
+      "source_independence": 0.75,
+      "topic_canonicity": 0.55,
+      "overall_notes": "Moderate scripted_example_fraction dominates in S4-S5 where guideline prescribes detailed illustrative flows and intuitions, reducing the value of further exploration there despite numeric depth gaps; S3 shows highest argumentative risk from normative choice frameworks. Sources are largely independent (distinct Anthropic/Google/Perplexity docs, Karpathy video, GitHub READMEs) with low redundancy, while the workflows-vs-agents topic is popular but still evolving with 2025 examples like Gemini CLI and Deep Research."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-the-critical-decision-every-ai-engineer-faces\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Guideline scripts a verbatim personal story opener plus exact lists of catastrophic outcomes (rigid systems, unpredictable agents, wasted months, frustrated executives) that carry normative weight on billion-dollar startup success/failure, exceeding the general tradeoffs in cited sources like kQxr-uOxw2o.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-understanding-the-spectrum-from-workflows-to-agents\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Mostly descriptive definitions, prescribed analogies (factory line, human expert), and orchestration contrasts are well-supported by building-effective-agents and LCEmiRjPEtQ with low interpretive leaps.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-choosing-your-path\",\n      \"scripted_example_fraction\": 0.35,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Guideline dictates exhaustive when-to-use lists, elaborated strengths/weaknesses, enterprise/regulatory preferences, MVP hardcoding, cost-per-request claims, autonomy slider with Cursor/Perplexity examples, and a funny Replit story that make normative recommendations thinly backed by the hybrid spectrum sources.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-exploring-common-patterns\",\n      \"scripted_example_fraction\": 0.55,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Detailed intuitive explanations of chaining/routing, orchestrator-worker, evaluator-optimizer, and ReAct components (with RAM analogy, mermaid diagrams, and must-cover intuitions) are largely pre-scripted illustrations rather than open evidence-seeking, but remain mostly descriptive per what-is-an-ai-agent.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-zooming-in-on-our-favorite-examples\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Section is almost entirely dictated step-by-step flows for Gemini CLI (context gathering through loop decision) and oversimplified Perplexity Deep Research (orchestrator decomposition through refinement), presented as \\\"this is how it works\\\" despite closed-source caveats and high-level 7-year-old explanations.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-conclusion-the-challenges-of-every-ai-engineer\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Guideline asserts these exact reliability, context, data, cost, and security challenges are faced by \\\"every AI Engineer\\\" with compounding failures and economic unfeasibility claims that carry evaluative weight relative to the high-level mitigation references in TRjq7t2Ms5I and building-effective-agents.\"\n    }\n  ],\n  \"source_independence\": 0.75,\n  \"topic_canonicity\": 0.55,\n  \"overall_notes\": \"Moderate scripted_example_fraction dominates in S4-S5 where guideline prescribes detailed illustrative flows and intuitions, reducing the value of further exploration there despite numeric depth gaps; S3 shows highest argumentative risk from normative choice frameworks. Sources are largely independent (distinct Anthropic/Google/Perplexity docs, Karpathy video, GitHub READMEs) with low redundancy, while the workflows-vs-agents topic is popular but still evolving with 2025 examples like Gemini CLI and Deep Research.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "03_context_engineering__var_minimal",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-when-prompt-engineering-breaks",
+          "scripted_example_fraction": 0.05,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "Section is purely descriptive of AI app evolution and course transition per guideline bullets, well-supported by sources on motivation and adjacent concepts with no strong normative leaps."
+        },
+        {
+          "sec_id": "S2::section-2-from-prompt-to-context-engineering",
+          "scripted_example_fraction": 0.35,
+          "argumentative_risk": 0.35,
+          "risk_rationale": "Guideline mandates a personal example and real-world stuffing example that are invented illustrations; argues prompt engineering limitations as motivation while citing future-lesson concepts with only moderate source backing on failure modes."
+        },
+        {
+          "sec_id": "S3::section-3-understanding-context-engineering",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Includes dictated simple examples (cooking agent, Slack messages) and mandated Mermaid workflow; positions fine-tuning as last resort and prompt as subset with interpretive weight relative to thin support in sources for the exact RAM analogy and decision diagram."
+        },
+        {
+          "sec_id": "S4::section-4-what-makes-up-the-context",
+          "scripted_example_fraction": 0.15,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Primarily lists and diagrams dynamic components (short/long-term memory) per guideline with future-lesson reminders; low risk as descriptive and directly matched to sources on theoretical foundations and nuances."
+        },
+        {
+          "sec_id": "S5::section-5-production-implementation-challenges",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Frames four specific issues (window, overload, drift, confusion) descriptively around 'small yet informative' constraint; minor risk in production framing but closely supported by sources on limitations and failure modes."
+        },
+        {
+          "sec_id": "S6::section-6-key-strategies-for-context-optimization",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Presents four strategies with mandated Mermaid diagrams as theoretical solutions; some evaluative emphasis on monitoring but grounded in sources, though guideline bans deeper named implementations."
+        },
+        {
+          "sec_id": "S7::section-7-here-is-an-example",
+          "scripted_example_fraction": 0.6,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Core content is dictated healthcare walkthrough, generic use cases, and illustrative <10-line pseudocode/XML snippet per guideline; these are pre-scripted invented narratives linking theory, with artefacts providing the only concrete support."
+        },
+        {
+          "sec_id": "S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering",
+          "scripted_example_fraction": 0.05,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Makes normative claims on context engineering as 'art' combining AI/SWE/Data/Ops disciplines and developer-to-architect shift, plus transition to future topics; thinly tied to sources relative to this cross-domain synthesis."
+        }
+      ],
+      "source_independence": 0.65,
+      "topic_canonicity": 0.8,
+      "overall_notes": "Topic shows high canonicity with overlapping explanations (Karpathy quote, failure modes, select/compress strategies) across independent blogs, survey, and exploitation sources, reducing value of further exploration. Dominant signal is low-to-medium scripted fractions except in the example section, with argumentative risk peaking in connective/theoretical positioning sections where guideline makes evaluative leaps beyond pure source summaries."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-when-prompt-engineering-breaks\",\n      \"scripted_example_fraction\": 0.05,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Section is purely descriptive of AI app evolution and course transition per guideline bullets, well-supported by sources on motivation and adjacent concepts with no strong normative leaps.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-from-prompt-to-context-engineering\",\n      \"scripted_example_fraction\": 0.35,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Guideline mandates a personal example and real-world stuffing example that are invented illustrations; argues prompt engineering limitations as motivation while citing future-lesson concepts with only moderate source backing on failure modes.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-understanding-context-engineering\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Includes dictated simple examples (cooking agent, Slack messages) and mandated Mermaid workflow; positions fine-tuning as last resort and prompt as subset with interpretive weight relative to thin support in sources for the exact RAM analogy and decision diagram.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-what-makes-up-the-context\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Primarily lists and diagrams dynamic components (short/long-term memory) per guideline with future-lesson reminders; low risk as descriptive and directly matched to sources on theoretical foundations and nuances.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-production-implementation-challenges\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Frames four specific issues (window, overload, drift, confusion) descriptively around 'small yet informative' constraint; minor risk in production framing but closely supported by sources on limitations and failure modes.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-key-strategies-for-context-optimization\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Presents four strategies with mandated Mermaid diagrams as theoretical solutions; some evaluative emphasis on monitoring but grounded in sources, though guideline bans deeper named implementations.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-here-is-an-example\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Core content is dictated healthcare walkthrough, generic use cases, and illustrative <10-line pseudocode/XML snippet per guideline; these are pre-scripted invented narratives linking theory, with artefacts providing the only concrete support.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering\",\n      \"scripted_example_fraction\": 0.05,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Makes normative claims on context engineering as 'art' combining AI/SWE/Data/Ops disciplines and developer-to-architect shift, plus transition to future topics; thinly tied to sources relative to this cross-domain synthesis.\"\n    }\n  ],\n  \"source_independence\": 0.65,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Topic shows high canonicity with overlapping explanations (Karpathy quote, failure modes, select/compress strategies) across independent blogs, survey, and exploitation sources, reducing value of further exploration. Dominant signal is low-to-medium scripted fractions except in the example section, with argumentative risk peaking in connective/theoretical positioning sections where guideline makes evaluative leaps beyond pure source summaries.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "03_context_engineering__var_standard",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-when-prompt-engineering-breaks",
+          "scripted_example_fraction": 0.4,
+          "argumentative_risk": 0.35,
+          "risk_rationale": "Guideline scripts a specific 4-stage evolution story (chatbots 2022 to memory-enabled agents 2025) plus personal-story framing and transition bullets that carry interpretive weight on why prompt engineering breaks, only partially backed by the historical_context items in the rise-of-context-engineering source."
+        },
+        {
+          "sec_id": "S2::section-2-from-prompt-to-context-engineering",
+          "scripted_example_fraction": 0.45,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Section mandates a verbatim real-world project failure narrative ('we tried to add everything... 30 minutes to run and low-quality outputs') plus strong claims on prompt-engineering limitations (context decay, costs) that evaluate tradeoffs beyond what the cited cheat-sheet and guide sources directly substantiate."
+        },
+        {
+          "sec_id": "S3::section-3-understanding-context-engineering",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.75,
+          "risk_rationale": "Guideline dictates normative claims ('context engineering is the new fine-tuning', exact 1-2-3 decision hierarchy, RAM/OS analogy quoted from Karpathy) and specific cooking/Slack examples plus table and mermaid that advance an original positioning only loosely supported by the survey and rise-of-context-engineering sources."
+        },
+        {
+          "sec_id": "S4::section-4-what-makes-up-the-context",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Primarily descriptive breakdown of short-term/long-term memory components and mandated workflow diagram explained at '7-year-old level', with low interpretive leaps relative to the technical_nuances coverage from context-engineering sources."
+        },
+        {
+          "sec_id": "S5::section-5-production-implementation-challenges",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Lists four challenges (context window, information overload, drift, tool confusion) with evaluative analogies (Schrödinger cat, RAM) and 'lost-in-the-middle' framing that add normative weight not fully evidenced by the 12-factor-agents and guide sources."
+        },
+        {
+          "sec_id": "S6::section-6-key-strategies-for-context-optimization",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.65,
+          "risk_rationale": "Prescribes four industry strategies with specific recommendations (repeat instructions despite token cost, YAML over JSON, temporal ranking) plus multiple mandated mermaid diagrams that constitute cross-domain optimization advice exceeding direct support in the what-is-context-engineering and rise sources."
+        },
+        {
+          "sec_id": "S7::section-7-here-is-an-example",
+          "scripted_example_fraction": 0.7,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Heavily scripts concrete use cases (healthcare headache query, financial services), step-by-step system behavior before LLM sees input, Python system-prompt example using XML, and recommended tech stack, making most of the section an invented illustrative narrative with limited new sourcing."
+        },
+        {
+          "sec_id": "S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.8,
+          "risk_rationale": "Makes high-level normative claims ('more of an art than a science', 'mindset shift from developers to architects', 'we should all think in systems') linking to SWE/data/ops disciplines and previews of future lessons, with thin direct support from the cited sources for these cross-domain analogies."
+        }
+      ],
+      "source_independence": 0.45,
+      "topic_canonicity": 0.65,
+      "overall_notes": "Moderate-to-high scripted_example_fraction appears in S2, S7 and parts of S1/S3 where the guideline dictates specific illustrative stories, queries, code examples, tables and diagrams rather than open evidence-seeking. Argumentative risk peaks in S3, S6 and S8 due to normative positioning ('new fine-tuning', decision hierarchies, art-vs-science, systems mindset) that outrun the thin or tangential support in the mostly blog-derived sources. The topic shows emerging canonicity via the 1400-paper survey yet retains some independence gaps from overlapping LangChain-adjacent blogs."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-when-prompt-engineering-breaks\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Guideline scripts a specific 4-stage evolution story (chatbots 2022 to memory-enabled agents 2025) plus personal-story framing and transition bullets that carry interpretive weight on why prompt engineering breaks, only partially backed by the historical_context items in the rise-of-context-engineering source.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-from-prompt-to-context-engineering\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Section mandates a verbatim real-world project failure narrative ('we tried to add everything... 30 minutes to run and low-quality outputs') plus strong claims on prompt-engineering limitations (context decay, costs) that evaluate tradeoffs beyond what the cited cheat-sheet and guide sources directly substantiate.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-understanding-context-engineering\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.75,\n      \"risk_rationale\": \"Guideline dictates normative claims ('context engineering is the new fine-tuning', exact 1-2-3 decision hierarchy, RAM/OS analogy quoted from Karpathy) and specific cooking/Slack examples plus table and mermaid that advance an original positioning only loosely supported by the survey and rise-of-context-engineering sources.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-what-makes-up-the-context\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Primarily descriptive breakdown of short-term/long-term memory components and mandated workflow diagram explained at '7-year-old level', with low interpretive leaps relative to the technical_nuances coverage from context-engineering sources.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-production-implementation-challenges\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Lists four challenges (context window, information overload, drift, tool confusion) with evaluative analogies (Schrödinger cat, RAM) and 'lost-in-the-middle' framing that add normative weight not fully evidenced by the 12-factor-agents and guide sources.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-key-strategies-for-context-optimization\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Prescribes four industry strategies with specific recommendations (repeat instructions despite token cost, YAML over JSON, temporal ranking) plus multiple mandated mermaid diagrams that constitute cross-domain optimization advice exceeding direct support in the what-is-context-engineering and rise sources.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-here-is-an-example\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Heavily scripts concrete use cases (healthcare headache query, financial services), step-by-step system behavior before LLM sees input, Python system-prompt example using XML, and recommended tech stack, making most of the section an invented illustrative narrative with limited new sourcing.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Makes high-level normative claims ('more of an art than a science', 'mindset shift from developers to architects', 'we should all think in systems') linking to SWE/data/ops disciplines and previews of future lessons, with thin direct support from the cited sources for these cross-domain analogies.\"\n    }\n  ],\n  \"source_independence\": 0.45,\n  \"topic_canonicity\": 0.65,\n  \"overall_notes\": \"Moderate-to-high scripted_example_fraction appears in S2, S7 and parts of S1/S3 where the guideline dictates specific illustrative stories, queries, code examples, tables and diagrams rather than open evidence-seeking. Argumentative risk peaks in S3, S6 and S8 due to normative positioning ('new fine-tuning', decision hierarchies, art-vs-science, systems mindset) that outrun the thin or tangential support in the mostly blog-derived sources. The topic shows emerging canonicity via the 1400-paper survey yet retains some independence gaps from overlapping LangChain-adjacent blogs.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "03_context_engineering__var_demanding",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-when-prompt-engineering-breaks",
+          "scripted_example_fraction": 0.35,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Section is mostly descriptive historical narrative per guideline's mandated evolution timeline (chatbots 2022 to memory-enabled agents 2025) and transition bullets; sources cover motivation but lack the specific course-anchoring references, keeping argumentative weight low."
+        },
+        {
+          "sec_id": "S2::section-2-from-prompt-to-context-engineering",
+          "scripted_example_fraction": 0.45,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Guideline dictates an invented 'previous projects' failure story (2M token stuffing yielding 30min low-quality runs) plus in-depth mechanisms for context decay/lost-in-the-middle and cost correlations; sources provide limitations but the personal narrative and production metrics claims exceed direct support."
+        },
+        {
+          "sec_id": "S3::section-3-understanding-context-engineering",
+          "scripted_example_fraction": 0.4,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Guideline requires specific cooking/Slack examples, Karpathy RAM analogy implications, exact prompt-vs-context table, 'new fine-tuning' framing, and 3-step decision workflow (prompt->context->fine-tune last); survey and rise-of sources give foundations but not this prescriptive hierarchy or course-wide industry claims."
+        },
+        {
+          "sec_id": "S4::section-4-what-makes-up-the-context",
+          "scripted_example_fraction": 0.25,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Primarily descriptive decomposition of short/long-term memory components and mandated 7-year-old intuitive workflow (user input -> context -> prompt -> LLM); sources align on elements but guideline's mermaid, dynamic recomputation emphasis, and future-lesson disclaimers add mild interpretive framing."
+        },
+        {
+          "sec_id": "S5::section-5-production-implementation-challenges",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Enumerates four challenges (window limits, overload/lost-in-middle, drift, tool confusion) with must-cover empirical evidence, token limits for named models, and orchestrator-worker mitigation; sources note some failure modes but lack the specific production scaling claims and depth on conflicting updates."
+        },
+        {
+          "sec_id": "S6::section-6-key-strategies-for-context-optimization",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.65,
+          "risk_rationale": "Prescribes four strategies with concrete techniques (structured outputs, RAG, temporal ranking, instruction repetition at boundaries, YAML over JSON, summarization tradeoffs) plus multiple mandated mermaid diagrams; sources list select/compress/isolate but guideline's 'always understand what is passed' monitoring conclusion and empirical repetition evidence raise normative weight."
+        },
+        {
+          "sec_id": "S7::section-7-here-is-an-example",
+          "scripted_example_fraction": 0.7,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Heavily dictated illustrative narrative (healthcare query with episodic/semantic retrieval steps, specific Python XML system prompt, named tech stack of Gemini/LangGraph/Qdrant/Opik) plus four domain use cases; sources supply case studies but the concrete code example, ordering highlights, and privacy/compliance details are authored illustration."
+        },
+        {
+          "sec_id": "S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering",
+          "scripted_example_fraction": 0.15,
+          "argumentative_risk": 0.75,
+          "risk_rationale": "Positions context engineering as 'more of an art than a science', mandates in-depth connections to AI/SWE/data/Ops disciplines with modularity/ETL/CI-CD examples, plus mindset shift to architects and selective future-lesson previews; sources are high-level while guideline's integrative normative claims and balance of intuition/systematic approaches lack direct cited support."
+        }
+      ],
+      "source_independence": 0.65,
+      "topic_canonicity": 0.7,
+      "overall_notes": "Dominant signal is elevated argumentative risk in S3, S6, and S8 where guideline-mandated normative hierarchies ('new fine-tuning', strict decision workflow, art-vs-science, cross-discipline integration with must-cover depth) exceed the descriptive, Karpathy-echoing sources. S7 has the highest scripted_example_fraction as its healthcare walkthrough, XML Python prompt, and tech-stack recommendation are fully pre-authored illustrations rather than sourced claims. The topic is moderately canonical with overlapping blog guides and a recent survey, yet sources remain sufficiently independent to support further non-redundant depth."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-when-prompt-engineering-breaks\",\n      \"scripted_example_fraction\": 0.35,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Section is mostly descriptive historical narrative per guideline's mandated evolution timeline (chatbots 2022 to memory-enabled agents 2025) and transition bullets; sources cover motivation but lack the specific course-anchoring references, keeping argumentative weight low.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-from-prompt-to-context-engineering\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline dictates an invented 'previous projects' failure story (2M token stuffing yielding 30min low-quality runs) plus in-depth mechanisms for context decay/lost-in-the-middle and cost correlations; sources provide limitations but the personal narrative and production metrics claims exceed direct support.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-understanding-context-engineering\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Guideline requires specific cooking/Slack examples, Karpathy RAM analogy implications, exact prompt-vs-context table, 'new fine-tuning' framing, and 3-step decision workflow (prompt->context->fine-tune last); survey and rise-of sources give foundations but not this prescriptive hierarchy or course-wide industry claims.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-what-makes-up-the-context\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Primarily descriptive decomposition of short/long-term memory components and mandated 7-year-old intuitive workflow (user input -> context -> prompt -> LLM); sources align on elements but guideline's mermaid, dynamic recomputation emphasis, and future-lesson disclaimers add mild interpretive framing.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-production-implementation-challenges\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Enumerates four challenges (window limits, overload/lost-in-middle, drift, tool confusion) with must-cover empirical evidence, token limits for named models, and orchestrator-worker mitigation; sources note some failure modes but lack the specific production scaling claims and depth on conflicting updates.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-key-strategies-for-context-optimization\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Prescribes four strategies with concrete techniques (structured outputs, RAG, temporal ranking, instruction repetition at boundaries, YAML over JSON, summarization tradeoffs) plus multiple mandated mermaid diagrams; sources list select/compress/isolate but guideline's 'always understand what is passed' monitoring conclusion and empirical repetition evidence raise normative weight.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-here-is-an-example\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Heavily dictated illustrative narrative (healthcare query with episodic/semantic retrieval steps, specific Python XML system prompt, named tech stack of Gemini/LangGraph/Qdrant/Opik) plus four domain use cases; sources supply case studies but the concrete code example, ordering highlights, and privacy/compliance details are authored illustration.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.75,\n      \"risk_rationale\": \"Positions context engineering as 'more of an art than a science', mandates in-depth connections to AI/SWE/data/Ops disciplines with modularity/ETL/CI-CD examples, plus mindset shift to architects and selective future-lesson previews; sources are high-level while guideline's integrative normative claims and balance of intuition/systematic approaches lack direct cited support.\"\n    }\n  ],\n  \"source_independence\": 0.65,\n  \"topic_canonicity\": 0.7,\n  \"overall_notes\": \"Dominant signal is elevated argumentative risk in S3, S6, and S8 where guideline-mandated normative hierarchies ('new fine-tuning', strict decision workflow, art-vs-science, cross-discipline integration with must-cover depth) exceed the descriptive, Karpathy-echoing sources. S7 has the highest scripted_example_fraction as its healthcare walkthrough, XML Python prompt, and tech-stack recommendation are fully pre-authored illustrations rather than sourced claims. The topic is moderately canonical with overlapping blog guides and a recent survey, yet sources remain sufficiently independent to support further non-redundant depth.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "05_workflow_patterns__var_minimal",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-the-challenge-with-complex-single-llm-calls",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Guideline dictates specific mock webpage setup, complex single-call prompt code/output from the notebook, and human-life analogy for splitting tasks, which adds interpretive weight beyond the thin 'lost in the middle' support in towardsai_course-ai-agents."
+        },
+        {
+          "sec_id": "S2::section-2-the-power-of-modularity-why-chain-llm-calls",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Theory-only guideline lists verbatim benefits (modularity, accuracy, debugging) and downsides (information/meaning loss, latency) that interpret Anthropic-derived sources with normative claims on why chaining is superior."
+        },
+        {
+          "sec_id": "S3::section-3-building-a-sequential-workflow-faq-generation-pipeline",
+          "scripted_example_fraction": 0.85,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "Section is almost entirely the pre-scripted 3-step FAQ chain (Generate Questions → Answer Questions → Find Sources), mock data, Mermaid diagram, and notebook code execution as explicitly dictated."
+        },
+        {
+          "sec_id": "S4::section-4-optimizing-sequential-workflows-with-parallel-processing",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Guideline requires specific asyncio notebook code, exact timing comparison (22.20s vs 8.98s), trade-off bullets, and rate-limit note, which are invented illustrations rather than sourced claims."
+        },
+        {
+          "sec_id": "S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Guideline mandates an evaluative example of when routing/branching is preferable to single-prompt optimization plus 'divide-and-conquer' claims that exceed the thin motivation coverage in building-effective-agents-anthropic."
+        },
+        {
+          "sec_id": "S6::section-building-a-basic-routing-workflow",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Primarily pre-scripted customer-service intent classification example, notebook code references, conditional handlers, and Mermaid branching diagram with fictional queries."
+        },
+        {
+          "sec_id": "S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition",
+          "scripted_example_fraction": 0.7,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Combines theory on when to use the pattern (unpredictable subtasks) with a fully dictated complex customer query example, worker dispatches, synthesis step, and Mermaid from the notebook."
+        }
+      ],
+      "source_independence": 0.4,
+      "topic_canonicity": 0.75,
+      "overall_notes": "Practical sections (S3,S4,S6,S7) are overwhelmingly pre-scripted illustrative narratives built around the internal notebook's mock FAQs/customer queries, Mermaid diagrams, and Gemini code, explaining the high scripted_example_fraction. Theory draws from overlapping Anthropic-inspired sources on now-canonical patterns (prompt chaining, routing, orchestrator-workers), yielding low source_independence and high topic_canonicity that reduce further exploration value; argumentative risk is moderate only where 'why better' or 'when to use' normative leaps appear relative to source gaps."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-the-challenge-with-complex-single-llm-calls\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Guideline dictates specific mock webpage setup, complex single-call prompt code/output from the notebook, and human-life analogy for splitting tasks, which adds interpretive weight beyond the thin 'lost in the middle' support in towardsai_course-ai-agents.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-power-of-modularity-why-chain-llm-calls\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Theory-only guideline lists verbatim benefits (modularity, accuracy, debugging) and downsides (information/meaning loss, latency) that interpret Anthropic-derived sources with normative claims on why chaining is superior.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-building-a-sequential-workflow-faq-generation-pipeline\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Section is almost entirely the pre-scripted 3-step FAQ chain (Generate Questions → Answer Questions → Find Sources), mock data, Mermaid diagram, and notebook code execution as explicitly dictated.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-optimizing-sequential-workflows-with-parallel-processing\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Guideline requires specific asyncio notebook code, exact timing comparison (22.20s vs 8.98s), trade-off bullets, and rate-limit note, which are invented illustrations rather than sourced claims.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Guideline mandates an evaluative example of when routing/branching is preferable to single-prompt optimization plus 'divide-and-conquer' claims that exceed the thin motivation coverage in building-effective-agents-anthropic.\"\n    },\n    {\n      \"sec_id\": \"S6::section-building-a-basic-routing-workflow\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Primarily pre-scripted customer-service intent classification example, notebook code references, conditional handlers, and Mermaid branching diagram with fictional queries.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Combines theory on when to use the pattern (unpredictable subtasks) with a fully dictated complex customer query example, worker dispatches, synthesis step, and Mermaid from the notebook.\"\n    }\n  ],\n  \"source_independence\": 0.4,\n  \"topic_canonicity\": 0.75,\n  \"overall_notes\": \"Practical sections (S3,S4,S6,S7) are overwhelmingly pre-scripted illustrative narratives built around the internal notebook's mock FAQs/customer queries, Mermaid diagrams, and Gemini code, explaining the high scripted_example_fraction. Theory draws from overlapping Anthropic-inspired sources on now-canonical patterns (prompt chaining, routing, orchestrator-workers), yielding low source_independence and high topic_canonicity that reduce further exploration value; argumentative risk is moderate only where 'why better' or 'when to use' normative leaps appear relative to source gaps.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "05_workflow_patterns__var_standard",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-the-challenge-with-complex-single-llm-calls",
+          "scripted_example_fraction": 0.5,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Guideline mandates specific mock webpage variables, complex single-call prompt code, and output excerpt from the notebook plus interpretive claims on inaccuracies (e.g. single vs. multi-source misses), which exceed the partial limitations_failure_modes coverage in sources."
+        },
+        {
+          "sec_id": "S2::section-2-the-power-of-modularity-why-chain-llm-calls",
+          "scripted_example_fraction": 0.05,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Pure-theory guideline lists exact benefits (modularity, accuracy, debugging) and downsides (information loss across steps, cost, latency) that interpret Anthropic-style patterns with evaluative weight not fully matched by the sources' case_studies_metrics gaps."
+        },
+        {
+          "sec_id": "S3::section-3-building-a-sequential-workflow-faq-generation-pipeline",
+          "scripted_example_fraction": 0.7,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "Guideline scripts verbatim 3-step FAQ chain (Generate Questions → Answer Questions → Find Sources), notebook code execution, timing highlight, and mermaid diagram as a fully dictated illustrative workflow on mock data."
+        },
+        {
+          "sec_id": "S4::section-4-optimizing-sequential-workflows-with-parallel-processing",
+          "scripted_example_fraction": 0.6,
+          "argumentative_risk": 0.35,
+          "risk_rationale": "Practice guideline requires specific notebook parallel code, sequential vs. parallel runtime comparison, explicit trade-off bullets, and rate-limit warning whose normative framing on real-world handling sits atop moderate implementation_tradeoffs coverage."
+        },
+        {
+          "sec_id": "S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic",
+          "scripted_example_fraction": 0.25,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Theory guideline directs normative claims on routing necessity, LLM-based decisions, branching preference over single prompts, and a tasks-style example that extrapolates beyond the generic motivation and technical_nuances in sources."
+        },
+        {
+          "sec_id": "S6::section-building-a-basic-routing-workflow",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Guideline prescribes customer-service intent classification use case, exact notebook code references, conditional handlers for Technical Support/Billing/General, and mermaid diagram as a pre-scripted worked example."
+        },
+        {
+          "sec_id": "S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition",
+          "scripted_example_fraction": 0.55,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Mixed section per guideline asserts when to use orchestrator-worker for unpredictable subtasks, key flexibility difference from parallelization, specific complex customer query example, notebook code, and mermaid that carries interpretive weight relative to partial theoretical_foundations support."
+        }
+      ],
+      "source_independence": 0.55,
+      "topic_canonicity": 0.8,
+      "overall_notes": "Practical sections show high scripted_example_fraction because the guideline verbatim dictates notebook code demos, mock data, specific pipelines (FAQ, routing, orchestrator-worker), and mermaid diagrams. The topic is highly canonical with overlapping Anthropic-derived coverage across golden sources, producing redundant facts and low marginal value from deeper search; argumentative risk is elevated only in theory sections that normatively justify trade-offs and use cases beyond what the cited sources directly anchor."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-the-challenge-with-complex-single-llm-calls\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Guideline mandates specific mock webpage variables, complex single-call prompt code, and output excerpt from the notebook plus interpretive claims on inaccuracies (e.g. single vs. multi-source misses), which exceed the partial limitations_failure_modes coverage in sources.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-power-of-modularity-why-chain-llm-calls\",\n      \"scripted_example_fraction\": 0.05,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Pure-theory guideline lists exact benefits (modularity, accuracy, debugging) and downsides (information loss across steps, cost, latency) that interpret Anthropic-style patterns with evaluative weight not fully matched by the sources' case_studies_metrics gaps.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-building-a-sequential-workflow-faq-generation-pipeline\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Guideline scripts verbatim 3-step FAQ chain (Generate Questions → Answer Questions → Find Sources), notebook code execution, timing highlight, and mermaid diagram as a fully dictated illustrative workflow on mock data.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-optimizing-sequential-workflows-with-parallel-processing\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Practice guideline requires specific notebook parallel code, sequential vs. parallel runtime comparison, explicit trade-off bullets, and rate-limit warning whose normative framing on real-world handling sits atop moderate implementation_tradeoffs coverage.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Theory guideline directs normative claims on routing necessity, LLM-based decisions, branching preference over single prompts, and a tasks-style example that extrapolates beyond the generic motivation and technical_nuances in sources.\"\n    },\n    {\n      \"sec_id\": \"S6::section-building-a-basic-routing-workflow\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Guideline prescribes customer-service intent classification use case, exact notebook code references, conditional handlers for Technical Support/Billing/General, and mermaid diagram as a pre-scripted worked example.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition\",\n      \"scripted_example_fraction\": 0.55,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Mixed section per guideline asserts when to use orchestrator-worker for unpredictable subtasks, key flexibility difference from parallelization, specific complex customer query example, notebook code, and mermaid that carries interpretive weight relative to partial theoretical_foundations support.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Practical sections show high scripted_example_fraction because the guideline verbatim dictates notebook code demos, mock data, specific pipelines (FAQ, routing, orchestrator-worker), and mermaid diagrams. The topic is highly canonical with overlapping Anthropic-derived coverage across golden sources, producing redundant facts and low marginal value from deeper search; argumentative risk is elevated only in theory sections that normatively justify trade-offs and use cases beyond what the cited sources directly anchor.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "05_workflow_patterns__var_demanding",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-the-challenge-with-complex-single-llm-calls",
+          "scripted_example_fraction": 0.45,
+          "argumentative_risk": 0.65,
+          "risk_rationale": "Guideline mandates in-depth coverage of 'lost in the middle', sensitivity to input changes, overstuffed contexts, and concrete monolithic-debugging examples plus a specific complex FAQ prompt with mock webpages and output, yet depth_checklist flags gaps in case_studies_metrics and implementation_tradeoffs."
+        },
+        {
+          "sec_id": "S2::section-2-the-power-of-modularity-why-chain-llm-calls",
+          "scripted_example_fraction": 0.05,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Pure-theory guideline requires deep elaboration on modularity, cognitive-load accuracy, model-optimization scenarios, information-loss pitfalls and glue-code overhead without anchoring case_studies_metrics, creating normative claims on 'enhanced accuracy' and 'easier debugging' that exceed current source support per checklist."
+        },
+        {
+          "sec_id": "S3::section-3-building-a-sequential-workflow-faq-generation-pipeline",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "Guideline dictates verbatim use of notebook code for the exact 3-step FAQ chain (Generate Questions → Answer Questions → Find Sources), mermaid diagram, timing output, and mock renewable-energy content with no room for external sourcing."
+        },
+        {
+          "sec_id": "S4::section-4-optimizing-sequential-workflows-with-parallel-processing",
+          "scripted_example_fraction": 0.7,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Practice guideline prescribes specific notebook parallel async code, sequential-vs-parallel timing comparison (22.20s vs 8.98s), rate-limit handling patterns and trade-off elaboration on resource utilization and idempotency using the dictated FAQ example."
+        },
+        {
+          "sec_id": "S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic",
+          "scripted_example_fraction": 0.25,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Theory guideline requires normative comparison of routing vs single-prompt optimization plus an example 'similar to the tasks example that is in the next sections' and failure-mode nuances for classification, only partially supported by sources despite low orphan count."
+        },
+        {
+          "sec_id": "S6::section-building-a-basic-routing-workflow",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Guideline specifies exact customer-service intent taxonomy, two-stage classification architecture, notebook code reference, and mermaid diagram with named branches (Technical Support, Billing Inquiry, General Question) as fully pre-scripted demonstration."
+        },
+        {
+          "sec_id": "S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.35,
+          "risk_rationale": "Mixed guideline dictates complete orchestrator-worker code from notebook on the specific complex_customer_query (billing, return, status update), mermaid flowchart, and in-depth coverage of reconciliation challenges and prompt schemas that outpace available case_studies_metrics."
+        }
+      ],
+      "source_independence": 0.55,
+      "topic_canonicity": 0.8,
+      "overall_notes": "Practice sections (S3,S4,S6,S7) show high scripted_example_fraction because guideline verbatim dictates notebook code, mock data, execution flows, timings and mermaid diagrams for invented FAQ/routing/customer-query examples. Early theory sections (S1,S2) carry elevated argumentative_risk from normative claims on reliability/modularity/debugging that the gap_profile flags as under-supported on case_studies_metrics despite Anthropic/LangGraph sources; topic is highly canonical, reducing value of further exploration."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-the-challenge-with-complex-single-llm-calls\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Guideline mandates in-depth coverage of 'lost in the middle', sensitivity to input changes, overstuffed contexts, and concrete monolithic-debugging examples plus a specific complex FAQ prompt with mock webpages and output, yet depth_checklist flags gaps in case_studies_metrics and implementation_tradeoffs.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-power-of-modularity-why-chain-llm-calls\",\n      \"scripted_example_fraction\": 0.05,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Pure-theory guideline requires deep elaboration on modularity, cognitive-load accuracy, model-optimization scenarios, information-loss pitfalls and glue-code overhead without anchoring case_studies_metrics, creating normative claims on 'enhanced accuracy' and 'easier debugging' that exceed current source support per checklist.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-building-a-sequential-workflow-faq-generation-pipeline\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Guideline dictates verbatim use of notebook code for the exact 3-step FAQ chain (Generate Questions → Answer Questions → Find Sources), mermaid diagram, timing output, and mock renewable-energy content with no room for external sourcing.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-optimizing-sequential-workflows-with-parallel-processing\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Practice guideline prescribes specific notebook parallel async code, sequential-vs-parallel timing comparison (22.20s vs 8.98s), rate-limit handling patterns and trade-off elaboration on resource utilization and idempotency using the dictated FAQ example.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-introducing-dynamic-behavior-routing-and-conditional-logic\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Theory guideline requires normative comparison of routing vs single-prompt optimization plus an example 'similar to the tasks example that is in the next sections' and failure-mode nuances for classification, only partially supported by sources despite low orphan count.\"\n    },\n    {\n      \"sec_id\": \"S6::section-building-a-basic-routing-workflow\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Guideline specifies exact customer-service intent taxonomy, two-stage classification architecture, notebook code reference, and mermaid diagram with named branches (Technical Support, Billing Inquiry, General Question) as fully pre-scripted demonstration.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-orchestrator-worker-pattern-dynamic-task-decomposition\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Mixed guideline dictates complete orchestrator-worker code from notebook on the specific complex_customer_query (billing, return, status update), mermaid flowchart, and in-depth coverage of reconciliation challenges and prompt schemas that outpace available case_studies_metrics.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Practice sections (S3,S4,S6,S7) show high scripted_example_fraction because guideline verbatim dictates notebook code, mock data, execution flows, timings and mermaid diagrams for invented FAQ/routing/customer-query examples. Early theory sections (S1,S2) carry elevated argumentative_risk from normative claims on reliability/modularity/debugging that the gap_profile flags as under-supported on case_studies_metrics despite Anthropic/LangGraph sources; topic is highly canonical, reducing value of further exploration.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "06_tools__var_minimal",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Guideline mandates specific quick reference to prior workflow lessons plus transition from 'What We Are Planning to Share' and 'Why We Think It's Valuable' without requiring new evidence or normative leaps."
+        },
+        {
+          "sec_id": "S2::section-2-understanding-why-agents-need-tools",
+          "scripted_example_fraction": 0.7,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Guideline dictates verbatim LLM-as-brain/tools-as-hands analogy, fundamental limitation as pattern matchers, bridge to external world, representative image, and exact list of 5 tool categories (weather, databases, memory, code, calculations)."
+        },
+        {
+          "sec_id": "S3::section-3-implementing-tool-calls-from-scratch",
+          "scripted_example_fraction": 0.95,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Guideline requires using all code from notebook section 2 with 22 enumerated steps on schemas, TOOL_CALLING_SYSTEM_PROMPT, extract_tool_call, call_tool, specific mock tools (search_google_drive etc.), USER_PROMPTs, and mermaid diagram of the exact 5-step flow."
+        },
+        {
+          "sec_id": "S4::section-4-implementing-a-tool-calling-framework-from-scratch",
+          "scripted_example_fraction": 0.9,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Guideline prescribes rewriting prior implementation with exact ToolFunction class, @tool decorator mechanics, DRY principle explanation, registry inspection points, and all code from notebook section 3."
+        },
+        {
+          "sec_id": "S5::section-5-implementing-production-level-tool-calls-with-gemini",
+          "scripted_example_fraction": 0.85,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Section is built around using all code from notebook section 4 with 14 enumerated steps on GenerateContentConfig, direct function input, call_tool simplification, and cross-API comparisons."
+        },
+        {
+          "sec_id": "S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Guideline dictates specific DocumentMetadata Pydantic class, extraction_tool schema from model_json_schema, mermaid of loop-with-final-structured-output, all code from notebook section 5, and connection to Lesson 4."
+        },
+        {
+          "sec_id": "S7::section-7-the-downsides-of-running-tools-in-a-loop",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Guideline requires detailed sequential loop code (max_iterations, hasattr), mermaid of iterative flow, explicit limitations ('no interpretation pause', 'limited ability to plan'), parallel execution note, and transition to ReAct in lessons 7-8."
+        },
+        {
+          "sec_id": "S8::section-8-popular-tools-used-within-the-industry",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Guideline supplies exact grouped list (knowledge/memory with text-to-SQL, web search/browsing, code execution with security risks, other APIs/filesystem) plus references to future Lessons 9-10."
+        },
+        {
+          "sec_id": "S9::section-9-conclusion",
+          "scripted_example_fraction": 0.4,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Guideline dictates normative claim that tool calling is 'the most important skill' for building/monitoring/debugging plus specific references only to Lesson 7 on planning/ReAct and related future concepts."
+        }
+      ],
+      "source_independence": 0.7,
+      "topic_canonicity": 0.85,
+      "overall_notes": "High scripted_example_fraction dominates in S3-S7 because the guideline verbatim dictates notebook code blocks, mock tools (search_google_drive, Discord, financial report), exact enumeration of explanation steps, schema highlights, mermaid diagrams, and USER_PROMPT flows with no room for unsourced material. Topic_canonicity is high and source_independence moderate as the 9 golden sources (official Gemini/OpenAI docs, from-scratch tutorials, arXiv CoA paper) overlap heavily on canonical function-calling mechanics. Argumentative risk stays low-to-moderate overall as most content is descriptive implementation; only S2 and S7 evaluate limitations or analogies with some orphan-anchor gaps relative to cited sources."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Guideline mandates specific quick reference to prior workflow lessons plus transition from 'What We Are Planning to Share' and 'Why We Think It's Valuable' without requiring new evidence or normative leaps.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-understanding-why-agents-need-tools\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline dictates verbatim LLM-as-brain/tools-as-hands analogy, fundamental limitation as pattern matchers, bridge to external world, representative image, and exact list of 5 tool categories (weather, databases, memory, code, calculations).\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-implementing-tool-calls-from-scratch\",\n      \"scripted_example_fraction\": 0.95,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Guideline requires using all code from notebook section 2 with 22 enumerated steps on schemas, TOOL_CALLING_SYSTEM_PROMPT, extract_tool_call, call_tool, specific mock tools (search_google_drive etc.), USER_PROMPTs, and mermaid diagram of the exact 5-step flow.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-implementing-a-tool-calling-framework-from-scratch\",\n      \"scripted_example_fraction\": 0.9,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Guideline prescribes rewriting prior implementation with exact ToolFunction class, @tool decorator mechanics, DRY principle explanation, registry inspection points, and all code from notebook section 3.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-implementing-production-level-tool-calls-with-gemini\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Section is built around using all code from notebook section 4 with 14 enumerated steps on GenerateContentConfig, direct function input, call_tool simplification, and cross-API comparisons.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Guideline dictates specific DocumentMetadata Pydantic class, extraction_tool schema from model_json_schema, mermaid of loop-with-final-structured-output, all code from notebook section 5, and connection to Lesson 4.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-the-downsides-of-running-tools-in-a-loop\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline requires detailed sequential loop code (max_iterations, hasattr), mermaid of iterative flow, explicit limitations ('no interpretation pause', 'limited ability to plan'), parallel execution note, and transition to ReAct in lessons 7-8.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-popular-tools-used-within-the-industry\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Guideline supplies exact grouped list (knowledge/memory with text-to-SQL, web search/browsing, code execution with security risks, other APIs/filesystem) plus references to future Lessons 9-10.\"\n    },\n    {\n      \"sec_id\": \"S9::section-9-conclusion\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline dictates normative claim that tool calling is 'the most important skill' for building/monitoring/debugging plus specific references only to Lesson 7 on planning/ReAct and related future concepts.\"\n    }\n  ],\n  \"source_independence\": 0.7,\n  \"topic_canonicity\": 0.85,\n  \"overall_notes\": \"High scripted_example_fraction dominates in S3-S7 because the guideline verbatim dictates notebook code blocks, mock tools (search_google_drive, Discord, financial report), exact enumeration of explanation steps, schema highlights, mermaid diagrams, and USER_PROMPT flows with no room for unsourced material. Topic_canonicity is high and source_independence moderate as the 9 golden sources (official Gemini/OpenAI docs, from-scratch tutorials, arXiv CoA paper) overlap heavily on canonical function-calling mechanics. Argumentative risk stays low-to-moderate overall as most content is descriptive implementation; only S2 and S7 evaluate limitations or analogies with some orphan-anchor gaps relative to cited sources.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "06_tools__var_standard",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.6,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Section follows scripted narrative flow (personal story + prior-lesson recap + transition per Global Context) with no thin interpretive leaps; sources provide basic motivation but checklist shows gaps in theoretical_foundations."
+        },
+        {
+          "sec_id": "S2::section-2-understanding-why-agents-need-tools",
+          "scripted_example_fraction": 0.5,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Guideline dictates specific brain/hands-and-senses analogy, 'fundamental limitation' claim, bridge-to-agent transformation, and enumerated tool examples that carry normative weight on why tools are essential, only partially matched by the three listed sources' motivation coverage."
+        },
+        {
+          "sec_id": "S3::section-3-implementing-tool-calls-from-scratch",
+          "scripted_example_fraction": 0.9,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "22-point directive to use verbatim notebook code, schemas, prompts, and mock tools (search_google_drive etc.) plus exact explanation order makes this a fully pre-scripted worked example; purely descriptive with well-matched sources."
+        },
+        {
+          "sec_id": "S4::section-4-implementing-a-tool-calling-framework-from-scratch",
+          "scripted_example_fraction": 0.85,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Guideline prescribes exact rewrite using @tool decorator, ToolFunction class, registry inspection points, and DRY principle from the notebook; no original normative claims or thin analogies."
+        },
+        {
+          "sec_id": "S5::section-5-implementing-production-level-tool-calls-with-gemini",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "14-step walkthrough of Gemini SDK config, native function passing, and call_tool reduction is dictated verbatim from notebook and golden Gemini docs; purely technical and descriptive."
+        },
+        {
+          "sec_id": "S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Specific DocumentMetadata Pydantic example, mermaid loop diagram, and linkage to Lesson 4 structured outputs are pre-scripted; mild interpretive claim on 'elegant way' for agentic scenarios has partial source support."
+        },
+        {
+          "sec_id": "S7::section-7-the-downsides-of-running-tools-in-a-loop",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Guideline scripts the loop code then pivots to normative critique (no interpretation step, limited planning, inefficient loops) that motivates ReAct, exceeding what the listed sources directly supply for these exact limitations."
+        },
+        {
+          "sec_id": "S8::section-8-popular-tools-used-within-the-industry",
+          "scripted_example_fraction": 0.4,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Guideline supplies the exact grouped list (knowledge/memory, web search, code execution, other APIs) with forward references to Lessons 9-10; largely descriptive with industry-application coverage from sources."
+        },
+        {
+          "sec_id": "S9::section-9-conclusion",
+          "scripted_example_fraction": 0.5,
+          "argumentative_risk": 0.35,
+          "risk_rationale": "Prescribed claims that tool calling is 'probably the most important skill' plus selective future-lesson previews introduce mild normative weight not fully anchored in the three sources' theoretical_foundations."
+        }
+      ],
+      "source_independence": 0.65,
+      "topic_canonicity": 0.8,
+      "overall_notes": "Implementation sections (S3-S7) show very high scripted_example_fraction because the guideline verbatim dictates notebook code order, mocks, highlights, and mermaid diagrams, leaving little open evidence-seeking. Topic is highly canonical (official OpenAI/Gemini docs plus many from-scratch tutorials), with mostly independent sources although several overlap on basic mechanics and loops; dominant signal is that numeric depth gaps in early theoretical sections may overstate need for exploration given canonicity and scripted nature."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Section follows scripted narrative flow (personal story + prior-lesson recap + transition per Global Context) with no thin interpretive leaps; sources provide basic motivation but checklist shows gaps in theoretical_foundations.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-understanding-why-agents-need-tools\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Guideline dictates specific brain/hands-and-senses analogy, 'fundamental limitation' claim, bridge-to-agent transformation, and enumerated tool examples that carry normative weight on why tools are essential, only partially matched by the three listed sources' motivation coverage.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-implementing-tool-calls-from-scratch\",\n      \"scripted_example_fraction\": 0.9,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"22-point directive to use verbatim notebook code, schemas, prompts, and mock tools (search_google_drive etc.) plus exact explanation order makes this a fully pre-scripted worked example; purely descriptive with well-matched sources.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-implementing-a-tool-calling-framework-from-scratch\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Guideline prescribes exact rewrite using @tool decorator, ToolFunction class, registry inspection points, and DRY principle from the notebook; no original normative claims or thin analogies.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-implementing-production-level-tool-calls-with-gemini\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"14-step walkthrough of Gemini SDK config, native function passing, and call_tool reduction is dictated verbatim from notebook and golden Gemini docs; purely technical and descriptive.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Specific DocumentMetadata Pydantic example, mermaid loop diagram, and linkage to Lesson 4 structured outputs are pre-scripted; mild interpretive claim on 'elegant way' for agentic scenarios has partial source support.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-the-downsides-of-running-tools-in-a-loop\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline scripts the loop code then pivots to normative critique (no interpretation step, limited planning, inefficient loops) that motivates ReAct, exceeding what the listed sources directly supply for these exact limitations.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-popular-tools-used-within-the-industry\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Guideline supplies the exact grouped list (knowledge/memory, web search, code execution, other APIs) with forward references to Lessons 9-10; largely descriptive with industry-application coverage from sources.\"\n    },\n    {\n      \"sec_id\": \"S9::section-9-conclusion\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Prescribed claims that tool calling is 'probably the most important skill' plus selective future-lesson previews introduce mild normative weight not fully anchored in the three sources' theoretical_foundations.\"\n    }\n  ],\n  \"source_independence\": 0.65,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Implementation sections (S3-S7) show very high scripted_example_fraction because the guideline verbatim dictates notebook code order, mocks, highlights, and mermaid diagrams, leaving little open evidence-seeking. Topic is highly canonical (official OpenAI/Gemini docs plus many from-scratch tutorials), with mostly independent sources although several overlap on basic mechanics and loops; dominant signal is that numeric depth gaps in early theoretical sections may overstate need for exploration given canonicity and scripted nature.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "06_tools__var_demanding",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Purely transitional per guideline ('Quick reference to what we've learned in previous lessons' + 'Transition to what we'll learn in this lesson' drawn from Global Context), with no original normative claims or thin analogies; depth gaps on theoretical foundations are present but descriptive."
+        },
+        {
+          "sec_id": "S2::section-2-understanding-why-agents-need-tools",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Guideline dictates specific brain/hands analogy, 'fundamental limitation' as pattern matchers, tools-as-bridge claim, and exact list of 5 tool categories (e.g. PostgreSQL, text-to-SQL precursors) that map to future banned concepts; sources cover motivation but leave theoretical foundations and industry applications thinly anchored."
+        },
+        {
+          "sec_id": "S3::section-3-implementing-tool-calls-from-scratch",
+          "scripted_example_fraction": 0.85,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "Guideline mandates 22 verbatim steps replicating notebook's mocked search_google_drive/send_discord_message/summarize_financial_report example with exact schemas, TOOL_CALLING_SYSTEM_PROMPT, extract_tool_call, and LLM output interpretations; purely descriptive with strong artefact coverage."
+        },
+        {
+          "sec_id": "S4::section-4-implementing-a-small-tool-calling-framework-from-scratch",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Fully dictated rewrite of prior code using specific @tool decorator, ToolFunction class, and re-defined example functions per notebook steps (including DRY principle claim and registry inspection outputs); implementation_tradeoffs covered but no interpretive leaps."
+        },
+        {
+          "sec_id": "S5::section-5-implementing-production-level-tool-calls-with-gemini",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Guideline sequences 14 exact code steps from notebook (GenerateContentConfig, function passing, call_tool wrapper) plus explicit comparison to manual prompts and extrapolation to OpenAI/Anthropic; supported by golden Gemini source but adds production robustness claim."
+        },
+        {
+          "sec_id": "S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs",
+          "scripted_example_fraction": 0.7,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Guideline dictates Pydantic DocumentMetadata example, mermaid loop diagram, and 'elegant way... in agentic scenarios' claim linking to Lesson 4 while referencing future agent loops; artefact A15 supports but cross-domain agentic framing is interpretive relative to sources."
+        },
+        {
+          "sec_id": "S7::section-7-the-downsides-of-running-tools-in-a-loop",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Guideline requires mermaid loop diagram, specific sequential loop code, then interpretive claims on 'limited ability to plan', inefficiency, and explicit pivot to ReAct (Lessons 7/8) using react-vs-plan-and-execute tables; high limitations_failure_modes coverage but normative 'not good practice' weight exceeds direct source support."
+        },
+        {
+          "sec_id": "S8::section-8-popular-tools-used-within-the-industry",
+          "scripted_example_fraction": 0.25,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Must-cover-in-depth mandates on vector DB mechanisms, text-to-SQL, ethical web scraping, sandbox architecture, security risks, and relationships to future memory/RAG/agentic RAG (Lessons 9/10) go beyond pure description; sources provide industry applications but leave some technical_nuances and historical_context gaps for original synthesis."
+        },
+        {
+          "sec_id": "S9::section-9-conclusion",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Guideline requires reiterating 'strategic importance... most important skill', elaboration on 'building, monitor, and debug' contributions, and preview of ReAct/planning (Lesson 7) plus selective future concepts; motivational but normative claims on foundational skill sit on thin post-mortem/metric support from sources."
+        }
+      ],
+      "source_independence": 0.7,
+      "topic_canonicity": 0.8,
+      "overall_notes": "Implementation sections (S3-S7) are overwhelmingly pre-scripted around the course notebook's specific mock tools, prompts, and output sequences, explaining high scripted_example_fraction values there and reduced value of further exploration. Tool calling is a highly canonical topic (official OpenAI/Gemini guides, multiple identical tutorial patterns) with mostly independent sources (distinct provider docs, arXiv paper, separate videos/blogs) but some explanatory overlap; dominant qualitative signal is depth gaps on limitations and industry anchoring in S2/S3/S8 despite the numeric scorer flagging them."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Purely transitional per guideline ('Quick reference to what we've learned in previous lessons' + 'Transition to what we'll learn in this lesson' drawn from Global Context), with no original normative claims or thin analogies; depth gaps on theoretical foundations are present but descriptive.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-understanding-why-agents-need-tools\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline dictates specific brain/hands analogy, 'fundamental limitation' as pattern matchers, tools-as-bridge claim, and exact list of 5 tool categories (e.g. PostgreSQL, text-to-SQL precursors) that map to future banned concepts; sources cover motivation but leave theoretical foundations and industry applications thinly anchored.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-implementing-tool-calls-from-scratch\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Guideline mandates 22 verbatim steps replicating notebook's mocked search_google_drive/send_discord_message/summarize_financial_report example with exact schemas, TOOL_CALLING_SYSTEM_PROMPT, extract_tool_call, and LLM output interpretations; purely descriptive with strong artefact coverage.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-implementing-a-small-tool-calling-framework-from-scratch\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Fully dictated rewrite of prior code using specific @tool decorator, ToolFunction class, and re-defined example functions per notebook steps (including DRY principle claim and registry inspection outputs); implementation_tradeoffs covered but no interpretive leaps.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-implementing-production-level-tool-calls-with-gemini\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Guideline sequences 14 exact code steps from notebook (GenerateContentConfig, function passing, call_tool wrapper) plus explicit comparison to manual prompts and extrapolation to OpenAI/Anthropic; supported by golden Gemini source but adds production robustness claim.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-using-pydantic-models-as-tools-for-on-demand-structured-outputs\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline dictates Pydantic DocumentMetadata example, mermaid loop diagram, and 'elegant way... in agentic scenarios' claim linking to Lesson 4 while referencing future agent loops; artefact A15 supports but cross-domain agentic framing is interpretive relative to sources.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-the-downsides-of-running-tools-in-a-loop\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline requires mermaid loop diagram, specific sequential loop code, then interpretive claims on 'limited ability to plan', inefficiency, and explicit pivot to ReAct (Lessons 7/8) using react-vs-plan-and-execute tables; high limitations_failure_modes coverage but normative 'not good practice' weight exceeds direct source support.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-popular-tools-used-within-the-industry\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Must-cover-in-depth mandates on vector DB mechanisms, text-to-SQL, ethical web scraping, sandbox architecture, security risks, and relationships to future memory/RAG/agentic RAG (Lessons 9/10) go beyond pure description; sources provide industry applications but leave some technical_nuances and historical_context gaps for original synthesis.\"\n    },\n    {\n      \"sec_id\": \"S9::section-9-conclusion\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Guideline requires reiterating 'strategic importance... most important skill', elaboration on 'building, monitor, and debug' contributions, and preview of ReAct/planning (Lesson 7) plus selective future concepts; motivational but normative claims on foundational skill sit on thin post-mortem/metric support from sources.\"\n    }\n  ],\n  \"source_independence\": 0.7,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Implementation sections (S3-S7) are overwhelmingly pre-scripted around the course notebook's specific mock tools, prompts, and output sequences, explaining high scripted_example_fraction values there and reduced value of further exploration. Tool calling is a highly canonical topic (official OpenAI/Gemini guides, multiple identical tutorial patterns) with mostly independent sources (distinct provider docs, arXiv paper, separate videos/blogs) but some explanatory overlap; dominant qualitative signal is depth gaps on limitations and industry anchoring in S2/S3/S8 despite the numeric scorer flagging them.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "08_react_practice__var_minimal",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-setup-and-environment",
+          "scripted_example_fraction": 0.9,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Guideline dictates exact code cells [2-5], imports, MODEL_ID, and expected stderr verbatim with purely instructional objective and no interpretive or normative elements."
+        },
+        {
+          "sec_id": "S2::section-2-tool-layer-mock-search-implementation",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Section mandates specific 'Tool Design Philosophy' bullets on why mock tool (simplifies focus, eliminates dependencies) plus real-world API replacement notes, which add light normative framing beyond notebook source."
+        },
+        {
+          "sec_id": "S3::section-3-thought-phase-prompt-construction-and-generation",
+          "scripted_example_fraction": 0.85,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "Fully dictated by code cells [8-10], exact PROMPT_TEMPLATE_THOUGHT print verification, and XML output description under 'Must stay brief' constraint with no room for external claims."
+        },
+        {
+          "sec_id": "S4::section-4-action-phase-function-calling-and-parsing",
+          "scripted_example_fraction": 0.7,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Guideline requires analysis of 'System Prompt Strategy', why tool details are unnecessary, and automatic Gemini integration, which interprets design choices with only thin support from gemini-function-calling-documentation and notebook."
+        },
+        {
+          "sec_id": "S5::section-5-control-loop-messages-scratchpad-orchestration",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Extensive notebook-derived loop, scratchpad, observation processing, and 'Extension Possibilities' discussion per guideline introduces evaluative commentary on architecture not fully grounded in the react-agent-ibm and notebook sources."
+        },
+        {
+          "sec_id": "S6::section-6-tests-and-traces-success-and-graceful-fallback",
+          "scripted_example_fraction": 0.95,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Consists of two verbatim notebook test queries ('capital of France', 'capital of Italy'), exact color-coded trace highlights, and verification points with no open evidentiary content."
+        }
+      ],
+      "source_independence": 0.45,
+      "topic_canonicity": 0.8,
+      "overall_notes": "The guideline is 100% practical mirroring of a single notebook with verbatim code cells, prompts, mock responses, and test traces, producing uniformly high scripted_example_fraction and low argumentative_risk (external evidence forbidden, 'must stay brief' repeated). ReAct is a canonical, oversaturated topic with many sources restating the same loop or citing the original paper, so further exploration adds minimal non-redundant value."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-setup-and-environment\",\n      \"scripted_example_fraction\": 0.9,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Guideline dictates exact code cells [2-5], imports, MODEL_ID, and expected stderr verbatim with purely instructional objective and no interpretive or normative elements.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-tool-layer-mock-search-implementation\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Section mandates specific 'Tool Design Philosophy' bullets on why mock tool (simplifies focus, eliminates dependencies) plus real-world API replacement notes, which add light normative framing beyond notebook source.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-thought-phase-prompt-construction-and-generation\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Fully dictated by code cells [8-10], exact PROMPT_TEMPLATE_THOUGHT print verification, and XML output description under 'Must stay brief' constraint with no room for external claims.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-action-phase-function-calling-and-parsing\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline requires analysis of 'System Prompt Strategy', why tool details are unnecessary, and automatic Gemini integration, which interprets design choices with only thin support from gemini-function-calling-documentation and notebook.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-control-loop-messages-scratchpad-orchestration\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Extensive notebook-derived loop, scratchpad, observation processing, and 'Extension Possibilities' discussion per guideline introduces evaluative commentary on architecture not fully grounded in the react-agent-ibm and notebook sources.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-tests-and-traces-success-and-graceful-fallback\",\n      \"scripted_example_fraction\": 0.95,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Consists of two verbatim notebook test queries ('capital of France', 'capital of Italy'), exact color-coded trace highlights, and verification points with no open evidentiary content.\"\n    }\n  ],\n  \"source_independence\": 0.45,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"The guideline is 100% practical mirroring of a single notebook with verbatim code cells, prompts, mock responses, and test traces, producing uniformly high scripted_example_fraction and low argumentative_risk (external evidence forbidden, 'must stay brief' repeated). ReAct is a canonical, oversaturated topic with many sources restating the same loop or citing the original paper, so further exploration adds minimal non-redundant value.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "08_react_practice__var_standard",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-setup-and-environment",
+          "scripted_example_fraction": 0.85,
+          "argumentative_risk": 0.05,
+          "risk_rationale": "Purely descriptive notebook-cell walkthrough (cells [2]-[5], expected stderr, transition sentence) with no normative claims or unsupported leaps per the guideline's 'step-by-step from the notebook' directive."
+        },
+        {
+          "sec_id": "S2::section-2-tool-layer-mock-search-implementation",
+          "scripted_example_fraction": 0.7,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Guideline mandates specific 'Tool Design Philosophy' bullets on mock benefits plus 'Real-World Context' on API replacement, adding mild evaluative weight only partially supported by the notebook and Medium source."
+        },
+        {
+          "sec_id": "S3::section-3-thought-phase-prompt-construction-and-generation",
+          "scripted_example_fraction": 0.9,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Section is almost entirely dictated by exact notebook cells [8]-[10], print verification, and XML output description, remaining descriptive with no interpretive or cross-domain content."
+        },
+        {
+          "sec_id": "S4::section-4-action-phase-function-calling-and-parsing",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.35,
+          "risk_rationale": "Guideline requires analysis of 'System Prompt Strategy', 'why tool descriptions are not needed', automatic integration tradeoffs, and parsing logic that slightly exceeds direct support in Gemini function-calling docs and notebook."
+        },
+        {
+          "sec_id": "S5::section-5-control-loop-messages-scratchpad-orchestration",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Heavy scripting around notebook's Message/Scratchpad/react_agent_loop implementation and output traces is mostly descriptive, though 'Extension Possibilities' and 'importance of preserving tool results' add light interpretive weight."
+        },
+        {
+          "sec_id": "S6::section-6-tests-and-traces-success-and-graceful-fallback",
+          "scripted_example_fraction": 0.95,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Guideline verbatim dictates the two queries, max_turns=2 runs, color-coded trace highlights, verification points, and forced-termination behavior from notebook cells [17] and [19], rendering it a fully pre-scripted example."
+        }
+      ],
+      "source_independence": 0.55,
+      "topic_canonicity": 0.85,
+      "overall_notes": "The lesson is 100% practical and highly scripted to one notebook's exact cells, outputs, and traces (high scripted fractions, especially S6), on the canonical, oversaturated ReAct pattern where sources overlap heavily in concepts. Argumentative risk stays low-to-moderate as sections remain instructional rather than normative, though weakest sections (S2, S4) carry the most 'why/philosophy' language."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-setup-and-environment\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.05,\n      \"risk_rationale\": \"Purely descriptive notebook-cell walkthrough (cells [2]-[5], expected stderr, transition sentence) with no normative claims or unsupported leaps per the guideline's 'step-by-step from the notebook' directive.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-tool-layer-mock-search-implementation\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Guideline mandates specific 'Tool Design Philosophy' bullets on mock benefits plus 'Real-World Context' on API replacement, adding mild evaluative weight only partially supported by the notebook and Medium source.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-thought-phase-prompt-construction-and-generation\",\n      \"scripted_example_fraction\": 0.9,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Section is almost entirely dictated by exact notebook cells [8]-[10], print verification, and XML output description, remaining descriptive with no interpretive or cross-domain content.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-action-phase-function-calling-and-parsing\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Guideline requires analysis of 'System Prompt Strategy', 'why tool descriptions are not needed', automatic integration tradeoffs, and parsing logic that slightly exceeds direct support in Gemini function-calling docs and notebook.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-control-loop-messages-scratchpad-orchestration\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Heavy scripting around notebook's Message/Scratchpad/react_agent_loop implementation and output traces is mostly descriptive, though 'Extension Possibilities' and 'importance of preserving tool results' add light interpretive weight.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-tests-and-traces-success-and-graceful-fallback\",\n      \"scripted_example_fraction\": 0.95,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Guideline verbatim dictates the two queries, max_turns=2 runs, color-coded trace highlights, verification points, and forced-termination behavior from notebook cells [17] and [19], rendering it a fully pre-scripted example.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.85,\n  \"overall_notes\": \"The lesson is 100% practical and highly scripted to one notebook's exact cells, outputs, and traces (high scripted fractions, especially S6), on the canonical, oversaturated ReAct pattern where sources overlap heavily in concepts. Argumentative risk stays low-to-moderate as sections remain instructional rather than normative, though weakest sections (S2, S4) carry the most 'why/philosophy' language.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "08_react_practice__var_demanding",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-setup-and-environment",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Guideline prescribes exact notebook code cells ([2]-[5]), expected stderr output, and specific imports/utilities; 'must cover in depth' pydantic/enum benefits adds explanatory content but remains tied to the pre-scripted environment setup."
+        },
+        {
+          "sec_id": "S2::section-2-tool-layer-mock-search-implementation",
+          "scripted_example_fraction": 0.7,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Walk-through of notebook search function, docstring, structured mock responses for query types, and fallback behavior are verbatim from the dictated implementation; production replacement examples (Google/Bing APIs, rate limiting) add some external framing."
+        },
+        {
+          "sec_id": "S3::section-3-thought-phase-prompt-construction-and-generation",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Exact code cells [8]-[10], PROMPT_TEMPLATE_THOUGHT definition, build_tools_xml_description output (XML with <tool name=\"search\"> and placeholder), and generate_thought function are fully scripted with verification criteria."
+        },
+        {
+          "sec_id": "S4::section-4-action-phase-function-calling-and-parsing",
+          "scripted_example_fraction": 0.6,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Notebook-derived parsing logic, dual return formats, and system-prompt strategy analysis are scripted, but 'must cover in depth' advanced production error handling (retries, circuit breakers integrating into generate_action/observe) requires interpretive best-practice claims beyond source support."
+        },
+        {
+          "sec_id": "S5::section-5-control-loop-messages-scratchpad-orchestration",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Full react_agent_loop, Message/MessageRole categories (user/thought/tool_request/observation/final_answer), scratchpad mechanics, turn bounds, and code-output analysis (reasoning through question types, error recovery) mirror notebook traces and structure exactly."
+        },
+        {
+          "sec_id": "S6::section-6-tests-and-traces-success-and-graceful-fallback",
+          "scripted_example_fraction": 0.85,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Two specific test cases ('capital of France', 'capital of Italy'), max_turns=2, and verbatim color-coded trace highlights (exact thoughts, tool requests, observations, forced final answer) are fully pre-scripted; must-cover test-suite design with SE comparisons adds higher interpretive weight."
+        }
+      ],
+      "source_independence": 0.55,
+      "topic_canonicity": 0.8,
+      "overall_notes": "Lesson is overwhelmingly a 100% practical, notebook-mirroring tutorial with dictated code cells, prompt templates, mock responses, and two verbatim test traces, producing high scripted_example fractions. Sources mix the original ReAct paper, Anthropic guidance, Gemini docs, an arXiv review, a Medium tutorial, the course notebook, and multiple IBM conceptual pages (some redundancy on agent planning/orchestration). ReAct + Gemini function-calling is a canonical, heavily documented topic (tavily_saturation=1.0, many restatements), limiting gains from deeper exploration; argumentative risk rises in sections mandating production strategies, industry anchoring, and testing analogies not fully supported by the mostly high-level sources."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-setup-and-environment\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Guideline prescribes exact notebook code cells ([2]-[5]), expected stderr output, and specific imports/utilities; 'must cover in depth' pydantic/enum benefits adds explanatory content but remains tied to the pre-scripted environment setup.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-tool-layer-mock-search-implementation\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Walk-through of notebook search function, docstring, structured mock responses for query types, and fallback behavior are verbatim from the dictated implementation; production replacement examples (Google/Bing APIs, rate limiting) add some external framing.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-thought-phase-prompt-construction-and-generation\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Exact code cells [8]-[10], PROMPT_TEMPLATE_THOUGHT definition, build_tools_xml_description output (XML with <tool name=\\\"search\\\"> and placeholder), and generate_thought function are fully scripted with verification criteria.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-action-phase-function-calling-and-parsing\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Notebook-derived parsing logic, dual return formats, and system-prompt strategy analysis are scripted, but 'must cover in depth' advanced production error handling (retries, circuit breakers integrating into generate_action/observe) requires interpretive best-practice claims beyond source support.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-control-loop-messages-scratchpad-orchestration\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Full react_agent_loop, Message/MessageRole categories (user/thought/tool_request/observation/final_answer), scratchpad mechanics, turn bounds, and code-output analysis (reasoning through question types, error recovery) mirror notebook traces and structure exactly.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-tests-and-traces-success-and-graceful-fallback\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Two specific test cases ('capital of France', 'capital of Italy'), max_turns=2, and verbatim color-coded trace highlights (exact thoughts, tool requests, observations, forced final answer) are fully pre-scripted; must-cover test-suite design with SE comparisons adds higher interpretive weight.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Lesson is overwhelmingly a 100% practical, notebook-mirroring tutorial with dictated code cells, prompt templates, mock responses, and two verbatim test traces, producing high scripted_example fractions. Sources mix the original ReAct paper, Anthropic guidance, Gemini docs, an arXiv review, a Medium tutorial, the course notebook, and multiple IBM conceptual pages (some redundancy on agent planning/orchestration). ReAct + Gemini function-calling is a canonical, heavily documented topic (tavily_saturation=1.0, many restatements), limiting gains from deeper exploration; argumentative risk rises in sections mandating production strategies, industry anchoring, and testing analogies not fully supported by the mostly high-level sources.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "09_RAG__var_minimal",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-giving-llms-an-open-book-exam",
+          "scripted_example_fraction": 0.5,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Guideline mandates starting with a personal story of encountering the problem, specific open-book exam and fine-tuning analogies, plus Lesson 10 memory contrast, which carry motivational/normative framing weight beyond the purely descriptive motivation coverage in sources like rag-fundamentals-first-by-paul-iusztin-decoding-ml."
+        },
+        {
+          "sec_id": "S2::section-2-the-rag-system-core-components",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Purely descriptive breakdown of retrieval/augmentation/generation pillars and Mermaid diagram per guideline, well-supported by sources with low interpretive leaps."
+        },
+        {
+          "sec_id": "S3::section-3-the-rag-pipeline-ingestion-and-retrieval",
+          "scripted_example_fraction": 0.15,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Guideline scripts two-phase pipeline steps with generic tool references and dual Mermaid diagram, but remains descriptive of standard workflow with minimal normative claims or unsupported analogies."
+        },
+        {
+          "sec_id": "S4::section-4-advanced-rag-techniques",
+          "scripted_example_fraction": 0.45,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Guideline dictates multiple specific invented examples (travel policy decomposition, retail/IT GraphRAG multi-hop, pricing table chunking) and What/Why rationales for hybrid/re-ranking/HyDE that are illustrative narratives not directly evidenced in the cited advanced-rag-blueprint sources."
+        },
+        {
+          "sec_id": "S5::section-5-agentic-rag",
+          "scripted_example_fraction": 0.6,
+          "argumentative_risk": 0.65,
+          "risk_rationale": "Guideline provides verbatim mini thought-process example (Thought/Action/Observation on EU data retention) plus core distinction claims about adaptive superiority over linear RAG and ties to ReAct (Lessons 7-8), which carry interpretive weight on agent capabilities with only partial support from what-is-agentic-rag sources and a high-level preview of Lesson 10 memory."
+        },
+        {
+          "sec_id": "S6::section-6-conclusion",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Section makes normative claims positioning RAG as 'foundational competency for the modern AI Engineer' and 'most used solution' within Context Engineering, plus previews of Lesson 10 and later evaluations/monitoring, going beyond purely descriptive summary supported by the-rise-of-rag and a-complete-guide-to-rag."
+        }
+      ],
+      "source_independence": 0.65,
+      "topic_canonicity": 0.85,
+      "overall_notes": "RAG is a highly canonical, well-saturated topic (original 2020 paper plus dozens of near-identical pipeline explanations across NVIDIA, decodingml, Weaviate, IBM etc.), yielding mostly redundant coverage despite distinct documents like the GraphRAG arXiv paper; this plus the 100% theory guideline with many pre-scripted analogies/examples (esp. S4/S5) and course-specific normative framing explain why numeric depth/breadth gaps overstate the value of further exploration."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-giving-llms-an-open-book-exam\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Guideline mandates starting with a personal story of encountering the problem, specific open-book exam and fine-tuning analogies, plus Lesson 10 memory contrast, which carry motivational/normative framing weight beyond the purely descriptive motivation coverage in sources like rag-fundamentals-first-by-paul-iusztin-decoding-ml.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-rag-system-core-components\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Purely descriptive breakdown of retrieval/augmentation/generation pillars and Mermaid diagram per guideline, well-supported by sources with low interpretive leaps.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-the-rag-pipeline-ingestion-and-retrieval\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Guideline scripts two-phase pipeline steps with generic tool references and dual Mermaid diagram, but remains descriptive of standard workflow with minimal normative claims or unsupported analogies.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-advanced-rag-techniques\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline dictates multiple specific invented examples (travel policy decomposition, retail/IT GraphRAG multi-hop, pricing table chunking) and What/Why rationales for hybrid/re-ranking/HyDE that are illustrative narratives not directly evidenced in the cited advanced-rag-blueprint sources.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-agentic-rag\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Guideline provides verbatim mini thought-process example (Thought/Action/Observation on EU data retention) plus core distinction claims about adaptive superiority over linear RAG and ties to ReAct (Lessons 7-8), which carry interpretive weight on agent capabilities with only partial support from what-is-agentic-rag sources and a high-level preview of Lesson 10 memory.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-conclusion\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Section makes normative claims positioning RAG as 'foundational competency for the modern AI Engineer' and 'most used solution' within Context Engineering, plus previews of Lesson 10 and later evaluations/monitoring, going beyond purely descriptive summary supported by the-rise-of-rag and a-complete-guide-to-rag.\"\n    }\n  ],\n  \"source_independence\": 0.65,\n  \"topic_canonicity\": 0.85,\n  \"overall_notes\": \"RAG is a highly canonical, well-saturated topic (original 2020 paper plus dozens of near-identical pipeline explanations across NVIDIA, decodingml, Weaviate, IBM etc.), yielding mostly redundant coverage despite distinct documents like the GraphRAG arXiv paper; this plus the 100% theory guideline with many pre-scripted analogies/examples (esp. S4/S5) and course-specific normative framing explain why numeric depth/breadth gaps overstate the value of further exploration.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "09_RAG__var_standard",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-giving-llms-an-open-book-exam",
+          "scripted_example_fraction": 0.5,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Guideline mandates a personal story of encountering the static-knowledge problem plus open-book exam/human cheat-sheet analogies and Lesson 10 contrasts that extend beyond cited sources' mainly technical descriptions."
+        },
+        {
+          "sec_id": "S2::section-2-the-rag-system-core-components",
+          "scripted_example_fraction": 0.05,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Purely descriptive decomposition into retrieval/augmentation/generation pillars plus Mermaid diagram; closely matches technical foundations in sources such as a-complete-guide-to-rag with no normative leaps."
+        },
+        {
+          "sec_id": "S3::section-3-the-rag-pipeline-ingestion-and-retrieval",
+          "scripted_example_fraction": 0.15,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "End-to-end pipeline steps with example tools/models are technical and descriptive; sources supply direct matches for ingestion/retrieval phases and diagrams, keeping interpretive weight low."
+        },
+        {
+          "sec_id": "S4::section-4-advanced-rag-techniques",
+          "scripted_example_fraction": 0.6,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Guideline dictates multiple specific invented scenarios (e.g. \"my bill keeps rolling over\" hybrid example, travel-policy decomposition, reimbursements handbook chunking, retail/IT GraphRAG multi-hop queries) as illustrative narratives."
+        },
+        {
+          "sec_id": "S5::section-5-agentic-rag",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Fully scripted mini thought-process example with verbatim Thought/Action/Observation steps plus analogies to a \"research assistant\" and ReAct-tool integration carry interpretive weight relative to source support."
+        },
+        {
+          "sec_id": "S6::section-6-conclusion",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Normative/evaluative claims that RAG is \"the most used solution,\" a \"foundational competency,\" and that \"the future of knowledge retrieval is agentic\" plus positioning within Context Engineering exceed purely descriptive source coverage."
+        }
+      ],
+      "source_independence": 0.65,
+      "topic_canonicity": 0.85,
+      "overall_notes": "RAG is a highly canonical, oversaturated topic (high topic_canonicity) with largely independent sources from diverse vendors and an arXiv paper, though many restate core concepts. Dominant signal is elevated scripted-example fractions in S4 and S5 from guideline-dictated illustrative scenarios, paired with moderate argumentative risk in framing, analogies, and normative positioning in S1/S5/S6."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-giving-llms-an-open-book-exam\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Guideline mandates a personal story of encountering the static-knowledge problem plus open-book exam/human cheat-sheet analogies and Lesson 10 contrasts that extend beyond cited sources' mainly technical descriptions.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-rag-system-core-components\",\n      \"scripted_example_fraction\": 0.05,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Purely descriptive decomposition into retrieval/augmentation/generation pillars plus Mermaid diagram; closely matches technical foundations in sources such as a-complete-guide-to-rag with no normative leaps.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-the-rag-pipeline-ingestion-and-retrieval\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"End-to-end pipeline steps with example tools/models are technical and descriptive; sources supply direct matches for ingestion/retrieval phases and diagrams, keeping interpretive weight low.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-advanced-rag-techniques\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline dictates multiple specific invented scenarios (e.g. \\\"my bill keeps rolling over\\\" hybrid example, travel-policy decomposition, reimbursements handbook chunking, retail/IT GraphRAG multi-hop queries) as illustrative narratives.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-agentic-rag\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Fully scripted mini thought-process example with verbatim Thought/Action/Observation steps plus analogies to a \\\"research assistant\\\" and ReAct-tool integration carry interpretive weight relative to source support.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-conclusion\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Normative/evaluative claims that RAG is \\\"the most used solution,\\\" a \\\"foundational competency,\\\" and that \\\"the future of knowledge retrieval is agentic\\\" plus positioning within Context Engineering exceed purely descriptive source coverage.\"\n    }\n  ],\n  \"source_independence\": 0.65,\n  \"topic_canonicity\": 0.85,\n  \"overall_notes\": \"RAG is a highly canonical, oversaturated topic (high topic_canonicity) with largely independent sources from diverse vendors and an arXiv paper, though many restate core concepts. Dominant signal is elevated scripted-example fractions in S4 and S5 from guideline-dictated illustrative scenarios, paired with moderate argumentative risk in framing, analogies, and normative positioning in S1/S5/S6.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "09_RAG__var_demanding",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-giving-llms-an-open-book-exam",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Guideline mandates invented personal story opener plus cross-domain open-book/cheat-sheet analogy and strong normative claims on fine-tuning limitations and RAG's essential role in Context Engineering (Lesson 03), only partially grounded in the three listed sources."
+        },
+        {
+          "sec_id": "S2::section-2-the-rag-system-core-components",
+          "scripted_example_fraction": 0.05,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "Purely descriptive pillar breakdown (retrieval/augmentation/generation) with vector-embedding mechanics and Mermaid diagram; sources directly match technical nuances with minimal interpretive leaps."
+        },
+        {
+          "sec_id": "S3::section-3-the-rag-pipeline-ingestion-and-retrieval",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Guideline lists concrete tools and must-cover technical steps for loading/splitting/embedding/search but remains descriptive pipeline exposition well-supported by the three cited sources."
+        },
+        {
+          "sec_id": "S4::section-4-advanced-rag-techniques",
+          "scripted_example_fraction": 0.35,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Guideline dictates multiple specific invented examples (e.g. \"my bill keeps rolling over\", travel-policy decomposition, HyDE draft answer, GraphRAG retail/IT multi-hop queries) plus evaluative claims on performance gains that exceed what the three sources explicitly demonstrate."
+        },
+        {
+          "sec_id": "S5::section-5-agentic-rag",
+          "scripted_example_fraction": 0.45,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Guideline verbatim scripts the mini ReAct-style thought-action-observation trace and research-assistant analogy while making interpretive claims on the \"conceptual shift\" and adaptive superiority over linear RAG that only the listed sources loosely support."
+        },
+        {
+          "sec_id": "S6::section-6-conclusion",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.65,
+          "risk_rationale": "Heavy normative/evaluative weight in must-cover-depth positioning of RAG as \"foundational competency\" within Context Engineering, strategic importance of agentic RAG, and detailed Lesson-10 memory transition, with thin direct source backing for the synthesis."
+        }
+      ],
+      "source_independence": 0.65,
+      "topic_canonicity": 0.85,
+      "overall_notes": "RAG is a highly canonical, well-saturated topic (high topic_canonicity) with mostly independent sources (moderate source_independence) despite some overlapping introductory explanations. Later sections show elevated scripted-example fractions from dictated illustrations and moderate-to-high argumentative risk on normative positioning and analogies, even where numeric depth scores appear strong."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-giving-llms-an-open-book-exam\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Guideline mandates invented personal story opener plus cross-domain open-book/cheat-sheet analogy and strong normative claims on fine-tuning limitations and RAG's essential role in Context Engineering (Lesson 03), only partially grounded in the three listed sources.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-rag-system-core-components\",\n      \"scripted_example_fraction\": 0.05,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Purely descriptive pillar breakdown (retrieval/augmentation/generation) with vector-embedding mechanics and Mermaid diagram; sources directly match technical nuances with minimal interpretive leaps.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-the-rag-pipeline-ingestion-and-retrieval\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Guideline lists concrete tools and must-cover technical steps for loading/splitting/embedding/search but remains descriptive pipeline exposition well-supported by the three cited sources.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-advanced-rag-techniques\",\n      \"scripted_example_fraction\": 0.35,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Guideline dictates multiple specific invented examples (e.g. \\\"my bill keeps rolling over\\\", travel-policy decomposition, HyDE draft answer, GraphRAG retail/IT multi-hop queries) plus evaluative claims on performance gains that exceed what the three sources explicitly demonstrate.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-agentic-rag\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline verbatim scripts the mini ReAct-style thought-action-observation trace and research-assistant analogy while making interpretive claims on the \\\"conceptual shift\\\" and adaptive superiority over linear RAG that only the listed sources loosely support.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-conclusion\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Heavy normative/evaluative weight in must-cover-depth positioning of RAG as \\\"foundational competency\\\" within Context Engineering, strategic importance of agentic RAG, and detailed Lesson-10 memory transition, with thin direct source backing for the synthesis.\"\n    }\n  ],\n  \"source_independence\": 0.65,\n  \"topic_canonicity\": 0.85,\n  \"overall_notes\": \"RAG is a highly canonical, well-saturated topic (high topic_canonicity) with mostly independent sources (moderate source_independence) despite some overlapping introductory explanations. Later sections show elevated scripted-example fractions from dictated illustrations and moderate-to-high argumentative risk on normative positioning and analogies, even where numeric depth scores appear strong.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "10_memory_knowledge_access__var_minimal",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place",
+          "scripted_example_fraction": 0.45,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Guideline mandates specific LLM limitations framing, intern-with-amnesia analogy, context-window counterpoint on growing sizes, and early agent-building example, layering motivational claims atop sources that are mostly descriptive of statelessness."
+        },
+        {
+          "sec_id": "S2::section-2-the-layers-of-memory-internal-short-term-and-long-term",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Section script dictates exact layer definitions, cognitive-science value explanation, dynamic retrieval pipeline, Mermaid diagram, and usefulness categorization that cross-applies biology terminology with thin direct source backing for agent-specific interplay."
+        },
+        {
+          "sec_id": "S3::section-3-long-term-memory-semantic-episodic-and-procedural",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.65,
+          "risk_rationale": "Guideline supplies verbatim detailed examples (enterprise vs personal assistant, Mark's birthday timestamped episode, MonthlyReportIntent steps) that invent fictional narratives for each memory type while sources remain high-level on CoALA taxonomy."
+        },
+        {
+          "sec_id": "S4::section-4-storing-memories-pros-and-cons-of-different-approaches",
+          "scripted_example_fraction": 0.85,
+          "argumentative_risk": 0.75,
+          "risk_rationale": "Pros/cons lists and concrete invented illustrations (\"brother job\" raw-string failure, \"petting my cat\" nuance loss, graph triples with dates) are fully dictated, advancing normative storage trade-off claims beyond what overlapping sources explicitly compare."
+        },
+        {
+          "sec_id": "S5::section-5-memory-implementations-with-code-examples",
+          "scripted_example_fraction": 0.9,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Instruction explicitly requires using only the provided Notebook's code, exact extraction prompts, and output examples (e.g. Mark software-engineer bullets, learn_procedure tool output), making the section almost entirely pre-scripted illustration rather than sourced claims."
+        },
+        {
+          "sec_id": "S6::section-6-real-world-lessons-challenges-and-best-practices",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.85,
+          "risk_rationale": "Section prescribes normative best practices on reduced compression with raw logs, product-specific design (Q&A bot vs companion), and autonomous \"human factor\" gardening avoidance, with examples like \"User has a new bike\" that exceed thin, mostly descriptive source support."
+        },
+        {
+          "sec_id": "S7::section-7-conclusion",
+          "scripted_example_fraction": 0.35,
+          "argumentative_risk": 0.35,
+          "risk_rationale": "Conclusion enumerates future lessons and positions memory as temporary continual-learning workaround per global context, but remains largely summative with lower original interpretive leaps than preceding sections."
+        }
+      ],
+      "source_independence": 0.55,
+      "topic_canonicity": 0.8,
+      "overall_notes": "The guideline heavily scripts invented examples and specific narratives (especially S3-S5) that cannot be improved by external evidence, aligning with high scripted fractions. Sources overlap significantly on CoALA-derived semantic/episodic/procedural taxonomy and storage trade-offs, confirming canonical saturation where further search yields restatements. Dominant signal is elevated argumentative risk in normative best-practice sections (S4, S6) that extrapolate cross-domain analogies and policy-like recommendations beyond what the provided sources directly substantiate."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline mandates specific LLM limitations framing, intern-with-amnesia analogy, context-window counterpoint on growing sizes, and early agent-building example, layering motivational claims atop sources that are mostly descriptive of statelessness.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-layers-of-memory-internal-short-term-and-long-term\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Section script dictates exact layer definitions, cognitive-science value explanation, dynamic retrieval pipeline, Mermaid diagram, and usefulness categorization that cross-applies biology terminology with thin direct source backing for agent-specific interplay.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-long-term-memory-semantic-episodic-and-procedural\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Guideline supplies verbatim detailed examples (enterprise vs personal assistant, Mark's birthday timestamped episode, MonthlyReportIntent steps) that invent fictional narratives for each memory type while sources remain high-level on CoALA taxonomy.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-storing-memories-pros-and-cons-of-different-approaches\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.75,\n      \"risk_rationale\": \"Pros/cons lists and concrete invented illustrations (\\\"brother job\\\" raw-string failure, \\\"petting my cat\\\" nuance loss, graph triples with dates) are fully dictated, advancing normative storage trade-off claims beyond what overlapping sources explicitly compare.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-memory-implementations-with-code-examples\",\n      \"scripted_example_fraction\": 0.9,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Instruction explicitly requires using only the provided Notebook's code, exact extraction prompts, and output examples (e.g. Mark software-engineer bullets, learn_procedure tool output), making the section almost entirely pre-scripted illustration rather than sourced claims.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-real-world-lessons-challenges-and-best-practices\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.85,\n      \"risk_rationale\": \"Section prescribes normative best practices on reduced compression with raw logs, product-specific design (Q&A bot vs companion), and autonomous \\\"human factor\\\" gardening avoidance, with examples like \\\"User has a new bike\\\" that exceed thin, mostly descriptive source support.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-conclusion\",\n      \"scripted_example_fraction\": 0.35,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Conclusion enumerates future lessons and positions memory as temporary continual-learning workaround per global context, but remains largely summative with lower original interpretive leaps than preceding sections.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"The guideline heavily scripts invented examples and specific narratives (especially S3-S5) that cannot be improved by external evidence, aligning with high scripted fractions. Sources overlap significantly on CoALA-derived semantic/episodic/procedural taxonomy and storage trade-offs, confirming canonical saturation where further search yields restatements. Dominant signal is elevated argumentative risk in normative best-practice sections (S4, S6) that extrapolate cross-domain analogies and policy-like recommendations beyond what the provided sources directly substantiate.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "10_memory_knowledge_access__var_standard",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place",
+          "scripted_example_fraction": 0.15,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Guideline dictates specific framing (LLM limitations as 'continual learning' problem, intern-with-amnesia analogy, context-window as RAM with 'lost in the middle'), normative claims on memory tools as temporary solution, and a real-world example, but depth_checklist lacks case_studies_metrics."
+        },
+        {
+          "sec_id": "S2::section-2-the-layers-of-memory-internal-short-term-and-long-term",
+          "scripted_example_fraction": 0.05,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Primarily descriptive definitions of internal/short-term/long-term layers and a mandated Mermaid diagram drawn from cognitive-science terminology, well-supported by cited sources with low interpretive leaps."
+        },
+        {
+          "sec_id": "S3::section-3-long-term-memory-semantic-episodic-and-procedural",
+          "scripted_example_fraction": 0.5,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Guideline verbatim dictates multiple invented illustrations (e.g. brother-Mark frustration episode with exact timestamp, MonthlyReportIntent procedural steps, vegetarian/allergy JSON entities) plus biology-to-agent mappings, while depth_checklist misses case_studies_metrics."
+        },
+        {
+          "sec_id": "S4::section-4-storing-memories-pros-and-cons-of-different-approaches",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Section makes evaluative claims on pros/cons and trade-offs of raw strings vs JSON entities vs graphs (with specific invented cases like 'brother is no longer a lawyer' or graph triples), framed as architectural decisions, despite some source gaps in historical_context."
+        },
+        {
+          "sec_id": "S5::section-5-memory-implementations-with-code-examples",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "Guideline explicitly mandates 'use the code from the provided Notebook. Do not come up with new code' along with verbatim extraction prompts, input/output examples (e.g. cabin-booking learn_procedure), and mem0 usage, making it a pre-scripted implementation walkthrough."
+        },
+        {
+          "sec_id": "S6::section-6-real-world-lessons-challenges-and-best-practices",
+          "scripted_example_fraction": 0.25,
+          "argumentative_risk": 0.8,
+          "risk_rationale": "Prescribes normative best practices (lean toward less compression, avoid user 'memory gardening', product-first design) and interpretive lessons on evolving context windows, with cross-domain claims only thinly tied to the high-level sources listed."
+        },
+        {
+          "sec_id": "S7::section-7-conclusion",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Positions memory as core to 'personalized agents that learn' and temporary workaround for continual learning while previewing future lessons, but remains mostly summative with light interpretive connection to the AI Engineering field."
+        }
+      ],
+      "source_independence": 0.55,
+      "topic_canonicity": 0.75,
+      "overall_notes": "High scripted_example_fraction in S5 (notebook-dictated code and examples) contrasts with elevated argumentative_risk in S4/S6 around evaluative pros/cons and normative best practices; sources overlap on CoALA-inspired taxonomy yielding moderate independence but high canonicity for the semantic/episodic/procedural framing, explaining persistent depth gaps in case studies despite tavily saturation."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Guideline dictates specific framing (LLM limitations as 'continual learning' problem, intern-with-amnesia analogy, context-window as RAM with 'lost in the middle'), normative claims on memory tools as temporary solution, and a real-world example, but depth_checklist lacks case_studies_metrics.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-layers-of-memory-internal-short-term-and-long-term\",\n      \"scripted_example_fraction\": 0.05,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Primarily descriptive definitions of internal/short-term/long-term layers and a mandated Mermaid diagram drawn from cognitive-science terminology, well-supported by cited sources with low interpretive leaps.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-long-term-memory-semantic-episodic-and-procedural\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Guideline verbatim dictates multiple invented illustrations (e.g. brother-Mark frustration episode with exact timestamp, MonthlyReportIntent procedural steps, vegetarian/allergy JSON entities) plus biology-to-agent mappings, while depth_checklist misses case_studies_metrics.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-storing-memories-pros-and-cons-of-different-approaches\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Section makes evaluative claims on pros/cons and trade-offs of raw strings vs JSON entities vs graphs (with specific invented cases like 'brother is no longer a lawyer' or graph triples), framed as architectural decisions, despite some source gaps in historical_context.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-memory-implementations-with-code-examples\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Guideline explicitly mandates 'use the code from the provided Notebook. Do not come up with new code' along with verbatim extraction prompts, input/output examples (e.g. cabin-booking learn_procedure), and mem0 usage, making it a pre-scripted implementation walkthrough.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-real-world-lessons-challenges-and-best-practices\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Prescribes normative best practices (lean toward less compression, avoid user 'memory gardening', product-first design) and interpretive lessons on evolving context windows, with cross-domain claims only thinly tied to the high-level sources listed.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-conclusion\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Positions memory as core to 'personalized agents that learn' and temporary workaround for continual learning while previewing future lessons, but remains mostly summative with light interpretive connection to the AI Engineering field.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.75,\n  \"overall_notes\": \"High scripted_example_fraction in S5 (notebook-dictated code and examples) contrasts with elevated argumentative_risk in S4/S6 around evaluative pros/cons and normative best practices; sources overlap on CoALA-inspired taxonomy yielding moderate independence but high canonicity for the semantic/episodic/procedural framing, explaining persistent depth gaps in case studies despite tavily saturation.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "10_memory_knowledge_access__var_demanding",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place",
+          "scripted_example_fraction": 0.25,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Guideline mandates specific claims on continual learning impossibility, ChatGPT opt-in mechanics, lost-in-the-middle examples, and intern-with-amnesia analogy plus historical compression necessity, which exceed direct support in the vesa-alexandru and memex sources."
+        },
+        {
+          "sec_id": "S2::section-2-the-layers-of-memory-internal-short-term-and-long-term",
+          "scripted_example_fraction": 0.15,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Section requires cross-domain biology/cognitive-science analogies and specific claims on internal immutability plus retrieval pipeline dynamics that are only partially grounded in the CoALA and IBM sources."
+        },
+        {
+          "sec_id": "S3::section-3-long-term-memory-semantic-episodic-and-procedural",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Guideline dictates verbatim invented examples (brother Mark episodic timestamp, MonthlyReportIntent procedural steps, entity JSON structures) and use-case-specific granularity choices that are self-contained illustrations rather than sourced claims."
+        },
+        {
+          "sec_id": "S4::section-4-storing-memories-pros-and-cons-of-different-approaches",
+          "scripted_example_fraction": 0.45,
+          "argumentative_risk": 0.75,
+          "risk_rationale": "Detailed pros/cons lists, update/conflict strategies, guardrails (low temperature, recency rules), and schema-drift moderation are normatively prescribed with only partial backing from the Mem0 arXiv and Memex sources."
+        },
+        {
+          "sec_id": "S5::section-5-memory-implementations-with-code-examples",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Instruction explicitly dictates 'use the code from the provided Notebook. Do not come up with new code' along with verbatim extraction prompts, memory-created outputs, and hybrid-search steps, making it a pre-scripted worked example."
+        },
+        {
+          "sec_id": "S6::section-6-real-world-lessons-challenges-and-best-practices",
+          "scripted_example_fraction": 0.35,
+          "argumentative_risk": 0.8,
+          "risk_rationale": "Prescribes normative best practices on re-evaluating compression ('lean towards less compression'), product-driven design, and autonomous agent-managed consolidation that rest on interpretive synthesis beyond the Dots talk and Memex coverage."
+        },
+        {
+          "sec_id": "S7::section-7-conclusion",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Requires speculative claims on 'temporary solution' vs true continual learning and future native-learning architecture shifts that are only loosely supported by CoALA and IBM sources."
+        }
+      ],
+      "source_independence": 0.55,
+      "topic_canonicity": 0.65,
+      "overall_notes": "The guideline is unusually prescriptive, dictating verbatim examples, pros/cons lists, specific code/notebook usage, and normative best practices across most sections, producing elevated scripted_example_fraction in S3/S4/S5 and argumentative_risk in evaluative sections (S4/S6/S7). Sources show moderate independence (distinct papers like Mem0 arXiv, CoALA, Dots talk, and notebook) but revolve around overlapping taxonomy and trade-off discussions, while the topic itself is now canonical in agent literature with limited new material likely from further search. Dominant signal is that numeric coverage scores will under-estimate argumentative and scripted content risks in later sections."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline mandates specific claims on continual learning impossibility, ChatGPT opt-in mechanics, lost-in-the-middle examples, and intern-with-amnesia analogy plus historical compression necessity, which exceed direct support in the vesa-alexandru and memex sources.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-layers-of-memory-internal-short-term-and-long-term\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Section requires cross-domain biology/cognitive-science analogies and specific claims on internal immutability plus retrieval pipeline dynamics that are only partially grounded in the CoALA and IBM sources.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-long-term-memory-semantic-episodic-and-procedural\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Guideline dictates verbatim invented examples (brother Mark episodic timestamp, MonthlyReportIntent procedural steps, entity JSON structures) and use-case-specific granularity choices that are self-contained illustrations rather than sourced claims.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-storing-memories-pros-and-cons-of-different-approaches\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.75,\n      \"risk_rationale\": \"Detailed pros/cons lists, update/conflict strategies, guardrails (low temperature, recency rules), and schema-drift moderation are normatively prescribed with only partial backing from the Mem0 arXiv and Memex sources.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-memory-implementations-with-code-examples\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Instruction explicitly dictates 'use the code from the provided Notebook. Do not come up with new code' along with verbatim extraction prompts, memory-created outputs, and hybrid-search steps, making it a pre-scripted worked example.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-real-world-lessons-challenges-and-best-practices\",\n      \"scripted_example_fraction\": 0.35,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Prescribes normative best practices on re-evaluating compression ('lean towards less compression'), product-driven design, and autonomous agent-managed consolidation that rest on interpretive synthesis beyond the Dots talk and Memex coverage.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-conclusion\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Requires speculative claims on 'temporary solution' vs true continual learning and future native-learning architecture shifts that are only loosely supported by CoALA and IBM sources.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.65,\n  \"overall_notes\": \"The guideline is unusually prescriptive, dictating verbatim examples, pros/cons lists, specific code/notebook usage, and normative best practices across most sections, producing elevated scripted_example_fraction in S3/S4/S5 and argumentative_risk in evaluative sections (S4/S6/S7). Sources show moderate independence (distinct papers like Mem0 arXiv, CoALA, Dots talk, and notebook) but revolve around overlapping taxonomy and trade-off discussions, while the topic itself is now canonical in agent literature with limited new material likely from further search. Dominant signal is that numeric coverage scores will under-estimate argumentative and scripted content risks in later sections.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "11_multimodal__var_minimal",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-the-need-for-multimodal-ai",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.65,
+          "risk_rationale": "Guideline prescribes specific industry use cases (object detection, financial reports with charts, medical documents) and a normative claim that native multimodal is 'a must' for enterprise AI, but depth_checklist shows gaps in case_studies_metrics, latest_advancements, and industry_applications."
+        },
+        {
+          "sec_id": "S2::section-2-limitations-of-traditional-document-processing",
+          "scripted_example_fraction": 0.15,
+          "argumentative_risk": 0.75,
+          "risk_rationale": "Section mandates strong claims on OCR cascade errors, fragility, and failure on sketches/X-rays plus explicit note to 'Add some report numbers on this' (absent per sources), arguing it 'doesn't scale for AI agents' with thin digest coverage on limitations_failure_modes beyond generic OCR blogs."
+        },
+        {
+          "sec_id": "S3::section-3-foundations-of-multimodal-llms",
+          "scripted_example_fraction": 0.25,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Guideline dictates specific 2025 model families (Llama 4, GPT-5 etc.), diffusion vs LLM comparison, and trade-offs between Unified Embedding and Cross-modality Attention drawn from one primary Raschka source, exceeding the 'surface-level' and 'must stay brief' constraints."
+        },
+        {
+          "sec_id": "S4::section-4-applying-multimodal-llms-to-images-and-pdfs",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Extremely prescriptive <define_how_the_code_should_be_explained_step_by_step> dictates verbatim sequence (load_image_as_bytes, specific WEBP/PDF 'attention_is_all_you_need_paper.pdf', Pydantic bounding boxes, kitten/robot object detection, pseudocode for GCS) that constitutes a fully authored worked example."
+        },
+        {
+          "sec_id": "S5::section-5-foundations-of-multimodal-rag",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Guideline asserts ColPali as 'the most popular architecture' for 2025 with specific benchmark (81.3% nDCG@5), paradigm-shift claims, and late-interaction details that rest on two sources while requiring brevity on core innovation only."
+        },
+        {
+          "sec_id": "S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Detailed numbered walkthrough mandates specific functions (create_vector_index, generate_image_description workaround, embed_text_with_gemini, search_multimodal), exact queries ('what is the architecture of the transformer neural network?', 'a kitten with a robot'), and explanation of why description is used despite lesson thesis."
+        },
+        {
+          "sec_id": "S7::section-7-building-multimodal-ai-agents",
+          "scripted_example_fraction": 0.7,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Guideline scripts exact integration (multimodal_search_tool, build_react_agent with system_prompt, test_question 'what color is my kitten?', ReAct steps) as a pre-scripted capstone consolidating Part 1, using LangGraph drop-in with future-lesson caveats."
+        },
+        {
+          "sec_id": "S8::section-8-conclusion",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Purely transitional wrap-up referencing capstone project and Part 2 concepts (MCP, LangGraph, evaluation) at high level per anchoring rules, with no original normative leaps or thin citations."
+        }
+      ],
+      "source_independence": 0.6,
+      "topic_canonicity": 0.75,
+      "overall_notes": "Implementation sections (S4,S6,S7) are almost entirely pre-scripted code narratives using the exact notebook sequence and examples (e.g. Attention paper PDF, kitten queries), rendering further exploration irrelevant. Early sections advance a strong normative thesis against OCR in favor of native multimodal processing, but coverage gaps on metrics/case studies plus reliance on a few canonical sources (Raschka, ColPali arXiv, CLIP explanations) with high tavily saturation indicate limited new material would be found."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-the-need-for-multimodal-ai\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Guideline prescribes specific industry use cases (object detection, financial reports with charts, medical documents) and a normative claim that native multimodal is 'a must' for enterprise AI, but depth_checklist shows gaps in case_studies_metrics, latest_advancements, and industry_applications.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-limitations-of-traditional-document-processing\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.75,\n      \"risk_rationale\": \"Section mandates strong claims on OCR cascade errors, fragility, and failure on sketches/X-rays plus explicit note to 'Add some report numbers on this' (absent per sources), arguing it 'doesn't scale for AI agents' with thin digest coverage on limitations_failure_modes beyond generic OCR blogs.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-foundations-of-multimodal-llms\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline dictates specific 2025 model families (Llama 4, GPT-5 etc.), diffusion vs LLM comparison, and trade-offs between Unified Embedding and Cross-modality Attention drawn from one primary Raschka source, exceeding the 'surface-level' and 'must stay brief' constraints.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-applying-multimodal-llms-to-images-and-pdfs\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Extremely prescriptive <define_how_the_code_should_be_explained_step_by_step> dictates verbatim sequence (load_image_as_bytes, specific WEBP/PDF 'attention_is_all_you_need_paper.pdf', Pydantic bounding boxes, kitten/robot object detection, pseudocode for GCS) that constitutes a fully authored worked example.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-foundations-of-multimodal-rag\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Guideline asserts ColPali as 'the most popular architecture' for 2025 with specific benchmark (81.3% nDCG@5), paradigm-shift claims, and late-interaction details that rest on two sources while requiring brevity on core innovation only.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Detailed numbered walkthrough mandates specific functions (create_vector_index, generate_image_description workaround, embed_text_with_gemini, search_multimodal), exact queries ('what is the architecture of the transformer neural network?', 'a kitten with a robot'), and explanation of why description is used despite lesson thesis.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-building-multimodal-ai-agents\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Guideline scripts exact integration (multimodal_search_tool, build_react_agent with system_prompt, test_question 'what color is my kitten?', ReAct steps) as a pre-scripted capstone consolidating Part 1, using LangGraph drop-in with future-lesson caveats.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-conclusion\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Purely transitional wrap-up referencing capstone project and Part 2 concepts (MCP, LangGraph, evaluation) at high level per anchoring rules, with no original normative leaps or thin citations.\"\n    }\n  ],\n  \"source_independence\": 0.6,\n  \"topic_canonicity\": 0.75,\n  \"overall_notes\": \"Implementation sections (S4,S6,S7) are almost entirely pre-scripted code narratives using the exact notebook sequence and examples (e.g. Attention paper PDF, kitten queries), rendering further exploration irrelevant. Early sections advance a strong normative thesis against OCR in favor of native multimodal processing, but coverage gaps on metrics/case studies plus reliance on a few canonical sources (Raschka, ColPali arXiv, CLIP explanations) with high tavily saturation indicate limited new material would be found.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "11_multimodal__var_standard",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-the-need-for-multimodal-ai",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Guideline mandates strong normative claims (AI apps MUST have native multimodal support; text-only loses rich info) plus specific industry use cases/limitations backed only by general sources like YOvxh_ma5qE."
+        },
+        {
+          "sec_id": "S2::section-2-limitations-of-traditional-document-processing",
+          "scripted_example_fraction": 0.25,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Strong claims on OCR cascade failures, rigidity, and non-scalability for agents (citing needed report numbers) transition to multimodal superiority, supported by OCR sources but with thin metrics on real-world fragility."
+        },
+        {
+          "sec_id": "S3::section-3-foundations-of-multimodal-llms",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Descriptive theory on architectures/encoders/trade-offs follows Raschka figures and 2025 model lists closely; minor risk in superiority claims vs. OCR and diffusion comparison."
+        },
+        {
+          "sec_id": "S4::section-4-applying-multimodal-llms-to-images-and-pdfs",
+          "scripted_example_fraction": 0.85,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Guideline dictates verbatim step-by-step notebook walkthrough (specific functions like load_image_as_bytes, Pydantic object detection, attention_is_all_you_need.pdf, kitten/robot queries) as pre-scripted tutorial."
+        },
+        {
+          "sec_id": "S5::section-5-foundations-of-multimodal-rag",
+          "scripted_example_fraction": 0.15,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Presents ColPali as paradigm shift (2-10x faster, 81.3% nDCG) bypassing OCR, with specific architecture details from arxiv/HF sources that support but do not deeply validate all enterprise claims."
+        },
+        {
+          "sec_id": "S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "Heavily scripted explanation of notebook code with exact functions (create_vector_index, generate_image_description, specific queries like transformer architecture/kitten-robot), mocked multimodal embedding paths."
+        },
+        {
+          "sec_id": "S7::section-7-building-multimodal-ai-agents",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Prescribed step-by-step integration of search_multimodal tool into LangGraph ReAct agent with specific test question (kitten color) and system prompt; consolidates prior concepts descriptively."
+        },
+        {
+          "sec_id": "S8::section-8-conclusion",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Wrap-up connects to capstone project and Part 2 with mandated transitions; low risk as it stays high-level on using multimodal to avoid translation issues."
+        }
+      ],
+      "source_independence": 0.65,
+      "topic_canonicity": 0.75,
+      "overall_notes": "Implementation sections (S4/S6/S7) are predominantly pre-scripted tutorials with verbatim notebook steps and concrete examples (kitten PDF queries), pushing scripted fractions high while theory sections remain mostly evidence-seeking. Foundations are canonical (CLIP, VLMs, ColPali) with overlapping explanatory sources; dominant depth gaps in S1/S3 align with moderate argumentative risk on native-multimodal superiority claims."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-the-need-for-multimodal-ai\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline mandates strong normative claims (AI apps MUST have native multimodal support; text-only loses rich info) plus specific industry use cases/limitations backed only by general sources like YOvxh_ma5qE.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-limitations-of-traditional-document-processing\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Strong claims on OCR cascade failures, rigidity, and non-scalability for agents (citing needed report numbers) transition to multimodal superiority, supported by OCR sources but with thin metrics on real-world fragility.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-foundations-of-multimodal-llms\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Descriptive theory on architectures/encoders/trade-offs follows Raschka figures and 2025 model lists closely; minor risk in superiority claims vs. OCR and diffusion comparison.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-applying-multimodal-llms-to-images-and-pdfs\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Guideline dictates verbatim step-by-step notebook walkthrough (specific functions like load_image_as_bytes, Pydantic object detection, attention_is_all_you_need.pdf, kitten/robot queries) as pre-scripted tutorial.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-foundations-of-multimodal-rag\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Presents ColPali as paradigm shift (2-10x faster, 81.3% nDCG) bypassing OCR, with specific architecture details from arxiv/HF sources that support but do not deeply validate all enterprise claims.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Heavily scripted explanation of notebook code with exact functions (create_vector_index, generate_image_description, specific queries like transformer architecture/kitten-robot), mocked multimodal embedding paths.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-building-multimodal-ai-agents\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Prescribed step-by-step integration of search_multimodal tool into LangGraph ReAct agent with specific test question (kitten color) and system prompt; consolidates prior concepts descriptively.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-conclusion\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Wrap-up connects to capstone project and Part 2 with mandated transitions; low risk as it stays high-level on using multimodal to avoid translation issues.\"\n    }\n  ],\n  \"source_independence\": 0.65,\n  \"topic_canonicity\": 0.75,\n  \"overall_notes\": \"Implementation sections (S4/S6/S7) are predominantly pre-scripted tutorials with verbatim notebook steps and concrete examples (kitten PDF queries), pushing scripted fractions high while theory sections remain mostly evidence-seeking. Foundations are canonical (CLIP, VLMs, ColPali) with overlapping explanatory sources; dominant depth gaps in S1/S3 align with moderate argumentative risk on native-multimodal superiority claims.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "11_multimodal__var_demanding",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-the-need-for-multimodal-ai",
+          "scripted_example_fraction": 0.35,
+          "argumentative_risk": 0.65,
+          "risk_rationale": "Guideline opens with a personal story illustrating the problem plus mandated industry use cases/limitations (financial charts, medical docs, building sketches) that carry strong normative 'must' claims for native multimodal processing; sources provide only generic CLIP motivation with low depth_score and many breadth orphans."
+        },
+        {
+          "sec_id": "S2::section-2-limitations-of-traditional-document-processing",
+          "scripted_example_fraction": 0.15,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Strong normative critique of OCR workflows (cascading errors, fragility, specific benchmarks for nested tables/X-rays/sketches) is well-supported by dedicated OCR sources, though the mandated 'report numbers' and multi-step fragility claims add moderate interpretive weight."
+        },
+        {
+          "sec_id": "S3::section-3-foundations-of-multimodal-llms",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Requires in-depth trade-off comparisons, benchmark performance for specifically named 2025 models (Llama 4, GPT-5, etc.), and distinctions vs. diffusion models; Raschka source covers current analogs but not the projected models or all mandated metrics, creating thin support for the superiority claims."
+        },
+        {
+          "sec_id": "S4::section-4-applying-multimodal-llms-to-images-and-pdfs",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Highly dictated step-by-step notebook walkthrough (specific load_image_as_bytes, kitten/object-detection examples, Pydantic schemas, attention paper, base64 33% overhead, private GCS pseudocode) is mostly pre-scripted tutorial narrative; storage/security decision framework adds moderate normative risk beyond Gemini notebook coverage."
+        },
+        {
+          "sec_id": "S5::section-5-foundations-of-multimodal-rag",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Primarily descriptive explanation of ColPali (late interaction, bag-of-embeddings, ViDoRe nDCG@5 gains, financial/tech doc applications) directly mirrors the primary arXiv paper and supporting sources with strong alignment and low interpretive leaps."
+        },
+        {
+          "sec_id": "S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Verbatim dictated explanation sequence (specific queries like 'what is the architecture of the transformer neural network?' and 'a kitten with a robot', generate_image_description rationale, mocked multimodal embedding code, in-memory index) is almost entirely pre-scripted pedagogical example; minimal original argument."
+        },
+        {
+          "sec_id": "S7::section-7-building-multimodal-ai-agents",
+          "scripted_example_fraction": 0.7,
+          "argumentative_risk": 0.35,
+          "risk_rationale": "Detailed step-by-step notebook scripting (multimodal_search_tool, create_react_agent with specific 'what color is my kitten?' query, LangGraph drop-in emphasis, intermediate ReAct steps) dominates as invented tutorial narrative; light claims on reasoning enhancement are notebook-supported."
+        },
+        {
+          "sec_id": "S8::section-8-conclusion",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Purely transitional wrap-up linking to capstone project and Part 2 (MCP, LangGraph, evaluation) per anchoring guidelines; low interpretive weight and no thin analogies."
+        }
+      ],
+      "source_independence": 0.55,
+      "topic_canonicity": 0.8,
+      "overall_notes": "Code-heavy sections (S4,S6,S7) show very high scripted-example fractions due to verbatim dictated notebook walkthroughs with specific inputs (kitten queries, attention PDF, exact functions). Article-level saturation is medium: distinct primaries (ColPali arXiv, Raschka, Gemini notebook, LangGraph) exist but many blogs redundantly summarize CLIP/OCR/VLM concepts on a now-canonical topic (tavily_saturation=1.0). Argumentative risk peaks in S1/S3 where normative 'must use native multimodal' claims and 2025-model benchmarks stretch provided sources."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-the-need-for-multimodal-ai\",\n      \"scripted_example_fraction\": 0.35,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Guideline opens with a personal story illustrating the problem plus mandated industry use cases/limitations (financial charts, medical docs, building sketches) that carry strong normative 'must' claims for native multimodal processing; sources provide only generic CLIP motivation with low depth_score and many breadth orphans.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-limitations-of-traditional-document-processing\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Strong normative critique of OCR workflows (cascading errors, fragility, specific benchmarks for nested tables/X-rays/sketches) is well-supported by dedicated OCR sources, though the mandated 'report numbers' and multi-step fragility claims add moderate interpretive weight.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-foundations-of-multimodal-llms\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Requires in-depth trade-off comparisons, benchmark performance for specifically named 2025 models (Llama 4, GPT-5, etc.), and distinctions vs. diffusion models; Raschka source covers current analogs but not the projected models or all mandated metrics, creating thin support for the superiority claims.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-applying-multimodal-llms-to-images-and-pdfs\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Highly dictated step-by-step notebook walkthrough (specific load_image_as_bytes, kitten/object-detection examples, Pydantic schemas, attention paper, base64 33% overhead, private GCS pseudocode) is mostly pre-scripted tutorial narrative; storage/security decision framework adds moderate normative risk beyond Gemini notebook coverage.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-foundations-of-multimodal-rag\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Primarily descriptive explanation of ColPali (late interaction, bag-of-embeddings, ViDoRe nDCG@5 gains, financial/tech doc applications) directly mirrors the primary arXiv paper and supporting sources with strong alignment and low interpretive leaps.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Verbatim dictated explanation sequence (specific queries like 'what is the architecture of the transformer neural network?' and 'a kitten with a robot', generate_image_description rationale, mocked multimodal embedding code, in-memory index) is almost entirely pre-scripted pedagogical example; minimal original argument.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-building-multimodal-ai-agents\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Detailed step-by-step notebook scripting (multimodal_search_tool, create_react_agent with specific 'what color is my kitten?' query, LangGraph drop-in emphasis, intermediate ReAct steps) dominates as invented tutorial narrative; light claims on reasoning enhancement are notebook-supported.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-conclusion\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Purely transitional wrap-up linking to capstone project and Part 2 (MCP, LangGraph, evaluation) per anchoring guidelines; low interpretive weight and no thin analogies.\"\n    }\n  ],\n  \"source_independence\": 0.55,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Code-heavy sections (S4,S6,S7) show very high scripted-example fractions due to verbatim dictated notebook walkthroughs with specific inputs (kitten queries, attention PDF, exact functions). Article-level saturation is medium: distinct primaries (ColPali arXiv, Raschka, Gemini notebook, LangGraph) exist but many blogs redundantly summarize CLIP/OCR/VLM concepts on a now-canonical topic (tavily_saturation=1.0). Argumentative risk peaks in S1/S3 where normative 'must use native multimodal' claims and 2025-model benchmarks stretch provided sources.\"\n}\n```",
+    "parse_ok": true
+  }
+]

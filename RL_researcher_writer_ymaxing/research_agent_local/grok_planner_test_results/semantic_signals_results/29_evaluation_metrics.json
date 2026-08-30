@@ -1,0 +1,54 @@
+{
+  "article": "29_evaluation_metrics",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-introduction",
+        "scripted_example_fraction": 0.05,
+        "argumentative_risk": 0.35,
+        "risk_rationale": "Guideline mandates contrast of classical ML rigor (accuracy, F1, significance) vs. AI vibe checks, positioning evals as 'north star' plus exact 4-bullet roadmap, which is normative framing supported by motivation sources but thin on course-specific prior-lesson anchoring."
+      },
+      {
+        "sec_id": "S2::section-2-using-evals-through-the-optimization-flywheel",
+        "scripted_example_fraction": 0.4,
+        "argumentative_risk": 0.45,
+        "risk_rationale": "Guideline scripts verbatim 8-step flywheel bullets, 5-step regression variant, single-variable rule, business-impact statistical-significance examples (support bot vs. creative tool), and dataset-expansion production-trace case, which are illustrative but not fully sourced."
+      },
+      {
+        "sec_id": "S3::section-3-exploring-possible-metric-types",
+        "scripted_example_fraction": 0.25,
+        "argumentative_risk": 0.55,
+        "risk_rationale": "Section requires specific pros/cons for BLEU/ROUGE/BERTScore/LLM judges plus mandated trade-off table that 'positions LLM judges as the most practical choice' for the writing workflow, involving interpretive synthesis across separate sources."
+      },
+      {
+        "sec_id": "S4::section-4-why-business-metrics-over-benchmarks",
+        "scripted_example_fraction": 0.3,
+        "argumentative_risk": 0.8,
+        "risk_rationale": "Guideline explicitly calls benchmarks 'the most deceiving type of metrics' and marketing artifacts with overfitting example plus task-mismatch claim (GSM8k vs. long-form writing), a strong normative argument only partially evidenced by the single overfitting paper."
+      },
+      {
+        "sec_id": "S5::section-5-why-custom-business-metrics-over-generic-metrics",
+        "scripted_example_fraction": 0.45,
+        "argumentative_risk": 0.8,
+        "risk_rationale": "Directs 'mirage' framing, 'Don't Do This!' dashboard, concrete Brown-agent hallucination anecdote vs. brand-voice needs, prefab limitations, narrow EDA role, and verbatim 3-example list, which are invented illustrations exceeding what generic-metric sources directly supply."
+      },
+      {
+        "sec_id": "S6::section-6-choosing-binary-metrics-over-anything-else",
+        "scripted_example_fraction": 0.55,
+        "argumentative_risk": 0.75,
+        "risk_rationale": "Strong recommendation of binary with verbatim numbered bullets on Likert problems/ binary advantages, LLM-judge variance call-out, and 4 specific scripted binary criteria (Content Adherence, Flow of Ideas, etc.) for the writing agent to 'capture nuance'."
+      },
+      {
+        "sec_id": "S7::section-7-conclusion",
+        "scripted_example_fraction": 0.0,
+        "argumentative_risk": 0.3,
+        "risk_rationale": "Pure recap of the 'core shift' from vibe checks/leaderboards to custom binary business-aligned EDD plus next-lesson preview, which is low-risk summary of prior normative claims already established in the guideline."
+      }
+    ],
+    "source_independence": 0.65,
+    "topic_canonicity": 0.7,
+    "overall_notes": "Moderate scripted_example_fraction appears in S2/S5/S6 where the guideline verbatim dictates multi-step processes, exact bullet lists, and illustrative examples (e.g. Brown hallucination, 4 binary writing criteria, 8-step flywheel). Argumentative risk is highest in S4-S6 due to strong normative claims ('most deceiving', 'mirage', 'strongly recommend binary') that synthesize sources but apply them to the course capstone with interpretive weight. Sources are mostly independent articles from varied sites yet the topic of LLM eval best practices (binary judges, benchmark pitfalls, generic-metric limits) has become fairly canonical, implying limited new material from deeper search."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.05,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Guideline mandates contrast of classical ML rigor (accuracy, F1, significance) vs. AI vibe checks, positioning evals as 'north star' plus exact 4-bullet roadmap, which is normative framing supported by motivation sources but thin on course-specific prior-lesson anchoring.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-using-evals-through-the-optimization-flywheel\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Guideline scripts verbatim 8-step flywheel bullets, 5-step regression variant, single-variable rule, business-impact statistical-significance examples (support bot vs. creative tool), and dataset-expansion production-trace case, which are illustrative but not fully sourced.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-exploring-possible-metric-types\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Section requires specific pros/cons for BLEU/ROUGE/BERTScore/LLM judges plus mandated trade-off table that 'positions LLM judges as the most practical choice' for the writing workflow, involving interpretive synthesis across separate sources.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-why-business-metrics-over-benchmarks\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Guideline explicitly calls benchmarks 'the most deceiving type of metrics' and marketing artifacts with overfitting example plus task-mismatch claim (GSM8k vs. long-form writing), a strong normative argument only partially evidenced by the single overfitting paper.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-why-custom-business-metrics-over-generic-metrics\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Directs 'mirage' framing, 'Don't Do This!' dashboard, concrete Brown-agent hallucination anecdote vs. brand-voice needs, prefab limitations, narrow EDA role, and verbatim 3-example list, which are invented illustrations exceeding what generic-metric sources directly supply.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-choosing-binary-metrics-over-anything-else\",\n      \"scripted_example_fraction\": 0.55,\n      \"argumentative_risk\": 0.75,\n      \"risk_rationale\": \"Strong recommendation of binary with verbatim numbered bullets on Likert problems/ binary advantages, LLM-judge variance call-out, and 4 specific scripted binary criteria (Content Adherence, Flow of Ideas, etc.) for the writing agent to 'capture nuance'.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-conclusion\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Pure recap of the 'core shift' from vibe checks/leaderboards to custom binary business-aligned EDD plus next-lesson preview, which is low-risk summary of prior normative claims already established in the guideline.\"\n    }\n  ],\n  \"source_independence\": 0.65,\n  \"topic_canonicity\": 0.7,\n  \"overall_notes\": \"Moderate scripted_example_fraction appears in S2/S5/S6 where the guideline verbatim dictates multi-step processes, exact bullet lists, and illustrative examples (e.g. Brown hallucination, 4 binary writing criteria, 8-step flywheel). Argumentative risk is highest in S4-S6 due to strong normative claims ('most deceiving', 'mirage', 'strongly recommend binary') that synthesize sources but apply them to the course capstone with interpretive weight. Sources are mostly independent articles from varied sites yet the topic of LLM eval best practices (binary judges, benchmark pitfalls, generic-metric limits) has become fairly canonical, implying limited new material from deeper search.\"\n}\n```",
+  "parse_ok": true
+}

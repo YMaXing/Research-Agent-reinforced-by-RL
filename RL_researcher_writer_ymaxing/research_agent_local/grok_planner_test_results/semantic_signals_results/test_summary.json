@@ -1,0 +1,860 @@
+[
+  {
+    "article": "04_structured_outputs",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.05,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Purely descriptive anchoring to prior lessons (AI Engineering & Agent Landscape, Workflows vs. Agents, Context Engineering) and transition per guideline with no interpretive weight or source gaps."
+        },
+        {
+          "sec_id": "S2::section-2-understanding-why-structured-outputs-are-critical",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.65,
+          "risk_rationale": "Section normatively asserts structured outputs are 'critical', the 'de facto method' and 'perfect bridge' between software 3.0/1.0 (guideline text on benefits, contract, use cases including GraphRAG precursor) while depth checklist shows gaps in limitations_failure_modes, implementation_tradeoffs and case_studies_metrics."
+        },
+        {
+          "sec_id": "S3::section-3-implementing-structured-outputs-from-scratch-using-json",
+          "scripted_example_fraction": 0.85,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "Almost entirely dictated walkthrough of specific notebook code (DOCUMENT, XML-wrapped prompt, extract_json_from_response, listed steps 1-8) as a pre-scripted worked example with minimal original argument beyond supporting theory."
+        },
+        {
+          "sec_id": "S4::section-4-implementing-structured-outputs-from-scratch-using-pydantic",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Heavily prescribes specific Pydantic models (DocumentMetadata, nested Summary/Tag), schema injection, mapping steps and illustrative data-quality ValidationError example per guideline, plus evaluative conclusion on Pydantic vs TypedDicts/DataClasses while coverage lacks latest_advancements and case_studies_metrics."
+        },
+        {
+          "sec_id": "S5::section-5-implementing-structured-outputs-using-gemini-and-pydantic",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Dictated native Gemini SDK steps (GenerateContentConfig, short prompt, response.parse to Pydantic) as pre-scripted notebook example; pros of native API are descriptive but implementation_tradeoffs orphan exists with limited supporting depth."
+        },
+        {
+          "sec_id": "S6::section-6-conclusion-structured-outputs-are-everywhere",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Broad normative claim that the pattern 'is used everywhere, regardless of what you are building (research, writer, coding agents), what patterns... or what domain' (guideline) plus future-lesson references, with coverage gaps in industry_applications, case_studies_metrics and adjacent_trends."
+        },
+        {
+          "sec_id": "S7::lesson-code",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.05,
+          "risk_rationale": "Pure meta-reference to the specific notebook link (prioritize over all other sources per guideline) with no narrative, claims or evidentiary gaps."
+        }
+      ],
+      "source_independence": 0.75,
+      "topic_canonicity": 0.85,
+      "overall_notes": "Implementation sections S3-S5 show very high scripted_example_fraction because guideline dictates verbatim notebook code, specific DOCUMENT, models, prompts and execution steps as self-contained worked examples needing no external sourcing. S2/S4/S6 carry moderate argumentative risk from strong evaluative claims (critical de-facto bridge, used everywhere, Pydantic superiority) that outpace the digest's missing limitations, metrics and breadth items despite good coverage of core technical_nuances. Topic is highly canonical with largely independent sources across OpenAI/Gemini/LangChain/Pydantic docs."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.05,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Purely descriptive anchoring to prior lessons (AI Engineering & Agent Landscape, Workflows vs. Agents, Context Engineering) and transition per guideline with no interpretive weight or source gaps.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-understanding-why-structured-outputs-are-critical\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Section normatively asserts structured outputs are 'critical', the 'de facto method' and 'perfect bridge' between software 3.0/1.0 (guideline text on benefits, contract, use cases including GraphRAG precursor) while depth checklist shows gaps in limitations_failure_modes, implementation_tradeoffs and case_studies_metrics.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-implementing-structured-outputs-from-scratch-using-json\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Almost entirely dictated walkthrough of specific notebook code (DOCUMENT, XML-wrapped prompt, extract_json_from_response, listed steps 1-8) as a pre-scripted worked example with minimal original argument beyond supporting theory.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-implementing-structured-outputs-from-scratch-using-pydantic\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Heavily prescribes specific Pydantic models (DocumentMetadata, nested Summary/Tag), schema injection, mapping steps and illustrative data-quality ValidationError example per guideline, plus evaluative conclusion on Pydantic vs TypedDicts/DataClasses while coverage lacks latest_advancements and case_studies_metrics.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-implementing-structured-outputs-using-gemini-and-pydantic\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Dictated native Gemini SDK steps (GenerateContentConfig, short prompt, response.parse to Pydantic) as pre-scripted notebook example; pros of native API are descriptive but implementation_tradeoffs orphan exists with limited supporting depth.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-conclusion-structured-outputs-are-everywhere\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Broad normative claim that the pattern 'is used everywhere, regardless of what you are building (research, writer, coding agents), what patterns... or what domain' (guideline) plus future-lesson references, with coverage gaps in industry_applications, case_studies_metrics and adjacent_trends.\"\n    },\n    {\n      \"sec_id\": \"S7::lesson-code\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.05,\n      \"risk_rationale\": \"Pure meta-reference to the specific notebook link (prioritize over all other sources per guideline) with no narrative, claims or evidentiary gaps.\"\n    }\n  ],\n  \"source_independence\": 0.75,\n  \"topic_canonicity\": 0.85,\n  \"overall_notes\": \"Implementation sections S3-S5 show very high scripted_example_fraction because guideline dictates verbatim notebook code, specific DOCUMENT, models, prompts and execution steps as self-contained worked examples needing no external sourcing. S2/S4/S6 carry moderate argumentative risk from strong evaluative claims (critical de-facto bridge, used everywhere, Pydantic superiority) that outpace the digest's missing limitations, metrics and breadth items despite good coverage of core technical_nuances. Topic is highly canonical with largely independent sources across OpenAI/Gemini/LangChain/Pydantic docs.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "07_reasoning_planning",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-what-a-non-reasoning-model-does-and-why-it-fails-on-complex-tasks",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.35,
+          "risk_rationale": "Guideline dictates a fully invented \"Technical Research Assistant Agent\" trace plus specific consequences (superficial outputs, no iteration, missed sub-goals) and explicit linkage that workflows/structured outputs/tools are insufficient for adaptive tasks, layering interpretive weight on thin failure-mode citations."
+        },
+        {
+          "sec_id": "S2::section-2-teaching-models-to-think-chain-of-thought-and-its-limits",
+          "scripted_example_fraction": 0.55,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Section scripts a verbatim prompt and expected high-level plan for the recurring research task plus two exact limitations on parseability and lack of iterative loops; sources cover CoT foundations but the critique is lightly interpretive."
+        },
+        {
+          "sec_id": "S3::section-3-separating-planning-from-answering-foundations-of-react-and-plan-and-execute",
+          "scripted_example_fraction": 0.15,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Primarily descriptive positioning of ReAct vs Plan-and-Execute with enumerated benefits (control, iterative loops); supported by canonical sources with minimal original normative leaps."
+        },
+        {
+          "sec_id": "S4::section-4-react-in-depth-loop-evolving-example-pros-and-cons",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Guideline verbatim scripts an 8-step evolving example with quoted Thoughts, exact Actions (e.g. specific search queries) and Observations for the research task, plus enumerated Pros/Cons that evaluate interpretability and predictability beyond what the ReAct paper directly quantifies for this scenario."
+        },
+        {
+          "sec_id": "S5::section-5-plan-and-execute-in-depth-plan-execution-pros-and-cons",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Guideline pre-scripts a 7-item numbered plan plus execution/refinement triggers for the same fictional agent, then lists Pros/Cons on efficiency, bounding cost, and \"risk of rigid adherence\" that constitute evaluative claims only loosely tied to the cited orchestration sources."
+        },
+        {
+          "sec_id": "S6::section-6-where-this-shows-up-in-practice-deep-research-style-systems",
+          "scripted_example_fraction": 0.45,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Section maps ReAct/Plan-and-Execute onto \"Deep Research–Style Systems\" via the recurring example's micro-cycles and explicit prompts for verification; this cross-system analogy carries interpretive weight relative to the sparse, partially matching sources."
+        },
+        {
+          "sec_id": "S7::section-7-modern-reasoning-models-thinking-vs-answer-streams-and-interleaved-thinking",
+          "scripted_example_fraction": 0.25,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Guideline asserts normative implications for system design (still need guardrails/prompts/state despite implicit planning in o3/o4-style streams) and continued usefulness of separation for debugging; these claims exceed direct support from the interleaved-thinking and 2025 expectations sources."
+        },
+        {
+          "sec_id": "S8::section-8-advanced-agent-capabilities-enabled-by-planning-goal-decomposition-and-self-correction",
+          "scripted_example_fraction": 0.5,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Continues the scripted recurring example with conflicting adoption rates to illustrate self-correction, then argues why explicit patterns \"still matter with strong models\" for debuggability/pedagogy; this evaluative claim linking to future lessons is thinly anchored in the cited agent guides."
+        }
+      ],
+      "source_independence": 0.5,
+      "topic_canonicity": 0.8,
+      "overall_notes": "High scripted-example fractions dominate in S1/S4/S5 because the guideline verbatim dictates a recurring fictional Technical Research Assistant trace with quoted thoughts, exact search queries, numbered plans and conflict-resolution steps that require no external evidence. The topic is highly canonical (foundational ReAct/CoT/Plan-and-Execute literature since 2022), producing redundant restatements across IBM, Google and arXiv sources. Argumentative risk peaks in later sections that evaluate modern-model implications and assert why explicit patterns remain essential, signals only partially matched by the digest's coverage gaps."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-what-a-non-reasoning-model-does-and-why-it-fails-on-complex-tasks\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Guideline dictates a fully invented \\\"Technical Research Assistant Agent\\\" trace plus specific consequences (superficial outputs, no iteration, missed sub-goals) and explicit linkage that workflows/structured outputs/tools are insufficient for adaptive tasks, layering interpretive weight on thin failure-mode citations.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-teaching-models-to-think-chain-of-thought-and-its-limits\",\n      \"scripted_example_fraction\": 0.55,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Section scripts a verbatim prompt and expected high-level plan for the recurring research task plus two exact limitations on parseability and lack of iterative loops; sources cover CoT foundations but the critique is lightly interpretive.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-separating-planning-from-answering-foundations-of-react-and-plan-and-execute\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Primarily descriptive positioning of ReAct vs Plan-and-Execute with enumerated benefits (control, iterative loops); supported by canonical sources with minimal original normative leaps.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-react-in-depth-loop-evolving-example-pros-and-cons\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline verbatim scripts an 8-step evolving example with quoted Thoughts, exact Actions (e.g. specific search queries) and Observations for the research task, plus enumerated Pros/Cons that evaluate interpretability and predictability beyond what the ReAct paper directly quantifies for this scenario.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-plan-and-execute-in-depth-plan-execution-pros-and-cons\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Guideline pre-scripts a 7-item numbered plan plus execution/refinement triggers for the same fictional agent, then lists Pros/Cons on efficiency, bounding cost, and \\\"risk of rigid adherence\\\" that constitute evaluative claims only loosely tied to the cited orchestration sources.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-where-this-shows-up-in-practice-deep-research-style-systems\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Section maps ReAct/Plan-and-Execute onto \\\"Deep Research–Style Systems\\\" via the recurring example's micro-cycles and explicit prompts for verification; this cross-system analogy carries interpretive weight relative to the sparse, partially matching sources.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-modern-reasoning-models-thinking-vs-answer-streams-and-interleaved-thinking\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline asserts normative implications for system design (still need guardrails/prompts/state despite implicit planning in o3/o4-style streams) and continued usefulness of separation for debugging; these claims exceed direct support from the interleaved-thinking and 2025 expectations sources.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-advanced-agent-capabilities-enabled-by-planning-goal-decomposition-and-self-correction\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Continues the scripted recurring example with conflicting adoption rates to illustrate self-correction, then argues why explicit patterns \\\"still matter with strong models\\\" for debuggability/pedagogy; this evaluative claim linking to future lessons is thinly anchored in the cited agent guides.\"\n    }\n  ],\n  \"source_independence\": 0.5,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"High scripted-example fractions dominate in S1/S4/S5 because the guideline verbatim dictates a recurring fictional Technical Research Assistant trace with quoted thoughts, exact search queries, numbered plans and conflict-resolution steps that require no external evidence. The topic is highly canonical (foundational ReAct/CoT/Plan-and-Execute literature since 2022), producing redundant restatements across IBM, Google and arXiv sources. Argumentative risk peaks in later sections that evaluate modern-model implications and assert why explicit patterns remain essential, signals only partially matched by the digest's coverage gaps.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "13_agent_framework",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.4,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Guideline scripts verbatim anchoring to Nova/Brown capstones, specific risks of late framework choice, mandated introduction of LangGraph interrupts/MCP, architecture preview, and image with exact caption, layering interpretive framing beyond available source gaps in motivation/theoretical_foundations."
+        },
+        {
+          "sec_id": "S2::section-2-framework-choice-under-uncertainty-and-why-some-selection-strategies-fail-in-production",
+          "scripted_example_fraction": 0.6,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Section mandates a verbatim personal story about abandoning static LangGraph for MCP on the research agent (and opposite for writing agent), plus explicit failure modes of hype/hello-world selection, creating normative illustration that outruns the cited layer-distinction sources."
+        },
+        {
+          "sec_id": "S3::section-3-a-theory-for-choosing-decision-axes-instead-of-brands",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.8,
+          "risk_rationale": "Guideline dictates original four axes (control-flow vs autonomy, reliability primitives, abstraction/DX, interoperability with MCP-as-USB-C analogy) plus explicit mapping to capstone needs, advancing interpretive claims thinly supported by the persistence/durable-execution citations."
+        },
+        {
+          "sec_id": "S4::section-4-the-landscape-today-frameworks-philosophies-adoption-snapshot",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Prescribes specific philosophies, download numbers (e.g. LangGraph 400K-500K), verbatim callout boxes contrasting LangGraph/LangChain and AgentKit/SDK, hybrid-pattern warnings, and GitHub-stars image, injecting evaluative maturity-proxy claims beyond individual framework sources."
+        },
+        {
+          "sec_id": "S5::section-5-framework-deep-dive-langgraph",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Guideline specifies graph modeling, interrupts/checkpointing/time-travel, API-style contrasts, and when-it-is-overkill framing for the writing agent, but remains mostly descriptive of persistence/workflows-and-agents sources with modest interpretive trade-off weight."
+        },
+        {
+          "sec_id": "S6::section-6-framework-deep-dive-openai-agents-sdk",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Mandates mapping of minimal primitives (agents/tools/guardrails/handoffs/sessions), Python-native loop vs compiled-graph contrast, and reliability trade-off for lightweight orchestration, adding moderate normative evaluation relative to the single openai-agents-sdk source."
+        },
+        {
+          "sec_id": "S7::section-7-framework-deep-dive-agentkit",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Specifies lifecycle-toolkit positioning on top of SDK, enumerated visual-builder/Connector-Registry/ChatKit/evals components, ecosystem trade-off, and when-it-adds-value, staying largely descriptive of openai-agents-sdk/fastmcp sources."
+        },
+        {
+          "sec_id": "S8::section-8-framework-deep-dive-crewai",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Requires dual crews/flows description, typical progression pattern, DX emphasis, sweet-spot in handoffs, and opinionated-construct trade-off, with modest normative weight on top of CrewAI-introduction/build-your-first-flow coverage."
+        },
+        {
+          "sec_id": "S9::section-9-framework-deep-dive-pydanticai",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Dictates FastAPI-like philosophy, durable-execution integrations, schema ergonomics, learning-curve cost, and best-fit for writing-agent auditability, remaining close to the single PydanticAI-durable-execution source."
+        },
+        {
+          "sec_id": "S10::section-10-framework-deep-dive-autogen",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Specifies layered Studio/AgentChat/Core design, typical workflow, explicit research-prototype disclaimer, R&D-laboratory strength, and exploration-to-production trade-off, adding interpretive framing atop autogen/studio-user-guide sources."
+        },
+        {
+          "sec_id": "S11::section-11-framework-deep-dive-claude-agent-sdk",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Requires tight-integration philosophy, ergonomic tool-calling, smaller-ecosystem trade-offs, opportunity-vs-risk framing, and Anthropic-stack use case, advancing evaluative claims with limited dedicated sources (relying on openai-agents-sdk overlap)."
+        },
+        {
+          "sec_id": "S12::section-12-framework-deep-dive-fastmcp",
+          "scripted_example_fraction": 0.4,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Mandates non-runtime clarification, interoperability benefit, capstone usage pattern, tools-as-workflows callout box with specific Brown examples, and decorator-based DX snippet from quickstart, mixing scripted illustration with source material."
+        },
+        {
+          "sec_id": "S13::section-13-choosing-for-your-project-decision-matrix-tentative-forecasts",
+          "scripted_example_fraction": 0.5,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Guideline supplies a verbatim decision-matrix table with specific feature/framework mappings, evolving-nature caveat, grounded forecasts, and hybrid-pattern illustrations, creating original synthesis that exceeds individual source support."
+        },
+        {
+          "sec_id": "S14::section-14-our-capstone-pivots",
+          "scripted_example_fraction": 0.7,
+          "argumentative_risk": 0.8,
+          "risk_rationale": "Section scripts specific initial-plan vs reality contrast, hybrid Nova-as-FastMCP-server/Brown-as-LangGraph-with-coarse-tools outcome, emergent wrapping pattern, and SDK deprioritization rationale, functioning as a high-weight invented illustrative narrative."
+        },
+        {
+          "sec_id": "S15::section-15-conclusion",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Prescribes core takeaway on stable concepts over brands, MCP as high-leverage reading, practical selection process, migration-path example from AutoGen to LangGraph/PydanticAI, and forward reference to system-design/capstone builds, advancing normative conclusions."
+        }
+      ],
+      "source_independence": 0.8,
+      "topic_canonicity": 0.7,
+      "overall_notes": "Guideline is unusually prescriptive, dictating verbatim stories, callouts, decision matrix, capstone pivots, and image captions, producing elevated scripted_example_fraction in S2/S12-S14. Argumentative risk peaks in theory, landscape, matrix, pivots, and conclusion sections that advance original axes, failure modes, forecasts, and hybrid recommendations beyond what the distinct but framework-specific golden sources directly underwrite. Topic is canonical within AI engineering with abundant comparisons already available."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline scripts verbatim anchoring to Nova/Brown capstones, specific risks of late framework choice, mandated introduction of LangGraph interrupts/MCP, architecture preview, and image with exact caption, layering interpretive framing beyond available source gaps in motivation/theoretical_foundations.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-framework-choice-under-uncertainty-and-why-some-selection-strategies-fail-in-production\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Section mandates a verbatim personal story about abandoning static LangGraph for MCP on the research agent (and opposite for writing agent), plus explicit failure modes of hype/hello-world selection, creating normative illustration that outruns the cited layer-distinction sources.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-a-theory-for-choosing-decision-axes-instead-of-brands\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Guideline dictates original four axes (control-flow vs autonomy, reliability primitives, abstraction/DX, interoperability with MCP-as-USB-C analogy) plus explicit mapping to capstone needs, advancing interpretive claims thinly supported by the persistence/durable-execution citations.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-the-landscape-today-frameworks-philosophies-adoption-snapshot\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Prescribes specific philosophies, download numbers (e.g. LangGraph 400K-500K), verbatim callout boxes contrasting LangGraph/LangChain and AgentKit/SDK, hybrid-pattern warnings, and GitHub-stars image, injecting evaluative maturity-proxy claims beyond individual framework sources.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-framework-deep-dive-langgraph\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline specifies graph modeling, interrupts/checkpointing/time-travel, API-style contrasts, and when-it-is-overkill framing for the writing agent, but remains mostly descriptive of persistence/workflows-and-agents sources with modest interpretive trade-off weight.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-framework-deep-dive-openai-agents-sdk\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Mandates mapping of minimal primitives (agents/tools/guardrails/handoffs/sessions), Python-native loop vs compiled-graph contrast, and reliability trade-off for lightweight orchestration, adding moderate normative evaluation relative to the single openai-agents-sdk source.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-framework-deep-dive-agentkit\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Specifies lifecycle-toolkit positioning on top of SDK, enumerated visual-builder/Connector-Registry/ChatKit/evals components, ecosystem trade-off, and when-it-adds-value, staying largely descriptive of openai-agents-sdk/fastmcp sources.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-framework-deep-dive-crewai\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Requires dual crews/flows description, typical progression pattern, DX emphasis, sweet-spot in handoffs, and opinionated-construct trade-off, with modest normative weight on top of CrewAI-introduction/build-your-first-flow coverage.\"\n    },\n    {\n      \"sec_id\": \"S9::section-9-framework-deep-dive-pydanticai\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Dictates FastAPI-like philosophy, durable-execution integrations, schema ergonomics, learning-curve cost, and best-fit for writing-agent auditability, remaining close to the single PydanticAI-durable-execution source.\"\n    },\n    {\n      \"sec_id\": \"S10::section-10-framework-deep-dive-autogen\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Specifies layered Studio/AgentChat/Core design, typical workflow, explicit research-prototype disclaimer, R&D-laboratory strength, and exploration-to-production trade-off, adding interpretive framing atop autogen/studio-user-guide sources.\"\n    },\n    {\n      \"sec_id\": \"S11::section-11-framework-deep-dive-claude-agent-sdk\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Requires tight-integration philosophy, ergonomic tool-calling, smaller-ecosystem trade-offs, opportunity-vs-risk framing, and Anthropic-stack use case, advancing evaluative claims with limited dedicated sources (relying on openai-agents-sdk overlap).\"\n    },\n    {\n      \"sec_id\": \"S12::section-12-framework-deep-dive-fastmcp\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Mandates non-runtime clarification, interoperability benefit, capstone usage pattern, tools-as-workflows callout box with specific Brown examples, and decorator-based DX snippet from quickstart, mixing scripted illustration with source material.\"\n    },\n    {\n      \"sec_id\": \"S13::section-13-choosing-for-your-project-decision-matrix-tentative-forecasts\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Guideline supplies a verbatim decision-matrix table with specific feature/framework mappings, evolving-nature caveat, grounded forecasts, and hybrid-pattern illustrations, creating original synthesis that exceeds individual source support.\"\n    },\n    {\n      \"sec_id\": \"S14::section-14-our-capstone-pivots\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Section scripts specific initial-plan vs reality contrast, hybrid Nova-as-FastMCP-server/Brown-as-LangGraph-with-coarse-tools outcome, emergent wrapping pattern, and SDK deprioritization rationale, functioning as a high-weight invented illustrative narrative.\"\n    },\n    {\n      \"sec_id\": \"S15::section-15-conclusion\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Prescribes core takeaway on stable concepts over brands, MCP as high-leverage reading, practical selection process, migration-path example from AutoGen to LangGraph/PydanticAI, and forward reference to system-design/capstone builds, advancing normative conclusions.\"\n    }\n  ],\n  \"source_independence\": 0.8,\n  \"topic_canonicity\": 0.7,\n  \"overall_notes\": \"Guideline is unusually prescriptive, dictating verbatim stories, callouts, decision matrix, capstone pivots, and image captions, producing elevated scripted_example_fraction in S2/S12-S14. Argumentative risk peaks in theory, landscape, matrix, pivots, and conclusion sections that advance original axes, failure modes, forecasts, and hybrid recommendations beyond what the distinct but framework-specific golden sources directly underwrite. Topic is canonical within AI engineering with abundant comparisons already available.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "14_agent_system_design",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Section positions system design as the decisive layer above frameworks and asserts order-of-magnitude leverage from specific variables (reasoning budget, HITL placement) with only generic support from llm-system-design-model-selection, creating moderate interpretive weight on production readiness."
+        },
+        {
+          "sec_id": "S2::section-2-a-general-ai-engineering-decision-framework",
+          "scripted_example_fraction": 0.5,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Guideline dictates the exact 7-step playbook, specific contrasts (real-time bot vs batch job), failure modes, and iterative emphasis while citing lost-in-the-middle only for context strategy, leaving the normative claims on orchestration/HITL/tool boundaries thinly linked to the provided sources."
+        },
+        {
+          "sec_id": "S3::section-3-inference-time-scaling-and-the-cost-latency-calculus",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Section mandates a verbatim-captioned image plus a fully pre-scripted toy cost-calculation contrast (naive vs budgeted designs with quantitative bullets for Model/Input/Output/Parallel/Calculation) that is invented illustration rather than sourced evidence."
+        },
+        {
+          "sec_id": "S4::section-4-our-capstone-global-system-design",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Guideline supplies near-verbatim paragraphs describing Nova MCP loops, Brown LangGraph tools (Generate/Edit), file-based handoffs, and claims that vague article_guideline.md produces \"AI-generated slop\" because \"LLMs are terrible at generating original ideas,\" supported only tangentially by gemini-review and human-in-the-loop sources."
+        },
+        {
+          "sec_id": "S5::section-5-decision-matrix-defaults-for-the-capstone",
+          "scripted_example_fraction": 0.9,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "The entire decision matrix (including every row's default choice and rationale tying levers to Nova/Brown) is supplied verbatim in the guideline as the \"exact blueprint,\" constituting pre-scripted authored content whose normative defaults receive only generic backing from llm-system-design-model-selection and revisiting-the-test-time-scaling."
+        },
+        {
+          "sec_id": "S6::section-6-conclusion",
+          "scripted_example_fraction": 0.25,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Recap asserts that the 7-step framework plus recorded decisions turn prototypes into \"scalable, production-ready\" systems, a normative claim referencing future lessons but resting on the same limited set of canonical sources without new evidence."
+        }
+      ],
+      "source_independence": 0.8,
+      "topic_canonicity": 0.7,
+      "overall_notes": "Guideline is unusually prescriptive with verbatim tables, image captions, dictated toy calculations, and full Nova/Brown architecture text, producing elevated scripted_example_fraction especially in S3-S5. Sources are independent (distinct papers, vendor docs, arXiv studies) yet the core topics of inference-time scaling levers and agent decision frameworks are canonical, so additional exploration would mostly rediscover similar material. Dominant qualitative signal is that S2 and S4 carry the highest argumentative risk and coverage gaps when asserting specific capstone design superiority."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Section positions system design as the decisive layer above frameworks and asserts order-of-magnitude leverage from specific variables (reasoning budget, HITL placement) with only generic support from llm-system-design-model-selection, creating moderate interpretive weight on production readiness.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-a-general-ai-engineering-decision-framework\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline dictates the exact 7-step playbook, specific contrasts (real-time bot vs batch job), failure modes, and iterative emphasis while citing lost-in-the-middle only for context strategy, leaving the normative claims on orchestration/HITL/tool boundaries thinly linked to the provided sources.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-inference-time-scaling-and-the-cost-latency-calculus\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Section mandates a verbatim-captioned image plus a fully pre-scripted toy cost-calculation contrast (naive vs budgeted designs with quantitative bullets for Model/Input/Output/Parallel/Calculation) that is invented illustration rather than sourced evidence.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-our-capstone-global-system-design\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Guideline supplies near-verbatim paragraphs describing Nova MCP loops, Brown LangGraph tools (Generate/Edit), file-based handoffs, and claims that vague article_guideline.md produces \\\"AI-generated slop\\\" because \\\"LLMs are terrible at generating original ideas,\\\" supported only tangentially by gemini-review and human-in-the-loop sources.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-decision-matrix-defaults-for-the-capstone\",\n      \"scripted_example_fraction\": 0.9,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"The entire decision matrix (including every row's default choice and rationale tying levers to Nova/Brown) is supplied verbatim in the guideline as the \\\"exact blueprint,\\\" constituting pre-scripted authored content whose normative defaults receive only generic backing from llm-system-design-model-selection and revisiting-the-test-time-scaling.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-conclusion\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Recap asserts that the 7-step framework plus recorded decisions turn prototypes into \\\"scalable, production-ready\\\" systems, a normative claim referencing future lessons but resting on the same limited set of canonical sources without new evidence.\"\n    }\n  ],\n  \"source_independence\": 0.8,\n  \"topic_canonicity\": 0.7,\n  \"overall_notes\": \"Guideline is unusually prescriptive with verbatim tables, image captions, dictated toy calculations, and full Nova/Brown architecture text, producing elevated scripted_example_fraction especially in S3-S5. Sources are independent (distinct papers, vendor docs, arXiv studies) yet the core topics of inference-time scaling levers and agent decision frameworks are canonical, so additional exploration would mostly rediscover similar material. Dominant qualitative signal is that S2 and S4 carry the highest argumentative risk and coverage gaps when asserting specific capstone design superiority.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "29_evaluation_metrics",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.05,
+          "argumentative_risk": 0.35,
+          "risk_rationale": "Guideline mandates contrast of classical ML rigor (accuracy, F1, significance) vs. AI vibe checks, positioning evals as 'north star' plus exact 4-bullet roadmap, which is normative framing supported by motivation sources but thin on course-specific prior-lesson anchoring."
+        },
+        {
+          "sec_id": "S2::section-2-using-evals-through-the-optimization-flywheel",
+          "scripted_example_fraction": 0.4,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Guideline scripts verbatim 8-step flywheel bullets, 5-step regression variant, single-variable rule, business-impact statistical-significance examples (support bot vs. creative tool), and dataset-expansion production-trace case, which are illustrative but not fully sourced."
+        },
+        {
+          "sec_id": "S3::section-3-exploring-possible-metric-types",
+          "scripted_example_fraction": 0.25,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Section requires specific pros/cons for BLEU/ROUGE/BERTScore/LLM judges plus mandated trade-off table that 'positions LLM judges as the most practical choice' for the writing workflow, involving interpretive synthesis across separate sources."
+        },
+        {
+          "sec_id": "S4::section-4-why-business-metrics-over-benchmarks",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.8,
+          "risk_rationale": "Guideline explicitly calls benchmarks 'the most deceiving type of metrics' and marketing artifacts with overfitting example plus task-mismatch claim (GSM8k vs. long-form writing), a strong normative argument only partially evidenced by the single overfitting paper."
+        },
+        {
+          "sec_id": "S5::section-5-why-custom-business-metrics-over-generic-metrics",
+          "scripted_example_fraction": 0.45,
+          "argumentative_risk": 0.8,
+          "risk_rationale": "Directs 'mirage' framing, 'Don't Do This!' dashboard, concrete Brown-agent hallucination anecdote vs. brand-voice needs, prefab limitations, narrow EDA role, and verbatim 3-example list, which are invented illustrations exceeding what generic-metric sources directly supply."
+        },
+        {
+          "sec_id": "S6::section-6-choosing-binary-metrics-over-anything-else",
+          "scripted_example_fraction": 0.55,
+          "argumentative_risk": 0.75,
+          "risk_rationale": "Strong recommendation of binary with verbatim numbered bullets on Likert problems/ binary advantages, LLM-judge variance call-out, and 4 specific scripted binary criteria (Content Adherence, Flow of Ideas, etc.) for the writing agent to 'capture nuance'."
+        },
+        {
+          "sec_id": "S7::section-7-conclusion",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Pure recap of the 'core shift' from vibe checks/leaderboards to custom binary business-aligned EDD plus next-lesson preview, which is low-risk summary of prior normative claims already established in the guideline."
+        }
+      ],
+      "source_independence": 0.65,
+      "topic_canonicity": 0.7,
+      "overall_notes": "Moderate scripted_example_fraction appears in S2/S5/S6 where the guideline verbatim dictates multi-step processes, exact bullet lists, and illustrative examples (e.g. Brown hallucination, 4 binary writing criteria, 8-step flywheel). Argumentative risk is highest in S4-S6 due to strong normative claims ('most deceiving', 'mirage', 'strongly recommend binary') that synthesize sources but apply them to the course capstone with interpretive weight. Sources are mostly independent articles from varied sites yet the topic of LLM eval best practices (binary judges, benchmark pitfalls, generic-metric limits) has become fairly canonical, implying limited new material from deeper search."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.05,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Guideline mandates contrast of classical ML rigor (accuracy, F1, significance) vs. AI vibe checks, positioning evals as 'north star' plus exact 4-bullet roadmap, which is normative framing supported by motivation sources but thin on course-specific prior-lesson anchoring.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-using-evals-through-the-optimization-flywheel\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Guideline scripts verbatim 8-step flywheel bullets, 5-step regression variant, single-variable rule, business-impact statistical-significance examples (support bot vs. creative tool), and dataset-expansion production-trace case, which are illustrative but not fully sourced.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-exploring-possible-metric-types\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Section requires specific pros/cons for BLEU/ROUGE/BERTScore/LLM judges plus mandated trade-off table that 'positions LLM judges as the most practical choice' for the writing workflow, involving interpretive synthesis across separate sources.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-why-business-metrics-over-benchmarks\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Guideline explicitly calls benchmarks 'the most deceiving type of metrics' and marketing artifacts with overfitting example plus task-mismatch claim (GSM8k vs. long-form writing), a strong normative argument only partially evidenced by the single overfitting paper.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-why-custom-business-metrics-over-generic-metrics\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Directs 'mirage' framing, 'Don't Do This!' dashboard, concrete Brown-agent hallucination anecdote vs. brand-voice needs, prefab limitations, narrow EDA role, and verbatim 3-example list, which are invented illustrations exceeding what generic-metric sources directly supply.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-choosing-binary-metrics-over-anything-else\",\n      \"scripted_example_fraction\": 0.55,\n      \"argumentative_risk\": 0.75,\n      \"risk_rationale\": \"Strong recommendation of binary with verbatim numbered bullets on Likert problems/ binary advantages, LLM-judge variance call-out, and 4 specific scripted binary criteria (Content Adherence, Flow of Ideas, etc.) for the writing agent to 'capture nuance'.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-conclusion\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Pure recap of the 'core shift' from vibe checks/leaderboards to custom binary business-aligned EDD plus next-lesson preview, which is low-risk summary of prior normative claims already established in the guideline.\"\n    }\n  ],\n  \"source_independence\": 0.65,\n  \"topic_canonicity\": 0.7,\n  \"overall_notes\": \"Moderate scripted_example_fraction appears in S2/S5/S6 where the guideline verbatim dictates multi-step processes, exact bullet lists, and illustrative examples (e.g. Brown hallucination, 4 binary writing criteria, 8-step flywheel). Argumentative risk is highest in S4-S6 due to strong normative claims ('most deceiving', 'mirage', 'strongly recommend binary') that synthesize sources but apply them to the course capstone with interpretive weight. Sources are mostly independent articles from varied sites yet the topic of LLM eval best practices (binary judges, benchmark pitfalls, generic-metric limits) has become fairly canonical, implying limited new material from deeper search.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "31_CI",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Purely anchoring/transitional text referencing prior Opik/eval lessons and shifting to CI; low interpretive weight and well-matched to course-internal context with no thin external leaps."
+        },
+        {
+          "sec_id": "S2::section-2-what-is-continuous-integration",
+          "scripted_example_fraction": 0.5,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Guideline dictates verbatim three numbered failure-mode examples, three-tier model subsections with specific cost/speed calibrations, and AI-unique Tier-3 positioning; these original contrasts and normative claims rely on orphan anchors not present in sources."
+        },
+        {
+          "sec_id": "S3::section-3-pre-commit-hooks-automated-local-guardrails",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Guideline requires using exact !cat output from Brown’s .pre-commit-config.yaml plus dictated walkthroughs of validate-pyproject/prettier/ruff hooks and install steps; almost entirely self-contained project-specific illustration."
+        },
+        {
+          "sec_id": "S4::section-4-ruff-fast-python-linting-and-formatting",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Hands-on examples explicitly mandate using notebook code/outputs to introduce then auto-fix broken formatting/linting snippets, plus grep’d pyproject.toml and Makefile targets; scripted demonstration over external claims."
+        },
+        {
+          "sec_id": "S5::section-5-unit-tests-for-agent-repos",
+          "scripted_example_fraction": 0.85,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Guideline inserts verbatim FakeModel class code, lists its three exact parts from Brown’s debug.yaml/get_model.py, and dictates a full test_article_writer_ainvoke_success example with mock JSON; normative preference for response-injection over HTTP mocking sits on thin support."
+        },
+        {
+          "sec_id": "S6::section-6-ci-workflows-automated-enforcement",
+          "scripted_example_fraction": 0.8,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Complete ci.yml configuration is given verbatim for inclusion, with step-by-step dissection of jobs, triggers, and “trying it out” failure scenarios all dictated from the Brown repo; low risk except for implicit claims of “exact same commands locally and in CI.”"
+        },
+        {
+          "sec_id": "S7::section-7-ai-evaluations-as-regression-tests",
+          "scripted_example_fraction": 0.65,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Illustrative eval.yml workflow_dispatch code plus concrete token-cost math example and maturity-based decision framework make normative claims on selective Tier-3 usage that exceed thin support from llm-evaluation-for-ci-cd-pipelines source."
+        },
+        {
+          "sec_id": "S8::section-8-daily-development-workflow",
+          "scripted_example_fraction": 0.6,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Numbered 6-step daily workflow is fully pre-scripted as synthesis of prior tiers; purely descriptive with no thin cross-domain or evaluative leaps."
+        },
+        {
+          "sec_id": "S9::section-9-conclusion",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Positions CI as “foundational production skill” and claims upfront investment “pays off” in regression prevention; these evaluative statements have only generic ruff-docs/testing support and high orphan count."
+        }
+      ],
+      "source_independence": 0.65,
+      "topic_canonicity": 0.8,
+      "overall_notes": "Guideline is extremely prescriptive, dictating verbatim configs, code blocks, notebook outputs, and illustrative examples for Brown’s implementation across S3-S7, yielding high scripted fractions there while S1/S9 remain more transitional. CI tooling (Ruff, pre-commit, GitHub Actions) is highly canonical with independent official docs, yet the AI-specific three-tier model and FakeModel pattern are largely authored with many unreachable orphan anchors."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Purely anchoring/transitional text referencing prior Opik/eval lessons and shifting to CI; low interpretive weight and well-matched to course-internal context with no thin external leaps.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-what-is-continuous-integration\",\n      \"scripted_example_fraction\": 0.5,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline dictates verbatim three numbered failure-mode examples, three-tier model subsections with specific cost/speed calibrations, and AI-unique Tier-3 positioning; these original contrasts and normative claims rely on orphan anchors not present in sources.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-pre-commit-hooks-automated-local-guardrails\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Guideline requires using exact !cat output from Brown’s .pre-commit-config.yaml plus dictated walkthroughs of validate-pyproject/prettier/ruff hooks and install steps; almost entirely self-contained project-specific illustration.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-ruff-fast-python-linting-and-formatting\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Hands-on examples explicitly mandate using notebook code/outputs to introduce then auto-fix broken formatting/linting snippets, plus grep’d pyproject.toml and Makefile targets; scripted demonstration over external claims.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-unit-tests-for-agent-repos\",\n      \"scripted_example_fraction\": 0.85,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline inserts verbatim FakeModel class code, lists its three exact parts from Brown’s debug.yaml/get_model.py, and dictates a full test_article_writer_ainvoke_success example with mock JSON; normative preference for response-injection over HTTP mocking sits on thin support.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-ci-workflows-automated-enforcement\",\n      \"scripted_example_fraction\": 0.8,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Complete ci.yml configuration is given verbatim for inclusion, with step-by-step dissection of jobs, triggers, and “trying it out” failure scenarios all dictated from the Brown repo; low risk except for implicit claims of “exact same commands locally and in CI.”\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-ai-evaluations-as-regression-tests\",\n      \"scripted_example_fraction\": 0.65,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Illustrative eval.yml workflow_dispatch code plus concrete token-cost math example and maturity-based decision framework make normative claims on selective Tier-3 usage that exceed thin support from llm-evaluation-for-ci-cd-pipelines source.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-daily-development-workflow\",\n      \"scripted_example_fraction\": 0.6,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Numbered 6-step daily workflow is fully pre-scripted as synthesis of prior tiers; purely descriptive with no thin cross-domain or evaluative leaps.\"\n    },\n    {\n      \"sec_id\": \"S9::section-9-conclusion\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Positions CI as “foundational production skill” and claims upfront investment “pays off” in regression prevention; these evaluative statements have only generic ruff-docs/testing support and high orphan count.\"\n    }\n  ],\n  \"source_independence\": 0.65,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Guideline is extremely prescriptive, dictating verbatim configs, code blocks, notebook outputs, and illustrative examples for Brown’s implementation across S3-S7, yielding high scripted fractions there while S1/S9 remain more transitional. CI tooling (Ruff, pre-commit, GitHub Actions) is highly canonical with independent official docs, yet the AI-specific three-tier model and FakeModel pattern are largely authored with many unreachable orphan anchors.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "Bird_Eye_Extreme",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction-the-avascular-retina-paradox",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Guideline mandates broader framing as 'an evolutionary extreme of metabolically active tissue survival without oxygen, with direct medical translation potential' plus a hawk-prey illustrative example, but these interpretive leaps and biomedical claims rest on thin support from the main paper's listed gaps (e.g. no electrophysiological confirmation)."
+        },
+        {
+          "sec_id": "S2::section-2-oxygenated-life-the-great-oxidation-event-and-metabolic-trade-offs",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Section is largely descriptive recap of GOE, ATP yields, and anoxia-tolerance spectrum with concrete examples (humans, naked mole rats, turtles) directly backed by sources like the naked-mole-rat and bird-retina papers, with minimal unsupported normative or cross-domain leaps."
+        },
+        {
+          "sec_id": "S3::section-3-a-mysterious-structure-the-pecten-oculi-and-chronic-anoxia",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.35,
+          "risk_rationale": "Guideline requires drawing a parallel to the Warburg effect in cancer while stressing this is a 'permanent, healthy state with no prior vertebrate precedent' plus quotes from Damsgaard/Baden, but this interpretive contrast relies on the main paper alone despite its gaps in direct lactate-flux measurements."
+        },
+        {
+          "sec_id": "S4::section-4-eyes-like-a-hawk-evolutionary-origins-selective-pressures-and-implications",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Guideline explicitly directs hypothesizing selective drivers for high-acuity vision, framing evolution as a 'tinkerer' (Jacob 1977), stating the open question of adaptation vs. coincidence with cautions/quotes, and discussing biomedical payoffs/inspiration from nature, but these normative/evaluative claims use only tangential sources (tinkering paper, mole-rat study, cone-mosaic paper) rather than the primary golden source."
+        }
+      ],
+      "source_independence": 0.75,
+      "topic_canonicity": 0.6,
+      "overall_notes": "All sections are overwhelmingly evidence-seeking descriptions of real-world findings rather than invented narratives, with zero fully scripted fictional examples. The core resolution derives from one primary recent Nature paper while other distinct sources supply evolutionary, historical, and comparative context (high source independence); however, the specific avian chronic-anoxia mechanism is a novel paradox resolution atop canonical metabolic/evolutionary background, and tavily saturation indicates further searches largely restate known material. Dominant qualitative signal is elevated argumentative risk in S4 due to its heavy interpretive, selective-pressure, and biomedical-implication weight relative to cited-source specificity."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-the-avascular-retina-paradox\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Guideline mandates broader framing as 'an evolutionary extreme of metabolically active tissue survival without oxygen, with direct medical translation potential' plus a hawk-prey illustrative example, but these interpretive leaps and biomedical claims rest on thin support from the main paper's listed gaps (e.g. no electrophysiological confirmation).\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-oxygenated-life-the-great-oxidation-event-and-metabolic-trade-offs\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Section is largely descriptive recap of GOE, ATP yields, and anoxia-tolerance spectrum with concrete examples (humans, naked mole rats, turtles) directly backed by sources like the naked-mole-rat and bird-retina papers, with minimal unsupported normative or cross-domain leaps.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-a-mysterious-structure-the-pecten-oculi-and-chronic-anoxia\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Guideline requires drawing a parallel to the Warburg effect in cancer while stressing this is a 'permanent, healthy state with no prior vertebrate precedent' plus quotes from Damsgaard/Baden, but this interpretive contrast relies on the main paper alone despite its gaps in direct lactate-flux measurements.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-eyes-like-a-hawk-evolutionary-origins-selective-pressures-and-implications\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Guideline explicitly directs hypothesizing selective drivers for high-acuity vision, framing evolution as a 'tinkerer' (Jacob 1977), stating the open question of adaptation vs. coincidence with cautions/quotes, and discussing biomedical payoffs/inspiration from nature, but these normative/evaluative claims use only tangential sources (tinkering paper, mole-rat study, cone-mosaic paper) rather than the primary golden source.\"\n    }\n  ],\n  \"source_independence\": 0.75,\n  \"topic_canonicity\": 0.6,\n  \"overall_notes\": \"All sections are overwhelmingly evidence-seeking descriptions of real-world findings rather than invented narratives, with zero fully scripted fictional examples. The core resolution derives from one primary recent Nature paper while other distinct sources supply evolutionary, historical, and comparative context (high source independence); however, the specific avian chronic-anoxia mechanism is a novel paradox resolution atop canonical metabolic/evolutionary background, and tavily saturation indicates further searches largely restate known material. Dominant qualitative signal is elevated argumentative risk in S4 due to its heavy interpretive, selective-pressure, and biomedical-implication weight relative to cited-source specificity.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "Dark_Dimension",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.35,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Guideline scripts a specific 'ball spontaneously rolling uphill' analogy plus Tait quote to frame phantom behavior as requiring coupling, while depth checklist shows gaps in limitations_failure_modes and several orphan anchors on core framing/motivation that lean interpretive."
+        },
+        {
+          "sec_id": "S2::section-2-dark-interactions",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.65,
+          "risk_rationale": "Guideline mandates detailed Andriot bookkeeping, Vafa critique that independent computation is 'fundamentally invalid', and claims that coupled scenarios 'naturally reconcile' the 9% Hubble discrepancy without errors or new particles, yet sources leave implementation_tradeoffs uncovered and orphans remain on theoretical_foundations."
+        },
+        {
+          "sec_id": "S3::section-3-a-dark-dimension",
+          "scripted_example_fraction": 0.15,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Section directs normative conclusion on 'methodological value of attacking the dark-sector problem from multiple complementary directions' plus Vafa gratification at any string-observation correspondence, with high orphan count (9) and gaps in implementation_tradeoffs despite citing specific Obied–Vafa–Bedroya–Wu and Kamionkowski bounds."
+        }
+      ],
+      "source_independence": 0.6,
+      "topic_canonicity": 0.35,
+      "overall_notes": "Dominant signal is elevated argumentative risk in S2/S3 where interpretive synthesis (bookkeeping resolution of tensions, string-theory gratification, interdisciplinary superiority) exceeds direct source support amid persistent depth gaps and orphans; topic remains niche/speculative rather than canonical, with sources mostly independent primary papers despite partial overlap in the two golden dark-dimension works."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.35,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline scripts a specific 'ball spontaneously rolling uphill' analogy plus Tait quote to frame phantom behavior as requiring coupling, while depth checklist shows gaps in limitations_failure_modes and several orphan anchors on core framing/motivation that lean interpretive.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-dark-interactions\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Guideline mandates detailed Andriot bookkeeping, Vafa critique that independent computation is 'fundamentally invalid', and claims that coupled scenarios 'naturally reconcile' the 9% Hubble discrepancy without errors or new particles, yet sources leave implementation_tradeoffs uncovered and orphans remain on theoretical_foundations.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-a-dark-dimension\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Section directs normative conclusion on 'methodological value of attacking the dark-sector problem from multiple complementary directions' plus Vafa gratification at any string-observation correspondence, with high orphan count (9) and gaps in implementation_tradeoffs despite citing specific Obied–Vafa–Bedroya–Wu and Kamionkowski bounds.\"\n    }\n  ],\n  \"source_independence\": 0.6,\n  \"topic_canonicity\": 0.35,\n  \"overall_notes\": \"Dominant signal is elevated argumentative risk in S2/S3 where interpretive synthesis (bookkeeping resolution of tensions, string-theory gratification, interdisciplinary superiority) exceeds direct source support amid persistent depth gaps and orphans; topic remains niche/speculative rather than canonical, with sources mostly independent primary papers despite partial overlap in the two golden dark-dimension works.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "Distinct_AI_Models",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.35,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Guideline explicitly scripts a colloquial \"dog\" example, AI unimodal training distinction, Plato's cave adaptation for AI, and dubbing of findings as the hypothesis with Isola quote, injecting interpretive philosophical mapping beyond the digest's source evidence for the allegory."
+        },
+        {
+          "sec_id": "S2::section-2-the-company-being-kept",
+          "scripted_example_fraction": 0.25,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Guideline prescribes Pythagoras reference, direct application of Firth's \"company it keeps\" to vectors, Anna Karenina convergence scenario with citations, and similarity-of-similarities technique (quoting Sucholutsky), creating moderate analogy-driven interpretive weight on relational geometry."
+        },
+        {
+          "sec_id": "S3::section-3-convergent-evolution",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Section frames LLM scaling as an \"existential life crisis\" (Huh quote), orders a hierarchy of convergence evidence \"in favor of the representation hypothesis,\" and describes Huh's cross-modal design, giving normative interpretive thrust to experimental results from The Platonic Representation Hypothesis and related sources."
+        },
+        {
+          "sec_id": "S4::section-4-find-the-universals",
+          "scripted_example_fraction": 0.15,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Guideline requires cataloging measurement degrees of freedom, Wolfram critique, explicit contrast of Isola (universals) vs. Efros (differences) attitudes with quotes (including Efros on Huh), practical payoffs for agentic systems, and Clune-quoted tension with trillion-parameter complexity, imposing high evaluative and cross-domain weight on thin support."
+        }
+      ],
+      "source_independence": 0.8,
+      "topic_canonicity": 0.55,
+      "overall_notes": "Early sections carry noticeable scripted_example_fraction from dictated illustrative narratives (dog example, Anna Karenina contrast) while argumentative risk rises sharply in S3-S4 due to normative framing of scaling debates, scientific-attitude contrasts, and practical implications. The six sources are largely independent papers with distinct methods (stitching, UML, vec2vec, layer affinities, alignment frameworks), but the core representational-similarity ideas are fairly canonical even as the specific Platonic hypothesis remains somewhat novel."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.35,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Guideline explicitly scripts a colloquial \\\"dog\\\" example, AI unimodal training distinction, Plato's cave adaptation for AI, and dubbing of findings as the hypothesis with Isola quote, injecting interpretive philosophical mapping beyond the digest's source evidence for the allegory.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-the-company-being-kept\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Guideline prescribes Pythagoras reference, direct application of Firth's \\\"company it keeps\\\" to vectors, Anna Karenina convergence scenario with citations, and similarity-of-similarities technique (quoting Sucholutsky), creating moderate analogy-driven interpretive weight on relational geometry.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-convergent-evolution\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Section frames LLM scaling as an \\\"existential life crisis\\\" (Huh quote), orders a hierarchy of convergence evidence \\\"in favor of the representation hypothesis,\\\" and describes Huh's cross-modal design, giving normative interpretive thrust to experimental results from The Platonic Representation Hypothesis and related sources.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-find-the-universals\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Guideline requires cataloging measurement degrees of freedom, Wolfram critique, explicit contrast of Isola (universals) vs. Efros (differences) attitudes with quotes (including Efros on Huh), practical payoffs for agentic systems, and Clune-quoted tension with trillion-parameter complexity, imposing high evaluative and cross-domain weight on thin support.\"\n    }\n  ],\n  \"source_independence\": 0.8,\n  \"topic_canonicity\": 0.55,\n  \"overall_notes\": \"Early sections carry noticeable scripted_example_fraction from dictated illustrative narratives (dog example, Anna Karenina contrast) while argumentative risk rises sharply in S3-S4 due to normative framing of scaling debates, scientific-attitude contrasts, and practical implications. The six sources are largely independent papers with distinct methods (stitching, UML, vec2vec, layer affinities, alignment frameworks), but the core representational-similarity ideas are fairly canonical even as the specific Platonic hypothesis remains somewhat novel.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "Earth_Oceans_Origin",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "Guideline requires purely descriptive historical arc (early comet preference, shift after D/H mismatches, asteroid arguments, quote from Ashley King) supported by Rosetta and enstatite sources with no normative leaps or thin analogies."
+        },
+        {
+          "sec_id": "S2::section-2-a-showdown-between-comets-and-asteroids",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.35,
+          "risk_rationale": "Section quantitatively contrasts Giotto/Rosetta/Winchcombe/Ryugu D/H data per guideline but pivots to 'radical alternative' of endogenous production by highlighting noble-gas/xenon mismatches whose interpretive weight exceeds direct source coverage."
+        },
+        {
+          "sec_id": "S3::section-3-hydrogen-meet-magma",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Core mechanism and diamond-anvil results are directly from the two Nature golden sources, but guideline-mandated broad habitability conclusion ('expanding the number of potentially habitable worlds') extrapolates to exoplanet implications with applicability-debate quotes only partially covered."
+        },
+        {
+          "sec_id": "S4::section-4-drowning-in-a-sea-of-possibilities",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.75,
+          "risk_rationale": "Guideline explicitly requires synthesis of mixed-source model plus cross-domain analogy to origin-of-life ('richer network of possible pathways') that is only tangentially supported by the noble-gas, Rosetta reanalysis, and enstatite sources."
+        }
+      ],
+      "source_independence": 0.8,
+      "topic_canonicity": 0.5,
+      "overall_notes": "No section contains invented narratives or pre-scripted fictional examples; all are evidence-driven interpretations of distinct primary studies (two Nature papers plus mission/meteorite analyses). Moderate-to-high argumentative risk is concentrated in S3/S4 due to habitability extrapolations and origin-of-life parallel, on a topic that mixes canonical comet/asteroid debate with emerging endogenous models."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Guideline requires purely descriptive historical arc (early comet preference, shift after D/H mismatches, asteroid arguments, quote from Ashley King) supported by Rosetta and enstatite sources with no normative leaps or thin analogies.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-a-showdown-between-comets-and-asteroids\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Section quantitatively contrasts Giotto/Rosetta/Winchcombe/Ryugu D/H data per guideline but pivots to 'radical alternative' of endogenous production by highlighting noble-gas/xenon mismatches whose interpretive weight exceeds direct source coverage.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-hydrogen-meet-magma\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Core mechanism and diamond-anvil results are directly from the two Nature golden sources, but guideline-mandated broad habitability conclusion ('expanding the number of potentially habitable worlds') extrapolates to exoplanet implications with applicability-debate quotes only partially covered.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-drowning-in-a-sea-of-possibilities\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.75,\n      \"risk_rationale\": \"Guideline explicitly requires synthesis of mixed-source model plus cross-domain analogy to origin-of-life ('richer network of possible pathways') that is only tangentially supported by the noble-gas, Rosetta reanalysis, and enstatite sources.\"\n    }\n  ],\n  \"source_independence\": 0.8,\n  \"topic_canonicity\": 0.5,\n  \"overall_notes\": \"No section contains invented narratives or pre-scripted fictional examples; all are evidence-driven interpretations of distinct primary studies (two Nature papers plus mission/meteorite analyses). Moderate-to-high argumentative risk is concentrated in S3/S4 due to habitability extrapolations and origin-of-life parallel, on a topic that mixes canonical comet/asteroid debate with emerging endogenous models.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "Gravity_Entropy",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.45,
+          "risk_rationale": "Guideline requires recounting Newton's letters on action-at-a-distance absurdity, historical push models, why the minority entropic view persists despite marginal status, and swarm analogies plus Carney quotes, but these interpretive framing and historical elements lack direct support in the 3 provided sources focused on modern arXiv physics."
+        },
+        {
+          "sec_id": "S2::section-2-a-force-emerges",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.35,
+          "risk_rationale": "Guideline directs emphasis on the 'conceptual power' of Jacobson's 1995 reversal deriving gravity from heat, contrasts with holographic principle via analogy, and GR incompleteness at singularities, which adds interpretive weight beyond the direct thermodynamic derivations supplied by the Jacobson and Verlinde sources."
+        },
+        {
+          "sec_id": "S3::section-3-apparent-attraction",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Section is largely descriptive of the two Carney et al. 2025 qubit models (order pockets, variable energy capacity, inverse-square emergence, epiphenomenon clarification), closely tracking the golden source's Hamiltonian and free-energy details with minimal original interpretive leaps."
+        },
+        {
+          "sec_id": "S4::section-4-strengths-and-weaknesses",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.75,
+          "risk_rationale": "Guideline requires critique of ad-hoc tuning, failure to capture equivalence principle (citing Van Raamsdonk's quote), weak-field vs strong-field contrasts, and counter-views on measurable fluctuations, which constitute high-stakes evaluative synthesis only partially supported by the Carney paper's own limitations discussion and absent from the other two sources."
+        },
+        {
+          "sec_id": "S5::section-5-testing-entropic-gravity",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Guideline mandates linking to objective collapse models, tabletop experiment prospects, emphasis on value of long-shot alternatives despite holographic dominance, and philosophical reframing of gravity as statistical tendency rather than immutable law, creating normative and cross-domain analogy risks thinly backed by the Carney source's decoherence predictions."
+        }
+      ],
+      "source_independence": 0.8,
+      "topic_canonicity": 0.45,
+      "overall_notes": "All sections show zero scripted-example content as the guideline demands evidence-based historical recounting, model descriptions, critiques, and philosophical links rather than invented narratives. The three independent primary sources leave 29 orphan anchors and high depth gaps (dominant gap type), especially for historical Newton material, specific researcher quotes (e.g. Van Raamsdonk, extra Carney), equivalence critiques, and collapse connections; argumentative risk spikes in S4/S5 where normative evaluations and cross-domain analogies exceed what the sources directly underwrite."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.45,\n      \"risk_rationale\": \"Guideline requires recounting Newton's letters on action-at-a-distance absurdity, historical push models, why the minority entropic view persists despite marginal status, and swarm analogies plus Carney quotes, but these interpretive framing and historical elements lack direct support in the 3 provided sources focused on modern arXiv physics.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-a-force-emerges\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.35,\n      \"risk_rationale\": \"Guideline directs emphasis on the 'conceptual power' of Jacobson's 1995 reversal deriving gravity from heat, contrasts with holographic principle via analogy, and GR incompleteness at singularities, which adds interpretive weight beyond the direct thermodynamic derivations supplied by the Jacobson and Verlinde sources.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-apparent-attraction\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Section is largely descriptive of the two Carney et al. 2025 qubit models (order pockets, variable energy capacity, inverse-square emergence, epiphenomenon clarification), closely tracking the golden source's Hamiltonian and free-energy details with minimal original interpretive leaps.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-strengths-and-weaknesses\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.75,\n      \"risk_rationale\": \"Guideline requires critique of ad-hoc tuning, failure to capture equivalence principle (citing Van Raamsdonk's quote), weak-field vs strong-field contrasts, and counter-views on measurable fluctuations, which constitute high-stakes evaluative synthesis only partially supported by the Carney paper's own limitations discussion and absent from the other two sources.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-testing-entropic-gravity\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Guideline mandates linking to objective collapse models, tabletop experiment prospects, emphasis on value of long-shot alternatives despite holographic dominance, and philosophical reframing of gravity as statistical tendency rather than immutable law, creating normative and cross-domain analogy risks thinly backed by the Carney source's decoherence predictions.\"\n    }\n  ],\n  \"source_independence\": 0.8,\n  \"topic_canonicity\": 0.45,\n  \"overall_notes\": \"All sections show zero scripted-example content as the guideline demands evidence-based historical recounting, model descriptions, critiques, and philosophical links rather than invented narratives. The three independent primary sources leave 29 orphan anchors and high depth gaps (dominant gap type), especially for historical Newton material, specific researcher quotes (e.g. Van Raamsdonk, extra Carney), equivalence critiques, and collapse connections; argumentative risk spikes in S4/S5 where normative evaluations and cross-domain analogies exceed what the sources directly underwrite.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "HNSW",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Purely descriptive introduction highlighting SOTA recall/speeds and adoption barriers per the HNSW paper, with no normative claims or thinly supported leaps."
+        },
+        {
+          "sec_id": "S2::section-2-foundations-of-hnsw",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Guideline requires synthesizing skip-list inheritance, greedy-routing zoom phases, local-minima risks, and degree-performance tradeoffs across NSW papers, adding interpretive framing beyond direct source support."
+        },
+        {
+          "sec_id": "S3::section-3-graph-construction",
+          "scripted_example_fraction": 0.05,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "Primarily descriptive account of iterative insertion, m_L overlap minimization, efConstruction phases, and link capping that follows Algorithm 1-4 in the HNSW golden source with minimal added interpretation."
+        },
+        {
+          "sec_id": "S4::section-4-implementation-of-hnsw",
+          "scripted_example_fraction": 0.4,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Heavy use of dictated Faiss code blocks, specific simulation outputs (e.g. max_level=4, entry_point=118295), and parameter-sweep heatmaps on Sift1M, plus interpretive corrections on efConstruction search-time effects that rely on article-generated results rather than external literature."
+        }
+      ],
+      "source_independence": 0.7,
+      "topic_canonicity": 0.8,
+      "overall_notes": "Foundational papers (HNSW, NSW variants, Pugh skip lists, navigability) are largely independent primaries, yet the topic is highly canonical with saturated explanations across literature and tutorials. Low scripted fractions and modest argumentative risk overall imply that numeric depth gaps (especially S2/S4) may not require extra exploration rounds, as coverage is already aligned to well-documented mechanics."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Purely descriptive introduction highlighting SOTA recall/speeds and adoption barriers per the HNSW paper, with no normative claims or thinly supported leaps.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-foundations-of-hnsw\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Guideline requires synthesizing skip-list inheritance, greedy-routing zoom phases, local-minima risks, and degree-performance tradeoffs across NSW papers, adding interpretive framing beyond direct source support.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-graph-construction\",\n      \"scripted_example_fraction\": 0.05,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Primarily descriptive account of iterative insertion, m_L overlap minimization, efConstruction phases, and link capping that follows Algorithm 1-4 in the HNSW golden source with minimal added interpretation.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-implementation-of-hnsw\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Heavy use of dictated Faiss code blocks, specific simulation outputs (e.g. max_level=4, entry_point=118295), and parameter-sweep heatmaps on Sift1M, plus interpretive corrections on efConstruction search-time effects that rely on article-generated results rather than external literature.\"\n    }\n  ],\n  \"source_independence\": 0.7,\n  \"topic_canonicity\": 0.8,\n  \"overall_notes\": \"Foundational papers (HNSW, NSW variants, Pugh skip lists, navigability) are largely independent primaries, yet the topic is highly canonical with saturated explanations across literature and tutorials. Low scripted fractions and modest argumentative risk overall imply that numeric depth gaps (especially S2/S4) may not require extra exploration rounds, as coverage is already aligned to well-documented mechanics.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "Insects_Consciousness",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.55,
+          "risk_rationale": "Guideline mandates explicit LLM contrast (no analogous play/pain states) plus Anil Seth quotes on human-animal commonalities, creating cross-domain analogy with only partial support in the NY declaration/background sources."
+        },
+        {
+          "sec_id": "S2::section-2-a-growing-awareness",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.25,
+          "risk_rationale": "Section is largely descriptive sequencing of cited studies plus direct quotes from Andrews/Godfrey-Smith/Sebo that align closely with Cambridge and background sources, with low normative weight."
+        },
+        {
+          "sec_id": "S3::section-3-mindful-relations",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.85,
+          "risk_rationale": "Guideline requires arguing for positive ethical obligations/enrichment, insect trade-offs, lab welfare gaps, UK policy extension, and cautionary machine-consciousness parallel, all normative leaps thinly supported by the cautious 'realistic possibility' phrasing in the NY sources."
+        }
+      ],
+      "source_independence": 0.45,
+      "topic_canonicity": 0.75,
+      "overall_notes": "Dominant signal is elevated argumentative risk in S3, where normative ethical/policy claims and AI analogies substantially outpace the purely consensus-oriented NY Declaration and background sources. The two golden sources are tightly coupled (declaration + its own background page), lowering independence despite the separate Cambridge and Nagel documents. Topic is fairly canonical in animal-sentience literature, with tavily saturation at 1.0 indicating further rounds would mostly rediscover restatements."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.55,\n      \"risk_rationale\": \"Guideline mandates explicit LLM contrast (no analogous play/pain states) plus Anil Seth quotes on human-animal commonalities, creating cross-domain analogy with only partial support in the NY declaration/background sources.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-a-growing-awareness\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.25,\n      \"risk_rationale\": \"Section is largely descriptive sequencing of cited studies plus direct quotes from Andrews/Godfrey-Smith/Sebo that align closely with Cambridge and background sources, with low normative weight.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-mindful-relations\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.85,\n      \"risk_rationale\": \"Guideline requires arguing for positive ethical obligations/enrichment, insect trade-offs, lab welfare gaps, UK policy extension, and cautionary machine-consciousness parallel, all normative leaps thinly supported by the cautious 'realistic possibility' phrasing in the NY sources.\"\n    }\n  ],\n  \"source_independence\": 0.45,\n  \"topic_canonicity\": 0.75,\n  \"overall_notes\": \"Dominant signal is elevated argumentative risk in S3, where normative ethical/policy claims and AI analogies substantially outpace the purely consensus-oriented NY Declaration and background sources. The two golden sources are tightly coupled (declaration + its own background page), lowering independence despite the separate Cambridge and Nagel documents. Topic is fairly canonical in animal-sentience literature, with tavily saturation at 1.0 indicating further rounds would mostly rediscover restatements.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "Space-Time_QECC",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-the-quantum-computing-challenge-and-the-discovery-of-a-cosmic-connection",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.65,
+          "risk_rationale": "Guideline explicitly requires arguing bidirectional prospects ('holographic codes may yield better practical QEC while QEC language may illuminate quantum gravity puzzles'), Preskill's robustness claim, and researcher quotes that extend interpretive weight beyond the conjecture summaries in Bulk Locality and ADH sources."
+        },
+        {
+          "sec_id": "S2::section-2-how-quantum-error-correcting-codes-work",
+          "scripted_example_fraction": 0.75,
+          "argumentative_risk": 0.15,
+          "risk_rationale": "Section is almost entirely a pre-scripted illustrative toy model (explicit |000⟩/|111⟩ encoding, parity-check circuits with four syndrome outcomes, and 'slightly over half' threshold), dictated verbatim with no interpretive leaps relative to the three-qutrit recovery unitary in the golden sources."
+        },
+        {
+          "sec_id": "S3::section-3-the-holographic-principle-and-space-time-emerges-as-a-quantum-error-correcting-code",
+          "scripted_example_fraction": 0.55,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Guideline mandates a 'general lesson' that 'quantum error correction supplies the correct language for thinking about emergent geometry from entanglement' plus Preskill and Hayden quotes that synthesize cross-domain claims exceeding the RT/greedy-wedge proofs in the HaPPY paper."
+        },
+        {
+          "sec_id": "S4::section-4-black-holes-where-correctability-breaks-down",
+          "scripted_example_fraction": 0.4,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Section requires showing how 'the QEC structure thereby reconciles smoothness with unitarity' via ER=EPR wormholes as decoding maps, plus Almheiri quotes on the three-quarter threshold shift, which interpretively resolves the AMPS firewall paradox beyond direct support in the cited sources."
+        },
+        {
+          "sec_id": "S5::section-5-implications-for-our-universe-and-quantum-computing",
+          "scripted_example_fraction": 0.45,
+          "argumentative_risk": 0.8,
+          "risk_rationale": "Guideline prescribes normative conclusions on DoD-funded holographic codes for 'higher-threshold' QEC, the open dS lifting challenge, and Preskill's 'entanglement-as-glue' quote that carry high evaluative weight with only tangential support from the de-Sitter limitations noted in the sources."
+        }
+      ],
+      "source_independence": 0.75,
+      "topic_canonicity": 0.55,
+      "overall_notes": "Guideline is unusually prescriptive on specific toy models (three-qubit, HaPPY pentagons, explicit encodings) and interpretive leaps (bidirectional prospects, 'correct language', entanglement-as-glue), elevating scripted fractions and argumentative risk especially in S2/S3/S5; sources are largely independent seminal papers (ADH, HaPPY, AMPS) but the QEC-holography intersection shows moderate canonicity with persistent orphan anchors on quotes and dS extensions."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-the-quantum-computing-challenge-and-the-discovery-of-a-cosmic-connection\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Guideline explicitly requires arguing bidirectional prospects ('holographic codes may yield better practical QEC while QEC language may illuminate quantum gravity puzzles'), Preskill's robustness claim, and researcher quotes that extend interpretive weight beyond the conjecture summaries in Bulk Locality and ADH sources.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-how-quantum-error-correcting-codes-work\",\n      \"scripted_example_fraction\": 0.75,\n      \"argumentative_risk\": 0.15,\n      \"risk_rationale\": \"Section is almost entirely a pre-scripted illustrative toy model (explicit |000⟩/|111⟩ encoding, parity-check circuits with four syndrome outcomes, and 'slightly over half' threshold), dictated verbatim with no interpretive leaps relative to the three-qutrit recovery unitary in the golden sources.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-the-holographic-principle-and-space-time-emerges-as-a-quantum-error-correcting-code\",\n      \"scripted_example_fraction\": 0.55,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Guideline mandates a 'general lesson' that 'quantum error correction supplies the correct language for thinking about emergent geometry from entanglement' plus Preskill and Hayden quotes that synthesize cross-domain claims exceeding the RT/greedy-wedge proofs in the HaPPY paper.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-black-holes-where-correctability-breaks-down\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Section requires showing how 'the QEC structure thereby reconciles smoothness with unitarity' via ER=EPR wormholes as decoding maps, plus Almheiri quotes on the three-quarter threshold shift, which interpretively resolves the AMPS firewall paradox beyond direct support in the cited sources.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-implications-for-our-universe-and-quantum-computing\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.8,\n      \"risk_rationale\": \"Guideline prescribes normative conclusions on DoD-funded holographic codes for 'higher-threshold' QEC, the open dS lifting challenge, and Preskill's 'entanglement-as-glue' quote that carry high evaluative weight with only tangential support from the de-Sitter limitations noted in the sources.\"\n    }\n  ],\n  \"source_independence\": 0.75,\n  \"topic_canonicity\": 0.55,\n  \"overall_notes\": \"Guideline is unusually prescriptive on specific toy models (three-qubit, HaPPY pentagons, explicit encodings) and interpretive leaps (bidirectional prospects, 'correct language', entanglement-as-glue), elevating scripted fractions and argumentative risk especially in S2/S3/S5; sources are largely independent seminal papers (ADH, HaPPY, AMPS) but the QEC-holography intersection shows moderate canonicity with persistent orphan anchors on quotes and dS extensions.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "State_of_LLM_Reasoning",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-introduction",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Guideline requires establishing 2025 priority for agentic systems and noting research surge post-DeepSeek-R1, which adds interpretive weight on importance beyond the thin cited sources on motivations."
+        },
+        {
+          "sec_id": "S2::section-2-implementing-and-improving-reasoning-in-llms-the-four-main-categories",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Section mandates contrasting training vs. inference compute, explaining hybrids, reward hacking, and detailed paragraphs on all four categories including DeepSeek-R1 specifics, layering normative claims on practical systems atop the provided sources."
+        },
+        {
+          "sec_id": "S3::section-3-inference-time-compute-scaling-methods",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Purely descriptive review of CoT, search/voting strategies drawn from matched sources like Zero-Shot Reasoners and LLM Test-Time Compute paper, with low interpretive leaps."
+        },
+        {
+          "sec_id": "S4::section-4-s1-simple-test-time-scaling",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Guideline sticks to reporting s1 mechanisms, empirical curves, limitations, and DeepSeek-R1 connections directly from the cited paper and artefacts, remaining descriptive."
+        },
+        {
+          "sec_id": "S5::section-5-other-noteworthy-research-papers-on-inference-time-compute-scaling",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Explaining rationale for brief summaries and differentiating regulated vs. distillation approaches introduces mild normative framing on paper patterns not exhaustively supported by the listed sources."
+        },
+        {
+          "sec_id": "S6::section-6-test-time-preference-optimization",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Strictly walks through the four-step loop, reward-model use, and process from the TPO paper with direct source backing and no evident cross-domain claims."
+        },
+        {
+          "sec_id": "S7::section-7-thoughts-are-all-over-the-place",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Describes underthinking, presents TIP method, and reports benchmark gains directly from the paper's definitions, logits adjustment, and tables."
+        },
+        {
+          "sec_id": "S8::section-8-trading-inference-time-compute-for-adversarial-robustness",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Concludes that scaling helps but is not a complete safety solution while highlighting exceptions and new attacks (Think Less, Nerd Sniping), adding evaluative weight relative to the robustness curves in the source."
+        },
+        {
+          "sec_id": "S9::section-9-chain-of-associated-thoughts",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Pure description of CoAT MCTS + associative memory, benefits, and framework from the paper's equations and results tables."
+        },
+        {
+          "sec_id": "S10::section-10-step-back-to-leap-forward",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Contrasts training backtrack token with inference tree search and notes no-external-RM advantage, staying close to the paper's mechanism without strong normative claims."
+        },
+        {
+          "sec_id": "S11::section-11-scaling-up-test-time-compute-with-latent-reasoning",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Explains recurrent depth, RNN-like behavior, and interpretability drawback drawn directly from the latent-space source and artefacts."
+        },
+        {
+          "sec_id": "S12::section-12-can-a-1b-llm-surpass-a-405b-llm",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Draws broader implication for engineer trade-offs that small models surpass large unscaled ones, an evaluative leap built on the systematic study but extending beyond its MATH/AIME focus."
+        },
+        {
+          "sec_id": "S13::section-13-learning-to-reason-from-feedback-at-test-time",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Acknowledges hybrid classification and contrasts weight-update vs. sequential/parallel methods using source details on OpTune, with limited added interpretation."
+        },
+        {
+          "sec_id": "S14::section-14-inference-time-computations-for-llm-reasoning-and-planning",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Extracts key insight that no technique dominates all tasks and summarizes cost/performance trade-offs, applying the benchmark's findings normatively to engineer method-matching."
+        },
+        {
+          "sec_id": "S15::section-15-inner-thinking-transformer",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.1,
+          "risk_rationale": "Directly introduces ATR, dynamic depth, and allocation mechanism from the ITT paper's architecture and evaluation tables."
+        },
+        {
+          "sec_id": "S16::section-16-test-time-scaling-for-code-generation",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Breaks down S* two-stage process, execution feedback, and adaptive synthesis while connecting to Google research, remaining descriptive of the cited source."
+        },
+        {
+          "sec_id": "S17::section-17-chain-of-draft",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.3,
+          "risk_rationale": "Discusses trade-off of lost interpretability vs. speed/cost to help engineers decide, layering mild normative guidance on the paper's efficiency gains."
+        },
+        {
+          "sec_id": "S18::section-18-better-feedback-and-edit-models",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Outlines open-ended task challenges and describes decoupled architecture/training from HelpSteer3 source, with limited unsupported evaluative weight."
+        },
+        {
+          "sec_id": "S19::section-19-conclusion",
+          "scripted_example_fraction": 0.0,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Positions scaling as major 2025 direction, reiterates findings, surfaces caveats, describes industry trends, predicts explicit reasoning as default, and teases next article, all high-normative claims thinly tied to the surveyed sources."
+        }
+      ],
+      "source_independence": 0.8,
+      "topic_canonicity": 0.25,
+      "overall_notes": "Scripted-example fraction is uniformly zero because the guideline contains no pre-scripted fictional narratives or invented dialogues; all sections summarize real papers or interpret their mechanisms. Argumentative risk is elevated in framing sections (S2, S12, S19) that draw engineer implications or 2025 predictions beyond direct source support. The topic is fast-moving and novel (recent 2025 arXiv papers), yielding low canonicity and high source independence from distinct primary studies."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Guideline requires establishing 2025 priority for agentic systems and noting research surge post-DeepSeek-R1, which adds interpretive weight on importance beyond the thin cited sources on motivations.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-implementing-and-improving-reasoning-in-llms-the-four-main-categories\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Section mandates contrasting training vs. inference compute, explaining hybrids, reward hacking, and detailed paragraphs on all four categories including DeepSeek-R1 specifics, layering normative claims on practical systems atop the provided sources.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-inference-time-compute-scaling-methods\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Purely descriptive review of CoT, search/voting strategies drawn from matched sources like Zero-Shot Reasoners and LLM Test-Time Compute paper, with low interpretive leaps.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-s1-simple-test-time-scaling\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Guideline sticks to reporting s1 mechanisms, empirical curves, limitations, and DeepSeek-R1 connections directly from the cited paper and artefacts, remaining descriptive.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-other-noteworthy-research-papers-on-inference-time-compute-scaling\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Explaining rationale for brief summaries and differentiating regulated vs. distillation approaches introduces mild normative framing on paper patterns not exhaustively supported by the listed sources.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-test-time-preference-optimization\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Strictly walks through the four-step loop, reward-model use, and process from the TPO paper with direct source backing and no evident cross-domain claims.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-thoughts-are-all-over-the-place\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Describes underthinking, presents TIP method, and reports benchmark gains directly from the paper's definitions, logits adjustment, and tables.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-trading-inference-time-compute-for-adversarial-robustness\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Concludes that scaling helps but is not a complete safety solution while highlighting exceptions and new attacks (Think Less, Nerd Sniping), adding evaluative weight relative to the robustness curves in the source.\"\n    },\n    {\n      \"sec_id\": \"S9::section-9-chain-of-associated-thoughts\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Pure description of CoAT MCTS + associative memory, benefits, and framework from the paper's equations and results tables.\"\n    },\n    {\n      \"sec_id\": \"S10::section-10-step-back-to-leap-forward\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Contrasts training backtrack token with inference tree search and notes no-external-RM advantage, staying close to the paper's mechanism without strong normative claims.\"\n    },\n    {\n      \"sec_id\": \"S11::section-11-scaling-up-test-time-compute-with-latent-reasoning\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Explains recurrent depth, RNN-like behavior, and interpretability drawback drawn directly from the latent-space source and artefacts.\"\n    },\n    {\n      \"sec_id\": \"S12::section-12-can-a-1b-llm-surpass-a-405b-llm\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Draws broader implication for engineer trade-offs that small models surpass large unscaled ones, an evaluative leap built on the systematic study but extending beyond its MATH/AIME focus.\"\n    },\n    {\n      \"sec_id\": \"S13::section-13-learning-to-reason-from-feedback-at-test-time\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Acknowledges hybrid classification and contrasts weight-update vs. sequential/parallel methods using source details on OpTune, with limited added interpretation.\"\n    },\n    {\n      \"sec_id\": \"S14::section-14-inference-time-computations-for-llm-reasoning-and-planning\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Extracts key insight that no technique dominates all tasks and summarizes cost/performance trade-offs, applying the benchmark's findings normatively to engineer method-matching.\"\n    },\n    {\n      \"sec_id\": \"S15::section-15-inner-thinking-transformer\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.1,\n      \"risk_rationale\": \"Directly introduces ATR, dynamic depth, and allocation mechanism from the ITT paper's architecture and evaluation tables.\"\n    },\n    {\n      \"sec_id\": \"S16::section-16-test-time-scaling-for-code-generation\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Breaks down S* two-stage process, execution feedback, and adaptive synthesis while connecting to Google research, remaining descriptive of the cited source.\"\n    },\n    {\n      \"sec_id\": \"S17::section-17-chain-of-draft\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Discusses trade-off of lost interpretability vs. speed/cost to help engineers decide, layering mild normative guidance on the paper's efficiency gains.\"\n    },\n    {\n      \"sec_id\": \"S18::section-18-better-feedback-and-edit-models\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Outlines open-ended task challenges and describes decoupled architecture/training from HelpSteer3 source, with limited unsupported evaluative weight.\"\n    },\n    {\n      \"sec_id\": \"S19::section-19-conclusion\",\n      \"scripted_example_fraction\": 0.0,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Positions scaling as major 2025 direction, reiterates findings, surfaces caveats, describes industry trends, predicts explicit reasoning as default, and teases next article, all high-normative claims thinly tied to the surveyed sources.\"\n    }\n  ],\n  \"source_independence\": 0.8,\n  \"topic_canonicity\": 0.25,\n  \"overall_notes\": \"Scripted-example fraction is uniformly zero because the guideline contains no pre-scripted fictional narratives or invented dialogues; all sections summarize real papers or interpret their mechanisms. Argumentative risk is elevated in framing sections (S2, S12, S19) that draw engineer implications or 2025 predictions beyond direct source support. The topic is fast-moving and novel (recent 2025 arXiv papers), yielding low canonicity and high source independence from distinct primary studies.\"\n}\n```",
+    "parse_ok": true
+  },
+  {
+    "article": "Understanding_Reasoning_LLMs",
+    "parsed": {
+      "sections": [
+        {
+          "sec_id": "S1::section-1-methods-and-strategies-for-building-and-refining-reasoning-models",
+          "scripted_example_fraction": 0.4,
+          "argumentative_risk": 0.5,
+          "risk_rationale": "Guideline mandates positioning reasoning models as the key 2025 specialization trend beyond RAG/domain fine-tuning plus verbatim roadmap and specific drawbacks clarification, creating interpretive framing with 5 orphan depth anchors only partially supported by sources."
+        },
+        {
+          "sec_id": "S2::section-2-how-do-we-define-reasoning-model",
+          "scripted_example_fraction": 0.4,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Section is mostly descriptive definition plus spectrum mapping drawn from Zero-Shot Reasoners and DeepSeek papers, with the 'simple example' being illustrative but not carrying high normative weight."
+        },
+        {
+          "sec_id": "S3::section-3-when-should-we-use-reasoning-models",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.6,
+          "risk_rationale": "Guideline requires normative catalog of when models deliver value vs. inefficiency plus concrete downsides (e.g. overthinking on arithmetic), which carries evaluative weight relative to limitations coverage in DeepSeek and O1-Journey sources."
+        },
+        {
+          "sec_id": "S4::section-4-a-brief-look-at-the-deepseek-training-pipeline",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.2,
+          "risk_rationale": "Primarily descriptive introduction of R1 variants, cold-start, and distillation nuances taken directly from the DeepSeek paper, with low interpretive leaps."
+        },
+        {
+          "sec_id": "S5::section-5-the-4-main-ways-to-build-and-improve-reasoning-models",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Requires speculation on o1/o3 expense drivers, one-sentence summaries per approach, 'insights on effectiveness' of distillation vs RL, and 'at least two useful additional comparisons' for the report table; 16+ orphan anchors indicate thin support for these original interpretive elements."
+        },
+        {
+          "sec_id": "S6::section-6-thoughts-about-deepseek-r1",
+          "scripted_example_fraction": 0.1,
+          "argumentative_risk": 0.65,
+          "risk_rationale": "Section evaluates significance, head-to-head o1 comparison (despite guideline stressing unknown o1 details like size and technique mix), and positions as open milestone, creating high interpretive/normative weight vs. source gaps on undisclosed o1 elements."
+        },
+        {
+          "sec_id": "S7::section-7-developing-reasoning-models-on-a-limited-budget",
+          "scripted_example_fraction": 0.3,
+          "argumentative_risk": 0.4,
+          "risk_rationale": "Outlines budget projects and 'future directions' combining Sky-T1/TinyZero/journey learning into hybrids; draws on O1-Journey but extends to prescriptive robustness contrasts and strategic balancing."
+        },
+        {
+          "sec_id": "S8::section-8-conclusion",
+          "scripted_example_fraction": 0.2,
+          "argumentative_risk": 0.7,
+          "risk_rationale": "Recaps with characterizations, forecasts hybrid future underlying o1/o3, and delivers normative strategic guidance for engineers on matching techniques to constraints, exceeding direct source support."
+        }
+      ],
+      "source_independence": 0.85,
+      "topic_canonicity": 0.45,
+      "overall_notes": "Four golden sources are fully independent primary arXiv papers (DeepSeek-R1 technical report supplies the central case study, others address CoT, test-time scaling, and o1-replication journey learning) with no redundancy. Topic mixes canonical CoT foundations with fast-moving 2024-2025 releases on emergence, cold-start RL, and budget distillation, so further search could still surface non-redundant material. Dominant signal is elevated argumentative risk plus high prescriptive scripting (especially S5 with 49 depth gaps and 16 orphans) where normative forecasts, speculations on o1 costs, and author-added comparisons exceed what the sources directly underwrite."
+    },
+    "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-methods-and-strategies-for-building-and-refining-reasoning-models\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Guideline mandates positioning reasoning models as the key 2025 specialization trend beyond RAG/domain fine-tuning plus verbatim roadmap and specific drawbacks clarification, creating interpretive framing with 5 orphan depth anchors only partially supported by sources.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-how-do-we-define-reasoning-model\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Section is mostly descriptive definition plus spectrum mapping drawn from Zero-Shot Reasoners and DeepSeek papers, with the 'simple example' being illustrative but not carrying high normative weight.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-when-should-we-use-reasoning-models\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline requires normative catalog of when models deliver value vs. inefficiency plus concrete downsides (e.g. overthinking on arithmetic), which carries evaluative weight relative to limitations coverage in DeepSeek and O1-Journey sources.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-a-brief-look-at-the-deepseek-training-pipeline\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Primarily descriptive introduction of R1 variants, cold-start, and distillation nuances taken directly from the DeepSeek paper, with low interpretive leaps.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-the-4-main-ways-to-build-and-improve-reasoning-models\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Requires speculation on o1/o3 expense drivers, one-sentence summaries per approach, 'insights on effectiveness' of distillation vs RL, and 'at least two useful additional comparisons' for the report table; 16+ orphan anchors indicate thin support for these original interpretive elements.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-thoughts-about-deepseek-r1\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Section evaluates significance, head-to-head o1 comparison (despite guideline stressing unknown o1 details like size and technique mix), and positions as open milestone, creating high interpretive/normative weight vs. source gaps on undisclosed o1 elements.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-developing-reasoning-models-on-a-limited-budget\",\n      \"scripted_example_fraction\": 0.3,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Outlines budget projects and 'future directions' combining Sky-T1/TinyZero/journey learning into hybrids; draws on O1-Journey but extends to prescriptive robustness contrasts and strategic balancing.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-conclusion\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Recaps with characterizations, forecasts hybrid future underlying o1/o3, and delivers normative strategic guidance for engineers on matching techniques to constraints, exceeding direct source support.\"\n    }\n  ],\n  \"source_independence\": 0.85,\n  \"topic_canonicity\": 0.45,\n  \"overall_notes\": \"Four golden sources are fully independent primary arXiv papers (DeepSeek-R1 technical report supplies the central case study, others address CoT, test-time scaling, and o1-replication journey learning) with no redundancy. Topic mixes canonical CoT foundations with fast-moving 2024-2025 releases on emergence, cold-start RL, and budget distillation, so further search could still surface non-redundant material. Dominant signal is elevated argumentative risk plus high prescriptive scripting (especially S5 with 49 depth gaps and 16 orphans) where normative forecasts, speculations on o1 costs, and author-added comparisons exceed what the sources directly underwrite.\"\n}\n```",
+    "parse_ok": true
+  }
+]

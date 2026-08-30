@@ -1,0 +1,183 @@
+{
+  "version": 1,
+  "merge_source": "single-draw section_oracle.json (production) + noise_experiment replicates via measure_replicate_noise.py's recompute path",
+  "article": "09_RAG",
+  "variant": "var_demanding",
+  "n_draws_per_arm": 3,
+  "replicate_ids_used": [
+    1,
+    2
+  ],
+  "sections": {
+    "S1::section-1-introduction-giving-llms-an-open-book-exam": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.041667,
+        "standard": 0.05,
+        "deep": 0.102917
+      },
+      "reward_sd": {
+        "skip": 0.1,
+        "light": 0.10251,
+        "standard": 0.152233,
+        "deep": 0.194998
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.035,
+        "standard": 0.07,
+        "deep": 0.16275
+      }
+    },
+    "S2::section-2-the-rag-system-core-components": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.133333,
+        "light": 0.108333,
+        "standard": 0.046667,
+        "deep": 0.040167
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.118357,
+        "standard": 0.057735,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.035,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S3::section-3-the-rag-pipeline-ingestion-and-retrieval": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.0,
+        "light": 0.006667,
+        "standard": -0.086667,
+        "deep": 0.054917
+      },
+      "reward_sd": {
+        "skip": 0.173205,
+        "light": 0.152753,
+        "standard": 0.152753,
+        "deep": 0.086879
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.11475
+      }
+    },
+    "S4::section-4-advanced-rag-techniques": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.066667,
+        "light": 0.208333,
+        "standard": 0.059667,
+        "deep": 0.347917
+      },
+      "reward_sd": {
+        "skip": 0.152753,
+        "light": 0.180733,
+        "standard": 0.202019,
+        "deep": 0.038043
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.235,
+        "standard": 0.113,
+        "deep": 0.50775
+      }
+    },
+    "S5::section-5-agentic-rag": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.1,
+        "light": 0.3975,
+        "standard": 0.361375,
+        "deep": 0.3635
+      },
+      "reward_sd": {
+        "skip": 0.173205,
+        "light": 0.1,
+        "standard": 0.150068,
+        "deep": 0.320029
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.1575,
+        "standard": 0.381375,
+        "deep": 0.29
+      }
+    },
+    "S6::section-6-conclusion": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.281917,
+        "standard": 0.321917,
+        "deep": 0.254
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.111452,
+        "standard": 0.101349,
+        "deep": 0.021218
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.07525,
+        "standard": 0.07525,
+        "deep": 0.0805
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction-giving-llms-an-open-book-exam": "skip",
+    "S2::section-2-the-rag-system-core-components": "skip",
+    "S3::section-3-the-rag-pipeline-ingestion-and-retrieval": "deep",
+    "S4::section-4-advanced-rag-techniques": "deep",
+    "S5::section-5-agentic-rag": "light",
+    "S6::section-6-conclusion": "skip"
+  }
+}

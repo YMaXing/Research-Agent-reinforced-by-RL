@@ -1,0 +1,456 @@
+{
+  "version": 3,
+  "article": "State_of_LLM_Reasoning",
+  "variant": "no_variant",
+  "computed_at": "2026-08-26T07:07:04.593029+00:00",
+  "computed_from": "section_oracle_averaged.json",
+  "n_draws_used": 3,
+  "oracle_arm": "skip",
+  "oracle_arm_idx": 0,
+  "runner_up_arm": "light",
+  "runner_up_arm_idx": 1,
+  "margin": 0.032893,
+  "reward_spread": 0.089022,
+  "r_w_rewards": {
+    "skip": 0.274058,
+    "light": 0.241166,
+    "standard": 0.185037,
+    "deep": 0.185114
+  },
+  "r_w_rewards_list": [
+    0.274058,
+    0.241166,
+    0.185037,
+    0.185114
+  ],
+  "decision_path": [
+    "policy=forbidden \u2192 skip (hard constraint)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "gate_diagnostics": null,
+  "low_signal_flag": false,
+  "n_sections": 19,
+  "n_sections_with_target": 19,
+  "total_target_words": 4690,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction",
+      "title": "introduction",
+      "target_words": 130,
+      "weight_words": 130,
+      "weight_frac": 0.02772,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.28,
+        "deep": 0.240167
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.34,
+        0.28,
+        0.240167
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-implementing-and-improving-reasoning-in-llms-the-four-main-categories",
+      "title": "implementing and improving reasoning in llms the four main categories",
+      "target_words": 870,
+      "weight_words": 870,
+      "weight_frac": 0.1855,
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.24,
+        "standard": 0.146667,
+        "deep": 0.206833
+      },
+      "rewards_by_preset": [
+        0.3,
+        0.24,
+        0.146667,
+        0.206833
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-inference-time-compute-scaling-methods",
+      "title": "inference time compute scaling methods",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.04264,
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.26275,
+        "standard": 0.321333,
+        "deep": 0.219
+      },
+      "rewards_by_preset": [
+        0.366667,
+        0.26275,
+        0.321333,
+        0.219
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-s1-simple-test-time-scaling",
+      "title": "s1 simple test time scaling",
+      "target_words": 450,
+      "weight_words": 450,
+      "weight_frac": 0.09595,
+      "rewards": {
+        "skip": 0.1,
+        "light": 0.006667,
+        "standard": -0.02,
+        "deep": 0.402417
+      },
+      "rewards_by_preset": [
+        0.1,
+        0.006667,
+        -0.02,
+        0.402417
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-other-noteworthy-research-papers-on-inference-time-compute-scaling",
+      "title": "other noteworthy research papers on inference time compute scaling",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.03198,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.28,
+        "deep": 0.29625
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.34,
+        0.28,
+        0.29625
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-test-time-preference-optimization",
+      "title": "test time preference optimization",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.03198,
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.306667,
+        "standard": 0.385,
+        "deep": 0.2735
+      },
+      "rewards_by_preset": [
+        0.366667,
+        0.306667,
+        0.385,
+        0.2735
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::section-7-thoughts-are-all-over-the-place",
+      "title": "thoughts are all over the place",
+      "target_words": 120,
+      "weight_words": 120,
+      "weight_frac": 0.02559,
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.34,
+        "standard": 0.28,
+        "deep": 0.2735
+      },
+      "rewards_by_preset": [
+        0.366667,
+        0.34,
+        0.28,
+        0.2735
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 8,
+      "sec_id": "S8::section-8-trading-inference-time-compute-for-adversarial-robustness",
+      "title": "trading inference time compute for adversarial robustness",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.03198,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.24,
+        "standard": 0.385,
+        "deep": 0.2735
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.24,
+        0.385,
+        0.2735
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 9,
+      "sec_id": "S9::section-9-chain-of-associated-thoughts",
+      "title": "chain of associated thoughts",
+      "target_words": 100,
+      "weight_words": 100,
+      "weight_frac": 0.02132,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.399417,
+        "standard": 0.28,
+        "deep": 0.2735
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.399417,
+        0.28,
+        0.2735
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 10,
+      "sec_id": "S10::section-10-step-back-to-leap-forward",
+      "title": "step back to leap forward",
+      "target_words": 180,
+      "weight_words": 180,
+      "weight_frac": 0.03838,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.306667,
+        "standard": 0.28,
+        "deep": 0.240167
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.306667,
+        0.28,
+        0.240167
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 11,
+      "sec_id": "S11::section-11-scaling-up-test-time-compute-with-latent-reasoning",
+      "title": "scaling up test time compute with latent reasoning",
+      "target_words": 120,
+      "weight_words": 120,
+      "weight_frac": 0.02559,
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.640042,
+        "standard": 0.385,
+        "deep": 0.240167
+      },
+      "rewards_by_preset": [
+        0.366667,
+        0.640042,
+        0.385,
+        0.240167
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 12,
+      "sec_id": "S12::section-12-can-a-1b-llm-surpass-a-405b-llm",
+      "title": "can a 1b llm surpass a 405b llm",
+      "target_words": 160,
+      "weight_words": 160,
+      "weight_frac": 0.03412,
+      "rewards": {
+        "skip": 0.233333,
+        "light": 0.206667,
+        "standard": 0.146667,
+        "deep": 0.140167
+      },
+      "rewards_by_preset": [
+        0.233333,
+        0.206667,
+        0.146667,
+        0.140167
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 13,
+      "sec_id": "S13::section-13-learning-to-reason-from-feedback-at-test-time",
+      "title": "learning to reason from feedback at test time",
+      "target_words": 180,
+      "weight_words": 180,
+      "weight_frac": 0.03838,
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.273333,
+        "standard": 0.28,
+        "deep": 0.206833
+      },
+      "rewards_by_preset": [
+        0.366667,
+        0.273333,
+        0.28,
+        0.206833
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 14,
+      "sec_id": "S14::section-14-inference-time-computations-for-llm-reasoning-and-planning",
+      "title": "inference time computations for llm reasoning and planning",
+      "target_words": 120,
+      "weight_words": 120,
+      "weight_frac": 0.02559,
+      "rewards": {
+        "skip": 0.266667,
+        "light": 0.34,
+        "standard": 0.146667,
+        "deep": 0.1735
+      },
+      "rewards_by_preset": [
+        0.266667,
+        0.34,
+        0.146667,
+        0.1735
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 15,
+      "sec_id": "S15::section-15-inner-thinking-transformer",
+      "title": "inner thinking transformer",
+      "target_words": 120,
+      "weight_words": 120,
+      "weight_frac": 0.02559,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.34,
+        "standard": 0.385,
+        "deep": 0.345167
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.34,
+        0.385,
+        0.345167
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 16,
+      "sec_id": "S16::section-16-test-time-scaling-for-code-generation",
+      "title": "test time scaling for code generation",
+      "target_words": 440,
+      "weight_words": 440,
+      "weight_frac": 0.09382,
+      "rewards": {
+        "skip": 0.1,
+        "light": 0.073333,
+        "standard": -0.02,
+        "deep": -0.093167
+      },
+      "rewards_by_preset": [
+        0.1,
+        0.073333,
+        -0.02,
+        -0.093167
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 17,
+      "sec_id": "S17::section-17-chain-of-draft",
+      "title": "chain of draft",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.04264,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.306667,
+        "standard": 0.246667,
+        "deep": 0.2735
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.306667,
+        0.246667,
+        0.2735
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 18,
+      "sec_id": "S18::section-18-better-feedback-and-edit-models",
+      "title": "better feedback and edit models",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.03198,
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.273333,
+        "standard": 0.28,
+        "deep": 0.240167
+      },
+      "rewards_by_preset": [
+        0.366667,
+        0.273333,
+        0.28,
+        0.240167
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 19,
+      "sec_id": "S19::section-19-conclusion",
+      "title": "conclusion",
+      "target_words": 700,
+      "weight_words": 700,
+      "weight_frac": 0.14925,
+      "rewards": {
+        "skip": 0.166667,
+        "light": 0.173333,
+        "standard": 0.159917,
+        "deep": 0.160167
+      },
+      "rewards_by_preset": [
+        0.166667,
+        0.173333,
+        0.159917,
+        0.160167
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    }
+  ]
+}

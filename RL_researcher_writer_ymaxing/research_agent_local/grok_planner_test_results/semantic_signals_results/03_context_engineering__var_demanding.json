@@ -1,0 +1,60 @@
+{
+  "article": "03_context_engineering__var_demanding",
+  "parsed": {
+    "sections": [
+      {
+        "sec_id": "S1::section-1-introduction-when-prompt-engineering-breaks",
+        "scripted_example_fraction": 0.35,
+        "argumentative_risk": 0.2,
+        "risk_rationale": "Section is mostly descriptive historical narrative per guideline's mandated evolution timeline (chatbots 2022 to memory-enabled agents 2025) and transition bullets; sources cover motivation but lack the specific course-anchoring references, keeping argumentative weight low."
+      },
+      {
+        "sec_id": "S2::section-2-from-prompt-to-context-engineering",
+        "scripted_example_fraction": 0.45,
+        "argumentative_risk": 0.6,
+        "risk_rationale": "Guideline dictates an invented 'previous projects' failure story (2M token stuffing yielding 30min low-quality runs) plus in-depth mechanisms for context decay/lost-in-the-middle and cost correlations; sources provide limitations but the personal narrative and production metrics claims exceed direct support."
+      },
+      {
+        "sec_id": "S3::section-3-understanding-context-engineering",
+        "scripted_example_fraction": 0.4,
+        "argumentative_risk": 0.7,
+        "risk_rationale": "Guideline requires specific cooking/Slack examples, Karpathy RAM analogy implications, exact prompt-vs-context table, 'new fine-tuning' framing, and 3-step decision workflow (prompt->context->fine-tune last); survey and rise-of sources give foundations but not this prescriptive hierarchy or course-wide industry claims."
+      },
+      {
+        "sec_id": "S4::section-4-what-makes-up-the-context",
+        "scripted_example_fraction": 0.25,
+        "argumentative_risk": 0.3,
+        "risk_rationale": "Primarily descriptive decomposition of short/long-term memory components and mandated 7-year-old intuitive workflow (user input -> context -> prompt -> LLM); sources align on elements but guideline's mermaid, dynamic recomputation emphasis, and future-lesson disclaimers add mild interpretive framing."
+      },
+      {
+        "sec_id": "S5::section-5-production-implementation-challenges",
+        "scripted_example_fraction": 0.1,
+        "argumentative_risk": 0.5,
+        "risk_rationale": "Enumerates four challenges (window limits, overload/lost-in-middle, drift, tool confusion) with must-cover empirical evidence, token limits for named models, and orchestrator-worker mitigation; sources note some failure modes but lack the specific production scaling claims and depth on conflicting updates."
+      },
+      {
+        "sec_id": "S6::section-6-key-strategies-for-context-optimization",
+        "scripted_example_fraction": 0.2,
+        "argumentative_risk": 0.65,
+        "risk_rationale": "Prescribes four strategies with concrete techniques (structured outputs, RAG, temporal ranking, instruction repetition at boundaries, YAML over JSON, summarization tradeoffs) plus multiple mandated mermaid diagrams; sources list select/compress/isolate but guideline's 'always understand what is passed' monitoring conclusion and empirical repetition evidence raise normative weight."
+      },
+      {
+        "sec_id": "S7::section-7-here-is-an-example",
+        "scripted_example_fraction": 0.7,
+        "argumentative_risk": 0.4,
+        "risk_rationale": "Heavily dictated illustrative narrative (healthcare query with episodic/semantic retrieval steps, specific Python XML system prompt, named tech stack of Gemini/LangGraph/Qdrant/Opik) plus four domain use cases; sources supply case studies but the concrete code example, ordering highlights, and privacy/compliance details are authored illustration."
+      },
+      {
+        "sec_id": "S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering",
+        "scripted_example_fraction": 0.15,
+        "argumentative_risk": 0.75,
+        "risk_rationale": "Positions context engineering as 'more of an art than a science', mandates in-depth connections to AI/SWE/data/Ops disciplines with modularity/ETL/CI-CD examples, plus mindset shift to architects and selective future-lesson previews; sources are high-level while guideline's integrative normative claims and balance of intuition/systematic approaches lack direct cited support."
+      }
+    ],
+    "source_independence": 0.65,
+    "topic_canonicity": 0.7,
+    "overall_notes": "Dominant signal is elevated argumentative risk in S3, S6, and S8 where guideline-mandated normative hierarchies ('new fine-tuning', strict decision workflow, art-vs-science, cross-discipline integration with must-cover depth) exceed the descriptive, Karpathy-echoing sources. S7 has the highest scripted_example_fraction as its healthcare walkthrough, XML Python prompt, and tech-stack recommendation are fully pre-authored illustrations rather than sourced claims. The topic is moderately canonical with overlapping blog guides and a recent survey, yet sources remain sufficiently independent to support further non-redundant depth."
+  },
+  "raw": "```json\n{\n  \"sections\": [\n    {\n      \"sec_id\": \"S1::section-1-introduction-when-prompt-engineering-breaks\",\n      \"scripted_example_fraction\": 0.35,\n      \"argumentative_risk\": 0.2,\n      \"risk_rationale\": \"Section is mostly descriptive historical narrative per guideline's mandated evolution timeline (chatbots 2022 to memory-enabled agents 2025) and transition bullets; sources cover motivation but lack the specific course-anchoring references, keeping argumentative weight low.\"\n    },\n    {\n      \"sec_id\": \"S2::section-2-from-prompt-to-context-engineering\",\n      \"scripted_example_fraction\": 0.45,\n      \"argumentative_risk\": 0.6,\n      \"risk_rationale\": \"Guideline dictates an invented 'previous projects' failure story (2M token stuffing yielding 30min low-quality runs) plus in-depth mechanisms for context decay/lost-in-the-middle and cost correlations; sources provide limitations but the personal narrative and production metrics claims exceed direct support.\"\n    },\n    {\n      \"sec_id\": \"S3::section-3-understanding-context-engineering\",\n      \"scripted_example_fraction\": 0.4,\n      \"argumentative_risk\": 0.7,\n      \"risk_rationale\": \"Guideline requires specific cooking/Slack examples, Karpathy RAM analogy implications, exact prompt-vs-context table, 'new fine-tuning' framing, and 3-step decision workflow (prompt->context->fine-tune last); survey and rise-of sources give foundations but not this prescriptive hierarchy or course-wide industry claims.\"\n    },\n    {\n      \"sec_id\": \"S4::section-4-what-makes-up-the-context\",\n      \"scripted_example_fraction\": 0.25,\n      \"argumentative_risk\": 0.3,\n      \"risk_rationale\": \"Primarily descriptive decomposition of short/long-term memory components and mandated 7-year-old intuitive workflow (user input -> context -> prompt -> LLM); sources align on elements but guideline's mermaid, dynamic recomputation emphasis, and future-lesson disclaimers add mild interpretive framing.\"\n    },\n    {\n      \"sec_id\": \"S5::section-5-production-implementation-challenges\",\n      \"scripted_example_fraction\": 0.1,\n      \"argumentative_risk\": 0.5,\n      \"risk_rationale\": \"Enumerates four challenges (window limits, overload/lost-in-middle, drift, tool confusion) with must-cover empirical evidence, token limits for named models, and orchestrator-worker mitigation; sources note some failure modes but lack the specific production scaling claims and depth on conflicting updates.\"\n    },\n    {\n      \"sec_id\": \"S6::section-6-key-strategies-for-context-optimization\",\n      \"scripted_example_fraction\": 0.2,\n      \"argumentative_risk\": 0.65,\n      \"risk_rationale\": \"Prescribes four strategies with concrete techniques (structured outputs, RAG, temporal ranking, instruction repetition at boundaries, YAML over JSON, summarization tradeoffs) plus multiple mandated mermaid diagrams; sources list select/compress/isolate but guideline's 'always understand what is passed' monitoring conclusion and empirical repetition evidence raise normative weight.\"\n    },\n    {\n      \"sec_id\": \"S7::section-7-here-is-an-example\",\n      \"scripted_example_fraction\": 0.7,\n      \"argumentative_risk\": 0.4,\n      \"risk_rationale\": \"Heavily dictated illustrative narrative (healthcare query with episodic/semantic retrieval steps, specific Python XML system prompt, named tech stack of Gemini/LangGraph/Qdrant/Opik) plus four domain use cases; sources supply case studies but the concrete code example, ordering highlights, and privacy/compliance details are authored illustration.\"\n    },\n    {\n      \"sec_id\": \"S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering\",\n      \"scripted_example_fraction\": 0.15,\n      \"argumentative_risk\": 0.75,\n      \"risk_rationale\": \"Positions context engineering as 'more of an art than a science', mandates in-depth connections to AI/SWE/data/Ops disciplines with modularity/ETL/CI-CD examples, plus mindset shift to architects and selective future-lesson previews; sources are high-level while guideline's integrative normative claims and balance of intuition/systematic approaches lack direct cited support.\"\n    }\n  ],\n  \"source_independence\": 0.65,\n  \"topic_canonicity\": 0.7,\n  \"overall_notes\": \"Dominant signal is elevated argumentative risk in S3, S6, and S8 where guideline-mandated normative hierarchies ('new fine-tuning', strict decision workflow, art-vs-science, cross-discipline integration with must-cover depth) exceed the descriptive, Karpathy-echoing sources. S7 has the highest scripted_example_fraction as its healthcare walkthrough, XML Python prompt, and tech-stack recommendation are fully pre-authored illustrations rather than sourced claims. The topic is moderately canonical with overlapping blog guides and a recent survey, yet sources remain sufficiently independent to support further non-redundant depth.\"\n}\n```",
+  "parse_ok": true
+}

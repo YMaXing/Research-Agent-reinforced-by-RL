@@ -1,10 +1,10 @@
 ================================================================================
   Variant : 02_workflows_vs_agents__var_minimal  [TRAIN]
 ================================================================================
-2026-08-25 11:56:47.482 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 11:56:48.438 | INFO     | logging:callHandlers:1762 | Starting infer.py HTTP server (this will load the model — ~5-10 min on first call over /mnt/f/)…
-2026-08-25 12:02:43.141 | INFO     | logging:callHandlers:1762 | Infer server is ready. Serving adapter: /mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/checkpoints/tasks/run33_averaged_confidence/epochs/epoch_0081
-2026-08-25 12:02:46.371 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:13:29.997 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:13:30.393 | INFO     | logging:callHandlers:1762 | Starting infer.py HTTP server (this will load the model — ~5-10 min on first call over /mnt/f/)…
+2026-08-27 23:21:08.786 | INFO     | logging:callHandlers:1762 | Infer server is ready. Serving adapter: /mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/checkpoints/tasks/run33_averaged_confidence/epochs/epoch_0081
+2026-08-27 23:21:12.572 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : forbidden
   RL model   : P1 light     conf=58%  H=1.10bits  [floor applied]
@@ -18,8 +18,8 @@
 ================================================================================
   Variant : 02_workflows_vs_agents__var_standard  [TRAIN]
 ================================================================================
-2026-08-25 12:02:46.416 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:02:52.131 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:12.605 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:21:15.226 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=36%  H=1.41bits  [floor applied]
@@ -33,23 +33,23 @@
 ================================================================================
   Variant : 02_workflows_vs_agents__var_demanding  [TRAIN]
 ================================================================================
-2026-08-25 12:02:52.146 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:02:54.554 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:15.256 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:21:17.911 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=17%  H=1.11bits  [floor applied]
   Guards     : deterministic policy clamp (forbidden→skip / required→≥light)
   -> Chosen  : P1 light  (by RL+guards)
-  Oracle     : P2 standard
-  R_w        : P0/skip:0.274  P1/light:0.394  P2/standard:0.399  P3/deep:0.319
-  Regret     : 0.0053  (regret +0.0053)
-  Verdict    : ~  NEAR MISS  (±1 preset)
+  Oracle     : P1 light
+  R_w        : P0/skip:0.274  P1/light:0.428  P2/standard:0.422  P3/deep:0.319
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
 
 ================================================================================
   Variant : 03_context_engineering__var_minimal  [TRAIN]
 ================================================================================
-2026-08-25 12:02:54.567 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:02:57.677 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:17.933 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:21:21.412 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : forbidden
   RL model   : P0 skip      conf=79%  H=0.74bits  [floor applied]
@@ -63,23 +63,23 @@
 ================================================================================
   Variant : 03_context_engineering__var_standard  [TRAIN]
 ================================================================================
-2026-08-25 12:02:57.706 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:00.785 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:21.431 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:21:24.846 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=24%  H=1.45bits  [floor applied]
   Guards     : deterministic policy clamp (forbidden→skip / required→≥light)
   -> Chosen  : P1 light  (by RL+guards)
   Oracle     : P2 standard
-  R_w        : P0/skip:0.243  P1/light:0.298  P2/standard:0.323  P3/deep:0.281
-  Regret     : 0.0247  (regret +0.0247)
+  R_w        : P0/skip:0.243  P1/light:0.282  P2/standard:0.316  P3/deep:0.281
+  Regret     : 0.0341  (regret +0.0341)
   Verdict    : ~  NEAR MISS  (±1 preset)
 
 ================================================================================
   Variant : 03_context_engineering__var_demanding  [TRAIN]
 ================================================================================
-2026-08-25 12:03:00.797 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:03.970 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:24.869 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:21:28.511 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=35%  H=1.72bits
@@ -93,8 +93,8 @@
 ================================================================================
   Variant : 05_workflow_patterns__var_minimal  [TRAIN]
 ================================================================================
-2026-08-25 12:03:03.982 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:06.706 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:28.534 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:21:31.549 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : forbidden
   RL model   : P1 light     conf=32%  H=1.36bits  [floor applied]
@@ -108,8 +108,8 @@
 ================================================================================
   Variant : 05_workflow_patterns__var_standard  [TRAIN]
 ================================================================================
-2026-08-25 12:03:06.717 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:09.450 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:31.571 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:21:34.642 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=21%  H=1.45bits  [floor applied]
@@ -123,8 +123,8 @@
 ================================================================================
   Variant : 05_workflow_patterns__var_demanding  [TRAIN]
 ================================================================================
-2026-08-25 12:03:09.486 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:12.212 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:34.685 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:21:37.739 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=43%  H=1.40bits  [floor applied]
@@ -138,8 +138,8 @@
 ================================================================================
   Variant : 06_tools__var_minimal  [TRAIN]
 ================================================================================
-2026-08-25 12:03:12.228 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:15.725 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:37.753 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:21:41.614 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : forbidden
   RL model   : P1 light     conf=26%  H=1.89bits
@@ -153,8 +153,8 @@
 ================================================================================
   Variant : 06_tools__var_standard  [TRAIN]
 ================================================================================
-2026-08-25 12:03:15.767 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:19.290 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:41.633 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:21:45.517 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P3 deep      conf=61%  H=1.55bits
@@ -168,8 +168,8 @@
 ================================================================================
   Variant : 06_tools__var_demanding  [TRAIN]
 ================================================================================
-2026-08-25 12:03:19.321 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:26.413 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:45.570 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:21:49.599 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=69%  H=1.17bits  [floor applied]
@@ -183,8 +183,8 @@
 ================================================================================
   Variant : 08_react_practice__var_minimal  [TRAIN]
 ================================================================================
-2026-08-25 12:03:26.439 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:28.834 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:49.626 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:21:52.264 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : forbidden
   RL model   : P1 light     conf=29%  H=0.87bits
@@ -198,8 +198,8 @@
 ================================================================================
   Variant : 08_react_practice__var_standard  [TRAIN]
 ================================================================================
-2026-08-25 12:03:28.847 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:31.273 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:52.292 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:21:54.934 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=49%  H=1.44bits  [floor applied]
@@ -213,8 +213,8 @@
 ================================================================================
   Variant : 08_react_practice__var_demanding  [TRAIN]
 ================================================================================
-2026-08-25 12:03:31.305 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:34.058 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:54.958 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:21:57.901 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=49%  H=1.73bits
@@ -228,8 +228,8 @@
 ================================================================================
   Variant : 09_RAG__var_minimal  [TRAIN]
 ================================================================================
-2026-08-25 12:03:34.078 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:36.524 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:21:57.926 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:00.622 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : forbidden
   RL model   : P3 deep      conf=43%  H=1.54bits
@@ -243,8 +243,8 @@
 ================================================================================
   Variant : 09_RAG__var_standard  [TRAIN]
 ================================================================================
-2026-08-25 12:03:36.538 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:38.947 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:00.655 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:03.375 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=18%  H=1.91bits
@@ -258,8 +258,8 @@
 ================================================================================
   Variant : 09_RAG__var_demanding  [TRAIN]
 ================================================================================
-2026-08-25 12:03:38.985 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:41.596 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:03.394 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:06.267 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P3 deep      conf=52%  H=1.27bits
@@ -273,8 +273,8 @@
 ================================================================================
   Variant : 10_memory_knowledge_access__var_minimal  [TRAIN]
 ================================================================================
-2026-08-25 12:03:41.612 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:44.421 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:06.333 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:09.464 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : forbidden
   RL model   : P1 light     conf=61%  H=0.97bits
@@ -288,8 +288,8 @@
 ================================================================================
   Variant : 10_memory_knowledge_access__var_standard  [TRAIN]
 ================================================================================
-2026-08-25 12:03:44.476 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:47.249 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:09.483 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:12.525 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=48%  H=1.00bits  [floor applied]
@@ -303,8 +303,8 @@
 ================================================================================
   Variant : 10_memory_knowledge_access__var_demanding  [TRAIN]
 ================================================================================
-2026-08-25 12:03:47.265 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:50.120 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:12.584 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:16.032 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P2 standard  conf=81%  H=0.69bits
@@ -318,8 +318,8 @@
 ================================================================================
   Variant : 11_multimodal__var_minimal  [TRAIN]
 ================================================================================
-2026-08-25 12:03:50.152 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:53.261 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:16.150 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:19.808 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : forbidden
   RL model   : P1 light     conf=38%  H=1.58bits
@@ -333,8 +333,8 @@
 ================================================================================
   Variant : 11_multimodal__var_standard  [TRAIN]
 ================================================================================
-2026-08-25 12:03:53.285 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:03:56.500 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:19.825 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:23.350 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=37%  H=1.62bits
@@ -348,8 +348,8 @@
 ================================================================================
   Variant : 11_multimodal__var_demanding  [TRAIN]
 ================================================================================
-2026-08-25 12:03:56.539 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:03.212 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:23.408 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:27.226 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=14%  H=1.75bits
@@ -363,23 +363,23 @@
 ================================================================================
   Variant : 04_structured_outputs  [TEST]
 ================================================================================
-2026-08-25 12:04:03.263 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:06.192 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:27.279 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:30.420 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P3 deep      conf=60%  H=1.34bits
   Guards     : deterministic policy clamp (forbidden→skip / required→≥light)
   -> Chosen  : P3 deep  (by RL+guards)
-  Oracle     : P2 standard
+  Oracle     : P3 deep
   R_w        : P0/skip:0.276  P1/light:0.315  P2/standard:0.350  P3/deep:0.350
-  Regret     : -0.0000
-  Verdict    : ~  NEAR MISS  (±1 preset)
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
 
 ================================================================================
   Variant : 07_reasoning_planning  [TEST]
 ================================================================================
-2026-08-25 12:04:06.232 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:09.470 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:30.465 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:34.069 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=31%  H=1.79bits
@@ -393,8 +393,8 @@
 ================================================================================
   Variant : 13_agent_framework  [TEST]
 ================================================================================
-2026-08-25 12:04:09.505 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:15.295 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:34.099 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:40.464 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=32%  H=1.84bits
@@ -408,68 +408,68 @@
 ================================================================================
   Variant : 14_agent_system_design  [TEST]
 ================================================================================
-2026-08-25 12:04:15.327 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:17.779 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:40.499 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:43.242 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=88%  H=0.54bits  [floor applied]
   Guards     : deterministic policy clamp (forbidden→skip / required→≥light)
   -> Chosen  : P1 light  (by RL+guards)
   Oracle     : P2 standard
-  R_w        : P0/skip:0.268  P1/light:0.370  P2/standard:0.398  P3/deep:0.348
-  Regret     : 0.0279  (regret +0.0279)
+  R_w        : P0/skip:0.268  P1/light:0.378  P2/standard:0.415  P3/deep:0.348
+  Regret     : 0.0373  (regret +0.0373)
   Verdict    : ~  NEAR MISS  (±1 preset)
 
 ================================================================================
   Variant : 29_evaluation_metrics  [TEST]
 ================================================================================
-2026-08-25 12:04:17.818 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:20.884 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:43.309 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:46.767 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P3 deep      conf=60%  H=1.32bits
   Guards     : deterministic policy clamp (forbidden→skip / required→≥light)
   -> Chosen  : P3 deep  (by RL+guards)
-  Oracle     : P1 light
-  R_w        : P0/skip:0.241  P1/light:0.439  P2/standard:0.369  P3/deep:0.373
-  Regret     : 0.0667  (regret +0.0667)
-  Verdict    : ✗  MISS
+  Oracle     : P2 standard
+  R_w        : P0/skip:0.320  P1/light:0.393  P2/standard:0.413  P3/deep:0.387
+  Regret     : 0.0261  (regret +0.0261)
+  Verdict    : ~  NEAR MISS  (±1 preset)
 
 ================================================================================
   Variant : 31_CI  [TEST]
 ================================================================================
-2026-08-25 12:04:20.902 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:24.574 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:46.805 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:50.833 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=57%  H=1.36bits  [floor applied]
   Guards     : deterministic policy clamp (forbidden→skip / required→≥light)
   -> Chosen  : P1 light  (by RL+guards)
   Oracle     : P1 light
-  R_w        : P0/skip:0.352  P1/light:0.450  P2/standard:0.361  P3/deep:0.357
+  R_w        : P0/skip:0.358  P1/light:0.388  P2/standard:0.333  P3/deep:0.345
   Regret     : 0.0000
   Verdict    : ✓  EXACT HIT
 
 ================================================================================
   Variant : Bird_Eye_Extreme  [TEST]
 ================================================================================
-2026-08-25 12:04:24.590 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:26.267 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:50.867 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:52.721 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=51%  H=1.47bits  [floor applied]
   Guards     : deterministic policy clamp (forbidden→skip / required→≥light)
   -> Chosen  : P1 light  (by RL+guards)
-  Oracle     : P1 light
-  R_w        : P0/skip:0.275  P1/light:0.361  P2/standard:0.369  P3/deep:0.289
-  Regret     : 0.0000
-  Verdict    : ✓  EXACT HIT
+  Oracle     : P2 standard
+  R_w        : P0/skip:0.275  P1/light:0.361  P2/standard:0.380  P3/deep:0.289
+  Regret     : 0.0184  (regret +0.0184)
+  Verdict    : ~  NEAR MISS  (±1 preset)
 
 ================================================================================
   Variant : Dark_Dimension  [TEST]
 ================================================================================
-2026-08-25 12:04:26.288 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:27.498 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:52.860 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:54.317 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P3 deep      conf=46%  H=1.51bits
@@ -483,23 +483,23 @@
 ================================================================================
   Variant : Distinct_AI_Models  [TEST]
 ================================================================================
-2026-08-25 12:04:27.527 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:29.128 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:54.364 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:56.324 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=45%  H=0.99bits  [floor applied]
   Guards     : deterministic policy clamp (forbidden→skip / required→≥light)
   -> Chosen  : P1 light  (by RL+guards)
-  Oracle     : P3 deep
+  Oracle     : P1 light
   R_w        : P0/skip:0.335  P1/light:0.457  P2/standard:0.449  P3/deep:0.453
-  Regret     : -0.0036  (regret -0.0036)
-  Verdict    : ✗  MISS
+  Regret     : 0.0000
+  Verdict    : ✓  EXACT HIT
 
 ================================================================================
   Variant : Earth_Oceans_Origin  [TEST]
 ================================================================================
-2026-08-25 12:04:29.196 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:30.922 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:56.371 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:22:58.512 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P3 deep      conf=72%  H=1.14bits
@@ -513,8 +513,8 @@
 ================================================================================
   Variant : Gravity_Entropy  [TEST]
 ================================================================================
-2026-08-25 12:04:30.935 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:32.972 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:22:58.548 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:23:00.933 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=100%  H=0.00bits
@@ -528,23 +528,23 @@
 ================================================================================
   Variant : HNSW  [TEST]
 ================================================================================
-2026-08-25 12:04:32.987 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:38.078 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:23:01.008 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:23:03.186 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=95%  H=0.27bits
   Guards     : deterministic policy clamp (forbidden→skip / required→≥light)
   -> Chosen  : P1 light  (by RL+guards)
   Oracle     : P1 light
-  R_w        : P0/skip:0.202  P1/light:0.433  P2/standard:0.306  P3/deep:0.349
+  R_w        : P0/skip:0.295  P1/light:0.444  P2/standard:0.327  P3/deep:0.479
   Regret     : 0.0000
   Verdict    : ✓  EXACT HIT
 
 ================================================================================
   Variant : Insects_Consciousness  [TEST]
 ================================================================================
-2026-08-25 12:04:38.139 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:39.548 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:23:03.232 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:23:04.762 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=76%  H=0.79bits  [floor applied]
@@ -558,8 +558,8 @@
 ================================================================================
   Variant : Space-Time_QECC  [TEST]
 ================================================================================
-2026-08-25 12:04:39.570 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:41.708 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:23:04.779 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:23:07.074 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P1 light     conf=42%  H=1.32bits  [floor applied]
@@ -573,23 +573,23 @@
 ================================================================================
   Variant : State_of_LLM_Reasoning  [TEST]
 ================================================================================
-2026-08-25 12:04:41.737 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:51.605 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:23:07.119 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:23:17.669 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : forbidden
   RL model   : P1 light     conf=25%  H=1.80bits
   Guards     : deterministic policy clamp (forbidden→skip / required→≥light)
   -> Chosen  : P0 skip  (by RL+guards)
   Oracle     : P0 skip
-  R_w        : P0/skip:0.183  P1/light:0.170  P2/standard:0.172  P3/deep:0.172
+  R_w        : P0/skip:0.274  P1/light:0.271  P2/standard:0.249  P3/deep:0.242
   Regret     : +0.0000  (not counted — forbidden policy, P1+ rewards tainted)
   Verdict    : ✓  EXACT HIT
 
 ================================================================================
   Variant : Understanding_Reasoning_LLMs  [TEST]
 ================================================================================
-2026-08-25 12:04:51.615 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
-2026-08-25 12:04:54.869 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
+2026-08-27 23:23:17.747 | INFO     | logging:callHandlers:1762 | Processing request of type CallToolRequest
+2026-08-27 23:23:21.396 | INFO     | logging:callHandlers:1762 | rl_only=True; skipping Grok planner stage.
 
   Policy     : allowed
   RL model   : P2 standard  conf=49%  H=1.26bits
@@ -599,22 +599,22 @@
   R_w        : P0/skip:0.250  P1/light:0.383  P2/standard:0.400  P3/deep:0.368
   Regret     : 0.0000
   Verdict    : ✓  EXACT HIT
-2026-08-25 12:04:54.895 | INFO     | logging:callHandlers:1762 | Stopping stale infer server (adapter changed)…
+2026-08-27 23:23:21.461 | INFO     | logging:callHandlers:1762 | Stopping stale infer server (adapter changed)…
 
 ================================================================================
   TEST  (held-out, primary metric)  [RL + deterministic policy guards]  (n=16)
 ================================================================================
   Article                                         Spl    RL  Grok  Chsn  → Orcl  Verdict
   ----------------------------------------------------------------------------
-  04_structured_outputs                          TEST    P3     —    P3  → P2    ~ NEAR
+  04_structured_outputs                          TEST    P3     —    P3  → P3    ✓ EXACT
   07_reasoning_planning                          TEST    P1     —    P1  → P0    ~ NEAR
   13_agent_framework                             TEST    P1     —    P1  → P1    ✓ EXACT
   14_agent_system_design                         TEST    P1     —    P1  → P2    ~ NEAR
-  29_evaluation_metrics                          TEST    P3     —    P3  → P1    ✗ MISS
+  29_evaluation_metrics                          TEST    P3     —    P3  → P2    ~ NEAR
   31_CI                                          TEST    P1     —    P1  → P1    ✓ EXACT
-  Bird_Eye_Extreme                               TEST    P1     —    P1  → P1    ✓ EXACT
+  Bird_Eye_Extreme                               TEST    P1     —    P1  → P2    ~ NEAR
   Dark_Dimension                                 TEST    P3     —    P3  → P3    ✓ EXACT
-  Distinct_AI_Models                             TEST    P1     —    P1  → P3    ✗ MISS
+  Distinct_AI_Models                             TEST    P1     —    P1  → P1    ✓ EXACT
   Earth_Oceans_Origin                            TEST    P3     —    P3  → P3    ✓ EXACT
   Gravity_Entropy                                TEST    P1     —    P1  → P1    ✓ EXACT
   HNSW                                           TEST    P1     —    P1  → P1    ✓ EXACT
@@ -623,24 +623,24 @@
   State_of_LLM_Reasoning                         TEST    P1     —    P0  → P0    ✓ EXACT
   Understanding_Reasoning_LLMs                   TEST    P2     —    P2  → P2    ✓ EXACT
 
-  n=16  exact=10 (62%)  near=3 (19%)  miss=3 (19%)  no-oracle/error=0
-  Ordinal MAE: 0.562
-  Reward-regret (allowed/required only, n=15; 1 forbidden excluded):  mean=0.0134  max=0.0667
+  n=16  exact=11 (69%)  near=4 (25%)  miss=1 (6%)  no-oracle/error=0
+  Ordinal MAE: 0.375
+  Reward-regret (allowed/required only, n=15; 1 forbidden excluded):  mean=0.0127  max=0.0599
 
   --- Confusion matrix ---
                            Predicted →
   Oracle ↓                      skip     light  standard      deep
   ------------------------------------------------------------
   P0 skip                         1         1         0         0  (n=2)
-  P1 light                        0         6         0         1  (n=7)
-  P2 standard                     0         1         1         1  (n=3)
-  P3 deep                         0         2         0         2  (n=4)
+  P1 light                        0         6         0         0  (n=6)
+  P2 standard                     0         2         1         1  (n=4)
+  P3 deep                         0         1         0         3  (n=4)
 
   --- Baselines ---
-  Oracle distribution: P0=2  P1=7  P2=3  P3=4
-  Majority-class baseline (always P1 light): 43.8%  (7/16)
+  Oracle distribution: P0=2  P1=6  P2=4  P3=4
+  Majority-class baseline (always P1 light): 37.5%  (6/16)
   Uniform-random baseline (1/4):  25.0%
-  Weighted-random baseline:  30.5%
+  Weighted-random baseline:  28.1%
 
 ================================================================================
   TRAIN (reference)  [RL + deterministic policy guards]  (n=24)
@@ -649,7 +649,7 @@
   ----------------------------------------------------------------------------
   02_workflows_vs_agents__var_minimal            TRAIN    P1     —    P0  → P0    ✓ EXACT
   02_workflows_vs_agents__var_standard           TRAIN    P1     —    P1  → P1    ✓ EXACT
-  02_workflows_vs_agents__var_demanding          TRAIN    P1     —    P1  → P2    ~ NEAR
+  02_workflows_vs_agents__var_demanding          TRAIN    P1     —    P1  → P1    ✓ EXACT
   03_context_engineering__var_minimal            TRAIN    P0     —    P0  → P0    ✓ EXACT
   03_context_engineering__var_standard           TRAIN    P1     —    P1  → P2    ~ NEAR
   03_context_engineering__var_demanding          TRAIN    P1     —    P1  → P1    ✓ EXACT
@@ -672,30 +672,30 @@
   11_multimodal__var_standard                    TRAIN    P1     —    P1  → P0    ~ NEAR
   11_multimodal__var_demanding                   TRAIN    P1     —    P1  → P2    ~ NEAR
 
-  n=24  exact=18 (75%)  near=5 (21%)  miss=1 (4%)  no-oracle/error=0
-  Ordinal MAE: 0.292
-  Reward-regret (allowed/required only, n=16; 8 forbidden excluded):  mean=0.0111  max=0.0402
+  n=24  exact=19 (79%)  near=4 (17%)  miss=1 (4%)  no-oracle/error=0
+  Ordinal MAE: 0.250
+  Reward-regret (allowed/required only, n=16; 8 forbidden excluded):  mean=0.0114  max=0.0402
 
   --- Confusion matrix ---
                            Predicted →
   Oracle ↓                      skip     light  standard      deep
   ------------------------------------------------------------
   P0 skip                         8         1         0         0  (n=9)
-  P1 light                        0         8         0         0  (n=8)
-  P2 standard                     0         3         0         0  (n=3)
+  P1 light                        0         9         0         0  (n=9)
+  P2 standard                     0         2         0         0  (n=2)
   P3 deep                         0         1         1         2  (n=4)
 
   --- Baselines ---
-  Oracle distribution: P0=9  P1=8  P2=3  P3=4
+  Oracle distribution: P0=9  P1=9  P2=2  P3=4
   Majority-class baseline (always P0 skip): 37.5%  (9/24)
   Uniform-random baseline (1/4):  25.0%
-  Weighted-random baseline:  29.5%
+  Weighted-random baseline:  31.6%
   var_minimal      ( 8):  exact 8/8   exact+near 8/8   regret n/a (all policy-forced)
-  var_standard     ( 8):  exact 5/8   exact+near 7/8   regret mean=0.0118 max=0.0356
-  var_demanding    ( 8):  exact 5/8   exact+near 8/8   regret mean=0.0105 max=0.0402
+  var_standard     ( 8):  exact 5/8   exact+near 7/8   regret mean=0.0130 max=0.0356
+  var_demanding    ( 8):  exact 6/8   exact+near 8/8   regret mean=0.0098 max=0.0402
 
 ################################################################################
   COMBINED  [RL + deterministic policy guards]  (n=40)
 ################################################################################
-  n=40  exact=28 (70%)  near=8 (20%)  miss=4 (10%)  no-oracle/error=0
-  Reward-regret (allowed/required only, n=31; 9 forbidden excluded):  mean=0.0122  max=0.0667
+  n=40  exact=30 (75%)  near=8 (20%)  miss=2 (5%)  no-oracle/error=0
+  Reward-regret (allowed/required only, n=31; 9 forbidden excluded):  mean=0.0120  max=0.0599
