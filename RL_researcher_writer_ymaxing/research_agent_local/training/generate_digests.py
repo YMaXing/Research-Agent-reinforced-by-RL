@@ -549,22 +549,44 @@ ARTICLE-WIDE FEATURE
                  fetch or cite outside web sources. This must be an overt
                  prohibition such as "do not use sources beyond the
                  provided list", "only reference the supplied materials",
-                 or "no external research allowed" — OR the guideline's
-                 scope note explicitly frames the article as a low-effort /
-                 conceptual-overview treatment where depth, exhaustive
-                 coverage, or production code are explicitly stated as NOT
-                 required (e.g. "this article is a conceptual overview;
-                 surface-level treatment is expected and depth, exhaustive
-                 coverage, or production code are explicitly NOT required")
-                 — OR the article's entire stated scope is to summarize /
-                 survey a fixed, named set of provided sources (e.g. "a
-                 survey of the following N papers"), such that the golden
-                 sources structurally ARE the complete content requirement.
+                 or "no external research allowed" — OR the guideline
+                 imposes a comprehensive ban on introducing content from
+                 new research: after applying every content restriction the
+                 guideline states, there is no plausible category of
+                 genuinely new material (named tool/system, case study,
+                 benchmark figure, data point, quote, etc.) that exploration
+                 could still contribute to the article. For example, in a
+                 guideline for a computer-science/AI technical article, a
+                 requirement stating "Do not introduce external libraries,
+                 real-world case studies, named production systems, or
+                 benchmark papers that are not already established in the
+                 course. External examples are explicitly out of scope."
+                 collectively rules out every category of content that
+                 research exploration would typically be able to contribute
+                 to a technical article of this kind (new tools/libraries,
+                 new case studies, new named systems, new benchmark data) —
+                 nothing is left over for new research to add, so this
+                 counts as a comprehensive ban even though it never uses the
+                 words "source" or "research". By contrast, a requirement
+                 stating only "Do not recommend libraries beyond those
+                 already covered in the course" restricts just one category
+                 while leaving case studies, benchmark data, and other
+                 findings open — this is a narrow scope constraint, not a
+                 comprehensive ban, and must NOT trigger "forbidden".
     "allowed"    guideline neither forbids nor requires outside evidence
                  (this is the default for most guidelines).
     "required"   guideline explicitly demands the writer cite external
                  sources, fresh benchmarks, or recent papers beyond the
                  supplied set.
+    "capped"     the article's entire stated scope is to summarize / survey
+                 a fixed, named set of provided sources (e.g. "a survey of
+                 the following N papers"), such that the golden sources
+                 structurally ARE the complete content requirement — this is
+                 a stated task framing, not an explicit prohibition. Unlike
+                 "forbidden", a survey/summary framing describes what the
+                 article's final content covers; it does not itself forbid
+                 the writer from exploring further to verify facts or add
+                 minor supporting context.
 
   CRITICAL DISTINCTION — the following instruction types do NOT constitute
   a "forbidden" evidence policy; classify them as "allowed" instead:
@@ -582,7 +604,7 @@ ARTICLE-WIDE FEATURE
 OUTPUT — exactly this JSON shape (use the section IDs from the listing above):
 
 {{
-  "external_evidence_policy": "forbidden|allowed|required",
+  "external_evidence_policy": "forbidden|allowed|required|capped",
   "sections": {{
     "S1::...": {{"target_words": 0, "mandatory_bullets": 0, "must_cover_depth": 0, "must_stay_brief": 0}},
     "S2::...": {{"target_words": 0, "mandatory_bullets": 0, "must_cover_depth": 0, "must_stay_brief": 0}}
@@ -653,7 +675,7 @@ async def _extract_guideline_features_once(
         return None
 
     policy = parsed.get("external_evidence_policy", "allowed")
-    if policy not in ("forbidden", "allowed", "required"):
+    if policy not in ("forbidden", "allowed", "required", "capped"):
         policy = "allowed"
 
     raw_secs = parsed.get("sections", {})
