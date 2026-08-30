@@ -588,17 +588,86 @@ ARTICLE-WIDE FEATURE
                  the writer from exploring further to verify facts or add
                  minor supporting context.
 
-  CRITICAL DISTINCTION — the following instruction types do NOT constitute
-  a "forbidden" evidence policy; classify them as "allowed" instead:
+  DISTINGUISHING "forbidden" FROM "capped" — the two can sound similar
+  ("nothing left for new research to add") but the test is PROHIBITIVE vs.
+  DESCRIPTIVE language, not how narrow or exhaustive the scope sounds:
+    - "forbidden" requires the guideline to actually PROHIBIT something —
+      "do not", "must not", "explicitly out of scope", or a content ban
+      comprehensive enough to leave no room for anything new (per the test
+      above).
+    - "capped" applies when the guideline only DESCRIBES the article's
+      nature/scope as a survey or summary of named sources, with NO
+      accompanying prohibition — the golden sources are a sufficient basis
+      for the described task, but the writer is never told they must not
+      explore further.
+  For example, a requirement stating "a comprehensive survey of the
+  post-X landscape covering N named papers, drawing concrete mechanisms,
+  benchmark results, and limitations directly from each paper, with a
+  strictly theoretical lens and no implementation code" is "capped", NOT
+  "forbidden" — it describes what the article covers (a survey) and
+  narrows tone (theory, not code), but never says new research is
+  disallowed. A narrow or exhaustive-sounding scope description on its own
+  is not a prohibition; do not upgrade "capped" to "forbidden" just
+  because the survey is specific or the tone is restricted to theory.
+
+  CRITICAL DISTINCTION — the comprehensive-ban test is about whether
+  EXTERNAL RESEARCH / EVIDENCE (new facts, tools, systems, benchmarks,
+  papers, case studies) is barred. It is NOT about vocabulary, narrative
+  voice, terminology, or which existing code sample to show the reader.
+  The following instruction types govern HOW the (still freely explorable)
+  topic is presented, not WHETHER new research may inform it, so they do
+  NOT constitute a "forbidden" evidence policy; classify them as "allowed"
+  instead:
     - Pedagogical scope instructions such as "use only previously introduced
       concepts" or "avoid concepts not yet taught to the reader" — these
       govern what vocabulary the writer exposes to the reader, NOT what
       research sources may be consulted.
     - Code-priority instructions such as "always prioritize this code over
-      every other piece of code found in the sources" — these govern which
-      code examples to showcase, not whether external research is allowed.
+      every other piece of code found in the sources", or repeated
+      per-section instructions to "use the code from the provided Notebook"
+      — these govern which code examples to showcase, not whether external
+      research is allowed. NOTE: such a sentence literally containing the
+      word "sources" (e.g. "...found in the sources") is STILL only about
+      code-sample choice, not about research/evidence sources — do not let
+      the word "sources" alone trigger "forbidden". Likewise, the SAME
+      code-priority instruction repeated once per section (e.g. "use all
+      the code from the `Section N` section" appearing in three different
+      sections) is still ONE restriction type, not three separate ones —
+      repetition across sections never adds up toward a comprehensive ban.
+    - Vocabulary / terminology restrictions such as "avoid acronyms not
+      explicitly stated in the guidelines" or "use simpler synonyms" — these
+      constrain word choice, not research sources.
     - Course-anchoring constraints about not reintroducing already-known
       concepts or foreshadowing future lessons.
+  These items are EXCLUDED from the comprehensive-ban test above entirely —
+  do not count them, individually or added together with each other or with
+  unrelated minor restrictions, toward "no plausible category of new
+  material is left." This holds NO MATTER HOW MANY of these instruction
+  types appear together in the same guideline: a guideline stacking a
+  pedagogical vocabulary restriction, a code-priority note, and an acronym
+  restriction is still "allowed", not "forbidden" — none of them restricts
+  research sources, so together they still restrict nothing relevant to
+  this field. Only count a restriction toward the comprehensive-ban test if
+  it explicitly limits what SOURCES OF EVIDENCE the writer may draw on.
+
+  A GUIDELINE'S CHECKLIST BEING SELF-CONTAINED IS NOT A PROHIBITION. Nearly
+  every guideline's own bullet list is, by construction, "everything the
+  writer must cover" — that is what a checklist is for, and it is true of
+  "allowed" guidelines just as much as "forbidden" ones. Do NOT reason from
+  "the checklist already dictates all the content (pre-taught concepts +
+  the provided code), so there is nothing left for research to add" to
+  "forbidden" — that reasoning would misclassify almost every hands-on,
+  code-heavy tutorial guideline as "forbidden", which is wrong. For example,
+  a lesson guideline that (a) restricts vocabulary to previously-taught
+  concepts and (b) always prioritizes a single provided code Notebook over
+  any other code is "allowed", NOT "forbidden", even though its own content
+  is fully dictated by those two things — the writer may still freely
+  consult outside sources to verify facts, add supporting context, compare
+  frameworks, or cite real-world usage/benchmarks; nothing in (a) or (b)
+  says the writer must not do so. Only classify "forbidden" when the
+  guideline itself contains language that affirmatively rules out
+  consulting outside material — never infer it merely from how narrow or
+  fully-specified the required checklist content happens to be.
   When in doubt, default to "allowed".
 
 OUTPUT — exactly this JSON shape (use the section IDs from the listing above):
@@ -706,10 +775,13 @@ async def _extract_guideline_features_once(
 #: phrasing that implies it (confirmed 2026-07-11: one confirmed-forbidden
 #: article's trigger was a "conceptual overview / minimal effort" scope
 #: note, another's was an entirely different "survey of N named papers"
-#: framing — no shared textual pattern). Majority-of-3 is cheap (small,
+#: framing — no shared textual pattern). Majority-of-N is cheap (small,
 #: fast JSON-only calls) and directly targets the observed failure mode
 #: (an occasional single-draw flip), rather than trusting one draw.
-_POLICY_VOTE_ROUNDS = 3
+#: Bumped 3->5 after a confirmed 2-of-3 unlucky-majority flip on
+#: 10_memory_knowledge_access__var_standard (5/5 fresh draws agreed
+#: "allowed", confirming the earlier 3-vote "forbidden" was noise).
+_POLICY_VOTE_ROUNDS = 5
 
 
 async def extract_guideline_features(
