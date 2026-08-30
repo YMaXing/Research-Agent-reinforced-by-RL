@@ -1,0 +1,823 @@
+{
+  "article": "06_tools__var_standard",
+  "variant_level": "standard",
+  "computed_at": "2026-05-05T00:43:34.837024+00:00",
+  "oracle_preset": 5,
+  "oracle_preset_name": "P5_depth_breadth_depth",
+  "runner_up_preset": 3,
+  "runner_up_preset_name": "P3_depth_breadth",
+  "margin": 0.021671,
+  "reward_spread": 0.291086,
+  "article_rewards": [
+    0.540614,
+    0.379957,
+    0.539829,
+    0.649371,
+    0.5164,
+    0.671043
+  ],
+  "oracle_ranking": [
+    5,
+    3,
+    0,
+    2,
+    4,
+    1
+  ],
+  "aggregation_scheme": "guideline_target_lengths",
+  "n_sections": 8,
+  "n_sections_with_target": 8,
+  "total_target_words": 3500,
+  "sections": [
+    {
+      "index": 1,
+      "title": "Introduction",
+      "target_words": 135,
+      "weight_words": 135,
+      "weight_frac": 0.03857,
+      "digest_words": 158,
+      "rewards_by_preset": [
+        0.55,
+        0.13,
+        0.66,
+        0.26,
+        0.64,
+        0.64
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 0.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 0.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 2,
+      "section_runner_up": 4,
+      "section_margin": 0.02,
+      "mu": 0.1214,
+      "prior_by_preset": [
+        -8.2e-05,
+        -0.004288,
+        -0.019605,
+        -0.019605,
+        -0.046034,
+        -0.046034
+      ],
+      "rewards_by_preset_modified": [
+        0.549918,
+        0.125712,
+        0.640395,
+        0.240395,
+        0.593966,
+        0.593966
+      ],
+      "section_oracle_new": 2,
+      "section_runner_up_new": 4,
+      "section_margin_new": 0.046428,
+      "oracle_changed": false
+    },
+    {
+      "index": 2,
+      "title": "Understanding why agents need tools",
+      "target_words": 310,
+      "weight_words": 310,
+      "weight_frac": 0.08857,
+      "digest_words": 119,
+      "rewards_by_preset": [
+        0.35,
+        0.33,
+        0.31,
+        0.84,
+        0.56,
+        0.64
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 3,
+      "section_runner_up": 5,
+      "section_margin": 0.2,
+      "mu": 1.2012,
+      "prior_by_preset": [
+        -0.008016,
+        -0.000225,
+        -0.003545,
+        -0.003545,
+        -0.017976,
+        -0.017976
+      ],
+      "rewards_by_preset_modified": [
+        0.341984,
+        0.329775,
+        0.306455,
+        0.836455,
+        0.542024,
+        0.622024
+      ],
+      "section_oracle_new": 3,
+      "section_runner_up_new": 5,
+      "section_margin_new": 0.214431,
+      "oracle_changed": false
+    },
+    {
+      "index": 3,
+      "title": "Implementing tool calls from scratch",
+      "target_words": 930,
+      "weight_words": 930,
+      "weight_frac": 0.26571,
+      "digest_words": 159,
+      "rewards_by_preset": [
+        0.68,
+        0.33,
+        0.64,
+        0.64,
+        0.47,
+        0.79
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 5,
+      "section_runner_up": 0,
+      "section_margin": 0.11,
+      "mu": 2.5352,
+      "prior_by_preset": [
+        -0.035706,
+        -0.013093,
+        -0.001591,
+        -0.001591,
+        -0.0012,
+        -0.0012
+      ],
+      "rewards_by_preset_modified": [
+        0.644294,
+        0.316907,
+        0.638409,
+        0.638409,
+        0.4688,
+        0.7888
+      ],
+      "section_oracle_new": 5,
+      "section_runner_up_new": 0,
+      "section_margin_new": 0.144506,
+      "oracle_changed": false
+    },
+    {
+      "index": 4,
+      "title": "Implementing a tool calling framework from scratch",
+      "target_words": 560,
+      "weight_words": 560,
+      "weight_frac": 0.16,
+      "digest_words": 120,
+      "rewards_by_preset": [
+        0.5,
+        0.33,
+        0.66,
+        0.46,
+        0.56,
+        0.79
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 5,
+      "section_runner_up": 2,
+      "section_margin": 0.13,
+      "mu": 2.2425,
+      "prior_by_preset": [
+        -0.027937,
+        -0.008576,
+        -0.000327,
+        -0.000327,
+        -0.003188,
+        -0.003188
+      ],
+      "rewards_by_preset_modified": [
+        0.472063,
+        0.321424,
+        0.659673,
+        0.459673,
+        0.556812,
+        0.786812
+      ],
+      "section_oracle_new": 5,
+      "section_runner_up_new": 2,
+      "section_margin_new": 0.127138,
+      "oracle_changed": false
+    },
+    {
+      "index": 5,
+      "title": "Implementing production-level tool calls with Gemini",
+      "target_words": 390,
+      "weight_words": 390,
+      "weight_frac": 0.11143,
+      "digest_words": 73,
+      "rewards_by_preset": [
+        0.55,
+        0.33,
+        0.51,
+        0.66,
+        0.49,
+        0.67
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 5,
+      "section_runner_up": 3,
+      "section_margin": 0.01,
+      "mu": 2.0337,
+      "prior_by_preset": [
+        -0.022977,
+        -0.005936,
+        -6e-06,
+        -6e-06,
+        -0.005188,
+        -0.005188
+      ],
+      "rewards_by_preset_modified": [
+        0.527023,
+        0.324064,
+        0.509994,
+        0.659994,
+        0.484812,
+        0.664812
+      ],
+      "section_oracle_new": 5,
+      "section_runner_up_new": 3,
+      "section_margin_new": 0.004819,
+      "oracle_changed": false
+    },
+    {
+      "index": 6,
+      "title": "Using Pydantic models as tools for on-demand structured outputs",
+      "target_words": 315,
+      "weight_words": 315,
+      "weight_frac": 0.09,
+      "digest_words": 92,
+      "rewards_by_preset": [
+        0.7,
+        0.48,
+        0.46,
+        0.66,
+        0.64,
+        0.67
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 0,
+      "section_runner_up": 5,
+      "section_margin": 0.03,
+      "mu": 1.9104,
+      "prior_by_preset": [
+        -0.020276,
+        -0.004605,
+        -4.5e-05,
+        -4.5e-05,
+        -0.006595,
+        -0.006595
+      ],
+      "rewards_by_preset_modified": [
+        0.679724,
+        0.475395,
+        0.459955,
+        0.659955,
+        0.633405,
+        0.663405
+      ],
+      "section_oracle_new": 0,
+      "section_runner_up_new": 5,
+      "section_margin_new": 0.016319,
+      "oracle_changed": false
+    },
+    {
+      "index": 7,
+      "title": "The downsides of running tools in a loop",
+      "target_words": 520,
+      "weight_words": 520,
+      "weight_frac": 0.14857,
+      "digest_words": 94,
+      "rewards_by_preset": [
+        0.5,
+        0.66,
+        0.46,
+        0.64,
+        0.62,
+        0.64
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 0.0
+        }
+      ],
+      "section_oracle": 1,
+      "section_runner_up": 3,
+      "section_margin": 0.02,
+      "mu": 1.8997,
+      "prior_by_preset": [
+        -0.020049,
+        -0.004497,
+        -5.6e-05,
+        -5.6e-05,
+        -0.006726,
+        -0.006726
+      ],
+      "rewards_by_preset_modified": [
+        0.479951,
+        0.655503,
+        0.459944,
+        0.639944,
+        0.613274,
+        0.633274
+      ],
+      "section_oracle_new": 1,
+      "section_runner_up_new": 3,
+      "section_margin_new": 0.015559,
+      "oracle_changed": false
+    },
+    {
+      "index": 8,
+      "title": "Going through popular tools used within the industry",
+      "target_words": 340,
+      "weight_words": 340,
+      "weight_frac": 0.09714,
+      "digest_words": 128,
+      "rewards_by_preset": [
+        0.3,
+        0.28,
+        0.46,
+        0.96,
+        0.24,
+        0.24
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 0.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 3,
+      "section_runner_up": 2,
+      "section_margin": 0.5,
+      "mu": 0.9545,
+      "prior_by_preset": [
+        -0.005061,
+        -1.2e-05,
+        -0.006073,
+        -0.006073,
+        -0.023245,
+        -0.023245
+      ],
+      "rewards_by_preset_modified": [
+        0.294939,
+        0.279988,
+        0.453927,
+        0.953927,
+        0.216755,
+        0.216755
+      ],
+      "section_oracle_new": 3,
+      "section_runner_up_new": 2,
+      "section_margin_new": 0.5,
+      "oracle_changed": false
+    }
+  ],
+  "article_rewards_modified": [
+    0.518083,
+    0.373172,
+    0.537675,
+    0.647216,
+    0.50777,
+    0.662411
+  ],
+  "oracle_preset_new": 5,
+  "runner_up_preset_new": 3,
+  "margin_new": 0.015195,
+  "prior_config": {
+    "lambda": 0.05,
+    "a_w": 0.4,
+    "a_p": 1.0,
+    "a_d": 1.0,
+    "mu_base": {
+      "minimal": 0.7,
+      "standard": 1.7,
+      "demanding": 2.0
+    }
+  }
+}

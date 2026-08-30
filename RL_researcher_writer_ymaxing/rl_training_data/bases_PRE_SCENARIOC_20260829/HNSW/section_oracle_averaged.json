@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "merge_source": "single-draw section_oracle.json (production) + noise_experiment replicates via measure_replicate_noise.py's recompute path",
+  "article": "HNSW",
+  "variant": "no_variant",
+  "n_draws_per_arm": 3,
+  "replicate_ids_used": [
+    1,
+    2
+  ],
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.382167,
+        "standard": 0.233017,
+        "deep": 0.38845
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.051098,
+        "standard": 0.101666,
+        "deep": 0.053282
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0455,
+        "standard": 0.02275,
+        "deep": 0.05775
+      }
+    },
+    "S2::section-2-foundations-of-hnsw": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.233333,
+        "light": 0.616417,
+        "standard": 0.362517,
+        "deep": 0.582367
+      },
+      "reward_sd": {
+        "skip": 0.152753,
+        "light": 0.185564,
+        "standard": 0.167652,
+        "deep": 0.178891
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.27975,
+        "standard": 0.25225,
+        "deep": 0.285
+      }
+    },
+    "S3::section-3-graph-construction": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.336667,
+        "standard": 0.310267,
+        "deep": 0.432325
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.057735,
+        "standard": 0.057735,
+        "deep": 0.101252
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.101625
+      }
+    },
+    "S4::section-4-implementation-of-hnsw": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.441667,
+        "standard": 0.433058,
+        "deep": 0.581533
+      },
+      "reward_sd": {
+        "skip": 0.1,
+        "light": 0.148668,
+        "standard": 0.182185,
+        "deep": 0.196315
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.105,
+        "standard": 0.156125,
+        "deep": 0.3175
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "skip",
+    "S2::section-2-foundations-of-hnsw": "light",
+    "S3::section-3-graph-construction": "deep",
+    "S4::section-4-implementation-of-hnsw": "deep"
+  }
+}

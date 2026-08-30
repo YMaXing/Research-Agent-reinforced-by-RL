@@ -384,8 +384,8 @@ def _decide(
     r_w: dict[str, float],
     n_draws: int = 1,
     external_evidence_policy: str = "allowed",
-) -> tuple[str, bool, bool, list[str]]:
-    """Return (oracle_arm, manual_override, needs_review, decision_path).
+) -> tuple[str, bool, bool, list[str], list[str]]:
+    """Return (oracle_arm, manual_override, needs_review, decision_path, candidate_arms).
 
     Pure mean-R_w argmax (A.16, 2026-08-25) -- retires the EPS_BAND/S3/S4/S5
     near-tie tie-break entirely. ``r_w`` is expected to already be the mean
@@ -393,29 +393,40 @@ def _decide(
     section_oracle_averaged.json when it exists); ``n_draws`` says how many
     contributed, so the confidence check can shrink ARTICLE_MARGIN_NOISE_SD
     by sqrt(n_draws) -- an averaged margin is less noisy than a single draw's.
+
+    ``candidate_arms`` is the arm set the decision actually searched over --
+    ARMS unless policy=="capped" restricts it to ["skip", "light"] (A.20) --
+    so the caller's runner-up/margin bookkeeping can stay scoped to the same
+    set instead of always comparing against arms the policy ruled out.
     """
     # -1. Hard constraint: forbidden policy → skip, regardless of R_w.
     #     External evidence cannot be used in the final article, so the only
     #     valid production choice is the no-exploration arm.
     if external_evidence_policy == "forbidden":
-        return "skip", False, False, ["policy=forbidden → skip (hard constraint)"]
+        return "skip", False, False, ["policy=forbidden → skip (hard constraint)"], ARMS
 
     # 0.  Manual override: absolute precedence over the mean-R_w computation.
     if article in _MANUAL_OVERRIDES:
         arm = _MANUAL_OVERRIDES[article]
-        return arm, True, False, [f"manual override → {arm}"]
+        return arm, True, False, [f"manual override → {arm}"], ARMS
 
-    ranked = sorted(ARMS, key=lambda a: r_w[a], reverse=True)
+    # Scenario C (A.20): article's own stated scope is a survey/exploitation
+    # task, not a hard ban -- cap the decision to {skip, light}, never
+    # standard/deep, without forcing a single fixed answer the way forbidden does.
+    candidate_arms = ["skip", "light"] if external_evidence_policy == "capped" else ARMS
+
+    ranked = sorted(candidate_arms, key=lambda a: r_w[a], reverse=True)
     best_arm = ranked[0]
     margin = r_w[best_arm] - r_w[ranked[1]]
     threshold = ARTICLE_MARGIN_NOISE_SD / (n_draws ** 0.5)
     needs_review = margin < threshold
     path = [
-        f"mean R_w argmax over {n_draws} draw(s): {best_arm}  "
+        f"mean R_w argmax over {n_draws} draw(s), policy={external_evidence_policy} "
+        f"(candidates={candidate_arms}): {best_arm}  "
         f"margin={margin:+.4f}  1x-noise-sd threshold={threshold:.4f}  "
         f"{'BELOW threshold, low confidence' if needs_review else 'confident'}"
     ]
-    return best_arm, False, needs_review, path
+    return best_arm, False, needs_review, path, candidate_arms
 
 
 # ---------------------------------------------------------------------------
@@ -504,14 +515,16 @@ def compute_article_oracle(article: str) -> dict:
     )
 
     # --- decision ---
-    oracle_arm, manual_override, needs_review, decision_path = _decide(
+    oracle_arm, manual_override, needs_review, decision_path, candidate_arms = _decide(
         article, r_w, n_draws=n_draws,
         external_evidence_policy=feat_data.get("external_evidence_policy", "allowed"),
     )
     oracle_arm_idx = ARM_IDX[oracle_arm]
 
+    # Scoped to candidate_arms so a capped article's runner-up/margin reflects
+    # the actual skip-vs-light decision, not an out-of-scope standard/deep arm.
     runner_up_arm = max(
-        (a for a in ARMS if a != oracle_arm), key=lambda a: r_w[a]
+        (a for a in candidate_arms if a != oracle_arm), key=lambda a: r_w[a]
     )
     runner_up_arm_idx = ARM_IDX[runner_up_arm]
     margin = r_w[oracle_arm] - r_w[runner_up_arm]

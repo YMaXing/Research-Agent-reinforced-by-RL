@@ -1,0 +1,192 @@
+{
+  "version": 3,
+  "article": "10_memory_knowledge_access__var_standard",
+  "variant": "var_standard",
+  "computed_at": "2026-08-26T06:44:21.860253+00:00",
+  "computed_from": "section_oracle_averaged.json",
+  "n_draws_used": 3,
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "standard",
+  "runner_up_arm_idx": 2,
+  "margin": 0.019332,
+  "reward_spread": 0.093562,
+  "r_w_rewards": {
+    "skip": 0.259501,
+    "light": 0.353063,
+    "standard": 0.333731,
+    "deep": 0.291313
+  },
+  "r_w_rewards_list": [
+    0.259501,
+    0.353063,
+    0.333731,
+    0.291313
+  ],
+  "decision_path": [
+    "mean R_w argmax over 3 draw(s): light  margin=+0.0193  1x-noise-sd threshold=0.0312  BELOW threshold, low confidence"
+  ],
+  "manual_override": false,
+  "needs_review": true,
+  "gate_diagnostics": null,
+  "low_signal_flag": false,
+  "n_sections": 7,
+  "n_sections_with_target": 7,
+  "total_target_words": 2675,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction-why-agents-need-a-memory-in-the-first-place",
+      "title": "introduction why agents need a memory in the first place",
+      "target_words": 400,
+      "weight_words": 400,
+      "weight_frac": 0.14953,
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.389167,
+        "standard": 0.4836,
+        "deep": 0.402367
+      },
+      "rewards_by_preset": [
+        0.4,
+        0.389167,
+        0.4836,
+        0.402367
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-the-layers-of-memory-internal-short-term-and-long-term",
+      "title": "the layers of memory internal short term and long term",
+      "target_words": 275,
+      "weight_words": 275,
+      "weight_frac": 0.1028,
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.460833,
+        "standard": 0.451933,
+        "deep": 0.386533
+      },
+      "rewards_by_preset": [
+        0.366667,
+        0.460833,
+        0.451933,
+        0.386533
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-long-term-memory-semantic-episodic-and-procedural",
+      "title": "long term memory semantic episodic and procedural",
+      "target_words": 400,
+      "weight_words": 400,
+      "weight_frac": 0.14953,
+      "rewards": {
+        "skip": 0.333333,
+        "light": 0.520833,
+        "standard": 0.276933,
+        "deep": 0.404033
+      },
+      "rewards_by_preset": [
+        0.333333,
+        0.520833,
+        0.276933,
+        0.404033
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-storing-memories-pros-and-cons-of-different-approaches",
+      "title": "storing memories pros and cons of different approaches",
+      "target_words": 400,
+      "weight_words": 400,
+      "weight_frac": 0.14953,
+      "rewards": {
+        "skip": 0.033333,
+        "light": 0.428333,
+        "standard": 0.0961,
+        "deep": 0.119033
+      },
+      "rewards_by_preset": [
+        0.033333,
+        0.428333,
+        0.0961,
+        0.119033
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-memory-implementations-with-code-examples",
+      "title": "memory implementations with code examples",
+      "target_words": 500,
+      "weight_words": 500,
+      "weight_frac": 0.18692,
+      "rewards": {
+        "skip": 0.233333,
+        "light": 0.17,
+        "standard": 0.297767,
+        "deep": 0.097367
+      },
+      "rewards_by_preset": [
+        0.233333,
+        0.17,
+        0.297767,
+        0.097367
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-real-world-lessons-challenges-and-best-practices",
+      "title": "real world lessons challenges and best practices",
+      "target_words": 500,
+      "weight_words": 500,
+      "weight_frac": 0.18692,
+      "rewards": {
+        "skip": 0.233333,
+        "light": 0.290833,
+        "standard": 0.511933,
+        "deep": 0.3482
+      },
+      "rewards_by_preset": [
+        0.233333,
+        0.290833,
+        0.511933,
+        0.3482
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::section-7-conclusion",
+      "title": "conclusion",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.07477,
+      "rewards": {
+        "skip": 0.266667,
+        "light": 0.259417,
+        "standard": 0.245267,
+        "deep": 0.354867
+      },
+      "rewards_by_preset": [
+        0.266667,
+        0.259417,
+        0.245267,
+        0.354867
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    }
+  ]
+}

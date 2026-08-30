@@ -1,0 +1,823 @@
+{
+  "article": "03_context_engineering__var_standard",
+  "variant_level": "standard",
+  "computed_at": "2026-05-05T00:43:34.663924+00:00",
+  "oracle_preset": 4,
+  "oracle_preset_name": "P4_bal_depth_breadth",
+  "runner_up_preset": 2,
+  "runner_up_preset_name": "P2_balanced_depth",
+  "margin": 0.013133,
+  "reward_spread": 0.081506,
+  "article_rewards": [
+    0.567018,
+    0.58241,
+    0.608645,
+    0.540271,
+    0.621777,
+    0.57497
+  ],
+  "oracle_ranking": [
+    4,
+    2,
+    1,
+    5,
+    0,
+    3
+  ],
+  "aggregation_scheme": "guideline_target_lengths",
+  "n_sections": 8,
+  "n_sections_with_target": 8,
+  "total_target_words": 3320,
+  "sections": [
+    {
+      "index": 1,
+      "title": "Introduction: When prompt engineering breaks",
+      "target_words": 220,
+      "weight_words": 220,
+      "weight_frac": 0.06627,
+      "digest_words": 175,
+      "rewards_by_preset": [
+        0.55,
+        0.28,
+        0.66,
+        0.51,
+        0.64,
+        0.82
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 0.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 5,
+      "section_runner_up": 2,
+      "section_margin": 0.16,
+      "mu": 0.7338,
+      "prior_by_preset": [
+        -0.002991,
+        -0.000394,
+        -0.008907,
+        -0.008907,
+        -0.028531,
+        -0.028531
+      ],
+      "rewards_by_preset_modified": [
+        0.547009,
+        0.279606,
+        0.651093,
+        0.501093,
+        0.611469,
+        0.791469
+      ],
+      "section_oracle_new": 5,
+      "section_runner_up_new": 2,
+      "section_margin_new": 0.140376,
+      "oracle_changed": false
+    },
+    {
+      "index": 2,
+      "title": "From prompt to context engineering",
+      "target_words": 275,
+      "weight_words": 275,
+      "weight_frac": 0.08283,
+      "digest_words": 134,
+      "rewards_by_preset": [
+        0.88,
+        0.86,
+        0.66,
+        0.84,
+        0.94,
+        0.64
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 4,
+      "section_runner_up": 0,
+      "section_margin": 0.06,
+      "mu": 1.1625,
+      "prior_by_preset": [
+        -0.007508,
+        -0.000147,
+        -0.003897,
+        -0.003897,
+        -0.018757,
+        -0.018757
+      ],
+      "rewards_by_preset_modified": [
+        0.872492,
+        0.859853,
+        0.656103,
+        0.836103,
+        0.921243,
+        0.621243
+      ],
+      "section_oracle_new": 4,
+      "section_runner_up_new": 0,
+      "section_margin_new": 0.048751,
+      "oracle_changed": false
+    },
+    {
+      "index": 3,
+      "title": "Understanding context engineering",
+      "target_words": 500,
+      "weight_words": 500,
+      "weight_frac": 0.1506,
+      "digest_words": 122,
+      "rewards_by_preset": [
+        0.5,
+        0.48,
+        0.46,
+        0.66,
+        0.74,
+        0.62
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 4,
+      "section_runner_up": 3,
+      "section_margin": 0.08,
+      "mu": 2.2075,
+      "prior_by_preset": [
+        -0.027073,
+        -0.008101,
+        -0.000239,
+        -0.000239,
+        -0.003489,
+        -0.003489
+      ],
+      "rewards_by_preset_modified": [
+        0.472927,
+        0.471899,
+        0.459761,
+        0.659761,
+        0.736511,
+        0.616511
+      ],
+      "section_oracle_new": 4,
+      "section_runner_up_new": 3,
+      "section_margin_new": 0.07675,
+      "oracle_changed": false
+    },
+    {
+      "index": 4,
+      "title": "What makes up the context",
+      "target_words": 500,
+      "weight_words": 500,
+      "weight_frac": 0.1506,
+      "digest_words": 106,
+      "rewards_by_preset": [
+        0.5,
+        0.46,
+        0.64,
+        0.58,
+        0.44,
+        0.56
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 2,
+      "section_runner_up": 3,
+      "section_margin": 0.06,
+      "mu": 2.2075,
+      "prior_by_preset": [
+        -0.027073,
+        -0.008101,
+        -0.000239,
+        -0.000239,
+        -0.003489,
+        -0.003489
+      ],
+      "rewards_by_preset_modified": [
+        0.472927,
+        0.451899,
+        0.639761,
+        0.579761,
+        0.436511,
+        0.556511
+      ],
+      "section_oracle_new": 2,
+      "section_runner_up_new": 3,
+      "section_margin_new": 0.06,
+      "oracle_changed": false
+    },
+    {
+      "index": 5,
+      "title": "Production implementation challenges",
+      "target_words": 400,
+      "weight_words": 400,
+      "weight_frac": 0.12048,
+      "digest_words": 99,
+      "rewards_by_preset": [
+        0.88,
+        0.86,
+        0.96,
+        0.84,
+        0.94,
+        0.82
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 2,
+      "section_runner_up": 4,
+      "section_margin": 0.02,
+      "mu": 2.0787,
+      "prior_by_preset": [
+        -0.024007,
+        -0.006465,
+        -3.4e-05,
+        -3.4e-05,
+        -0.004715,
+        -0.004715
+      ],
+      "rewards_by_preset_modified": [
+        0.855993,
+        0.853535,
+        0.959966,
+        0.839966,
+        0.935285,
+        0.815285
+      ],
+      "section_oracle_new": 2,
+      "section_runner_up_new": 4,
+      "section_margin_new": 0.024681,
+      "oracle_changed": false
+    },
+    {
+      "index": 6,
+      "title": "Key strategies for context optimization",
+      "target_words": 650,
+      "weight_words": 650,
+      "weight_frac": 0.19578,
+      "digest_words": 104,
+      "rewards_by_preset": [
+        0.5,
+        0.71,
+        0.69,
+        0.29,
+        0.62,
+        0.47
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 0.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 1,
+      "section_runner_up": 2,
+      "section_margin": 0.02,
+      "mu": 2.3589,
+      "prior_by_preset": [
+        -0.030914,
+        -0.010259,
+        -0.000716,
+        -0.000716,
+        -0.002283,
+        -0.002283
+      ],
+      "rewards_by_preset_modified": [
+        0.469086,
+        0.699741,
+        0.689284,
+        0.289284,
+        0.617717,
+        0.467717
+      ],
+      "section_oracle_new": 1,
+      "section_runner_up_new": 2,
+      "section_margin_new": 0.010456,
+      "oracle_changed": false
+    },
+    {
+      "index": 7,
+      "title": "Here is an example",
+      "target_words": 500,
+      "weight_words": 500,
+      "weight_frac": 0.1506,
+      "digest_words": 83,
+      "rewards_by_preset": [
+        0.3,
+        0.28,
+        0.26,
+        0.26,
+        0.24,
+        0.24
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 0.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 0.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 0.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 0.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 0.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 0.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 0.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 0,
+      "section_runner_up": 1,
+      "section_margin": 0.02,
+      "mu": 1.9075,
+      "prior_by_preset": [
+        -0.020215,
+        -0.004575,
+        -4.8e-05,
+        -4.8e-05,
+        -0.006631,
+        -0.006631
+      ],
+      "rewards_by_preset_modified": [
+        0.279785,
+        0.275425,
+        0.259952,
+        0.259952,
+        0.233369,
+        0.233369
+      ],
+      "section_oracle_new": 0,
+      "section_runner_up_new": 1,
+      "section_margin_new": 0.004361,
+      "oracle_changed": false
+    },
+    {
+      "index": 8,
+      "title": "Conclusion - Wrap-up: Connecting context engineering to AI engineering",
+      "target_words": 275,
+      "weight_words": 275,
+      "weight_frac": 0.08283,
+      "digest_words": 84,
+      "rewards_by_preset": [
+        0.7,
+        0.8,
+        0.66,
+        0.64,
+        0.64,
+        0.76
+      ],
+      "raw_scores_by_preset": [
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 0.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 1.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 0.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        },
+        {
+          "ground_truth_core_content": 1.0,
+          "ground_truth_flow": 1.0,
+          "ground_truth_depth_enhancement": 0.0,
+          "ground_truth_breadth_enhancement": 1.0,
+          "ground_truth_core_preservation": 1.0,
+          "user_intent_guideline_adherence": 1.0,
+          "user_intent_research_anchoring": 1.0
+        }
+      ],
+      "section_oracle": 1,
+      "section_runner_up": 5,
+      "section_margin": 0.04,
+      "mu": 0.8625,
+      "prior_by_preset": [
+        -0.004133,
+        -0.000105,
+        -0.007188,
+        -0.007188,
+        -0.025382,
+        -0.025382
+      ],
+      "rewards_by_preset_modified": [
+        0.695867,
+        0.799895,
+        0.652812,
+        0.632812,
+        0.614618,
+        0.734618
+      ],
+      "section_oracle_new": 1,
+      "section_runner_up_new": 5,
+      "section_margin_new": 0.065277,
+      "oracle_changed": false
+    }
+  ],
+  "article_rewards_modified": [
+    0.545706,
+    0.576439,
+    0.606907,
+    0.538534,
+    0.61316,
+    0.566354
+  ],
+  "oracle_preset_new": 4,
+  "runner_up_preset_new": 2,
+  "margin_new": 0.006253,
+  "prior_config": {
+    "lambda": 0.05,
+    "a_w": 0.4,
+    "a_p": 1.0,
+    "a_d": 1.0,
+    "mu_base": {
+      "minimal": 0.7,
+      "standard": 1.7,
+      "demanding": 2.0
+    }
+  }
+}

@@ -1,0 +1,237 @@
+{
+  "version": 5,
+  "article": "08_react_practice",
+  "variant": "var_demanding",
+  "sections": {
+    "S1::section-1-setup-and-environment": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.1,
+        "light": 0.37,
+        "standard": 0.2436,
+        "deep": 0.3307
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S2::section-2-tool-layer-mock-search-implementation": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.372375,
+        "standard": 0.5011,
+        "deep": 0.4332
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.102375,
+        "standard": 0.1575,
+        "deep": 0.2025
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S3::section-3-thought-phase-prompt-construction-and-generation": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": -0.1,
+        "light": -0.13,
+        "standard": -0.1564,
+        "deep": -0.1693
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S4::section-4-action-phase-function-calling-and-parsing": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.372375,
+        "standard": 0.5061,
+        "deep": 0.3357
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.102375,
+        "standard": 0.2625,
+        "deep": 0.105
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S5::section-5-control-loop-messages-scratchpad-orchestration": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.1,
+        "light": -0.13,
+        "standard": 0.4936,
+        "deep": 0.1882
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.45,
+        "deep": 0.1575
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 0.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    },
+    "S6::section-6-tests-and-traces-success-and-graceful-fallback": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.372375,
+        "standard": 0.5011,
+        "deep": 0.5332
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.102375,
+        "standard": 0.1575,
+        "deep": 0.2025
+      },
+      "diagnostics": {
+        "skip": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "light": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "standard": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        },
+        "deep": {
+          "cp": 1.0,
+          "ra": 1.0,
+          "gsp": 1.0
+        }
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-setup-and-environment": "light",
+    "S2::section-2-tool-layer-mock-search-implementation": "standard",
+    "S3::section-3-thought-phase-prompt-construction-and-generation": "skip",
+    "S4::section-4-action-phase-function-calling-and-parsing": "standard",
+    "S5::section-5-control-loop-messages-scratchpad-orchestration": "standard",
+    "S6::section-6-tests-and-traces-success-and-graceful-fallback": "deep"
+  }
+}

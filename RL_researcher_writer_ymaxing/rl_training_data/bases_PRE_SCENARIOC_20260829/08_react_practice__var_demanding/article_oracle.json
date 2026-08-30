@@ -1,0 +1,170 @@
+{
+  "version": 3,
+  "article": "08_react_practice__var_demanding",
+  "variant": "var_demanding",
+  "computed_at": "2026-08-26T06:44:21.759845+00:00",
+  "computed_from": "section_oracle_averaged.json",
+  "n_draws_used": 3,
+  "oracle_arm": "light",
+  "oracle_arm_idx": 1,
+  "runner_up_arm": "deep",
+  "runner_up_arm_idx": 3,
+  "margin": 0.029928,
+  "reward_spread": 0.05816,
+  "r_w_rewards": {
+    "skip": 0.169732,
+    "light": 0.227892,
+    "standard": 0.172226,
+    "deep": 0.197964
+  },
+  "r_w_rewards_list": [
+    0.169732,
+    0.227892,
+    0.172226,
+    0.197964
+  ],
+  "decision_path": [
+    "manual override \u2192 light"
+  ],
+  "manual_override": true,
+  "needs_review": false,
+  "gate_diagnostics": null,
+  "low_signal_flag": false,
+  "n_sections": 6,
+  "n_sections_with_target": 6,
+  "total_target_words": 4350,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-setup-and-environment",
+      "title": "setup and environment",
+      "target_words": 400,
+      "weight_words": 400,
+      "weight_frac": 0.09195,
+      "rewards": {
+        "skip": 0.233333,
+        "light": 0.303333,
+        "standard": 0.2436,
+        "deep": 0.3832
+      },
+      "rewards_by_preset": [
+        0.233333,
+        0.303333,
+        0.2436,
+        0.3832
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-tool-layer-mock-search-implementation",
+      "title": "tool layer mock search implementation",
+      "target_words": 650,
+      "weight_words": 650,
+      "weight_frac": 0.14943,
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.424083,
+        "standard": 0.362767,
+        "deep": 0.4032
+      },
+      "rewards_by_preset": [
+        0.3,
+        0.424083,
+        0.362767,
+        0.4032
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-thought-phase-prompt-construction-and-generation",
+      "title": "thought phase prompt construction and generation",
+      "target_words": 600,
+      "weight_words": 600,
+      "weight_frac": 0.13793,
+      "rewards": {
+        "skip": -0.1,
+        "light": -0.13,
+        "standard": -0.1564,
+        "deep": -0.135967
+      },
+      "rewards_by_preset": [
+        -0.1,
+        -0.13,
+        -0.1564,
+        -0.135967
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-action-phase-function-calling-and-parsing",
+      "title": "action phase function calling and parsing",
+      "target_words": 800,
+      "weight_words": 800,
+      "weight_frac": 0.18391,
+      "rewards": {
+        "skip": 0.166667,
+        "light": 0.275792,
+        "standard": 0.197767,
+        "deep": 0.189242
+      },
+      "rewards_by_preset": [
+        0.166667,
+        0.275792,
+        0.197767,
+        0.189242
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-control-loop-messages-scratchpad-orchestration",
+      "title": "control loop messages scratchpad orchestration",
+      "target_words": 1200,
+      "weight_words": 1200,
+      "weight_frac": 0.27586,
+      "rewards": {
+        "skip": 0.1,
+        "light": 0.176958,
+        "standard": 0.195267,
+        "deep": 0.050658
+      },
+      "rewards_by_preset": [
+        0.1,
+        0.176958,
+        0.195267,
+        0.050658
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-tests-and-traces-success-and-graceful-fallback",
+      "title": "tests and traces success and graceful fallback",
+      "target_words": 700,
+      "weight_words": 700,
+      "weight_frac": 0.16092,
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.457417,
+        "standard": 0.362767,
+        "deep": 0.469867
+      },
+      "rewards_by_preset": [
+        0.366667,
+        0.457417,
+        0.362767,
+        0.469867
+      ],
+      "section_oracle": "deep",
+      "section_oracle_idx": 3
+    }
+  ]
+}

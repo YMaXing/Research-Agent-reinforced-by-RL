@@ -1,0 +1,239 @@
+{
+  "version": 1,
+  "merge_source": "single-draw section_oracle.json (production) + noise_experiment replicates via measure_replicate_noise.py's recompute path",
+  "article": "Understanding_Reasoning_LLMs",
+  "variant": "no_variant",
+  "n_draws_per_arm": 3,
+  "replicate_ids_used": [
+    1,
+    2
+  ],
+  "sections": {
+    "S1::section-1-methods-and-strategies-for-building-and-refining-reasoning-models": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.233333,
+        "light": 0.203333,
+        "standard": 0.245183,
+        "deep": 0.164033
+      },
+      "reward_sd": {
+        "skip": 0.288675,
+        "light": 0.288675,
+        "standard": 0.347781,
+        "deep": 0.288675
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.06825,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-how-do-we-define-reasoning-model": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.333333,
+        "light": 0.39275,
+        "standard": 0.47585,
+        "deep": 0.35345
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.039404,
+        "standard": 0.047198,
+        "deep": 0.039404
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.02275,
+        "standard": 0.13225,
+        "deep": 0.02275
+      }
+    },
+    "S3::section-3-when-should-we-use-reasoning-models": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.37,
+        "standard": 0.431017,
+        "deep": 0.417325
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.078637,
+        "deep": 0.079923
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.12075,
+        "deep": 0.086625
+      }
+    },
+    "S4::section-4-a-brief-look-at-the-deepseek-training-pipeline": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.336667,
+        "standard": 0.344392,
+        "deep": 0.3307
+      },
+      "reward_sd": {
+        "skip": 0.1,
+        "light": 0.057735,
+        "standard": 0.10119,
+        "deep": 0.0
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.034125,
+        "deep": 0.0
+      }
+    },
+    "S5::section-5-the-4-main-ways-to-build-and-improve-reasoning-models": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.166667,
+        "light": 0.704167,
+        "standard": 0.669183,
+        "deep": 0.7507
+      },
+      "reward_sd": {
+        "skip": 0.11547,
+        "light": 0.200629,
+        "standard": 0.054287,
+        "deep": 0.060622
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.3675,
+        "standard": 0.39225,
+        "deep": 0.52
+      }
+    },
+    "S6::section-6-thoughts-about-deepseek-r1": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.336667,
+        "standard": 0.3436,
+        "deep": 0.264033
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.057735,
+        "standard": 0.0,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S7::section-7-developing-reasoning-models-on-a-limited-budget": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.375,
+        "standard": 0.4011,
+        "deep": 0.4032
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.025981
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.105,
+        "standard": 0.1575,
+        "deep": 0.1725
+      }
+    },
+    "S8::section-8-conclusion": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.303333,
+        "standard": 0.3136,
+        "deep": 0.399033
+      },
+      "reward_sd": {
+        "skip": 0.1,
+        "light": 0.11547,
+        "standard": 0.11694,
+        "deep": 0.11547
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.07,
+        "deep": 0.135
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-methods-and-strategies-for-building-and-refining-reasoning-models": "standard",
+    "S2::section-2-how-do-we-define-reasoning-model": "standard",
+    "S3::section-3-when-should-we-use-reasoning-models": "standard",
+    "S4::section-4-a-brief-look-at-the-deepseek-training-pipeline": "standard",
+    "S5::section-5-the-4-main-ways-to-build-and-improve-reasoning-models": "deep",
+    "S6::section-6-thoughts-about-deepseek-r1": "skip",
+    "S7::section-7-developing-reasoning-models-on-a-limited-budget": "deep",
+    "S8::section-8-conclusion": "deep"
+  }
+}

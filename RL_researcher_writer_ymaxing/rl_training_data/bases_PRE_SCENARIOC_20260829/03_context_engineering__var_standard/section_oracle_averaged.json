@@ -1,0 +1,239 @@
+{
+  "version": 1,
+  "merge_source": "single-draw section_oracle.json (production) + noise_experiment replicates via measure_replicate_noise.py's recompute path",
+  "article": "03_context_engineering",
+  "variant": "var_standard",
+  "n_draws_per_arm": 3,
+  "replicate_ids_used": [
+    1,
+    2
+  ],
+  "sections": {
+    "S1::section-1-introduction-when-prompt-engineering-breaks": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.236667,
+        "standard": 0.310267,
+        "deep": 0.349867
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.23094,
+        "standard": 0.057735,
+        "deep": 0.129816
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0525
+      }
+    },
+    "S2::section-2-from-prompt-to-context-engineering": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.4225,
+        "standard": 0.467767,
+        "deep": 0.3832
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.090933,
+        "standard": 0.057735,
+        "deep": 0.090933
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0525,
+        "standard": 0.1575,
+        "deep": 0.0525
+      }
+    },
+    "S3::section-3-understanding-context-engineering": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.133333,
+        "light": 0.17,
+        "standard": 0.152183,
+        "deep": 0.169033
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.0,
+        "standard": 0.04524,
+        "deep": 0.129816
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.07525,
+        "deep": 0.105
+      }
+    },
+    "S4::section-4-what-makes-up-the-context": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.133333,
+        "light": 0.103333,
+        "standard": 0.111933,
+        "deep": 0.239033
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.057735,
+        "standard": 0.118357,
+        "deep": 0.052579
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.035,
+        "deep": 0.175
+      }
+    },
+    "S5::section-5-production-implementation-challenges": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.5725,
+        "standard": 0.662767,
+        "deep": 0.5182
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.148668,
+        "deep": 0.025981
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.2025,
+        "standard": 0.3525,
+        "deep": 0.1875
+      }
+    },
+    "S6::section-6-key-strategies-for-context-optimization": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.593333,
+        "standard": 0.581933,
+        "deep": 0.442617
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.027424,
+        "standard": 0.275163,
+        "deep": 0.134985
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.29,
+        "standard": 0.305,
+        "deep": 0.24525
+      }
+    },
+    "S7::section-7-here-is-an-example": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": -0.033333,
+        "light": -0.13,
+        "standard": -0.0564,
+        "deep": -0.0693
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.4575,
+        "standard": 0.484392,
+        "deep": 0.456492
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.151554,
+        "standard": 0.033364,
+        "deep": 0.018045
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0875,
+        "standard": 0.174125,
+        "deep": 0.159125
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction-when-prompt-engineering-breaks": "skip",
+    "S2::section-2-from-prompt-to-context-engineering": "standard",
+    "S3::section-3-understanding-context-engineering": "light",
+    "S4::section-4-what-makes-up-the-context": "deep",
+    "S5::section-5-production-implementation-challenges": "standard",
+    "S6::section-6-key-strategies-for-context-optimization": "light",
+    "S7::section-7-here-is-an-example": "skip",
+    "S8::section-8-conclusion-wrap-up-connecting-context-engineering-to-ai-engineering": "standard"
+  }
+}

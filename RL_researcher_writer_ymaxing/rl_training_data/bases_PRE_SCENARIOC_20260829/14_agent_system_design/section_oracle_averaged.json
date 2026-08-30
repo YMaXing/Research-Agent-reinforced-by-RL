@@ -1,0 +1,183 @@
+{
+  "version": 1,
+  "merge_source": "single-draw section_oracle.json (production) + noise_experiment replicates via measure_replicate_noise.py's recompute path",
+  "article": "14_agent_system_design",
+  "variant": "no_variant",
+  "n_draws_per_arm": 3,
+  "replicate_ids_used": [
+    1,
+    2
+  ],
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.333333,
+        "light": 0.303333,
+        "standard": 0.4536,
+        "deep": 0.264033
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.057735,
+        "standard": 0.090933,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.21,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-a-general-ai-engineering-decision-framework": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.133333,
+        "light": 0.664833,
+        "standard": 0.499433,
+        "deep": 0.601533
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.068993,
+        "standard": 0.263158,
+        "deep": 0.271596
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.5615,
+        "standard": 0.4225,
+        "deep": 0.5375
+      }
+    },
+    "S3::section-3-inference-time-scaling-and-the-cost-latency-calculus": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.266667,
+        "light": 0.341667,
+        "standard": 0.507183,
+        "deep": 0.3332
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.152753,
+        "standard": 0.088309,
+        "deep": 0.2
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.105,
+        "standard": 0.23025,
+        "deep": 0.2025
+      }
+    },
+    "S4::section-4-our-capstone-global-system-design": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.4225,
+        "standard": 0.4786,
+        "deep": 0.489867
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.090933,
+        "standard": 0.0,
+        "deep": 0.002887
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0525,
+        "standard": 0.135,
+        "deep": 0.1925
+      }
+    },
+    "S5::section-5-decision-matrix-defaults-for-the-capstone": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.37,
+        "standard": 0.310267,
+        "deep": 0.3832
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.057735,
+        "deep": 0.090933
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0525
+      }
+    },
+    "S6::section-6-conclusion": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.333333,
+        "light": 0.382167,
+        "standard": 0.390267,
+        "deep": 0.264033
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.097139,
+        "standard": 0.07654,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0455,
+        "standard": 0.08,
+        "deep": 0.0
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "standard",
+    "S2::section-2-a-general-ai-engineering-decision-framework": "light",
+    "S3::section-3-inference-time-scaling-and-the-cost-latency-calculus": "standard",
+    "S4::section-4-our-capstone-global-system-design": "deep",
+    "S5::section-5-decision-matrix-defaults-for-the-capstone": "skip",
+    "S6::section-6-conclusion": "standard"
+  }
+}

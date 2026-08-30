@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "merge_source": "single-draw section_oracle.json (production) + noise_experiment replicates via measure_replicate_noise.py's recompute path",
+  "article": "Dark_Dimension",
+  "variant": "no_variant",
+  "n_draws_per_arm": 3,
+  "replicate_ids_used": [
+    1,
+    2
+  ],
+  "sections": {
+    "S1::section-1-introduction": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.333333,
+        "light": 0.37,
+        "standard": 0.334683,
+        "deep": 0.264033
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.0,
+        "standard": 0.019932,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.05775,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-dark-interactions": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.336667,
+        "standard": 0.310267,
+        "deep": 0.589033
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.057735,
+        "standard": 0.057735,
+        "deep": 0.26223
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.325
+      }
+    },
+    "S3::section-3-a-dark-dimension": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.3,
+        "light": 0.856667,
+        "standard": 0.8636,
+        "deep": 0.811242
+      },
+      "reward_sd": {
+        "skip": 0.173205,
+        "light": 0.059231,
+        "standard": 0.060622,
+        "deep": 0.065533
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.52,
+        "standard": 0.52,
+        "deep": 0.513875
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-introduction": "light",
+    "S2::section-2-dark-interactions": "deep",
+    "S3::section-3-a-dark-dimension": "standard"
+  }
+}

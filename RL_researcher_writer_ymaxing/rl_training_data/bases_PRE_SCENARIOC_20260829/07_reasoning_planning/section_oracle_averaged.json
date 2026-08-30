@@ -1,0 +1,239 @@
+{
+  "version": 1,
+  "merge_source": "single-draw section_oracle.json (production) + noise_experiment replicates via measure_replicate_noise.py's recompute path",
+  "article": "07_reasoning_planning",
+  "variant": "no_variant",
+  "n_draws_per_arm": 3,
+  "replicate_ids_used": [
+    1,
+    2
+  ],
+  "sections": {
+    "S1::section-1-what-a-non-reasoning-model-does-and-why-it-fails-on-complex-tasks": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.2,
+        "light": 0.17,
+        "standard": 0.1436,
+        "deep": 0.3057
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.151554
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.175
+      }
+    },
+    "S2::section-2-teaching-models-to-think-chain-of-thought-and-its-limits": {
+      "oracle": "standard",
+      "rewards": {
+        "skip": 0.133333,
+        "light": 0.07,
+        "standard": 0.1436,
+        "deep": 0.1307
+      },
+      "reward_sd": {
+        "skip": 0.11547,
+        "light": 0.173205,
+        "standard": 0.0,
+        "deep": 0.0
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S3::section-3-separating-planning-from-answering-foundations-of-react-and-plan-and-execute": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.424167,
+        "standard": 0.451933,
+        "deep": 0.524867
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.093819,
+        "standard": 0.093819,
+        "deep": 0.118357
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0875,
+        "standard": 0.175,
+        "deep": 0.2275
+      }
+    },
+    "S4::section-4-react-in-depth-loop-evolving-example-pros-and-cons": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.0,
+        "light": -0.13,
+        "standard": -0.123067,
+        "deep": -0.102633
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.057735,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S5::section-5-plan-and-execute-in-depth-plan-execution-pros-and-cons": {
+      "oracle": "light",
+      "rewards": {
+        "skip": -0.033333,
+        "light": -0.03,
+        "standard": -0.123067,
+        "deep": -0.135967
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.0,
+        "standard": 0.057735,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S6::section-6-where-this-shows-up-in-practice-deep-research-style-systems": {
+      "oracle": "deep",
+      "rewards": {
+        "skip": 0.1,
+        "light": 0.036667,
+        "standard": 0.076933,
+        "deep": 0.1072
+      },
+      "reward_sd": {
+        "skip": 0.173205,
+        "light": 0.152753,
+        "standard": 0.11547,
+        "deep": 0.161041
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0765
+      }
+    },
+    "S7::section-7-modern-reasoning-models-thinking-vs-answer-streams-and-interleaved-thinking": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.0,
+        "light": -0.096667,
+        "standard": -0.089733,
+        "deep": -0.102633
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.057735,
+        "standard": 0.057735,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S8::section-8-advanced-agent-capabilities-enabled-by-planning-goal-decomposition-and-self-correction": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": -0.1,
+        "light": -0.13,
+        "standard": -0.1039,
+        "deep": -0.1018
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.090933,
+        "deep": 0.116913
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0525,
+        "deep": 0.0675
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-what-a-non-reasoning-model-does-and-why-it-fails-on-complex-tasks": "deep",
+    "S2::section-2-teaching-models-to-think-chain-of-thought-and-its-limits": "standard",
+    "S3::section-3-separating-planning-from-answering-foundations-of-react-and-plan-and-execute": "deep",
+    "S4::section-4-react-in-depth-loop-evolving-example-pros-and-cons": "skip",
+    "S5::section-5-plan-and-execute-in-depth-plan-execution-pros-and-cons": "light",
+    "S6::section-6-where-this-shows-up-in-practice-deep-research-style-systems": "deep",
+    "S7::section-7-modern-reasoning-models-thinking-vs-answer-streams-and-interleaved-thinking": "skip",
+    "S8::section-8-advanced-agent-capabilities-enabled-by-planning-goal-decomposition-and-self-correction": "skip"
+  }
+}

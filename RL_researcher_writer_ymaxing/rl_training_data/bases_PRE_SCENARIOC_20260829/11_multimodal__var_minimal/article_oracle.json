@@ -1,0 +1,214 @@
+{
+  "version": 3,
+  "article": "11_multimodal__var_minimal",
+  "variant": "var_minimal",
+  "computed_at": "2026-08-26T06:44:21.899395+00:00",
+  "computed_from": "section_oracle_averaged.json",
+  "n_draws_used": 3,
+  "oracle_arm": "skip",
+  "oracle_arm_idx": 0,
+  "runner_up_arm": "light",
+  "runner_up_arm_idx": 1,
+  "margin": -0.053975,
+  "reward_spread": 0.119827,
+  "r_w_rewards": {
+    "skip": 0.101149,
+    "light": 0.155125,
+    "standard": 0.066457,
+    "deep": 0.035298
+  },
+  "r_w_rewards_list": [
+    0.101149,
+    0.155125,
+    0.066457,
+    0.035298
+  ],
+  "decision_path": [
+    "policy=forbidden \u2192 skip (hard constraint)"
+  ],
+  "manual_override": false,
+  "needs_review": false,
+  "gate_diagnostics": null,
+  "low_signal_flag": false,
+  "n_sections": 8,
+  "n_sections_with_target": 8,
+  "total_target_words": 1450,
+  "sections": [
+    {
+      "index": 1,
+      "sec_id": "S1::section-1-introduction-the-need-for-multimodal-ai",
+      "title": "introduction the need for multimodal ai",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.10345,
+      "rewards": {
+        "skip": 0.133333,
+        "light": 0.226083,
+        "standard": 0.176933,
+        "deep": 0.097367
+      },
+      "rewards_by_preset": [
+        0.133333,
+        0.226083,
+        0.176933,
+        0.097367
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 2,
+      "sec_id": "S2::section-2-limitations-of-traditional-document-processing",
+      "title": "limitations of traditional document processing",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.13793,
+      "rewards": {
+        "skip": 0.366667,
+        "light": 0.336667,
+        "standard": 0.333017,
+        "deep": 0.264033
+      },
+      "rewards_by_preset": [
+        0.366667,
+        0.336667,
+        0.333017,
+        0.264033
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 3,
+      "sec_id": "S3::section-3-foundations-of-multimodal-llms",
+      "title": "foundations of multimodal llms",
+      "target_words": 250,
+      "weight_words": 250,
+      "weight_frac": 0.17241,
+      "rewards": {
+        "skip": -0.033333,
+        "light": 0.126083,
+        "standard": 0.133017,
+        "deep": -0.035967
+      },
+      "rewards_by_preset": [
+        -0.033333,
+        0.126083,
+        0.133017,
+        -0.035967
+      ],
+      "section_oracle": "standard",
+      "section_oracle_idx": 2
+    },
+    {
+      "index": 4,
+      "sec_id": "S4::section-4-applying-multimodal-llms-to-images-and-pdfs",
+      "title": "applying multimodal llms to images and pdfs",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.13793,
+      "rewards": {
+        "skip": 0.0,
+        "light": 0.136667,
+        "standard": -0.0564,
+        "deep": -0.102633
+      },
+      "rewards_by_preset": [
+        0.0,
+        0.136667,
+        -0.0564,
+        -0.102633
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 5,
+      "sec_id": "S5::section-5-foundations-of-multimodal-rag",
+      "title": "foundations of multimodal rag",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.13793,
+      "rewards": {
+        "skip": 0.033333,
+        "light": 0.133083,
+        "standard": -0.1039,
+        "deep": 0.064033
+      },
+      "rewards_by_preset": [
+        0.033333,
+        0.133083,
+        -0.1039,
+        0.064033
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 6,
+      "sec_id": "S6::section-6-implementing-multimodal-rag-for-images-pdfs-and-text",
+      "title": "implementing multimodal rag for images pdfs and text",
+      "target_words": 200,
+      "weight_words": 200,
+      "weight_frac": 0.13793,
+      "rewards": {
+        "skip": 0.033333,
+        "light": 0.003333,
+        "standard": -0.1564,
+        "deep": -0.102633
+      },
+      "rewards_by_preset": [
+        0.033333,
+        0.003333,
+        -0.1564,
+        -0.102633
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    },
+    {
+      "index": 7,
+      "sec_id": "S7::section-7-building-multimodal-ai-agents",
+      "title": "building multimodal ai agents",
+      "target_words": 150,
+      "weight_words": 150,
+      "weight_frac": 0.10345,
+      "rewards": {
+        "skip": 0.1,
+        "light": 0.136667,
+        "standard": 0.034683,
+        "deep": -0.035967
+      },
+      "rewards_by_preset": [
+        0.1,
+        0.136667,
+        0.034683,
+        -0.035967
+      ],
+      "section_oracle": "light",
+      "section_oracle_idx": 1
+    },
+    {
+      "index": 8,
+      "sec_id": "S8::section-8-conclusion",
+      "title": "conclusion",
+      "target_words": 100,
+      "weight_words": 100,
+      "weight_frac": 0.06897,
+      "rewards": {
+        "skip": 0.333333,
+        "light": 0.203333,
+        "standard": 0.255767,
+        "deep": 0.264033
+      },
+      "rewards_by_preset": [
+        0.333333,
+        0.203333,
+        0.255767,
+        0.264033
+      ],
+      "section_oracle": "skip",
+      "section_oracle_idx": 0
+    }
+  ]
+}

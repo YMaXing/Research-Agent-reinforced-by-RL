@@ -1,0 +1,183 @@
+{
+  "version": 1,
+  "merge_source": "single-draw section_oracle.json (production) + noise_experiment replicates via measure_replicate_noise.py's recompute path",
+  "article": "08_react_practice",
+  "variant": "var_minimal",
+  "n_draws_per_arm": 3,
+  "replicate_ids_used": [
+    1,
+    2
+  ],
+  "sections": {
+    "S1::section-1-setup-and-environment": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.266667,
+        "light": 0.203333,
+        "standard": 0.2436,
+        "deep": 0.264033
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.11547,
+        "standard": 0.0,
+        "deep": 0.057735
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0
+      }
+    },
+    "S2::section-2-tool-layer-mock-search-implementation": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.266667,
+        "light": 0.203333,
+        "standard": 0.176933,
+        "deep": 0.1832
+      },
+      "reward_sd": {
+        "skip": 0.057735,
+        "light": 0.11547,
+        "standard": 0.11547,
+        "deep": 0.082272
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0525
+      }
+    },
+    "S3::section-3-thought-phase-prompt-construction-and-generation": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.1,
+        "light": -0.13,
+        "standard": 0.010267,
+        "deep": -0.1168
+      },
+      "reward_sd": {
+        "skip": 0.264575,
+        "light": 0.0,
+        "standard": 0.208167,
+        "deep": 0.090933
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0525
+      }
+    },
+    "S4::section-4-action-phase-function-calling-and-parsing": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.4,
+        "light": 0.203333,
+        "standard": 0.277725,
+        "deep": 0.1982
+      },
+      "reward_sd": {
+        "skip": 0.0,
+        "light": 0.11547,
+        "standard": 0.059106,
+        "deep": 0.056292
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.034125,
+        "deep": 0.0675
+      }
+    },
+    "S5::section-5-control-loop-messages-scratchpad-orchestration": {
+      "oracle": "light",
+      "rewards": {
+        "skip": 0.033333,
+        "light": 0.27125,
+        "standard": 0.022433,
+        "deep": -0.102633
+      },
+      "reward_sd": {
+        "skip": 0.11547,
+        "light": 0.053044,
+        "standard": 0.154874,
+        "deep": 0.11547
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.20125,
+        "standard": 0.0455,
+        "deep": 0.0
+      }
+    },
+    "S6::section-6-tests-and-traces-success-and-graceful-fallback": {
+      "oracle": "skip",
+      "rewards": {
+        "skip": 0.133333,
+        "light": -0.03,
+        "standard": 0.010267,
+        "deep": 0.049867
+      },
+      "reward_sd": {
+        "skip": 0.23094,
+        "light": 0.1,
+        "standard": 0.208167,
+        "deep": 0.379608
+      },
+      "n_draws": {
+        "skip": 3,
+        "light": 3,
+        "standard": 3,
+        "deep": 3
+      },
+      "explore": {
+        "skip": 0.0,
+        "light": 0.0,
+        "standard": 0.0,
+        "deep": 0.0525
+      }
+    }
+  },
+  "presets": {
+    "S1::section-1-setup-and-environment": "skip",
+    "S2::section-2-tool-layer-mock-search-implementation": "skip",
+    "S3::section-3-thought-phase-prompt-construction-and-generation": "skip",
+    "S4::section-4-action-phase-function-calling-and-parsing": "skip",
+    "S5::section-5-control-loop-messages-scratchpad-orchestration": "light",
+    "S6::section-6-tests-and-traces-success-and-graceful-fallback": "skip"
+  }
+}
