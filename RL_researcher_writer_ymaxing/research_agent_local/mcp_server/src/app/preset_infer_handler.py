@@ -339,34 +339,6 @@ _COST_MATRIX_C2: list[list[float]] = [
     [0.1067, 0.0369, 0.0436, 0.0000],  # true = deep
 ]
 
-# Design C's own cost matrix, fit the identical way (Cost[c][a] = mean over
-# TRAIN articles with oracle==c of r_w[c]-r_w[a]) but from bases_design_c/'s
-# own article_oracle.json (Design C's reward formula + the same mean-R_w
-# mechanism as C2, A.16.8/A.18.6) -- NOT a copy of C2's matrix. Fit 2026-08-26.
-# CAVEAT: true=skip (n=1) and true=standard (n=1) rows are single-article,
-# noisy fits -- same caveat as C2's true=skip row above, now also applying to
-# true=standard here because Design C's own oracle only calls 1 TRAIN article
-# "standard" (vs. C2's 3).
-_COST_MATRIX_DESIGN_C: list[list[float]] = [
-    # action:     skip     light  standard    deep
-    [0.0000, 0.0656, 0.2021, 0.0752],  # true = skip      (n=1, noisy)
-    [0.0751, 0.0000, 0.0798, 0.0763],  # true = light     (n=10)
-    [-0.0251, 0.0066, 0.0000, 0.0337],  # true = standard (n=1, noisy)
-    [0.0495, 0.0096, 0.0499, 0.0000],  # true = deep      (n=4)
-]
-
-#: Selects which fitted matrix apply_cost_sensitive_rule() uses, mirroring the
-#: RL_INFER_ADAPTER_DIR env-var pattern already used for checkpoint selection
-#: (ensure_infer_server() above) -- lets a caller (e.g. test_grok_planner.py's
-#: --cost-formula) select the matching cost structure for whichever
-#: reward-formula experiment's checkpoint/oracle it's currently evaluating,
-#: without threading a new parameter through the whole MCP tool-call chain.
-_COST_FORMULA_ENV_VAR = "RL_COST_FORMULA"
-_COST_MATRICES: dict[str, list[list[float]]] = {
-    "c2": _COST_MATRIX_C2,
-    "design_c": _COST_MATRIX_DESIGN_C,
-}
-
 #: Never let the rule move more than this many preset levels from the raw
 #: argmax. An unconstrained argmin over the full cost matrix can jump 2+
 #: levels purely because a cheap preset has uniformly low cost as an action
@@ -384,11 +356,6 @@ def apply_cost_sensitive_rule(raw_preset: int, probs: list[float]) -> int:
     ``E[cost | a] = sum_c probs[c] * cost_matrix[c][a]``, restricted to
     candidates within `_COST_RULE_MAX_STEP` of ``raw_preset``.
 
-    ``cost_matrix`` is selected via the ``RL_COST_FORMULA`` env var
-    (``"c2"`` default, or ``"design_c"``) -- an unrecognized value falls back
-    to ``"c2"`` with a warning rather than raising, so a typo degrades to the
-    documented default instead of crashing inference mid-pipeline.
-
     Backtest result (2026-08-25, refit against N=3-replication-corrected
     oracle data): TEST exact 8->9 (50%->56%), near 5->4, miss unchanged at 3,
     MAE 0.6875->0.625, reward-regret mean 0.0176->0.0134, regret max unchanged
@@ -397,14 +364,7 @@ def apply_cost_sensitive_rule(raw_preset: int, probs: list[float]) -> int:
     0.0198->0.0111, regret max 0.0774->0.0401 -- a small, mixed trade (fewer
     exact hits, lower worst-case regret) versus the prior matrix's 13/24 exact.
     """
-    formula = os.environ.get(_COST_FORMULA_ENV_VAR, "c2")
-    cost_matrix = _COST_MATRICES.get(formula)
-    if cost_matrix is None:
-        logger.warning(
-            "%s=%r not recognized (expected one of %s); falling back to 'c2'.",
-            _COST_FORMULA_ENV_VAR, formula, sorted(_COST_MATRICES),
-        )
-        cost_matrix = _COST_MATRIX_C2
+    cost_matrix = _COST_MATRIX_C2
     lo = max(0, raw_preset - _COST_RULE_MAX_STEP)
     hi = min(NUM_PRESETS - 1, raw_preset + _COST_RULE_MAX_STEP)
     candidates = range(lo, hi + 1)

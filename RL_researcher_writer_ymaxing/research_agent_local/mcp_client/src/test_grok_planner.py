@@ -84,16 +84,6 @@ Usage (from research_agent_local/)
   uv run python -m mcp_client.src.test_grok_planner \
       --adapter-dir tasks/run31_averaged_confidence/epochs/epoch_0109 \
       --rl-guards-only --save-json
-
-  # Score a Design-C-trained checkpoint against Design C's own oracle labels
-  # and rewards (rl_training_data/bases_design_c/), not production C2's --
-  # --cost-formula also switches the server's cost-sensitive decision rule
-  # (--rl-guards-only mode doesn't apply that rule, but plain RL/Grok modes do):
-  uv run python -m mcp_client.src.test_grok_planner \
-      --adapter-dir tasks/run_design_c/epochs/epoch_00XX \
-      --bases-dir ../rl_training_data/bases_design_c \
-      --cost-formula design_c \
-      --rl-guards-only --save-json
 """
 
 from __future__ import annotations
@@ -123,18 +113,12 @@ _THIS_DIR = Path(__file__).resolve().parent
 _CLIENT_DIR = _THIS_DIR.parent                    # mcp_client/
 _AGENT_DIR = _CLIENT_DIR.parent                   # research_agent_local/
 _REPO_ROOT = _AGENT_DIR.parent                    # RL_researcher_writer_ymaxing/
-# Reassigned in main() by --bases-dir (e.g. to bases_design_c/ for scoring a
-# Design-C-trained checkpoint against Design C's own oracle labels/rewards
-# instead of production C2's) -- both run_variant() and _read_oracle() below
-# read this name unqualified, so the override propagates to both.
+# Reassigned in main() by --bases-dir to score a checkpoint against an
+# alternate reward-formula experiment's own oracle labels/rewards -- both
+# run_variant() and _read_oracle() below read this name unqualified, so the
+# override propagates to both.
 _BASES_DIR = _REPO_ROOT / "rl_training_data" / "bases"
 _CHECKPOINTS_ROOT = _REPO_ROOT / "rl_training_data" / "checkpoints"
-
-# Must stay in sync with preset_infer_handler.py's _COST_FORMULA_ENV_VAR /
-# _COST_MATRICES -- this client process only forwards the env var to the
-# server subprocess, it never imports the server's cost-matrix module.
-_COST_FORMULA_ENV_VAR = "RL_COST_FORMULA"
-_COST_FORMULAS = {"c2", "design_c"}
 
 # _infer_config.py is stdlib-only (see its own docstring), so it's safe to
 # import here too -- lets --save-json mirror ensure_infer_server()'s own
@@ -296,16 +280,48 @@ def _read_oracle(variant_name: str) -> tuple[int, list[float]]:
     return int(data["oracle_arm_idx"]), data["r_w_rewards_list"]
 
 
-def _apply_policy_guards(preset: int, policy: str) -> int:
-    """Deterministic hard-constraint clamp (mirrors the server-side guard).
+def _apply_policy_guards(
+    preset: int, policy: str, distribution: list[float] | None = None
+) -> tuple[int, str | None]:
+    """Deterministic hard-constraint clamp (mirrors the server-side guard exactly).
 
-    forbidden -> P0 skip   ·   required -> at least P1 light   ·   allowed -> unchanged.
+    forbidden -> P0 skip   ·   required -> at least P1 light   ·
+    capped -> at most P1 light; WITHIN that ceiling, ``distribution``'s own
+    P(skip) vs P(light) always arbitrates the choice (even when preset is
+    already in {0, 1} -- it can still disagree with the distribution, e.g.
+    after the cost-sensitive rule's adjustment), no distribution -> leave
+    an in-bounds preset unchanged   ·   allowed -> unchanged.
+
+    A standard/deep vote is ALWAYS capped to light regardless of distribution
+    (A.20.11: the residual P(skip) vs P(light) split is unreliable there) --
+    but when that residual split disagrees with the light default, the
+    returned note is marked AMBIGUOUS so the case is flagged for review.
+
+    Returns ``(clamped_preset, note)`` where ``note`` is a short human-readable
+    string when a clamp fired, else None.
     """
     if policy == "forbidden":
-        return 0
+        return 0, f"policy=forbidden: clamped P{preset}->P0 skip" if preset != 0 else None
     if policy == "required":
-        return max(1, preset)
-    return preset
+        return (max(1, preset), f"policy=required: clamped P{preset}->P1 light") if preset < 1 else (preset, None)
+    if policy == "capped":
+        if preset > 1:
+            if distribution and distribution[0] > distribution[1]:
+                return 1, (
+                    f"policy=capped: clamped P{preset}->P1 light — AMBIGUOUS: "
+                    f"residual P(skip)={distribution[0]:.3f} > "
+                    f"P(light)={distribution[1]:.3f}, flagged for review (A.20.11)"
+                )
+            return 1, f"policy=capped: clamped P{preset}->P1 light"
+        if distribution:
+            resolved = 1 if distribution[1] >= distribution[0] else 0
+            if resolved != preset:
+                return resolved, (
+                    f"policy=capped: distribution favors P{resolved} "
+                    f"{_PRESET_NAMES[resolved]} over P{preset} {_PRESET_NAMES[preset]} "
+                    f"(P(skip)={distribution[0]:.3f} vs P(light)={distribution[1]:.3f})"
+                )
+    return preset, None
 
 
 # ---------------------------------------------------------------------------
@@ -380,6 +396,7 @@ async def run_variant(
     rl_section_signals = evidence.get("section_signals")
 
     # Determine which preset to evaluate
+    guard_note: str | None = None
     if grok_only:
         if grok is None:
             return {
@@ -394,7 +411,7 @@ async def run_variant(
                 "variant": variant, "lesson": lesson, "split": split,
                 "error": "rl_recommendation missing (rl_guards_only)",
             }
-        chosen_preset = _apply_policy_guards(rl["preset"], policy)
+        chosen_preset, guard_note = _apply_policy_guards(rl["preset"], policy, rl.get("agg_probs"))
         chosen_by = "RL+guards"
     elif rl_only or grok is None:
         chosen_preset = rl["preset"]
@@ -416,6 +433,7 @@ async def run_variant(
             "grok_preset": grok["preset"] if grok else None,
             "chosen_preset": chosen_preset,
             "chosen_by": chosen_by,
+            "guard_note": guard_note,
             "oracle_preset": None,
             "verdict": "NO_ORACLE",
             "entropy_bits": rl["entropy_bits"] if rl else None,
@@ -458,6 +476,7 @@ async def run_variant(
         "grok_preset": grok["preset"] if grok else None,
         "chosen_preset": chosen_preset,
         "chosen_by": chosen_by,
+        "guard_note": guard_note,
         "oracle_preset": oracle_preset,
         "oracle_name": _PRESET_NAMES.get(oracle_preset, "?"),
         "r_w_rewards": [round(r, 4) for r in r_w_rewards],
@@ -525,7 +544,11 @@ def _print_variant_result(r: dict) -> None:
         print(f"  Section vote mass (word-weighted hard vote): {vm_str}")
 
     if is_guards:
-        print(f"  Guards     : deterministic policy clamp (forbidden→skip / required→≥light)")
+        print(f"  Guards     : deterministic policy clamp (forbidden→skip / required→≥light / capped→≤light)")
+        note = r.get("guard_note")
+        if note:
+            flag = "  [FLAGGED FOR REVIEW]" if "AMBIGUOUS" in note else ""
+            print(f"               {note}{flag}")
     elif gp is not None:
         gp_name = _PRESET_NAMES.get(gp, "?")
         if is_grok_only:
@@ -896,21 +919,9 @@ async def main() -> None:
             "Override the bases root used for BOTH the tool's research_directory "
             "argument AND article_oracle.json scoring (default: production "
             "rl_training_data/bases/). Use this to score a checkpoint against an "
-            "alternate reward-formula experiment's own oracle labels/rewards, e.g. "
-            "rl_training_data/bases_design_c/ for Design C -- without it, oracle/"
-            "reward figures are always read from production C2 regardless of "
-            "which checkpoint --adapter-dir points at."
-        ),
-    )
-    parser.add_argument(
-        "--cost-formula", type=str, default=None, choices=sorted(_COST_FORMULAS),
-        help=(
-            "Select which fitted cost matrix the server's cost-sensitive decision "
-            "rule (preset_infer_handler.apply_cost_sensitive_rule) uses -- 'c2' "
-            "(default) or 'design_c'. Only affects plain RL/full pipeline modes, "
-            "not --rl-guards-only (guards don't call the cost rule). Pair with "
-            "--bases-dir rl_training_data/bases_design_c for a fully consistent "
-            "Design C evaluation."
+            "alternate reward-formula experiment's own oracle labels/rewards -- "
+            "without it, oracle/reward figures are always read from production "
+            "C2 regardless of which checkpoint --adapter-dir points at."
         ),
     )
     args = parser.parse_args()
@@ -922,17 +933,6 @@ async def main() -> None:
             return
         global _BASES_DIR
         _BASES_DIR = resolved_bases_dir
-
-    if args.cost_formula is not None:
-        # Same forwarding split as RL_INFER_ADAPTER_DIR below: os.environ for
-        # this process (unused here, but kept for symmetry/introspection) plus
-        # an explicit server env entry, since stdio's default env allowlist
-        # would otherwise drop it before it reaches the subprocess.
-        os.environ[_COST_FORMULA_ENV_VAR] = args.cost_formula
-        _mcp_settings.mcp.servers["research_agent"].env = {
-            **(_mcp_settings.mcp.servers["research_agent"].env or {}),
-            _COST_FORMULA_ENV_VAR: args.cost_formula,
-        }
 
     n_modes = sum([args.rl_only, args.grok_only, args.rl_guards_only])
     if n_modes > 1:
@@ -996,7 +996,6 @@ async def main() -> None:
     if resolved_adapter_dir is not None:
         print(f"  Adapter  : {resolved_adapter_dir}  (--adapter-dir override)")
     print(f"  Bases dir: {_BASES_DIR}" + ("  (--bases-dir override)" if args.bases_dir is not None else ""))
-    print(f"  Cost formula: {args.cost_formula or 'c2 (default)'}")
     print(f"  Variants : {variant_list}")
 
     async with app.run():

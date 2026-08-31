@@ -138,7 +138,7 @@ def per_round_margins(article: str):
     rounds = [prod["sections"]]
     for r in replicate_ids:
         prefix = mrn._NOISE_EXPERIMENT_DIR / f"{article}__replicate{r}"
-        rounds.append(mrn._compute_replicate_sections(article, prefix, prod_sec_ids, cost_formula="c2"))
+        rounds.append(mrn._compute_replicate_sections(article, prefix, prod_sec_ids))
 
     margins = [
         _article_level_r_w(rd, feat, winner) - _article_level_r_w(rd, feat, runner_up)

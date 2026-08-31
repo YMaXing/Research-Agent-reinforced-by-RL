@@ -64,6 +64,10 @@ _POLICY_MEANING: dict[str, str] = {
     "required": (
         "external web evidence is mandatory — at least light exploration must run"
     ),
+    "capped": (
+        "the article's scope is a survey of fixed/named sources — exploration is capped "
+        "at light: only skip or light are valid, never standard or deep"
+    ),
 }
 
 # ---------------------------------------------------------------------------
@@ -488,9 +492,31 @@ def fallback_aggregator(evidence: dict) -> dict:
 
     preset = rl_preset
     drivers = ["rl_aggregate"]
+    risk_flags: list[str] = []
     if policy == "required" and preset < 1:
         preset = 1
         drivers.append("policy:required")
+    if policy == "capped":
+        dist = rl["distribution"]
+        if preset > 1:
+            # A.20.11: the residual P(skip) vs P(light) split is unreliable here
+            # (2/5 wrong on the validation sample) and is never used to pick the
+            # arm -- but when it disagrees with the mandated light default, flag
+            # the case for review rather than silently resolving it.
+            ambiguous = dist[0] > dist[1]
+            preset = 1
+            drivers.append("policy:capped")
+            if ambiguous:
+                risk_flags.append(
+                    f"policy=capped AMBIGUOUS: residual P(skip)={dist[0]:.3f} > "
+                    f"P(light)={dist[1]:.3f}, but standard/deep votes are always "
+                    f"capped to light regardless (A.20.11) -- flagged for review"
+                )
+        else:
+            resolved = 1 if dist[1] >= dist[0] else 0
+            if resolved != preset:
+                preset = resolved
+                drivers.append("policy:capped")
 
     return {
         "preset": preset,
@@ -502,7 +528,7 @@ def fallback_aggregator(evidence: dict) -> dict:
         "override": preset != rl_preset,
         "override_reason": None,
         "decision_drivers": drivers,
-        "risk_flags": ["deterministic fallback — no LLM reasoning applied"],
+        "risk_flags": ["deterministic fallback — no LLM reasoning applied", *risk_flags],
     }
 
 
@@ -511,13 +537,39 @@ def fallback_aggregator(evidence: dict) -> dict:
 # ---------------------------------------------------------------------------
 # Never trust the LLM to honour the external-evidence policy. After Grok returns
 # a preset, clamp it deterministically so a policy violation is impossible:
-#   forbidden -> P0 skip   (exploration output is unusable in the final article)
+#   forbidden -> P0 skip     (exploration output is unusable in the final article)
 #   required  -> >= P1 light (external evidence is mandatory)
-# These are the only two policy directions that have a hard, non-negotiable
+#   capped    -> <= P1 light (article scope is a survey of fixed/named sources;
+#                             the {skip,light} ceiling is a design decision, not a
+#                             data-driven one — see A.20 discussion). WITHIN that
+#                             ceiling, the skip-vs-light choice is NOT "leave preset
+#                             alone if already <= 1" — it always defers to the RL
+#                             distribution's own P(skip) vs P(light) preference,
+#                             since an in-bounds preset can still disagree with the
+#                             distribution (e.g. after the cost-sensitive rule's
+#                             adjustment). No distribution available -> leave as-is.
+# These are the only three policy directions that have a hard, non-negotiable
 # constraint; "allowed" imposes nothing.
 
-def _apply_policy_guards(preset: int, policy: str) -> tuple[int, str | None]:
+def _apply_policy_guards(
+    preset: int, policy: str, distribution: list[float] | None = None
+) -> tuple[int, str | None]:
     """Clamp a chosen preset to satisfy the external-evidence policy.
+
+    ``distribution`` is the RL aggregate's raw 4-arm probability vector
+    ([skip, light, standard, deep]). For "capped" it is the SOLE arbiter of
+    the skip-vs-light choice whenever preset is already in {0, 1} -- not just
+    a fallback for out-of-bounds presets -- since the incoming preset can
+    disagree with the distribution's own ranking. No distribution -> leave
+    an in-bounds preset unchanged.
+
+    A standard/deep vote is ALWAYS capped to light regardless of distribution
+    (A.20.11: the residual P(skip) vs P(light) split is unreliable there, 2/5
+    wrong on the validation sample, so it is never used to pick the arm) --
+    but when that residual split disagrees with the light default (i.e.
+    P(skip) > P(light)), the returned note is marked AMBIGUOUS so the case is
+    flagged for review rather than silently resolved, per A.20.11's
+    "flagged-for-review, not silently auto-picked" rule.
 
     Returns ``(clamped_preset, note)`` where ``note`` is a short human-readable
     string when a clamp fired, else None.
@@ -526,6 +578,23 @@ def _apply_policy_guards(preset: int, policy: str) -> tuple[int, str | None]:
         return 0, f"policy=forbidden: clamped P{preset}->P0 skip"
     if policy == "required" and preset < 1:
         return 1, f"policy=required: clamped P{preset}->P1 light"
+    if policy == "capped":
+        if preset > 1:
+            if distribution and distribution[0] > distribution[1]:
+                return 1, (
+                    f"policy=capped: clamped P{preset}->P1 light — AMBIGUOUS: "
+                    f"residual P(skip)={distribution[0]:.3f} > "
+                    f"P(light)={distribution[1]:.3f}, flagged for review (A.20.11)"
+                )
+            return 1, f"policy=capped: clamped P{preset}->P1 light"
+        if distribution:
+            resolved = 1 if distribution[1] >= distribution[0] else 0
+            if resolved != preset:
+                return resolved, (
+                    f"policy=capped: distribution favors P{resolved} "
+                    f"{PRESET_NAMES[resolved]} over P{preset} {PRESET_NAMES[preset]} "
+                    f"(P(skip)={distribution[0]:.3f} vs P(light)={distribution[1]:.3f})"
+                )
     return preset, None
 
 
@@ -687,6 +756,9 @@ volume.
 HARD CONSTRAINTS (these override everything above)
   - external-evidence policy = forbidden -> you MUST choose P0 skip.
   - external-evidence policy = required  -> you MUST choose at least P1 light.
+  - external-evidence policy = capped    -> you MUST choose P0 skip or P1 light only
+    (never P2 standard or P3 deep) — the article's scope is a survey of fixed/named
+    sources, so exploration cannot exceed a light touch-up.
 
 OUTPUT
 Reason briefly first (a few sentences citing the SPECIFIC evidence that drove you),
@@ -746,6 +818,9 @@ volume.
 HARD CONSTRAINTS (these override everything above)
   - external-evidence policy = forbidden -> you MUST choose P0 skip.
   - external-evidence policy = required  -> you MUST choose at least P1 light.
+  - external-evidence policy = capped    -> you MUST choose P0 skip or P1 light only
+    (never P2 standard or P3 deep) — the article's scope is a survey of fixed/named
+    sources, so exploration cannot exceed a light touch-up.
 
 OUTPUT
 Reason briefly first (a few sentences citing the specific evidence), then output ONLY
@@ -865,7 +940,9 @@ async def call_grok_planner(
         #     _apply_escalation_guard docstring — a prompt instruction alone was
         #     shown to be insufficient); (2) forbidden->skip, required->>=light.
         escalated_preset, escalation_note = _apply_escalation_guard(parsed_preset, rl_preset)
-        final_preset, guard_note = _apply_policy_guards(escalated_preset, policy)
+        final_preset, guard_note = _apply_policy_guards(
+            escalated_preset, policy, evidence["rl_aggregate"]["distribution"]
+        )
         drivers = parsed.get("decision_drivers", [])
         risk_flags = parsed.get("risk_flags", [])
         override_reason = parsed.get("override_reason")
@@ -935,7 +1012,9 @@ async def call_grok_planner_standalone(
         parsed_preset = int(parsed["preset"])
         if parsed_preset not in range(NUM_PRESETS):
             raise ValueError(f"preset {parsed_preset} out of range 0-{NUM_PRESETS - 1}")
-        # Deterministic hard-constraint guard (forbidden->skip, required->>=light).
+        # Deterministic hard-constraint guard (forbidden->skip, required->>=light,
+        # capped->[skip,light]). No RL distribution exists in standalone mode
+        # (rl_aggregate is None), so a capped clamp here always defaults to light.
         final_preset, guard_note = _apply_policy_guards(parsed_preset, policy)
         drivers = parsed.get("decision_drivers", [])
         risk_flags = parsed.get("risk_flags", [])

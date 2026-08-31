@@ -73,7 +73,7 @@ def _discover_replicates(article: str, max_replicates: int) -> list[int]:
     return found
 
 
-def merge_article(article: str, max_replicates: int, dry_run: bool, cost_formula: str = "c2") -> bool:
+def merge_article(article: str, max_replicates: int, dry_run: bool) -> bool:
     section_oracle_path = _BASES_DIR / article / "section_oracle.json"
     if not section_oracle_path.exists():
         print(f"  SKIP {article}: no production section_oracle.json", file=sys.stderr)
@@ -112,7 +112,7 @@ def merge_article(article: str, max_replicates: int, dry_run: bool, cost_formula
     }
     for r in replicate_ids:
         prefix = _NOISE_EXPERIMENT_DIR / f"{article}__replicate{r}"
-        sections = mrn._compute_replicate_sections(article, prefix, prod_sec_ids, cost_formula=cost_formula)
+        sections = mrn._compute_replicate_sections(article, prefix, prod_sec_ids)
         for sid in sec_ids:
             for a in _ARM_ORDER:
                 draws[sid][a].append(float(sections[sid]["rewards"][a]))
@@ -179,8 +179,6 @@ def main() -> int:
     parser.add_argument("--target-n", type=int, default=None,
                          help="Total draws INCLUDING the production one; overrides --replicates as target_n - 1.")
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--cost-formula", choices=["c2", "design_c"], default="c2",
-                         help="Reward cost mechanism -- see generate_episode_oracles.py::_DESIGN_C_COST.")
     parser.add_argument("--bases-dir", type=Path, default=None,
                          help="Override the bases root (default: production rl_training_data/bases/). "
                               "Must match generate_episode_oracles.py's --bases-dir for the same experiment.")
@@ -208,7 +206,7 @@ def main() -> int:
 
     ok = 0
     for article in args.articles:
-        if merge_article(article, args.replicates, args.dry_run, cost_formula=args.cost_formula):
+        if merge_article(article, args.replicates, args.dry_run):
             ok += 1
     print()
     print(f"Done: {ok}/{len(args.articles)} article(s) merged.")

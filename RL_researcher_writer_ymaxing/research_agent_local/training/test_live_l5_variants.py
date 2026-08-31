@@ -108,7 +108,7 @@ def check_feature_schema() -> bool:
     for v in VARIANTS:
         feats = _load(v, "guideline_features.json")
         policy = feats.get("external_evidence_policy", "")
-        if policy not in ("forbidden", "allowed", "required"):
+        if policy not in ("forbidden", "allowed", "required", "capped"):
             print(f"FAIL  {_short(v)}: bad external_evidence_policy={policy!r}")
             ok = False
         sections: dict = feats.get("sections", {})

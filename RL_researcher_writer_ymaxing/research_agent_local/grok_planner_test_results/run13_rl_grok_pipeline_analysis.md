@@ -9048,6 +9048,221 @@ resulting ceiling is. Scenario B never earned that trust in the first place — 
 templated/mechanical, not a bespoke editorial decision, and the TRAIN reward data (A.20.3) shows it
 being wrong close to half the time.
 
+### A.20.13 Why cap standard/deep votes to `light`, not `skip`? Corpus-wide empirical validation (2026-08-30)
+
+A.20.11 established the *design rule* (cap a standard/deep vote deterministically to `light` rather
+than resolving it via the unstable tail-argmax) and A.20.12 folded it into the framework with a
+*qualitative* justification only — "a softer ceiling since a single light touch doesn't categorically
+contradict 'this is a survey.'" This section supplies the missing *quantitative* backing: across every
+corpus article whose true oracle label is `standard` or `deep` (i.e., where meaningful exploration is
+genuinely warranted) and whose policy is not `forbidden`, does `R_w[light]` actually beat `R_w[skip]`?
+If light were frequently a *worse* reward choice than skip in this population, capping down to light
+rather than skip would be indefensible on reward grounds, however well it reads qualitatively.
+
+**Method:** read `oracle_arm_idx` and `r_w_rewards_list` directly from every TRAIN+TEST article's
+`article_oracle.json` (no inference, no guard applied), filter to `oracle_arm ∈ {standard, deep}` and
+`policy != forbidden`, and compare `R_w[skip]` vs. `R_w[light]` per article:
+
+| article | oracle | policy | R_w[skip] | R_w[light] | winner |
+|---|---|---|---:|---:|---|
+| `03_context_engineering__var_standard` | standard | allowed | 0.2429 | 0.2816 | light > skip |
+| `06_tools__var_standard` | deep | allowed | 0.1460 | 0.2300 | light > skip |
+| `09_RAG__var_standard` | deep | allowed | 0.0772 | 0.1045 | light > skip |
+| `09_RAG__var_demanding` | deep | allowed | 0.1147 | 0.1826 | light > skip |
+| `10_memory_knowledge_access__var_demanding` | deep | allowed | 0.2109 | 0.3110 | light > skip |
+| `11_multimodal__var_demanding` | standard | allowed | 0.2747 | 0.2731 | skip > light (exception) |
+| `04_structured_outputs` | deep | allowed | 0.2756 | 0.3151 | light > skip |
+| `14_agent_system_design` | standard | allowed | 0.2677 | 0.3776 | light > skip |
+| `29_evaluation_metrics` | standard | allowed | 0.3201 | 0.3930 | light > skip |
+| `Bird_Eye_Extreme` | standard | allowed | 0.2748 | 0.3614 | light > skip |
+| `Dark_Dimension` | deep | allowed | 0.3411 | 0.5167 | light > skip |
+| `Earth_Oceans_Origin` | deep | allowed | 0.2853 | 0.3615 | light > skip |
+| `Insects_Consciousness` | deep | allowed | 0.3596 | 0.5191 | light > skip |
+| `Understanding_Reasoning_LLMs` | standard | allowed | 0.2502 | 0.3828 | light > skip |
+
+**`R_w[light] > R_w[skip]` in 13/14 (93%)** of every standard/deep-oracle, non-forbidden article in the
+whole 40-article corpus. The sole exception, `11_multimodal__var_demanding`, is a near-tie — the
+margin (0.2747 vs. 0.2731) is only 0.0016, well inside the measurement-noise floor A.19.9 already
+established (single-draw MAE ≈0.33-0.69 ordinal steps; a 0.0016 R_w gap is far smaller than that noise
+floor implies is distinguishable) — not a genuine counter-example.
+
+This is a **uniform, distribution-free** finding: it is computed once across the whole corpus as a
+general design justification for *which fixed direction* to clamp toward, not as a per-article rule
+that consults any individual article's live RL distribution. That distinction matters for A.19.7's
+"guarded-constant baselines must not borrow real per-article signal" discipline (also reaffirmed for
+`guarded_constant_baseline.py` directly, A.21.1 below): choosing the clamp *target* (light, not skip)
+from an aggregate, corpus-wide reward pattern is a legitimate, fixed design decision available equally
+to the real model and to any trivial constant baseline — unlike the separate, genuinely per-article
+`P(skip)` vs. `P(light)` arbitration (A.20.10), which only the real model's own live distribution can
+supply and which a constant baseline correctly never gets to use (A.21.1's `_apply_policy_guards`
+ceiling-only clamp).
+
+**Conclusion:** capping standard/deep votes to `light` rather than `skip` is not just qualitatively
+softer (A.20.12) — it is the empirically better reward choice 13/14 times in the real corpus, with the
+one exception being statistically indistinguishable from a tie. No change to A.20.11/A.20.12's rule or
+to any guard implementation is warranted by this check; it confirms the existing design.
+
+## A.21 Phase 9 — guarded-constant / statistical / noise-ceiling baselines refreshed for the `capped` policy fix (2026-08-30)
+
+A.19.7-A.19.9 were computed 2026-08-27 — before Scenario C's `capped` policy value existed as a
+classifier output at all, and before the skip-vs-light in-bounds guard bugfix. `guarded_constant_
+baseline.py`, `stats_crosscheck.py`, and `noise_ceiling_baseline.py` were re-run against the current,
+post-fix corpus for the record.
+
+### A.21.1 Guarded-constant baselines refreshed (supersedes A.19.7)
+
+**TRAIN (n=24):**
+
+| baseline | exact | near | miss | MAE | regret mean | regret max |
+|---|---|---|---|---:|---:|---:|
+| always-skip | 10/24 (41.7%) | 8/24 (33.3%) | 6/24 (25.0%) | 1.000 | 0.0876 | 0.1628 |
+| always-light | 17/24 (70.8%) | 3/24 (12.5%) | 4/24 (16.7%) | 0.458 | 0.0161 | 0.0412 |
+| always-standard | 10/24 (41.7%) | 13/24 (54.2%) | 1/24 (4.2%) | 0.625 | 0.0507 | 0.1419 |
+| always-deep | 12/24 (50.0%) | 2/24 (8.3%) | 10/24 (41.7%) | 0.958 | 0.0375 | 0.1092 |
+
+**TEST (n=16):**
+
+| baseline | exact | near | miss | MAE | regret mean | regret max |
+|---|---|---|---|---:|---:|---:|
+| always-skip | 2/16 (12.5%) | 6/16 (37.5%) | 8/16 (50.0%) | 1.625 | 0.1034 | 0.2193 |
+| always-light | 6/16 (37.5%) | 6/16 (37.5%) | 4/16 (25.0%) | 0.875 | 0.0217 | 0.0648 |
+| always-standard | 4/16 (25.0%) | 11/16 (68.8%) | 1/16 (6.2%) | 0.812 | 0.0361 | 0.1225 |
+| always-deep | 4/16 (25.0%) | 5/16 (31.2%) | 7/16 (43.8%) | 1.250 | 0.0248 | 0.0905 |
+
+**McNemar exact test, `run33/ep81` vs. each guarded constant, TEST:**
+
+| baseline | b | c | n | one-sided p | significant (α=0.05)? |
+|---|---:|---:|---:|---:|---|
+| always-skip | 10 | 1 | 11 | 0.0059 | yes |
+| always-light | 5 | 0 | 5 | 0.0312 | **yes** |
+| always-standard | 10 | 3 | 13 | 0.0461 | **yes** |
+| always-deep | 8 | 1 | 9 | 0.0195 | yes |
+
+**Headline change from A.19.7: `always-light` and `always-standard` both flip back from "not
+significant" to significant.** Root cause, fully traced (not just "the guard fires differently now"):
+before this segment's A.20 classifier redesign, all 3 trigger scenarios (A/B/C) collapsed to the
+single `forbidden` policy value (A.20's own framing — Scenario C wasn't yet split out). `State_of_
+LLM_Reasoning` triggered the Scenario-C condition, so it was classified `forbidden` at the time A.19.7
+ran — and `forbidden`'s guard forces **every** constant down to `skip` unconditionally, which happens
+to equal this article's oracle (`skip`) exactly. That gave **all four** guarded-constant baselines an
+unearned EXACT hit on this one article: precisely the "free credit" risk A.19.7 itself warned about,
+just not yet visible because the classifier hadn't yet been split into A.20's finer A/B/C treatment.
+After the redesign, this article is correctly reclassified `capped` — a strictly softer ceiling than
+`forbidden` (clamps to `light`, never forces all the way down to `skip`). That removes the free credit
+from `always-light`/`always-standard`/`always-deep` specifically: each loses exactly one EXACT→NEAR on
+this one article (confirmed directly in the TEST table above vs. A.19.7's: exact 7→6, 5→4, 5→4
+respectively, near +1 each, miss unchanged) — while `always-skip` is untouched (already predicting
+`skip`, unaffected by which of `forbidden`/`capped` applies). Simultaneously, `run33/ep81` — via this
+session's separate skip-vs-light in-bounds guard bugfix (this document's Issue 3) — still correctly
+resolves to `skip` using its **own** real distribution, so it keeps its correct prediction on this
+article even without the crutch of a forced-skip classification. Net effect: three fresh, genuine
+discordant pairs in the model's favor (`b` +1 each for always-light/standard/deep: 4→5, 9→10, 7→8),
+while `always-skip`'s `b`/`c` are unchanged (10, 1). **This is a correction of a previously* too-strong*
+guard (an over-broad `forbidden` collapse silently inflating every baseline's score), not a new form of
+credit invented for the model** — the model's edge on this article is now counted as real
+discrimination, not a guard artifact, on every baseline it's compared against.
+
+*(Minor, unrelated note: TRAIN's `always-skip` row also moved, 9/24→10/24 exact — this is unrelated to
+the `capped` mechanism, since no TRAIN article carries `capped` policy. It traces to
+`11_multimodal__var_standard`, whose current classification is `allowed` with oracle=`skip`; under the
+guard, `required` is the only branch that can change an already-`skip` constant's outcome
+(`max(1, preset)`), so this is consistent with that one article no longer being classified `required`
+as of the Aug-29 Scenario A/B/C redesign — not a symptom of anything to do with the capped fix itself.)*
+
+### A.21.2 Statistical cross-checks refreshed (supersedes A.19.8)
+
+Computed via `stats_crosscheck.py` against `run33/ep81` vs. guarded-`light`, current corpus:
+
+| test | quantity | n | statistic | p (one-sided) |
+|---|---|---:|---:|---:|
+| Wilcoxon signed-rank | MAE/dist reduction | 5 | W+=15.0 | 0.0312 |
+| Wilcoxon signed-rank | regret reduction | 6 | W+=19.0 | 0.0469 |
+| Sign-flip permutation | MAE/dist reduction | 5 | sum=8.0000 | 0.0312 |
+| Sign-flip permutation | regret reduction | 6 | sum=0.1563 | 0.0469 |
+| Paired bootstrap (B=100,000) | MAE/dist reduction | 16 | mean=0.5000, CI=[0.1250, 0.9375] | 0.0023 |
+| Paired bootstrap (B=100,000) | regret reduction | 16 | mean=0.0098, CI=[0.0014, 0.0203] | 0.0084 |
+
+**A.19.7's original finding — all three sign-based tests converging on an identical, non-significant
+p=0.0625 — no longer holds.** With `State_of_LLM_Reasoning` now a genuine discordant pair (A.21.1), the
+sign-based tests (Wilcoxon, sign-flip) themselves clear α=0.05 (p=0.0312/0.0469), not just the
+bootstrap. `run33/ep81`'s edge over guarded-`light` is now significant by every method tested.
+
+### A.21.3 Noise-ceiling baseline reconfirmed unaffected (regression check for the Design C removal)
+
+`noise_ceiling_baseline.py` never consults policy guards (pure replicate-draw measurement noise), so
+its TEST-side per-draw figures should be byte-identical to A.19.9 both before and after this segment's
+Design C removal collateral fix to `measure_replicate_noise.py`. Re-running confirms exactly that:
+production=9/16 (56.2%, MAE 0.688), replicate1=11/16 (68.8%, MAE 0.375), replicate2=10/16 (62.5%, MAE
+0.438) — identical to A.19.9 to the decimal, serving as a regression check that the Design-C-removal
+fixes changed no behavior. Bonus figure not computed in A.19.9: pooled across **both splits**, all 3
+draws: n=120 draw-observations, 82/120 (68.3%) agreement, MAE 0.442.
+
+### A.21.4 Statistical test reference: what each test asks, and how to read the result
+
+Written for a critical reader auditing A.21.1-A.21.3 who wants to know exactly what was tested, not
+just the p-values. Every test below is **paired** — the same 16 TEST articles compared under two
+conditions (`run33/ep81` vs. one guarded-constant baseline) — which matters because a paired design
+uses each article as its own control and is markedly more powerful, at this sample size, than an
+unpaired test would be; it is also the only design not confounded by which particular 16 articles
+happen to be in the TEST split.
+
+1. **McNemar's exact test (A.21.1).** *Asks:* when two paired classifiers are each scored right/wrong
+   against the same ground truth, does one disagree with the other more often in its own favor than
+   chance would predict? *Mechanics:* only the discordant pairs matter — `b` = model right/baseline
+   wrong, `c` = model wrong/baseline right; concordant pairs (both right or both wrong) carry no
+   information about *which* is better and are correctly dropped from the test statistic (though they
+   still count in `n_articles=16`, just not in `n=b+c`). *Null hypothesis:* `b` and `c` are draws from
+   Binomial(`b+c`, 0.5) — i.e., disagreements are coin flips with no directional preference. *p-value:*
+   one-sided, `P(X <= c | X ~ Binomial(b+c, 0.5))` — the chance of seeing a baseline-favoring count `c`
+   this low or lower if there were really no asymmetry. *Caveat:* power depends only on `n=b+c`
+   (4-13 here across the four baselines), which is why A.21.2 cross-checks with two more independent
+   methods rather than resting on McNemar alone.
+
+2. **Wilcoxon signed-rank test, exact (A.21.2).** *Asks:* is the **median** of the paired per-article
+   difference (ordinal-distance reduction, or regret reduction) greater than zero, using the *ranks* of
+   the absolute differences — so a large win counts for more than a narrow one, unlike McNemar which
+   only uses the sign. *Mechanics:* exact zero-differences are dropped per convention (reducing `n` to
+   5-6 here); ties among remaining absolute differences get averaged ranks; the exact (not
+   normal-approximation) one-sided p-value is computed by enumerating all `2^m` sign-flip assignments of
+   the observed ranks — feasible and preferred here specifically because `m<=6` is small enough to
+   enumerate exhaustively rather than lean on a large-sample approximation whose assumptions wouldn't
+   hold at this `n`.
+
+3. **Sign-flip permutation test, exact (A.21.2).** *Asks:* nearly the same question as Wilcoxon, but on
+   the **raw** differences rather than their within-sample ranks — is the **mean** of the paired
+   differences greater than zero, under the null that each nonzero difference's sign is an independent
+   coin flip. *Mechanics:* same exhaustive `2^m` enumeration as Wilcoxon, but summing raw values instead
+   of ranks. Being a permutation test, it makes no distributional assumption beyond exchangeability of
+   signs under the null (no normality, no symmetry) — the least assumption-laden test in this reference,
+   included specifically so the Wilcoxon result isn't resting on rank-transformation alone.
+
+4. **Paired bootstrap, B=100,000 (A.21.2).** *Asks:* is the **mean** paired difference, estimated over
+   the **full** n=16/15 sample (not just the discordant/nonzero subset the three tests above reduce to),
+   distinguishable from zero? *Mechanics:* resample all paired differences with replacement 100,000
+   times, take the mean of each resample, and read off the empirical 2.5th/97.5th percentiles as a 95%
+   CI; the one-sided p is the fraction of resampled means `<= 0`. *Why it matters here:* it is the only
+   test that keeps every tied (zero-difference) article's real information rather than discarding it,
+   which is exactly why it is the highest-powered test in this set (tightest CIs, smallest p-values) —
+   at the cost of relying on the bootstrap resampling distribution as a stand-in for the true sampling
+   distribution, a standard and normally mild assumption at this `n`.
+
+5. **Noise-ceiling baseline (A.21.3 / A.19.9).** *Not* a significance test — a contextualizing
+   benchmark. *Asks:* how often would even a perfect single-draw oracle already disagree with the
+   (three-draw-averaged) ground truth, purely from measurement noise, with no model or baseline
+   comparison involved on either side? *How to read it:* compare `run33/ep81`'s own raw accuracy
+   directly against this figure (not against any p-value) to gauge how much headroom the corpus itself
+   can even support — it is the check against overclaiming: no combination of favorable results from
+   tests 1-4 should be read as implying more real-world headroom than this noise floor allows.
+
+**Why five different methods for one underlying comparison?** Each covers a different failure mode of
+the others, deliberately: McNemar/Wilcoxon/sign-flip all discard the majority-concordant or tied
+articles and can under-power a real effect when discordant pairs are few (exactly what A.19.7's
+original `p=0.0625` reflected); the bootstrap recovers power by using the full sample and full
+magnitude, but rests on different assumptions than the sign-based family, so agreement **across both
+families** (as seen here — all four now significant) is materially stronger evidence than any one test
+in isolation; the noise ceiling caps the entire exercise so favorable significance results can never be
+misread as claiming a bigger real-world effect than the corpus's own measurement noise permits.
+
 
 
 

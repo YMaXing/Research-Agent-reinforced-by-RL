@@ -96,7 +96,7 @@ def _variant_short(article: str) -> str:
     return article.rsplit("__", 1)[-1].replace("var_", "")
 
 
-def _compute_replicate_sections(article: str, replicate_dir_prefix: Path, sec_ids: list[str], cost_formula: str = "c2") -> dict[str, dict]:
+def _compute_replicate_sections(article: str, replicate_dir_prefix: Path, sec_ids: list[str]) -> dict[str, dict]:
     """Compute {sec_id: {"oracle": arm, "rewards": {...}}} for one replicate,
     mirroring generate_episode_oracles.py::process_article_variant's inner loop
     -- INCLUDING its enhancement-credit routing (de/be go through
@@ -128,7 +128,6 @@ def _compute_replicate_sections(article: str, replicate_dir_prefix: Path, sec_id
         for p in arm_presets_flat:
             ep = episode_dims[p]
             nr = geo._ARM_COST_UNITS[preset_to_arm[p]]
-            cost_override = geo._DESIGN_C_COST[preset_to_arm[p]] if cost_formula == "design_c" else None
 
             def _score(dim: str, _ep=ep, _sn=sec_norm, _si=sec_idx) -> float:
                 return geo._get_score(_ep.get(dim, []), _sn, _si)
@@ -150,7 +149,6 @@ def _compute_replicate_sections(article: str, replicate_dir_prefix: Path, sec_id
                 ra=_score("user_intent_research_anchoring"),
                 nr=nr,
                 variant=variant_short,
-                cost_override=cost_override,
             )
             preset_rewards[p] = rest + explore
             preset_explore[p] = explore
@@ -183,7 +181,7 @@ def _stats(values: list[float]) -> str:
     return f"mean={mu:+.4f}  std={sd:.4f}  range=[{min(values):+.4f}, {max(values):+.4f}]"
 
 
-def measure_article(article: str, n_replicates: int, cost_formula: str = "c2") -> None:
+def measure_article(article: str, n_replicates: int) -> None:
     print("=" * 100)
     print(f"ARTICLE: {article}")
     print("=" * 100)
@@ -223,7 +221,7 @@ def measure_article(article: str, n_replicates: int, cost_formula: str = "c2") -
                    for p in arm_presets_flat):
             missing += 1
             continue
-        sections = _compute_replicate_sections(article, prefix, prod_sec_ids, cost_formula=cost_formula)
+        sections = _compute_replicate_sections(article, prefix, prod_sec_ids)
         replicate_sections.append(sections)
         r_w, *_ = cao._compute_r_w(sections, features_sections)
         replicate_r_w.append(r_w)
@@ -275,8 +273,6 @@ def main() -> None:
                          help="Max replicate index to look for (additional to the production draw).")
     parser.add_argument("--target-n", type=int, default=None,
                          help="Total draws INCLUDING the production one; overrides --replicates as target_n - 1.")
-    parser.add_argument("--cost-formula", choices=["c2", "design_c"], default="c2",
-                         help="Reward cost mechanism -- see generate_episode_oracles.py::_DESIGN_C_COST.")
     parser.add_argument("--bases-dir", type=Path, default=None,
                          help="Override the bases root (default: production rl_training_data/bases/).")
     args = parser.parse_args()
@@ -287,7 +283,7 @@ def main() -> None:
         _BASES_DIR = args.bases_dir
 
     for article in args.articles:
-        measure_article(article, replicates, cost_formula=args.cost_formula)
+        measure_article(article, replicates)
 
 
 if __name__ == "__main__":

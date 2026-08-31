@@ -1,7 +1,7 @@
 """Guarded-constant baselines: the 4 trivial "always-X" predictors, each run
 through the SAME deterministic policy guard used by the real pipeline
-(forbidden -> P0 skip, required -> >= P1 light), with no RL/LLM signal at
-all. Mirrors preset_planner_handler.py::_apply_policy_guards /
+(forbidden -> P0 skip, required -> >= P1 light, capped -> <= P1 light), with
+no RL/LLM signal at all. Mirrors preset_planner_handler.py::_apply_policy_guards /
 test_grok_planner.py::_apply_policy_guards exactly.
 
 Purpose: isolate how much of RL+guards' edge over a plain "always-light"
@@ -70,11 +70,18 @@ def _read_policy(article: str) -> str:
 
 
 def _apply_policy_guards(preset: int, policy: str) -> int:
-    """Mirrors preset_planner_handler.py / test_grok_planner.py's guard exactly."""
+    """Mirrors preset_planner_handler.py / test_grok_planner.py's guard exactly.
+
+    capped's skip-vs-light choice defers to a real distribution in the other
+    two mirrors; a fixed constant has none, so this is an unconditional
+    ceiling clamp to light (never skip).
+    """
     if policy == "forbidden":
         return 0
     if policy == "required":
         return max(1, preset)
+    if policy == "capped":
+        return min(preset, ARMS.index("light"))
     return preset
 
 

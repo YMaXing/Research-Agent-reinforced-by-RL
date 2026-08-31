@@ -87,7 +87,7 @@ def per_draw_argmax(article: str):
     for r in replicate_ids:
         prefix = mrn._NOISE_EXPERIMENT_DIR / f"{article}__replicate{r}"
         draws[f"replicate{r}"] = mrn._compute_replicate_sections(
-            article, prefix, prod_sec_ids, cost_formula="c2"
+            article, prefix, prod_sec_ids
         )
 
     per_draw = {}
