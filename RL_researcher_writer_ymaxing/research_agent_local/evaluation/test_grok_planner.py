@@ -131,9 +131,9 @@ _CHECKPOINTS_ROOT = _REPO_ROOT / "rl_training_data" / "checkpoints"
 # checkpoint resolution (RL_INFER_ADAPTER_DIR env var, else the current
 # default) instead of guessing, so results always land next to the
 # checkpoint that actually served them.
-_TRAINING_DIR = _AGENT_DIR / "training"
-if str(_TRAINING_DIR) not in _sys.path:
-    _sys.path.insert(0, str(_TRAINING_DIR))
+_INFER_SERVICE_DIR = _AGENT_DIR / "rl_inference_service"
+if str(_INFER_SERVICE_DIR) not in _sys.path:
+    _sys.path.insert(0, str(_INFER_SERVICE_DIR))
 from _infer_config import DEFAULT_ADAPTER_DIR as _DEFAULT_ADAPTER_DIR  # noqa: E402
 
 # ---------------------------------------------------------------------------

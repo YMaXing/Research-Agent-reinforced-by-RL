@@ -31,10 +31,10 @@ an already-graded article would silently destroy its GRPO reward labels.
 See /memories/repo/research_agent_local_architecture.md 2026-07-11 entry.
 
 Usage (from research_agent_local/):
-  uv run --project mcp_client python training/generate_digests.py
-  uv run --project mcp_client python training/generate_digests.py --articles 02_workflows_vs_agents
-  uv run --project mcp_client python training/generate_digests.py --dry-run
-  uv run --project mcp_client python training/generate_digests.py --force
+  uv run --project rl_inference_service python rl_inference_service/generate_digests.py
+  uv run --project rl_inference_service python rl_inference_service/generate_digests.py --articles 02_workflows_vs_agents
+  uv run --project rl_inference_service python rl_inference_service/generate_digests.py --dry-run
+  uv run --project rl_inference_service python rl_inference_service/generate_digests.py --force
 
 Depth checklist items (from PROMPT_GENERATE_COMPLEMENTARY_QUERIES_AND_REASONS):
   motivation, theoretical_foundations, technical_nuances, latest_advancements,
@@ -68,7 +68,12 @@ from dotenv import load_dotenv
 _THIS_DIR = Path(__file__).resolve().parent
 _AGENT_DIR = _THIS_DIR.parent          # research_agent_local/
 _REPO_ROOT = _AGENT_DIR.parent         # RL_researcher_writer_ymaxing/
-_ENV_FILE = _AGENT_DIR / "mcp_client" / ".env"
+# Falls back to this package's own .env for manual/CLI invocations only --
+# when spawned as a subprocess by mcp_server (the --research-dir production
+# path), XAI_API_KEY/ANTHROPIC_API_KEY/XAI_BASE_URL are already set in the
+# child's environment (passed through from mcp_server's own settings), and
+# override=False means this load never clobbers them.
+_ENV_FILE = _THIS_DIR / ".env"
 _BASES_DIR = _REPO_ROOT / "rl_training_data" / "bases"
 
 load_dotenv(_ENV_FILE, override=False)
@@ -82,8 +87,11 @@ _ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")  # optional; used for L
 if not _XAI_API_KEY:
     sys.exit(
         "ERROR: XAI_API_KEY not found. "
-        f"Add it to {_ENV_FILE} or set it as an environment variable."
+        f"Add it to {_ENV_FILE}, set it as an environment variable, or configure "
+        "mcp_server's own XAI_API_KEY (passed through automatically when this "
+        "script is invoked by predict_exploration_preset_tool.py)."
     )
+
 
 # ---------------------------------------------------------------------------
 # Logging

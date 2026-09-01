@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import re
 import subprocess
 import sys
@@ -29,42 +30,51 @@ from .preset_infer_handler import (
     guidance,
     top2,
 )
+from ..config.settings import settings
 
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# _digest_parse — stdlib-only, lives in training/ (single source of truth).
+# _digest_parse — stdlib-only, lives in rl_inference_service/ (single source of truth).
 # parents[3] = research_agent_local/ for files in mcp_server/src/app/
 # ---------------------------------------------------------------------------
-_TRAINING_DIR = Path(__file__).resolve().parents[3] / "training"
-if str(_TRAINING_DIR) not in sys.path:
-    sys.path.insert(0, str(_TRAINING_DIR))
+_INFER_SERVICE_DIR = Path(__file__).resolve().parents[3] / "rl_inference_service"
+if str(_INFER_SERVICE_DIR) not in sys.path:
+    sys.path.insert(0, str(_INFER_SERVICE_DIR))
 import _digest_parse  # noqa: E402  # type: ignore[import-not-found]
 
-_GENERATE_DIGESTS_SCRIPT = _TRAINING_DIR / "generate_digests.py"
-_TRAINING_PYTHON = _TRAINING_DIR / ".venv" / "bin" / "python"
+_GENERATE_DIGESTS_SCRIPT = _INFER_SERVICE_DIR / "generate_digests.py"
+_INFER_SERVICE_PYTHON = _INFER_SERVICE_DIR / ".venv" / "bin" / "python"
 _DIGEST_GEN_TIMEOUT = 1800  # seconds — COMPRESS+GENERATE over many sources
 
 
 def _generate_digest_via_subprocess(research_dir: Path) -> None:
     """Generate research_digest.md for a live research dir via generate_digests.py.
 
-    Runs the full v2 pipeline in the training venv, which has the pipeline deps
-    and reads XAI_API_KEY from mcp_client/.env. Writes research_digest.md,
-    digest_section_placeholder.json, and guideline_features.json into ``research_dir``.
+    Runs the full v2 pipeline in rl_inference_service's own venv, passing this
+    server's own XAI_API_KEY/ANTHROPIC_API_KEY/XAI_BASE_URL settings through
+    explicitly (generate_digests.py no longer reaches into mcp_client/.env for
+    them). Writes research_digest.md, digest_section_placeholder.json, and
+    guideline_features.json into ``research_dir``.
 
     Raises RuntimeError on non-zero exit.
     """
+    env = dict(os.environ)
+    if settings.xai_api_key is not None:
+        env["XAI_API_KEY"] = settings.xai_api_key.get_secret_value()
+    if settings.anthropic_api_key is not None:
+        env["ANTHROPIC_API_KEY"] = settings.anthropic_api_key.get_secret_value()
     proc = subprocess.run(
         [
-            str(_TRAINING_PYTHON),
+            str(_INFER_SERVICE_PYTHON),
             str(_GENERATE_DIGESTS_SCRIPT),
             "--research-dir", str(research_dir),
         ],
-        cwd=str(_TRAINING_DIR),
+        cwd=str(_INFER_SERVICE_DIR),
         capture_output=True,
         text=True,
         timeout=_DIGEST_GEN_TIMEOUT,
+        env=env,
     )
     if proc.returncode != 0:
         tail = (proc.stderr or proc.stdout or "").strip()[-2000:]

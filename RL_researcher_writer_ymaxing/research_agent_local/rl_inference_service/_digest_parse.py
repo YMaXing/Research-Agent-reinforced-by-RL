@@ -11,7 +11,8 @@ per-section signals out of ``research_digest.md`` (the v2 XML format produced by
 Design constraints
 ------------------
 * **Stdlib only** (``re``) so it imports cleanly in *either* venv (the
-  mcp_server venv has no torch; the training venv does).  Do not add heavy deps.
+  mcp_server venv has no torch; rl_inference_service's own venv does).  Do not
+  add heavy deps.
 * **Read-only.**  These functions never run the model and never touch reward
   files (``section_oracle.json``) or per-arm articles.  Everything returned here
   is derivable from a single exploitation pass, which is exactly what is

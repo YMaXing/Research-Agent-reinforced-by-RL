@@ -15,7 +15,7 @@ NOT part of this production pipeline and is not exposed on the production MCP se
 
 If research_digest.md does not yet exist in the research directory, the
 tool generates it on-the-fly via the v2 digest pipeline (generate_digests.py,
-run in the training venv) before running RL inference.
+run in rl_inference_service's own venv) before running RL inference.
 
 Signal semantics
 ----------------
@@ -94,9 +94,10 @@ async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, 
 
     If research_digest.md does not yet exist in the research directory, the tool
     generates it on-the-fly via the v2 digest pipeline (generate_digests.py, run
-    in the training venv) and writes research_digest.md, digest_section_placeholder.json, and
-    guideline_features.json before running inference. This requires the training
-    venv and XAI_API_KEY (in mcp_client/.env) and the .research/ subfolder to
+    in rl_inference_service's own venv) and writes research_digest.md, digest_section_placeholder.json, and
+    guideline_features.json before running inference. This requires the
+    rl_inference_service venv (XAI_API_KEY/ANTHROPIC_API_KEY are passed through from
+    this server's own settings) and the .research/ subfolder to
     contain the exploitation sources collected during step 3.
 
     The tool performs two-stage inference:

@@ -27,7 +27,7 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "rl_inference_service"))
 
 import generate_digests as gd  # noqa: E402
 import _digest_parse  # noqa: E402

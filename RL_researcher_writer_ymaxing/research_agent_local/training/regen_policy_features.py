@@ -21,8 +21,13 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import sys
+from pathlib import Path
 
-import generate_digests as gd
+_INFER_SERVICE_DIR = Path(__file__).resolve().parent.parent / "rl_inference_service"
+if str(_INFER_SERVICE_DIR) not in sys.path:
+    sys.path.insert(0, str(_INFER_SERVICE_DIR))
+import generate_digests as gd  # noqa: E402
 import guarded_constant_baseline as gcb
 
 ALL_ARTICLES: list[str] = gcb.TRAIN_ARTICLES + gcb.TEST_ARTICLES

@@ -1,0 +1,6 @@
+# Production checkpoint weights (*.safetensors, *.pt) — large, keep out of git
+checkpoints/
+
+.venv/
+__pycache__/
+.env

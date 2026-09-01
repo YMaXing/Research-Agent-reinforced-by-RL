@@ -4,7 +4,7 @@ across the three lesson-5 variants (minimal / standard / demanding).
 
 Run AFTER generate_digests.py has been executed with --force on all three:
 
-    uv run python training/generate_digests.py \\
+    uv run python rl_inference_service/generate_digests.py \\
         --articles 05_workflow_patterns__var_minimal \\
                    05_workflow_patterns__var_standard \\
                    05_workflow_patterns__var_demanding \\
@@ -241,10 +241,10 @@ def check_preset_ordering() -> bool:
 def check_build_rl_input() -> bool:
     print("\n=== CHECK 6: build_rl_input produces valid dicts ===")
 
-    # Import from the training package
+    # Import from the rl_inference_service package
     sys.path.insert(0, str(TRAINING_DIR.parent))
     try:
-        from training.generate_digests import build_rl_input, _RL_INPUT_SYSTEM
+        from rl_inference_service.generate_digests import build_rl_input, _RL_INPUT_SYSTEM
     except ImportError as e:
         print(f"FAIL  Could not import generate_digests: {e}")
         return False

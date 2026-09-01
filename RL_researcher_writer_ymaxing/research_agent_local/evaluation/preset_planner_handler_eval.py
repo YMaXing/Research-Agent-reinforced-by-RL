@@ -11,7 +11,7 @@ the deterministic policy guard.
 Cross-imports the production mcp_server handlers (``build_article_evidence``,
 ``fallback_aggregator``, ``PRESET_NAMES``, ``NUM_PRESETS``) via a sys.path insertion of
 the mcp_server/ directory, mirroring how those handlers themselves cross-import
-training/_digest_parse.py.
+rl_inference_service/_digest_parse.py.
 """
 
 from __future__ import annotations

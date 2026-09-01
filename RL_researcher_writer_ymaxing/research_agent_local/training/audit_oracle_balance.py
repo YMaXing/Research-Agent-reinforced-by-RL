@@ -28,8 +28,9 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 _THIS_DIR = Path(__file__).resolve().parent
-if str(_THIS_DIR) not in sys.path:
-    sys.path.insert(0, str(_THIS_DIR))
+_INFER_SERVICE_DIR = _THIS_DIR.parent / "rl_inference_service"
+if str(_INFER_SERVICE_DIR) not in sys.path:
+    sys.path.insert(0, str(_INFER_SERVICE_DIR))
 from _rl_preset import PRESET_NAMES, PRESET_ORDER  # noqa: E402
 
 _DEFAULT_BASES_DIR = _THIS_DIR.parent.parent / "rl_training_data" / "bases"

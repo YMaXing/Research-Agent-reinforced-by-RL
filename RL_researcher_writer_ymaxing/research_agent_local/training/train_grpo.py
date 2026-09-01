@@ -40,7 +40,12 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 # Shared preset vocabulary, system prompt, and per-section input builder.
 # Imported here rather than duplicated; _rl_preset.py has no heavy dependencies.
-from _rl_preset import (
+# Lives in the sibling rl_inference_service/ package (single source of truth
+# shared with production inference), not training/ itself.
+_INFER_SERVICE_DIR = Path(__file__).resolve().parent.parent / "rl_inference_service"
+if str(_INFER_SERVICE_DIR) not in sys.path:
+    sys.path.insert(0, str(_INFER_SERVICE_DIR))
+from _rl_preset import (  # noqa: E402
     _RL_INPUT_SYSTEM,
     NUM_PRESETS,
     PRESET_NAMES,

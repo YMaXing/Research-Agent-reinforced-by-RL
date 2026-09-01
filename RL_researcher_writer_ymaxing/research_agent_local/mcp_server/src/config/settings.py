@@ -72,11 +72,36 @@ class Settings(BaseSettings):
     xai_api_key: SecretStr | None = Field(
         default=None, alias="XAI_API_KEY", description="The API key for the xAI (Grok) API"
     )
+    anthropic_api_key: SecretStr | None = Field(
+        default=None,
+        alias="ANTHROPIC_API_KEY",
+        description=(
+            "The API key for the Anthropic (Claude) API. Passed through to the "
+            "rl_inference_service/generate_digests.py subprocess for its optional "
+            "Layer-3 fallback; not otherwise used by the server itself."
+        ),
+    )
     tavily_api_key: SecretStr | None = Field(
         default=None, alias="TAVILY_API_KEY", description="The API key for the Tavily API"
     )
     jina_api_key: SecretStr | None = Field(
         default=None, alias="JINA_API_KEY", description="The API key for the Jina.ai Reader API"
+    )
+
+    # RL exploration-preset inference service (rl_inference_service/)
+    rl_infer_adapter_dir: str | None = Field(
+        default=None,
+        alias="RL_INFER_ADAPTER_DIR",
+        description=(
+            "Optional override for which LoRA checkpoint the RL inference server (infer.py) "
+            "loads, as an absolute path. Defaults to rl_inference_service/_infer_config.py's "
+            "own DEFAULT_ADAPTER_DIR when unset."
+        ),
+    )
+    rl_infer_port: int = Field(
+        default=8787,
+        alias="RL_INFER_PORT",
+        description="Localhost port the RL inference server (infer.py --serve) listens on.",
     )
 
     # Opik Monitoring Configuration

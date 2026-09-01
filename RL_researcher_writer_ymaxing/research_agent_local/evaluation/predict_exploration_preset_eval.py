@@ -16,7 +16,7 @@ See mcp_server/src/prompts/research_instructions_prompt.py.
 
 This module imports the production mcp_server's ``src.app`` handlers directly (via a
 sys.path insertion of the mcp_server/ directory, mirroring how those handlers themselves
-cross-import training/_digest_parse.py) rather than duplicating their logic, so evaluation
+cross-import rl_inference_service/_digest_parse.py) rather than duplicating their logic, so evaluation
 always tracks the exact production Stage-1 pipeline. Run with the mcp_server venv, e.g.:
 
     uv run --project mcp_server python evaluation/test_grok_planner.py
