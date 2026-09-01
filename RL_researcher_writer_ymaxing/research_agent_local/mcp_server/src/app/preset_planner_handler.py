@@ -350,8 +350,8 @@ def assemble_result(
 def fallback_aggregator(evidence: dict) -> dict:
     """Deterministic article preset from the evidence packet (no LLM call).
 
-    Used when XAI_API_KEY is unset or when the planner LLM returns unparseable
-    output. Applies the RL aggregate vote and hard policy guards.
+    The production policy guard: applies the RL aggregate vote, then clamps it to
+    satisfy the article's external-evidence policy (forbidden/required/capped).
     """
     rl = evidence["rl_aggregate"]
     policy = evidence["guideline_context"]["external_evidence_policy"]
@@ -372,8 +372,23 @@ def fallback_aggregator(evidence: dict) -> dict:
     drivers = ["rl_aggregate"]
     risk_flags: list[str] = []
     if policy == "required" and preset < 1:
+        # A.20.15: a corpus-wide check of "required"-policy articles found NO
+        # consistent winner among light/standard/deep once skip is excluded --
+        # light was clearly best in some cases, but in others standard or deep
+        # won by a wide margin, and in one case light was even the WORST of the
+        # three eligible arms (worse than skip itself). Unlike A.20.14's capped
+        # finding, there is no data-confirmed default here either, so every skip
+        # vote elevated to light is flagged AMBIGUOUS for review, same as capped.
+        dist = rl["distribution"]
         preset = 1
         drivers.append("policy:required")
+        risk_flags.append(
+            f"policy=required AMBIGUOUS: skip vote elevated to light "
+            f"(RL distribution P(light)={dist[1]:.3f}, P(standard)={dist[2]:.3f}, "
+            f"P(deep)={dist[3]:.3f}) -- no data-confirmed default among "
+            f"light/standard/deep for a skip vote in this population (A.20.15); "
+            f"flagged for review"
+        )
     if policy == "capped":
         dist = rl["distribution"]
         if preset > 1:

@@ -293,13 +293,31 @@ def _apply_policy_guards(
     population, including every case where the residual itself favored skip,
     so the residual's direction is not trusted in either direction.
 
+    A skip vote under "required" is likewise ALWAYS elevated to light and marked
+    AMBIGUOUS: a corpus-wide check (A.20.15) found no consistent winner among
+    light/standard/deep once skip is excluded -- light was clearly best in some
+    cases, but in others standard or deep won by a wide margin, and in one case
+    light was even the WORST of the three eligible arms (worse than skip itself).
+
     Returns ``(clamped_preset, note)`` where ``note`` is a short human-readable
     string when a clamp fired, else None.
     """
     if policy == "forbidden":
         return 0, f"policy=forbidden: clamped P{preset}->P0 skip" if preset != 0 else None
-    if policy == "required":
-        return (max(1, preset), f"policy=required: clamped P{preset}->P1 light") if preset < 1 else (preset, None)
+    if policy == "required" and preset < 1:
+        if distribution:
+            return 1, (
+                f"policy=required: clamped P{preset}->P1 light — AMBIGUOUS: no "
+                f"data-confirmed default among light/standard/deep for a skip vote "
+                f"in this population (A.20.15); RL distribution "
+                f"P(light)={distribution[1]:.3f}, P(standard)={distribution[2]:.3f}, "
+                f"P(deep)={distribution[3]:.3f}; flagged for review"
+            )
+        return 1, (
+            f"policy=required: clamped P{preset}->P1 light — AMBIGUOUS: no "
+            f"data-confirmed default among light/standard/deep for a skip vote "
+            f"in this population (A.20.15); flagged for review"
+        )
     if policy == "capped":
         if preset > 1:
             if distribution:

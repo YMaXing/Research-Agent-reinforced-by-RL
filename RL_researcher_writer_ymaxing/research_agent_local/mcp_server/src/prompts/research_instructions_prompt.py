@@ -217,12 +217,12 @@ If the user doesn't provide a research directory, you should ask for it before e
          direct response to seeing llm_recommendation (see "User-directed exploration override" below) —
          the override IS the exploration plan. This holds even if it conflicts with a
          forbidden/required/capped policy clamp, and even if it would otherwise have triggered the
-         ambiguous-capped question below — a direct override answers that question outright, so do not
-         separately ask it once an override is already in hand.
+         ambiguous-policy-guard question below — a direct override answers that question outright, so do
+         not separately ask it once an override is already in hand.
       2. Otherwise, llm_recommendation.preset — mapped through the preset-mapping table above — IS the
-         exploration plan, UNLESS llm_recommendation.risk_flags contains the "AMBIGUOUS" tag (see "Ambiguous
-         capped-policy cases" below), in which case ask the user the specified question first; their answer
-         then becomes the exploration plan.
+         exploration plan, UNLESS llm_recommendation.risk_flags contains the "AMBIGUOUS" tag (see
+         "Ambiguous policy-guard cases" below), in which case ask the user the specified question first;
+         their answer then becomes the exploration plan.
     Do NOT use section_signals (depth_score, need_depth, breadth_score, etc.) to alter which sections a round
     targets or which global focus/depth_vs_breadth_ratio a round uses in either case above — the exploration
     tool itself has no per-section targeting parameter, and departing from the fixed recipe would execute a
@@ -272,26 +272,38 @@ If the user doesn't provide a research directory, you should ask for it before e
     unless the user also explicitly says to skip it — the tool still determines external_evidence_policy,
     which the heads-up rule above depends on.
 
-    **Ambiguous capped-policy cases require explicit user input** (case 2 above): whenever
-    external_evidence_policy=capped and the RL model votes standard or deep, the deterministic guard ALWAYS
-    clamps the preset down to P1 light — this is unconditional, by design, regardless of what the RL model's
-    own probability split between skip and light says (the "residual" left after standard/deep are excluded;
-    a corpus-wide check found zero confirmed cases of skip actually beating light in this population, so the
-    residual is not trusted in either direction). Every one of these clamps is therefore ALSO tagged
-    "AMBIGUOUS" in llm_recommendation.risk_flags — check specifically for that tag (policy=capped plus a
-    standard/deep RL vote always produces it; policy=capped with a skip/light RL vote does NOT). When the
-    "AMBIGUOUS" tag IS present (and no override is already in hand):
-      1. STOP before running step 4. Show the user the exact risk_flags text (it states the residual
-         P(skip) vs P(light) values) and explain that the guard defaulted to light but the signal is
-         genuinely ambiguous.
-      2. Ask the user explicitly: proceed with light (P1, the guard's default), or override to skip (P0)?
+    **Ambiguous policy-guard cases require explicit user input** (case 2 above): two policy guards can
+    move the preset to an arm the data does not clearly support, and both are ALWAYS tagged "AMBIGUOUS" in
+    llm_recommendation.risk_flags when they fire — check specifically for that tag, then read which guard
+    fired from the risk_flags text itself ("policy=capped ..." or "policy=required ..."):
+      - **capped, RL votes standard or deep**: the guard ALWAYS clamps the preset down to P1 light — this
+        is unconditional, by design, regardless of what the RL model's own probability split between skip
+        and light says (the "residual" left after standard/deep are excluded; a corpus-wide check found
+        zero confirmed cases of skip actually beating light in this population, so the residual is not
+        trusted in either direction). policy=capped with a skip/light RL vote does NOT produce this tag.
+      - **required, RL votes skip**: the guard ALWAYS elevates the preset up to P1 light — likewise
+        unconditional. A corpus-wide check of "required"-policy articles found no consistent winner among
+        light/standard/deep once skip is excluded: light was clearly best in some cases, but in others
+        standard or deep won by a wide margin, and in one case light was even the WORST of the three
+        eligible arms (worse than skip itself). There is no data-confirmed default here either, so light is
+        used only as a conservative, single-level-escalation placeholder, not a confident pick.
+    When the "AMBIGUOUS" tag IS present (and no override is already in hand):
+      1. STOP before running step 4. Show the user the exact risk_flags text (it names the policy guard
+         that fired and cites the RL model's own residual probability split) and explain that the guard
+         defaulted to light but the signal is genuinely ambiguous.
+      2. Ask the user explicitly:
+         - For a capped case: proceed with light (P1, the guard's default), or override to skip (P0)?
+         - For a required case: proceed with light (P1, the guard's default), or override to standard (P2)
+           or deep (P3)?
       3. Wait for the user's answer. Use the user's chosen preset — not llm_recommendation.preset — as the
-         exploration plan (skip means step 4 is not run at all; light means the normal P1 recipe).
-      4. If the user does not state a preference, proceed with the guard's default (light) as the exploration
-         plan.
+         exploration plan (skip means step 4 is not run at all; light/standard/deep map through the normal
+         preset-mapping table above).
+      4. If the user does not state a preference, proceed with the guard's default (light) as the
+         exploration plan.
 
-    Outside of case 1 (an explicit, direct user override) and the ambiguous-capped question in case 2 above,
-    do NOT second-guess llm_recommendation.preset on your own initiative — not because of confidence, entropy,
+    Outside of case 1 (an explicit, direct user override) and the ambiguous-policy-guard question in case 2
+    above, do NOT second-guess llm_recommendation.preset on your own initiative — not because of confidence,
+    entropy,
     section_signals, or your own reading of the article guideline (the guideline is already an input to the
     digest and RL model that produced this preset; re-applying it yourself would duplicate or fight a decision
     already made more reliably upstream). That kind of ad-hoc judgement was tried in an earlier LLM-planner
