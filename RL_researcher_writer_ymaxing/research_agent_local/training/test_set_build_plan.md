@@ -295,7 +295,7 @@ the canonical `article_oracle.json`, and tests the raw section model rather than
 the production RL→Grok pipeline.
 
 The current, canonical harness is
-[test_grok_planner.py](../mcp_client/src/test_grok_planner.py). It **already**:
+[test_grok_planner.py](../evaluation/test_grok_planner.py). It **already**:
 - is 4-preset and reads `oracle_arm_idx` / `r_w_rewards_list` from
   `article_oracle.json` (v2),
 - calls the production `predict_exploration_preset` tool via MCP (RL → Grok),

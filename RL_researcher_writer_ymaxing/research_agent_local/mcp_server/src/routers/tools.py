@@ -10,6 +10,7 @@ from ..tools import (
     create_research_file_tool,
     extract_guidelines_urls_tool,
     predict_exploration_preset_tool,
+    get_exploration_override_guidance_tool,
     generate_next_queries_tool,
     generate_next_complementary_queries_tool,
     run_tavily_research_tool,
@@ -523,12 +524,36 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     @opik.track(type="tool", project_name=settings.opik_project_name)
-    async def predict_exploration_preset(research_directory: str, grok_only: bool = False, rl_only: bool = False) -> Dict[str, Any]:
+    async def get_exploration_override_guidance() -> Dict[str, Any]:
         """
-        Predict the optimal exploration preset using the GRPO-trained RL model.
+        Return whether user-directed exploration-plan overrides are enabled, and if so, guidance to
+        show the user before running predict_exploration_preset (workflow step 3.4).
 
-        Reads research_digest.md from the research directory and runs two-stage
-        inference:
+        Controlled by the user_plan_override_allowed setting (default False, favouring fully
+        automatic planning). When override_allowed is False, the client should proceed directly to
+        predict_exploration_preset without asking the user anything. When True, the client should
+        show the returned guidance/examples to the user and WAIT for their response before deciding
+        whether/how to call predict_exploration_preset.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing:
+                - status: Operation status ("success")
+                - override_allowed: Whether the client should ask the user for an override
+                - guidance: Explanation to show the user (empty string when override_allowed is False)
+                - examples: Example override phrasings (empty list when override_allowed is False)
+                - message: Instruction for the client on what to do next
+        """
+        opik_context.update_thread_id()
+        result = get_exploration_override_guidance_tool()
+        return result
+
+    @mcp.tool()
+    @opik.track(type="tool", project_name=settings.opik_project_name)
+    async def predict_exploration_preset(research_directory: str) -> Dict[str, Any]:
+        """
+        Predict the exploration preset using the GRPO-trained RL model + deterministic policy guard.
+
+        Reads research_digest.md from the research directory and runs two-stage inference:
 
         Stage 1 — RL model (Qwen3-4B + LoRA, NF4 quantised):
           Splits the digest into per-section excerpts and runs a word-count-weighted
@@ -537,19 +562,13 @@ def register_mcp_tools(mcp: FastMCP) -> None:
           least one section individually predicts a higher preset, preventing short
           intro sections from masking deep technical sections.
 
-        Stage 2 — Deterministic policy guard (no LLM call in production):
+        Stage 2 — Deterministic policy guard (no LLM call):
           Clamps the RL model's own pick to satisfy the article's external-evidence
           policy (forbidden → P0 skip, required → ≥ P1 light, capped → ≤ P1 light).
-          In the current production configuration (PRESET_PLANNER_SKIP_LLM=True, the
-          default) no LLM reviews, confirms, or overrides the RL pick — it is
-          authoritative except where this guard fires. An optional LLM-planner mode
-          exists in the codebase (disabled by default; set PRESET_PLANNER_SKIP_LLM=False
-          and XAI_API_KEY) for a future re-evaluation, but it is not part of the
-          production pipeline.
-          Set grok_only=True to skip Stage 1 and have an LLM decide from the
-          article guideline and gap profile alone (an ablation baseline, not the
-          default pipeline path; useful to measure the RL model's marginal
-          contribution).
+          The RL pick is authoritative except where this guard fires — there is no
+          LLM-planner stage in this tool at all. The only other sanctioned deviation is
+          an explicit user-directed override (see get_exploration_override_guidance and
+          research_instructions_prompt.py step 3.4).
 
         Signal semantics:
           preset (int 0–3):
@@ -564,7 +583,8 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
           entropy_bits (float):
             H = −∑ p·log₂(p+ε) over the 4-preset distribution.
-            <0.5 → very confident.  0.5–1.5 → moderate.  >1.5 → uncertain.
+            <0.5 → very confident.  0.5–1.5 → moderate.  >1.5 → uncertain (informational only,
+            not a basis to self-override).
 
           floor_correction_applied (bool):
             True when the floor heuristic raised the aggregate vote.
@@ -577,36 +597,28 @@ def register_mcp_tools(mcp: FastMCP) -> None:
             One-sentence synthesis.  Use this as your reasoning seed.
 
         Note: the RL model loads on the first call (~3 min on GPU) and is then cached
-        for the lifetime of the server process. When grok_only=True the RL model is
-        not loaded at all.
+        for the lifetime of the server process.
 
         Args:
             research_directory: Path to the research directory containing
                                 research_digest.md at its root.
-            grok_only: When True, skip the RL inference stage. The LLM planner
-                       decides solely from the article guideline and coverage gap
-                       profile. rl_recommendation will be None in the returned dict.
-            rl_only: When True, run RL inference but skip the LLM planner stage.
-                     llm_recommendation will be None in the returned dict.
-                     Use for evaluation/ablation (caller applies policy guards).
 
         Returns:
             Dict[str, Any]:
                 - status: "success" or "error"
                 - rl_recommendation: dict with preset, name, confidence,
                                      entropy_bits, floor_correction_applied
-                                     (None when grok_only=True)
                 - section_signals: list of per-section dicts with title, preset,
-                                   name, top2 (empty when grok_only=True)
+                                   name, top2
                 - guidance: one-sentence synthesis for the client LLM
-                - llm_recommendation: dict with preset, name, reasoning,
-                                       override, override_reason, decision_drivers,
-                                       risk_flags (None when rl_only=True or
-                                       grok_only=True with no RL input)
+                - llm_recommendation: the FINAL authoritative decision (the field name is a
+                                       historical artifact; no LLM is involved) — dict with preset,
+                                       name, reasoning, override, override_reason, decision_drivers,
+                                       risk_flags
                 - message: human-readable summary
         """
         opik_context.update_thread_id()
-        result = await predict_exploration_preset_tool(research_directory, grok_only=grok_only, rl_only=rl_only)
+        result = await predict_exploration_preset_tool(research_directory)
         return result
 
     # ============================================================================

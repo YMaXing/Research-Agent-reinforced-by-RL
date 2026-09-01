@@ -1,9 +1,17 @@
 """
-Meta-reasoner tool: RL-guided exploration preset prediction.
+Meta-reasoner tool: RL-guided exploration preset prediction (PRODUCTION pipeline).
 
-Uses a GRPO-trained Qwen3-4B + LoRA adapter to analyse the research
-digest and produce structured section-level signals that help the client
-LLM (currently Grok) decide how many rounds of exploration to run and in what order.
+Uses a GRPO-trained Qwen3-4B + LoRA adapter to analyse the research digest and produce
+structured section-level signals, then applies a deterministic policy guard (external-evidence
+policy: forbidden/required/capped). This is the production pipeline: RL model + deterministic
+guard only — no LLM-planner stage, no grok_only/rl_only ablation switches. The only sanctioned
+way to deviate from its recommendation is an explicit user-directed override (see
+research_instructions_prompt.py step 3.4) or the guard's own policy clamp.
+
+For the evaluation/ablation variant (grok_only, rl_only, the disabled-by-default LLM-planner
+stage) used by evaluation/test_grok_planner.py to measure the RL model's marginal
+contribution, see evaluation/predict_exploration_preset_eval.py. That variant is intentionally
+NOT part of this production pipeline and is not exposed on the production MCP server.
 
 If research_digest.md does not yet exist in the research directory, the
 tool generates it on-the-fly via the v2 digest pipeline (generate_digests.py,
@@ -61,101 +69,24 @@ technical depth requirements.
 
 from __future__ import annotations
 
-import asyncio
 import logging
-import re
-import subprocess
 from pathlib import Path
 from typing import Any, Dict
 
-from ..config.settings import settings
-from ..app.preset_infer_handler import (
-    PRESET_NAMES,
-    apply_cost_sensitive_rule,
-    call_infer_server,
-    entropy,
-    guidance,
-)
 from ..app.preset_planner_handler import (
-    _INCLUDE_GUIDELINE_IN_PLANNER,
-    build_article_evidence,
-    call_grok_planner,
-    call_grok_planner_standalone,
+    assemble_result,
+    extract_gap_profile,
     fallback_aggregator,
+    load_or_generate_digest,
+    run_rl_stage,
 )
 
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
-# Paths (tools/ is 3 levels below research_agent_local/, same as app/)
-# ---------------------------------------------------------------------------
-_TRAINING_DIR = Path(__file__).resolve().parents[3] / "training"
-_TRAINING_PYTHON = _TRAINING_DIR / ".venv" / "bin" / "python"
-_GENERATE_DIGESTS_SCRIPT = _TRAINING_DIR / "generate_digests.py"
-_DIGEST_GEN_TIMEOUT = 1800  # seconds — COMPRESS+GENERATE over many sources
 
-
-# ---------------------------------------------------------------------------
-# On-the-fly digest generation (delegates to generate_digests.py v2 pipeline)
-# ---------------------------------------------------------------------------
-
-def _generate_digest_via_subprocess(research_dir: Path) -> None:
-    """Generate research_digest.md for a live research dir via generate_digests.py.
-
-    Runs the full v2 pipeline in the training venv, which has the pipeline deps
-    and reads XAI_API_KEY from mcp_client/.env. Writes research_digest.md,
-    digest_section_placeholder.json, and guideline_features.json into ``research_dir``.
-
-    Raises RuntimeError on non-zero exit.
+async def predict_exploration_preset_tool(research_directory: str) -> Dict[str, Any]:
     """
-    proc = subprocess.run(
-        [
-            str(_TRAINING_PYTHON),
-            str(_GENERATE_DIGESTS_SCRIPT),
-            "--research-dir", str(research_dir),
-        ],
-        cwd=str(_TRAINING_DIR),
-        capture_output=True,
-        text=True,
-        timeout=_DIGEST_GEN_TIMEOUT,
-    )
-    if proc.returncode != 0:
-        tail = (proc.stderr or proc.stdout or "").strip()[-2000:]
-        raise RuntimeError(
-            f"Digest generation failed (exit {proc.returncode}):\n{tail}"
-        )
-
-
-
-# ---------------------------------------------------------------------------
-# Gap-profile extraction
-# ---------------------------------------------------------------------------
-
-def _extract_gap_profile(digest: str) -> str:
-    """Extract the coverage gap profile section from the exploitation digest.
-
-    Prefers the v2 XML <gap_profile> block. Falls back to the legacy markdown
-    "## 3. Overall Gap Profile" section. Returns "" if neither is present.
-    """
-    m = re.search(r"<gap_profile>.*?</gap_profile>", digest, re.DOTALL)
-    if m:
-        return m.group(0).strip()
-
-    marker = "## 3. Overall Gap Profile"
-    idx = digest.find(marker)
-    if idx == -1:
-        return ""
-    rest = digest[idx:]
-    next_heading = rest.find("\n## ", len(marker))
-    if next_heading != -1:
-        return rest[:next_heading].strip()
-    return rest.strip()
-
-
-
-async def predict_exploration_preset_tool(research_directory: str, grok_only: bool = False, rl_only: bool = False) -> Dict[str, Any]:
-    """
-    Predict the optimal exploration preset for an article using the trained RL model.
+    Predict the exploration preset for an article: RL model + deterministic policy guard only.
 
     Reads (or auto-generates) research_digest.md from the research directory,
     runs per-section inference through the GRPO-trained Qwen3-4B + LoRA model,
@@ -171,28 +102,16 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
     The tool performs two-stage inference:
       Stage 1 (RL model): per-section preset prediction via word-count-weighted
                           probability vote → aggregate recommendation (P0–P3).
-    Stage 2 (deterministic policy guard, no LLM call in production): clamps the RL
-                          pick to the article's external-evidence policy (forbidden
-                          → P0, required → ≥ P1, capped → ≤ P1). In the default
-                          configuration (PRESET_PLANNER_SKIP_LLM=True) no LLM
-                          reviews or overrides the RL pick — it is authoritative
-                          except where this guard fires. An optional LLM-planner
-                          mode exists for a future re-evaluation (set
-                          PRESET_PLANNER_SKIP_LLM=False and XAI_API_KEY) but is
-                          not part of the production pipeline.
+      Stage 2 (deterministic policy guard, no LLM call): clamps the RL pick to the
+                          article's external-evidence policy (forbidden → P0,
+                          required → ≥ P1, capped → ≤ P1). The RL pick is
+                          authoritative except where this guard fires — there is no
+                          LLM-planner stage in this tool at all (see module docstring).
 
     Args:
         research_directory: Path to the research directory. Must contain either:
           - research_digest.md (pre-existing, used directly), or
           - article_guideline.md + .research/ subfolder (digest auto-generated).
-        grok_only: When True, skip the RL inference stage entirely and call the LLM
-          planner (currently Grok 4.2) with only the article guideline + coverage gap
-          profile (no section-level RL signals). Use this for the LLM-alone baseline
-          to measure the RL model's marginal contribution. rl_recommendation will be
-          None in the result.
-        rl_only: When True, run the RL inference stage but skip the LLM planner stage
-          entirely. llm_recommendation will be None in the result. Use for
-          evaluation/ablation; the caller is responsible for applying policy guards.
 
     Returns:
         Dict with keys:
@@ -204,53 +123,30 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
                                  offline decision-rule analysis), raw_argmax_preset (the
                                  preset before the cost-sensitive rule adjustment),
                                  cost_rule_adjusted (True if the rule moved the pick
-                                 away from raw argmax). None when grok_only=True.
+                                 away from raw argmax).
           section_signals      – per-section list of preset, name, top2 probs.
-                                 Empty list when grok_only=True.
           guidance             – one-sentence synthesis from the RL stage.
-                                 Empty string when grok_only=True.
           article_guideline    – full text of article_guideline.md
           digest_gap_profile   – gap profile section from the digest
-          llm_recommendation   – the FINAL authoritative decision: by default (no LLM
-                                 call in production) this is the RL pick clamped only
-                                 by the deterministic policy guard — preset (0–3),
-                                 name, reasoning, override, override_reason,
+          llm_recommendation   – the FINAL authoritative decision (the field name is a
+                                 historical artifact; no LLM is involved) — the RL pick
+                                 clamped only by the deterministic policy guard: preset
+                                 (0–3), name, reasoning, override, override_reason,
                                  decision_drivers, risk_flags.
-                                 When grok_only=True: preset, name, reasoning,
-                                   decision_drivers, risk_flags (no override fields).
-                                 None when rl_only=True, or when grok_only=True and
-                                   XAI_API_KEY is unset or the LLM call fails.
           message              – human-readable summary
     """
     research_path = Path(research_directory)
-    digest_path = research_path / "research_digest.md"
-
     if not research_path.exists():
         return {
             "status": "error",
             "message": f"Research directory not found: {research_directory}",
         }
 
-    digest_generated = False
-
-    if not digest_path.exists():
-        logger.info(f"research_digest.md not found — generating on-the-fly for {research_directory}")
-        try:
-            loop = asyncio.get_running_loop()
-            await loop.run_in_executor(
-                None, _generate_digest_via_subprocess, research_path
-            )
-            digest = digest_path.read_text(encoding="utf-8")
-            digest_generated = True
-            logger.info(f"Digest written to {digest_path}")
-        except Exception as exc:
-            logger.exception("On-the-fly digest generation failed")
-            return {"status": "error", "message": f"Digest generation failed: {exc}"}
-    else:
-        try:
-            digest = digest_path.read_text(encoding="utf-8")
-        except Exception as exc:
-            return {"status": "error", "message": f"Failed to read digest: {exc}"}
+    try:
+        digest, digest_generated = await load_or_generate_digest(research_path)
+    except Exception as exc:
+        logger.exception("Digest load/generation failed")
+        return {"status": "error", "message": f"Digest generation failed: {exc}"}
 
     guideline_path = research_path / "article_guideline.md"
     article_guideline = (
@@ -258,158 +154,14 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
         if guideline_path.exists()
         else ""
     )
-    digest_gap_profile = _extract_gap_profile(digest)
+    digest_gap_profile = extract_gap_profile(digest)
 
-    # -----------------------------------------------------------------------
-    # Branch: LLM-alone baseline (no RL inference; currently Grok 4.2)
-    # -----------------------------------------------------------------------
-    if grok_only:
-        # Digest-only evidence packet: same per-section gaps + economics the full
-        # pipeline sees, but with no trained-scorer signal (rl_aggregate=None and
-        # empty per-section RL fields). Isolates the section model's contribution.
-        evidence = build_article_evidence(digest)
-        llm_recommendation: dict | None = None
-        if settings.xai_api_key is not None:
-            try:
-                llm_recommendation = await call_grok_planner_standalone(
-                    api_key=settings.xai_api_key.get_secret_value(),
-                    base_url="https://api.x.ai/v1",
-                    evidence=evidence,
-                    article_guideline=(
-                        article_guideline if _INCLUDE_GUIDELINE_IN_PLANNER else ""
-                    ),
-                )
-                if llm_recommendation:
-                    logger.info("LLM standalone chose P%d", llm_recommendation["preset"])
-            except Exception:
-                logger.warning("LLM standalone planner call failed.")
-        else:
-            logger.warning("XAI_API_KEY not set; cannot run LLM standalone planner.")
-
-        llm_preset = llm_recommendation["preset"] if llm_recommendation else "?"
-        return {
-            "status": "success",
-            "digest_generated": digest_generated,
-            "rl_recommendation": None,
-            "section_signals": [],
-            "guidance": "",
-            "llm_recommendation": llm_recommendation,
-            "article_evidence": evidence,
-            "article_guideline": article_guideline,
-            "digest_gap_profile": digest_gap_profile,
-            "message": (
-                f"LLM standalone (no RL) chose preset P{llm_preset}."
-                if llm_recommendation
-                else "LLM standalone call failed or XAI_API_KEY not set."
-            ),
-        }
-
-    # -----------------------------------------------------------------------
-    # Standard pipeline: RL inference → article evidence packet → LLM planner (currently Grok 4.2)
-    # -----------------------------------------------------------------------
     try:
-        loop = asyncio.get_running_loop()
-        preset, agg_probs, section_details = await loop.run_in_executor(
-            None, call_infer_server, digest
-        )
+        rl = await run_rl_stage(digest)
     except Exception as exc:
         logger.exception("RL inference failed")
         return {"status": "error", "message": f"RL inference failed: {exc}"}
 
-    # Cost-sensitive decision rule: adjusts the raw argmax using the empirical
-    # reward-asymmetry cost matrix (fit from train-set oracles), restricted to
-    # a 1-level move. Supersedes plain argmax as the pipeline's RL recommendation
-    # — see preset_infer_handler.apply_cost_sensitive_rule docstring for the
-    # backtest that validated this (TEST exact 7->10, regret -51%, 0 new misses).
-    raw_argmax_preset = preset
-    preset = apply_cost_sensitive_rule(preset, agg_probs)
-    cost_rule_adjusted = preset != raw_argmax_preset
+    llm_recommendation = fallback_aggregator(rl["evidence"])
 
-    confidence = round(agg_probs[preset], 4)
-    h = round(entropy(agg_probs), 4)
-    section_floor = max((d["chosen"] for d in section_details), default=preset)
-    floor_applied = preset <= 1 and section_floor >= 2 and h <= 1.5
-    guidance_str = guidance(preset, confidence, h, floor_applied)
-    if cost_rule_adjusted:
-        guidance_str += (
-            f" Cost-sensitive rule adjusted the raw vote P{raw_argmax_preset} -> "
-            f"P{preset} (reward asymmetry: a miss in this direction is costlier "
-            f"than the alternative at this boundary)."
-        )
-
-    # Build the structured, leakage-free evidence packet (Stage 1 → Stage 2).
-    evidence = build_article_evidence(digest, preset, agg_probs, section_details)
-
-    # Compact per-section view for the result payload (backward-compatible shape).
-    section_signals = [
-        {
-            "title": s["title"],
-            "label": s["label"],
-            "preset": s["chosen_preset"],
-            "name": PRESET_NAMES.get(s["chosen_preset"], "?"),
-            "top2": s["top2"],
-        }
-        for s in evidence["section_signals"]
-    ]
-
-    # Stage 2: deterministic policy guard by default (PRESET_PLANNER_SKIP_LLM=True) —
-    # no LLM call; the RL pick is clamped only by fallback_aggregator's hard policy
-    # guards. The optional LLM-planner call below only runs if explicitly re-enabled,
-    # and still falls back to the same deterministic aggregator on any error.
-    if rl_only:
-        # RL-only baseline / policy-guard ablation: skip the LLM planner stage entirely.
-        llm_recommendation = None
-        logger.info("rl_only=True; skipping LLM planner stage.")
-    elif settings.preset_planner_skip_llm:
-        # A.17.9: measured worse than RL+guards on this checkpoint; scoped opt-out
-        # that leaves XAI_API_KEY available for the other Grok-backed features.
-        logger.info("PRESET_PLANNER_SKIP_LLM=true; using deterministic fallback aggregator.")
-        llm_recommendation = fallback_aggregator(evidence)
-    elif settings.xai_api_key is not None:
-        try:
-            llm_recommendation = await call_grok_planner(
-                api_key=settings.xai_api_key.get_secret_value(),
-                base_url="https://api.x.ai/v1",
-                evidence=evidence,
-                article_guideline=(
-                    article_guideline if _INCLUDE_GUIDELINE_IN_PLANNER else ""
-                ),
-            )
-            logger.info(
-                "LLM planner chose P%d (override=%s)",
-                llm_recommendation["preset"],
-                llm_recommendation["override"],
-            )
-        except Exception:
-            logger.warning("LLM planner call failed; using deterministic fallback.")
-            llm_recommendation = fallback_aggregator(evidence)
-    else:
-        logger.warning("XAI_API_KEY not set; using deterministic fallback aggregator.")
-        llm_recommendation = fallback_aggregator(evidence)
-
-    return {
-        "status": "success",
-        "digest_generated": digest_generated,
-        "rl_recommendation": {
-            "preset": preset,
-            "name": PRESET_NAMES[preset],
-            "confidence": confidence,
-            "entropy_bits": h,
-            "floor_correction_applied": floor_applied,
-            "agg_probs": [round(float(p), 4) for p in agg_probs],
-            "raw_argmax_preset": raw_argmax_preset,
-            "cost_rule_adjusted": cost_rule_adjusted,
-        },
-        "section_signals": section_signals,
-        "guidance": guidance_str,
-        "llm_recommendation": llm_recommendation,
-        "article_evidence": evidence,
-        "article_guideline": article_guideline,
-        "digest_gap_profile": digest_gap_profile,
-        "message": (
-            f"RL model recommends preset P{preset} "
-            f"({PRESET_NAMES[preset]}) "
-            f"with {confidence:.0%} confidence across {len(section_signals)} sections. "
-            f"Entropy: {h:.2f} bits."
-        ),
-    }
+    return assemble_result(digest_generated, rl, llm_recommendation, article_guideline, digest_gap_profile)

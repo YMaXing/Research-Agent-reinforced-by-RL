@@ -1,13 +1,16 @@
 """
-Preset planner test: predict_exploration_preset tool (direct MCP call).
+Preset planner test: predict_exploration_preset_eval (direct in-process call).
 
-The tool makes the final planning decision internally via two stages:
+This is the EVAL-ONLY function (grok_only/rl_only ablation switches, the disabled-by-default
+LLM-planner stage) -- NOT the production predict_exploration_preset MCP tool, which has neither
+and is not exposed here at all. The function makes the final planning decision internally via
+two stages:
   Stage 1 — Qwen3-4B RL model      -> rl_recommendation
   Stage 2 — LLM planner (currently Grok 4.2) -> llm_recommendation
 
-This test calls the tool directly via the MCP protocol, bypassing any LLM
-agent loop.  The mcp-agent is still used to manage the server subprocess and
-expose the MCP transport, but no orchestration LLM is involved.
+This is a plain workflow script (like training/rl_data_generator.py) that imports and calls
+predict_exploration_preset_eval() directly in-process — it does not start an MCP server or
+go through the MCP protocol/agent loop at all.
 
 Corpus
 ------
@@ -27,10 +30,11 @@ Oracle
 Modes
 -----
   default          — reads llm_recommendation.preset (full pipeline: RL → LLM planner
-                     stage). NOTE: with the server's default PRESET_PLANNER_SKIP_LLM=True,
-                     this is IDENTICAL to --rl-guards-only (no LLM call; a deterministic
-                     policy guard only). Set PRESET_PLANNER_SKIP_LLM=False server-side to
-                     actually exercise the LLM planner in this mode.
+                     stage). NOTE: with predict_exploration_preset_eval's default
+                     PRESET_PLANNER_SKIP_LLM=true, this is IDENTICAL to --rl-guards-only
+                     (no LLM call; a deterministic policy guard only). Set
+                     PRESET_PLANNER_SKIP_LLM=false in the environment to actually exercise
+                     the LLM planner in this mode.
   --rl-only        — reads rl_recommendation.preset   (Qwen3-4B only, no LLM planner call)
   --rl-guards-only — RL aggregate + deterministic policy guards (forbidden→skip,
                      required→≥light, capped→≤light), no LLM planner call. The benchmark
@@ -54,42 +58,45 @@ Split reporting
   A 4×4 per-arm confusion matrix and majority/random baselines are printed for
   each split.
 
-Usage (from research_agent_local/)
------------------------------------
+Usage (from research_agent_local/, requires the mcp_server venv)
+------------------------------------------------------------------
   # All articles — train variants + test held-outs (default)
-  uv run python -m mcp_client.src.test_grok_planner
+  uv run --project mcp_server python evaluation/test_grok_planner.py
 
   # Test held-outs only (all 16)
-  uv run python -m mcp_client.src.test_grok_planner --test-only
+  uv run --project mcp_server python evaluation/test_grok_planner.py --test-only
 
   # Training variants only
-  uv run python -m mcp_client.src.test_grok_planner --train-only
+  uv run --project mcp_server python evaluation/test_grok_planner.py --train-only
 
   # RL model only — faster, no LLM planner call
-  uv run python -m mcp_client.src.test_grok_planner --rl-only
+  uv run --project mcp_server python evaluation/test_grok_planner.py --rl-only
 
   # LLM planner standalone baseline (currently Grok 4.2) — no RL section signals
-  uv run python -m mcp_client.src.test_grok_planner --grok-only
+  uv run --project mcp_server python evaluation/test_grok_planner.py --grok-only
 
   # Only demanding training variants
-  uv run python -m mcp_client.src.test_grok_planner --variants demanding
+  uv run --project mcp_server python evaluation/test_grok_planner.py --variants demanding
 
   # Specific articles (bare test slug → no expansion; bare train slug → 3 variants)
-  uv run python -m mcp_client.src.test_grok_planner --articles 04_structured_outputs,09_RAG
+  uv run --project mcp_server python evaluation/test_grok_planner.py --articles 04_structured_outputs,09_RAG
 
   # Save per-variant JSON results (written next to the checkpoint that
   # produced them: <adapter_dir>/rl_only_results|rl_guard_results|
   # grok_only_results|rl_and_grok_results/, per RL_INFER_ADAPTER_DIR or the
   # current default checkpoint)
-  uv run python -m mcp_client.src.test_grok_planner --save-json
+  uv run --project mcp_server python evaluation/test_grok_planner.py --save-json
 
   # Override which checkpoint the infer server loads, as a path relative to
   # rl_training_data/checkpoints/ (no need to edit _infer_config.py or export
   # RL_INFER_ADAPTER_DIR by hand) 
   For example, to test the run31_averaged_confidence/epoch_0109 checkpoint:
-  uv run python -m mcp_client.src.test_grok_planner \
+  uv run --project mcp_server python evaluation/test_grok_planner.py \
       --adapter-dir tasks/run31_averaged_confidence/epochs/epoch_0109 \
       --rl-guards-only --save-json
+
+  # Or, using the research_agent_local/ root shim (mirrors rl_data_generator.py):
+  uv run --project mcp_server python test_grok_planner.py --rl-only
 """
 
 from __future__ import annotations
@@ -102,22 +109,15 @@ import os
 import sys as _sys
 from pathlib import Path
 
-from mcp_agent.app import MCPApp
-from mcp_agent.agents.agent import Agent
-from mcp_agent.config import get_settings as get_mcp_settings
+from predict_exploration_preset_eval import predict_exploration_preset_eval
 
-from .settings import settings
-from .utils.logging_utils import configure_logging
-from .utils.mcp_startup_utils import get_capabilities_from_mcp_client
-
-configure_logging()
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-_THIS_DIR = Path(__file__).resolve().parent
-_CLIENT_DIR = _THIS_DIR.parent                    # mcp_client/
-_AGENT_DIR = _CLIENT_DIR.parent                   # research_agent_local/
+_THIS_DIR = Path(__file__).resolve().parent       # evaluation/
+_AGENT_DIR = _THIS_DIR.parent                     # research_agent_local/
 _REPO_ROOT = _AGENT_DIR.parent                    # RL_researcher_writer_ymaxing/
 # Reassigned in main() by --bases-dir to score a checkpoint against an
 # alternate reward-formula experiment's own oracle labels/rewards -- both
@@ -233,18 +233,6 @@ def _expand_articles(names: list[str]) -> list[str]:
                 out.append(f"{name}__{var}")
     return out
 
-
-# ---------------------------------------------------------------------------
-# MCP app (created once, shared across all variants)
-# ---------------------------------------------------------------------------
-_mcp_settings = get_mcp_settings(str(Path(__file__).parent / "mcp_agent.config.yaml"))
-_mcp_settings.mcp.servers["research_agent"].args = [
-    "--directory", str(settings.server_main_path),
-    "run", "python", "-m", "src.server", "--transport", "stdio",
-]
-app = MCPApp(name="GrokPlannerTest", settings=_mcp_settings)
-
-
 def _resolve_adapter_dir(subdir: str) -> Path:
     """Resolve a ``--adapter-dir`` value (relative to rl_training_data/checkpoints/)
     to an absolute, validated checkpoint directory.
@@ -339,27 +327,10 @@ def _apply_policy_guards(
 
 
 # ---------------------------------------------------------------------------
-# Tool call + result parsing
-# ---------------------------------------------------------------------------
-def _parse_tool_result(tool_result) -> dict:
-    """Extract the JSON dict from an MCP CallToolResult."""
-    if getattr(tool_result, "isError", False):
-        raise RuntimeError(f"Tool returned an error: {tool_result}")
-    content = getattr(tool_result, "content", None)
-    if not content:
-        raise RuntimeError("Tool returned empty content.")
-    text = getattr(content[0], "text", None)
-    if text is None:
-        raise RuntimeError(f"First content item has no .text: {content[0]!r}")
-    return json.loads(text)
-
-
-# ---------------------------------------------------------------------------
 # Per-variant runner
 # ---------------------------------------------------------------------------
 async def run_variant(
     variant: str,
-    agent: Agent,
     rl_only: bool,
     grok_only: bool = False,
     rl_guards_only: bool = False,
@@ -371,16 +342,15 @@ async def run_variant(
     lesson = _lesson_of(variant)
     split = "TEST" if lesson in _TEST_LESSONS else "TRAIN"
 
-    # --- Direct MCP tool call (no LLM agent loop) ---
-    tool_args: dict = {"research_directory": str(research_dir)}
+    # --- Direct in-process call (no MCP protocol, no agent loop) ---
+    call_kwargs: dict = {}
     if grok_only:
-        tool_args["grok_only"] = True
+        call_kwargs["grok_only"] = True
     if rl_only or rl_guards_only:
-        # Both modes evaluate the RL stage only; skip the Grok call server-side.
-        tool_args["rl_only"] = True
+        # Both modes evaluate the RL stage only; skip the Grok call.
+        call_kwargs["rl_only"] = True
     try:
-        tool_result = await agent.call_tool("predict_exploration_preset", tool_args)
-        data = _parse_tool_result(tool_result)
+        data = await predict_exploration_preset_eval(str(research_dir), **call_kwargs)
     except Exception as exc:
         return {"variant": variant, "lesson": lesson, "split": split, "error": str(exc)}
 
@@ -389,6 +359,7 @@ async def run_variant(
             "variant": variant, "lesson": lesson, "split": split,
             "error": data.get("message", "unknown error"),
         }
+
 
     rl = data.get("rl_recommendation")     # None when grok_only=True
     grok = data.get("llm_recommendation") # None when rl_only / XAI unset / call failed
@@ -861,10 +832,10 @@ def _save_results(results: list[dict], out_dir: Path) -> None:
 async def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "Test predict_exploration_preset via direct MCP tool call. "
+            "Test predict_exploration_preset_eval via a direct in-process call. "
             "Evaluates 24 training variants (8 lessons \u00d7 3 guideline variants) and/or "
             "16 held-out test articles (no-variant) against article_oracle.json. "
-            "No LLM orchestration layer — the tool makes the final decision internally."
+            "No LLM orchestration layer — the function makes the final decision internally."
         )
     )
     parser.add_argument(
@@ -963,17 +934,10 @@ async def main() -> None:
         except ValueError as exc:
             print(f"ERROR: {exc}")
             return
-        # os.environ: consumed by _resolve_output_dir() in THIS process for
-        # --save-json's output path. The stdio MCP transport only forwards a
-        # curated env subset to the server subprocess (see mcp.client.stdio's
-        # get_default_environment()), so it would NOT see this var just from
-        # os.environ -- it must also be set explicitly on the server config
-        # below for the infer server to actually load this checkpoint.
+        # Consumed both by ensure_infer_server() (in-process, via preset_infer_handler)
+        # for which checkpoint to load, and by _resolve_output_dir() below for
+        # --save-json's output path.
         os.environ["RL_INFER_ADAPTER_DIR"] = str(resolved_adapter_dir)
-        _mcp_settings.mcp.servers["research_agent"].env = {
-            **(_mcp_settings.mcp.servers["research_agent"].env or {}),
-            "RL_INFER_ADAPTER_DIR": str(resolved_adapter_dir),
-        }
 
     # Build variant list
     if args.articles:
@@ -1012,39 +976,17 @@ async def main() -> None:
     print(f"  Bases dir: {_BASES_DIR}" + ("  (--bases-dir override)" if args.bases_dir is not None else ""))
     print(f"  Variants : {variant_list}")
 
-    async with app.run():
-        agent = Agent(
-            name="research_agent",
-            instruction="",  # no LLM loop — direct tool calls only
-            server_names=["research_agent"],
-        )
+    results = []
+    for variant in variant_list:
+        lesson = _lesson_of(variant)
+        split = "TEST" if lesson in _TEST_LESSONS else "TRAIN"
+        print(f"\n{'='*80}")
+        print(f"  Variant : {variant}  [{split}]")
+        print("=" * 80)
 
-        async with agent:
-            all_tools, _, _ = await get_capabilities_from_mcp_client(agent)
-            tool_names = [t.name for t in all_tools]
-            # mcp_agent namespaces tool names as "{server_name}_{tool_name}",
-            # so check for both the bare name and the namespaced variant.
-            _TOOL = "predict_exploration_preset"
-            if not any(n == _TOOL or n.endswith(f"_{_TOOL}") for n in tool_names):
-                print(
-                    "ERROR: predict_exploration_preset tool not found on the MCP server.\n"
-                    "Make sure the server is up to date and the tool is registered."
-                )
-                return
-
-            print(f"  Tool     : predict_exploration_preset (direct call, no agent loop)\n")
-
-            results = []
-            for variant in variant_list:
-                lesson = _lesson_of(variant)
-                split = "TEST" if lesson in _TEST_LESSONS else "TRAIN"
-                print(f"\n{'='*80}")
-                print(f"  Variant : {variant}  [{split}]")
-                print("=" * 80)
-
-                result = await run_variant(variant, agent, rl_only, grok_only, rl_guards_only)
-                results.append(result)
-                _print_variant_result(result)
+        result = await run_variant(variant, rl_only, grok_only, rl_guards_only)
+        results.append(result)
+        _print_variant_result(result)
 
     _print_summary(results, rl_only, grok_only, rl_guards_only)
 

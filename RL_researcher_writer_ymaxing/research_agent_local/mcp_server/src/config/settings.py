@@ -38,17 +38,18 @@ class Settings(BaseSettings):
     n_exploration_queries_per_round: int = Field(default=4, alias="N_EXPLORATION_QUERIES_PER_ROUND", description="Number of exploration queries to generate per exploration round. Only applicable if maximum_exploration_rounds > 0.")
     maximum_sources_to_scrape: int = Field(default=6, alias="MAXIMUM_SOURCES_TO_SCRAPE", description="Maximum number of sources to scrape fully during research")
     enable_content_dedup: bool = Field(default=False, alias="ENABLE_CONTENT_DEDUP", description="Whether to run the content deduplication step (step 7). Set to false to feed the full raw research into the final file.")
-    preset_planner_skip_llm: bool = Field(
-        default=True,
-        alias="PRESET_PLANNER_SKIP_LLM",
+    user_plan_override_allowed: bool = Field(
+        default=False,
+        alias="USER_PLAN_OVERRIDE_ALLOWED",
         description=(
-            "Skip the LLM-planner stage (currently Grok 4.2) in predict_exploration_preset_tool "
-            "and use the deterministic RL+guards fallback_aggregator instead. Defaults to True: "
-            "measured evidence (run13_rl_grok_pipeline_analysis.md A.17-A.17.9) shows "
-            "the LLM-planner stage adds no value over RL+guards on this checkpoint, so the "
-            "LLM-planner pipeline is retired from production. Set to False to re-enable it "
-            "for a future re-evaluation (XAI_API_KEY is shared with other Grok-backed "
-            "features and must stay set for those regardless of this flag)."
+            "Whether the client should proactively ask the user for an exploration-plan override "
+            "(round count/focus for workflow step 4) before running predict_exploration_preset "
+            "(step 3.4), via the get_exploration_override_guidance tool. Defaults to False: the "
+            "RL+guards pipeline is well-validated, so fully automatic planning is the default and "
+            "the user is not prompted. Set True to have the workflow prompt instruct the client to "
+            "call get_exploration_override_guidance and wait for the user's response first. This "
+            "only controls whether the client PROACTIVELY asks — an unprompted user override is "
+            "always honoured regardless of this setting (see research_instructions_prompt.py)."
         ),
     )
     

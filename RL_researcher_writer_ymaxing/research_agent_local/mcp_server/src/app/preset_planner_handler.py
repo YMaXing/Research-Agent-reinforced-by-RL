@@ -1,31 +1,32 @@
 """
-LLM planner handler for the predict_exploration_preset tool (currently Grok 4.2).
+Article-evidence builder and production-pipeline glue for the exploration-preset
+tool (predict_exploration_preset_tool.py): RL model + deterministic policy guard
+only, no LLM call anywhere in this module.
 
-Builds the leakage-free article evidence packet from a v2 digest and optional
-RL section-scorer output, renders it as a guided markdown brief, and calls the
-planner LLM (currently Grok 4.2; a deterministic fallback is used otherwise) for
-the final exploration-preset decision.
-
-Production note: settings.preset_planner_skip_llm defaults to True, so in the
-current production pipeline the LLM planner is never actually called —
-``fallback_aggregator`` (deterministic RL pick + policy guard, no LLM) is the
-default path. ``call_grok_planner``/``call_grok_planner_standalone`` remain here
-as an opt-in mode for a future re-evaluation.
+The eval-only LLM-planner path (render_evidence_brief, the policy/escalation guards,
+the planner prompts, and call_grok_planner/call_grok_planner_standalone) lives
+entirely in evaluation/preset_planner_handler_eval.py, used by
+evaluation/predict_exploration_preset_eval.py and evaluation/test_grok_planner.py.
+That eval module cross-imports build_article_evidence/fallback_aggregator FROM this
+file, but nothing in this file imports or calls anything eval-only.
 """
 
 from __future__ import annotations
 
-import json as _json
+import asyncio
 import logging
 import re
+import subprocess
 import sys
 from pathlib import Path
-from typing import Any
 
 from .preset_infer_handler import (
     PRESET_NAMES,
     NUM_PRESETS,
+    apply_cost_sensitive_rule,
+    call_infer_server,
     entropy,
+    guidance,
     top2,
 )
 
@@ -40,49 +41,74 @@ if str(_TRAINING_DIR) not in sys.path:
     sys.path.insert(0, str(_TRAINING_DIR))
 import _digest_parse  # noqa: E402  # type: ignore[import-not-found]
 
-# ---------------------------------------------------------------------------
-# Planner LLM model (currently Grok 4.2; swap to change the pipeline's LLM)
-# ---------------------------------------------------------------------------
-_PLANNER_MODEL = "grok-4.20-0309-reasoning"
+_GENERATE_DIGESTS_SCRIPT = _TRAINING_DIR / "generate_digests.py"
+_TRAINING_PYTHON = _TRAINING_DIR / ".venv" / "bin" / "python"
+_DIGEST_GEN_TIMEOUT = 1800  # seconds — COMPRESS+GENERATE over many sources
 
-# ---------------------------------------------------------------------------
-# Calibrated escalation thresholds
-# ---------------------------------------------------------------------------
-# When the RL aggregate vote is UNCERTAIN (confidence < _DECISIVE_CONFIDENCE or
-# entropy > 1.5 bits), the LLM planner may escalate above the RL pick, but only
-# when the budget-weighted section-vote mass clears _ESCALATION_MASS_THRESHOLD.
-# These MUST stay in sync with the numeric thresholds written into _PLANNER_SYSTEM.
-_DECISIVE_CONFIDENCE = 0.70
-_ESCALATION_MASS_THRESHOLD = 0.30
 
-# ---------------------------------------------------------------------------
-# Article evidence packet constants
-# ---------------------------------------------------------------------------
-_POLICY_MEANING: dict[str, str] = {
-    "forbidden": (
-        "external evidence is NOT allowed for this article — exploration output "
-        "cannot be used, so the only valid choice is skip"
-    ),
-    "allowed": (
-        "external web evidence is permitted but not mandatory — explore only if "
-        "the gaps justify it"
-    ),
-    "required": (
-        "external web evidence is mandatory — at least light exploration must run"
-    ),
-    "capped": (
-        "the article's scope is a survey of fixed/named sources — exploration is capped "
-        "at light: only skip or light are valid, never standard or deep"
-    ),
-}
+def _generate_digest_via_subprocess(research_dir: Path) -> None:
+    """Generate research_digest.md for a live research dir via generate_digests.py.
 
-# ---------------------------------------------------------------------------
-# Guideline appendix
-# ---------------------------------------------------------------------------
-# Real guidelines top out around ~34k chars (~8.5k tokens); the 80k ceiling
-# (~20k tokens) never truncates legitimate content.
-_INCLUDE_GUIDELINE_IN_PLANNER = True
-_GUIDELINE_APPENDIX_MAX_CHARS = 80_000
+    Runs the full v2 pipeline in the training venv, which has the pipeline deps
+    and reads XAI_API_KEY from mcp_client/.env. Writes research_digest.md,
+    digest_section_placeholder.json, and guideline_features.json into ``research_dir``.
+
+    Raises RuntimeError on non-zero exit.
+    """
+    proc = subprocess.run(
+        [
+            str(_TRAINING_PYTHON),
+            str(_GENERATE_DIGESTS_SCRIPT),
+            "--research-dir", str(research_dir),
+        ],
+        cwd=str(_TRAINING_DIR),
+        capture_output=True,
+        text=True,
+        timeout=_DIGEST_GEN_TIMEOUT,
+    )
+    if proc.returncode != 0:
+        tail = (proc.stderr or proc.stdout or "").strip()[-2000:]
+        raise RuntimeError(
+            f"Digest generation failed (exit {proc.returncode}):\n{tail}"
+        )
+
+
+async def load_or_generate_digest(research_path: Path) -> tuple[str, bool]:
+    """Read research_digest.md, generating it on-the-fly via the v2 pipeline if absent.
+
+    Returns (digest_text, digest_generated). Raises on any failure (generation or read).
+    Used by the production predict_exploration_preset_tool.py.
+    """
+    digest_path = research_path / "research_digest.md"
+    if not digest_path.exists():
+        logger.info(f"research_digest.md not found — generating on-the-fly for {research_path}")
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, _generate_digest_via_subprocess, research_path)
+        digest = digest_path.read_text(encoding="utf-8")
+        logger.info(f"Digest written to {digest_path}")
+        return digest, True
+    return digest_path.read_text(encoding="utf-8"), False
+
+
+def extract_gap_profile(digest: str) -> str:
+    """Extract the coverage gap profile section from the exploitation digest.
+
+    Prefers the v2 XML <gap_profile> block. Falls back to the legacy markdown
+    "## 3. Overall Gap Profile" section. Returns "" if neither is present.
+    """
+    m = re.search(r"<gap_profile>.*?</gap_profile>", digest, re.DOTALL)
+    if m:
+        return m.group(0).strip()
+
+    marker = "## 3. Overall Gap Profile"
+    idx = digest.find(marker)
+    if idx == -1:
+        return ""
+    rest = digest[idx:]
+    next_heading = rest.find("\n## ", len(marker))
+    if next_heading != -1:
+        return rest[:next_heading].strip()
+    return rest.strip()
 
 
 # ---------------------------------------------------------------------------
@@ -224,251 +250,97 @@ def build_article_evidence(
 
 
 # ---------------------------------------------------------------------------
-# Evidence rendering helpers
+# Production-pipeline glue (used by predict_exploration_preset_tool.py)
 # ---------------------------------------------------------------------------
 
-def _interpret_rl(conf: float, h: float) -> str:
-    if h > 1.5:
-        return (
-            f"UNCERTAIN (entropy {h:.2f} bits > 1.5) — the scorer is spread across "
-            "presets and NOT decisive; let the budget-weighted section votes set the level."
+async def run_rl_stage(digest: str) -> dict:
+    """Stage 1: RL inference + cost-sensitive rule + evidence packet + section signals."""
+    loop = asyncio.get_running_loop()
+    preset, agg_probs, section_details = await loop.run_in_executor(None, call_infer_server, digest)
+
+    # Cost-sensitive decision rule: adjusts the raw argmax using the empirical
+    # reward-asymmetry cost matrix (fit from train-set oracles), restricted to
+    # a 1-level move. Supersedes plain argmax as the pipeline's RL recommendation
+    # — see preset_infer_handler.apply_cost_sensitive_rule docstring for the
+    # backtest that validated this (TEST exact 7->10, regret -51%, 0 new misses).
+    raw_argmax_preset = preset
+    preset = apply_cost_sensitive_rule(preset, agg_probs)
+    cost_rule_adjusted = preset != raw_argmax_preset
+
+    confidence = round(agg_probs[preset], 4)
+    h = round(entropy(agg_probs), 4)
+    section_floor = max((d["chosen"] for d in section_details), default=preset)
+    floor_applied = preset <= 1 and section_floor >= 2 and h <= 1.5
+    guidance_str = guidance(preset, confidence, h, floor_applied)
+    if cost_rule_adjusted:
+        guidance_str += (
+            f" Cost-sensitive rule adjusted the raw vote P{raw_argmax_preset} -> "
+            f"P{preset} (reward asymmetry: a miss in this direction is costlier "
+            f"than the alternative at this boundary)."
         )
-    if conf >= 0.70:
-        return (
-            f"DECISIVE ({conf:.0%} of the vote on its top pick) — a strong learned "
-            "signal; trust it and do not escalate above it without a hard constraint."
-        )
-    if conf >= 0.40:
-        return (
-            f"MODERATE ({conf:.0%} on its top pick) — a real lean but NOT decisive; "
-            "weigh the budget-weighted section votes below to set the level."
-        )
-    return (
-        f"WEAK ({conf:.0%} on its top pick) — NOT decisive; let the budget-weighted "
-        "section votes set the level."
-    )
+
+    # Build the structured, leakage-free evidence packet.
+    evidence = build_article_evidence(digest, preset, agg_probs, section_details)
+
+    # Compact per-section view for the result payload (backward-compatible shape).
+    section_signals = [
+        {
+            "title": s["title"],
+            "label": s["label"],
+            "preset": s["chosen_preset"],
+            "name": PRESET_NAMES.get(s["chosen_preset"], "?"),
+            "top2": s["top2"],
+        }
+        for s in evidence["section_signals"]
+    ]
+
+    return {
+        "preset": preset,
+        "raw_argmax_preset": raw_argmax_preset,
+        "cost_rule_adjusted": cost_rule_adjusted,
+        "confidence": confidence,
+        "entropy_bits": h,
+        "floor_applied": floor_applied,
+        "guidance_str": guidance_str,
+        "evidence": evidence,
+        "section_signals": section_signals,
+        "agg_probs": agg_probs,
+    }
 
 
-def _pct_row(dist: list[float]) -> str:
-    names = ["skip", "light", "standard", "deep"]
-    return "  ·  ".join(
-        f"{names[i]} {dist[i]*100:.0f}%" for i in range(min(len(dist), 4))
-    )
-
-
-def render_guideline_appendix(article_guideline: str) -> str:
-    """Render the raw article guideline as a clearly-delimited primary source.
-
-    Returns ``""`` when no guideline text is given.
-    """
-    text = (article_guideline or "").strip()
-    if not text:
-        return ""
-    if len(text) > _GUIDELINE_APPENDIX_MAX_CHARS:
-        text = text[:_GUIDELINE_APPENDIX_MAX_CHARS] + "\n\n[... guideline truncated ...]"
-    return (
-        "---\n\n"
-        "## Appendix — Article guideline (primary source)\n"
-        "The full author-written guideline is reproduced verbatim below. The "
-        "structured brief above is your PRIMARY decision basis; consult this only "
-        "for qualitative scope cues the numbers miss — intended depth, audience, "
-        "tone, and any explicit \"keep this brief\" / \"go deep here\" instructions. "
-        "Do NOT let the guideline's sheer length or detail inflate the preset: "
-        "exploration buys missing *evidence*, not matching prose volume.\n\n"
-        "<article_guideline>\n"
-        f"{text}\n"
-        "</article_guideline>\n"
-    )
-
-
-def render_evidence_brief(
-    evidence: dict,
-    *,
-    include_rl: bool = True,
-    article_guideline: str = "",
-) -> str:
-    """Render the evidence packet as a guided markdown decision brief.
-
-    When ``include_rl`` is False the trained-scorer sections are omitted (used
-    for the LLM-standalone baseline so it decides from the guideline + gaps
-    alone, isolating the RL signal's marginal value).
-
-    When ``article_guideline`` is non-empty it is appended verbatim as a
-    primary-source appendix after the structured brief.
-    """
-    gc = evidence["guideline_context"]
-    glob = evidence["digest_global"]
-    secs = evidence["section_signals"]
-    policy = gc["external_evidence_policy"]
-
-    out: list[str] = []
-
-    # --- 1. Article ---
-    out.append("# Exploration Decision Brief\n")
-    out.append("## 1. Article")
-    out.append(f"- Title: {gc['article_title'] or '(untitled)'}")
-    out.append(f"- Content sections: {gc['n_content_sections']}")
-    out.append(f"- Total writing budget: {gc['expected_total_words']} words")
-    out.append(
-        f"- External-evidence policy: **{policy.upper()}** — "
-        f"{_POLICY_MEANING.get(policy, 'unknown policy')}"
-    )
-    out.append("")
-
-    # --- 2. Trained section-scorer aggregate (primary signal) ---
-    if include_rl:
-        rl = evidence["rl_aggregate"]
-        out.append("## 2. Trained section-scorer — aggregate recommendation  (primary signal)")
-        out.append(
-            "A GRPO-trained model read every section and voted for an exploration "
-            "preset, weighting each section by its writing budget. This learned, "
-            "budget-weighted vote is the best single predictor of the reward-optimal "
-            "preset — treat it as your prior and move off it only for a concrete reason."
-        )
-        out.append("")
-        out.append(f"- Recommendation: **P{rl['preset']} {rl['preset_name']}**")
-        out.append(f"- Soft vote distribution:  {_pct_row(rl['distribution'])}")
-        out.append(f"- Read: {_interpret_rl(rl['confidence'], rl['entropy_bits'])}")
-        if "section_vote_mass" in rl:
-            std_m = rl.get("standard_mass", 0.0)
-            deep_m = rl.get("deep_mass", 0.0)
-            out.append(
-                f"- Budget-weighted section votes:  {_pct_row(rl['section_vote_mass'])}"
-            )
-            bar = f"{_ESCALATION_MASS_THRESHOLD*100:.0f}%"
-            out.append(
-                f"- Vote-mass gates: standard-vote mass = {std_m*100:.0f}%  \u00b7  "
-                f"deep-vote mass = {deep_m*100:.0f}%  (bar {bar}). These masses ONLY "
-                f"gate a P2->P3 escalation (deep-vote mass \u2265 {bar} from a P2 pick) "
-                f"and the deep-or-nothing guard. They do NOT sanction escalating a P0/P1 "
-                f"pick up to P2 \u2014 see OVERRIDE POLICY."
-            )
-            self_contained_wt = sum(s["weight"] for s in secs if s.get("self_contained"))
-            out.append(
-                f"- Residual/self-containment context: {self_contained_wt*100:.0f}% of the "
-                f"writing budget sits in sections flagged self-contained (see \u00a73 table). "
-                f"This is descriptive context only \u2014 it is NOT a sanctioned mechanism for "
-                f"moving off the RL pick; the RL pick already incorporates a reward-calibrated "
-                f"cost-sensitive adjustment before you see it."
-            )
-        out.append("")
-
-    # --- 3. Per-section breakdown ---
-    out.append("## 3. Per-section breakdown")
-    out.append(
-        "Each row is one section. **Budget** is its share of the article (larger "
-        "sections dominate the article-level choice). The gap columns contrast what "
-        "the exploitation pass already covered against what the guideline demands."
-    )
-    out.append("")
-
-    if include_rl:
-        header = (
-            "| # | Section | Budget | RL pick | need d/b | cov d·b | resid d/b | self-cont | must-ev | orphans d/b | brief |"
-        )
-        sep = "|---|---------|-------:|---------|:-------:|:------:|:--------:|:--------:|:------:|:----------:|:----:|"
-    else:
-        header = (
-            "| # | Section | Budget | need d/b | cov d·b | resid d/b | self-cont | must-ev | orphans d/b | brief |"
-        )
-        sep = "|---|---------|-------:|:-------:|:------:|:--------:|:--------:|:------:|:----------:|:----:|"
-    out.append(header)
-    out.append(sep)
-
-    for i, s in enumerate(secs, 1):
-        budget = f"{s['weight']*100:.0f}%"
-        need = f"{s['need_depth']}/{s['need_breadth']}"
-        cov = f"{s['depth_score']}·{s['breadth_score']}"
-        resid = f"{s.get('residual_depth', 0)}/{s.get('residual_breadth', 0)}"
-        self_cont = "yes" if s.get("self_contained") else "—"
-        must_ev = str(s["must_cover_depth"])
-        orph = f"{s['orphans']['depth']}/{s['orphans']['breadth']}"
-        brief = "yes" if s["must_stay_brief"] else "—"
-        sec_label = f"{s['label']} {s['title']}"[:40]
-        if include_rl:
-            rl_pick = (
-                f"{PRESET_NAMES.get(s['chosen_preset'], '?')} "
-                f"·{s['top2_margin']:.2f}"
-            )
-            out.append(
-                f"| {i} | {sec_label} | {budget} | {rl_pick} | {need} | {cov} | "
-                f"{resid} | {self_cont} | {must_ev} | {orph} | {brief} |"
-            )
-        else:
-            out.append(
-                f"| {i} | {sec_label} | {budget} | {need} | {cov} | "
-                f"{resid} | {self_cont} | {must_ev} | {orph} | {brief} |"
-            )
-
-    out.append("")
-    out.append("Legend:")
-    out.append(
-        "- **need d/b** — unmet depth / breadth gap pressure (higher = more "
-        "missing; includes orphaned guideline anchors). Universally large across "
-        "articles and presets — do NOT use this raw number to escalate."
-    )
-    out.append(
-        "- **cov d·b** — coverage already achieved (depth out of 8, breadth out of 6)."
-    )
-    out.append(
-        "- **resid d/b** — RESIDUAL need = need MINUS coverage already achieved. This "
-        "is the honest \"how much is actually still missing\" figure \u2014 context for "
-        "the GENERAL DOWNWARD OVERRIDE only, not a standalone trigger."
-    )
-    out.append(
-        "- **self-cont** — \"yes\" means the digest judged this section's already-scraped "
-        "sources well-matched to its topic. Supporting context, but NOT sufficient alone "
-        "\u2014 some genuinely-P2 articles have every section self-contained yet still need "
-        "real new depth/breadth; check resid d/b too."
-    )
-    out.append(
-        "- **must-ev** — # mandatory bullets that REQUIRE named evidence (tools, "
-        "benchmarks, numbers). High = section cannot be written well without sourced facts."
-    )
-    out.append(
-        "- **orphans d/b** — guideline anchors with no backing source yet "
-        "(depth / breadth)."
-    )
-    out.append(
-        "- **brief** — \"yes\" means the section must stay short and cannot absorb "
-        "extra research."
-    )
-    if include_rl:
-        out.append(
-            "- **RL pick** — that section's own scorer choice and its top-2 margin "
-            "(bigger margin = more confident)."
-        )
-    out.append("")
-
-    # Section intents (semantic context, one line each)
-    if any(s["intent"] for s in secs):
-        out.append("Section intents:")
-        for s in secs:
-            if s["intent"]:
-                out.append(f"- {s['label']} — {s['intent']}")
-        out.append("")
-
-    # --- 4. Exploration economics ---
-    out.append("## 4. Exploration economics (article-wide)")
-    out.append(
-        f"- Unbacked anchors (article-wide): {glob['n_orphan_anchors']} — guideline "
-        "claims still lacking a source."
-    )
-    out.append(
-        f"- Dominant gap type: {glob['dominant_gap_type'] or 'n/a'} — where the "
-        "missing coverage mostly lies."
-    )
-    weak = ", ".join(glob["weakest_sections"]) or "n/a"
-    strong = ", ".join(glob["strongest_sections"]) or "n/a"
-    out.append(f"- Weakest sections: {weak}   ·   Strongest: {strong}")
-    out.append("")
-
-    # --- 5. Primary-source appendix: raw article guideline (optional) ---
-    appendix = render_guideline_appendix(article_guideline)
-    if appendix:
-        out.append(appendix)
-
-    return "\n".join(out)
+def assemble_result(
+    digest_generated: bool,
+    rl: dict,
+    llm_recommendation: dict | None,
+    article_guideline: str,
+    digest_gap_profile: str,
+) -> dict:
+    """Assemble predict_exploration_preset_tool.py's return dict from a completed RL stage."""
+    return {
+        "status": "success",
+        "digest_generated": digest_generated,
+        "rl_recommendation": {
+            "preset": rl["preset"],
+            "name": PRESET_NAMES[rl["preset"]],
+            "confidence": rl["confidence"],
+            "entropy_bits": rl["entropy_bits"],
+            "floor_correction_applied": rl["floor_applied"],
+            "agg_probs": [round(float(p), 4) for p in rl["agg_probs"]],
+            "raw_argmax_preset": rl["raw_argmax_preset"],
+            "cost_rule_adjusted": rl["cost_rule_adjusted"],
+        },
+        "section_signals": rl["section_signals"],
+        "guidance": rl["guidance_str"],
+        "llm_recommendation": llm_recommendation,
+        "article_evidence": rl["evidence"],
+        "article_guideline": article_guideline,
+        "digest_gap_profile": digest_gap_profile,
+        "message": (
+            f"RL model recommends preset P{rl['preset']} ({PRESET_NAMES[rl['preset']]}) "
+            f"with {rl['confidence']:.0%} confidence across {len(rl['section_signals'])} sections. "
+            f"Entropy: {rl['entropy_bits']:.2f} bits."
+        ),
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -540,512 +412,3 @@ def fallback_aggregator(evidence: dict) -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
-# Deterministic policy guard (hard constraint clamp)
-# ---------------------------------------------------------------------------
-# Never trust the LLM to honour the external-evidence policy. After the LLM
-# returns a preset, clamp it deterministically so a policy violation is impossible:
-#   forbidden -> P0 skip     (exploration output is unusable in the final article)
-#   required  -> >= P1 light (external evidence is mandatory)
-#   capped    -> <= P1 light (article scope is a survey of fixed/named sources;
-#                             the {skip,light} ceiling is a design decision, not a
-#                             data-driven one — see A.20 discussion). WITHIN that
-#                             ceiling, the skip-vs-light choice is NOT "leave preset
-#                             alone if already <= 1" — it always defers to the RL
-#                             distribution's own P(skip) vs P(light) preference,
-#                             since an in-bounds preset can still disagree with the
-#                             distribution (e.g. after the cost-sensitive rule's
-#                             adjustment). No distribution available -> leave as-is.
-# These are the only three policy directions that have a hard, non-negotiable
-# constraint; "allowed" imposes nothing.
-
-def _apply_policy_guards(
-    preset: int, policy: str, distribution: list[float] | None = None
-) -> tuple[int, str | None]:
-    """Clamp a chosen preset to satisfy the external-evidence policy.
-
-    ``distribution`` is the RL aggregate's raw 4-arm probability vector
-    ([skip, light, standard, deep]). For "capped" it is the SOLE arbiter of
-    the skip-vs-light choice whenever preset is already in {0, 1} -- not just
-    a fallback for out-of-bounds presets -- since the incoming preset can
-    disagree with the distribution's own ranking. No distribution -> leave
-    an in-bounds preset unchanged.
-
-    A standard/deep vote is ALWAYS capped to light regardless of distribution
-    (A.20.11: the residual P(skip) vs P(light) split is unreliable there and is
-    never used to pick the arm). Every such clamp is marked AMBIGUOUS and
-    flagged for review, not just cases where the residual disagrees with light:
-    a corpus-wide check (A.20.14) found zero confirmed cases of skip beating
-    light in this population, including every case where the residual itself
-    favored skip -- so the residual's direction carries no demonstrated signal
-    in either direction and is not a basis for trusting light only selectively.
-
-    Returns ``(clamped_preset, note)`` where ``note`` is a short human-readable
-    string when a clamp fired, else None.
-    """
-    if policy == "forbidden" and preset != 0:
-        return 0, f"policy=forbidden: clamped P{preset}->P0 skip"
-    if policy == "required" and preset < 1:
-        return 1, f"policy=required: clamped P{preset}->P1 light"
-    if policy == "capped":
-        if preset > 1:
-            if distribution:
-                return 1, (
-                    f"policy=capped: clamped P{preset}->P1 light — AMBIGUOUS: no "
-                    f"data-confirmed case of skip beating light for a standard/deep "
-                    f"vote in this population (A.20.14); residual "
-                    f"P(skip)={distribution[0]:.3f} vs P(light)={distribution[1]:.3f}, "
-                    f"flagged for review"
-                )
-            return 1, (
-                f"policy=capped: clamped P{preset}->P1 light — AMBIGUOUS: no "
-                f"data-confirmed case of skip beating light for a standard/deep "
-                f"vote in this population (A.20.14); flagged for review"
-            )
-        if distribution:
-            resolved = 1 if distribution[1] >= distribution[0] else 0
-            if resolved != preset:
-                return resolved, (
-                    f"policy=capped: distribution favors P{resolved} "
-                    f"{PRESET_NAMES[resolved]} over P{preset} {PRESET_NAMES[preset]} "
-                    f"(P(skip)={distribution[0]:.3f} vs P(light)={distribution[1]:.3f})"
-                )
-    return preset, None
-
-
-# ---------------------------------------------------------------------------
-# Deterministic escalation guard (hard constraint clamp)
-# ---------------------------------------------------------------------------
-# The planner prompt explicitly states "NEVER escalate a P0 or P1 pick up to P2
-# or higher, regardless of vote mass or gap counts" (in both the system prompt
-# and the user template) — but a 2026-07-10 held-out backtest showed the LLM
-# violating this anyway, using the budget-weighted vote-mass number to
-# functionally reconstruct a retired P1->P2 escalation (override_reason:
-# "departed from uncertain P1 aggregate to P2 because budget-weighted standard
-# mass (68%)..."), undoing a correct cost-rule-adjusted RL pick. A prompt-level
-# instruction alone is not reliable enough for this hard boundary; enforce it
-# in code, matching the existing forbidden/required policy-guard pattern. The
-# still-sanctioned P0->P1 nudge (one level up) is unaffected.
-
-def _apply_escalation_guard(preset: int, rl_preset: int) -> tuple[int, str | None]:
-    """Hard block: never let the LLM planner escalate a P0/P1 RL pick all the way to P2+.
-
-    Returns ``(clamped_preset, note)`` where ``note`` is a short human-readable
-    string when a clamp fired, else None.
-    """
-    if rl_preset <= 1 and preset >= 2:
-        return (
-            1,
-            f"escalation_guard: clamped P{preset}->P1 (RL pick was P{rl_preset}; "
-            f"escalating a P0/P1 RL vote to P2+ is not permitted)",
-        )
-    return preset, None
-
-
-# ---------------------------------------------------------------------------
-# Planner LLM system prompts and user templates (model-agnostic; currently Grok 4.2)
-# ---------------------------------------------------------------------------
-
-_PLANNER_SYSTEM = """\
-You are the article-level exploration planner for an autonomous research-and-writing \
-system. Your decisions are scored against an offline oracle, so accuracy matters.
-
-THE DECISION
-Before an article is written, the system can run extra rounds of autonomous web \
-exploration to close coverage gaps. Exploration costs time and money and, past a \
-point, returns mostly duplicate material. Choose ONE exploration preset for the \
-whole article that buys the most useful new coverage for the least waste.
-
-THE FOUR PRESETS (ordered by cost)
-  P0 skip     - no exploration. Existing coverage is already sufficient.
-  P1 light    - 1 round, balanced (~50% depth / 50% breadth). Cheap touch-up.
-  P2 standard - 2 rounds: depth -> breadth. Meaningful gap-filling.
-  P3 deep     - 3 rounds: depth -> breadth -> depth. Expensive; only when large,
-                evidence-heavy gaps clearly justify it.
-
-WHERE THE EVIDENCE COMES FROM (so you weigh it correctly)
-A single exploitation pass has already run. From it you receive a guided brief with:
-  1. A trained section-scorer's budget-weighted vote over the four presets. The
-     scorer was trained (GRPO) to predict, per section, which preset maximises the
-     article's reward — it already weighed every per-section gap (must-ev, unbacked
-     anchors, need_depth, coverage scores) against the reward trade-off. Its
-     aggregate vote is the reward-trained estimate of the optimal preset. Treat it
-     as your primary signal and the approximate location of the reward peak.
-  2. A per-section table of coverage already achieved vs. what the guideline demands,
-     including a RESIDUAL-need column (need minus coverage) and a self-contained flag.
-     Use this to understand DIRECTION (which sections need depth-first vs.
-     breadth-first rounds) and, per the OVERRIDE POLICY below, as the basis for the
-     sanctioned downward step — NOT to re-derive escalation from raw need_depth.
-  3. Article-wide gap economics (unbacked anchors, dominant gap type).
-
-THE REWARD CURVE IS OFTEN BIMODAL, NOT SINGLE-PEAKED
-Article reward as a function of preset is unimodal (one true optimum) in only about half
-of articles measured (44% TRAIN / 47% TEST, held-out backtest). In the rest it is
-bimodal: P1 light and P3 deep are competing local optima, with P2 standard sitting in a
-reward TROUGH between them. Do NOT assume a confident vote for one side rules out the
-other being correct — check whether P2 sits at a local minimum in the section votes
-before treating it as a safe intermediate step; if it does, the article needs a decision
-between P1 and P3, not a hedge at P2. Over- or under-shooting the TRUE local optimum
-(whichever one it is) still loses reward, so do not reflexively round toward the
-cheapest arm either.
-
-TRUST THE SCORER WHEN IT IS CONFIDENT; READ THE VOTES WHEN IT IS NOT
-The section-scorer's aggregate vote is the reward-trained estimate of the nearest local
-optimum, but it is only as trustworthy as it is confident, and it can be mis-calibrated
-on articles unlike those it was trained on:
-  - DECISIVE (confidence >= 70% and low entropy): a strong learned signal. Do NOT pick
-    a preset above it — upward escalation is almost never correct here.
-  - UNCERTAIN (confidence < 70% OR entropy > 1.5 bits): the learned signal is weak. The
-    budget-weighted per-section votes carry real information the aggregate has blurred
-    away; use them together with the OVERRIDE POLICY below, which may point up OR down.
-
-DO NOT ESCALATE ON RAW GAP COUNTS
-Coverage gaps (must-ev, unbacked anchors, need_depth) are universally present across
-every article and preset level and carry little information about whether escalation
-helps. Do NOT escalate just because these counts look large. The single calibrated
-escalation signal is the BUDGET-WEIGHTED SECTION-VOTE MASS in the brief: the share of
-the article's writing budget whose own section voted skip / light / standard / deep. A
-large intro section voting skip can hide small-but-heavy technical sections that need
-deep exploration — the vote mass exposes exactly that.
-
-RESIDUAL NEED IS CONTEXT, NOT A DECISION TRIGGER
-The brief's "resid d/b" column (need MINUS coverage already achieved) is NOT a raw gap
-count — it is the honest measure of what is actually still missing. It is useful context
-for the GENERAL DOWNWARD OVERRIDE below, but it is NOT a standalone trigger: the RL pick
-you are shown has ALREADY been adjusted by a reward-calibrated cost-sensitive rule before
-you see it (see PIPELINE NOTE below), so do not re-derive a P1/P2 boundary correction from
-residual need yourself — that correction is already baked into the pick.
-
-PIPELINE NOTE — THE RL PICK IS ALREADY COST-ADJUSTED
-The RL pick shown above is not a raw model argmax. It has already been passed through a
-deterministic, empirically-fit cost-sensitive rule that corrects for known reward
-asymmetries (under-shooting the true preset is usually costlier than a 1-level
-over-shoot). Do not attempt to re-derive that correction yourself from confidence,
-residual need, or self-containment — you would likely be duplicating or fighting a
-correction that was already made more reliably than a prompt-level judgement call can.
-Your job is to catch what a numeric rule CANNOT see (policy compliance, and genuinely
-qualitative red flags), not to re-second-guess the P0-P3 level itself.
-
-OVERRIDE POLICY
-  - SANCTIONED UPWARD ESCALATION — P2 -> P3 ONLY, and ONLY when the scorer vote is
-    UNCERTAIN:
-      * To P3 deep: if the RL pick is P2 AND the budget-weighted mass of sections
-        voting DEEP specifically is >= 30% — choose P3.
-      * NEVER escalate a P0 or P1 pick up to P2 or higher, regardless of vote mass or
-        gap counts. This is enforced as a HARD, NON-NEGOTIABLE CODE-LEVEL GUARD after
-        your response — any P2+ you return when the RL pick was P0/P1 will be silently
-        clamped back down, so there is no benefit to attempting it. (An earlier policy
-        revision sanctioned this escalation; it was retired after held-out evaluation
-        showed it fired twice and was wrong both times, and a later revision found the
-        LLM was still reaching this outcome via vote-mass reasoning despite an explicit
-        textual prohibition — hence the hard code-level guard now, not just a prompt rule.)
-      * NEVER escalate when the vote is DECISIVE.
-  - DEEP-OR-NOTHING GUARD: if the RL pick is P1 and the deep-vote mass is high while
-    the standard-vote mass is low (a depth-or-nothing pattern), do NOT infer that P2 is
-    worth trying — the standard middle sits in a reward valley for such articles. P3 is
-    reachable only from a P2 pick, never a two-level jump from P1.
-  - GENERAL DOWNWARD OVERRIDE: you MAY choose one level BELOW the scorer's pick when
-    most high-budget sections are brief-flagged or already well-covered (depth_score
-    >= 6, or residual need near zero), or the vote is highly uncertain with no
-    dominant arm AND neither standard-vote nor deep-vote mass reaches 30% (no real
-    escalation signal).
-  - SANCTIONED P0 -> P1 NUDGE: if the scorer votes P0 skip, its runner-up is P1 light
-    with substantial mass (>= 25%), AND neither standard-vote nor deep-vote mass
-    reaches 30% — you MAY choose P1 light as cheap insurance.
-
-USE need_depth / need_breadth FOR ROUND COMPOSITION, NOT LEVEL
-Once you have chosen a preset, need_depth / need_breadth tell you which sections need
-depth-first vs. breadth-first rounds — let them shape the composition of the rounds
-(depth -> breadth vs. balanced). The escalation/down-step LEVEL, by contrast, comes
-from the budget-weighted section-vote mass and residual-need/self-contained signals,
-not from these raw gap columns.
-
-PRIMARY-SOURCE APPENDIX (may follow the brief)
-You may also receive the full author-written article guideline reproduced verbatim.
-The structured brief is your PRIMARY basis; use the guideline only to catch
-qualitative scope cues the numbers cannot express (intended depth, audience, tone,
-explicit "keep brief"/"go deep" instructions). Never let its length, ambition, or
-detail push the preset up — exploration buys missing evidence, not matching prose
-volume.
-
-HARD CONSTRAINTS (these override everything above)
-  - external-evidence policy = forbidden -> you MUST choose P0 skip.
-  - external-evidence policy = required  -> you MUST choose at least P1 light.
-  - external-evidence policy = capped    -> you MUST choose P0 skip or P1 light only
-    (never P2 standard or P3 deep) — the article's scope is a survey of fixed/named
-    sources, so exploration cannot exceed a light touch-up.
-
-OUTPUT
-Reason briefly first (a few sentences citing the SPECIFIC evidence that drove you),
-then output ONLY this JSON block, with nothing after it:
-
-```json
-{{
-  "preset": <integer 0-3>,
-  "name": "<skip|light|standard|deep>",
-  "reasoning": "<2-4 sentences naming the decisive evidence>",
-  "override": <true|false>,
-  "override_reason": "<why you departed from the section-scorer's aggregate, or null>",
-  "decision_drivers": ["<short names of the signals that drove the choice>"],
-  "risk_flags": ["<short notes on what could make this decision wrong>"]
-}}
-```"""
-
-_PLANNER_STANDALONE_SYSTEM = """\
-You are the article-level exploration planner for an autonomous research-and-writing \
-system. You will be shown a guided brief built from a single exploitation pass: the \
-article overview, a per-section table of coverage vs. guideline demand, and \
-article-wide exploration economics. There is NO trained-model recommendation in this \
-mode — decide entirely on your own reading of the evidence.
-
-THE DECISION
-Choose ONE exploration preset for the whole article that buys the most useful new \
-coverage for the least waste.
-
-THE FOUR PRESETS (ordered by cost)
-  P0 skip     - no exploration. Existing coverage is already sufficient.
-  P1 light    - 1 round, balanced (~50% depth / 50% breadth). Cheap touch-up.
-  P2 standard - 2 rounds: depth -> breadth. Meaningful gap-filling.
-  P3 deep     - 3 rounds: depth -> breadth -> depth. Expensive; only when large,
-                evidence-heavy gaps clearly justify it.
-
-HOW TO WEIGH THE SIGNALS
-  - Default toward the CHEAPER arm; escalate only on concrete, sizeable, evidence-driven
-    gaps (large need_depth AND a depth mandate).
-  - Weight sections by writing budget; gaps in tiny or "must stay brief" sections barely
-    matter.
-  - must-ev (must_cover_depth) is depth pressure even when need_depth looks modest.
-  - The table's "resid d/b" column is need MINUS existing coverage — a small residual
-    means the gap is mostly already filled; weigh this more heavily than the raw need
-    column when judging whether escalation is really warranted.
-  - "self-cont" flags a section whose already-gathered sources are well-matched to its
-    topic — supporting (not sufficient) evidence that little new exploration is needed
-    there; check it alongside resid d/b, not in isolation.
-
-PRIMARY-SOURCE APPENDIX (may follow the brief)
-You may also receive the full author-written article guideline reproduced verbatim.
-The structured brief is your PRIMARY basis; use the guideline only to catch
-qualitative scope cues the numbers cannot express (intended depth, audience, tone,
-explicit "keep brief"/"go deep" instructions). Never let its length, ambition, or
-detail push the preset up — exploration buys missing evidence, not matching prose
-volume.
-
-HARD CONSTRAINTS (these override everything above)
-  - external-evidence policy = forbidden -> you MUST choose P0 skip.
-  - external-evidence policy = required  -> you MUST choose at least P1 light.
-  - external-evidence policy = capped    -> you MUST choose P0 skip or P1 light only
-    (never P2 standard or P3 deep) — the article's scope is a survey of fixed/named
-    sources, so exploration cannot exceed a light touch-up.
-
-OUTPUT
-Reason briefly first (a few sentences citing the specific evidence), then output ONLY
-this JSON block, with nothing after it:
-
-```json
-{{
-  "preset": <integer 0-3>,
-  "name": "<skip|light|standard|deep>",
-  "reasoning": "<2-4 sentences naming the decisive evidence>",
-  "decision_drivers": ["<short names of the signals that drove the choice>"],
-  "risk_flags": ["<short notes on what could make this decision wrong>"]
-}}
-```"""
-
-_PLANNER_USER_TEMPLATE = """\
-{evidence_brief}
----
-
-## Your task
-Decide the single exploration preset for THIS article. Work through the brief above
-step by step:
-  1. State the section-scorer's aggregate vote (already cost-adjusted upstream) and
-     whether it is DECISIVE or UNCERTAIN.
-  2. If UNCERTAIN, check whether a sanctioned P2->P3 escalation, a general downward
-     override, or a P0->P1 nudge applies (see OVERRIDE POLICY in your instructions).
-     Use the preset-SPECIFIC deep-vote mass for the P2->P3 escalation. NEVER escalate
-     a P0/P1 pick up to P2 or higher under any circumstance \u2014 this is enforced as a
-     hard code-level guard regardless of what you return, so do not spend reasoning
-     trying to justify it.
-  3. State your final choice and the single most decisive reason.
-
-Then output ONLY the JSON block specified in your instructions (nothing after it)."""
-
-_PLANNER_STANDALONE_USER_TEMPLATE = """\
-{evidence_brief}
----
-
-## Your task
-Decide the single exploration preset for THIS article based solely on the brief above.
-Work through it step by step - weigh the per-section gaps against the writing budgets
-and the exploration economics - then output ONLY the JSON block specified in your
-instructions (nothing after it)."""
-
-
-# ---------------------------------------------------------------------------
-# JSON extraction helper
-# ---------------------------------------------------------------------------
-
-def _extract_json_block(raw: str) -> dict:
-    """Pull the JSON decision object out of a model reply.
-
-    Tries a fenced ```json block first, then the last bare {...} object.
-    Returns ``{}`` on any parse failure.
-    """
-    m = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.DOTALL)
-    json_str = m.group(1) if m else ""
-    if not json_str:
-        matches = re.findall(r"\{[^{}]*\}", raw, re.DOTALL)
-        json_str = matches[-1] if matches else ""
-    if not json_str:
-        return {}
-    try:
-        return _json.loads(json_str)
-    except Exception:
-        return {}
-
-
-# ---------------------------------------------------------------------------
-# LLM planner calls (currently Grok 4.2)
-# ---------------------------------------------------------------------------
-
-async def call_grok_planner(
-    api_key: str,
-    base_url: str,
-    evidence: dict,
-    article_guideline: str = "",
-) -> dict:
-    """Call the planner LLM (currently Grok 4.2) for the final exploration-preset decision.
-
-    The LLM receives the guided evidence brief rendered from ``evidence``.
-    When ``article_guideline`` is provided it is appended verbatim as a
-    primary-source appendix.
-
-    Returns a dict with keys: preset, name, reasoning, override, override_reason,
-    decision_drivers, risk_flags.  Falls back to ``fallback_aggregator`` on any
-    parsing failure.
-    """
-    from openai import AsyncOpenAI  # noqa: PLC0415
-
-    client = AsyncOpenAI(api_key=api_key, base_url=base_url)
-    rl_preset = int(evidence["rl_aggregate"]["preset"])
-    policy = evidence["guideline_context"]["external_evidence_policy"]
-    user_msg = _PLANNER_USER_TEMPLATE.format(
-        evidence_brief=render_evidence_brief(
-            evidence, include_rl=True, article_guideline=article_guideline
-        )
-    )
-
-    response = await client.chat.completions.create(
-        model=_PLANNER_MODEL,
-        messages=[
-            {"role": "system", "content": _PLANNER_SYSTEM},
-            {"role": "user", "content": user_msg},
-        ],
-        max_tokens=4096,
-    )
-    raw = (response.choices[0].message.content or "").strip()
-
-    parsed = _extract_json_block(raw)
-    try:
-        parsed_preset = int(parsed["preset"])
-        if parsed_preset not in range(NUM_PRESETS):
-            raise ValueError(f"preset {parsed_preset} out of range 0-{NUM_PRESETS - 1}")
-        # Deterministic hard-constraint guards, applied in order:
-        # (1) never let the LLM escalate a P0/P1 RL pick to P2+ (see
-        #     _apply_escalation_guard docstring — a prompt instruction alone was
-        #     shown to be insufficient); (2) forbidden->skip, required->>=light,
-        #     capped->skip-or-light (distribution-arbitrated, A.20.11).
-        escalated_preset, escalation_note = _apply_escalation_guard(parsed_preset, rl_preset)
-        final_preset, guard_note = _apply_policy_guards(
-            escalated_preset, policy, evidence["rl_aggregate"]["distribution"]
-        )
-        drivers = parsed.get("decision_drivers", [])
-        risk_flags = parsed.get("risk_flags", [])
-        override_reason = parsed.get("override_reason")
-        notes = [n for n in (escalation_note, guard_note) if n]
-        if notes:
-            drivers = [*drivers, "policy_guard"]
-            risk_flags = [*risk_flags, *notes]
-            joined_notes = "; ".join(notes)
-            override_reason = (
-                joined_notes if not override_reason else f"{override_reason}; {joined_notes}"
-            )
-        return {
-            "preset": final_preset,
-            "name": PRESET_NAMES[final_preset],
-            "reasoning": parsed.get("reasoning", ""),
-            "override": final_preset != rl_preset,
-            "override_reason": override_reason,
-            "decision_drivers": drivers,
-            "risk_flags": risk_flags,
-        }
-    except Exception:
-        logger.warning(
-            "LLM planner response could not be parsed as JSON; "
-            "using deterministic fallback. raw=%s", raw[:300]
-        )
-        fb = fallback_aggregator(evidence)
-        fb["reasoning"] = "LLM JSON parse failed; " + fb["reasoning"]
-        return fb
-
-
-async def call_grok_planner_standalone(
-    api_key: str,
-    base_url: str,
-    evidence: dict,
-    article_guideline: str = "",
-) -> dict | None:
-    """Call the planner LLM (currently Grok 4.2) with NO trained-scorer signal (the LLM-alone baseline).
-
-    The primary-source guideline appendix (when provided) is included identically
-    to the full call so the only difference between the two modes is the RL signal.
-
-    Returns a dict with keys: preset, name, reasoning, decision_drivers,
-    risk_flags.  Returns None on parsing failure.
-    """
-    from openai import AsyncOpenAI  # noqa: PLC0415
-
-    client = AsyncOpenAI(api_key=api_key, base_url=base_url)
-    policy = evidence["guideline_context"]["external_evidence_policy"]
-    user_msg = _PLANNER_STANDALONE_USER_TEMPLATE.format(
-        evidence_brief=render_evidence_brief(
-            evidence, include_rl=False, article_guideline=article_guideline
-        )
-    )
-
-    response = await client.chat.completions.create(
-        model=_PLANNER_MODEL,
-        messages=[
-            {"role": "system", "content": _PLANNER_STANDALONE_SYSTEM},
-            {"role": "user", "content": user_msg},
-        ],
-        max_tokens=4096,
-    )
-    raw = (response.choices[0].message.content or "").strip()
-
-    parsed = _extract_json_block(raw)
-    try:
-        parsed_preset = int(parsed["preset"])
-        if parsed_preset not in range(NUM_PRESETS):
-            raise ValueError(f"preset {parsed_preset} out of range 0-{NUM_PRESETS - 1}")
-        # Deterministic hard-constraint guard (forbidden->skip, required->>=light,
-        # capped->[skip,light]). No RL distribution exists in standalone mode
-        # (rl_aggregate is None), so a capped clamp here always defaults to light.
-        final_preset, guard_note = _apply_policy_guards(parsed_preset, policy)
-        drivers = parsed.get("decision_drivers", [])
-        risk_flags = parsed.get("risk_flags", [])
-        if guard_note:
-            drivers = [*drivers, "policy_guard"]
-            risk_flags = [*risk_flags, guard_note]
-        return {
-            "preset": final_preset,
-            "name": PRESET_NAMES[final_preset],
-            "reasoning": parsed.get("reasoning", ""),
-            "decision_drivers": drivers,
-            "risk_flags": risk_flags,
-        }
-    except Exception:
-        logger.warning(
-            "LLM standalone planner response could not be parsed as JSON. raw=%s", raw[:300]
-        )
-        return None

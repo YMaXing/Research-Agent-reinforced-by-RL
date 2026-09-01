@@ -15,6 +15,22 @@ async def full_research_instructions_prompt() -> str:
         The complete research instructions as a string
     """
     dedup_enabled = settings.enable_content_dedup
+    override_allowed = settings.user_plan_override_allowed
+
+    # Sub-step 3.4a, shown only when overrides are proactively solicited
+    override_reminder_block = """
+      a. Call the "get_exploration_override_guidance" tool (no arguments). It returns
+         override_allowed=True together with guidance and examples text — show that guidance and the
+         examples to the user now, and WAIT for their response before proceeding. Treat silence, "no",
+         or an unrelated reply as no override; treat anything resembling a round-count/focus
+         instruction as an override (see "User-directed exploration override" below for how to
+         interpret and confirm it).
+""" if override_allowed else """
+      a. (Skipped — user_plan_override_allowed=False, so overrides are not proactively solicited for
+         this workflow: do not ask the user for one, proceed directly to step b. An unprompted override
+         from the user, given at any point, still applies regardless — see "User-directed exploration
+         override" below — this setting only controls whether you proactively ask.)
+"""
 
     dedup_step_number = 7   # step number assigned to dedup when enabled
     # Paragraph shown inside the write step describing how DEDUPLICATED_RESEARCH_FILE is used
@@ -150,25 +166,27 @@ If the user doesn't provide a research directory, you should ask for it before e
     3.3. Run the "run_tavily_research" tool with the new queries in NEXT_QUERIES_FILE. This tool executes the queries with
     Tavily and appends the results to the TAVILY_RESULTS_FILE within RESEARCH_OUTPUT_DIRECTORY.
 
-3.4. Exploration Planning (RL Meta-Reasoner + deterministic policy guard):
+3.4. Exploration Planning (RL Meta-Reasoner + deterministic policy guard). After completing all 3
+    exploitation rounds, do the following in order:
+{override_reminder_block}
+      b. Run the "predict_exploration_preset" tool with the research directory.
+      c. Determine the exploration plan from the tool's result — see "Determining the exploration plan
+         for step 4" below — resolving any pending override or AMBIGUOUS flag before step 4 runs.
 
-    After completing all 3 exploitation rounds, run the "predict_exploration_preset" tool with the research
-    directory. The tool runs a two-stage pipeline internally:
+    The "predict_exploration_preset" tool runs a two-stage pipeline internally:
       Stage 1 — Qwen3-4B RL model: infers a per-section preset vote from the exploitation digest,
                  aggregates via weighted vote, applies an entropy-gated floor correction, and a
                  deterministic cost-sensitive rule.
-      Stage 2 — Deterministic policy guard (no LLM call in production): clamps the RL model's own
-                 pick to satisfy the article's external-evidence policy (forbidden → P0 skip,
-                 required → ≥ P1 light, capped → ≤ P1 light). In the current production configuration
-                 (PRESET_PLANNER_SKIP_LLM=True, the default) no LLM reviews, confirms, or overrides the
-                 RL pick — the RL recommendation is authoritative except where this hard policy
-                 constraint requires a clamp. (An optional LLM-planner mode exists in the codebase for a
-                 future re-evaluation, but it is disabled by default and not part of this workflow.)
+      Stage 2 — Deterministic policy guard (no LLM call): clamps the RL model's own pick to satisfy
+                 the article's external-evidence policy (forbidden → P0 skip, required → ≥ P1 light,
+                 capped → ≤ P1 light). There is no LLM-planner stage in this tool at all — the RL
+                 recommendation is authoritative except where this hard policy constraint requires a
+                 clamp, or an explicit user-directed override applies (see below).
 
     The tool returns:
     - llm_recommendation.preset (0–3) — the FINAL authoritative preset: the RL model's own pick,
       clamped only by the deterministic policy guard above (the field name is a historical artifact;
-      no LLM is involved by default)
+      no LLM is involved at all)
     - llm_recommendation.name — human-readable name: skip | light | standard | deep
     - llm_recommendation.reasoning — a short deterministic description of the guard's decision
     - llm_recommendation.override — True only if the policy guard changed the RL model's own pick
@@ -195,11 +213,12 @@ If the user doesn't provide a research directory, you should ask for it before e
     **Determining the exploration plan for step 4**: step 3.4 always concludes with exactly one exploration
     plan — a round count and, for each round, a focus (and optionally a depth_vs_breadth_ratio/n_queries) —
     that step 4 then executes. Determine it in this order:
-      1. If the user has given, or gives once they see llm_recommendation, a direct exploration override (see
-         "User-directed exploration override" below), the override IS the exploration plan. This holds even
-         if it conflicts with a forbidden/required/capped policy clamp, and even if it would otherwise have
-         triggered the ambiguous-capped question below — a direct override answers that question outright,
-         so do not separately ask it once an override is already in hand.
+      1. If the user provides a direct exploration override — whether before step 3.4 even runs, or in
+         direct response to seeing llm_recommendation (see "User-directed exploration override" below) —
+         the override IS the exploration plan. This holds even if it conflicts with a
+         forbidden/required/capped policy clamp, and even if it would otherwise have triggered the
+         ambiguous-capped question below — a direct override answers that question outright, so do not
+         separately ask it once an override is already in hand.
       2. Otherwise, llm_recommendation.preset — mapped through the preset-mapping table above — IS the
          exploration plan, UNLESS llm_recommendation.risk_flags contains the "AMBIGUOUS" tag (see "Ambiguous
          capped-policy cases" below), in which case ask the user the specified question first; their answer
@@ -211,23 +230,6 @@ If the user doesn't provide a research directory, you should ask for it before e
     invalidating the preset choice. section_signals remains available for diagnostic/reporting purposes. If
     llm_recommendation.override is True, note the override_reason — it identifies which policy guard
     (forbidden/required/capped) fired.
-
-    **Ambiguous capped-policy cases require explicit user input** (case 2 above): whenever
-    external_evidence_policy=capped and the RL model votes standard or deep, the deterministic guard ALWAYS
-    clamps the preset down to P1 light — this is unconditional, by design, regardless of what the RL model's
-    own residual skip-vs-light distribution says (a corpus-wide check found zero confirmed cases of skip
-    actually beating light in this population, so the residual is not trusted in either direction). Every one
-    of these clamps is therefore ALSO tagged "AMBIGUOUS" in llm_recommendation.risk_flags — check specifically
-    for that tag (policy=capped plus a standard/deep RL vote always produces it; policy=capped with a
-    skip/light RL vote does NOT). When the "AMBIGUOUS" tag IS present (and no override is already in hand):
-      1. STOP before running step 4. Show the user the exact risk_flags text (it states the residual
-         P(skip) vs P(light) values) and explain that the guard defaulted to light but the signal is
-         genuinely ambiguous.
-      2. Ask the user explicitly: proceed with light (P1, the guard's default), or override to skip (P0)?
-      3. Wait for the user's answer. Use the user's chosen preset — not llm_recommendation.preset — as the
-         exploration plan (skip means step 4 is not run at all; light means the normal P1 recipe).
-      4. If the user does not state a preference, proceed with the guard's default (light) as the exploration
-         plan.
 
     **User-directed exploration override** (case 1 above): At any point in the conversation — before step 3.4
     even runs, immediately after seeing llm_recommendation, or mid-way through step 4's loop — the user may
@@ -270,6 +272,24 @@ If the user doesn't provide a research directory, you should ask for it before e
     unless the user also explicitly says to skip it — the tool still determines external_evidence_policy,
     which the heads-up rule above depends on.
 
+    **Ambiguous capped-policy cases require explicit user input** (case 2 above): whenever
+    external_evidence_policy=capped and the RL model votes standard or deep, the deterministic guard ALWAYS
+    clamps the preset down to P1 light — this is unconditional, by design, regardless of what the RL model's
+    own probability split between skip and light says (the "residual" left after standard/deep are excluded;
+    a corpus-wide check found zero confirmed cases of skip actually beating light in this population, so the
+    residual is not trusted in either direction). Every one of these clamps is therefore ALSO tagged
+    "AMBIGUOUS" in llm_recommendation.risk_flags — check specifically for that tag (policy=capped plus a
+    standard/deep RL vote always produces it; policy=capped with a skip/light RL vote does NOT). When the
+    "AMBIGUOUS" tag IS present (and no override is already in hand):
+      1. STOP before running step 4. Show the user the exact risk_flags text (it states the residual
+         P(skip) vs P(light) values) and explain that the guard defaulted to light but the signal is
+         genuinely ambiguous.
+      2. Ask the user explicitly: proceed with light (P1, the guard's default), or override to skip (P0)?
+      3. Wait for the user's answer. Use the user's chosen preset — not llm_recommendation.preset — as the
+         exploration plan (skip means step 4 is not run at all; light means the normal P1 recipe).
+      4. If the user does not state a preference, proceed with the guard's default (light) as the exploration
+         plan.
+
     Outside of case 1 (an explicit, direct user override) and the ambiguous-capped question in case 2 above,
     do NOT second-guess llm_recommendation.preset on your own initiative — not because of confidence, entropy,
     section_signals, or your own reading of the article guideline (the guideline is already an input to the
@@ -277,7 +297,10 @@ If the user doesn't provide a research directory, you should ask for it before e
     already made more reliably upstream). That kind of ad-hoc judgement was tried in an earlier LLM-planner
     design and found unreliable; it is not part of the current pipeline.
 
-4. Exploration Phase, repeat the following research loop for an indefinite number of rounds with a configurable maximum number of {settings.maximum_exploration_rounds} rounds:
+4. Exploration Phase: execute the exploration plan established in step 3.4 (see "Determining the exploration
+    plan for step 4") — run exactly its round count, each with its specified focus. The round count is fixed
+    at plan time, 0 up to the ceiling of {settings.maximum_exploration_rounds} rounds; it is never open-ended
+    and is never decided during step 4 itself. If the plan's round count is 0, skip this step entirely.
 
     **Scope of step 4 (gap-driven exploration only):** This phase is *exclusively* depth and breadth exploration
     around the anchors that step 3 already covered. Every query here must target a depth or breadth category
@@ -287,9 +310,6 @@ If the user doesn't provide a research directory, you should ask for it before e
     trends in adjacent fields). Pure-coverage "What is X?" / "How does X work?" queries on guideline-named
     concepts are *forbidden* here — those belong to step 3. The dedup tool will reject any exploration query that
     is pure coverage of a guideline-anchored concept.
-
-    Execute the exploration plan established in step 3.4 (see "Determining the exploration plan for step 4").
-    If its round count is 0, skip this step entirely.
 
     For each exploration round:
 
@@ -307,7 +327,7 @@ If the user doesn't provide a research directory, you should ask for it before e
     4.2. Run "deduplicate_new_queries_tool" with query_source="complementary" to remove semantic duplicates among the queries generated in this round and against the full query history.
     The deduplicated queries are saved back to NEXT_QUERIES_FILE and also appended to FULL_QUERIES_FILE.
 
-    4.3 Run the "run_tavily_research" tool with the new complementary queries in NEXT_QUERIES_FILE. This tool executes the queries with
+    4.3. Run the "run_tavily_research" tool with the new complementary queries in NEXT_QUERIES_FILE. This tool executes the queries with
     Tavily and appends the results to the TAVILY_RESULTS_FILE within RESEARCH_OUTPUT_DIRECTORY.
 
 5. Filter Tavily results by quality:
@@ -392,6 +412,9 @@ After running the complete workflow, the research directory will contain the fol
 ```
 research_directory/
 ├── ARTICLE_GUIDELINE_FILE                              # Input: Article guidelines and requirements
+├── research_digest.md                                  # Step 3.4 — Exploitation digest, auto-generated by predict_exploration_preset if absent
+├── guideline_features.json                             # Step 3.4 — Extracted guideline features (e.g. external_evidence_policy) backing the digest
+├── digest_section_placeholder.json                     # Step 3.4 — Digest-stage per-section placeholder data (diagnostic only)
 ├── RESEARCH_OUTPUT_FOLDER/                             # Hidden directory containing all research data
 │   ├── GUIDELINES_FILENAMES_FILE                       # Step 1.3 — Extracted URLs and local files from guidelines
 │   ├── LOCAL_FILES_FROM_RESEARCH_FOLDER/               # Step 2.1 — Copied local files referenced in guidelines
@@ -404,8 +427,9 @@ research_directory/
 │   │   └── [youtube_transcripts...]
 │   ├── URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER/       # Step 2.5 — Scraped "Other Sources" (exploitation, non-golden)
 │   │   └── [exploitation_sources...]
-│   ├── FULL_QUERIES_FILE                               # Steps 3.2 / 4.2 — Cumulative history of all deduplicated queries
 │   ├── NEXT_QUERIES_FILE                               # Steps 3.1 / 4.1 — Proposed queries for the current round
+│   ├── FULL_QUERIES_FILE                               # Steps 3.2 / 4.2 — Cumulative history of all deduplicated queries
+│   ├── REJECTED_QUERIES_FILE                           # Steps 3.2 / 4.2 — Rejected duplicate queries with reasons (written only if any were removed)
 │   ├── TAVILY_RESULTS_FILE                             # Steps 3.3 / 4.3 — Complete results from all Tavily rounds
 │   ├── TAVILY_SOURCES_SELECTED_FILE                    # Step 5.1 — Accepted source IDs after quality filtering
 │   ├── TAVILY_RESULTS_SELECTED_FILE                    # Step 5.1 — Filtered Tavily results (accepted sources only)
@@ -413,7 +437,7 @@ research_directory/
 │   ├── URL_PHASES_FILE                                 # Step 6.1 — URL → phase mapping (exploitation / exploration)
 │   ├── URLS_FROM_RESEARCH_FOLDER/                      # Step 6.2 — Fully scraped content from selected research URLs
 │   │   └── [full_research_sources...]
-    │   └── DEDUPLICATED_RESEARCH_FILE                      # Step 7.1 — Phase-aware deduplicated knowledge base (omitted when dedup disabled)
+│   └── DEDUPLICATED_RESEARCH_FILE                      # Step 7.1 — Phase-aware deduplicated knowledge base (omitted when dedup disabled)
 └── RESEARCH_MD_FILE                                    # Step {write_step_number}.1 — Final comprehensive research compilation
 ```
 

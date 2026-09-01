@@ -56,49 +56,6 @@ def _append_assistant_response(history: List, response: Any, model_id: str):
 # Tool execution
 # ---------------------------------------------------------------------------
 
-# Tool name associated with workflow step 3.4 (RL exploration-preset planner).
-_EXPLORATION_PRESET_TOOL_NAME = "predict_exploration_preset"
-
-
-def _prompt_exploration_override_reminder() -> str | None:
-    """Ask the human, right before step 3.4 runs, whether they want to override the exploration plan.
-
-    This is a client-side UX concern (the human may not be watching closely enough to interject
-    unprompted) -- the server-side prompt only needs to know how to comply with an override once given.
-    """
-    print()
-    print_colored("📋 Exploration Planning (step 3.4) is about to run.", Color.BRIGHT_YELLOW, Style.BOLD)
-    print_colored(
-        "The RL model is about to recommend how many exploration rounds to run and what each round "
-        "should focus on. You can override this instead of letting it decide automatically.",
-        Color.YELLOW,
-    )
-    print_colored(
-        "To override, specify any of: total round count, each round's focus (depth / breadth / "
-        "balanced), an optional depth-vs-breadth split for a balanced round (e.g. \"70% depth\"), "
-        "and/or a query count per round. You can give a full plan now, or wait and give a relative "
-        "adjustment once you see the recommendation. Requesting more rounds than the configured "
-        "maximum is capped automatically.",
-        Color.YELLOW,
-    )
-    print_colored("Examples:", Color.YELLOW, Style.BOLD)
-    for example in (
-        "\"run 2 rounds: depth then breadth\"",
-        "\"just 1 round, focus on breadth\"",
-        "\"skip exploration entirely\"",
-        "\"balanced round with a 70% depth / 30% breadth split\"",
-        "\"run 3 rounds: round 1 at 80% depth / 20% breadth, round 2 at 30% depth / 70% breadth, "
-        "round 3 pure depth\" (multi-round, explicit per-round ratio)",
-        "\"use 6 queries per round instead of the default\"",
-        "\"add one more depth round\" (relative, after seeing the recommendation)",
-        "\"drop the last round\" (relative, after seeing the recommendation)",
-    ):
-        print_colored(f"  - {example}", Color.YELLOW)
-    override = input("👤 Exploration override (press Enter to let the planner decide): ").strip()
-    print()
-    return override or None
-
-
 async def execute_tool(name: str, args: dict, client: Agent):
     """Execute a tool and return the result."""
     print()
@@ -166,22 +123,12 @@ async def handle_agent_loop(
                 print_colored("  Arguments: ", Color.CYAN, end="")
                 print_colored(json.dumps(args, indent=2), Color.CYAN)
 
-                # Give the human a chance to override the exploration plan before step 3.4 runs.
-                override_note = None
-                if name == _EXPLORATION_PRESET_TOOL_NAME:
-                    override_note = _prompt_exploration_override_reminder()
-
                 # Execute the tool via MCP server
                 try:
                     tool_result = await execute_tool(name, args, client)
                     # Add tool result to conversation history
                     tool_response = f"Tool '{name}' executed successfully. Result: {tool_result}"
                     conversation_history.append(make_user_message(tool_response))
-                    if override_note:
-                        conversation_history.append(make_user_message(
-                            f"User-provided exploration override (stated before seeing the "
-                            f"recommendation): {override_note}"
-                        ))
                 except Exception as e:
                     # Error already printed by execute_tool; surface it clearly to the LLM
                     error_response = f"Tool '{name}' returned an error: {e}"
