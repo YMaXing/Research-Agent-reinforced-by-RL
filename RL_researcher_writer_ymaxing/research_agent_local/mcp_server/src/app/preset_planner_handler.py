@@ -1,10 +1,16 @@
 """
-Grok 4.2 planner handler for the predict_exploration_preset tool.
+LLM planner handler for the predict_exploration_preset tool (currently Grok 4.2).
 
 Builds the leakage-free article evidence packet from a v2 digest and optional
 RL section-scorer output, renders it as a guided markdown brief, and calls the
-Grok 4.2 reasoning model (or a deterministic fallback) for the final
-exploration-preset decision.
+planner LLM (currently Grok 4.2; a deterministic fallback is used otherwise) for
+the final exploration-preset decision.
+
+Production note: settings.preset_planner_skip_llm defaults to True, so in the
+current production pipeline the LLM planner is never actually called —
+``fallback_aggregator`` (deterministic RL pick + policy guard, no LLM) is the
+default path. ``call_grok_planner``/``call_grok_planner_standalone`` remain here
+as an opt-in mode for a future re-evaluation.
 """
 
 from __future__ import annotations
@@ -35,7 +41,7 @@ if str(_TRAINING_DIR) not in sys.path:
 import _digest_parse  # noqa: E402  # type: ignore[import-not-found]
 
 # ---------------------------------------------------------------------------
-# Grok planner model
+# Planner LLM model (currently Grok 4.2; swap to change the pipeline's LLM)
 # ---------------------------------------------------------------------------
 _PLANNER_MODEL = "grok-4.20-0309-reasoning"
 
@@ -43,9 +49,9 @@ _PLANNER_MODEL = "grok-4.20-0309-reasoning"
 # Calibrated escalation thresholds
 # ---------------------------------------------------------------------------
 # When the RL aggregate vote is UNCERTAIN (confidence < _DECISIVE_CONFIDENCE or
-# entropy > 1.5 bits), Grok may escalate above the RL pick, but only when the
-# budget-weighted section-vote mass clears _ESCALATION_MASS_THRESHOLD. These MUST
-# stay in sync with the numeric thresholds written into _PLANNER_SYSTEM.
+# entropy > 1.5 bits), the LLM planner may escalate above the RL pick, but only
+# when the budget-weighted section-vote mass clears _ESCALATION_MASS_THRESHOLD.
+# These MUST stay in sync with the numeric thresholds written into _PLANNER_SYSTEM.
 _DECISIVE_CONFIDENCE = 0.70
 _ESCALATION_MASS_THRESHOLD = 0.30
 
@@ -93,7 +99,7 @@ def build_article_evidence(
 
     The section list is taken from the digest (gap_profile rows), so this works
     with OR without the trained scorer: when ``section_details`` / ``agg_probs``
-    are omitted (the Grok-standalone baseline) the per-section RL fields are left
+    are omitted (the LLM-standalone baseline) the per-section RL fields are left
     empty and ``rl_aggregate`` is None. When provided, RL detail is overlaid by
     sec_id.
 
@@ -284,7 +290,7 @@ def render_evidence_brief(
     """Render the evidence packet as a guided markdown decision brief.
 
     When ``include_rl`` is False the trained-scorer sections are omitted (used
-    for the Grok-standalone baseline so it decides from the guideline + gaps
+    for the LLM-standalone baseline so it decides from the guideline + gaps
     alone, isolating the RL signal's marginal value).
 
     When ``article_guideline`` is non-empty it is appended verbatim as a
@@ -472,8 +478,8 @@ def render_evidence_brief(
 def fallback_aggregator(evidence: dict) -> dict:
     """Deterministic article preset from the evidence packet (no LLM call).
 
-    Used when XAI_API_KEY is unset or when Grok returns unparseable output.
-    Applies the RL aggregate vote and hard policy guards.
+    Used when XAI_API_KEY is unset or when the planner LLM returns unparseable
+    output. Applies the RL aggregate vote and hard policy guards.
     """
     rl = evidence["rl_aggregate"]
     policy = evidence["guideline_context"]["external_evidence_policy"]
@@ -499,19 +505,21 @@ def fallback_aggregator(evidence: dict) -> dict:
     if policy == "capped":
         dist = rl["distribution"]
         if preset > 1:
-            # A.20.11: the residual P(skip) vs P(light) split is unreliable here
-            # (2/5 wrong on the validation sample) and is never used to pick the
-            # arm -- but when it disagrees with the mandated light default, flag
-            # the case for review rather than silently resolving it.
-            ambiguous = dist[0] > dist[1]
+            # A.20.14: a corpus-wide check (13/14 oracle-standard/deep articles,
+            # plus every one of 6 cross-referenced real RL-distribution cases)
+            # found ZERO confirmed cases of skip beating light in this
+            # population -- not even the cases where the residual itself
+            # favored skip. The residual therefore carries no demonstrated
+            # skip-favoring signal, so every standard/deep vote capped to light
+            # is flagged AMBIGUOUS for review, regardless of the residual split.
             preset = 1
             drivers.append("policy:capped")
-            if ambiguous:
-                risk_flags.append(
-                    f"policy=capped AMBIGUOUS: residual P(skip)={dist[0]:.3f} > "
-                    f"P(light)={dist[1]:.3f}, but standard/deep votes are always "
-                    f"capped to light regardless (A.20.11) -- flagged for review"
-                )
+            risk_flags.append(
+                f"policy=capped AMBIGUOUS: standard/deep vote capped to light "
+                f"(residual P(skip)={dist[0]:.3f} vs P(light)={dist[1]:.3f}) -- no "
+                f"data-confirmed case of skip beating light in this population "
+                f"(A.20.14); flagged for review"
+            )
         else:
             resolved = 1 if dist[1] >= dist[0] else 0
             if resolved != preset:
@@ -535,8 +543,8 @@ def fallback_aggregator(evidence: dict) -> dict:
 # ---------------------------------------------------------------------------
 # Deterministic policy guard (hard constraint clamp)
 # ---------------------------------------------------------------------------
-# Never trust the LLM to honour the external-evidence policy. After Grok returns
-# a preset, clamp it deterministically so a policy violation is impossible:
+# Never trust the LLM to honour the external-evidence policy. After the LLM
+# returns a preset, clamp it deterministically so a policy violation is impossible:
 #   forbidden -> P0 skip     (exploration output is unusable in the final article)
 #   required  -> >= P1 light (external evidence is mandatory)
 #   capped    -> <= P1 light (article scope is a survey of fixed/named sources;
@@ -564,12 +572,13 @@ def _apply_policy_guards(
     an in-bounds preset unchanged.
 
     A standard/deep vote is ALWAYS capped to light regardless of distribution
-    (A.20.11: the residual P(skip) vs P(light) split is unreliable there, 2/5
-    wrong on the validation sample, so it is never used to pick the arm) --
-    but when that residual split disagrees with the light default (i.e.
-    P(skip) > P(light)), the returned note is marked AMBIGUOUS so the case is
-    flagged for review rather than silently resolved, per A.20.11's
-    "flagged-for-review, not silently auto-picked" rule.
+    (A.20.11: the residual P(skip) vs P(light) split is unreliable there and is
+    never used to pick the arm). Every such clamp is marked AMBIGUOUS and
+    flagged for review, not just cases where the residual disagrees with light:
+    a corpus-wide check (A.20.14) found zero confirmed cases of skip beating
+    light in this population, including every case where the residual itself
+    favored skip -- so the residual's direction carries no demonstrated signal
+    in either direction and is not a basis for trusting light only selectively.
 
     Returns ``(clamped_preset, note)`` where ``note`` is a short human-readable
     string when a clamp fired, else None.
@@ -580,13 +589,19 @@ def _apply_policy_guards(
         return 1, f"policy=required: clamped P{preset}->P1 light"
     if policy == "capped":
         if preset > 1:
-            if distribution and distribution[0] > distribution[1]:
+            if distribution:
                 return 1, (
-                    f"policy=capped: clamped P{preset}->P1 light — AMBIGUOUS: "
-                    f"residual P(skip)={distribution[0]:.3f} > "
-                    f"P(light)={distribution[1]:.3f}, flagged for review (A.20.11)"
+                    f"policy=capped: clamped P{preset}->P1 light — AMBIGUOUS: no "
+                    f"data-confirmed case of skip beating light for a standard/deep "
+                    f"vote in this population (A.20.14); residual "
+                    f"P(skip)={distribution[0]:.3f} vs P(light)={distribution[1]:.3f}, "
+                    f"flagged for review"
                 )
-            return 1, f"policy=capped: clamped P{preset}->P1 light"
+            return 1, (
+                f"policy=capped: clamped P{preset}->P1 light — AMBIGUOUS: no "
+                f"data-confirmed case of skip beating light for a standard/deep "
+                f"vote in this population (A.20.14); flagged for review"
+            )
         if distribution:
             resolved = 1 if distribution[1] >= distribution[0] else 0
             if resolved != preset:
@@ -603,7 +618,7 @@ def _apply_policy_guards(
 # ---------------------------------------------------------------------------
 # The planner prompt explicitly states "NEVER escalate a P0 or P1 pick up to P2
 # or higher, regardless of vote mass or gap counts" (in both the system prompt
-# and the user template) — but a 2026-07-10 held-out backtest showed Grok
+# and the user template) — but a 2026-07-10 held-out backtest showed the LLM
 # violating this anyway, using the budget-weighted vote-mass number to
 # functionally reconstruct a retired P1->P2 escalation (override_reason:
 # "departed from uncertain P1 aggregate to P2 because budget-weighted standard
@@ -613,7 +628,7 @@ def _apply_policy_guards(
 # still-sanctioned P0->P1 nudge (one level up) is unaffected.
 
 def _apply_escalation_guard(preset: int, rl_preset: int) -> tuple[int, str | None]:
-    """Hard block: never let Grok escalate a P0/P1 RL pick all the way to P2+.
+    """Hard block: never let the LLM planner escalate a P0/P1 RL pick all the way to P2+.
 
     Returns ``(clamped_preset, note)`` where ``note`` is a short human-readable
     string when a clamp fired, else None.
@@ -628,7 +643,7 @@ def _apply_escalation_guard(preset: int, rl_preset: int) -> tuple[int, str | Non
 
 
 # ---------------------------------------------------------------------------
-# Grok 4.2 system prompts and user templates
+# Planner LLM system prompts and user templates (model-agnostic; currently Grok 4.2)
 # ---------------------------------------------------------------------------
 
 _PLANNER_SYSTEM = """\
@@ -890,7 +905,7 @@ def _extract_json_block(raw: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Grok 4.2 planner calls
+# LLM planner calls (currently Grok 4.2)
 # ---------------------------------------------------------------------------
 
 async def call_grok_planner(
@@ -899,9 +914,9 @@ async def call_grok_planner(
     evidence: dict,
     article_guideline: str = "",
 ) -> dict:
-    """Call Grok 4.2 for the final exploration-preset decision.
+    """Call the planner LLM (currently Grok 4.2) for the final exploration-preset decision.
 
-    Grok receives the guided evidence brief rendered from ``evidence``.
+    The LLM receives the guided evidence brief rendered from ``evidence``.
     When ``article_guideline`` is provided it is appended verbatim as a
     primary-source appendix.
 
@@ -936,9 +951,10 @@ async def call_grok_planner(
         if parsed_preset not in range(NUM_PRESETS):
             raise ValueError(f"preset {parsed_preset} out of range 0-{NUM_PRESETS - 1}")
         # Deterministic hard-constraint guards, applied in order:
-        # (1) never let Grok escalate a P0/P1 RL pick to P2+ (see
+        # (1) never let the LLM escalate a P0/P1 RL pick to P2+ (see
         #     _apply_escalation_guard docstring — a prompt instruction alone was
-        #     shown to be insufficient); (2) forbidden->skip, required->>=light.
+        #     shown to be insufficient); (2) forbidden->skip, required->>=light,
+        #     capped->skip-or-light (distribution-arbitrated, A.20.11).
         escalated_preset, escalation_note = _apply_escalation_guard(parsed_preset, rl_preset)
         final_preset, guard_note = _apply_policy_guards(
             escalated_preset, policy, evidence["rl_aggregate"]["distribution"]
@@ -965,11 +981,11 @@ async def call_grok_planner(
         }
     except Exception:
         logger.warning(
-            "Grok planner response could not be parsed as JSON; "
+            "LLM planner response could not be parsed as JSON; "
             "using deterministic fallback. raw=%s", raw[:300]
         )
         fb = fallback_aggregator(evidence)
-        fb["reasoning"] = "Grok JSON parse failed; " + fb["reasoning"]
+        fb["reasoning"] = "LLM JSON parse failed; " + fb["reasoning"]
         return fb
 
 
@@ -979,7 +995,7 @@ async def call_grok_planner_standalone(
     evidence: dict,
     article_guideline: str = "",
 ) -> dict | None:
-    """Call Grok 4.2 with NO trained-scorer signal (the Grok-alone baseline).
+    """Call the planner LLM (currently Grok 4.2) with NO trained-scorer signal (the LLM-alone baseline).
 
     The primary-source guideline appendix (when provided) is included identically
     to the full call so the only difference between the two modes is the RL signal.
@@ -1030,6 +1046,6 @@ async def call_grok_planner_standalone(
         }
     except Exception:
         logger.warning(
-            "Grok standalone planner response could not be parsed as JSON. raw=%s", raw[:300]
+            "LLM standalone planner response could not be parsed as JSON. raw=%s", raw[:300]
         )
         return None

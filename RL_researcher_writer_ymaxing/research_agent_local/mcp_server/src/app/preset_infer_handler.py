@@ -284,7 +284,8 @@ def guidance(preset: int, confidence: float, h: float, floor_applied: bool) -> s
 
     if h > ENTROPY_THRESHOLD_HIGH:
         parts.append(
-            f"RL model is uncertain (H={h:.2f} bits > 1.5) — apply your own judgement."
+            f"RL model is uncertain for P{preset} (H={h:.2f} bits > 1.5) — informational only, not a basis"
+            " to self-override; only a user-directed override or a policy guard may change the plan."
         )
     elif confidence >= CONFIDENCE_STRONG:
         parts.append(

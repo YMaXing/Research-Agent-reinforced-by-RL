@@ -9102,6 +9102,52 @@ softer (A.20.12) — it is the empirically better reward choice 13/14 times in t
 one exception being statistically indistinguishable from a tie. No change to A.20.11/A.20.12's rule or
 to any guard implementation is warranted by this check; it confirms the existing design.
 
+### A.20.14 The residual P(skip) vs P(light) split has no confirmed skip-favoring signal — AMBIGUOUS now fires unconditionally (2026-08-31)
+
+A.20.11's original design conditioned the AMBIGUOUS flag on the residual distribution *disagreeing*
+with the light default (`P(skip) > P(light)`), implicitly treating the *agreeing* case (`P(light) >=
+P(skip)`) as reassuring evidence the clamp is safe. Re-examined this assumption directly: does the raw
+RL distribution's own P(skip)-vs-P(light) ordering actually track which arm is reward-better, anywhere
+in the corpus's standard/deep-voted population?
+
+Cross-referenced every corpus article where a real RL aggregate distribution is on record (A.19/A.20.11's
+own 5-article validation set, plus 1 more from saved eval JSONs) against A.20.13's `R_w[skip]` vs.
+`R_w[light]` figures for the same articles:
+
+| article | P(skip) | P(light) | residual favors | R_w[skip] | R_w[light] | truly better | residual correct? |
+|---|---:|---:|---|---:|---:|---|---|
+| `06_tools__var_standard` | 0.120 | 0.183 | light | 0.1460 | 0.2300 | light | yes |
+| `Dark_Dimension` | 0.200 | 0.344 | light | 0.3411 | 0.5167 | light | yes |
+| `Earth_Oceans_Origin` | 0.000 | 0.143 | light | 0.2853 | 0.3615 | light | yes |
+| `Understanding_Reasoning_LLMs` | 0.000 | 0.058 | light | 0.2502 | 0.3828 | light | yes |
+| `04_structured_outputs` | 0.267 | 0.133 | **skip** | 0.2756 | 0.3151 | light | **no** |
+| `09_RAG__var_demanding` | 0.436 | 0.029 | **skip** | 0.1147 | 0.1826 | light | **no** |
+
+**Light is truly reward-better in all 6/6 cases — including both cases where the residual itself favored
+skip.** This is the key result: every time the residual "voted" for skip, it was wrong; every time it
+agreed with light, light really was better. Since light is already known to win 13/14 (93%) of the time
+in this population regardless of what any per-article signal says (A.20.13), a residual split with *zero
+real discriminating power* would be expected to look exactly like this — "agreeing" with light most of
+the time purely by riding the base rate, while never once being vindicated on the occasions it disagrees.
+That is precisely the pattern observed: **0/2 confirmed hits for "residual says skip," 4/4 confirmed hits
+for "residual says light,"** which is fully consistent with the residual carrying no information beyond
+the population base rate itself, not with it having genuine skip-vs-light discriminating skill.
+
+**Conclusion (confirms the user's stated hypothesis): there is no data support, in either direction, for
+treating a standard/deep vote's residual P(skip) vs P(light) split as evidence about which of {skip,
+light} is actually better once capped — including no confirmed case, anywhere checked, where skip is
+truly the reward-optimal choice.** Conditioning the AMBIGUOUS flag on the residual's direction was
+therefore drawing a distinction the data doesn't support: the "non-disagreeing" cases were never actually
+validated as safer, they simply hadn't been checked.
+
+**Change shipped:** `_apply_policy_guards` (`preset_planner_handler.py`, mirrored in
+`test_grok_planner.py`) and `fallback_aggregator` now mark **every** standard/deep-vote-capped-to-light
+clamp as AMBIGUOUS, unconditionally — not just the subset where the residual happened to favor skip. The
+residual's P(skip)/P(light) values are still reported in the flag text for transparency, but no longer
+gate whether the flag fires. `research_instructions_prompt.py`'s step 3.4 updated to match: the
+ask-the-user protocol now triggers on every capped + standard/deep clamp, with no "residual agrees, skip
+asking" exception.
+
 ## A.21 Phase 9 — guarded-constant / statistical / noise-ceiling baselines refreshed for the `capped` policy fix (2026-08-30)
 
 A.19.7-A.19.9 were computed 2026-08-27 — before Scenario C's `capped` policy value existed as a

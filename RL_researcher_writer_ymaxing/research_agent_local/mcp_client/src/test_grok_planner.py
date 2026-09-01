@@ -2,8 +2,8 @@
 Preset planner test: predict_exploration_preset tool (direct MCP call).
 
 The tool makes the final planning decision internally via two stages:
-  Stage 1 — Qwen3-4B RL model  -> rl_recommendation
-  Stage 2 — Grok 4.2 reasoning -> grok_recommendation
+  Stage 1 — Qwen3-4B RL model      -> rl_recommendation
+  Stage 2 — LLM planner (currently Grok 4.2) -> llm_recommendation
 
 This test calls the tool directly via the MCP protocol, bypassing any LLM
 agent loop.  The mcp-agent is still used to manage the server subprocess and
@@ -26,12 +26,18 @@ Oracle
 
 Modes
 -----
-  default          — reads grok_recommendation.preset (full pipeline: RL → Grok 4.2)
-  --rl-only        — reads rl_recommendation.preset   (Qwen3-4B only, no Grok 4.2)
+  default          — reads llm_recommendation.preset (full pipeline: RL → LLM planner
+                     stage). NOTE: with the server's default PRESET_PLANNER_SKIP_LLM=True,
+                     this is IDENTICAL to --rl-guards-only (no LLM call; a deterministic
+                     policy guard only). Set PRESET_PLANNER_SKIP_LLM=False server-side to
+                     actually exercise the LLM planner in this mode.
+  --rl-only        — reads rl_recommendation.preset   (Qwen3-4B only, no LLM planner call)
   --rl-guards-only — RL aggregate + deterministic policy guards (forbidden→skip,
-                     required→≥light), no Grok 4.2. The benchmark the LLM planner
-                     must beat.
-  --grok-only      — reads grok_recommendation.preset (Grok 4.2 standalone, no RL signals)
+                     required→≥light, capped→≤light), no LLM planner call. The benchmark
+                     the LLM planner must beat.
+  --grok-only      — reads llm_recommendation.preset (LLM planner standalone, no RL signals;
+                     always makes a real LLM call when XAI_API_KEY is set, regardless of
+                     PRESET_PLANNER_SKIP_LLM)
                      Use as a baseline to measure the RL model's marginal contribution.
 
 Reward-regret
@@ -59,10 +65,10 @@ Usage (from research_agent_local/)
   # Training variants only
   uv run python -m mcp_client.src.test_grok_planner --train-only
 
-  # RL model only — faster, no Grok 4.2 call
+  # RL model only — faster, no LLM planner call
   uv run python -m mcp_client.src.test_grok_planner --rl-only
 
-  # Grok 4.2 standalone baseline — no RL section signals
+  # LLM planner standalone baseline (currently Grok 4.2) — no RL section signals
   uv run python -m mcp_client.src.test_grok_planner --grok-only
 
   # Only demanding training variants
@@ -294,8 +300,10 @@ def _apply_policy_guards(
 
     A standard/deep vote is ALWAYS capped to light regardless of distribution
     (A.20.11: the residual P(skip) vs P(light) split is unreliable there) --
-    but when that residual split disagrees with the light default, the
-    returned note is marked AMBIGUOUS so the case is flagged for review.
+    every such clamp is marked AMBIGUOUS and flagged for review: a corpus-wide
+    check (A.20.14) found zero confirmed cases of skip beating light in this
+    population, including every case where the residual itself favored skip,
+    so the residual's direction is not trusted in either direction.
 
     Returns ``(clamped_preset, note)`` where ``note`` is a short human-readable
     string when a clamp fired, else None.
@@ -306,13 +314,19 @@ def _apply_policy_guards(
         return (max(1, preset), f"policy=required: clamped P{preset}->P1 light") if preset < 1 else (preset, None)
     if policy == "capped":
         if preset > 1:
-            if distribution and distribution[0] > distribution[1]:
+            if distribution:
                 return 1, (
-                    f"policy=capped: clamped P{preset}->P1 light — AMBIGUOUS: "
-                    f"residual P(skip)={distribution[0]:.3f} > "
-                    f"P(light)={distribution[1]:.3f}, flagged for review (A.20.11)"
+                    f"policy=capped: clamped P{preset}->P1 light — AMBIGUOUS: no "
+                    f"data-confirmed case of skip beating light for a standard/deep "
+                    f"vote in this population (A.20.14); residual "
+                    f"P(skip)={distribution[0]:.3f} vs P(light)={distribution[1]:.3f}, "
+                    f"flagged for review"
                 )
-            return 1, f"policy=capped: clamped P{preset}->P1 light"
+            return 1, (
+                f"policy=capped: clamped P{preset}->P1 light — AMBIGUOUS: no "
+                f"data-confirmed case of skip beating light for a standard/deep "
+                f"vote in this population (A.20.14); flagged for review"
+            )
         if distribution:
             resolved = 1 if distribution[1] >= distribution[0] else 0
             if resolved != preset:
@@ -377,7 +391,7 @@ async def run_variant(
         }
 
     rl = data.get("rl_recommendation")     # None when grok_only=True
-    grok = data.get("grok_recommendation") # None when rl_only / XAI unset / call failed
+    grok = data.get("llm_recommendation") # None when rl_only / XAI unset / call failed
 
     # External-evidence policy (drives guards + regret accounting). Always present
     # in article_evidence regardless of mode.
@@ -884,21 +898,21 @@ async def main() -> None:
     )
     parser.add_argument(
         "--rl-only", action="store_true",
-        help="Evaluate rl_recommendation.preset only (skip Grok 4.2 stage).",
+        help="Evaluate rl_recommendation.preset only (skip LLM planner stage).",
     )
     parser.add_argument(
         "--rl-guards-only", action="store_true",
         help=(
             "Ablation: RL aggregate + deterministic policy guards "
-            "(forbidden→skip, required→≥light), NO Grok 4.2. "
+            "(forbidden→skip, required→≥light, capped→≤light), no LLM planner call. "
             "The benchmark the LLM planner must beat."
         ),
     )
     parser.add_argument(
         "--grok-only", action="store_true",
         help=(
-            "Grok 4.2 standalone baseline: no RL signals. "
-            "Measures Grok's marginal contribution vs. the RL model."
+            "LLM planner standalone baseline (currently Grok 4.2): no RL signals. "
+            "Measures the LLM planner's marginal contribution vs. the RL model."
         ),
     )
     parser.add_argument("--save-json", action="store_true", help="Save per-variant JSON results.")

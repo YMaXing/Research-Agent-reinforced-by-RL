@@ -3,7 +3,7 @@ Meta-reasoner tool: RL-guided exploration preset prediction.
 
 Uses a GRPO-trained Qwen3-4B + LoRA adapter to analyse the research
 digest and produce structured section-level signals that help the client
-LLM (Grok) decide how many rounds of exploration to run and in what order.
+LLM (currently Grok) decide how many rounds of exploration to run and in what order.
 
 If research_digest.md does not yet exist in the research directory, the
 tool generates it on-the-fly via the v2 digest pipeline (generate_digests.py,
@@ -22,14 +22,15 @@ confidence
     Probability mass on the chosen preset (0.0–1.0).
     • ≥0.70 → strong signal, model is decisive.
     • 0.40–0.70 → moderate; consider section breakdown.
-    • <0.40 → uncertain; apply your own judgement.
+    • <0.40 → uncertain.
 
 entropy (bits, base-2)
     Spread of the probability distribution over presets 0–3.
     Computed as H = −∑ p·log₂(p+ε) over the aggregated preset probs.
     • H < 0.5 → very confident (nearly all mass on one preset).
     • 0.5–1.5 → moderate confidence.
-    • H > 1.5 → model is uncertain; override freely.
+    • H > 1.5 → model is uncertain. This is informational only, not a basis for the client LLM to
+      self-override; only an explicit user-directed override or a policy guard may change the plan.
 
 floor_correction_applied
     True when the max-preset floor heuristic fired: the aggregate vote was
@@ -170,24 +171,27 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
     The tool performs two-stage inference:
       Stage 1 (RL model): per-section preset prediction via word-count-weighted
                           probability vote → aggregate recommendation (P0–P3).
-      Stage 2 (Grok 4.2 planner): reviews the RL aggregate vote against the
-                          article guideline and gap profile, applying an
-                          asymmetric downside-averse override policy (never
-                          escalates above a P1+ RL vote; one sanctioned P0→P1
-                          nudge under specific conditions). Deterministic hard
-                          policy guards (forbidden → P0, required → ≥ P1) are
-                          applied to the Grok output after it returns.
+    Stage 2 (deterministic policy guard, no LLM call in production): clamps the RL
+                          pick to the article's external-evidence policy (forbidden
+                          → P0, required → ≥ P1, capped → ≤ P1). In the default
+                          configuration (PRESET_PLANNER_SKIP_LLM=True) no LLM
+                          reviews or overrides the RL pick — it is authoritative
+                          except where this guard fires. An optional LLM-planner
+                          mode exists for a future re-evaluation (set
+                          PRESET_PLANNER_SKIP_LLM=False and XAI_API_KEY) but is
+                          not part of the production pipeline.
 
     Args:
         research_directory: Path to the research directory. Must contain either:
           - research_digest.md (pre-existing, used directly), or
           - article_guideline.md + .research/ subfolder (digest auto-generated).
-        grok_only: When True, skip the RL inference stage entirely and call Grok 4.2
-          with only the article guideline + coverage gap profile (no section-level
-          RL signals). Use this for the Grok-alone baseline to measure the RL
-          model's marginal contribution. rl_recommendation will be None in the result.
-        rl_only: When True, run the RL inference stage but skip the Grok 4.2 planner
-          entirely. grok_recommendation will be None in the result. Use for
+        grok_only: When True, skip the RL inference stage entirely and call the LLM
+          planner (currently Grok 4.2) with only the article guideline + coverage gap
+          profile (no section-level RL signals). Use this for the LLM-alone baseline
+          to measure the RL model's marginal contribution. rl_recommendation will be
+          None in the result.
+        rl_only: When True, run the RL inference stage but skip the LLM planner stage
+          entirely. llm_recommendation will be None in the result. Use for
           evaluation/ablation; the caller is responsible for applying policy guards.
 
     Returns:
@@ -207,14 +211,15 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
                                  Empty string when grok_only=True.
           article_guideline    – full text of article_guideline.md
           digest_gap_profile   – gap profile section from the digest
-          grok_recommendation  – Grok 4.2's planning decision:
-                                   preset (0–3), name, reasoning, override,
-                                   override_reason, decision_drivers, risk_flags.
+          llm_recommendation   – the FINAL authoritative decision: by default (no LLM
+                                 call in production) this is the RL pick clamped only
+                                 by the deterministic policy guard — preset (0–3),
+                                 name, reasoning, override, override_reason,
+                                 decision_drivers, risk_flags.
                                  When grok_only=True: preset, name, reasoning,
                                    decision_drivers, risk_flags (no override fields).
-                                 None when rl_only=True, XAI_API_KEY unset, or
-                                   the Grok call fails (deterministic fallback is
-                                   used in place of None for the standard pipeline).
+                                 None when rl_only=True, or when grok_only=True and
+                                   XAI_API_KEY is unset or the LLM call fails.
           message              – human-readable summary
     """
     research_path = Path(research_directory)
@@ -256,17 +261,17 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
     digest_gap_profile = _extract_gap_profile(digest)
 
     # -----------------------------------------------------------------------
-    # Branch: Grok-alone baseline (no RL inference)
+    # Branch: LLM-alone baseline (no RL inference; currently Grok 4.2)
     # -----------------------------------------------------------------------
     if grok_only:
         # Digest-only evidence packet: same per-section gaps + economics the full
         # pipeline sees, but with no trained-scorer signal (rl_aggregate=None and
         # empty per-section RL fields). Isolates the section model's contribution.
         evidence = build_article_evidence(digest)
-        grok_recommendation: dict | None = None
+        llm_recommendation: dict | None = None
         if settings.xai_api_key is not None:
             try:
-                grok_recommendation = await call_grok_planner_standalone(
+                llm_recommendation = await call_grok_planner_standalone(
                     api_key=settings.xai_api_key.get_secret_value(),
                     base_url="https://api.x.ai/v1",
                     evidence=evidence,
@@ -274,33 +279,33 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
                         article_guideline if _INCLUDE_GUIDELINE_IN_PLANNER else ""
                     ),
                 )
-                if grok_recommendation:
-                    logger.info("Grok standalone chose P%d", grok_recommendation["preset"])
+                if llm_recommendation:
+                    logger.info("LLM standalone chose P%d", llm_recommendation["preset"])
             except Exception:
-                logger.warning("Grok standalone planner call failed.")
+                logger.warning("LLM standalone planner call failed.")
         else:
-            logger.warning("XAI_API_KEY not set; cannot run Grok standalone planner.")
+            logger.warning("XAI_API_KEY not set; cannot run LLM standalone planner.")
 
-        grok_preset = grok_recommendation["preset"] if grok_recommendation else "?"
+        llm_preset = llm_recommendation["preset"] if llm_recommendation else "?"
         return {
             "status": "success",
             "digest_generated": digest_generated,
             "rl_recommendation": None,
             "section_signals": [],
             "guidance": "",
-            "grok_recommendation": grok_recommendation,
+            "llm_recommendation": llm_recommendation,
             "article_evidence": evidence,
             "article_guideline": article_guideline,
             "digest_gap_profile": digest_gap_profile,
             "message": (
-                f"Grok standalone (no RL) chose preset P{grok_preset}."
-                if grok_recommendation
-                else "Grok standalone call failed or XAI_API_KEY not set."
+                f"LLM standalone (no RL) chose preset P{llm_preset}."
+                if llm_recommendation
+                else "LLM standalone call failed or XAI_API_KEY not set."
             ),
         }
 
     # -----------------------------------------------------------------------
-    # Standard pipeline: RL inference → article evidence packet → Grok 4.2
+    # Standard pipeline: RL inference → article evidence packet → LLM planner (currently Grok 4.2)
     # -----------------------------------------------------------------------
     try:
         loop = asyncio.get_running_loop()
@@ -347,20 +352,22 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
         for s in evidence["section_signals"]
     ]
 
-    # Stage 2: Grok 4.2 planner. Always produce an article-level decision —
-    # fall back to the deterministic aggregator if Grok is unavailable/errors.
+    # Stage 2: deterministic policy guard by default (PRESET_PLANNER_SKIP_LLM=True) —
+    # no LLM call; the RL pick is clamped only by fallback_aggregator's hard policy
+    # guards. The optional LLM-planner call below only runs if explicitly re-enabled,
+    # and still falls back to the same deterministic aggregator on any error.
     if rl_only:
-        # RL-only baseline / policy-guard ablation: skip the Grok stage entirely.
-        grok_recommendation = None
-        logger.info("rl_only=True; skipping Grok planner stage.")
-    elif settings.preset_planner_skip_grok:
+        # RL-only baseline / policy-guard ablation: skip the LLM planner stage entirely.
+        llm_recommendation = None
+        logger.info("rl_only=True; skipping LLM planner stage.")
+    elif settings.preset_planner_skip_llm:
         # A.17.9: measured worse than RL+guards on this checkpoint; scoped opt-out
         # that leaves XAI_API_KEY available for the other Grok-backed features.
-        logger.info("PRESET_PLANNER_SKIP_GROK=true; using deterministic fallback aggregator.")
-        grok_recommendation = fallback_aggregator(evidence)
+        logger.info("PRESET_PLANNER_SKIP_LLM=true; using deterministic fallback aggregator.")
+        llm_recommendation = fallback_aggregator(evidence)
     elif settings.xai_api_key is not None:
         try:
-            grok_recommendation = await call_grok_planner(
+            llm_recommendation = await call_grok_planner(
                 api_key=settings.xai_api_key.get_secret_value(),
                 base_url="https://api.x.ai/v1",
                 evidence=evidence,
@@ -369,16 +376,16 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
                 ),
             )
             logger.info(
-                "Grok planner chose P%d (override=%s)",
-                grok_recommendation["preset"],
-                grok_recommendation["override"],
+                "LLM planner chose P%d (override=%s)",
+                llm_recommendation["preset"],
+                llm_recommendation["override"],
             )
         except Exception:
-            logger.warning("Grok planner call failed; using deterministic fallback.")
-            grok_recommendation = fallback_aggregator(evidence)
+            logger.warning("LLM planner call failed; using deterministic fallback.")
+            llm_recommendation = fallback_aggregator(evidence)
     else:
         logger.warning("XAI_API_KEY not set; using deterministic fallback aggregator.")
-        grok_recommendation = fallback_aggregator(evidence)
+        llm_recommendation = fallback_aggregator(evidence)
 
     return {
         "status": "success",
@@ -395,7 +402,7 @@ async def predict_exploration_preset_tool(research_directory: str, grok_only: bo
         },
         "section_signals": section_signals,
         "guidance": guidance_str,
-        "grok_recommendation": grok_recommendation,
+        "llm_recommendation": llm_recommendation,
         "article_evidence": evidence,
         "article_guideline": article_guideline,
         "digest_gap_profile": digest_gap_profile,

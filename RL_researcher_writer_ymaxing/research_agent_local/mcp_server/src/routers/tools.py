@@ -537,19 +537,19 @@ def register_mcp_tools(mcp: FastMCP) -> None:
           least one section individually predicts a higher preset, preventing short
           intro sections from masking deep technical sections.
 
-        Stage 2 — Grok 4.2 planner:
-          Reviews the RL aggregate vote together with the article guideline and
-          coverage gap profile, then either confirms or overrides the RL preset
-          following an asymmetric, downside-averse override policy (the reward
-          curve is frequently bimodal rather than single-peaked — see
-          run13_rl_grok_pipeline_analysis.md A.17.6/A.17.8 — so the planner is
-          instructed never to escalate above a P1+ RL vote and only applies a
-          single sanctioned P0→P1 nudge when specific conditions are met). Hard
-          policy guards (forbidden → P0 skip, required → ≥ P1 light) are applied
-          deterministically to Grok's output after it returns.
-          Set grok_only=True to skip Stage 1 and have Grok decide from the
-          article guideline and gap profile alone (useful as a baseline to
-          measure the RL model's marginal contribution).
+        Stage 2 — Deterministic policy guard (no LLM call in production):
+          Clamps the RL model's own pick to satisfy the article's external-evidence
+          policy (forbidden → P0 skip, required → ≥ P1 light, capped → ≤ P1 light).
+          In the current production configuration (PRESET_PLANNER_SKIP_LLM=True, the
+          default) no LLM reviews, confirms, or overrides the RL pick — it is
+          authoritative except where this guard fires. An optional LLM-planner mode
+          exists in the codebase (disabled by default; set PRESET_PLANNER_SKIP_LLM=False
+          and XAI_API_KEY) for a future re-evaluation, but it is not part of the
+          production pipeline.
+          Set grok_only=True to skip Stage 1 and have an LLM decide from the
+          article guideline and gap profile alone (an ablation baseline, not the
+          default pipeline path; useful to measure the RL model's marginal
+          contribution).
 
         Signal semantics:
           preset (int 0–3):
@@ -583,11 +583,11 @@ def register_mcp_tools(mcp: FastMCP) -> None:
         Args:
             research_directory: Path to the research directory containing
                                 research_digest.md at its root.
-            grok_only: When True, skip the RL inference stage. Grok 4.2 decides
-                       solely from the article guideline and coverage gap profile.
-                       rl_recommendation will be None in the returned dict.
-            rl_only: When True, run RL inference but skip the Grok 4.2 planner.
-                     grok_recommendation will be None in the returned dict.
+            grok_only: When True, skip the RL inference stage. The LLM planner
+                       decides solely from the article guideline and coverage gap
+                       profile. rl_recommendation will be None in the returned dict.
+            rl_only: When True, run RL inference but skip the LLM planner stage.
+                     llm_recommendation will be None in the returned dict.
                      Use for evaluation/ablation (caller applies policy guards).
 
         Returns:
@@ -599,7 +599,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
                 - section_signals: list of per-section dicts with title, preset,
                                    name, top2 (empty when grok_only=True)
                 - guidance: one-sentence synthesis for the client LLM
-                - grok_recommendation: dict with preset, name, reasoning,
+                - llm_recommendation: dict with preset, name, reasoning,
                                        override, override_reason, decision_drivers,
                                        risk_flags (None when rl_only=True or
                                        grok_only=True with no RL input)
