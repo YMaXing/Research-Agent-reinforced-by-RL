@@ -2,10 +2,12 @@
 
 For a flagged near-tie article, locates and prints (or writes to a file) the
 drafted text + grader's reasoning for the section(s) driving the ambiguity
-(per the margin decomposition), across all 3 draws (production + 2
-replicates) for BOTH contending arms (winner and runner-up) -- so a reviewer
-doesn't have to manually hunt through 6 directories and cross-reference
-article.md against reasoning.json by hand each time.
+(per the margin decomposition), across ALL replicated draws (production +
+however many replicates that article has -- N varies per article, e.g. N=3
+or N=5, read from section_oracle_averaged.json, not hardcoded) for BOTH
+contending arms (winner and runner-up) -- so a reviewer doesn't have to
+manually hunt through several directories and cross-reference article.md
+against reasoning.json by hand each time.
 
 Reuses generate_episode_oracles.py's own title-normalization
 (_normalize/_sec_id_to_norm) and measure_replicate_noise.py's arm/episode
@@ -20,6 +22,8 @@ Usage (from research_agent_local/training/):
     python3 review_near_tie.py --article HNSW --save
         -> writes rl_training_data/oracle_review/HNSW.md (auto-named, one file per article)
     python3 review_near_tie.py --article HNSW --output ../../rl_training_data/oracle_review.md --append
+    python3 review_near_tie.py --article 29_evaluation_metrics --arms standard deep
+        -> compares any two arms directly, instead of the default oracle_arm vs runner_up_arm
 """
 from __future__ import annotations
 
@@ -55,11 +59,21 @@ _REVIEW_DIMS = [
 
 
 def _episode_dir(article: str, draw: int, preset: int) -> Path:
-    """draw: 0=production, 1/2=replicate index."""
+    """draw: 0=production, 1..N=replicate index."""
     if draw == 0:
         root = _TEST_EPISODES_DIR if article in mrn._TEST_ARTICLES else _EPISODES_DIR
         return root / f"{article}__preset{preset}"
     return _NOISE_EXPERIMENT_DIR / f"{article}__replicate{draw}__preset{preset}"
+
+
+def _n_draws_for(article: str) -> int:
+    """How many draws (production + replicates) exist for this article, per
+    merge_replicate_oracles.py's section_oracle_averaged.json -- NOT hardcoded
+    to 3, since articles are now replicated to different N (e.g. N=5)."""
+    avg_path = _BASES_DIR / article / "section_oracle_averaged.json"
+    if not avg_path.exists():
+        return 1
+    return json.loads(avg_path.read_text(encoding="utf-8")).get("n_draws_per_arm", 1)
 
 
 def _section_contributions(article: str, winner: str, runner_up: str) -> list[tuple[float, str, str, dict]]:
@@ -175,7 +189,7 @@ def render_section_review(article: str, sec_id: str, target_norm: str, winner: s
     for arm in (winner, runner_up):
         preset = arm_presets[arm][0]
         lines.append(f"### Arm: {arm} (preset{preset})\n")
-        for draw in (0, 1, 2):
+        for draw in range(_n_draws_for(article)):
             draw_label = "production" if draw == 0 else f"replicate{draw}"
             ep_dir = _episode_dir(article, draw, preset)
             lines.append(f"#### Draw: {draw_label}  `{ep_dir}`\n")
@@ -203,6 +217,9 @@ def render_section_review(article: str, sec_id: str, target_norm: str, winner: s
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--article", required=True)
+    parser.add_argument("--arms", nargs=2, metavar=("ARM_A", "ARM_B"), default=None,
+                         help="Compare these two arms directly (any of skip/light/standard/deep) "
+                              "instead of the default oracle_arm vs runner_up_arm.")
     parser.add_argument("--sections", nargs="+", default=None,
                          help="Section title(s) to review (fuzzy substring match). Default: auto-select.")
     parser.add_argument("--top-n", type=int, default=2,
@@ -218,21 +235,32 @@ def main() -> None:
     parser.add_argument("--append", action="store_true", help="Append to --output instead of overwriting.")
     args = parser.parse_args()
 
-    output_path = args.output
-    if output_path is None and args.save:
-        _REVIEW_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        output_path = _REVIEW_OUTPUT_DIR / f"{args.article}.md"
-
     oracle_path = _BASES_DIR / args.article / "article_oracle.json"
     if not oracle_path.exists():
         print(f"ERROR: no article_oracle.json for {args.article}")
         return
     oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
-    winner = oracle["oracle_arm"]
-    runner_up = oracle.get("runner_up_arm")
-    if runner_up is None:
-        print(f"ERROR: {args.article} has no runner_up_arm (manual override or forbidden policy) -- nothing to review.")
-        return
+
+    if args.arms:
+        winner, runner_up = args.arms
+        valid_arms = {"skip", "light", "standard", "deep"}
+        if winner not in valid_arms or runner_up not in valid_arms:
+            print(f"ERROR: --arms must be two of {sorted(valid_arms)}, got {args.arms!r}")
+            return
+        margin = oracle["r_w_rewards"][winner] - oracle["r_w_rewards"][runner_up]
+    else:
+        winner = oracle["oracle_arm"]
+        runner_up = oracle.get("runner_up_arm")
+        if runner_up is None:
+            print(f"ERROR: {args.article} has no runner_up_arm (manual override or forbidden policy) -- nothing to review.")
+            return
+        margin = oracle["margin"]
+
+    output_path = args.output
+    if output_path is None and args.save:
+        _REVIEW_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        suffix = f"__{winner}_vs_{runner_up}" if args.arms else ""
+        output_path = _REVIEW_OUTPUT_DIR / f"{args.article}{suffix}.md"
 
     contribs, total_w = _section_contributions(args.article, winner, runner_up)
     feat = json.loads((_BASES_DIR / args.article / "guideline_features.json").read_text(encoding="utf-8"))["sections"]
@@ -261,8 +289,8 @@ def main() -> None:
                 seen.add(c[1])
                 targets.append(c)
 
-    out_lines = [f"# Near-tie review: {args.article}  ({winner} vs {runner_up}, margin={oracle['margin']:+.4f})\n"]
-    out_lines.append(render_summary_table(contribs, winner, runner_up, oracle["margin"]))
+    out_lines = [f"# Near-tie review: {args.article}  ({winner} vs {runner_up}, margin={margin:+.4f})\n"]
+    out_lines.append(render_summary_table(contribs, winner, runner_up, margin))
     for contribution, sec_id, norm, avg_info in targets:
         tw = int(feat.get(sec_id, {}).get("target_words", 100))
         out_lines.append(render_section_review(args.article, sec_id, norm, winner, runner_up, contribution, tw / total_w, avg_info))

@@ -1,4 +1,4 @@
-# Lesson 14: LLM Agent System Design Considerations and Framework
+  # Lesson 14: LLM Agent System Design Considerations and Framework
 
 In Lesson 12, we scoped the capstone you’ll build in Part 2: two production‑oriented agents that collaborate to produce publish‑ready technical articles. We defined the _research_ agent (Nova) and the _writing_ workflow (Brown), and you saw why we split exploration from deterministic drafting. In Lesson 13, we compared agent frameworks and chose a stack that fits that split: Nova ships as FastMCP tools (portable, steerable), while Brown runs a LangGraph workflow (durable, auditable), fronted by FastMCP for tool access.
 
@@ -101,7 +101,7 @@ For example, if the ideas are not clearly enumerated and connected, the output w
 Applying our decision framework to the capstone project enabled a concrete set of architectural choices. This matrix summarizes our defaults and their rationale, providing a clear blueprint for the system we will build in the upcoming lessons. It translates the abstract principles from Section 2 into specific, practical decisions that balance performance, cost, and reliability for our research and writing tasks. Each choice reflects a deliberate trade-off, optimized for the particular requirements of our two-agent system.
 Decision Dimension| Our Default Choice| Rationale  
 
-## Table 1: Decision matrix for the capstone project
+### Table 1: Decision matrix for the capstone project
 
 | Decision Dimension          | Our Default Choice                                                                 | Rationale |
 |-----------------------------|------------------------------------------------------------------------------------|-----------|

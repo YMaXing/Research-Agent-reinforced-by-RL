@@ -24,8 +24,13 @@ Corpus
 
 Oracle
 ------          
-  Read from <bases_dir>/<variant>/article_oracle.json  (version 2).
+  Read from <bases_dir>/<variant>/article_oracle.json  (version 3).
   Key field: oracle_arm_idx  (0=skip, 1=light, 2=standard, 3=deep).
+  Optional field: tied_arm_indices — other arm(s) an independent review found
+  statistically indistinguishable from oracle_arm_idx (empty list for all but
+  genuine, reviewed dead-heats e.g. Bird_Eye_Extreme). A prediction landing on
+  oracle_arm_idx OR any tied_arm_indices entry is scored EXACT (see verdict
+  computation in run_variant()), not just oracle_arm_idx alone.
 
 Modes
 -----
@@ -107,6 +112,7 @@ import json
 import logging
 import os
 import sys as _sys
+from math import comb
 from pathlib import Path
 
 from predict_exploration_preset_eval import predict_exploration_preset_eval
@@ -255,15 +261,23 @@ def _resolve_adapter_dir(subdir: str) -> Path:
 # ---------------------------------------------------------------------------
 # Oracle: read from article_oracle.json  (version 3)
 # ---------------------------------------------------------------------------
-def _read_oracle(variant_name: str) -> tuple[int, list[float]]:
-    """Return (oracle_arm_idx, r_w_rewards_list[0..3]).
+def _read_oracle(variant_name: str) -> tuple[int, list[float], list[int]]:
+    """Return (oracle_arm_idx, r_w_rewards_list[0..3], tied_arm_indices).
 
-    Both values come directly from article_oracle.json. As of A.16
-    (2026-08-25), that file's own r_w_rewards_list already IS the mean-R_w
+    Both the first two values come directly from article_oracle.json. As of
+    A.16 (2026-08-25), that file's own r_w_rewards_list already IS the mean-R_w
     across every available draw (production + replicates) whenever replicate
     data exists -- the earlier article_oracle_averaged.json sibling file /
     canonical-vs-averaged split has been retired, so there is no longer a
     second file to prefer or reconcile against.
+
+    ``tied_arm_indices`` (added 2026-09-05) lists any OTHER arm(s) an
+    independent review found statistically indistinguishable from
+    oracle_arm_idx (e.g. Bird_Eye_Extreme's light/standard dead heat) --
+    empty for every article except a genuine, reviewed tie. A prediction
+    landing on any of these should be scored the same as landing on
+    oracle_arm_idx itself. Missing/older article_oracle.json files (no
+    ``tied_arms`` field) default to an empty list.
 
     Raises FileNotFoundError when article_oracle.json is absent.
     """
@@ -271,7 +285,11 @@ def _read_oracle(variant_name: str) -> tuple[int, list[float]]:
     if not oracle_path.exists():
         raise FileNotFoundError(f"Missing article_oracle.json: {oracle_path}")
     data = json.loads(oracle_path.read_text(encoding="utf-8"))
-    return int(data["oracle_arm_idx"]), data["r_w_rewards_list"]
+    return (
+        int(data["oracle_arm_idx"]),
+        data["r_w_rewards_list"],
+        data.get("tied_arm_indices", []),
+    )
 
 
 def _apply_policy_guards(
@@ -425,7 +443,7 @@ async def run_variant(
 
     # --- Oracle ---
     try:
-        oracle_preset, r_w_rewards = _read_oracle(variant)
+        oracle_preset, r_w_rewards, tied_indices = _read_oracle(variant)
     except FileNotFoundError as exc:
         return {
             "variant": variant,
@@ -438,6 +456,8 @@ async def run_variant(
             "chosen_by": chosen_by,
             "guard_note": guard_note,
             "oracle_preset": None,
+            "oracle_tied_indices": [],
+            "oracle_tied_names": [],
             "verdict": "NO_ORACLE",
             "entropy_bits": rl["entropy_bits"] if rl else None,
             "confidence": rl["confidence"] if rl else None,
@@ -451,18 +471,30 @@ async def run_variant(
             "error": str(exc),
         }
 
-    if chosen_preset == oracle_preset:
+    # tied_indices (from article_oracle.json's tied_arms) are other arm(s) an
+    # independent review found statistically indistinguishable from the
+    # primary oracle_preset (e.g. Bird_Eye_Extreme's light/standard dead
+    # heat) -- landing on any of them is scored the same as an exact hit.
+    # NEAR/MISS distance is likewise measured to the nearest accepted arm, not
+    # just the primary, so a tied arm far from oracle_preset (e.g. skip tied
+    # with deep) doesn't wrongly demote an adjacent-to-the-tie miss to MISS.
+    accepted_presets = {oracle_preset, *tied_indices}
+    if chosen_preset in accepted_presets:
         verdict = "EXACT"
-    elif abs(chosen_preset - oracle_preset) == 1:
+    elif min(abs(chosen_preset - a) for a in accepted_presets) == 1:
         verdict = "NEAR"
     else:
         verdict = "MISS"
 
     # Reward-regret: how much reward was left on the table vs. oracle arm.
-    # regret = r_w[oracle] - r_w[chosen]  (0.0 on exact hit, >0 on error)
-    regret = round(
-        r_w_rewards[oracle_preset] - r_w_rewards[chosen_preset], 4
-    ) if len(r_w_rewards) > max(oracle_preset, chosen_preset) else None
+    # regret = r_w[oracle] - r_w[chosen]  (0.0 on exact hit, >0 on error).
+    # A tied-arm hit is also scored 0.0 regret -- it's an equally valid pick
+    # by construction, not a lesser one.
+    regret = (
+        0.0 if chosen_preset in accepted_presets
+        else round(r_w_rewards[oracle_preset] - r_w_rewards[chosen_preset], 4)
+        if len(r_w_rewards) > max(oracle_preset, chosen_preset) else None
+    )
 
     # Forbidden-policy articles have TAINTED P1/P2/P3 rewards: those arms were
     # generated using the very exploration the policy forbids, so their R_w is not
@@ -482,6 +514,8 @@ async def run_variant(
         "guard_note": guard_note,
         "oracle_preset": oracle_preset,
         "oracle_name": _PRESET_NAMES.get(oracle_preset, "?"),
+        "oracle_tied_indices": tied_indices,
+        "oracle_tied_names": [_PRESET_NAMES.get(i, "?") for i in tied_indices],
         "r_w_rewards": [round(r, 4) for r in r_w_rewards],
         "verdict": verdict,
         "regret": regret,
@@ -576,7 +610,14 @@ def _print_variant_result(r: dict) -> None:
         reward_str = "  ".join(
             f"P{i}/{_PRESET_NAMES[i]}:{rewards[i]:.3f}" for i in range(len(rewards))
         )
-        print(f"  Oracle     : P{op} {_PRESET_NAMES.get(op, '?')}")
+        tied_idx = r.get("oracle_tied_indices") or []
+        if tied_idx:
+            tied_str = ", ".join(
+                f"P{i} {_PRESET_NAMES.get(i, '?')}" for i in tied_idx
+            )
+            print(f"  Oracle     : P{op} {_PRESET_NAMES.get(op, '?')}  (tied with {tied_str} — either counts as EXACT)")
+        else:
+            print(f"  Oracle     : P{op} {_PRESET_NAMES.get(op, '?')}")
         print(f"  R_w        : {reward_str}")
         regret = r.get("regret")
         if regret is not None:
@@ -594,6 +635,12 @@ def _print_variant_result(r: dict) -> None:
     print(f"  Verdict    : {_VERDICT_SYM.get(verdict, verdict)}")
 
 
+def _accepted_dist(r: dict) -> int:
+    """Ordinal distance from chosen_preset to the nearest of {oracle_preset} ∪ tied indices."""
+    accepted = {r["oracle_preset"], *r.get("oracle_tied_indices", [])}
+    return min(abs(r["chosen_preset"] - a) for a in accepted)
+
+
 def _confusion_matrix(results: list[dict]) -> None:
     """Print a 4×4 confusion matrix (oracle rows × predicted columns) for a result set."""
     scoreable = [
@@ -607,21 +654,31 @@ def _confusion_matrix(results: list[dict]) -> None:
         return
 
     mat = [[0] * _NUM_PRESETS for _ in range(_NUM_PRESETS)]
+    tied_hits = [[0] * _NUM_PRESETS for _ in range(_NUM_PRESETS)]
     for r in scoreable:
-        mat[r["oracle_preset"]][r["chosen_preset"]] += 1
+        row, col = r["oracle_preset"], r["chosen_preset"]
+        mat[row][col] += 1
+        if row != col and r["verdict"] == "EXACT":
+            tied_hits[row][col] += 1  # off-diagonal but accepted via oracle_tied_indices
 
     print(f"  {'':24} Predicted →")
     header = f"  {'Oracle ↓':24}" + "".join(f"  {_PRESET_NAMES[i]:>8}" for i in range(_NUM_PRESETS))
     print(header)
     print(f"  {'-'*60}")
+    any_tied = False
     for oracle_arm in range(_NUM_PRESETS):
         row_total = sum(mat[oracle_arm])
         if row_total == 0:
             continue
-        row = f"  P{oracle_arm} {_PRESET_NAMES[oracle_arm]:<20}" + "".join(
-            f"  {mat[oracle_arm][pred]:>8}" for pred in range(_NUM_PRESETS)
-        )
+        cells = []
+        for pred in range(_NUM_PRESETS):
+            n, tied = mat[oracle_arm][pred], tied_hits[oracle_arm][pred]
+            any_tied = any_tied or tied > 0
+            cells.append(f"  {(f'{n}(\u2713{tied})' if tied else str(n)):>8}")
+        row = f"  P{oracle_arm} {_PRESET_NAMES[oracle_arm]:<20}" + "".join(cells)
         print(row + f"  (n={row_total})")
+    if any_tied:
+        print("  (n(\u2713k) = of that cell's count, k were tied-arm-accepted EXACT hits, not true misses)")
 
 
 def _baselines(results: list[dict]) -> None:
@@ -636,17 +693,24 @@ def _baselines(results: list[dict]) -> None:
         return
 
     n = len(scoreable)
-    # Majority-class: predict the most common oracle arm
     from collections import Counter
     oracle_counts = Counter(r["oracle_preset"] for r in scoreable)
-    majority_arm, majority_n = oracle_counts.most_common(1)[0]
+
+    # Per-article accepted sets ({oracle_preset} ∪ tied indices) so every baseline
+    # below is scored under the same tied-arm-accepted rule as the model's EXACT verdict.
+    accepted_sets = [{r["oracle_preset"], *r.get("oracle_tied_indices", [])} for r in scoreable]
+
+    # Majority-class: try each constant guess, take the one accepted most often.
+    guess_hits = {g: sum(1 for acc in accepted_sets if g in acc) for g in range(_NUM_PRESETS)}
+    majority_arm = max(guess_hits, key=guess_hits.get)
+    majority_n = guess_hits[majority_arm]
     majority_acc = majority_n / n
 
-    # Uniform random: 1/_NUM_PRESETS expected accuracy
-    random_acc = 1.0 / _NUM_PRESETS
+    # Uniform random: expected hit rate is |accepted set|/4 per article, averaged.
+    random_acc = sum(len(acc) for acc in accepted_sets) / (n * _NUM_PRESETS)
 
-    # Weighted random: predict arm proportional to oracle distribution
-    weighted_acc = sum((c / n) ** 2 for c in oracle_counts.values())
+    # Weighted random: guess drawn proportional to the (primary) oracle distribution.
+    weighted_acc = sum((oracle_counts.get(g, 0) / n) * (guess_hits[g] / n) for g in range(_NUM_PRESETS))
 
     dist_str = "  ".join(f"P{arm}={cnt}" for arm, cnt in sorted(oracle_counts.items()))
     print(f"  Oracle distribution: {dist_str}")
@@ -654,8 +718,81 @@ def _baselines(results: list[dict]) -> None:
         f"  Majority-class baseline (always P{majority_arm} {_PRESET_NAMES[majority_arm]}): "
         f"{majority_acc:.1%}  ({majority_n}/{n})"
     )
-    print(f"  Uniform-random baseline (1/{_NUM_PRESETS}):  {random_acc:.1%}")
+    print(f"  Uniform-random baseline:  {random_acc:.1%}")
     print(f"  Weighted-random baseline:  {weighted_acc:.1%}")
+
+
+def _p_tier(p: float) -> str:
+    """strong (p<0.05) / suggestive (0.05<=p<0.20) / none -- see this session's
+    alpha discussion: unmodified 0.05 is underpowered at n=16, but 0.20 alone
+    (this codebase's own MULTI_ORACLE_RULE precedent) overclaims. Report both."""
+    if p < 0.05:
+        return "strong"
+    if p < 0.20:
+        return "suggestive"
+    return "none"
+
+
+def _significance_tests(results: list[dict]) -> None:
+    """Significance tests, tied-arm-accepted-set aware throughout:
+      1. McNemar exact (paired) -- model vs. the majority-class constant guess.
+      2. Poisson-binomial exact (one-sample) -- model vs. per-article chance
+         level (chance differs by article: |accepted set|/_NUM_PRESETS).
+      3. Wilson 95% CI on the model's own exact rate.
+    """
+    scoreable = [
+        r for r in results
+        if r.get("oracle_preset") is not None
+        and r.get("verdict") not in ("NO_ORACLE", "ERROR", None)
+        and "error" not in r
+    ]
+    n = len(scoreable)
+    if n == 0:
+        return
+
+    accepted_sets = [{r["oracle_preset"], *r.get("oracle_tied_indices", [])} for r in scoreable]
+    guess_hits = {g: sum(1 for acc in accepted_sets if g in acc) for g in range(_NUM_PRESETS)}
+    majority_arm = max(guess_hits, key=guess_hits.get)
+
+    model_correct = [r["verdict"] == "EXACT" for r in scoreable]
+    baseline_correct = [majority_arm in acc for acc in accepted_sets]
+
+    b = sum(1 for m, base in zip(model_correct, baseline_correct) if m and not base)
+    c = sum(1 for m, base in zip(model_correct, baseline_correct) if base and not m)
+    m_n = b + c
+    if m_n:
+        # one-sided, P(X <= c | X~Binomial(b+c, 0.5)) -- same convention as
+        # guarded_constant_baseline.py's mcnemar_one_sided / A.17.1 / A.19.5.
+        mcnemar_p = sum(comb(m_n, i) for i in range(c + 1)) / (2 ** m_n)
+        print(
+            f"  McNemar exact, model vs. majority-class (P{majority_arm} {_PRESET_NAMES[majority_arm]}): "
+            f"b={b} c={c} n={m_n}  one-sided p={mcnemar_p:.4f}  [{_p_tier(mcnemar_p)}]"
+        )
+    else:
+        print("  McNemar exact, model vs. majority-class: no discordant pairs (n=0)")
+
+    # Poisson-binomial pmf: sum of independent Bernoulli(chance_i), chance_i = |accepted_i|/_NUM_PRESETS.
+    pmf = [1.0]
+    for acc in accepted_sets:
+        p = len(acc) / _NUM_PRESETS
+        pmf = [
+            (pmf[k - 1] * p if k > 0 else 0.0) + (pmf[k] * (1 - p) if k < len(pmf) else 0.0)
+            for k in range(len(pmf) + 1)
+        ]
+    x_observed = sum(model_correct)
+    p_vs_chance = sum(pmf[x_observed:])
+    print(
+        f"  Poisson-binomial exact, model vs. per-article chance level: "
+        f"observed={x_observed}/{n}  one-sided p={p_vs_chance:.4f}  [{_p_tier(p_vs_chance)}]"
+    )
+
+    z = 1.959963984540054  # 97.5th percentile of the standard normal
+    phat = x_observed / n
+    denom = 1 + z * z / n
+    center = (phat + z * z / (2 * n)) / denom
+    margin = (z / denom) * ((phat * (1 - phat) / n + z * z / (4 * n * n)) ** 0.5)
+    lo, hi = max(0.0, center - margin), min(1.0, center + margin)
+    print(f"  Model exact-rate Wilson 95% CI: [{lo:.1%}, {hi:.1%}]  (point estimate {phat:.1%})")
 
 
 def _split_stats(results: list[dict]) -> tuple[int, int, int, int, list[float], int]:
@@ -712,7 +849,7 @@ def _print_split_block(
     total = len(results)
     n_scoreable = exact + near + miss
     mae = (
-        sum(abs(r["chosen_preset"] - r["oracle_preset"])
+        sum(_accepted_dist(r)
             for r in results
             if r.get("chosen_preset") is not None and r.get("oracle_preset") is not None)
         / n_scoreable if n_scoreable else 0.0
@@ -735,6 +872,9 @@ def _print_split_block(
 
     print(f"\n  --- Baselines ---")
     _baselines(results)
+
+    print(f"\n  --- Significance tests ---")
+    _significance_tests(results)
 
     # Per-variant-type breakdown (training variants only)
     variant_rows = [r for r in results if "__var_" in r.get("variant", "")]

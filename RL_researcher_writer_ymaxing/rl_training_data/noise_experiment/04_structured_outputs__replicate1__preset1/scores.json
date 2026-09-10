@@ -3,7 +3,7 @@
   "ground_truth_flow": 0.666667,
   "ground_truth_structure": 0.666667,
   "ground_truth_depth_enhancement": 0.333333,
-  "ground_truth_breadth_enhancement": 0.0,
+  "ground_truth_breadth_enhancement": 0.166667,
   "ground_truth_core_preservation": 1.0,
   "user_intent_guideline_adherence": 0.5,
   "user_intent_research_anchoring": 1.0,

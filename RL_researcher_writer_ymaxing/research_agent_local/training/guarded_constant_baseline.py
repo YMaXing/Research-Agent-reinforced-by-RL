@@ -85,9 +85,9 @@ def _apply_policy_guards(preset: int, policy: str) -> int:
     return preset
 
 
-def _read_oracle(article: str) -> tuple[int, list[float]]:
+def _read_oracle(article: str) -> tuple[int, list[float], list[int]]:
     data = json.loads((_BASES_DIR / article / "article_oracle.json").read_text(encoding="utf-8"))
-    return int(data["oracle_arm_idx"]), data["r_w_rewards_list"]
+    return int(data["oracle_arm_idx"]), data["r_w_rewards_list"], data.get("tied_arm_indices", [])
 
 
 def score_constant_baseline(articles: list[str], constant_idx: int) -> dict:
@@ -99,8 +99,9 @@ def score_constant_baseline(articles: list[str], constant_idx: int) -> dict:
     for article in articles:
         policy = _read_policy(article)
         guarded = _apply_policy_guards(constant_idx, policy)
-        oracle_idx, r_w = _read_oracle(article)
-        dist = abs(guarded - oracle_idx)
+        oracle_idx, r_w, tied_idx = _read_oracle(article)
+        accepted = {oracle_idx, *tied_idx}
+        dist = 0 if guarded in accepted else min(abs(guarded - a) for a in accepted)
         if dist == 0:
             exact += 1
         elif dist == 1:
@@ -113,7 +114,7 @@ def score_constant_baseline(articles: list[str], constant_idx: int) -> dict:
             regrets.append(regret)
         per_article[article] = {
             "policy": policy, "guarded_idx": guarded, "oracle_idx": oracle_idx,
-            "dist": dist, "regret": regret,
+            "tied_idx": tied_idx, "dist": dist, "regret": regret,
         }
     n = len(articles)
     mae = sum(v["dist"] for v in per_article.values()) / n
@@ -134,12 +135,22 @@ def mcnemar_one_sided(b: int, c: int) -> float:
     return sum(comb(n, i) for i in range(0, c + 1)) / (2 ** n)
 
 
+def _p_tier(p: float) -> str:
+    """strong (p<0.05) / suggestive (0.05<=p<0.20) / none -- unmodified 0.05 is
+    underpowered at this n (see A.21 alpha discussion); 0.20 alone overclaims."""
+    if p < 0.05:
+        return "strong"
+    if p < 0.20:
+        return "suggestive"
+    return "none"
+
+
 def mcnemar_vs_model(per_article: dict, model_chosen: dict[str, int]) -> dict:
     b = c = both_correct = both_wrong = 0
     for article, v in per_article.items():
-        oracle = v["oracle_idx"]
-        baseline_correct = v["guarded_idx"] == oracle
-        model_correct = model_chosen[article] == oracle
+        accepted = {v["oracle_idx"], *v["tied_idx"]}
+        baseline_correct = v["guarded_idx"] in accepted
+        model_correct = model_chosen[article] in accepted
         if model_correct and baseline_correct:
             both_correct += 1
         elif model_correct:
@@ -182,13 +193,12 @@ def main() -> None:
 
         if split_name == "TEST":
             print(f"\n  --- McNemar exact test: RL+guards (run33/ep81) vs. each guarded-constant baseline ---")
-            print(f"  {'baseline':<16} {'b':>3} {'c':>3} {'n':>3} {'one-sided p':>12}  significant(a=.05)?")
+            print(f"  {'baseline':<16} {'b':>3} {'c':>3} {'n':>3} {'one-sided p':>12}  tier")
             for name, r in results.items():
                 m = mcnemar_vs_model(r["per_article"], _RL_GUARDS_CHOSEN_TEST)
-                sig = "yes" if m["p"] < 0.05 else "no"
                 print(
                     f"  always-{name:<9} {m['b']:>3} {m['c']:>3} {m['n']:>3} "
-                    f"{m['p']:>12.4f}  {sig}"
+                    f"{m['p']:>12.4f}  {_p_tier(m['p'])}"
                 )
 
 

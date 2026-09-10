@@ -75,6 +75,14 @@ gate_diagnostics      dict|None {arm: {cp,ra,gsp: float}} mean satisficing
                       the "diagnostics" field) -- informational only, does
                       NOT influence oracle_arm (see Part 7 S56/S57).
 low_signal_flag       bool  True if any gate_diagnostics value < DIAG_LOW_SIGNAL_THRESHOLD
+tied_arms             list  other arm(s) considered statistically indistinguishable from
+                      oracle_arm for this article (see ``_TIED_ARMS``) -- empty for every
+                      article except genuine dead-heats (e.g. Bird_Eye_Extreme). Purely
+                      additive/informational: does NOT affect oracle_arm/margin/decision_path.
+                      Consumers that want "either X or Y counts as a hit" (e.g.
+                      evaluation/test_grok_planner.py's verdict) should treat a prediction
+                      landing on oracle_arm OR any tied_arms entry as EXACT.
+tied_arm_indices      list  int indices (ARM_IDX) mirroring tied_arms
 n_sections            int
 n_sections_with_target int
 total_target_words    int
@@ -204,9 +212,55 @@ _MANUAL_OVERRIDES: dict[str, str] = {
     "08_react_practice__var_demanding":    "light",
     "11_multimodal__var_standard":         "skip",
     "06_tools__var_demanding":             "light",
+    # 2026-09-07 documentation fix: this entry also had no dedicated comment.
+    #     Per-draw votes (2026-09-07 re-grade): [deep, deep, deep] -> deep
+    #     (3/3 unanimous), low cross-draw variance (sd=0.021, tightest of any
+    #     near-tie reviewed this session), p(2-tail)=0.021 -- the only
+    #     comparison this session to clear conventional significance. `deep`
+    #     is also the raw averaged-R_w argmax (margin +0.0827) by a wide
+    #     margin, so this override is redundant with the uncorrected data --
+    #     kept pinned for the same future-drift-protection reason as the
+    #     other "not a true override" entries. See
+    #     oracle_review/Earth_Oceans_Origin.md Reviewer conclusion.
     "Earth_Oceans_Origin":                 "deep",
     "Gravity_Entropy":                     "light",
+    # 2026-09-02 re-scoring update: article was manually re-graded (production
+    #     all 4 presets; replicate1 presets 2-3; replicate2 presets 0,1,3),
+    #     margin grew from +0.0139 to +0.0209. Per-draw sign was already
+    #     unanimous (3/3 favor light) both before and after; the correction
+    #     strengthened significance to p=0.038 (one-tailed, df=2) -- `light`
+    #     now beats every other arm (deep, skip, standard) at p<0.05
+    #     one-tailed, the only near-tie article this session where that
+    #     holds across all pairwise comparisons. Still not a true override --
+    #     `light` remains the raw averaged-R_w argmax. See
+    #     oracle_review/Gravity_Entropy.md Reviewer conclusion for the full
+    #     distributional/quantitative basis.
     "13_agent_framework":                  "light",
+    # 2026-09-02 re-scoring update: article was manually re-graded (production
+    #     all 4 presets; replicate1 presets 2-3; replicate2 preset 0 only),
+    #     margin grew from +0.0034 (weakest near-tie reviewed this session) to
+    #     +0.0309 (now on par with ARTICLE_MARGIN_NOISE_SD/sqrt(3)=0.0312).
+    #     The correction flipped the production draw's own winner from deep
+    #     to light and made the per-draw sign unanimous (3/3 favor light,
+    #     was 2/3 before) with the lowest cross-draw sd of any near-tie
+    #     article reviewed (0.0135). `light` is still not a true override --
+    #     it remains the raw averaged-R_w argmax. See
+    #     oracle_review/13_agent_framework.md Reviewer conclusion for the
+    #     full distributional/quantitative basis.
+    # 2026-09-06 documentation fix: this entry previously had NO comment at
+    #     all (an oversight -- every other entry documents its basis).
+    #     Per-draw votes (2026-09-06 re-grade): [light, deep, deep] -> deep
+    #     (2/3), but replicate1's "deep" win margin (+0.0082) is an order of
+    #     magnitude smaller than production's (-0.0505) or replicate2's
+    #     (+0.1344) -- a near-zero draw, not a genuinely decisive one (same
+    #     caution as `Bird_Eye_Extreme`'s vote-counting lesson). `deep` is
+    #     still the raw averaged-R_w argmax (margin +0.0307, p=0.630 --
+    #     essentially no significance), so this override is currently
+    #     redundant with the uncorrected data, not a true divergent
+    #     override -- kept pinned to protect against a future re-grading
+    #     nudging the raw argmax back to `light` without deliberate review.
+    #     See oracle_review/Insects_Consciousness.md Reviewer conclusion for
+    #     the full basis.
     "Insects_Consciousness":               "deep",
 
     # --- 2026-08-25: N=3 promotion for 4 TEST articles that had replicate
@@ -223,24 +277,242 @@ _MANUAL_OVERRIDES: dict[str, str] = {
     #     31_CI = [light, light, skip] -> light (2/3, confirms, no override
     #     needed); State_of_LLM_Reasoning = [skip, skip, light] -> skip (2/3,
     #     confirms, and policy-forced regardless). See A.18.6 addendum.
+    # 2026-09-01 re-scoring update: article was manually re-graded (all 4
+    #     presets x 3 draws), margin dropped from +0.0198 to +0.0076 (well
+    #     under needs_review's own threshold -- note this manual override
+    #     bypasses that check regardless of margin). Re-verified: the
+    #     per-draw vote is UNCHANGED at [light, standard, standard] ->
+    #     standard (2/3), and standard is still the raw averaged-R_w argmax
+    #     (still not a true divergent override). But standard-vs-light is
+    #     now the single weakest-evidence near-tie pair reviewed all
+    #     session (one-tailed p=0.46, sd=0.117 vs mean margin 0.008) --
+    #     driven by light's anomalous production-draw spike (0.492, its
+    #     article-wide high) coinciding with standard's article-wide low
+    #     (0.365) on that same draw. See oracle_review/29_evaluation_metrics.md
+    #     Reviewer conclusion for the full distributional/quantitative basis.
+    # 2026-09-02 second re-scoring update: margin grew again, +0.0076 ->
+    #     +0.0165. Per-draw vote still unchanged at [light, standard,
+    #     standard] -> standard (2/3). standard-vs-light is still the
+    #     weakest near-tie pair reviewed (p=0.40 one-tailed, sd=0.101,
+    #     nearly unchanged), still driven by the same volatile production
+    #     draw (light's spike grew to 0.494). But standard's corpus-wide
+    #     position strengthened: it now beats deep (p=0.041 one-tailed,
+    #     3/3) and skip (p=0.043, 3/3) with conventionally-significant,
+    #     unanimous evidence -- corroborating standard as the correct
+    #     overall pick even though the specific runner-up pairing remains
+    #     weak. See oracle_review/29_evaluation_metrics.md Reviewer
+    #     conclusion (updated 2026-09-02) for full details.
+    # 29_evaluation_metrics: RECLASSIFIED SOLE 2026-09-08 (was the audit
+    #     counter-example that motivated retiring v1 -- see below). At N=3,
+    #     margin=+0.0165 (manual override -> standard, redundant with raw
+    #     argmax), per-draw (standard-light)=[-0.1004,+0.0812,+0.0688] --
+    #     v1's magnitude check passed cleanly (every draw far exceeds the
+    #     0.3x-tau floor, hard vote 2/3 agrees with the mean winner) yet
+    #     p=0.804, a near-perfect coin flip, because the dissenting draw
+    #     (-0.1004) is itself the LARGEST in magnitude, driving sd up to
+    #     0.101 -- this is what motivated retiring v1 and moving to a direct
+    #     p-value check (v2). Real replicate expansion since then: N=5
+    #     (2026-09-08, replicate3/replicate4 merged) dropped p to 0.355 --
+    #     still MULTIPLE, but already less than half the N=3 value. N=7
+    #     (2026-09-08, replicate5/replicate6 merged, real data not a
+    #     projection) drops it further: per-draw (standard-light)=
+    #     [-0.0779,+0.0812,+0.0688,+0.0084,+0.0787,+0.0300,+0.0754], mean
+    #     +0.0378, sd=0.0581, t=+1.723 (df=6), **p=0.136** -- now clears the
+    #     v2 ALPHA=0.20 threshold. `standard` stays oracle_arm (override
+    #     preserved, and still coincides with the raw argmax); `light` is no
+    #     longer registered as tied. See oracle_review/29_evaluation_metrics.md
+    #     Reviewer conclusion (2026-09-08, N=7) for the full basis.
     "29_evaluation_metrics":               "standard",
-    # --- 2026-08-27: near-tie oracle review battery, distributional override
-    #     (A.19). Mean-R_w argmax picks `deep` for HNSW (margin +0.0343 after
-    #     this session's grading corrections, needs_review cleared), but the
-    #     per-draw evidence behind that mean is not comparable to `light`'s:
-    #     deep=[0.429, 0.374, 0.633] (sd=0.136) vs light=[0.433, 0.463, 0.436]
-    #     (sd=0.017) -- an 8.19x sd ratio, the most extreme of the 12
-    #     near-tie articles reviewed this session -- and 2 of deep's 3 draws
-    #     fall entirely below light's observed range (clean maximin
-    #     dominance for light; light's floor 0.433 > deep's floor 0.374).
-    #     A.19 confirms this specific combination (extreme sd-ratio outlier
-    #     + clean maximin dominance) does NOT replicate on the corpus's next
-    #     two highest sd-ratio cases (03_context_engineering__var_standard
-    #     4.80x, Bird_Eye_Extreme 2.78x, both left unchanged), so this is a
-    #     narrow, dual-condition override scoped to HNSW only -- not a
-    #     blanket lower-variance preference. See A.19 for the full
-    #     distribution table and rule.
-    "HNSW":                                "light",}
+    # --- 2026-08-27 override REVOKED 2026-09-06: near-tie oracle review
+    #     battery, distributional override (A.19), originally justified by
+    #     mean-R_w argmax picking `deep` for HNSW (margin +0.0343) despite an
+    #     extreme 8.19x sd ratio (deep sd=0.136 vs light sd=0.017) AND clean
+    #     maximin dominance (2 of deep's 3 draws fell entirely below light's
+    #     observed range). A full re-grading round (2026-09-06) erased BOTH
+    #     conditions the override depended on: new per-draw R_w deep=[0.475,
+    #     0.374, 0.633] (sd=0.130) vs light=[0.316, 0.525, 0.436] (sd=0.105)
+    #     -- sd ratio now only 1.24x (not 8.19x), and deep's minimum (0.374)
+    #     sits INSIDE light's range [0.316, 0.525], i.e. zero maximin
+    #     dominance remains. Raw mean-R_w argmax is now `deep` by a much
+    #     wider, unambiguous margin (+0.0681, roughly 2x the original), with
+    #     a 2/3 per-draw majority also favoring deep (production, replicate2)
+    #     against only replicate1 favoring light. Quantitatively deep now
+    #     leads on cc/de/be/ga (previously only de/be/ga, with cc slightly
+    #     favoring light) -- deep's advantage is broader, not narrower, after
+    #     correction. Since the override's own stated justification no
+    #     longer holds on the corrected data, it has been removed; oracle_arm
+    #     reverts to the raw mean-R_w argmax (`deep`). See
+    #     oracle_review/HNSW.md Reviewer conclusion (2026-09-06) for the full
+    #     before/after comparison.
+}
+
+# ---------------------------------------------------------------------------
+# Tied arms (see ``tied_arms`` in the schema docstring above)
+#
+# Purely additive/informational -- does NOT affect oracle_arm, margin, or
+# decision_path in any way. Populated only for articles independently
+# reviewed and found to be a genuine dead heat between two arms (not merely
+# a thin margin -- see the article's own oracle_review/<article>.md for the
+# distributional basis establishing this).
+# ---------------------------------------------------------------------------
+_TIED_ARMS: dict[str, list[str]] = {
+    # 2026-09-05: light vs standard genuine tie (see the CONSIDERED-AND-
+    #     DECLINED override note in _MANUAL_OVERRIDES above). Per-draw margins
+    #     (light-standard) are [+0.0787, -0.0566, -0.0023] -- only 1 real win
+    #     each plus one statistical wash, not a real 2/3 majority either way.
+    #     `oracle_arm` stays `light` (raw mean-R_w argmax, no override), but
+    #     `standard` is registered here as an equally valid pick. p=0.882
+    #     under the v2 (p-value) rule below -- confirmed MULTIPLE.
+    "Bird_Eye_Extreme": ["standard"],
+    # 2026-09-05: skip vs deep genuine tie. Whole-article reward landscape
+    #     compressed after a full re-grade (reward_spread=0.040, tightest in
+    #     the corpus); oracle_arm=deep by margin=+0.0007 (~44x below the
+    #     noise threshold). Per-draw margins (skip-deep) are [-0.0026,
+    #     -0.0071, +0.0076] -- 2/3 draws favor deep but every margin is
+    #     comparably tiny, p=0.887 (near-coin-flip, confirmed MULTIPLE under
+    #     the v2 rule below). Mechanism: deep's real de/be content-enrichment
+    #     gain is almost exactly offset by its ga (guideline-adherence) cost
+    #     -- see oracle_review/07_reasoning_planning.md for the full basis.
+    "07_reasoning_planning": ["skip"],
+    # Dark_Dimension: TIED-ARMS ENTRY REMOVED 2026-09-09 (was ["standard"]).
+    #     At N=3 (2026-09-07, v1 rule): margin=+0.0193, per-draw
+    #     (deep-standard)=[-0.0756,+0.1694,-0.036] -- hard vote favored
+    #     standard 2/3, DISAGREEING with mean winner deep (deep's only win,
+    #     replicate1, was a large outlier); p=0.823, confirmed MULTIPLE.
+    #     Real replicate expansion to N=8 (2026-09-09, replicate2-7 merged,
+    #     real data not a projection) resolved this: runner-up flipped
+    #     standard->light (R_w light=0.515 now edges out standard=0.507),
+    #     and BOTH near-contenders clear the v2 ALPHA=0.20 threshold --
+    #     deep-vs-light per-draw=[+0.0701,+0.1457,+0.0182,+0.0009,-0.0346,
+    #     -0.0379,+0.0294,+0.0665], mean+0.0323, p=0.178, 6/8 favor deep;
+    #     deep-vs-standard per-draw=[-0.0756,+0.1694,-0.016,+0.0557,+0.0843,
+    #     +0.0229,+0.0408,+0.0423], mean+0.0405, p=0.153, 6/8 favor deep.
+    #     `deep` reclassifies SOLE -- no arm remains registered as tied. See
+    #     oracle_review/Dark_Dimension.md Reviewer conclusion (2026-09-09,
+    #     N=8) for the full basis.
+    # Distinct_AI_Models: margin=+0.0180, per-draw (light-standard)=
+    #     [+0.0009,-0.0119,+0.0649], p=0.529 -- confirmed MULTIPLE under the
+    #     v2 (p-value) rule below.
+    "Distinct_AI_Models": ["standard"],
+    # Insects_Consciousness: margin=+0.0307 (manual override, redundant with
+    #     raw argmax), per-draw (deep-light)=[-0.0505,+0.0082,+0.1344],
+    #     p=0.630 -- confirmed MULTIPLE under the v2 (p-value) rule below.
+    "Insects_Consciousness": ["light"],
+    # 2026-09-07 v2 additions: rule replaced with a direct p-value check
+    # (see MULTI_ORACLE_RULE below) -- these 4 were "sole" under the retired
+    # v1 margin/hard-vote-magnitude heuristic but their own t-test says
+    # otherwise; a concrete audit example (29_evaluation_metrics, below)
+    # showed v1 could pass an article whose per-draw margins were all large
+    # in magnitude yet still statistically indistinguishable from a tie,
+    # because the DISSENTING draw was itself large, inflating variance --
+    # v1's "no draw negligibly small" check only guarded against the
+    # opposite failure mode.
+    # 04_structured_outputs: N=5 UPDATE (2026-09-09) -- the raw mean-R_w
+    #     argmax itself FLIPPED deep->standard (was margin=+0.0711 favoring
+    #     deep at N=3, cleared v1's margin>tau bar outright; now margin=
+    #     +0.0183 favoring standard, oracle_arm/runner_up_arm swapped). The
+    #     underlying toss-up is UNCHANGED, just relabeled: per-draw (standard-
+    #     deep)=[-0.0026,+0.0232,-0.0740,+0.0320,+0.1131], p=0.576 (was 0.249
+    #     at N=3, i.e. got LESS decisive, not more, with 2 more real draws) --
+    #     still confirmed MULTIPLE under v2. `deep` (now the runner-up)
+    #     replaces `standard` as the registered tied arm below.
+    "04_structured_outputs": ["deep"],
+    # 31_CI: margin=+0.0150, per-draw (light-skip)=[+0.0382,+0.038,-0.0312],
+    #     p=0.582 (v1 called this SOLE via the hard-vote/magnitude branch --
+    #     all 3 draws individually non-negligible, but their sign disagrees
+    #     2-1 with a full-magnitude dissenting draw, hence p=0.582 not <0.05).
+    "31_CI": ["skip"],
+    # HNSW: margin=+0.0681 (cleared v1's margin>tau bar outright, the same
+    #     branch that let 04_structured_outputs and Earth_Oceans_Origin
+    #     through unconditionally), per-draw (deep-light)=
+    #     [+0.1587,-0.1508,+0.1963], p=0.599 -- large swings both directions,
+    #     cross-draw sd=0.191 (highest in the corpus) swamps the mean.
+    "HNSW": ["light"],
+    # 29_evaluation_metrics: TIED-ARMS ENTRY REMOVED 2026-09-08 (was
+    #     ["light"]). THE audit counter-example that originally motivated
+    #     retiring v1 (at N=3, margin=+0.0165, per-draw (standard-light)=
+    #     [-0.1004,+0.0812,+0.0688], p=0.804 -- a near-perfect coin flip
+    #     despite every draw individually clearing v1's magnitude floor).
+    #     Real replicate expansion since then (N=5, then N=7, both real
+    #     data not projections -- see the `_MANUAL_OVERRIDES` entry above
+    #     for the full per-draw numbers) dropped p to 0.355 then 0.136,
+    #     crossing below the v2 ALPHA=0.20 threshold. Per the v2 rule this
+    #     article now reclassifies SOLE -- `light` removed from
+    #     `_TIED_ARMS`. See oracle_review/29_evaluation_metrics.md Reviewer
+    #     conclusion (2026-09-08, N=7) for the full basis.
+    # State_of_LLM_Reasoning: CONSIDERED AND DECLINED (2026-09-07). Margin=
+    #     +0.0033, per-draw (skip-light)=[+0.0334,-0.0242,+0.0008], p=0.861
+    #     -- mechanically qualifies as MULTIPLE under BOTH the retired v1
+    #     rule and the current v2 (p-value) rule. NOT applied: this
+    #     article's own enhancement-instance analysis found a *structural*,
+    #     not just statistical, reason skip should win -- `light`'s
+    #     exploration payoff (0.45*de+0.30*be) tops out at 0.029 even at
+    #     full saturation (replicate2, the maximum possible instance credit),
+    #     still short of `skip`'s deterministic 0.030 cost advantage
+    #     (`-0.03*nr`). That makes replicate2's near-zero margin a real
+    #     structural ceiling, not statistical noise -- so `skip` is the sole
+    #     oracle here regardless of which classification rule is applied.
+    #     See oracle_review/State_of_LLM_Reasoning.md Reviewer conclusion.
+}
+
+# ---------------------------------------------------------------------------
+# Multi-oracle classification rule v2 (2026-09-07 -- REPLACES the same-day
+# margin/hard-vote-magnitude v1 rule after an internal audit found it didn't
+# track actual statistical confidence; formalizes/extends the ad hoc
+# majority-vote rule already used for the A.15.2/A.15.4 manual overrides
+# above)
+#
+# RULE: compute the per-draw margins margin_i = R_w[oracle_arm] -
+# R_w[runner_up_arm] for the 3 draws (production/replicate1/replicate2), then
+# the two-tailed p-value of a paired t-test (df=2, Student-t closed form
+# F(t)=0.5*(1+t/sqrt(2+t^2))) against the null that the true mean margin is 0
+# (see analyze_near_tie_metrics.distributional_basis, already computes this).
+#   p < ALPHA (0.20) -> SOLE oracle = oracle_arm.
+#   p >= ALPHA        -> MULTIPLE oracles: register runner_up_arm in
+#                        _TIED_ARMS -- UNLESS a separate, article-specific
+#                        mechanistic analysis (e.g. an enhancement-instance/
+#                        reward-formula breakdown showing one arm
+#                        structurally cannot beat the other even in its
+#                        best-case draw) positively explains the result as a
+#                        real ceiling rather than noise, in which case the
+#                        article stays SOLE (State_of_LLM_Reasoning is the
+#                        only case this exception has applied to so far).
+#
+# ALPHA=0.20 (not the conventional 0.05): with n_draws=3 (df=2), the
+# two-tailed critical value for p<0.05 is |t|>4.303 -- an extremely high bar
+# that only 1 of 16 TEST articles ever clears (Earth_Oceans_Origin, p=0.021).
+# N=3 is a deliberate budget-vs-robustness compromise, not a design that can
+# support conventional significance thresholds; 0.20 (|t|>1.886) was chosen
+# both for this power reason and because it falls in a natural gap in the
+# corpus's actual p-value distribution -- 6 articles cluster at p<=0.196,
+# the next-nearest sits at p=0.249, a comfortable margin either side of the
+# cutoff. Note Understanding_Reasoning_LLMs (p=0.196) sits close enough to
+# this boundary that a stricter alpha (e.g. 0.15) would flip it to MULTIPLE.
+#
+# WHY v1 (margin > ARTICLE_MARGIN_NOISE_SD/sqrt(n_draws), or a per-draw
+# "not-negligible" magnitude floor as a fallback) was RETIRED: margin > tau
+# alone doesn't track this article's own measured noise at all -- tau is a
+# POOLED, corpus-wide constant (single-draw sd=0.054), while actual per-
+# article cross-draw sd ranges from 0.011 to 0.191, almost a 20x spread.
+# Of the 6 articles v1 called "confident sole" purely via margin>tau, 5 have
+# p>0.15 by their OWN data (04_structured_outputs p=0.249, 14_agent_system_
+# design p=0.164, HNSW p=0.599, Space-Time_QECC p=0.154, Understanding_
+# Reasoning_LLMs p=0.196) -- only Earth_Oceans_Origin (p=0.021) was genuinely
+# confident. The per-draw magnitude fallback has its own blind spot, caught
+# by 29_evaluation_metrics: every draw clears the "not negligible" floor
+# (none is small) yet p=0.804, because the fallback only guards against
+# winning draws being too small, not against the DISSENTING draw being large
+# enough to blow up the variance.
+#
+# Retroactively re-validated against all 16 TEST articles' article_oracle.json
+# (2026-09-07 audit, all fresh from that day's re-grade) under this v2 rule:
+# 6 SOLE (Earth_Oceans_Origin p=0.021, Gravity_Entropy p=0.075,
+# 13_agent_framework p=0.084, Space-Time_QECC p=0.154, 14_agent_system_design
+# p=0.164, Understanding_Reasoning_LLMs p=0.196 -- 2 of these are also
+# _MANUAL_OVERRIDES, both still the raw argmax regardless), 9 MULTIPLE (all
+# entries in _TIED_ARMS above), 1 exception (State_of_LLM_Reasoning, stays
+# SOLE via the mechanistic-ceiling override).
+# ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
 # File loaders
@@ -542,6 +814,8 @@ def compute_article_oracle(article: str) -> dict:
         for k in ("cp", "ra", "gsp")
     )
 
+    tied_arms = _TIED_ARMS.get(article, [])
+
     return {
         "version": 3,
         "article": article,
@@ -562,6 +836,8 @@ def compute_article_oracle(article: str) -> dict:
         "needs_review": needs_review,
         "gate_diagnostics": gate_diagnostics,
         "low_signal_flag": low_signal_flag,
+        "tied_arms": tied_arms,
+        "tied_arm_indices": [ARM_IDX[a] for a in tied_arms],
         "n_sections": n_sections,
         "n_sections_with_target": n_with_target,
         "total_target_words": total_tw,

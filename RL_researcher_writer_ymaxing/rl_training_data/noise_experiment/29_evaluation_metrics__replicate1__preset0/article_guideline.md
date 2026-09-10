@@ -1,4 +1,4 @@
-## Global Context of the Lesson
+  ## Global Context of the Lesson
 
 ### What We Are Planning to Share
 

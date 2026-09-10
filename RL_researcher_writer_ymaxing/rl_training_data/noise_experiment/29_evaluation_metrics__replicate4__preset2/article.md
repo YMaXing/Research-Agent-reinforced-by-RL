@@ -1,0 +1,210 @@
+# Lesson 29: Designing AI Evals
+
+In our previous lessons, we instrumented our agents with Opik for observability and built our first offline evaluation dataset from production traces. We now have the raw materials for a dependable evaluation pipeline. But before we can build it, we must answer a fundamental question: what exactly are we measuring?
+
+In classical machine learning, this question has a clear answer. We rely on rigorous, quantitative metrics like accuracy, precision, recall, and F1-score to measure performance against a labeled dataset. We debate the merits of p-values and statistical significance. In the world of AI engineering, however, many teams have fallen back on a far less rigorous standard: the "vibe check." We run a new prompt, look at the output, and decide, "this feels more coherent." Sometimes, evaluation is skipped altogether.
+
+Investing in a proper evaluation layer can feel like a secondary priority. It delivers no immediate user-visible feature. It requires upfront effort to design datasets and metrics, all while the pressure to ship new functionality mounts. However, this initial investment accelerates long-term development. It provides an objective signal on every change, catches regressions instantly, and turns a process driven by intuition into one driven by evidence.
+
+This shift is analogous to the move from manual testing to Test-Driven Development (TDD) in classical software engineering. Evaluation-Driven Development (EDD) asks a different question. It is not just "Does it work?" but "How well does it work, and is it getting better?" [[1]](https://medium.com/@nimrodbusany_9074/from-tdd-to-edd-why-evaluation-driven-development-is-the-future-of-ai-engineering-a5e5796b2af4). It reframes evaluation from a final quality gate to the central engine of development.
+
+Evals are the north star of AI engineering. They are the single source of truth that tells you which modifications improve your system and which degrade it. In this lesson, we will establish the theoretical foundation for building an evaluation framework that works. We will cover:
+
+-   The optimization flywheel and its three core use cases.
+-   Metric-type trade-offs for unstructured outputs.
+-   Why custom business metrics beat benchmarks and generic scores.
+-   Why binary pass/fail judgments are superior to Likert scales.
+
+With the problem and its importance clear, we will now examine how to operationalize evaluations inside a repeatable optimization flywheel that replaces intuition with evidence.
+
+## Using Evals Through the Optimization Flywheel
+
+To build intuition, let's examine how we can effectively use and integrate AI evaluations into our application development lifecycle. There are three core scenarios where evaluations provide value.
+
+First, evals **quantify the quality of your system** on a given set of metrics, creating a baseline snapshot of its current performance. This baseline is your source of truth. It tells you whether your system is ready for production and provides a stable reference point to measure against. Without it, you are flying blind, unable to know if your changes are making things better or worse. This is the first step in moving from a fragile demo to a dependable production asset [[29]](https://towardsdatascience.com/stop-evaluating-llms-with-vibe-checks). This initial measurement is not just about getting a score; it is about understanding the current state of your system's capabilities and limitations. It provides the context needed to set realistic improvement goals and prioritize development efforts.
+
+Second, these metrics serve as **guidance when optimizing your system**. They provide objective evidence for experiments, shifting development from being intuition-based to evidence-based. Instead of relying on "vibe checks" where a change "feels better," you can point to hard data showing that a new prompt increased the pass rate on a key metric by 5%. This rigor is what separates science fair projects from enterprise-grade systems [[29]](https://towardsdatascience.com/stop-evaluating-llms-with-vibe-checks). This evidence-driven approach allows you to systematically test hypotheses about what improves performance. For example, you can run A/B tests on different models, prompts, or retrieval strategies and use your evaluation metrics to determine a clear winner. This turns optimization into a scientific process of experimentation and validation.
+
+Finally, evals act as **regression tests** that protect shared components. In complex AI systems, prompts, tools, and memory retrieval logic are often interconnected. A change intended to improve one feature can inadvertently break another. By running a full evaluation suite before merging changes, you can catch these regressions automatically, ensuring that new features do not silently degrade the performance of old ones. This is vital for maintaining stability and trust in the system as it evolves. As AI applications grow, the number of interacting components increases, making it nearly impossible to manually verify that a change in one area has not caused unintended consequences elsewhere. Automated regression testing using AI evals becomes an essential safety net.
+
+### The Optimization Process
+
+How does this look in a real-world scenario? Let's look at a step-by-step plan for the optimization flywheel.
+
+1.  **Gather your dataset:** Assemble an offline dataset of inputs and expected outputs, as we did in Lesson 28. This dataset should be representative of the real-world scenarios your application will face, including common use cases, edge cases, and known failure modes.
+2.  **Build your metrics:** Define a set of business-aligned metrics to measure performance. These metrics should directly reflect what success looks like for your users and your business.
+3.  **Establish a baseline:** Run the evaluations on the current system to compute your baseline scores. This initial measurement provides the benchmark against which all future changes will be compared.
+4.  **Start the optimization:** Make one isolated change that you believe will improve performance. This could be a tweak to a prompt, a change in the model's temperature setting, or an update to your RAG retrieval algorithm.
+5.  **Compute the new score:** Re-evaluate the entire dataset by re-running the evals with the modified system.
+6.  **Compare:** Compare the new scores to the baseline, considering statistical significance. This step tells you whether your change had a positive, negative, or neutral impact on performance.
+7.  **Decide:** Based on whether the score is better, the same, or worse, decide to keep the change, revert it, or continue experimenting. This decision should also consider the complexity of the change; a large improvement might justify a more complex solution, while a marginal gain might not.
+8.  **Repeat:** Repeat this cycle until the scores meet your target for production readiness. This iterative process of measure, change, and verify is the engine of continuous improvement.![The iterative optimization flywheel for AI applications using evaluations.](https://images.spr.so/cdn-cgi/imagedelivery/j42No7y-dcokJuNgXeA0ig/3fe225f6-9114-4d87-943c-d5bbe3fbbdfc/ai_evals/w=1920,quality=90,fit=scale-down)
+Image 1: The iterative optimization flywheel for AI applications using evaluations.
+
+It is essential to keep all components fixed except for one variable per cycle. If you change the prompt, the model, and the retrieval strategy all at once, you create confounding variables. Any resulting score change cannot be attributed to a single modification, turning your "experiment" back into guesswork. This principle of isolating a single variable is a cornerstone of classical control theory, which designs feedback loops for single-input, single-output systems to ensure stability and optimize performance [[2]](https://en.wikipedia.org/wiki/Control_theory).
+
+Your decision to accept a change should anchor statistical significance to actual **business impact**, not just arbitrary p-value thresholds. A "better" score is always relative to the business use case. For example, imagine a change to a high-volume e-commerce checkout flow reduces errors by just 0.5%. While that number seems small, if your product processes 2 million checkouts per year, that translates to 10,000 fewer failed transactions. If each failure costs the business $15 in lost revenue or support time, that tiny improvement is worth $150,000 annually. In this context, the effect has clear, practical value [[3]](https://www.nngroup.com/articles/practical-significance).
+
+In contrast, consider a creative writing assistant used by a few hundred people. A 0.5% increase in a "creativity" score is likely negligible. The effect is too small for users to perceive, and it does not meaningfully impact business outcomes. In this scenario, the change lacks practical significance, and the engineering effort would be better spent elsewhere. Statistical significance tells you if a result is reliable; practical significance tells you if it is worth acting on [[3]](https://www.nngroup.com/articles/practical-significance).
+
+### Regression Testing
+
+A powerful variation of this flywheel is using it for regression testing. Before merging any new feature that touches shared prompts, tool descriptions, or orchestration logic, you run the full evaluation suite to guard against breaking existing behavior. This ensures that new features do not silently degrade the performance of old ones.
+
+The process is a simplified version of the optimization flywheel:
+
+1.  **Implement a new feature:** You write the code and verify it works locally for the new use case.
+2.  **Run the AI evaluations:** You run the full suite of assessments, covering all previous use cases, not just the new one.
+3.  **Compare Scores:** You compare the baseline scores against the AI evaluation scores on your new feature.
+4.  **Metrics similar to baseline:** If the scores are identical to the baseline, your feature is OK, as it did not affect any old feature. You can merge the feature into your production codebase.
+5.  **Metrics lower than the baseline:** If the score is worse, you have introduced a regression. You should fix your code. Then repeat steps 2 and 3.![Integrating AI evaluations into CI pipelines for regression testing.](https://images.spr.so/cdn-cgi/imagedelivery/j42No7y-dcokJuNgXeA0ig/81fa7407-fdcd-4427-8468-669a31e2ca3f/ai_evals_-1/w=1920,quality=90,fit=scale-down)
+Image 2: Integrating AI evaluations into CI pipelines for regression testing.
+
+This treats evaluations like integration tests, but instead of enforcing a strict pass/fail threshold, we compare scores against a moving baseline. The dataset for these evaluations must continuously expand. New edge cases discovered for features, production failures captured via observability tools like Opik, and difficult debugging examples should all be added to the dataset [[4]](https://www.comet.com/docs/opik/evaluation/advanced/manage_datasets). For instance, if a user interaction from production reveals a regression, that trace can be converted into a new dataset item to ensure the same failure is caught automatically in the future [[5]](https://www.decodingai.com/p/generate-synthetic-datasets-for-ai-evals). Instead of writing new tests in code, you broaden your test coverage by adding new samples to the dataset.
+
+This practice is becoming increasingly formalized as agent frameworks evolve to include built-in continuous evaluation. The goal is to create a system that can monitor for performance degradation or "agent decay" in near real-time, ensuring that agents maintain their quality as underlying models, tools, or data change [[6]](https://learn.microsoft.com/en-us/agents/architecture/evaluation-frameworks), [[7]](https://aws.amazon.com/blogs/machine-learning/evaluating-ai-agents-real-world-lessons-from-building-agentic-systems-at-amazon).
+
+With the flywheel mechanics clear, we can now examine the different families of metrics we might plug into it when dealing with unstructured outputs.
+
+## Exploring Possible Metric Types
+
+The core difficulty in evaluating AI systems is that we are often dealing with unstructured text, reasoning traces, or even image outputs. Unlike classical ML with its structured labels, standard accuracy metrics are often unavailable. There are three core families of metrics to consider.
+
+### 1. BLEU and ROUGE
+
+N-gram overlap metrics like BLEU (Bilingual Evaluation Understudy) and ROUGE (Recall-Oriented Understudy for Gisting Evaluation) are statistical methods that work by counting overlapping words and phrases between the generated text and a reference text. Their primary advantages are that they are fast, deterministic, widely understood, and require no additional models to run [[8]](https://wandb.ai/ai-team-articles/llm-evaluation/reports/LLM-evaluation-benchmarking-Beyond-BLEU-and-ROUGE--VmlldzoxNTIzMTY0NQ), [[9]](https://www.traceloop.com/blog/demystifying-the-bleu-metric). However, they are blind to semantic meaning. They cannot recognize paraphrasing, penalizing perfectly correct answers that use different wording, and they do not care about factual accuracy [[8]](https://wandb.ai/ai-team-articles/llm-evaluation/reports/LLM-evaluation-benchmarking-Beyond-BLEU-and-ROUGE--VmlldzoxNTIzMTY0NQ), [[10]](https://medium.com/@sthanikamsanthosh1994/understanding-bleu-and-rouge-score-for-nlp-evaluation-1ab334ecadcb). For example, if a reference answer is "Jane Austen," and a model responds, "The author is Jane Austen," BLEU and ROUGE would assign a low score despite the answer being correct [[8]](https://wandb.ai/ai-team-articles/llm-evaluation/reports/LLM-evaluation-benchmarking-Beyond-BLEU-and-ROUGE--VmlldzoxNTIzMTY0NQ). These metrics were designed for tasks like machine translation and summarization in an era of less fluent models, and their limitations are apparent with modern LLMs.
+
+### 2. BERTScore
+
+Embedding similarity metrics, such as BERTScore, address the semantic blindness of n-gram methods. They work by embedding both the generated and reference texts into a high-dimensional vector space using a model like BERT. By calculating the cosine similarity between these embeddings, they can measure semantic closeness [[8]](https://wandb.ai/ai-team-articles/llm-evaluation/reports/LLM-evaluation-benchmarking-Beyond-BLEU-and-ROUGE--VmlldzoxNTIzMTY0NQ). This allows them to recognize paraphrases and capture meaning far better than purely lexical methods. For instance, BERTScore would recognize that "The boy is happy" and "The child is joyful" convey similar meanings and assign a high score. However, they are still fundamentally comparison metrics and cannot verify complex business logic or rules on their own. They can tell you if two pieces of text are semantically similar, but not if either is factually correct or follows a specific instruction.
+
+### 3. LLM Judges
+
+The LLM-as-a-judge approach uses a capable LLM to evaluate an output. You provide the judge model with the input, the generated output, a set of detailed criteria, few-shot examples, and chain-of-thought instructions. This method is highly flexible and can be customized to evaluate against complex, domain-specific requirements, such as adherence to brand voice or legal constraints [[11]](https://www.braintrust.dev/articles/what-is-llm-as-a-judge). LLM judges can also provide detailed, human-like critiques explaining their reasoning [[12]](https://medium.com/data-science-collective/llm-as-a-judge-when-to-use-reasoning-cot-and-explanations-964ad82ebc3d). The main downsides are that their performance depends heavily on the prompt and the evaluator model, they can be slower and more expensive, and they can inherit the LLM’s biases if not properly developed and tested [[13]](https://www.evidentlyai.com/llm-guide/llm-as-a-judge), [[14]](https://www.linkedin.com/posts/allaabdella_llm-aijudge-genai-activity-7353053642590932994-s3sw). Known biases include position bias (favoring the first response), verbosity bias (preferring longer answers), and self-enhancement bias (favoring outputs from the same model family) [[30]](https://eugeneyan.com/writing/llm-evaluators/).
+
+To be reliable in production, LLM judges require a rigorous calibration process. This involves an iterative loop of labeling a representative dataset, running the judge, reviewing disagreements, and updating the evaluation criteria until the judge's agreement with human labels is high [[15]](https://arize.com/blog/how-to-build-llm-as-a-judge-evaluators-that-hold-up-in-production). The goal is to validate that the judge's score tracks the real-world outcomes you care about, not just surface-level patterns [[16]](https://engineering.atspotify.com/2026/5/better-experiments-with-llm-evals-a-funnel-not-a-fork). Furthermore, because binary judgments can be validated with standard classification metrics, they often provide a more stable foundation for this process than scalar scores [[17]](https://cameronrwolfe.substack.com/p/finetuned-judge).
+
+| Metric Family | Speed | Cost | Semantic Awareness | Business Alignment | Explainability |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **BLEU/ROUGE** | High | Low | Low | Low | Low |
+| **BERTScore** | Medium | Medium | High | Medium | Low |
+| **LLM Judges** | Low | High | High | High | High |
+
+Table 1: A trade-off summary of different evaluation metric families.
+
+For the kinds of guideline adherence, structure fidelity, and research grounding needed for our capstone writing projects, LLM judges are the most practical choice.
+
+Now, you kept hearing from us: _"business metrics here, business metrics there"_. Thus, let's understand why defining your own business metrics is such an essential and underrated step in building your AI evals strategy.
+
+## Why Business Metrics Over Benchmarks
+
+It is important to state that benchmarks are often the most deceiving type of metric. Looking at popular leaderboards or public benchmarks to choose an LLM for your product is often a mistake. There are two core reasons for this.
+
+First, benchmarks often function as marketing artifacts. Once a test set becomes public, it is susceptible to data contamination, where parts of the test set inadvertently leak into training data, invalidating the results [[18]](https://medium.com/@yujiisobe/navigating-the-maze-of-llm-evaluation-a-guide-to-benchmarks-rag-and-agent-assessment-fb7aef299e66). Even without direct leaks, teams can overfit to the benchmark, chasing leaderboard scores that no longer reflect performance on unseen data [[19]](https://www.evidentlyai.com/llm-guide/llm-benchmarks), [[20]](https://world.hey.com/bhari/ai-benchmark-scores-are-becoming-marketing-dynamic-eval-is-the-only-antidote-dedd7053). This "teaching to the test" is a well-documented problem from ML history, where even iterative prompt engineering on a benchmark can act as a form of implicit training on the evaluation data [[21]](https://openreview.net/forum?id=maMnVCHl8J). Furthermore, benchmarks can quickly become outdated. As models achieve near-perfect scores, the benchmark loses its effectiveness, necessitating the creation of more difficult tasks to continue measuring progress [[19]](https://www.evidentlyai.com/llm-guide/llm-benchmarks).
+
+Second, there is a fundamental mismatch between typical benchmark tasks, like solving math problems (GSM8k) or answering general knowledge questions (MMLU), and the reality of real business workloads [[22]](https://magazine.sebastianraschka.com/p/llm-evaluation-4-approaches). A model that excels at standardized tests may fail completely at tasks requiring long-form creative writing, nuanced legal analysis, or personalized customer support, as these require domain-specific knowledge and adherence to complex guidelines that benchmarks do not measure [[23]](https://arxiv.org/html/2601.20617v1).
+
+The proper role for benchmarks is narrow: they are useful for advancing research, and for initial model filtering during early exploration. They should never be used as a proxy for product-level decisions or as a primary optimization target.
+
+If benchmarks are misleading, generic prefab metrics that claim to measure universal qualities are even more dangerous; we must instead build metrics that are deeply tied to our specific application.
+
+## Why Custom Business Metrics Over Generic Metrics
+
+Generic, off-the-shelf metrics for qualities like "toxicity," "helpfulness," or "hallucination" can act as a mirage. They create a false sense of confidence by optimizing for the wrong signal, because they lack context about your product, user expectations, and brand voice. A model can score brilliantly on a generic "helpfulness" metric but fail catastrophically on your specific constraints [[24]](https://www.linkedin.com/posts/shivanshu-aggarwal_evals-aievals-llm-activity-7375884554177449985-16kP). For example, a real estate assistant might get a high "helpfulness" score for proposing viewing times, but if those times are when the agent is unavailable, it has failed at its core task. The generic metric completely misses this essential functional error.
+
+Consider the dashboard below. It looks impressive, with scores for "Truthfulness" and "Personalization." But what does a 3.7 in "Personalization" actually mean? Without a clear, actionable definition tied to the product, such numbers are vanity metrics [[24]](https://www.linkedin.com/posts/shivanshu-aggarwal_evals-aievals-llm-activity-7375884554177449985-16kP). They create the illusion of progress while masking the failures that actually matter to users.![A dashboard showing generic metrics like Helpfulness and Truthfulness.](https://images.spr.so/cdn-cgi/imagedelivery/j42No7y-dcokJuNgXeA0ig/585bb9f6-0bf3-427f-a9d3-994dd5849a1a/322c2e07-ee9a-4139-b51d-8f0c4787d880_1600x822/w=1920,quality=90,fit=scale-down)
+Image 3: A dashboard showing generic metrics like Helpfulness and Truthfulness, labeled "Don't Do This!"
+
+For example, let's assume we want to check if an article written by our Brown agent contains hallucinations. A generic `hallucination` score might return "positive," but what does that tell us? Did the model add information not present in the research? Did it deviate from the article guidelines? Or did it simply include a personal story that wasn't in the source text but is factually correct and relevant to the topic? A generic detector might flag an engaging personal anecdote as a fabrication, yet that same anecdote may be exactly what your brand voice requires. The generic metric cannot distinguish between undesirable invention and desirable creative elaboration.
+
+Prefabricated scores suffer from several limitations. They lack domain-specific constraints, cannot localize which part of an output failed, and introduce additional statistical noise into your decision-making process. This inconsistency makes direct comparisons between metrics challenging, as their validation methods and underlying embeddings can vary significantly [[25]](https://arxiv.org/html/2508.13816v1). Furthermore, optimizing for metrics like perplexity can lead to overly generic, bland answers that are statistically safe but practically useless [[26]](https://toloka.ai/blog/llm-evaluation-from-classic-metrics-to-modern-methods).
+
+However, generic metrics can be useful when treated as a flashlight for exploratory data analysis, rather than a report card for quality. The goal is not to achieve a high average score, but to use the score to surface interesting traces for human review.
+
+1.  **Verbosity:** Sorting your outputs by length can reveal if your most verbose answers are rambling and unhelpful, or if your shortest answers are too curt. This helps you spot failure modes in long-form generation by clustering problematic traces at the extremes.
+2.  **Similarity Score:** In a RAG system, you can use a similarity score to evaluate the retriever component specifically. If the similarity between a user's query and the retrieved document chunks is low, your retriever is likely failing. This is a valid component-level check that helps diagnose one specific part of your pipeline.
+3.  **BERTScore:** You can use this to check the quality of your "golden" reference answers. If a cluster of outputs receives a low BERTScore against a reference you expected to be similar, it might be that the LLM found a more creative or even better solution than your reference. This challenges your assumptions about what a "good" answer looks like.
+
+In all these cases, the generic metric is not the final verdict. It is the starting point of an investigation that relies on human judgment to draw meaningful conclusions. Every production metric must be deeply application-centric, derived from concrete product requirements, user success criteria, and explicit constraints.
+
+Once we have rejected both benchmarks and generic metrics, the remaining design choice is how to elicit judgments from our LLM judge. Here, binary pass/fail criteria outperform every alternative.
+
+## Choosing Binary Metrics Over Anything Else
+
+When designing these custom metrics, you will face a choice: should you use a Likert scale (e.g., 1-5 stars) or a binary pass/fail? We strongly recommend **binary metrics**.
+
+Likert scales introduce several problems:
+
+1.  **Inconsistent Labeling:** There is high subjectivity in deciding whether an output is a "3" or a "4." One person's "good" is another's "okay," leading to low inter-annotator agreement [[27]](https://www.decodingai.com/p/the-5-star-lie-you-are-doing-ai-evals). Different annotators simply disagree on what "3" means [[28]](https://www.ellamind.com/blog/binary-vs-likert-scales).
+2.  **Statistical Noise:** Small movements in an average score, like from 3.2 to 3.5, are often statistically indistinguishable from random variance, especially with small sample sizes. This makes it hard to know if a change truly improved the system [[28]](https://www.ellamind.com/blog/binary-vs-likert-scales).
+3.  **Lazy Decision-Making:** Evaluators, both human and LLM, often default to middle values like "3" to avoid making a difficult judgment. This "satisficing" behavior flattens the signal and hides real failure modes [[27]](https://www.decodingai.com/p/the-5-star-lie-you-are-doing-ai-evals).
+
+Binary evaluations work because they **force decisions**. They offer several advantages:
+
+1.  **Clearer Thinking:** They force you to create precise, unambiguous definitions of quality. An output either meets the criterion or it does not.
+2.  **Consistency:** They yield higher agreement among both human annotators and LLM judges.
+3.  **Actionability:** They deliver a clear failure signal tied to a specific problem, rather than a vague score change.
+
+<aside>
+💡 **Note:** The 3 points above translate exceptionally well to LLM Judges. Using binary scoring is a key design choice to mitigate the inherent randomness of LLMs. LLMs are much more stable when asked to make a binary decision than when asked to assign a scalar value. A binary metric translates to a more dependable and repeatable evaluation pipeline.
+</aside>
+
+### Capturing Nuance
+
+The standard objection to binary metrics is, "But I'm losing nuance! A 1-5 scale captures shades of gray."
+
+The way to capture nuance is not by making your scale fuzzier, but by making your criteria more **granular**. Instead of a single, subjective rating for a complex quality, you should break it down into multiple, specific, binary checks [[28]](https://www.ellamind.com/blog/binary-vs-likert-scales).
+
+However, it is important to acknowledge the limitations. For highly creative or open-ended tasks like long-form writing, even a suite of granular binary metrics can sometimes fail to capture fundamental issues like a lack of narrative coherence or fluency. An agent might pass all individual checks but produce an output that is stylistically flawed or incomplete, a failure mode that binary checks can miss [[29]](https://www.linkedin.com/posts/pauliusztin_i-created-an-ai-agent-to-write-a-substack-activity-7420095430807691266-fQ1U), [[30]](https://www.mdpi.com/2076-3417/15/6/2971).
+
+For our writing agent, instead of rating an article 1-5 for "Quality," we can create multiple binary evaluations that capture specific dimensions of quality:
+
+1.  **Content Adherence:** Does the generated article contain the same core concepts as the expected article? (Yes/No) A "No" here means the agent missed key topics or introduced irrelevant ones.
+2.  **Flow of Ideas Adherence:** Does the generated article present ideas in the same order as the expected article? (Yes/No) A failure indicates a structural problem in the narrative flow.
+3.  **Article Guideline Adherence:** Does the generated article follow the flow of ideas from the article guideline input? (Yes/No) This checks if the agent correctly interpreted and executed high-level instructions.
+4.  **Research Anchoring:** Is every claim in the article supported by the provided research? (Yes/No) This is a direct check for factual grounding and hallucination.
+
+By aggregating these binary signals, you can achieve a nuanced view of performance. For example, you can calculate a simple average or a weighted sum to get an overall quality score. This approach gives you a detailed, actionable breakdown of what is working and what is not, all while eliminating the noise and bias of scalar ratings. This decomposition also makes it easier to create test sets that target specific failure modes [[28]](https://www.ellamind.com/blog/binary-vs-likert-scales).
+
+With the full theoretical picture in place, we can now summarize the mindset shift required and preview the hands-on implementation that follows in the next lesson.
+
+## Conclusion
+
+The path to building dependable AI products requires a fundamental shift in mindset: away from vibe checks, leaderboards, and generic scores, and toward a rigorous, evaluation-driven development process. This process is built on a foundation of custom, binary, business-aligned metrics that provide a clear and actionable signal for improvement.
+
+Granular pass/fail criteria deliver the clearest optimization signal while avoiding the statistical noise and subjectivity inherent in scalar scales. By breaking down complex qualities into specific, verifiable checks, you gain a nuanced understanding of your system's performance without sacrificing clarity. In our next lesson, we will translate this theory into practice by implementing custom LLM judges from scratch to evaluate our Brown writing workflow.
+
+## References
+
+- [1] From TDD to EDD: Why Evaluation-Driven Development is the Future of AI Engineering. (https://medium.com/@nimrodbusany_9074/from-tdd-to-edd-why-evaluation-driven-development-is-the-future-of-ai-engineering-a5e5796b2af4)
+- [2] Control theory. (https://en.wikipedia.org/wiki/Control_theory)
+- [3] Statistical Significance Isn’t the Same as Practical Significance. (https://www.nngroup.com/articles/practical-significance)
+- [4] Manage Datasets | Opik Documentation. (https://www.comet.com/docs/opik/evaluation/advanced/manage_datasets)
+- [5] Generate Synthetic Datasets for AI Evals. (https://www.decodingai.com/p/generate-synthetic-datasets-for-ai-evals)
+- [6] Evaluation frameworks for agents. (https://learn.microsoft.com/en-us/agents/architecture/evaluation-frameworks)
+- [7] Evaluating AI agents: Real-world lessons from building agentic systems at Amazon. (https://aws.amazon.com/blogs/machine-learning/evaluating-ai-agents-real-world-lessons-from-building-agentic-systems-at-amazon)
+- [8] LLM evaluation benchmarking: Beyond BLEU and ROUGE. (https://wandb.ai/ai-team-articles/llm-evaluation/reports/LLM-evaluation-benchmarking-Beyond-BLEU-and-ROUGE--VmlldzoxNTIzMTY0NQ)
+- [9] Demystifying the BLEU Metric. (https://www.traceloop.com/blog/demystifying-the-bleu-metric)
+- [10] Understanding BLEU and ROUGE Score for NLP Evaluation. (https://medium.com/@sthanikamsanthosh1994/understanding-bleu-and-rouge-score-for-nlp-evaluation-1ab334ecadcb)
+- [11] What is LLM-as-a-Judge?. (https://www.braintrust.dev/articles/what-is-llm-as-a-judge)
+- [12] LLM-as-a-Judge: When to Use Reasoning, CoT, and Explanations. (https://medium.com/data-science-collective/llm-as-a-judge-when-to-use-reasoning-cot-and-explanations-964ad82ebc3d)
+- [13] LLM-as-a-judge: a complete guide to using LLMs for evaluations. (https://www.evidentlyai.com/llm-guide/llm-as-a-judge)
+- [14] Pros and Cons of LLM as a Judge. (https://www.linkedin.com/posts/allaabdella_llm-aijudge-genai-activity-7353053642590932994-s3sw)
+- [15] How to Build LLM-as-a-Judge Evaluators That Hold Up in Production. (https://arize.com/blog/how-to-build-llm-as-a-judge-evaluators-that-hold-up-in-production)
+- [16] Better Experiments with LLM Evals: A Funnel, Not a Fork. (https://engineering.atspotify.com/2026/5/better-experiments-with-llm-evals-a-funnel-not-a-fork)
+- [17] Finetuned Judge. (https://cameronrwolfe.substack.com/p/finetuned-judge)
+- [18] Navigating the Maze of LLM Evaluation: A Guide to Benchmarks, RAG, and Agent Assessment. (https://medium.com/@yujiisobe/navigating-the-maze-of-llm-evaluation-a-guide-to-benchmarks-rag-and-agent-assessment-fb7aef299e66)
+- [19] LLM Benchmarks. (https://www.evidentlyai.com/llm-guide/llm-benchmarks)
+- [20] AI Benchmark scores are becoming marketing; dynamic eval is the only antidote. (https://world.hey.com/bhari/ai-benchmark-scores-are-becoming-marketing-dynamic-eval-is-the-only-antidote-dedd7053)
+- [21] On the Impossible Problem of Evaluating Language Models. (https://openreview.net/forum?id=maMnVCHl8J)
+- [22] LLM Evaluation: 4 Approaches. (https://magazine.sebastianraschka.com/p/llm-evaluation-4-approaches)
+- [23] Benchmarks for LLM Agents in the Public Sector. (https://arxiv.org/html/2601.20617v1)
+- [24] The Mirage of Generic AI Metrics. (https://www.linkedin.com/posts/shivanshu-aggarwal_evals-aievals-llm-activity-7375884554177449985-16kP)
+- [25] A meta-evaluation of evaluation metrics for text generation. (https://arxiv.org/html/2508.13816v1)
+- [26] LLM Evaluation: From Classic Metrics to Modern Methods. (https://toloka.ai/blog/llm-evaluation-from-classic-metrics-to-modern-methods)
+- [27] The 5-Star Lie: You’re Doing AI Evaluations Wrong. (https://www.decodingai.com/p/the-5-star-lie-you-are-doing-ai-evals)
+- [28] Why We Use Binary Yes/No Evaluations (And You Should Too). (https://www.ellamind.com/blog/binary-vs-likert-scales)
+- [29] I created an AI Agent to write a Substack article from scratch. (https://www.linkedin.com/posts/pauliusztin_i-created-an-ai-agent-to-write-a-substack-activity-7420095430807691266-fQ1U)
+- [30] A Comprehensive Evaluation of Large Language Models in the Legal Domain. (https://www.mdpi.com/2076-3417/15/6/2971)
+- [31] Stop Evaluating LLMs with “Vibe Checks”. (https://towardsdatascience.com/stop-evaluating-llms-with-vibe-checks)
+- [32] Evaluating the Effectiveness of LLM-Evaluators (aka LLM-as-Judge). (https://eugeneyan.com/writing/llm-evaluators/)

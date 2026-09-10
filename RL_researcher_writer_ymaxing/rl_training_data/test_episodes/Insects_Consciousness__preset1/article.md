@@ -98,7 +98,8 @@ Ultimately, the declaration is a call for more research. As Kristin Andrews sugg
 - [16] https://asknature.org/strategy/bird-brains-use-unique-structure-to-support-high-intelligence
 - [17] https://iai.tv/articles/studies-on-animal-minds-suggest-consciousness-is-not-computation-auid-3535
 - [18] https://undark.org/2023/07/14/interview-the-ethical-puzzle-of-sentient-ai
-- [19] https://www.thetransmitter.org/policy/knowledge-gaps-in-cephalopod-care-could-stall-welfare-standards
+- [19]
+
 - [20] https://www.eurogroupforanimals.org/news/decapods-and-cephalopods-be-recognised-sentient-beings-under-uk-law
 - [21] https://researchbriefings.files.parliament.uk/documents/CBP-9423/CBP-9423.pdf
 - [22] https://www.youtube.com/watch?v=ak3WuQhtoW4

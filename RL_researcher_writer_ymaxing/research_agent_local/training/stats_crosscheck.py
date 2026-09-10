@@ -33,10 +33,11 @@ def paired_data() -> tuple[list[float], list[float]]:
         b = baseline[article]
         model_idx = gcb._RL_GUARDS_CHOSEN_TEST[article]
         oracle_idx = b["oracle_idx"]
-        model_dist = abs(model_idx - oracle_idx)
+        accepted = {oracle_idx, *b["tied_idx"]}
+        model_dist = 0 if model_idx in accepted else min(abs(model_idx - a) for a in accepted)
         dist_reductions.append(b["dist"] - model_dist)
         if b["policy"] != "forbidden":
-            _, r_w = gcb._read_oracle(article)
+            _, r_w, _ = gcb._read_oracle(article)
             model_regret = r_w[oracle_idx] - r_w[model_idx]
             regret_reductions.append(b["regret"] - model_regret)
     return dist_reductions, regret_reductions

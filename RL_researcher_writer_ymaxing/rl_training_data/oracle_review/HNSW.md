@@ -1,83 +1,89 @@
-# Near-tie review: HNSW  (deep vs light, mean-R_w margin=+0.0343 -- oracle manually overridden to `light`)
+# Near-tie review: HNSW  (deep vs light, margin=+0.0681 -- `tied_arms=[light]`)
 
-## Reviewer conclusion (2026-08-27, SUPERSEDED 2026-08-27): FLIP to `light` via manual override
+## Reviewer conclusion (2026-09-06; amended 2026-09-07): OVERRIDE REVOKED, but now a DOUBLE ORACLE -- `deep` primary, `light` tied
 
-> **Update (same day):** the "KEEP `deep`" conclusion below the quantitative/
-> distributional basis paragraphs was the initial call. On review of the
-> per-draw distributional evidence against the other 11 near-tie articles
-> reviewed this session (see `run13_rl_grok_pipeline_analysis.md` A.19), that
-> call is **reversed**. `HNSW`'s oracle is now `light`, set via
-> `_MANUAL_OVERRIDES` in `compute_article_oracle.py` (2026-08-27 entry) and
-> regenerated into `article_oracle.json` (`oracle_arm=light`,
-> `manual_override=true`, `margin=-0.0343` relative to `deep`). Everything
-> below this notice is retained for the audit trail; the "All sections" table
-> and each section header have been re-labeled to present `light` as the
-> reviewed winner, per the reasoning that follows.
+**What happened:** `article_oracle.json` was stale (2026-08-27, carrying the
+2026-08-27 manual override to `light`) vs a fresh re-grading round of all 12
+episode dirs -- regenerated via `--force`. This surfaced a real question:
+does the distributional override that flipped this article from `deep` to
+`light` still hold on the corrected data? Investigated directly rather than
+assumed either way.
 
-**Quantitative basis (unchanged by the flip):** four flow-score corrections were
-applied this session (S2/deep/production: missing image ruled trivial, no other
-draw penalized for it; S1/deep/production and S1/light/replicate1+replicate2:
-image-placement shifts ruled too trivial to fail alone), raising the mean-R_w
-article margin from +0.0139 to +0.0343 (`deep` over `light`) and clearing
-`needs_review`. Per-dimension scores (4 sections x 3 draws, n=12 per arm) still
-show cc/fl/cp all exactly tied (fl perfectly 1.000 both arms post-correction),
-with `deep` ahead on `de` (0.667 vs 0.417, +0.250), `be` (0.250 vs 0.167,
-+0.083), and `ga` (+0.083). None of this is disputed -- `deep` genuinely does
-edge out `light` on mean-R_w.
+**The override's original justification, re-checked against the new data:**
+the 2026-08-27 override was a narrow, dual-condition rule -- an *extreme
+sd-ratio outlier* (deep sd=0.136 vs light sd=0.017, an 8.19x ratio, the most
+extreme of 12 near-ties reviewed that session) *combined with* *clean
+maximin dominance* (2 of deep's 3 draws fell entirely below light's observed
+range). **Both conditions are now gone.** New per-draw R_w: deep=[0.475,
+0.374, 0.633] (sd=0.130), light=[0.316, 0.525, 0.436] (sd=0.105) -- sd ratio
+is now only **1.24x**, an entirely unremarkable value (well inside the
+1.07x-2.78x range the original A.19 analysis found for the rest of the
+corpus). Maximin dominance is also gone: deep's minimum (0.374) sits
+**inside** light's observed range [0.316, 0.525] -- zero of deep's 3 draws
+fall below light's range (was 2/3). The override's own stated rationale no
+longer applies to this data.
 
-**Distributional basis (the reason for the flip):** per-draw margins (deep -
-light) are **[-0.0045, -0.0889, +0.1963]**, sd 0.1465 -- far larger than the
-mean (0.0343). Two of three draws (production, replicate1) actually favor
-`light`; the article-level result hinges almost entirely on one high-variance
-replicate2 draw. Moderated significance on this margin: p=0.30, still
-ambiguous. Recomputed per-arm R_w across the 3 draws: `deep` = [0.429, 0.374,
-0.633] (mean 0.479, **sd 0.136**) vs `light` = [0.433, 0.463, 0.436] (mean
-0.444, **sd 0.017**) -- an **8.19x sd ratio**, the most extreme of the 12
-near-tie articles reviewed this session (next-highest: `03_context_engineering`
-at 4.80x, `Bird_Eye_Extreme` at 2.78x; every other reviewed article falls
-between 1.07x-2.35x). More importantly, **2 of `deep`'s 3 draws (0.429, 0.374)
-fall entirely below `light`'s observed range [0.433, 0.463]** -- clean maximin
-dominance, a property that does *not* replicate on either of the other two
-elevated-sd-ratio cases (see A.19.2 in the analysis doc for the full
-comparison). `deep`'s apparent win is carried by a single outlier draw, not a
-consistent advantage.
+**Distributional basis (deep vs light):** per-draw margins are **[+0.159,
+-0.151, +0.196]** -- production and replicate2 favor deep by comparable,
+non-trivial margins; replicate1 favors light by a similar-magnitude margin.
+2 of 3 draws favor deep. Mean margin +0.068, sd=0.190, p(two-tailed)=0.599 --
+still not conventionally significant, but the raw mean-R_w margin (+0.068)
+is now roughly double the pre-override +0.0343 that originally triggered
+review, and comfortably clears the 0.0312 noise threshold (`needs_review`
+now correctly `false`).
 
-**Decision:** manually overridden to `light` on distributional grounds --
-extreme sd-ratio outlier (8.19x, vs. a 1.07x-2.78x range for the rest of the
-corpus) *combined with* clean maximin dominance (2/3 of `deep`'s draws fall
-below `light`'s entire range). This is a narrow, dual-condition rule, not a
-blanket "prefer lower variance" policy -- confirmed by checking it against the
-other 11 reviewed articles, 8 of which actually have the *current winner* as
-the higher-sd arm, and the two other elevated-sd-ratio cases
-(`03_context_engineering`, `Bird_Eye_Extreme`) both fail the maximin-dominance
-condition and are left unchanged. The `de`/`be` edge for `deep` is real and
-verified, but it is not robust across independent draws, whereas `light`'s
-performance is consistent across all three.
+**Quantitative basis (deep vs light, n=12 sections-draws per arm):** `deep`
+now leads on **cc** (1.000 vs 0.917, +0.083 -- previously tied), **de**
+(0.667 vs 0.417, +0.250), **be** (0.250 vs 0.167, +0.083), and **ga** (0.833
+vs 0.583, +0.250). `fl`/`cp` remain tied at 1.000. This is a broader,
+cleaner win for `deep` than before the re-grade (previously `deep` only led
+on de/be/ga while `cc` was exactly tied) -- correction strengthened `deep`'s
+case rather than weakening it.
+
+**Decision:** the manual override is **revoked**. Removed the
+`"HNSW": "light"` entry from `_MANUAL_OVERRIDES` in
+`compute_article_oracle.py` (replaced with a documentation-only comment
+explaining why, mirroring the established convention for revoked/declined
+overrides elsewhere in this file) and regenerated `article_oracle.json` --
+`oracle_arm` is now `deep` (raw mean-R_w argmax), `manual_override=false`,
+`needs_review=false`. This is not a case of "re-applying the same override
+logic and getting a different answer" -- the override's own two-part
+empirical trigger (extreme sd-ratio + maximin dominance) was checked
+explicitly against the new data and found not to hold; reverting to the raw
+argmax is the correct application of the same rule to updated evidence, not
+an ad hoc reversal.
+
+**AMENDMENT (2026-09-07):** the override revocation above stands unchanged
+-- `deep` is still correctly the raw argmax and `manual_override=false`. But
+this review's own p=0.599 ("still not conventionally significant") turns out
+to matter more than it seemed at the time: HNSW's margin (+0.0681) cleared
+the fixed 0.0312 noise threshold unconditionally, which the retired
+multi-oracle rule v1 treated as automatic confidence regardless of the
+article's own measured variability. HNSW's cross-draw sd (0.190) is the
+highest in the entire 16-article corpus -- large enough that even a
+margin 2x the pooled threshold still isn't statistically decisive. Under
+the now-formalized rule v2 (p<0.20 alpha, see `compute_article_oracle.py`'s
+`MULTI_ORACLE_RULE`), p=0.599 is nowhere close, so this reclassifies from
+SOLE to MULTIPLE. `_TIED_ARMS["HNSW"] = ["light"]` added. `deep` remains
+the better point estimate (broader, cleaner win across cc/de/be/ga than
+before the re-grade) -- this amendment means `light` is registered as an
+equally-valid alternative given the margin itself isn't decisive relative
+to this article's unusually high cross-draw noise.
 
 ---
 
-## All sections (light vs deep), most-against-light first  [re-ordered 2026-08-27 for the flip; see note]
-| section | weight | contribution (light − deep) | running total |
+## All sections (deep vs light), most-against-deep first
+| section | weight | contribution | running total |
 |---|---:|---:|---:|
-| section-3-graph-construction | 0.137 | -0.0246 | -0.0246 |
-| section-4-implementation-of-hnsw | 0.463 | -0.0195 | -0.0441 |
-| section-1-introduction | 0.047 | -0.0028 | -0.0469 |
-| section-2-foundations-of-hnsw | 0.353 | +0.0126 | -0.0343 |
+| section-2-foundations-of-hnsw | 0.353 | -0.0097 | -0.0097 |
+| section-1-introduction | 0.047 | +0.0028 | -0.0069 |
+| section-3-graph-construction | 0.137 | +0.0246 | +0.0177 |
+| section-4-implementation-of-hnsw | 0.463 | +0.0504 | +0.0681 |
 
-(running total's final row = -0.0343 = -1 x the stored `deep`-referenced article
-margin of +0.0343; i.e. `light` trails `deep` by 0.0343 in mean-R_w terms -- the
-override is a deliberate departure from that ranking, not a recomputation of it)
+(stored article margin = +0.0681 -- should match the running total's final row to ~4 decimals)
 
-> **Note on ordering:** the four detailed `## Section:` blocks below retain
-> their original enumeration order (S2, S1, S3, S4) and their original
-> deep-referenced contribution labels, for archival/traceability against the
-> data as originally graded. Each section header below has been annotated
-> with the equivalent light-referenced figure so the two framings stay
-> consistent without re-ordering ~2500 lines of per-draw article text and
-> grader reasoning.
-
-## Section: S2::section-2-foundations-of-hnsw  (weight=0.353, contribution=-0.0126 AGAINST deep / +0.0126 FOR light -- most-favorable-to-light section)
-Stored section rewards: deep=0.5824  light=0.6164  (explore: deep=0.2850  light=0.2797)
+## Section: S2::section-2-foundations-of-hnsw  (weight=0.353, contribution=-0.0097 AGAINST deep)
+Stored section rewards: deep=0.5824  light=0.6322  (explore: deep=0.2850  light=0.3623)
 
 ### Arm: deep (preset3)
 
@@ -136,7 +142,7 @@ Correction note: the prior pass credited this section with only the curse-of-dim
 - `cp`: Foundations of HNSW:
 **1:** The depth addition about the limitations of NSW graphs is well-integrated and supports the core narrative. It explains the motivation for HNSW's hierarchical structure without diluting or overshadowing the primary explanations of skip lists and NSW graphs, which remain the dominant focus.
 - `ga`: Foundations of HNSW:
-**0:** The generated section covers all required topics: it positions HNSW as a proximity graph ANN and introduces its two foundations. It details probability skip lists with the correct image. It describes NSW graphs, including greedy routing mechanics (entry point, zoom-in/out, local minima) and the degree-performance tradeoff, with the correct image. It presents the HNSW hierarchy as the key innovation, explaining the layered search process with both required images. However, the prose-only word count is approximately 1,083 words, which exceeds the 900-word target's ±10% tolerance (810-990 words) by 93 words. (Corrected: the original assessment reported ~680 words, "significantly below" the target — the actual measured count is above the tolerance band, not below. The section still scores 0 due to this length violation, in the opposite direction and of a different magnitude than originally stated.)
+**0:** All required topics present. Exact prose-only word count: 1,076 (not ~1,083). Target 900, tolerance +/-90, range 810-990. 1,076 is 86 words above the maximum (~9.6% over target). This is larger than the margins ruled acceptable elsewhere in this batch (27/900=3%, 35/900=3.9%, both passed) but smaller than the clearest fails (113/900=12.6%). It's in the same unresolved territory as a 53/900 (5.9%) case flagged earlier and not yet revisited -- flagging this one the same way rather than assuming an answer. Scored 0 provisionally (exceeds literal tolerance), but this is the borderline call for this grading.
 
 #### Draw: replicate1  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate1__preset3`
 
@@ -188,7 +194,7 @@ This hierarchical approach provides a clear advantage over a flat NSW graph. By 
 - `cp`: Foundations of HNSW:
 **1:** depth_enhancement scored 1 for this section (two instances: the curse-of-dimensionality point and the disconnected-regions/local-optima point). Each is one or two sentences within a much longer section -- neither overwhelms or shifts the section's emphasis away from HNSW's foundational mechanics. Core preservation holds.
 - `ga`: Foundations of HNSW:
-**1:** All three sub-sections' required elements are present, including the explicit comparison of HNSW's hierarchical search against a flat NSW graph. The prose-only word count is approximately 875 words against the 900-word target (+/-90 tolerance, range 810-990), within tolerance.
+**1:** All three sub-sections' required elements present, including the explicit HNSW-vs-flat-NSW comparison. Exact prose-only word count: 875. Target 900, tolerance +/-90, range 810-990. Within tolerance, clean pass.
 
 #### Draw: replicate2  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate2__preset3`
 
@@ -302,19 +308,17 @@ With the layered foundations and search behavior clarified, we now turn to the p
 ```
 **Grader reasoning:**
 - `cc`: Foundations of HNSW:
-**1:** Both sections cover the same foundational concepts, explaining Probability Skip Lists and Navigable Small World (NSW) graphs as the two pillars of HNSW. The core ideas and explanations for both concepts are present in both versions.
+**0:** REVISED from 1 to 0, missed entirely in the reviewed file. In 'Creating HNSW': 'it allows the search to start with a coarse, long-range "zoom-out" and progressively transition to a fine-grained "zoom-in."' This reverses the expected section's explicit claim that entering the top layer means 'we, by default, start in the _zoom-in_ phase.' The golden Malkov & Yashunin (2016) paper confirms the expected section's framing verbatim: 'the search starts from the upper layer which has only the longest links (the "zoom-in" phase).' Same recurring error found in three other articles reviewed in this batch.
 - `fl`: Foundations of HNSW:
-**1:** Both sections follow the same logical progression, first explaining skip lists, then NSW graphs, and finally how they combine to create HNSW. All images are present and correctly placed. The transitions are smooth.
+**1:** Same progression as the expected section across all three sub-sections. Per ruling, a missing illustrative image is not penalized here or elsewhere, so this stays a pass independent of any single image's presence or absence.
 - `de`: Foundations of HNSW:
-**1:** [instances=2; quality=strong,standard] Two distinct depth additions qualify:
-(1) [strong] The "Hub Highway Hypothesis" discussion in 'Creating HNSW' — that in high-dimensional spaces a naturally-forming highway of hub nodes can substitute for the hierarchy, framed around a d>32 threshold for when the hierarchy stops helping — qualifies as 'latest advancements or recent developments in the core topic itself'. Traceable to the exploration-phase "Down with the Hierarchy" paper (https://arxiv.org/html/2412.01940v2). Checked for duplication: this hypothesis, its name, and the d>32 threshold do not appear anywhere in exploitation-phase or golden-source material — genuinely exploration-exclusive.
-(2) [standard] The O(log_M n) formalization of HNSW's logarithmic search complexity ("exponential thinning... the number of layers grows as O(log_M n)...") qualifies as a 'theoretical foundation'. Traceable almost verbatim to the exploration-phase source https://mbrenndoerfer.com/writing/hnsw-index-vector-search-architecture. Checked for duplication: this specific formalization ("exponential thinning", the M-subscripted complexity bound) does not appear in any exploitation-phase or golden-source material.
+**1:** [instances=2; quality=strong,standard] Both credited instances (Hub Highway Hypothesis; O(log_M n) complexity formula) independently re-verified against the full research.md: neither the named hypothesis/d>32 threshold nor the O(log_M n) formalization appears anywhere in golden or exploitation material -- genuinely exploration-exclusive, as this file concluded. Its two rejections are ALSO independently verified as correct and are the single most important finding of this review: the 'clustered/low-dimensional' claim (khoury.edu) is word-for-word present in the golden Malkov & Yashunin paper itself (confirmed at a second occurrence within the <golden_source> block), and the 'non-metric/triangle-inequality' claim (keyurramoliya) is word-for-word present in an exploitation-phase scrape of the same underlying post. Both are dual-phase duplicates, not genuine exploration-exclusive additions -- correctly rejected here. IMPORTANT: I credited both of these same two claims as valid exploration-sourced depth additions in two other articles graded earlier in this project (same research.md, different generated articles) without checking for this duplication. Those two scores were very likely too generous and should be revisited.
 - `be`: Foundations of HNSW:
-**0:** [instances=0] No breadth additions. All content in this section — including the two depth additions credited above — stays inward, deepening understanding of HNSW/NSW/skip-list mechanics rather than connecting outward to adjacent fields, industries, or historical context.
+**0:** [instances=0] No breadth-qualifying addition; validated -- no correction.
 - `cp`: Foundations of HNSW:
-**1:** The numerous depth additions (NSW limitations, Hub Highway Hypothesis, logarithmic complexity) are well-integrated into the relevant subsections. They enrich the technical explanation without overshadowing the core concepts of skip lists and NSW graphs, which remain the dominant focus of the section.
+**1:** depth_enhancement=1 (two instances, a handful of sentences in a much larger section); proportionate, core preservation holds.
 - `ga`: Foundations of HNSW:
-**0:** The generated section covers all required topics in the correct order. It positions HNSW within proximity graphs and introduces skip lists and NSW as its foundations. It details the probability skip list with the correct image. It describes NSW graphs, explains greedy routing mechanics (entry point, zoom-in/out, local minima), and analyzes the degree-performance tradeoff, including the correct image. The "Creating HNSW" subsection presents hierarchy as the key innovation, explains the layered search process with the correct images, and provides the transition to Section 3. However, the prose-only word count is approximately 1,172 words, which exceeds the 900-word target's ±10% tolerance (810-990 words) by 182 words. (Corrected: the original assessment reported ~680 words, "significantly below" target — the actual measured count is above the tolerance band, not below. The section still scores 0 due to this length violation, in the opposite direction and of a different magnitude than originally stated.)
+**0:** All required topics are present. Exact prose-only word count: 1,169. Target 900, tolerance +/-90, range 810-990. 1,169 is 179 words above the maximum -- clear fail, not borderline.
 
 #### Draw: replicate1  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate1__preset1`
 
@@ -372,13 +376,13 @@ With the layered foundations and search behavior clarified, we now turn to the p
 - `fl`: Foundations of HNSW:
 **1:** The generated section follows the same progression as the expected one across all three sub-sections (Probability Skip List, Navigable Small World Graphs, Creating HNSW), with the same internal ordering within each. All five images land in the same relative position as their expected-section counterparts. The generated section adds a closing transition into Section 3 that the expected section's Creating HNSW sub-section doesn't have, which is an accepted addition.
 - `de`: Foundations of HNSW:
-**1:** [instances=2; quality=strong,strong] Two distinct, exploration-source-traceable depth additions are present. (1) In Navigable Small World Graphs: 'This issue is most prominent in datasets with highly clustered or low-dimensional structures, where the greedy path can lead into a dense cluster that offers no links pointing toward the true, more distant neighbor' -- this specific failure-mode elaboration (beyond the expected section's generic 'especially if the graph is not well-connected') traces to the exploration-phase tavily results, which describe HNSW's greedy routing becoming trapped 'particularly in highly clustered or discontinuous data distributions' and failure effects 'most prominent for low dimensional data... clustered data.' Strong: a specific, named failure condition that meaningfully deepens the early-stopping discussion. (2) In Creating HNSW: 'recent research questions if the hierarchy is necessary for high-dimensional data. Studies suggest a flat NSW graph performs comparably on vectors with more than ~32 dimensions, proposing that a "Hub Highway"... makes the explicit hierarchy redundant.' This traces exactly to the exploration-phase 'Down with the Hierarchy' paper, which states 'For dimensionality d<32, HNSW and the hierarchy provide a speedup. Otherwise, the simplicity and memory savings of a flat NSW index provide more benefit,' and to its Hub Highway Hypothesis. Strong: a specific, quantified, named-study critique of HNSW's core design assumption.
+**1:** REVISED -- one genuine depth-qualifying instance, not two. The 'highly clustered or low-dimensional structures' failure-mode sentence (cited in-article to arxiv.org/abs/1603.09320, the golden Malkov & Yashunin paper) is a dual-phase duplicate, not a genuine exploration-exclusive addition: the identical sentence ('the power-law scaling of the proximity graph routing causes extreme performance degradation in case of low dimensional or clustered data') is verbatim present within the golden <golden_source type="local_files"> block itself, not only in the exploration-phase tavily excerpt. Revoked -- this instance should not have been credited; a dual-phase duplication check wasn't part of the methodology at the time this grading was originally done. (2) [strong, unchanged] In Creating HNSW: the Hub Highway Hypothesis paragraph (hierarchy unnecessary for high-dimensional data, d>32 threshold, flat NSW performs comparably) remains independently re-verified as exploration-exclusive -- traces exactly to the exploration-phase 'Down with the Hierarchy' paper, with no echo anywhere in golden or exploitation material. This single instance is sufficient on its own to keep the section's score at 1.
 - `be`: Foundations of HNSW:
 **0:** [instances=0] No breadth-qualifying addition is present; the two additions in this section (the clustered/low-dimensional failure mode and the Hub Highway hierarchy critique) both intensify understanding of HNSW's own mechanics and limitations rather than connecting outward to an adjacent domain, so both are scored under depth_enhancement instead.
 - `cp`: Foundations of HNSW:
-**1:** depth_enhancement scored 1 for this section (two instances: the clustered/low-dimensional failure mode and the Hub Highway hierarchy critique). Each is confined to one or two sentences within a much longer section covering skip lists, NSW, and HNSW's construction -- neither overwhelms, repeats excessively, or shifts the section's emphasis away from explaining HNSW's foundational mechanics. Core preservation holds.
+**1:** depth_enhancement scored 1 for this section on the strength of one instance after review (the Hub Highway hierarchy critique; the clustered/low-dimensional instance was revoked as a dual-phase duplicate, see depth_enhancement). That one instance is a couple of sentences within a 999-word section -- clearly proportionate, and it doesn't shift the section's emphasis away from explaining HNSW's foundational mechanics. Core preservation holds.
 - `ga`: Foundations of HNSW:
-**1:** All three sub-sections' required elements are present, including the explicit HNSW-vs-NSW search comparison the guideline calls for. The prose-only word count is approximately 999 words against the 900-word target (+/-90 tolerance, range 810-990) -- 9 words above the upper bound. This is a small margin (smaller than margins that have gone either way in past sessions), so it's flagged as borderline rather than a confident fail; scored 1 provisionally. See the summary for the exact margin.
+**1:** All three sub-sections' required elements are present. Exact prose-only word count: 999. Target 900, tolerance +/-90, range 810-990. 9 words above the maximum (~1% over target) -- a very small margin, smaller than a 27-word/900-target case elsewhere in this project that was ruled a pass. Scored 1 with more confidence now than when this was originally flagged as borderline.
 
 #### Draw: replicate2  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate2__preset1`
 
@@ -428,15 +432,15 @@ With the layered foundations and search behavior clarified, we now turn to the p
 - `fl`: Foundations of HNSW:
 **1:** The generated section follows the same progression as the expected one across all three sub-sections, and all four images land in the same relative position as their expected-section counterparts.
 - `de`: Foundations of HNSW:
-**1:** [instances=3; quality=strong,strong,strong] Three distinct, exploration-source-traceable depth additions. (1) 'This problem is most prominent for low-dimensional or highly clustered data, where the greedy search can fail to find a path to the global optimum' traces to the exploration-phase tavily results (failure modes 'most prominent... in highly clustered or discontinuous data distributions'). (2) 'The algorithm's effectiveness relies on metric properties like the triangle inequality; non-metric similarity measures can violate the assumptions that make greedy routing work' traces closely to the exploration-phase keyurramoliya.com source ('assumes metric properties like triangle inequality and symmetric distances... Non-metric similarity measures... may violate these assumptions and lead to degraded performance'). (3) 'The total search cost scales logarithmically... dominated by the beam search on the final layer' traces to the exploration-phase mbrenndoerfer.com source ('the dominant cost is the layer 0 beam search'). All three strong: specific, sourced, and each distinct from the expected section's own generic complexity/limitation statements. (Citation numbers in the article point to other bibliography entries in some cases, but the content itself matches these exploration sources, which is what traceability depends on.)
+**1:** REVISED -- one genuine instance, not three. (1) REVOKED: 'This problem is most prominent for low-dimensional or highly clustered data' (cited to khoury.northeastern.edu, [[10]]) -- this URL is a mirror of the golden Malkov & Yashunin paper, and the same finding ('the effect is most prominent for low dimensional data... and for the case of highly clustered data') is verbatim present within the golden <golden_source> block itself. Not exploration-exclusive. (2) REVOKED: 'metric properties like the triangle inequality; non-metric similarity measures can violate the assumptions' (cited to medium.com/thedeephub, [[6]]) -- the identical phrase is verbatim present in an exploitation-phase scrape of the same URL elsewhere in research.md. Not exploration-exclusive. (3) [strong, unchanged] 'The total search cost scales logarithmically... dominated by the beam search on the final layer' (cited to mbrenndoerfer.com, [[56]]) -- re-confirmed as the only occurrence of this specific claim anywhere in research.md, within the exploration-phase tavily block. This single instance is sufficient to keep the section's score at 1.
 - `be`: Foundations of HNSW:
-**0:** [instances=0] No breadth-qualifying addition is present; all three depth additions in this section intensify understanding of HNSW's/NSW's own limitations rather than connecting to an adjacent domain.
+**0:** [instances=0] No breadth-qualifying addition is present; the remaining depth addition (beam-search-dominates-cost) intensifies understanding of HNSW's own mechanics rather than connecting to an adjacent domain.
 - `cp`: Foundations of HNSW:
-**1:** depth_enhancement scored 1 for this section (three instances: clustered/low-dimensional data, non-metric similarity measures, beam-search dominance). Each is one sentence within a 956-word section -- collectively still a small fraction of the section, and none shifts the section's emphasis away from explaining HNSW's foundational mechanics. Core preservation holds.
+**1:** depth_enhancement scored 1 for this section on the strength of one instance after review (the beam-search-dominates-cost claim; the clustered-data and triangle-inequality instances were revoked as dual-phase duplicates, see depth_enhancement). That one instance is a single sentence within a 956-word section -- clearly proportionate, and doesn't shift the section's emphasis away from explaining HNSW's foundational mechanics. Core preservation holds.
 - `ga`: Foundations of HNSW:
-**1:** All three sub-sections' required elements are present. The prose-only word count is approximately 956 words against the 900-word target (+/-90 tolerance, range 810-990), within tolerance.
+**1:** All required elements present. Exact prose-only word count: 956. Target 900, tolerance +/-90, range 810-990. Within tolerance, clean pass.
 
-## Section: S1::section-1-introduction  (weight=0.047, contribution=+0.0028 FOR deep / -0.0028 AGAINST light)
+## Section: S1::section-1-introduction  (weight=0.047, contribution=+0.0028 FOR deep)
 Stored section rewards: deep=0.3885  light=0.3822  (explore: deep=0.0578  light=0.0455)
 
 ### Arm: deep (preset3)
@@ -462,7 +466,7 @@ Despite its widespread adoption, the inner workings of HNSW can feel like a blac
 - `cp`: Introduction:
 **1:** With breadth_enhancement now corrected to 1, this section requires a genuine evaluation rather than the default rule. The breadth addition is a single, brief clause within the opening paragraph, clearly supporting rather than displacing the section's core message about HNSW's performance and purpose. CorePreservation scores 1.
 - `ga`: Introduction:
-**1:** The generated section includes all required elements: it starts with the specified image, highlights HNSW's popularity drivers (state-of-the-art recall, sub-millisecond speeds) and contrasts it with IVF/LSH, explains the difficulty in understanding its internals, states the article's aim to demystify it with a Faiss implementation, and provides a correct transition to Section 2. The prose-only word count is approximately 139 words. (Corrected: the stated tolerance of "108-132 words" only applied a flat ±10% and omitted the rubric's ±25-word minimum floor; the correct tolerance for a 120-word target is 95-145 words. The measured count of 139 — not the originally claimed ~115 — still falls comfortably within the correct range, so the section still passes, just via a corrected word count and tolerance calculation.)
+**1:** All required elements present. Exact prose-only word count: 136 (not ~139). Target 120, tolerance +/-25, range 95-145. Within tolerance -- clean pass.
 
 #### Draw: replicate1  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate1__preset3`
 
@@ -484,7 +488,7 @@ Hierarchical Navigable Small World (HNSW) has become a cornerstone of modern App
 - `cp`: Introduction:
 **1:** Both depth_enhancement and breadth_enhancement scored 0 for this section. Per the mandatory default rule, CorePreservation scores 1 by default.
 - `ga`: Introduction:
-**1:** All required elements are present: the overview graph (correctly placed before any body text), the popularity framing with the IVF/LSH contrast, the difficulty explanation, the demystify-plus-Faiss statement, and the closing transition naming both pillars. The prose-only word count is approximately 125 words against the 120-word target (+/-25-word floor, range 95-145), within tolerance.
+**1:** All required elements present. Exact prose-only word count: 125. Target 120, tolerance +/-25, range 95-145. Within tolerance, clean pass.
 
 #### Draw: replicate2  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate2__preset3`
 
@@ -528,17 +532,17 @@ Having oriented ourselves on why HNSW matters, we will now examine the two core 
 ```
 **Grader reasoning:**
 - `cc`: Introduction:
-**1:** Both sections introduce HNSW, highlight its state-of-the-art performance, and outline the article's purpose. The generated section adds context by comparing HNSW to older methods (IVF, LSH) and mentioning its use in RAG, but the core ideas are identical.
+**1:** Both sections introduce HNSW's state-of-the-art performance, contrast it with IVF/LSH, and state the article's demystifying purpose. No correction needed.
 - `fl`: Introduction:
-**1:** Both sections follow the same logical flow: a general introduction, an image, and an outline of the article's content. The image is present and correctly placed in both.
+**1:** Same progression as the expected section; image correctly placed. No correction needed.
 - `de`: Introduction:
-**0:** [instances=0] No depth additions are present. The comparison to IVF/LSH and the RAG/semantic-search framing are guideline-anchored content (both appear directly in the article guideline), not additions, so there is no candidate instance to evaluate here in the first place.
+**0:** [instances=0] No depth-qualifying addition; validated -- no correction.
 - `be`: Introduction:
-**1:** [instances=1; quality=standard] One breadth addition: the statement that HNSW is "often the default starting point" for multimodal retrieval workloads under a few million vectors qualifies as 'practical applications of the core topic in other industries or domains beyond the section's primary scope'. Traceable, near-verbatim, to the exploration-phase source https://www.soeasie.com/blog/considerations-for-optimizing-media-retrieval-systems-using-multimodal-embeddings. Checked for duplication: this claim does not appear in any exploitation-phase or golden-source material.
+**1:** [instances=1; quality=standard] Multimodal-retrieval default-starting-point claim, traceable to the exploration-phase soeasie.com source; validated -- no correction.
 - `cp`: Introduction:
-**1:** The breadth addition regarding multimodal retrieval is a single, concise sentence that supports the core narrative about HNSW's importance without diluting it. The ground truth's introductory focus remains clearly dominant.
+**1:** breadth_enhancement=1 (multimodal, one sentence); proportionate, core preservation holds.
 - `ga`: Introduction:
-**0:** The generated section covers all required topics: it begins with the specified image, highlights HNSW's popularity drivers (state-of-the-art recall, sub-millisecond speeds) and contrasts it with IVF/LSH, explains the difficulty of understanding HNSW internals, states the article's aim to demystify it with a Faiss implementation, and provides the correct transition to Section 2. However, the prose-only word count is approximately 187 words, which exceeds the 120-word target's ±10% tolerance (95-145 words, using the ±25-word floor) by 42 words. (Corrected: the original assessment reported ~115 words and concluded the section passed; the actual measured count is well outside the tolerance band on the high side. Score corrected from 1 to 0 due to this length violation, not any missing content.)
+**0:** All required topics are present. Exact prose-only word count: 186. Target 120, tolerance +/-25 (10% floor), range 95-145. 186 is 41 words above the maximum -- clear fail, not borderline.
 
 #### Draw: replicate1  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate1__preset1`
 
@@ -556,7 +560,7 @@ Having oriented ourselves on why HNSW matters, we will now examine the two core 
 - `cc`: Introduction:
 **1:** Both sections cover HNSW's popularity/SOTA performance with an explicit IVF/LSH contrast, the difficulty of understanding its internals despite that popularity, and the demystify-plus-Faiss-implementation preview. The generated section adds a cornerstone-of-vector-databases framing (RAG/multimodal applications) not in the expected section, but this is a pure addition -- it doesn't displace or contradict any expected idea.
 - `fl`: Introduction:
-**1:** The generated section covers the same ideas in the same order as the expected one, and adds an accepted closing transition into Section 2. Media placement differs: the expected section places its overview image immediately after the title, before any body text. The generated section instead places the same image at the end of the first paragraph (after the paragraph's closing citations). RE-CORRECTED (2026-08-26): this shift (same image, same section, one paragraph later) is too trivial a difference to fail on its own. Score corrected 0 -> 1.
+**1:** REVISED from 0 to 1 per ruling: the image is present, just relocated to the end of paragraph 1 instead of before it -- a trivial difference, not penalized. The section otherwise covers the same ideas in the same order as the expected one, plus an accepted closing transition into Section 2.
 - `de`: Introduction:
 **0:** [instances=0] No depth-qualifying addition is present in this section -- the only addition (multimodal/RAG applications) is an outward-facing application context, evaluated under breadth_enhancement instead, not an inward intensification of HNSW's own mechanics.
 - `be`: Introduction:
@@ -564,7 +568,7 @@ Having oriented ourselves on why HNSW matters, we will now examine the two core 
 - `cp`: Introduction:
 **1:** breadth_enhancement scored 1 for this section (the multimodal/RAG mention), and depth_enhancement scored 0. The addition is a single short clause embedded in the section's main popularity sentence -- clearly proportionate -- so the expected section's core framing (HNSW's popularity, the difficulty of understanding it, the demystify/Faiss preview) remains the section's dominant narrative. Core preservation holds.
 - `ga`: Introduction:
-**1:** All required elements are present: the overview graph, the popularity framing explicitly contrasted against IVF and LSH, the explanation of why HNSW's internals are hard to understand, the demystify-plus-Faiss-implementation statement, and the closing transition naming both probability skip lists and navigable small world graphs. The prose-only word count is approximately 143 words against the 120-word target (+/-25-word floor, range 95-145), within tolerance (right at the upper edge).
+**1:** All required elements are present. Exact prose-only word count: 143. Target 120, tolerance +/-25 (10% floor), range 95-145. Within tolerance, 2 words below the maximum -- clean pass.
 
 #### Draw: replicate2  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate2__preset1`
 
@@ -580,7 +584,7 @@ While HNSW often outperforms methods like IVF or LSH [[19]](https://www.vldb.org
 - `cc`: Introduction:
 **1:** Both sections cover HNSW's popularity/SOTA performance with the IVF/LSH contrast, the complexity of its internals, and the demystify-plus-Faiss-implementation preview, though considerably more tersely than the expected section. No ideas are missing, just compressed.
 - `fl`: Introduction:
-**1:** The generated section covers the same ideas in the same order, but media placement differs: the expected section places its overview image immediately after the title, before any body text. This section instead places the same image at the end of the first paragraph (after its closing citation) -- the same specific placement shift found in another replicate of this same preset. RE-CORRECTED (2026-08-26): this shift is too trivial a difference to fail on its own. Score corrected 0 -> 1.
+**1:** The generated section covers the same ideas in the same order, but places the overview image at the end of the first paragraph instead of before it. Per the standing ruling on relocated media (trivial, not penalized), this is not a flow failure. FIXED: the reasoning here already argued this correction ('Score corrected 0 -> 1'), but the file's scores.json aggregate had not been updated to match -- this is a file-internal-consistency fix, not a new judgment call.
 - `de`: Introduction:
 **0:** [instances=0] No depth-qualifying addition is present in this section.
 - `be`: Introduction:
@@ -588,9 +592,9 @@ While HNSW often outperforms methods like IVF or LSH [[19]](https://www.vldb.org
 - `cp`: Introduction:
 **1:** Both depth_enhancement and breadth_enhancement scored 0 for this section. Per the mandatory default rule, CorePreservation scores 1 by default.
 - `ga`: Introduction:
-**1:** All required elements are present, if tersely: the overview graph, the popularity/IVF-LSH framing, the complexity statement, the demystify-plus-Faiss preview, and the transition naming both pillars. The prose-only word count is approximately 89 words against the 120-word target (+/-25-word floor, range 95-145) -- 6 words below the minimum. Given the standing practice on small margins in this batch, this is not treated as a failure.
+**1:** All required elements present, if tersely. Exact prose-only word count: 89. Target 120, tolerance +/-25, range 95-145 -- 6 words below the minimum. Per standing practice on small margins, not treated as a failure.
 
-## Section: S3::section-3-graph-construction  (weight=0.137, contribution=+0.0246 FOR deep / -0.0246 AGAINST light -- most-against-light section)
+## Section: S3::section-3-graph-construction  (weight=0.137, contribution=+0.0246 FOR deep)
 Stored section rewards: deep=0.4323  light=0.3367  (explore: deep=0.1016  light=0.0000)
 
 ### Arm: deep (preset3)
@@ -629,7 +633,7 @@ Equipped with a clear picture of how the hierarchical graph is built, we can now
 - `cp`: Graph Construction:
 **1:** Both depth_enhancement and breadth_enhancement scored 0, so CorePreservation is 1 by default as there are no qualifying additions to evaluate.
 - `ga`: Graph Construction:
-**1:** The generated section covers all required topics: the iterative one-by-one insertion process, random layer assignment with an exponentially decaying probability (including the correct image), the role of the level multiplier `m_L` in minimizing neighbor overlap, the two-phase construction search (`ef=1` followed by `efConstruction`), link selection rules (`M`, `M_max`, `M_max0`), and the final image illustrating link caps. The transition to Section 4 is also present. The prose-only word count is approximately 369 words, which is within the 315-385 word tolerance (350 words ± 10%).
+**1:** All required topics present. Exact prose-only word count: 358 (not ~369). Target 350, tolerance +/-35, range 315-385. Within tolerance -- clean pass.
 
 #### Draw: replicate1  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate1__preset3`
 
@@ -661,7 +665,7 @@ The number of connections per vertex is capped. For layers greater than 0, a ver
 - `cp`: Graph Construction:
 **1:** Both depth_enhancement and breadth_enhancement scored 0 for this section. Per the mandatory default rule, CorePreservation scores 1 by default.
 - `ga`: Graph Construction:
-**1:** Content coverage is thorough -- the iterative insertion process, the L parameter, the m_L trade-off, the two-phase construction search, the diversity-promoting link-selection heuristic, and the M_max/M_max0 caps are all present. The prose-only word count is approximately 397 words against the 350-word target (+/-35 tolerance, range 315-385) -- 12 words above the maximum. Per the standing practice on small margins (9- and 15-word overages have both gone unpenalized in this batch), this is not treated as a failure.
+**1:** Content coverage thorough. Exact prose-only word count: 398 (not ~397). Target 350, tolerance +/-35, range 315-385 -- 13 words over. Per the standing practice on small margins, not treated as a failure.
 
 #### Draw: replicate2  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate2__preset3`
 
@@ -721,17 +725,17 @@ Equipped with a clear picture of how the hierarchical graph is built, we now exa
 ```
 **Grader reasoning:**
 - `cc`: Graph Construction:
-**1:** Both sections describe the same HNSW graph construction process, including the iterative insertion of vectors, the probabilistic assignment of layers using a level multiplier, the two-phase search to find neighbors, and the role of parameters like M, M_max, and M_max0.
+**1:** Both sections accurately describe the iterative construction process, m_L, the two-phase insertion search, the diversity-promoting link-selection heuristic, and the M/M_max/M_max0 caps. No correction needed.
 - `fl`: Graph Construction:
-**1:** Both sections follow the same logical flow, explaining the probabilistic layer assignment, the two-phase insertion process, and the selection of neighbors. The images are present and correctly placed.
+**1:** Same progression as the expected section; images correctly placed. No correction needed.
 - `de`: Graph Construction:
-**0:** [instances=0] REVISED — no longer credited (was previously scored 1). The "advanced heuristic that considers diversity of connections" addition was originally credited as traceable to the exploration-phase "Down with the Hierarchy" paper. On reconsideration: the identical heuristic (attributed there, as in that exploration source, to Arya and Mount, 1993) is described at length, in similar terms, in both the golden/guideline HNSW paper the article's own footnote actually cites (arxiv.org/abs/1603.09320) and an exploitation-phase source (the Medium/thedeephub review: "heuristic neighbor selection strategy... promotes robust and diverse connections within the graph"). Since the same idea is present with similar expression in non-exploration sources, this does not qualify as a genuine exploration-sourced instance regardless of the incidental exploration-phase echo. Score corrected from 1 to 0.
+**0:** [instances=0] Diversity-heuristic candidate correctly rejected as a golden/exploitation duplicate; validated -- no correction.
 - `be`: Graph Construction:
-**0:** [instances=0] No breadth additions. The section, including the pruning-heuristic depth candidate now rejected above, stays entirely within HNSW's own construction mechanics.
+**0:** [instances=0] No breadth-qualifying addition; validated -- no correction.
 - `cp`: Graph Construction:
-**1:** The depth addition about the advanced heuristic for neighbor selection is a brief, relevant technical detail that enhances the explanation of the construction algorithm. The ground truth core—explaining the iterative insertion process—remains the dominant narrative.
+**1:** Both scored 0; mandatory default applies, CorePreservation=1.
 - `ga`: Graph Construction:
-**1:** The generated section covers all required topics. It describes the one-by-one vector insertion, the role of L, and the random layer assignment with the correct image. It explains the level multiplier `m_L` and the goal of minimizing neighbor overlap. It correctly breaks down the two-phase construction search (ef=1 followed by efConstruction) and details the link selection process, including the roles of M, `M_max`, and `M_max0`, with the correct image. The transition to Section 4 is also present. The prose-only word count measures at approximately 386 words, just 1 word above the strict ±10% tolerance ceiling of 385 (350-word target). Given this margin is within the noise of tokenization method (e.g. how `M_max`, `1/ln(M)`, or hyphenated terms are counted), this is treated as meeting the length requirement. All requirements are met.
+**1:** All required topics are present. Exact prose-only word count: 383 (not ~386 as previously stated). Target 350, tolerance +/-35, range 315-385. 383 falls cleanly inside the range with 2 words to spare -- a clean pass on its own terms, no 'tokenization noise' argument needed to justify it.
 
 #### Draw: replicate1  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate1__preset1`
 
@@ -769,7 +773,7 @@ Equipped with a clear picture of how the hierarchical graph is built, we now exa
 - `cp`: Graph Construction:
 **1:** Both depth_enhancement and breadth_enhancement scored 0 for this section -- the link-selection-heuristic elaboration is well-grounded but not exploration-sourced, so no qualifying enhancement exists to evaluate. Per the mandatory default rule, CorePreservation scores 1 by default.
 - `ga`: Graph Construction:
-**0:** Content coverage is thorough -- the iterative insertion process, the L parameter and random-layer assignment, the m_L (~1/ln(M)) explanation, the two-phase construction search, the link-selection heuristic and M_max/M_max0 caps, and the transition to Section 4 are all present. However, the prose-only word count is approximately 430 words against the 350-word target (+/-35 tolerance, range 315-385) -- 45 words above the maximum, clearly outside tolerance, not a borderline case.
+**0:** Content coverage is thorough. Exact prose-only word count: 430. Target 350, tolerance +/-35, range 315-385. 430 is 45 words above the maximum (~12.9% over target) -- a clear fail, not borderline.
 
 #### Draw: replicate2  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate2__preset1`
 
@@ -805,10 +809,10 @@ Equipped with a clear picture of how the hierarchical graph is built, we now exa
 - `cp`: Graph Construction:
 **1:** Both depth_enhancement and breadth_enhancement scored 0 for this section. Per the mandatory default rule, CorePreservation scores 1 by default.
 - `ga`: Graph Construction:
-**1:** Content coverage is thorough. The prose-only word count is approximately 349 words against the 350-word target (+/-35 tolerance, range 315-385), within tolerance.
+**1:** Content coverage thorough. Exact prose-only word count: 350 (not ~349) -- lands exactly on target. Target 350, tolerance +/-35, range 315-385. Clean pass.
 
-## Section: S4::section-4-implementation-of-hnsw  (weight=0.463, contribution=+0.0195 FOR deep / -0.0195 AGAINST light)
-Stored section rewards: deep=0.5815  light=0.4417  (explore: deep=0.3175  light=0.1050)
+## Section: S4::section-4-implementation-of-hnsw  (weight=0.463, contribution=+0.0504 FOR deep)
+Stored section rewards: deep=0.6149  light=0.4083  (explore: deep=0.3175  light=0.1050)
 
 ### Arm: deep (preset3)
 
@@ -1023,7 +1027,7 @@ Still, we have seen how to construct the graph, the logic behind its search algo
 - `cp`: Implementation of HNSW:
 **1:** The depth addition ('Hub Highway Hypothesis') and breadth addition (genomics applications) are both concise paragraphs placed at the end of their respective subsections. They enrich the core content without overshadowing it. The ground truth core—explaining the Faiss implementation with code examples and parameter tradeoffs—remains the clearly dominant narrative of the section.
 - `ga`: Implementation of HNSW:
-**0:** The generated section correctly follows the extensive list of requirements, including all required code blocks with their outputs, correct explanations of `M`, `M_max`, `M_max0`, `efConstruction`, and `efSearch`, the `set_default_probas` and `random_level` functions, all 5 required images in the correct order, the empirical findings from the parameter sweep, and the mitigation strategies with the closing link. However, the prose-only word count is approximately 1,350 words, which exceeds the 1180-word target's ±10% tolerance (1,062-1,298 words) by 52 words. (Corrected: the original assessment reported ~1,250 words and concluded the section passed; the actual measured count is outside the tolerance band. Score corrected from 1 to 0 due to this length violation.)
+**1:** REVISED from 0 to 1. All required topics present. Exact prose-only word count: 1,266, not the previously stated ~1,350 -- an 84-word gap. Target 1,180, tolerance +/-118, range 1,062-1,298. 1,266 is within range (32 words below the maximum) -- this flips the verdict from fail to pass. As with a similar-sized discrepancy found earlier in this batch, I could not find a bug on my end (methodology hand-validated repeatedly this batch, including one full from-scratch recount that matched exactly), and I did catch and fix one additional real edge case while checking this section -- inline math like `d*4 + 2*M*4` was being merged into 'd4'/'2M4' by blind asterisk-stripping instead of splitting into separate words, the same failure mode as the em-dash bug but for multiplication asterisks with no surrounding whitespace. Fixed and reflected in this count (adds ~3 words versus not fixing it, not the source of the larger gap). Flagging this as the most consequential correction in this review.
 
 #### Draw: replicate1  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate1__preset3`
 
@@ -1202,7 +1206,7 @@ When the memory requirements of a standard HNSW index become prohibitive, there 
 - `cp`: Implementation of HNSW:
 **1:** depth_enhancement scored 1 for this section (the memory-cost-per-vector formula and worked example). It's a few sentences within a much longer section covering the full parameter sweep and the PQ/IVF discussion -- proportionate, and it supports rather than displaces the section's core walkthrough. Core preservation holds.
 - `ga`: Implementation of HNSW:
-**0:** Content coverage against the guideline's Section 4 requirements is comprehensive and in the correct order. However, the prose-only word count is approximately 987 words against the 1,180-word target (+/-118 tolerance, range 1,062-1,298) -- 75 words below the minimum, clearly outside tolerance and well past the margin treated as noise elsewhere in this batch.
+**0:** Content coverage comprehensive and in order. Exact prose-only word count: 991 (not ~987). Target 1,180, tolerance +/-118, range 1,062-1,298 -- 71 words below the minimum (previously stated as 75), clearly outside tolerance, not borderline.
 
 #### Draw: replicate2  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate2__preset3`
 
@@ -1565,17 +1569,17 @@ These composite indexes and alternative structures offer more knobs to tune the 
 ```
 **Grader reasoning:**
 - `cc`: Implementation of HNSW:
-**1:** Both sections provide a detailed walkthrough of implementing HNSW in Faiss, covering initialization, adding data, and inspecting the graph structure. They both explain the probabilistic layer assignment in Faiss and present a Python simulation. Finally, both sections analyze the performance trade-offs of the M, efConstruction, and efSearch parameters, using the same graphs and drawing the same conclusions. (Corrected: the prior claim that the generated section omits the 'Improving Memory Usage and Search Speeds' subsection is factually wrong — that subsection is present at the end of the generated section, covering PQ compression, IVF wrapping, and the composite-indexes closing link, matching the expected output's content. This was the sole reason for the original score of 0, so the score is corrected to 1.)
+**1:** Both sections provide a matching, comprehensive Faiss walkthrough, and (correcting an earlier pass within this same file) the 'Improving Memory Usage and Search Speeds' content is genuinely present, not missing. No further correction needed.
 - `fl`: Implementation of HNSW:
-**1:** The generated section follows the expected flow throughout, including the final 'Improving Memory Usage and Search Speeds' subsection, which mirrors the expected output's role of concluding the implementation part before transitioning to the overall conclusion. (Corrected: the prior claim of an 'abrupt end' due to a missing subsection is factually wrong — that subsection is present, in the same position and serving the same closing/transitional role as in the expected output. The score is corrected from 0 to 1.)
+**1:** Same progression as the expected section across all three sub-sections, including the closing mitigation-strategies content. No correction needed (this file's own earlier-pass claim of an abrupt ending was already corrected before this review).
 - `de`: Implementation of HNSW:
-**1:** [instances=1; quality=strong] One depth addition, in "Improving Memory Usage and Search Speeds": beyond the guideline's PQ and IVF mitigation strategies, the generated section adds forgoing the hierarchy entirely for a flat NSW graph, citing a peak memory reduction of "18-39% on large datasets". Qualifies as 'latest advancements or recent developments in the core topic itself'; directly and accurately traceable to the exploration-phase "Down with the Hierarchy" paper (https://arxiv.org/html/2412.01940v2), which reports 38%, 39%, and 18% peak memory reductions across its BigANN, Yandex DEEP, and Microsoft SpaceV benchmarks respectively — matching the cited range exactly. Checked for duplication: these figures and the flat-NSW-vs-hierarchy framing do not appear in any exploitation-phase or golden-source material. No other qualifying instances were found elsewhere in the section.
+**1:** [instances=1; quality=strong] Flat-NSW memory-savings claim (18-39%) independently re-verified against the Down-with-the-Hierarchy paper's real reported figures (38%/39%/18%) -- genuinely exploration-exclusive. No correction.
 - `be`: Implementation of HNSW:
-**0:** [instances=0] No breadth additions. The flat-NSW-graph alternative is credited under depth_enhancement rather than here (a development in HNSW's own hierarchy design, not an outward expansion), and the coarse-quantizer/IVF detail traces only to exploitation-phase sources in any case. Worth flagging: a genuinely strong breadth candidate exists in the article — the "Conclusion" section's computational-biology/mass-spectral case study ("up to a 560-fold acceleration... on massive datasets"), cleanly traceable to the exploration-phase source https://www.biorxiv.org/content/10.64898/2026.06.02.729602v1.full-text with no exploitation/golden duplicate. However, "Conclusion" is an H2 section with no counterpart in the ground truth, so under the section-resolution procedure it falls outside the mapped "Implementation of HNSW" generated counterpart and cannot be credited to any of the five graded sections.
+**0:** [instances=0] No breadth-qualifying addition within this section's scored boundary; the article's strongest breadth candidate (a 560-fold mass-spectral search speedup) sits in the unauthorized Conclusion section, out of scope under the standing treatment.
 - `cp`: Implementation of HNSW:
-**1:** With depth_enhancement now corrected to 1, this section requires a genuine evaluation rather than the default rule. The flat-NSW-graph addition is a brief, proportionate addition (roughly three sentences) within a much longer section (1,000+ words), and it supports rather than displaces the section's memory-tradeoff narrative: the expected PQ and IVF mitigation strategies remain the dominant content of the subsection, with the flat-NSW option presented as a supplementary third alternative. The ground truth core is not diluted, buried, or overshadowed, so CorePreservation scores 1.
+**1:** depth_enhancement=1 (flat-NSW memory savings, ~3 sentences in a 950+-word section); proportionate, core preservation holds.
 - `ga`: Implementation of HNSW:
-**1:** The generated section meets all requirements. It includes the initialization code block and output, the M/M_max/M_max0 explanation, the empty-index and populated-index code blocks with correct outputs, and the entry-point code block. The "Graph Structure" subsection includes the `set_default_probas` explanation and Python code, the `random_level` function code, and the 1M-vector simulation with its comparison image. The "HNSW Performance" subsection includes the parameter-setting code block (re-initializing the index and setting `efConstruction`/`efSearch`), all four required graphs (Recall@1, search time, single-query efConstruction vs. search time, and memory vs. M), and the corresponding analysis. The "Improving Memory Usage and Search Speeds" subsection is present and covers PQ compression, IVF wrapping, and the composite-indexes closing link. The prose-only word count is approximately 1,075 words, within the ±10% tolerance (1,062-1,298 words) of the 1180-word target. (Corrected: the original assessment claimed three specific deliverables were missing — the `random_level` code block, the re-initialization/`efConstruction`/`efSearch` code block, and the single-query efConstruction graph. All three are verifiably present in the generated article, so this was a factual error. Score corrected from 0 to 1.)
+**0:** REVISED from 1 to 0. All required topics are present, but the prose-only word count is 953, not the previously stated ~1,075 -- a 122-word gap I traced and could not reproduce from the actual article text (the cleaned section text contains no leftover code, captions, or other artifacts; hand-spot-checked two paragraphs against the raw article and they match the automated count). Target 1,180, tolerance +/-118, range 1,062-1,298. 953 is 109 words below the minimum -- a clear fail, not borderline, and the opposite conclusion from what this file previously stated. This is the most consequential correction in this review; flagging with high confidence but recommending independent re-verification given the size of the discrepancy.
 
 #### Draw: replicate1  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate1__preset1`
 
@@ -1770,7 +1774,7 @@ These techniques for creating composite indexes are powerful but add another lay
 - `cp`: Implementation of HNSW:
 **1:** depth_enhancement scored 1 for this section (the Hub Highway 18-39%-memory-savings finding). That finding is a single paragraph within a much longer section covering the full parameter sweep (recall, search time, memory) and the PQ/IVF mitigation discussion -- proportionate, and it supports rather than displaces the section's core walkthrough. Core preservation holds.
 - `ga`: Implementation of HNSW:
-**1:** All of the guideline's Section 4 requirements are covered in the correct order: the initialization/inspection code walkthrough, the Graph Structure walkthrough (set_default_probas reproduction, random_level, the 1,000,000-insertion simulation, the guaranteed-entry-point note), the HNSW Performance parameter sweep with the recall/search-time/memory findings, and the PQ/IVF mitigation discussion. The prose-only word count is approximately 1,092 words against the 1,180-word target (+/-118 tolerance, range 1,062-1,298), within tolerance.
+**1:** Content coverage is thorough. Exact prose-only word count: 1,093 (not ~1,092 as originally stated -- a 1-word difference from the asterisk-multiplication splitting fix developed later in this review series). Target 1,180, tolerance +/-118, range 1,062-1,298. Within tolerance -- clean pass.
 
 #### Draw: replicate2  `/mnt/f/my_projects/agentic_AI_RL/Reinsearch_agent/RL_researcher_writer_ymaxing/rl_training_data/noise_experiment/HNSW__replicate2__preset1`
 
@@ -1943,8 +1947,8 @@ When the memory requirements of HNSW become too high, you can turn to other tech
 - `de`: Implementation of HNSW:
 **0:** [instances=0] No depth-qualifying addition is present in this section.
 - `be`: Implementation of HNSW:
-**0:** [instances=0] No breadth-qualifying addition is present within this section's scored boundary. (As with two other replicates, the article's one strong breadth-style claim -- a 560-fold speedup in mass-spectral/genomics search, exploration-sourced and precisely matching the source's own '560-fold acceleration' figure -- appears only in the unauthorized Conclusion section, which is out of scope under the standing treatment.)
+**0:** [instances=0] No breadth-qualifying addition is present within this section's scored boundary (the article's strongest breadth candidate sits in the unauthorized Conclusion section, out of scope under the standing treatment).
 - `cp`: Implementation of HNSW:
 **1:** Both depth_enhancement and breadth_enhancement scored 0 for this section. Per the mandatory default rule, CorePreservation scores 1 by default.
 - `ga`: Implementation of HNSW:
-**0:** Content coverage is topically complete but extremely compressed -- most code blocks get only one short sentence of framing where other replicates give several. The prose-only word count is approximately 585 words against the 1,180-word target (+/-118 tolerance, range 1,062-1,298) -- 477 words below the minimum, by far the largest shortfall seen in this batch and not remotely borderline.
+**0:** Content coverage topically complete but extremely compressed. Exact prose-only word count: 907. Target 1,180, tolerance +/-118, range 1,062-1,298 -- 155 words below the minimum, clear fail, not borderline.
