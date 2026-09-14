@@ -5,7 +5,6 @@
 from .create_research_file_tool import create_research_file_tool
 from .extract_guidelines_urls_tool import extract_guidelines_urls_tool
 from .predict_exploration_preset_tool import predict_exploration_preset_tool
-from .get_exploration_override_guidance_tool import get_exploration_override_guidance_tool
 
 # Research query and analysis tools
 from .generate_next_queries_tool import generate_next_queries_tool, generate_next_complementary_queries_tool
@@ -49,5 +48,4 @@ __all__ = [
     "create_research_file_tool",
     # RL meta-reasoner
     "predict_exploration_preset_tool",
-    "get_exploration_override_guidance_tool",
 ]

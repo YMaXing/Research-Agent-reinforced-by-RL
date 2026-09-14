@@ -106,7 +106,7 @@ async def _generate_article_workflow(inputs: GenerateArticleInput, config: Runna
         p_review = int(25 + step_size * (base_step_index + 1))
         p_review = min(p_review, 99)
         writer(
-            WorkflowProgress(progress=p_review, message=f"Rewiewing article [Iteration {i} / {app_config.num_reviews}]").model_dump(
+            WorkflowProgress(progress=p_review, message=f"Reviewing article [Iteration {i} / {app_config.num_reviews}]").model_dump(
                 mode="json"
             )
         )

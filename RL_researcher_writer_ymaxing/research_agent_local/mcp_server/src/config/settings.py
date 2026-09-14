@@ -39,17 +39,17 @@ class Settings(BaseSettings):
     maximum_sources_to_scrape: int = Field(default=6, alias="MAXIMUM_SOURCES_TO_SCRAPE", description="Maximum number of sources to scrape fully during research")
     enable_content_dedup: bool = Field(default=False, alias="ENABLE_CONTENT_DEDUP", description="Whether to run the content deduplication step (step 7). Set to false to feed the full raw research into the final file.")
     user_plan_override_allowed: bool = Field(
-        default=False,
+        default=True,
         alias="USER_PLAN_OVERRIDE_ALLOWED",
         description=(
-            "Whether the client should proactively ask the user for an exploration-plan override "
-            "(round count/focus for workflow step 4) before running predict_exploration_preset "
-            "(step 3.4), via the get_exploration_override_guidance tool. Defaults to False: the "
-            "RL+guards pipeline is well-validated, so fully automatic planning is the default and "
-            "the user is not prompted. Set True to have the workflow prompt instruct the client to "
-            "call get_exploration_override_guidance and wait for the user's response first. This "
-            "only controls whether the client PROACTIVELY asks — an unprompted user override is "
-            "always honoured regardless of this setting (see research_instructions_prompt.py)."
+            "Whether the workflow always stops after predict_exploration_preset (step 3.4) to present "
+            "the RL+guards pipeline's recommended exploration plan and let the user confirm or override "
+            "it before step 4 runs. Defaults to True: the client always presents the recommendation and "
+            "waits for the user's decision, looping on natural-language overrides until the user says "
+            "the plan is final. Set False to skip this and proceed straight from the recommendation to "
+            "step 4 automatically — the only remaining stop in that mode is the narrower "
+            "'AMBIGUOUS'-tagged policy-guard question (see research_instructions_prompt.py step 3.4). "
+            "An unprompted user override is always honoured regardless of this setting."
         ),
     )
     

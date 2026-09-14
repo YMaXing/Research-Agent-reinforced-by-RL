@@ -10,7 +10,6 @@ from ..tools import (
     create_research_file_tool,
     extract_guidelines_urls_tool,
     predict_exploration_preset_tool,
-    get_exploration_override_guidance_tool,
     generate_next_queries_tool,
     generate_next_complementary_queries_tool,
     run_tavily_research_tool,
@@ -524,31 +523,6 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     @opik.track(type="tool", project_name=settings.opik_project_name)
-    async def get_exploration_override_guidance() -> Dict[str, Any]:
-        """
-        Return whether user-directed exploration-plan overrides are enabled, and if so, guidance to
-        show the user before running predict_exploration_preset (workflow step 3.4).
-
-        Controlled by the user_plan_override_allowed setting (default False, favouring fully
-        automatic planning). When override_allowed is False, the client should proceed directly to
-        predict_exploration_preset without asking the user anything. When True, the client should
-        show the returned guidance/examples to the user and WAIT for their response before deciding
-        whether/how to call predict_exploration_preset.
-
-        Returns:
-            Dict[str, Any]: Dictionary containing:
-                - status: Operation status ("success")
-                - override_allowed: Whether the client should ask the user for an override
-                - guidance: Explanation to show the user (empty string when override_allowed is False)
-                - examples: Example override phrasings (empty list when override_allowed is False)
-                - message: Instruction for the client on what to do next
-        """
-        opik_context.update_thread_id()
-        result = get_exploration_override_guidance_tool()
-        return result
-
-    @mcp.tool()
-    @opik.track(type="tool", project_name=settings.opik_project_name)
     async def predict_exploration_preset(research_directory: str) -> Dict[str, Any]:
         """
         Predict the exploration preset using the GRPO-trained RL model + deterministic policy guard.
@@ -567,8 +541,7 @@ def register_mcp_tools(mcp: FastMCP) -> None:
           policy (forbidden → P0 skip, required → ≥ P1 light, capped → ≤ P1 light).
           The RL pick is authoritative except where this guard fires — there is no
           LLM-planner stage in this tool at all. The only other sanctioned deviation is
-          an explicit user-directed override (see get_exploration_override_guidance and
-          research_instructions_prompt.py step 3.4).
+          an explicit user-directed override (see research_instructions_prompt.py step 3.4).
 
         Signal semantics:
           preset (int 0–3):

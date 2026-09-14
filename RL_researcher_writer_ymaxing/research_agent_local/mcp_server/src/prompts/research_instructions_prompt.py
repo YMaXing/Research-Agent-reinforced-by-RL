@@ -17,19 +17,53 @@ async def full_research_instructions_prompt() -> str:
     dedup_enabled = settings.enable_content_dedup
     override_allowed = settings.user_plan_override_allowed
 
-    # Sub-step 3.4a, shown only when overrides are proactively solicited
-    override_reminder_block = """
-      a. Call the "get_exploration_override_guidance" tool (no arguments). It returns
-         override_allowed=True together with guidance and examples text — show that guidance and the
-         examples to the user now, and WAIT for their response before proceeding. Treat silence, "no",
-         or an unrelated reply as no override; treat anything resembling a round-count/focus
-         instruction as an override (see "User-directed exploration override" below for how to
-         interpret and confirm it).
+    # Shown when the user asks to change the recommended plan (True branch) or gives an unprompted
+    # override at any point (both branches) — moved here from the now-removed guidance tool.
+    override_guidance_block = f"""
+        This is the guidance for overriding the recommended exploration plan.
+         🎛️ What's overridable: 🔢 total round count (0 up to the configured ceiling of
+         {settings.maximum_exploration_rounds} rounds — 0 means step 4 is skipped entirely, same as
+         preset P0), 🎯 each round's focus (depth / breadth / balanced), ⚖️ an optional depth-vs-breadth
+         split for a balanced round (e.g. "70% depth"), and/or 🔍 a query count per round. A full
+         replacement plan or a relative adjustment to the recommended recipe (e.g. "add one more depth
+         round", "drop the last round", "make round 2 breadth instead") are both fine. Requesting more
+         rounds than the ceiling is capped automatically, with a note to the user.
+
+         Examples: "run 2 rounds: depth then breadth" · "just 1 round, focus on breadth" · "skip
+         exploration entirely" · "balanced round with a 70%/30% depth/breadth split" · "run 3 rounds:
+         80/20, then 30/70, then pure depth" · "use 6 queries per round" · "add one more depth round" ·
+         "drop the last round"
+"""
+
+    # Step 3.4's stop-and-confirm behavior, gated by user_plan_override_allowed.
+    plan_confirmation_block = f"""
+      b. STOP. Present the recommendation to the user in plain language before doing anything else:
+         the preset name (skip/light/standard/deep) from llm_recommendation.name, its reasoning, and —
+         if llm_recommendation.risk_flags contains "AMBIGUOUS" — the specific guard rationale from
+         "Ambiguous policy-guard cases" below, making clear this pick is a guard default rather than a
+         confident RL vote. State plainly that this is the recommended exploration plan (mapped through
+         the preset-mapping table below) and ask the user to confirm it or change it. Do not call any
+         further tool until they answer.
+      c. If the user's reply does not request any change (confirms, says proceed, or is otherwise not a
+         change request): the recommended plan is FINAL as-is. Say so in one line and move on to step 4.
+      d. If the user's reply requests a change (in any form — "use more rounds", "skip exploration",
+         "focus on breadth", etc.): show them the following, then wait for their specific plan:
+{override_guidance_block}
+      e. Once the user states an overriding plan, restate it back in one precise line — total round
+         count and each round's focus/depth_vs_breadth_ratio/n_queries — and ask if that's final. If
+         they adjust it again, repeat this restate-and-ask with the new plan. Keep looping for as long
+         as the user keeps adjusting it; only stop once they explicitly say the plan is final / good to
+         go / proceed. Only then move to step 4 with that plan.
 """ if override_allowed else """
-      a. (Skipped — user_plan_override_allowed=False, so overrides are not proactively solicited for
-         this workflow: do not ask the user for one, proceed directly to step b. An unprompted override
-         from the user, given at any point, still applies regardless — see "User-directed exploration
-         override" below — this setting only controls whether you proactively ask.)
+      b. Determine the exploration plan directly from llm_recommendation.preset (mapped through the
+         preset-mapping table below), UNLESS llm_recommendation.risk_flags contains "AMBIGUOUS" — in
+         that case, and only in that case, STOP and ask the user explicitly: for a "capped" guard,
+         proceed with light (the default) or override to skip? For a "required" guard, proceed with
+         light (the default) or override to standard or deep? Wait for their answer; if they don't
+         state a preference, proceed with light. (user_plan_override_allowed=False: do not otherwise
+         ask the user anything here — proceed straight to step 4 with the resolved plan. An unprompted
+         override from the user, given at any point, is still always honoured — see "What is
+         overridable" below.)
 """
 
     dedup_step_number = 7   # step number assigned to dedup when enabled
@@ -168,11 +202,11 @@ If the user doesn't provide a research directory, you should ask for it before e
 
 3.4. Exploration Planning (RL Meta-Reasoner + deterministic policy guard). After completing all 3
     exploitation rounds, do the following in order:
-{override_reminder_block}
-      b. Run the "predict_exploration_preset" tool with the research directory.
-      c. Determine the exploration plan from the tool's result — see "Determining the exploration plan
-         for step 4" below — resolving any pending override or AMBIGUOUS flag before step 4 runs.
 
+      a. Run the "predict_exploration_preset" tool with the research directory. Always run this
+         first, even if the user already told you what exploration plan they want — the tool still
+         determines external_evidence_policy, which the guard logic below depends on.
+{plan_confirmation_block}
     The "predict_exploration_preset" tool runs a two-stage pipeline internally:
       Stage 1 — Qwen3-4B RL model: infers a per-section preset vote from the exploitation digest,
                  aggregates via weighted vote, applies an entropy-gated floor correction, and a
@@ -184,9 +218,9 @@ If the user doesn't provide a research directory, you should ask for it before e
                  clamp, or an explicit user-directed override applies (see below).
 
     The tool returns:
-    - llm_recommendation.preset (0–3) — the FINAL authoritative preset: the RL model's own pick,
-      clamped only by the deterministic policy guard above (the field name is a historical artifact;
-      no LLM is involved at all)
+    - llm_recommendation.preset (0–3) — the recommended preset: the RL model's own pick, clamped
+      only by the deterministic policy guard above (the field name is a historical artifact; no LLM
+      is involved at all)
     - llm_recommendation.name — human-readable name: skip | light | standard | deep
     - llm_recommendation.reasoning — a short deterministic description of the guard's decision
     - llm_recommendation.override — True only if the policy guard changed the RL model's own pick
@@ -210,32 +244,9 @@ If the user doesn't provide a research directory, you should ask for it before e
       P2 standard → 2 rounds: round 1 focus="depth", round 2 focus="breadth"
       P3 deep     → 3 rounds: round 1 focus="depth", round 2 focus="breadth", round 3 focus="depth"
 
-    **Determining the exploration plan for step 4**: step 3.4 always concludes with exactly one exploration
-    plan — a round count and, for each round, a focus (and optionally a depth_vs_breadth_ratio/n_queries) —
-    that step 4 then executes. Determine it in this order:
-      1. If the user provides a direct exploration override — whether before step 3.4 even runs, or in
-         direct response to seeing llm_recommendation (see "User-directed exploration override" below) —
-         the override IS the exploration plan. This holds even if it conflicts with a
-         forbidden/required/capped policy clamp, and even if it would otherwise have triggered the
-         ambiguous-policy-guard question below — a direct override answers that question outright, so do
-         not separately ask it once an override is already in hand.
-      2. Otherwise, llm_recommendation.preset — mapped through the preset-mapping table above — IS the
-         exploration plan, UNLESS llm_recommendation.risk_flags contains the "AMBIGUOUS" tag (see
-         "Ambiguous policy-guard cases" below), in which case ask the user the specified question first;
-         their answer then becomes the exploration plan.
-    Do NOT use section_signals (depth_score, need_depth, breadth_score, etc.) to alter which sections a round
-    targets or which global focus/depth_vs_breadth_ratio a round uses in either case above — the exploration
-    tool itself has no per-section targeting parameter, and departing from the fixed recipe would execute a
-    different exploration process than the one the RL model's reward calibration assumes, silently
-    invalidating the preset choice. section_signals remains available for diagnostic/reporting purposes. If
-    llm_recommendation.override is True, note the override_reason — it identifies which policy guard
-    (forbidden/required/capped) fired.
-
-    **User-directed exploration override** (case 1 above): At any point in the conversation — before step 3.4
-    even runs, immediately after seeing llm_recommendation, or mid-way through step 4's loop — the user may
-    directly instruct you to run a different exploration plan than llm_recommendation.preset implies.
-
-    What is overridable, mapped onto step 4's actual mechanics:
+    **What is overridable**, mapped onto step 4's actual mechanics — this applies whether the user
+    overrides in response to step (b)/(d) above, or unprompted at any other point in the conversation
+    (before step 3.4 even runs, or mid-way through step 4's loop):
       - Total round count: 0 up to the configured ceiling of {settings.maximum_exploration_rounds} rounds.
         0 means step 4 is not run at all, the same as preset P0.
       - Each round's focus: "depth", "breadth", or "balanced" — the exact values
@@ -245,37 +256,30 @@ If the user doesn't provide a research directory, you should ask for it before e
         4.1 is appropriate.
       - Each round's query count (n_queries), only if the user states one; otherwise use
         settings.n_exploration_queries_per_round as usual.
-    The instruction may be a FULL replacement plan ("run exactly 2 rounds: depth, then breadth") or a RELATIVE
-    adjustment to llm_recommendation's recipe ("add one more depth round", "drop the last round", "make round
+    An override may be a FULL replacement plan ("run exactly 2 rounds: depth, then breadth") or a RELATIVE
+    adjustment to the recommended recipe ("add one more depth round", "drop the last round", "make round
     2 breadth instead"). For a relative adjustment, the baseline is always llm_recommendation's fixed
-    per-round recipe from the preset-mapping table above, resolved once step 3.4 has actually run — not an
-    ad-hoc reinterpretation of it, and not the raw rl_recommendation before any policy-guard clamp.
+    per-round recipe from the preset-mapping table above — not an ad-hoc reinterpretation of it, and not
+    the raw rl_recommendation before any policy-guard clamp.
 
-    Confirmation discipline before adopting an override as the exploration plan:
-      - If it is fully specified (round count, and every affected round's focus, are explicit), restate the
-        resulting plan in one line and proceed — e.g. "Overriding llm_recommendation (P2 standard, 2 rounds:
-        depth → breadth) per your request: running 1 round, focus=breadth." Do not wait for further
-        confirmation; the user already told you to do it.
-      - If it is ambiguous or only partly specified (e.g. "focus more on breadth" with no round count, or
-        "add a round" with no stated focus), ask ONE targeted clarifying question before proceeding — do not
-        guess at the missing part.
-      - If it conflicts with a fired policy guard (llm_recommendation.override is True), give a single brief
-        heads-up citing override_reason (e.g. "note: this article's guideline marks external evidence as
-        forbidden — research from this exploration may not be usable in the final article"), then proceed as
-        instructed. Do not block on this, and do not raise it a second time.
-      - If the requested round count exceeds {settings.maximum_exploration_rounds}, cap it there and say so —
-        this ceiling is a fixed system limit, not user-negotiable.
-      - If the user changes or cancels the exploration plan mid-way through step 4's loop (e.g. "stop here,
-        that's enough"), honor it at the next round boundary — never run a now-unwanted round just because it
-        was part of the plan established at the start of step 4.
-    Still run "predict_exploration_preset" in step 3.4 even when a full override is already known in advance,
-    unless the user also explicitly says to skip it — the tool still determines external_evidence_policy,
-    which the heads-up rule above depends on.
+    If given unprompted (not in direct response to step (b)/(d) above — e.g. before step 3.4 even runs,
+    or mid-way through step 4's loop): when it is fully specified (round count and every affected
+    round's focus are explicit), restate the resulting plan in one line and proceed without waiting for
+    further confirmation — the user already told you to do it. When it is ambiguous or only partly
+    specified (e.g. "focus more on breadth" with no round count), ask ONE targeted clarifying question
+    before proceeding. Either way, if it conflicts with a fired policy guard (llm_recommendation.override
+    is True), give a single brief heads-up citing override_reason (e.g. "note: this article's guideline
+    marks external evidence as forbidden — research from this exploration may not be usable in the final
+    article"), then proceed as instructed — do not block on this or raise it twice. If the requested round
+    count exceeds {settings.maximum_exploration_rounds}, cap it there and say so. If the user changes or
+    cancels the exploration plan mid-way through step 4's loop (e.g. "stop here, that's enough"), honor
+    it at the next round boundary — never run a now-unwanted round just because it was part of the
+    confirmed plan.
 
-    **Ambiguous policy-guard cases require explicit user input** (case 2 above): two policy guards can
-    move the preset to an arm the data does not clearly support, and both are ALWAYS tagged "AMBIGUOUS" in
-    llm_recommendation.risk_flags when they fire — check specifically for that tag, then read which guard
-    fired from the risk_flags text itself ("policy=capped ..." or "policy=required ..."):
+    **Ambiguous policy-guard cases**: two policy guards can move the preset to an arm the data does not
+    clearly support, and both are ALWAYS tagged "AMBIGUOUS" in llm_recommendation.risk_flags when they
+    fire — check specifically for that tag, then read which guard fired from the risk_flags text itself
+    ("policy=capped ..." or "policy=required ..."):
       - **capped, RL votes standard or deep**: the guard ALWAYS clamps the preset down to P1 light — this
         is unconditional, by design, regardless of what the RL model's own probability split between skip
         and light says (the "residual" left after standard/deep are excluded; a corpus-wide check found
@@ -287,27 +291,18 @@ If the user doesn't provide a research directory, you should ask for it before e
         standard or deep won by a wide margin, and in one case light was even the WORST of the three
         eligible arms (worse than skip itself). There is no data-confirmed default here either, so light is
         used only as a conservative, single-level-escalation placeholder, not a confident pick.
-    When the "AMBIGUOUS" tag IS present (and no override is already in hand):
-      1. STOP before running step 4. Show the user the exact risk_flags text (it names the policy guard
-         that fired and cites the RL model's own residual probability split) and explain that the guard
-         defaulted to light but the signal is genuinely ambiguous.
-      2. Ask the user explicitly:
-         - For a capped case: proceed with light (P1, the guard's default), or override to skip (P0)?
-         - For a required case: proceed with light (P1, the guard's default), or override to standard (P2)
-           or deep (P3)?
-      3. Wait for the user's answer. Use the user's chosen preset — not llm_recommendation.preset — as the
-         exploration plan (skip means step 4 is not run at all; light/standard/deep map through the normal
-         preset-mapping table above).
-      4. If the user does not state a preference, proceed with the guard's default (light) as the
-         exploration plan.
+    When this tag is present, always surface the specific guard and its rationale from the bullets above
+    when presenting or discussing the recommendation (step (b) above, or the targeted question below when
+    user_plan_override_allowed is False) — the user should know this pick is a guard default, not a
+    confident RL vote.
 
-    Outside of case 1 (an explicit, direct user override) and the ambiguous-policy-guard question in case 2
-    above, do NOT second-guess llm_recommendation.preset on your own initiative — not because of confidence,
-    entropy,
-    section_signals, or your own reading of the article guideline (the guideline is already an input to the
-    digest and RL model that produced this preset; re-applying it yourself would duplicate or fight a decision
-    already made more reliably upstream). That kind of ad-hoc judgement was tried in an earlier LLM-planner
-    design and found unreliable; it is not part of the current pipeline.
+    Outside of an explicit user override and (when user_plan_override_allowed is False) the
+    ambiguous-policy-guard question, do NOT second-guess llm_recommendation.preset on your own
+    initiative — not because of confidence, entropy, section_signals, or your own reading of the article
+    guideline (the guideline is already an input to the digest and RL model that produced this preset;
+    re-applying it yourself would duplicate or fight a decision already made more reliably upstream).
+    That kind of ad-hoc judgement was tried in an earlier LLM-planner design and found unreliable; it is
+    not part of the current pipeline.
 
 4. Exploration Phase: execute the exploration plan established in step 3.4 (see "Determining the exploration
     plan for step 4") — run exactly its round count, each with its specified focus. The round count is fixed
