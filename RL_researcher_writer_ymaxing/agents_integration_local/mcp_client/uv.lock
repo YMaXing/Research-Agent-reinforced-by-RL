@@ -1082,6 +1082,7 @@ dependencies = [
     { name = "fastmcp" },
     { name = "google-genai" },
     { name = "mcp" },
+    { name = "openai" },
     { name = "opik" },
     { name = "pydantic-settings" },
 ]
@@ -1091,6 +1092,7 @@ requires-dist = [
     { name = "fastmcp", specifier = ">=0.9.0" },
     { name = "google-genai", specifier = ">=1.20.0" },
     { name = "mcp", specifier = ">=1.11.0" },
+    { name = "openai", specifier = ">=1.0.0" },
     { name = "opik", specifier = ">=1.8.42" },
     { name = "pydantic-settings", specifier = ">=2.10.0" },
 ]

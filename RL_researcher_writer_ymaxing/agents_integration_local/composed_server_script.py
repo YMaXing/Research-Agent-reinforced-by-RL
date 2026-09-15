@@ -130,7 +130,8 @@ if __name__ == "__main__":
 
     research_python = resolve_python_executable(research_server_dir)
     writer_python = resolve_python_executable(writer_server_dir)
-    # Reuse Research interpreter for composed server because both require FastMCP.
+    # Reuse the research venv for the composed server (needs fastmcp) and the client
+    # (needs google-genai/openai/opik, all already present as research's own deps).
     composed_python = research_python
     client_python = research_python
 

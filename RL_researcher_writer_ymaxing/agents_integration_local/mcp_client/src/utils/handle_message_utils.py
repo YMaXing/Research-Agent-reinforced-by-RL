@@ -4,10 +4,9 @@ import logging
 from typing import List
 
 from fastmcp import Client
-from google.genai import types
 
 from .command_utils import handle_command, handle_prompt_command, handle_resource_command, handle_thinking_toggle
-from .handle_agent_loop_utils import handle_agent_loop
+from .handle_agent_loop_utils import handle_agent_loop, make_user_message
 from .print_utils import Color, Style, print_colored
 from .types import InputType, ProcessedInput
 
@@ -17,7 +16,7 @@ async def handle_user_message(
     tools: List,
     resources: List,
     prompts: List,
-    conversation_history: List[types.Content],
+    conversation_history: List,
     mcp_client: Client,
     thinking_enabled: bool,
     server_names: List[str],
@@ -51,8 +50,7 @@ async def handle_user_message(
             parsed_input.prompt_name, parsed_input.prompt_arguments, prompts, mcp_client
         )
         if prompt_content is not None:
-            prompt_message = types.Content(role="user", parts=[types.Part(text=prompt_content)])
-            conversation_history.append(prompt_message)
+            conversation_history.append(make_user_message(prompt_content))
             await handle_agent_loop(conversation_history, tools, mcp_client, thinking_enabled)
         return True, thinking_enabled
 
@@ -77,8 +75,7 @@ async def handle_user_message(
 
     elif parsed_input.input_type == InputType.NORMAL_MESSAGE:
         # Handle normal user message by adding it to conversation
-        user_message = types.Content(role="user", parts=[types.Part(text=parsed_input.user_message)])
-        conversation_history.append(user_message)
+        conversation_history.append(make_user_message(parsed_input.user_message))
         await handle_agent_loop(conversation_history, tools, mcp_client, thinking_enabled)
         return True, thinking_enabled
 

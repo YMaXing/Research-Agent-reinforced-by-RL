@@ -12,6 +12,7 @@ from brown.evals.metrics.base import (
     SectionCriteriaScores,
 )
 
+from . import word_count
 from .types import (
     UserIntentArticleScores,
     UserIntentCriteriaScores,
@@ -109,7 +110,15 @@ three criteria:
         (minimum ±25 words): if the prose-only word count falls more than that tolerance below the target, or exceeds
         the target by more than that tolerance, assign a score of 0. For example, a 400-word target allows 360–440
         words (±40); a 250-word target allows 225–275 words (±25); a 700-word target allows 630–770 words (±70).
-        - **Prose-only word count:** When the unit is words, count prose words only — exclude fenced code blocks
+        - **Prose-only word count is pre-computed for you — do not recount words yourself.** Counting words precisely
+        in long text is error-prone even for careful readers, so the exact, deterministic prose-only word count for
+        every H2-delimited section of the generated article is provided in `<generated_article_section_word_counts>`
+        below. Those counts already exclude fenced code blocks, Mermaid diagram blocks, table cell text,
+        image/diagram captions, and inline citation markers (e.g. `[[N]](url)` tokens) — this is the same
+        prose-only definition given below, just computed for you. Look up the count for whichever generated section
+        you associated with the expected section (match by title), and compare that exact number against the
+        tolerance range. Never substitute your own estimate for the provided count, and never recompute it by eye.
+        - **Prose-only word count (definition, for reference):** count prose words only — exclude fenced code blocks
         (all content between opening and closing ``` delimiters), Mermaid diagram blocks, table cell
         text, image/diagram captions, and inline citation markers (e.g. `[[N]](url)` tokens).
    2. **Research Anchoring**: For each expected section in the article guideline, you will evaluate whether the generated 
@@ -260,6 +269,14 @@ Here are few-shot examples demonstrating how to compute the scores for each sect
 <output>
 {output}
 </output>
+
+<generated_article_section_word_counts>
+Exact, pre-computed prose-only word counts for each H2-delimited section of the generated article
+(<output>) above, using the same section boundaries described in point 8. Use these counts directly
+for the length check in Guideline Adherence instead of counting words yourself.
+
+{section_word_counts}
+</generated_article_section_word_counts>
 
 Think through your answer step by step, and provide the requested evaluation.
 """
@@ -1016,9 +1033,11 @@ def get_eval_prompt(
     few_shot_examples: UserIntentMetricFewShotExamples,
 ) -> str:
     """Generate the evaluation prompt for the user intent metric."""
+    section_word_counts = word_count.to_prompt_block(word_count.compute_section_word_counts(output))
     return SYSTEM_PROMPT.format(
         examples=few_shot_examples.to_context(),
         input=input,
         context=context,
         output=output,
+        section_word_counts=section_word_counts,
     )

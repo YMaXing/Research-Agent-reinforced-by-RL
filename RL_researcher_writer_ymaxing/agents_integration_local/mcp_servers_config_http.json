@@ -1,9 +1,9 @@
 {
   "mcpServers": {
-    "nova-research-agent": {
+    "local-research-agent": {
       "url": "http://localhost:8001/mcp"
     },
-    "brown-writing-workflow": {
+    "writing-workflow": {
       "url": "http://localhost:8002/mcp"
     }
   }

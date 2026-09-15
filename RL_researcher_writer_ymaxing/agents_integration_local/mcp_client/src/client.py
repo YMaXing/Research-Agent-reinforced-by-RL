@@ -7,7 +7,7 @@ All tools, resources, and prompts are accessible without prefixes.
 
 Usage:
     uv run python -m src.client
-    uv run python -m src.client --config ../mcp_composed_server_config.json
+    uv run python -m src.client --config ../mcp_composed_server_config_http.json
 """
 
 import argparse

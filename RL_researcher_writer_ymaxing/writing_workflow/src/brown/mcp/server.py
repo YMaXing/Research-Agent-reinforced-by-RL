@@ -30,8 +30,6 @@ from brown.workflows import (
 )
 from brown.workflows.types import WorkflowProgress
 
-app_config = load_app_config()
-
 logger.info("Initializing Brown MCP Server...")
 mcp = FastMCP("Brown MCP Server")
 logger.info("Brown MCP Server initialized successfully")
@@ -112,6 +110,7 @@ async def generate_article(dir_path: Path, ctx: Context) -> str:
         # with multiple review iterations applied as article_000.md, article_001.md, etc.
     """
 
+    app_config = load_app_config()
     async with build_short_term_memory(app_config) as checkpointer:
         generate_article_workflow = build_generate_article_workflow(checkpointer=checkpointer)
 
@@ -196,6 +195,7 @@ async def edit_article(
         <instructions>
     """
 
+    app_config = load_app_config()
     async with build_short_term_memory(app_config) as checkpointer:
         edit_article_workflow = build_edit_article_workflow(checkpointer=checkpointer)
 
@@ -303,6 +303,7 @@ async def edit_selected_text(
         <instructions>
     """
 
+    app_config = load_app_config()
     async with build_short_term_memory(app_config) as checkpointer:
         edit_selected_text_workflow = build_edit_selected_text_workflow(checkpointer=checkpointer)
 
@@ -352,7 +353,7 @@ def get_app_config() -> dict:
             - Tool configurations and model assignments
     """
 
-    return app_config.model_dump(mode="json")
+    return load_app_config().model_dump(mode="json")
 
 
 @mcp.resource("resource://profiles/character")
@@ -422,6 +423,7 @@ def __get_profile(profile_name: str) -> str:
         "# Character Profile\n\nPaul Iusztin is..."
     """
 
+    app_config = load_app_config()
     loaders = build_loaders(app_config)
     profiles_loader = loaders["profiles"]
     profiles = profiles_loader.load()

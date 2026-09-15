@@ -306,8 +306,9 @@ def test_system_prompt_contains_non_qualifying_addition_flow_rule() -> None:
     """
     The Flow accepted-differences bullet must state that non-qualifying
     additions (depth=0 AND breadth=0) are not covered by the accepted-
-    difference rule, and that a disproportionately long non-qualifying
-    addition constitutes a Flow=0 failure.
+    difference rule, and that a large such addition is resolved via the
+    three-way crowding boundary test (CoreContent/Flow/neither), not a
+    length calculation.
     """
     assert "non-qualifying addition" in follows_gt_prompts.SYSTEM_PROMPT
     assert "Flow=0" in follows_gt_prompts.SYSTEM_PROMPT
@@ -316,10 +317,11 @@ def test_system_prompt_contains_non_qualifying_addition_flow_rule() -> None:
 def test_system_prompt_contains_non_qualifying_addition_core_preservation_rule() -> None:
     """
     The WHAT TO AVOID section must state that non-qualifying additions must
-    not trigger CorePreservation=0 and that their penalty belongs to Flow.
+    not trigger CorePreservation=0, and that a large such addition is resolved
+    via the three-way crowding boundary test rather than a length calculation.
     """
     assert "CorePreservation=0" in follows_gt_prompts.SYSTEM_PROMPT
-    assert "belongs exclusively to Flow" in follows_gt_prompts.SYSTEM_PROMPT
+    assert "Three-Way Crowding Boundary" in follows_gt_prompts.SYSTEM_PROMPT
 
 
 def test_system_prompt_flow_does_not_own_missing_topics() -> None:
@@ -580,16 +582,31 @@ def test_to_core_preservation_context_contains_articles(
     assert "Ground truth article text." in ctx
 
 
-def test_to_core_preservation_context_does_not_contain_other_criteria(
+def test_to_core_preservation_context_contains_core_content_and_flow(
     sample_example: FollowsGTMetricExample,
 ) -> None:
     """
-    to_core_preservation_context() must NOT include pass-1-only criteria
-    (core_content, flow, structure) — those belong to the pass-1 examples only.
+    to_core_preservation_context() must embed core_content and flow scores/reasons
+    (the corrected CorePreservation test uses them as its anchor), mirroring
+    _build_section_scores_context format.
     """
     ctx = sample_example.to_core_preservation_context()
-    for field in ("core_content", "flow", "structure"):
-        assert f"<{field}>" not in ctx, f"Pass-1-only field found in pass-2 context: {field}"
+    assert "core_content" in ctx
+    assert "flow" in ctx
+    assert "OK." in ctx
+
+
+def test_to_core_preservation_context_does_not_contain_structure(
+    sample_example: FollowsGTMetricExample,
+) -> None:
+    """
+    to_core_preservation_context() must NOT include the structure criterion —
+    only core_content, flow, depth_enhancement, and breadth_enhancement are
+    relevant upstream context for CorePreservation.
+    """
+    ctx = sample_example.to_core_preservation_context()
+    assert "<structure>" not in ctx
+    assert "structure:" not in ctx
 
 
 # ---------------------------------------------------------------------------

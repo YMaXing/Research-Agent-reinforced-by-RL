@@ -146,20 +146,24 @@ class FollowsGTMetricExample(BaseExample):
     def to_core_preservation_context(self) -> str:
         """Convert the example to a formatted string for use in the pass-2 core preservation prompt.
 
-        The format mirrors the CORE_PRESERVATION_PROMPT structure: enhancement scores first,
-        then the articles, then the expected core_preservation judgments. This teaches the LLM
-        how to evaluate CorePreservation given the already-determined depth/breadth scores.
+        The format mirrors the CORE_PRESERVATION_PROMPT structure: core_content/flow/enhancement scores
+        first, then the articles, then the expected core_preservation judgments. This teaches the LLM
+        how to evaluate CorePreservation given the already-determined upstream scores.
 
         Returns:
             A string representation suitable for embedding as a few-shot example in
             get_core_preservation_prompt.
         """
-        # Build enhancement scores block (same format as _build_section_scores_context)
+        # Build upstream scores block (same format as _build_section_scores_context)
         score_lines: list[str] = []
         for section in self.scores.sections:
+            cc = section.scores.core_content
+            fl = section.scores.flow
             d = section.scores.depth_enhancement
             b = section.scores.breadth_enhancement
             score_lines.append(f'Section: "{section.title}"')
+            score_lines.append(f'  core_content:        score={cc.score}, reason="{cc.reason}"')
+            score_lines.append(f'  flow:                score={fl.score}, reason="{fl.reason}"')
             score_lines.append(f'  depth_enhancement:   score={d.score}, reason="{d.reason}"')
             score_lines.append(f'  breadth_enhancement: score={b.score}, reason="{b.reason}"')
             score_lines.append("")
@@ -180,8 +184,8 @@ class FollowsGTMetricExample(BaseExample):
             )
         cp_xml = "\n".join(cp_xml_parts)
 
-        return f"""<enhancement_scores>
-{enhancement_scores_text}</enhancement_scores>
+        return f"""<upstream_scores>
+{enhancement_scores_text}</upstream_scores>
 <output>
 {self.output}
 </output>

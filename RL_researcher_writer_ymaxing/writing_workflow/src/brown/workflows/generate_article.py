@@ -25,8 +25,6 @@ from brown.nodes.article_writer import ArticleWriter
 from brown.nodes.media_generator import MediaGeneratorOrchestrator
 from brown.workflows.types import WorkflowProgress
 
-app_config = get_app_config()
-
 
 def _retry_non_quota(exc: Exception) -> bool:
     """Return True if *exc* should be retried by LangGraph's RetryPolicy.
@@ -62,6 +60,7 @@ class GenerateArticleInput(TypedDict):
 
 
 async def _generate_article_workflow(inputs: GenerateArticleInput, config: RunnableConfig) -> str:
+    app_config = get_app_config()
     dir_path = inputs["dir_path"]
     dir_path.mkdir(parents=True, exist_ok=True)
 
@@ -343,6 +342,7 @@ def _is_valid_tool_call_args(tool: BaseTool, args: dict, writer) -> bool:
 
 @task(retry_policy=retry_policy)
 async def generate_media_items(article_guideline: ArticleGuideline, research: Research) -> MediaItems:
+    app_config = get_app_config()
     writer = get_stream_writer()
 
     model, toolkit = build_model(app_config, node="generate_media_items")
@@ -395,6 +395,7 @@ async def write_article(
     media_items: MediaItems,
     article_examples: ArticleExamples,
 ) -> Article:
+    app_config = get_app_config()
     model, _ = build_model(app_config, node="write_article")
     article_writer = ArticleWriter(
         article_guideline=article_guideline,
@@ -418,6 +419,7 @@ async def integrate_exploration(
     media_items: MediaItems,
     exploration_examples: ArticleExamples,
 ) -> Article:
+    app_config = get_app_config()
     model, _ = build_model(app_config, node="integrate_exploration")
     article_writer = ArticleWriter(
         article_guideline=article_guideline,
@@ -437,6 +439,7 @@ async def integrate_exploration(
 async def generate_reviews(
     article: Article, article_guideline: ArticleGuideline, article_profiles: ArticleProfiles, research: Research, media_items: MediaItems
 ) -> ArticleReviews:
+    app_config = get_app_config()
     model, _ = build_model(app_config, node="review_article")
     article_reviewer = ArticleReviewer(
         to_review=article,
@@ -460,6 +463,7 @@ async def edit_based_on_reviews(
     article_examples: ArticleExamples,
     reviews: ArticleReviews,
 ) -> Article:
+    app_config = get_app_config()
     model, _ = build_model(app_config, node="edit_article")
     article_writer = ArticleWriter(
         article_guideline=article_guideline,

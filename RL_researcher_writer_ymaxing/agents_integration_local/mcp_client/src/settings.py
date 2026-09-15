@@ -32,8 +32,8 @@ class Settings(BaseSettings):
     google_api_key: SecretStr | None = Field(default=None, alias="GOOGLE_API_KEY", description="The Google API key for Gemini models")
     xai_api_key: SecretStr | None = Field(default=None, alias="XAI_API_KEY", description="The xAI API key for Grok models")
     xai_base_url: str = Field(default="https://api.x.ai/v1", alias="XAI_BASE_URL", description="The xAI API base URL")
-    orchestrator_key: str = Field(default="grok-4-1-fast-reasoning", description="Default orchestrator model key")
-    model_id: str = Field(default="grok-4-1-fast-reasoning", description="Default model ID for LLM operations")
+    orchestrator_key: str = Field(default="grok-4.6", description="Default orchestrator model key")
+    model_id: str = Field(default="grok-4.6", description="Default model ID for LLM operations")
     thinking_budget: int = Field(default=1024, alias="THINKING_BUDGET", description="Thinking budget for latency vs. depth tradeoff")
 
     # Agent configuration
@@ -59,10 +59,12 @@ class Settings(BaseSettings):
                     "max_retries": 3,
                 },
             },
-            "grok-4-1-fast-reasoning": {
-                "identifier": "xai:grok-4-1-fast-reasoning",
+            "grok-4.6": {
+                "identifier": "xai:grok-4.6",
                 "params": {
                     "temperature": 1,
+                    # supports low/medium/high/xhigh; high is xAI's own default
+                    "reasoning_effort": "high",
                     "max_retries": 3,
                 },
             },

@@ -9,8 +9,6 @@ from brown.config_app import get_app_config as load_app_config
 
 from .opik_utils import get_dataset
 
-app_config = load_app_config()
-
 
 def evaluate(
     dataset_name: str,
@@ -44,6 +42,8 @@ def evaluate(
     """
 
     assert get_settings().OPIK_API_KEY, "OPIK_API_KEY is not set. We need it to track the experiment with Opik."
+
+    app_config = load_app_config()
 
     dataset = get_dataset(dataset_name)
     if not dataset:
