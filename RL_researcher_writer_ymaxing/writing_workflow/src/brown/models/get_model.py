@@ -21,6 +21,9 @@ from .fake_model import FakeModel
 _log = logging.getLogger(__name__)
 
 MODEL_TO_REQUIRED_API_KEY = {
+    SupportedModels.GOOGLE_GEMINI_37_FLASH: "GOOGLE_API_KEY",
+    SupportedModels.GOOGLE_GEMINI_31_FLASH_LITE: "GOOGLE_API_KEY",
+    SupportedModels.GOOGLE_GEMINI_31_PRO_PREVIEW: "GOOGLE_API_KEY",
     SupportedModels.GOOGLE_GEMINI_25_PRO: "GOOGLE_API_KEY",
     SupportedModels.GOOGLE_GEMINI_25_FLASH: "GOOGLE_API_KEY",
     SupportedModels.GOOGLE_GEMINI_25_FLASH_LITE: "GOOGLE_API_KEY",
@@ -29,6 +32,33 @@ MODEL_TO_REQUIRED_API_KEY = {
     SupportedModels.XAI_GROK_41_FAST: "XAI_API_KEY",
     SupportedModels.ANTHROPIC_CLAUDE_SONNET: "ANTHROPIC_API_KEY",
 }
+
+
+def extract_text_content(content: object) -> str:
+    """Return the plain text from a chat model response's ``.content``.
+
+    Most models return ``.content`` as a plain string. Some (e.g. gemini-3.7-flash)
+    return a list of content-block dicts instead (e.g. ``{"type": "text", "text": "..."}``).
+    This extracts the actual text from each block, dropping non-text blocks (e.g.
+    "thinking", tool-call signatures), so callers get a consistent string regardless
+    of which underlying model produced the response. Only needed for raw (non
+    structured-output) ``ainvoke`` calls — ``with_structured_output`` results are
+    already parsed and unaffected by this.
+    """
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        text_parts = []
+        for part in content:
+            if isinstance(part, dict):
+                block_type = part.get("type")
+                if block_type is not None and block_type != "text":
+                    continue
+                text_parts.append(part.get("text", ""))
+            else:
+                text_parts.append(str(part))
+        return "".join(text_parts)
+    return str(content)
 
 
 # ---------------------------------------------------------------------------

@@ -1,10 +1,18 @@
 from enum import StrEnum
-from typing import Any
+from typing import Any, Literal
 
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import BaseModel, Field, PrivateAttr, model_validator
+
+ThinkingLevel = Literal["minimal", "low", "medium", "high"]
 
 
 class SupportedModels(StrEnum):
+    GOOGLE_GEMINI_37_FLASH = "google_genai:gemini-3.7-flash"
+    GOOGLE_GEMINI_31_FLASH_LITE = "google_genai:gemini-3.1-flash-lite"
+    # Latest Pro model. Still in preview; swap it in via config if you want a Pro model.
+    GOOGLE_GEMINI_31_PRO_PREVIEW = "google_genai:gemini-3.1-pro-preview"
+    # Kept for backward compatibility: existing Google accounts can still use 2.5 models,
+    # but 2.5 Pro is not available to new accounts.
     GOOGLE_GEMINI_25_PRO = "google_genai:gemini-2.5-pro"
     GOOGLE_GEMINI_25_FLASH = "google_genai:gemini-2.5-flash"
     GOOGLE_GEMINI_25_FLASH_LITE = "google_genai:gemini-2.5-flash-lite"
@@ -26,7 +34,12 @@ class ModelConfig(BaseModel):
     thinking_budget: int | None = Field(
         default=None,
         ge=0,
-        description="If reasoning is available, the maximum number of tokens the model can use for thinking.",
+        description="If reasoning is available, the maximum number of tokens the model can use for thinking. "
+        "Used by Gemini 2.5 models. Mutually exclusive with `thinking_level`.",
+    )
+    thinking_level: ThinkingLevel | None = Field(
+        default=None,
+        description="Reasoning depth for Gemini 3.x models (one of minimal/low/medium/high). Mutually exclusive with `thinking_budget`.",
     )
     max_output_tokens: int | None = None
     max_retries: int = 1
@@ -36,6 +49,12 @@ class ModelConfig(BaseModel):
     # Tracks which item in a list mocked_response to use on the next get_model call.
     _response_index: int = PrivateAttr(default=0)
 
+    @model_validator(mode="after")
+    def _check_thinking_exclusive(self) -> "ModelConfig":
+        if self.thinking_budget is not None and self.thinking_level is not None:
+            raise ValueError("`thinking_budget` and `thinking_level` are mutually exclusive; set only one.")
+        return self
+
     def model_dump(self, *args, **kwargs) -> dict[str, Any]:
         return super().model_dump(
             include={
@@ -44,6 +63,7 @@ class ModelConfig(BaseModel):
                 "n",
                 "response_modalities",
                 "thinking_budget",
+                "thinking_level",
                 "max_output_tokens",
                 "max_retries",
             },
@@ -54,7 +74,7 @@ class ModelConfig(BaseModel):
 
 
 # Parameters that are Google-specific and should not be passed to non-Google providers.
-GOOGLE_ONLY_PARAMS = {"thinking_budget", "top_k", "response_modalities"}
+GOOGLE_ONLY_PARAMS = {"thinking_budget", "thinking_level", "top_k", "response_modalities"}
 
 # Parameters unsupported by the Anthropic Messages API (e.g. `n` for multiple
 # completions has no Anthropic equivalent and raises a TypeError if passed).
@@ -71,6 +91,25 @@ ANTHROPIC_NO_TEMPERATURE_MODELS = {
 }
 
 DEFAULT_MODEL_CONFIGS = {
+    "google_genai:gemini-3.7-flash": ModelConfig(
+        temperature=1,
+        include_thoughts=False,
+        thinking_level="low",
+        max_retries=3,
+    ),
+    "google_genai:gemini-3.1-flash-lite": ModelConfig(
+        temperature=1,
+        include_thoughts=False,
+        thinking_level="low",
+        max_retries=3,
+    ),
+    "google_genai:gemini-3.1-pro-preview": ModelConfig(
+        temperature=1,
+        include_thoughts=False,
+        thinking_level="high",
+        max_retries=3,
+    ),
+    # Kept for backward compatibility; gemini-2.5-pro is not available to new accounts.
     "google_genai:gemini-2.5-pro": ModelConfig(
         temperature=0.7,
         include_thoughts=False,

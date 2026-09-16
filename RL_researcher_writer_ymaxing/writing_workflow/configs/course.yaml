@@ -14,46 +14,66 @@ context:
   exploration_examples_uri: "inputs/examples/exploration_integration"
 memory:
   checkpointer: "in_memory"
-num_reviews: 2
+num_reviews: 3
+max_reviews_per_iteration: 5
+# Shared anchors merged into each node below via `<<:` to avoid repeating the same
+# model_id/thinking defaults on every node (ignored by AppConfig's default extra="ignore").
+_defaults:
+  flash_model: &flash_model
+    model_id: "google_genai:gemini-3.7-flash"
+  low_thinking: &low_thinking
+    include_thoughts: false
+    thinking_level: low
+  high_thinking: &high_thinking
+    include_thoughts: false
+    thinking_level: high
 nodes:
   generate_media_items:
-    model_id: "google_genai:gemini-2.5-flash"
+    <<: *flash_model
     model_config:
+      <<: *low_thinking
       temperature: 0.0
       max_retries: 2
     tools:
       mermaid_diagram_generator:
-        model_id: "google_genai:gemini-2.5-flash"
+        <<: *flash_model
         config:
+          <<: *low_thinking
           temperature: 0.0
           max_retries: 2
   write_article:
-    model_id: "google_genai:gemini-2.5-pro"
+    <<: *flash_model
     model_config:
+      <<: *high_thinking
       temperature: 0.7
       max_retries: 2
   integrate_exploration:
-    model_id: "google_genai:gemini-2.5-pro"
+    <<: *flash_model
     model_config:
+      <<: *high_thinking
       temperature: 0.7
       max_retries: 2
   review_article:
-    model_id: "google_genai:gemini-2.5-pro"
+    <<: *flash_model
     model_config:
+      <<: *high_thinking
       temperature: 0.0
       max_retries: 2
   edit_article:
-    model_id: "google_genai:gemini-2.5-pro"
+    <<: *flash_model
     model_config:
+      <<: *high_thinking
       temperature: 0.1
       max_retries: 2
   review_selected_text:
-    model_id: "google_genai:gemini-2.5-pro"
+    <<: *flash_model
     model_config:
+      <<: *high_thinking
       temperature: 0.0
       max_retries: 2
   edit_selected_text:
-    model_id: "google_genai:gemini-2.5-pro"
+    <<: *flash_model
     model_config:
+      <<: *high_thinking
       temperature: 0.1
       max_retries: 2

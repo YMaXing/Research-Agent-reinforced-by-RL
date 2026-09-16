@@ -12,6 +12,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent / "evaluation"))
 runpy.run_path(
-    str(Path(__file__).parent / "evaluation" / "test_grok_planner.py"),
+    str(Path(__file__).parent / "evaluation" / "test_planner.py"),
     run_name="__main__",
 )

@@ -14,7 +14,7 @@ from arxiv2md import ingest_paper
 
 from ..config.prompts import PROMPT_CLEAN_ARXIV_MARKDOWN, PROMPT_CLEAN_MARKDOWN
 from ..config.settings import settings
-from ..utils.llm_utils import get_chat_model
+from ..utils.llm_utils import extract_text_content, get_chat_model
 
 logger = logging.getLogger(__name__)
 
@@ -355,7 +355,7 @@ async def scrape_arxiv_url(
             )
             try:
                 response = await chat_model.ainvoke(clean_prompt)
-                cleaned_md = response.content if hasattr(response, "content") else str(response)
+                cleaned_md = extract_text_content(response.content) if hasattr(response, "content") else str(response)
                 cleaned_md = _strip_outer_code_fence(cleaned_md)
                 logger.info(f"✅ arXiv LaTeX cleanup completed for {url}")
             except Exception as e:
@@ -431,10 +431,7 @@ async def clean_markdown(
     try:
         # Add timeout to LLM API call
         response = await asyncio.wait_for(chat_model.ainvoke(prompt_text), timeout=timeout_seconds)
-        cleaned_content = response.content if hasattr(response, "content") else str(response)
-
-        if isinstance(cleaned_content, list):
-            cleaned_content = "".join(str(part) for part in cleaned_content)
+        cleaned_content = extract_text_content(response.content) if hasattr(response, "content") else str(response)
 
         # Strip outer code fence if the LLM wrapped its output (e.g. ```markdown\n...\n```)
         cleaned_content = _strip_outer_code_fence(cleaned_content)

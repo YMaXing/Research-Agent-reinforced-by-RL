@@ -200,8 +200,13 @@ number of required reviews. In other words, for each requirement, you will creat
 requirement 100%, you will not create any reviews for it. If it doesn't follow the requirement, you will create as many reviews 
 as required to ensure the article follows the requirement.
 
+**You MUST return at most {max_reviews} reviews in total across all requirements.** Prioritize the most impactful issues first,
+following the reviewing rules priority order below. If there are more issues than the limit allows, focus on the highest-priority
+ones and omit the least significant.
+
 Remember that these reviews will further be used to edit the article, ensuring it follows all the requirements. Thus, it's
-important to make a thorough review, covering all the requirements and not missing any detail.
+important to make a thorough review, covering all the requirements and not missing any detail, while staying within the limit
+of {max_reviews} reviews.
 
 ## Reviewing Rules
 
@@ -431,7 +436,7 @@ or "Implementing GraphRAG - Third paragraph"
    b. **Quality check:** For every section where exploration content does appear, cross-reference against
       the source and verify narrative primacy, placement, self-contained integration, and cumulative
       focus.
-9. For each requirement, create 0 to N reviews.
+9. For each requirement, create 0 to N reviews (up to {max_reviews} total).
 10. Return the reviews of the article.
 """
 
@@ -471,7 +476,7 @@ steps, but continue to apply all Reviewing Rules from the system prompt above:
    b. **Quality check:** For any exploration content that does appear in the selected text, cross-reference
       against the source and verify narrative primacy, placement, self-contained integration, and
       cumulative focus.
-7. For each requirement, create 0 to N reviews.
+7. For each requirement, create 0 to N reviews (up to {max_reviews} total).
 8. Carefully compare the selected text against the requirements as instructed by the rules above.
 9. Return the reviews of the selected text.
 """
@@ -485,6 +490,7 @@ steps, but continue to apply all Reviewing Rules from the system prompt above:
         human_feedback: HumanFeedback | None = None,
         research: Research | None = None,
         media_items: MediaItems | None = None,
+        max_reviews: int = 5,
     ) -> None:
         self.to_review = to_review
         self.article_guideline = article_guideline
@@ -492,6 +498,7 @@ steps, but continue to apply all Reviewing Rules from the system prompt above:
         self.human_feedback = human_feedback
         self.research = research
         self.media_items = media_items
+        self.max_reviews = max_reviews
 
         super().__init__(model, toolkit=Toolkit(tools=[]))
 
@@ -531,6 +538,7 @@ steps, but continue to apply all Reviewing Rules from the system prompt above:
             if self.research
             else "Research was not provided to the reviewer. Skip all exploration integration checks.",
             media_items=self.media_items.to_context() if self.media_items else "No pre-generated media items were provided.",
+            max_reviews=self.max_reviews,
         )
         user_input_content = self.build_user_input_content(inputs=[system_prompt])
         inputs = [
@@ -544,7 +552,9 @@ steps, but continue to apply all Reviewing Rules from the system prompt above:
                 [
                     {
                         "role": "user",
-                        "content": self.selected_text_system_prompt_template.format(selected_text=self.to_review.to_context()),
+                        "content": self.selected_text_system_prompt_template.format(
+                            selected_text=self.to_review.to_context(), max_reviews=self.max_reviews
+                        ),
                     }
                 ]
             )

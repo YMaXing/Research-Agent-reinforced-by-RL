@@ -66,12 +66,12 @@ def extract_guidelines_urls_tool(research_folder: str) -> Dict[str, Any]:
     golden_urls = urls_by_section["golden"]
     exploitation_urls = urls_by_section["exploitation"]
 
-    # --- Golden URLs (from "Golden Sources", "Article Code"/"Lesson Code", or unlabelled sections) ---
+    # --- Golden URLs (from "Golden Sources" or an independent code/notebook block, e.g. "Lesson Code") ---
     github_source_urls = [u for u in golden_urls if "github.com" in u]
     youtube_source_urls = [u for u in golden_urls if "youtube.com" in u]
     web_source_urls = [u for u in golden_urls if "github.com" not in u and "youtube.com" not in u]
 
-    # --- Exploitation URLs (from "Other Sources" section) ---
+    # --- Exploitation URLs (from "Other Sources", "Documentation", or any other section) ---
     exploitation_github_urls = [u for u in exploitation_urls if "github.com" in u]
     exploitation_youtube_urls = [u for u in exploitation_urls if "youtube.com" in u]
     exploitation_other_urls = [u for u in exploitation_urls if "github.com" not in u and "youtube.com" not in u]

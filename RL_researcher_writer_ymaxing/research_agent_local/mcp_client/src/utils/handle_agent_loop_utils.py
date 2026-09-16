@@ -1,7 +1,7 @@
 """Agent loop handling utilities."""
 
 import json
-from typing import Any, List
+from typing import Any, Dict, List, Tuple
 
 from mcp_agent.agents.agent import Agent
 
@@ -15,21 +15,28 @@ from .print_utils import Color, Style, print_colored
 # Provider dispatch
 # ---------------------------------------------------------------------------
 
+# Keyed by the provider prefix used in orchestrator_configs' "identifier" field
+# (e.g. "xai:grok-4.6"), not by the orchestrator_configs key itself.
 _PROVIDERS = {
-    "gemini": gemini,
-    "grok": grok,
+    "google_genai": gemini,
+    "xai": grok,
 }
 
 
-def _get_provider(model_id: str):
-    """Return the LLM provider module that matches *model_id*."""
-    for prefix, module in _PROVIDERS.items():
-        if model_id.startswith(prefix):
-            return module
-    raise ValueError(
-        f"Unsupported model: '{model_id}'. "
-        f"model_id must start with one of: {', '.join(_PROVIDERS)}"
-    )
+def _resolve_orchestrator(orchestrator_key: str) -> Tuple[Any, str, Dict[str, Any]]:
+    """Resolve an orchestrator_configs key to (provider module, raw model id, params)."""
+    config = settings.orchestrator_configs.get(orchestrator_key)
+    if config is None:
+        raise ValueError(
+            f"Unknown orchestrator key '{orchestrator_key}'. Must be one of: "
+            f"{', '.join(settings.orchestrator_configs)}"
+        )
+    identifier = config["identifier"]
+    prefix, _, raw_model_id = identifier.partition(":")
+    provider = _PROVIDERS.get(prefix)
+    if provider is None:
+        raise ValueError(f"Unsupported provider prefix '{prefix}' in identifier '{identifier}'.")
+    return provider, raw_model_id, config.get("params", {})
 
 
 # ---------------------------------------------------------------------------
@@ -85,12 +92,11 @@ async def handle_agent_loop(
     thinking_enabled: bool,
 ):
     """Handle the agent loop for tool execution."""
-    model_id = settings.model_id
-    provider = _get_provider(model_id)
+    provider, model_id, params = _resolve_orchestrator(settings.model_id)
 
     # Initialize LLM client using the resolved provider
-    llm_config = provider.build_llm_config_with_tools(tools, thinking_enabled)
-    llm_client = provider.LLMClient(model_id, llm_config)
+    llm_config = provider.build_llm_config_with_tools(tools, thinking_enabled, params)
+    llm_client = provider.LLMClient(model_id, llm_config, params)
 
     iteration_count = 0
     while True:

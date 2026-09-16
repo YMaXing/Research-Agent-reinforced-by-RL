@@ -448,6 +448,7 @@ async def generate_reviews(
         research=research,
         media_items=media_items,
         model=model,
+        max_reviews=app_config.max_reviews_per_iteration,
     )
     reviews = await article_reviewer.ainvoke()
 

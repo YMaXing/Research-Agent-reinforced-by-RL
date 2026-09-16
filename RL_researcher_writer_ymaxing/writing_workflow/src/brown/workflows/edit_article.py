@@ -102,6 +102,7 @@ async def generate_reviews(
         human_feedback=human_feedback,
         research=research,
         model=model,
+        max_reviews=app_config.max_reviews_per_iteration,
     )
     reviews = await article_reviewer.ainvoke()
 

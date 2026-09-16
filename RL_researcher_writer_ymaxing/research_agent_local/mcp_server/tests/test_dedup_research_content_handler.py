@@ -57,6 +57,22 @@ class TestDeduplicateResearchContent:
         assert source_counts["YouTube transcripts"] == 1
         assert total_parts == 5
 
+    async def test_content_as_block_list_is_handled(self, fake_plain_model_factory, tmp_research_dir):
+        """gemini-3.7-flash-style responses: .content is a list of {"type": "text", ...} blocks."""
+        output_path = tmp_research_dir / RESEARCH_OUTPUT_FOLDER
+        _write_source_files(output_path)
+
+        model = fake_plain_model_factory(
+            [
+                {"type": "thinking", "thinking": "reasoning about dedup..."},
+                {"type": "text", "text": "# Deduplicated\n\nCleaned output"},
+            ]
+        )
+        with patch(_PATCH_TARGET, return_value=model):
+            deduplicated_md, _, _ = await deduplicate_research_content(tmp_research_dir, output_path)
+
+        assert deduplicated_md == "# Deduplicated\n\nCleaned output"
+
     async def test_prompt_contains_guidelines_and_collected_content(
         self, fake_plain_model_factory, tmp_research_dir
     ):

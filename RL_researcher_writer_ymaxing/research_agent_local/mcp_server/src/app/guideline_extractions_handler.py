@@ -16,16 +16,32 @@ from ..utils.url_utils import normalize_url_for_match
 # Section-aware classification helpers
 # ---------------------------------------------------------------------------
 
-_EXPLOITATION_SECTION_KEYWORDS = ("other sources",)
-_GOLDEN_SECTION_KEYWORDS = ("golden sources", "article code", "lesson code")
+_GOLDEN_SECTION_KEYWORDS = ("golden sources", "code", "notebook")
 
 
 def _classify_section(header_lower: str) -> str:
-    """Return 'exploitation' or 'golden' for a stripped, lower-cased H2 header text."""
-    for kw in _EXPLOITATION_SECTION_KEYWORDS:
+    """Return 'golden' for a stripped, lower-cased H2 header text.
+
+    Only the "Golden Sources" section and an independent code/notebook block (any
+    header containing "code" or "notebook", e.g. "Lesson Code", "Article Code",
+    "Notebooks") are golden. Every other section — "Other Sources", "Documentation",
+    any other named section, or text before the first H2 heading — is exploitation.
+    """
+    for kw in _GOLDEN_SECTION_KEYWORDS:
         if kw in header_lower:
-            return "exploitation"
-    return "golden"
+            return "golden"
+    return "exploitation"
+
+
+def _dedupe_preserve_order(items: list[str]) -> list[str]:
+    """Return items with duplicates removed, keeping first-seen order."""
+    seen: set[str] = set()
+    deduped: list[str] = []
+    for item in items:
+        if item not in seen:
+            seen.add(item)
+            deduped.append(item)
+    return deduped
 
 
 def extract_urls_by_section(text: str) -> dict[str, list[str]]:
@@ -33,16 +49,21 @@ def extract_urls_by_section(text: str) -> dict[str, list[str]]:
     Extract URLs and classify them as 'golden' or 'exploitation' based on their H2 section.
 
     Section rules (matched by lower-cased header text):
-    - ``## Other Sources``  → exploitation
-    - ``## Golden Sources``, ``## Article Code``, ``## Lesson Code``, or any other
-      section (including text before the first H2 heading) → golden
+    - ``## Golden Sources``, or any independent code/notebook block (header containing
+      "code" or "notebook", e.g. ``## Lesson Code``, ``## Article Code``, ``## Notebooks``)
+      → golden.
+    - Everything else — ``## Other Sources``, ``## Documentation``, any other named
+      section, or text before the first H2 heading → exploitation.
+    - If a URL is found under a golden section anywhere in the document, that URL is
+      always reported as golden even if it also appears elsewhere (e.g. quoted inline
+      within a lesson section) — golden classification takes precedence.
 
     Args:
         text: The full article guideline text.
 
     Returns:
-        A dict with keys ``"golden"`` and ``"exploitation"``, each mapping to a list
-        of URLs found in that section type.
+        A dict with keys ``"golden"`` and ``"exploitation"``, each mapping to a
+        de-duplicated, order-preserving list of URLs found in that section type.
     """
     golden_urls: list[str] = []
     exploitation_urls: list[str] = []
@@ -54,12 +75,8 @@ def extract_urls_by_section(text: str) -> dict[str, list[str]]:
         if not part.strip():
             continue
         first_line = part.split("\n", 1)[0]
-        if re.match(r"^## ", first_line):
-            header_lower = first_line.lstrip("#").strip().lower()
-            section_type = _classify_section(header_lower)
-        else:
-            # Text before any H2 heading defaults to golden
-            section_type = "golden"
+        header_lower = first_line.lstrip("#").strip().lower() if re.match(r"^## ", first_line) else ""
+        section_type = _classify_section(header_lower)
 
         for url in extract_urls(part):
             if section_type == "exploitation":
@@ -67,7 +84,10 @@ def extract_urls_by_section(text: str) -> dict[str, list[str]]:
             else:
                 golden_urls.append(url)
 
-    return {"golden": golden_urls, "exploitation": exploitation_urls}
+    golden = _dedupe_preserve_order(golden_urls)
+    golden_set = set(golden)
+    exploitation = [u for u in _dedupe_preserve_order(exploitation_urls) if u not in golden_set]
+    return {"golden": golden, "exploitation": exploitation}
 
 
 def extract_urls(text: str) -> list[str]:
@@ -83,7 +103,9 @@ def extract_urls(text: str) -> list[str]:
     )
     # Strip HTML comments first so URLs inside <!-- ... --> are not extracted.
     text = re.sub(r"<!--.*?-->", "", text, flags=re.DOTALL)
-    url_pattern = re.compile(r"https?://[^\s)>\"',]+")
+    # Backtick excluded so a URL wrapped in `...` (inline code span) doesn't swallow the
+    # closing backtick, which would otherwise defeat the image-extension check below.
+    url_pattern = re.compile(r"https?://[^\s)>\"',`]+")
     return [u for u in url_pattern.findall(text) if not _IMAGE_EXTS.search(u)]
 
 
@@ -138,31 +160,33 @@ def extract_local_paths_by_section(text: str) -> dict[str, list[str]]:
     """Extract local file references and classify them as 'golden' or 'exploitation'.
 
     Uses the same section-classification rules as :func:`extract_urls_by_section`:
-    ``## Other Sources`` → exploitation; everything else → golden.
+    "Golden Sources" and independent code/notebook blocks → golden; everything else →
+    exploitation. Golden classification takes precedence for a path found in both.
 
     Returns:
-        ``{"golden": [...], "exploitation": [...]}``
+        ``{"golden": [...], "exploitation": [...]}``, each de-duplicated and
+        order-preserving.
     """
-    golden: list[str] = []
-    exploitation: list[str] = []
+    golden_paths: list[str] = []
+    exploitation_paths: list[str] = []
 
     parts = re.split(r"(?m)^(?=## )", text)
     for part in parts:
         if not part.strip():
             continue
         first_line = part.split("\n", 1)[0]
-        if re.match(r"^## ", first_line):
-            header_lower = first_line.lstrip("#").strip().lower()
-            section_type = _classify_section(header_lower)
-        else:
-            section_type = "golden"
+        header_lower = first_line.lstrip("#").strip().lower() if re.match(r"^## ", first_line) else ""
+        section_type = _classify_section(header_lower)
 
         for path in extract_local_paths(part):
             if section_type == "exploitation":
-                exploitation.append(path)
+                exploitation_paths.append(path)
             else:
-                golden.append(path)
+                golden_paths.append(path)
 
+    golden = _dedupe_preserve_order(golden_paths)
+    golden_set = set(golden)
+    exploitation = [p for p in _dedupe_preserve_order(exploitation_paths) if p not in golden_set]
     return {"golden": golden, "exploitation": exploitation}
 
 

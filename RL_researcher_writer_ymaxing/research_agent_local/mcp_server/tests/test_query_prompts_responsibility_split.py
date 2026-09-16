@@ -38,6 +38,7 @@ def _make_settings(enable_content_dedup: bool = True):
             "enable_content_dedup": enable_content_dedup,
             "maximum_exploration_rounds": 4,
             "maximum_sources_to_scrape": 6,
+            "user_plan_override_allowed": True,
         },
     )()
 

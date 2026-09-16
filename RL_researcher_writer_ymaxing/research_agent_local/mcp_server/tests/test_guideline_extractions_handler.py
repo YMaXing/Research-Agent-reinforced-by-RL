@@ -61,6 +61,15 @@ class TestExtractUrls:
         urls = extract_urls(text)
         assert all(u.startswith("http") for u in urls)
 
+    def test_ignores_image_url_wrapped_in_backticks(self):
+        text = "Include the diagram: `https://example.com/assets/diagram.png`"
+        assert extract_urls(text) == []
+
+    def test_backtick_wrapped_non_image_url_is_captured_cleanly(self):
+        text = "See `https://example.com/docs/guide` for details."
+        urls = extract_urls(text)
+        assert urls == ["https://example.com/docs/guide"]
+
 
 # ---------------------------------------------------------------------------
 # extract_local_paths
@@ -69,17 +78,17 @@ class TestExtractUrls:
 
 class TestExtractLocalPaths:
     def test_extracts_quoted_python_file(self):
-        text = 'Reference the file "src/main.py" for details.'
+        text = 'Reference the file below for details.\n"src/main.py"'
         paths = extract_local_paths(text)
         assert "src/main.py" in paths
 
     def test_extracts_quoted_notebook(self):
-        text = 'Open "analysis.ipynb" to see the results.'
+        text = 'Open the file below to see the results.\n"analysis.ipynb"'
         paths = extract_local_paths(text)
         assert "analysis.ipynb" in paths
 
     def test_extracts_quoted_markdown_file(self):
-        text = 'See "docs/guide.md" for instructions.'
+        text = 'See the file below for instructions.\n"docs/guide.md"'
         paths = extract_local_paths(text)
         assert "docs/guide.md" in paths
 
@@ -89,7 +98,7 @@ class TestExtractLocalPaths:
         assert len(paths) == 0
 
     def test_extracts_standalone_filename(self):
-        text = "Check the file main.py for the entry point."
+        text = 'Check the file below for the entry point.\n"main.py"'
         paths = extract_local_paths(text)
         assert "main.py" in paths
 
@@ -99,7 +108,7 @@ class TestExtractLocalPaths:
         assert len(paths) == 0
 
     def test_no_duplicates(self):
-        text = '"code.py" is important. Also see "code.py" again.'
+        text = '"code.py"\nSome text in between.\n"code.py"'
         paths = extract_local_paths(text)
         assert paths.count("code.py") == 1
 
@@ -108,7 +117,7 @@ class TestExtractLocalPaths:
         assert extract_local_paths(text) == []
 
     def test_multiple_different_files(self):
-        text = '"a.py" and "b.ipynb" and "c.md"'
+        text = '"a.py"\n"b.ipynb"\n"c.md"'
         paths = extract_local_paths(text)
         assert "a.py" in paths
         assert "b.ipynb" in paths
@@ -159,6 +168,24 @@ class TestExtractUrlsBySection:
         assert "https://github.com/owner/repo2" in result["golden"]
         assert result["exploitation"] == []
 
+    def test_notebooks_section_is_golden(self):
+        text = (
+            "## Notebooks\n"
+            "1. [Notebook](https://github.com/owner/repo3)\n"
+        )
+        result = extract_urls_by_section(text)
+        assert "https://github.com/owner/repo3" in result["golden"]
+        assert result["exploitation"] == []
+
+    def test_documentation_section_is_exploitation(self):
+        text = (
+            "## Documentation\n"
+            "1. [Docs](https://docs.example.com/guide)\n"
+        )
+        result = extract_urls_by_section(text)
+        assert "https://docs.example.com/guide" in result["exploitation"]
+        assert result["golden"] == []
+
     def test_mixed_sections(self):
         text = (
             "## Golden Sources\n"
@@ -170,23 +197,24 @@ class TestExtractUrlsBySection:
         assert "https://golden.example.com" in result["golden"]
         assert "https://other.example.com" in result["exploitation"]
 
-    def test_urls_before_any_section_are_golden(self):
+    def test_urls_before_any_section_are_exploitation(self):
         text = (
             "Intro text with https://intro.example.com\n"
             "## Other Sources\n"
             "1. [Other](https://other.example.com)\n"
         )
         result = extract_urls_by_section(text)
-        assert "https://intro.example.com" in result["golden"]
+        assert "https://intro.example.com" in result["exploitation"]
         assert "https://other.example.com" in result["exploitation"]
 
-    def test_unknown_section_defaults_to_golden(self):
+    def test_unknown_section_defaults_to_exploitation(self):
         text = (
             "## References\n"
             "1. [Ref](https://ref.example.com)\n"
         )
         result = extract_urls_by_section(text)
-        assert "https://ref.example.com" in result["golden"]
+        assert "https://ref.example.com" in result["exploitation"]
+        assert result["golden"] == []
 
     def test_empty_text_returns_empty_lists(self):
         result = extract_urls_by_section("")
@@ -197,6 +225,26 @@ class TestExtractUrlsBySection:
         text = "## OTHER SOURCES\n1. [X](https://x.example.com)\n"
         result = extract_urls_by_section(text)
         assert "https://x.example.com" in result["exploitation"]
+
+    def test_duplicate_url_within_same_section_is_deduplicated(self):
+        text = (
+            "## Golden Sources\n"
+            "1. [Gold](https://golden.example.com)\n"
+            "2. [Gold again](https://golden.example.com)\n"
+        )
+        result = extract_urls_by_section(text)
+        assert result["golden"].count("https://golden.example.com") == 1
+
+    def test_url_cited_in_body_and_listed_as_golden_is_golden_only(self):
+        text = (
+            "## Section 2 - Theory\n"
+            "Quoting [source](https://youtube.com/watch?v=abc) here.\n"
+            "## Golden Sources\n"
+            "1. [Same source](https://youtube.com/watch?v=abc)\n"
+        )
+        result = extract_urls_by_section(text)
+        assert result["golden"] == ["https://youtube.com/watch?v=abc"]
+        assert result["exploitation"] == []
 
 
 # ---------------------------------------------------------------------------

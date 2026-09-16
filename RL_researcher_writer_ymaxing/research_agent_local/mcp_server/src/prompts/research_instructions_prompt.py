@@ -121,16 +121,21 @@ If the user doesn't provide a research directory, you should ask for it before e
     1.3 Extract the URLs from the ARTICLE_GUIDELINE_FILE with the "extract_guidelines_urls" tool. This tool reads the
     ARTICLE_GUIDELINE_FILE and categorises all references by the H2 section they appear in:
 
-    **Golden sources** (from "Golden Sources", "Article Code", "Lesson Code", or any other section):
+    **Golden sources** (from "Golden Sources", or any independent code/notebook block such as "Article Code",
+    "Lesson Code", "Notebooks", etc. — matched by "code"/"notebook" appearing in the header):
     • "github_urls" - GitHub links that are golden sources;
     • "youtube_videos_urls" - YouTube video links that are golden sources;
     • "other_urls" - all other HTTP/HTTPS links (including arXiv papers) that are golden sources;
     • "local_files" - relative paths to local files mentioned in the guidelines.
 
-    **Exploitation sources** (from "Other Sources" section only):
-    • "exploitation_github_urls" - GitHub links listed under "Other Sources";
-    • "exploitation_youtube_videos_urls" - YouTube links listed under "Other Sources";
-    • "exploitation_other_urls" - all other HTTP/HTTPS links (including arXiv papers) listed under "Other Sources".
+    **Exploitation sources** (from "Other Sources", "Documentation", or any other section not matched as golden above):
+    • "exploitation_github_urls" - GitHub links listed under a non-golden section;
+    • "exploitation_youtube_videos_urls" - YouTube links listed under a non-golden section;
+    • "exploitation_other_urls" - all other HTTP/HTTPS links (including arXiv papers) listed under a non-golden section.
+
+    Each list above is de-duplicated. If the same URL/local-file appears under both a golden and a
+    non-golden section (e.g. quoted inline in a lesson section and also formally listed under "Golden
+    Sources"), it is only ever reported once, as golden.
 
     **Reference-only URLs** (blocklisted from scraping):
     • "local_file_reference_urls" - URLs commented out (``<!-- [Title](URL) -->``) directly above a

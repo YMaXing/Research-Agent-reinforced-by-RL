@@ -3,7 +3,7 @@ Evaluation/ablation variant of the exploration-preset predictor.
 
 NOT part of the production MCP server — lives outside mcp_server/ so production and
 evaluation code stay in strictly separate directories, and is used exclusively by
-evaluation/test_grok_planner.py to measure the RL model's marginal contribution and to
+evaluation/test_planner.py to measure the RL model's marginal contribution and to
 regression-test the (disabled-by-default) LLM-planner stage against the deterministic policy
 guard. Adds the grok_only/rl_only ablation switches and the LLM-planner call that
 mcp_server/src/tools/predict_exploration_preset_tool.py (the production tool) intentionally
@@ -19,7 +19,7 @@ sys.path insertion of the mcp_server/ directory, mirroring how those handlers th
 cross-import rl_inference_service/_digest_parse.py) rather than duplicating their logic, so evaluation
 always tracks the exact production Stage-1 pipeline. Run with the mcp_server venv, e.g.:
 
-    uv run --project mcp_server python evaluation/test_grok_planner.py
+    uv run --project mcp_server python evaluation/test_planner.py
 """
 
 from __future__ import annotations

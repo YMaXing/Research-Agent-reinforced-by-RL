@@ -216,6 +216,21 @@ class TestDeduplicateNewQueriesAgainstHistory:
 # ---------------------------------------------------------------------------
 
 class TestDeduplicateEdgeCases:
+    async def test_content_as_block_list_is_handled(self, fake_plain_model_factory, tmp_path):
+        """gemini-3.7-flash-style responses: .content is a list of {"type": "text", ...} blocks."""
+        kept = [q for q, _ in _SAMPLE_NEW]
+        model = fake_plain_model_factory([{"type": "text", "text": _kept_json(kept)}])
+        history = tmp_path / "full.md"
+        history.write_text("", encoding="utf-8")
+
+        with patch(_PATCH_TARGET, return_value=model):
+            result = await deduplicate_new_queries_against_history(
+                _SAMPLE_NEW, history, "exploitation"
+            )
+
+        assert len(result.kept) == 3
+        assert result.rejected == []
+
     async def test_empty_input_returns_empty_without_llm_call(self, tmp_path):
         history = tmp_path / "full.md"
         history.write_text("", encoding="utf-8")

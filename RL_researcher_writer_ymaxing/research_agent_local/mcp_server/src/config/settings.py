@@ -54,12 +54,12 @@ class Settings(BaseSettings):
     )
     
     # LLM Configuration
-    youtube_transcription_model: str = Field(default="gemini-2.5-flash", description="Model for YouTube transcription, only supported Gemini models")
-    scraping_model: str = Field(default="gemini-2.5-flash", description="Model for web scraping")
-    query_generation_model: str = Field(default="grok-4.20-reasoning", description="Model for query generation")
-    search_enhancement_model: str = Field(default="grok-4-1-fast-non-reasoning", description="Model for search enhancement")
-    source_selection_model: str = Field(default="grok-4.20-reasoning", description="Model for source selection")
-    content_dedup_model: str = Field(default="grok-4-1-fast-reasoning", description="Model for content deduplication")
+    youtube_transcription_model: str = Field(default="gemini-3.7-flash", description="Model for YouTube transcription, only supported Gemini models")
+    scraping_model: str = Field(default="gemini-3.7-flash", description="Model for web scraping")
+    query_generation_model: str = Field(default="grok-4.6", description="Model for query generation")
+    search_enhancement_model: str = Field(default="grok-4.6-non-reasoning", description="Model for search enhancement")
+    source_selection_model: str = Field(default="grok-4.6", description="Model for source selection")
+    content_dedup_model: str = Field(default="grok-4.6-reasoning", description="Model for content deduplication")
     
     # API Keys
     google_api_key: SecretStr | None = Field(
@@ -119,8 +119,10 @@ class Settings(BaseSettings):
     def llm_configs(self) -> Dict[str, Dict[str, Any]]:
         """Get the LLM configurations."""
         return {
-            "gemini-3-pro": {
-                "identifier": "google_genai:gemini-3-pro",
+            "gemini-3.1-pro-preview": {
+                # NOTE: previously named "gemini-3-pro" with identifier "google_genai:gemini-3-pro",
+                # which is not a real Gemini model id (was never usable). Fixed to a valid identifier.
+                "identifier": "google_genai:gemini-3.1-pro-preview",
                 "api_key_env_var": "GOOGLE_API_KEY",
                 "params": {
                     "temperature": 0.8,
@@ -129,7 +131,18 @@ class Settings(BaseSettings):
                     "max_retries": 3,
                 },
             },
+            "gemini-3.7-flash": {
+                "identifier": "google_genai:gemini-3.7-flash",
+                "api_key_env_var": "GOOGLE_API_KEY",
+                "params": {
+                    "temperature": 1,
+                    "thinking_budget": 1000,
+                    "include_thoughts": False,
+                    "max_retries": 3,
+                },
+            },
             "gemini-2.5-flash": {
+                # Kept for backward compatibility; no longer the default for any role.
                 "identifier": "google_genai:gemini-2.5-flash",
                 "api_key_env_var": "GOOGLE_API_KEY",
                 "params": {
@@ -139,11 +152,30 @@ class Settings(BaseSettings):
                     "max_retries": 3,
                 },
             },
-            "grok-4.20-reasoning": {
-                "identifier": "xai:grok-4.20-0309-reasoning",
+            "grok-4.6": {
+                "identifier": "xai:grok-4.6",
                 "api_key_env_var": "XAI_API_KEY",
                 "params": {
                     "temperature": 0.8,
+                    # supports low/medium/high/xhigh; high is xAI's own default. grok-4.6 is a single
+                    # unified model (no separate reasoning/non-reasoning SKU like the 4.20 generation).
+                    "reasoning_effort": "high",
+                    "max_retries": 3,
+                },
+            },
+            "grok-4.6-reasoning": {
+                "identifier": "xai:grok-4.6",
+                "api_key_env_var": "XAI_API_KEY",
+                "params": {
+                    "temperature": 0.8,
+                    "max_retries": 3,
+                },
+            },
+            "grok-4.6-non-reasoning": {
+                "identifier": "xai:grok-4.6",
+                "api_key_env_var": "XAI_API_KEY",
+                "params": {
+                    "temperature": 0.0,
                     "max_retries": 3,
                 },
             },
@@ -156,6 +188,7 @@ class Settings(BaseSettings):
                 },
             },
             "grok-4-1-fast-non-reasoning": {
+                # Kept for backward compatibility; deprecated by xAI in favor of grok-4.20-non-reasoning.
                 "identifier": "xai:grok-4-1-fast-non-reasoning",
                 "api_key_env_var": "XAI_API_KEY",
                 "params": {
@@ -163,6 +196,7 @@ class Settings(BaseSettings):
                 },
             },
             "grok-4-1-fast-reasoning": {
+                # Kept for backward compatibility; deprecated by xAI in favor of grok-4.20-reasoning.
                 "identifier": "xai:grok-4-1-fast-reasoning",
                 "api_key_env_var": "XAI_API_KEY",
                 "params": {

@@ -84,7 +84,7 @@ if not os.environ.get("ENV_FILE_PATH"):
 
 from langchain_core.messages import HumanMessage, SystemMessage  # noqa: E402
 
-from brown.models import ModelConfig, SupportedModels, get_model  # noqa: E402
+from brown.models import ModelConfig, SupportedModels, extract_text_content, get_model  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -296,7 +296,7 @@ async def _generate_variant(
                 HumanMessage(content=user_prompt),
             ]
             response = await llm.ainvoke(messages)
-            text = response.content.strip()
+            text = extract_text_content(response.content).strip()
             if not text:
                 raise ValueError("LLM returned empty response")
             return text

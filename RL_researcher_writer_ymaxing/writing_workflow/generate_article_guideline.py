@@ -108,7 +108,7 @@ if not os.environ.get("ENV_FILE_PATH"):
 
 from langchain_core.messages import HumanMessage, SystemMessage  # noqa: E402
 
-from brown.models import ModelConfig, SupportedModels, get_model  # noqa: E402
+from brown.models import ModelConfig, SupportedModels, extract_text_content, get_model  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -905,7 +905,7 @@ async def _extract_brief_from_article(
                 HumanMessage(content=user_message),
             ]
             response = await llm.ainvoke(messages)
-            text = response.content.strip()
+            text = extract_text_content(response.content).strip()
 
             # Strip markdown code fences if the model wrapped the output
             text = re.sub(r"^```(?:yaml)?\s*\n", "", text)
@@ -1199,7 +1199,7 @@ async def _generate_guideline(
                 HumanMessage(content=user_message),
             ]
             response = await llm.ainvoke(messages)
-            text = response.content.strip()
+            text = extract_text_content(response.content).strip()
             if not text:
                 raise ValueError("LLM returned an empty response")
             # Post-process: inject ## Article Code if brief specifies it but model omitted it

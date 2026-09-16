@@ -27,20 +27,21 @@ def _setup_dir(tmp_path: Path, guideline_text: str) -> Path:
 
 class TestExtractGuidelinesUrlsTool:
     def test_success_with_mixed_urls(self, tmp_path):
+        # No H2 headers present, so all references default to exploitation.
         text = (
             "GitHub: https://github.com/owner/repo\n"
             "YouTube: https://youtube.com/watch?v=abc\n"
             "Web: https://docs.example.com/page\n"
-            'Local: "src/main.py"\n'
+            'Local:\n"src/main.py"\n'
         )
         research_dir = _setup_dir(tmp_path, text)
         result = extract_guidelines_urls_tool(str(research_dir))
 
         assert result["status"] == "success"
-        assert result["github_sources_count"] == 1
-        assert result["youtube_sources_count"] == 1
-        assert result["web_sources_count"] == 1
-        assert result["local_files_count"] >= 1
+        assert result["exploitation_github_sources_count"] == 1
+        assert result["exploitation_youtube_sources_count"] == 1
+        assert result["exploitation_web_sources_count"] == 1
+        assert result["exploitation_local_files_count"] >= 1
 
         # Check that output file was created
         output_path = research_dir / RESEARCH_OUTPUT_FOLDER / GUIDELINES_FILENAMES_FILE

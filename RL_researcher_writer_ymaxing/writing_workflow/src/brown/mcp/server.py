@@ -35,6 +35,20 @@ mcp = FastMCP("Brown MCP Server")
 logger.info("Brown MCP Server initialized successfully")
 
 
+def _sanitize_path_str(raw_path: str) -> str:
+    """Strip stray whitespace/quote characters MCP clients sometimes leave around path arguments.
+
+    An orchestrating LLM can echo a user-typed path verbatim, quote characters and all
+    (e.g. `'" /path/to/dir"'`), producing a literal non-existent path once turned into a
+    `Path`. Only a single matching pair of leading/trailing quotes is stripped, and only
+    after surrounding whitespace is removed, so a legitimate path is never truncated.
+    """
+    cleaned = raw_path.strip()
+    if len(cleaned) >= 2 and cleaned[0] == cleaned[-1] and cleaned[0] in ('"', "'"):
+        cleaned = cleaned[1:-1].strip()
+    return cleaned
+
+
 async def parse_message(chunk_data: dict, ctx: Context, prefix: str = "") -> None:
     """Parse and report workflow streaming messages to the MCP client.
 
@@ -114,6 +128,7 @@ async def generate_article(dir_path: Path, ctx: Context) -> str:
     async with build_short_term_memory(app_config) as checkpointer:
         generate_article_workflow = build_generate_article_workflow(checkpointer=checkpointer)
 
+        dir_path = Path(_sanitize_path_str(str(dir_path)))
         thread_id = str(uuid.uuid4())
         tracer = tracing.build_handler(thread_id, tags=["generate"])
         config: RunnableConfig = {
@@ -203,6 +218,7 @@ async def edit_article(
         tracer = tracing.build_handler(thread_id, tags=["edit"])
         config: RunnableConfig = {"configurable": {"thread_id": thread_id}, "callbacks": [tracer]}
 
+        article_path = _sanitize_path_str(article_path)
         dir_path = Path(article_path).parent
         await ctx.info(f"Editing article from file {article_path}")
         await ctx.info(f"Using directory `{dir_path}` as context")
@@ -311,6 +327,7 @@ async def edit_selected_text(
         tracer = tracing.build_handler(thread_id, tags=["edit_selected_text"])
         config: RunnableConfig = {"configurable": {"thread_id": thread_id}, "callbacks": [tracer]}
 
+        article_path = _sanitize_path_str(article_path)
         dir_path = Path(article_path).parent
         await ctx.info(f"Editing selected text from file {article_path}")
         await ctx.info(f"Using directory `{dir_path}` as context")

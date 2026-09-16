@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     google_api_key: SecretStr | None = Field(default=None, alias="GOOGLE_API_KEY", description="The Google API key for Gemini models")
     xai_api_key: SecretStr | None = Field(default=None, alias="XAI_API_KEY", description="The xAI API key for Grok models")
     xai_base_url: str = Field(default="https://api.x.ai/v1", alias="XAI_BASE_URL", description="The xAI API base URL")
+    # NOTE: both must be a key into orchestrator_configs below (not a raw API model string) —
+    # handle_agent_loop_utils resolves the actual model id + params through that dict.
     orchestrator_key: str = Field(default="grok-4.6", description="Default orchestrator model key")
     model_id: str = Field(default="grok-4.6", description="Default model ID for LLM operations")
     thinking_budget: int = Field(default=1024, alias="THINKING_BUDGET", description="Thinking budget for latency vs. depth tradeoff")
@@ -50,7 +52,17 @@ class Settings(BaseSettings):
     def orchestrator_configs(self) -> Dict[str, Dict[str, Any]]:
         """Get the orchestrator configurations."""
         return {
+            "gemini-3.7-flash": {
+                "identifier": "google_genai:gemini-3.7-flash",
+                "params": {
+                    "temperature": 1,
+                    "thinking_budget": -1,
+                    "include_thoughts": True,
+                    "max_retries": 3,
+                },
+            },
             "gemini-2.5-flash": {
+                # Kept for backward compatibility; no longer the default.
                 "identifier": "google_genai:gemini-2.5-flash",
                 "params": {
                     "temperature": 1,

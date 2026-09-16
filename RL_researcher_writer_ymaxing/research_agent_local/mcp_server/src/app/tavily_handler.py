@@ -212,10 +212,16 @@ async def run_queries(article_id: str, queries: List[str]) -> None:
 
     logger.info(f"Executing {len(queries)} Tavily queries concurrently...")
     tasks = [run_tavily_search(query) for query in queries]
-    search_results = await asyncio.gather(*tasks)
+    # return_exceptions=True isolates a single failed query so one transient LLM/Tavily
+    # error doesn't lose results for the rest of the batch (matches run_tavily_research_tool.py).
+    raw_results = await asyncio.gather(*tasks, return_exceptions=True)
     logger.info("...all Tavily queries finished. Appending results.")
 
-    for query, (_, answer_by_source, citations) in zip(queries, search_results):
+    for query, result in zip(queries, raw_results):
+        if isinstance(result, BaseException):
+            logger.error(f"❌ Tavily query failed (skipped): {query!r} — {result}")
+            continue
+        _, answer_by_source, citations = result
         if citations:
             next_global_id = append_tavily_results(
                 results_path,

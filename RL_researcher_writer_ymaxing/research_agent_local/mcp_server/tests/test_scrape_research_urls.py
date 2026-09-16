@@ -307,6 +307,44 @@ class TestCleanMarkdown:
         )
         assert result == "part one part two"
 
+    async def test_joins_text_content_blocks(self):
+        """gemini-3.7-flash-style responses: content is a list of {"type": "text", "text": ...} blocks."""
+
+        class BlockResponseLLM(FakeLLM):
+            async def ainvoke(self, prompt: Any, **kwargs: Any) -> Any:
+                msg = MagicMock()
+                msg.content = [
+                    {"type": "text", "text": "cleaned markdown "},
+                    {"type": "text", "text": "body"},
+                ]
+                return msg
+
+        fake_llm = BlockResponseLLM()
+        result = await scraping_handler.clean_markdown(
+            "raw", "guidelines", "https://example.com", fake_llm
+        )
+        assert result == "cleaned markdown body"
+
+    async def test_non_text_blocks_are_dropped(self):
+        """Non-text blocks (e.g. "thinking", tool-call signatures) must not leak into output."""
+
+        class MixedBlockResponseLLM(FakeLLM):
+            async def ainvoke(self, prompt: Any, **kwargs: Any) -> Any:
+                msg = MagicMock()
+                msg.content = [
+                    {"type": "thinking", "thinking": "reasoning about the content..."},
+                    {"type": "text", "text": "final cleaned markdown", "extras": {"signature": "abc123"}},
+                ]
+                return msg
+
+        fake_llm = MixedBlockResponseLLM()
+        result = await scraping_handler.clean_markdown(
+            "raw", "guidelines", "https://example.com", fake_llm
+        )
+        assert result == "final cleaned markdown"
+        assert "thinking" not in result
+        assert "signature" not in result
+
     async def test_timeout_returns_original(self, monkeypatch):
         """When the LLM call times out, the original markdown is returned."""
 
@@ -693,6 +731,28 @@ class TestScrapeArxivUrl:
         assert result["success"] is True
         assert result["markdown"] == "latex cleaned output"
         assert len(fake_llm.prompts_received) == 1
+
+    async def test_block_list_content_is_handled_in_latex_cleanup(self):
+        """gemini-3.7-flash-style responses: .content is a list of {"type": "text", ...} blocks."""
+        fake_llm = FakeLLM(
+            [
+                {"type": "thinking", "thinking": "fixing LaTeX quirks..."},
+                {"type": "text", "text": "latex cleaned output"},
+            ]
+        )
+        fake_llm.get_num_tokens = lambda text: 10
+        raw_content = "# Short Paper with $\\LaTeX$"
+        fake_ingest_result = MagicMock(content=raw_content)
+
+        with patch(self._INGEST_PATCH, new=AsyncMock(return_value=(fake_ingest_result, {"title": "Short Paper"}))):
+            result = await scraping_handler.scrape_arxiv_url(
+                "https://arxiv.org/abs/2312.05678",
+                "guidelines",
+                fake_llm,
+            )
+
+        assert result["success"] is True
+        assert result["markdown"] == "latex cleaned output"
 
 
 # ===========================================================================
