@@ -200,6 +200,10 @@ configs/
 inputs/
 !writing_workflow/configs/
 !writing_workflow/inputs/
+# The mocked test-config fixture is a nested "configs" dir the rule above also
+# catches — un-ignore it too, or CI (a fresh clone) fails with CONFIG_FILE
+# "Path does not point to a file" since the file was never actually committed.
+!writing_workflow/tests/fixtures/configs/
 
 # Base model (download from HuggingFace)
 models/
