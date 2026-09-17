@@ -36,14 +36,24 @@ def read_file_safe(path: Path) -> str:
 
 def validate_research_folder(research_path: Path) -> None:
     """
-    Validate that the research folder exists and is a directory.
+    Validate that the research folder is an absolute path that exists and is a directory.
+
+    A relative path silently resolves against whatever the server process's
+    current working directory happens to be, which can create/read from an
+    unintended location instead of failing loudly (e.g. a stray leading
+    character turning an absolute path into a relative one).
 
     Args:
         research_path: Path to the research folder to validate
 
     Raises:
-        ValueError: If the research folder doesn't exist or is not a directory
+        ValueError: If the path is not absolute, or the folder doesn't exist or is not a directory
     """
+    if not research_path.is_absolute():
+        msg = f"research_directory must be an absolute path, got: {research_path}"
+        logger.error(msg)
+        raise ValueError(msg)
+
     if not research_path.exists():
         msg = f"Research folder does not exist: {research_path}"
         logger.error(msg)

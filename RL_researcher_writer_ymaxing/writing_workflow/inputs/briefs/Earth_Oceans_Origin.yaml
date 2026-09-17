@@ -1,0 +1,89 @@
+# Auto-extracted brief for: Earth_Oceans_Origin
+# Source: article_ground_truth.md
+# REVIEW BEFORE USE — check all fields, especially those marked
+# '# TODO: review' which require course-context knowledge.
+# Then run:
+#   uv run python generate_article_guideline.py --article Earth_Oceans_Origin
+
+lesson_number: 8
+title: Where Did Earth Get Its Oceans? Maybe It Made Them Itself.
+topic_summary:
+  "Plan a lesson contrasting comets versus asteroids as sources of Earth's water, using D/H ratio isotopic evidence
+  from missions like Giotto, Rosetta, and sample returns from Ryugu and Winchcombe meteorites. Introduce the emerging endogenous
+  water production mechanism via high-pressure hydrogen-magma ocean reactions, grounded in exoplanet observations, enstatite
+  chondrite reanalysis, and recent diamond-anvil/laser experiments. Conclude by weighing the mixed-source hypothesis against
+  ongoing uncertainties in late bombardment and atmospheric retention, plus implications for planetary habitability.
+
+  "
+why_valuable:
+  "This topic equips AI engineers with a model of how scientific consensus evolves through conflicting evidence,
+  experimental validation, and paradigm shifts — skills directly transferable to building agents that weigh hypotheses, integrate
+  multimodal data, and reason about complex, underdetermined real-world systems.
+
+  "
+target_length_words: 2406
+theory_practice_ratio: 100% theory - 0% practice
+lesson_scope:
+  "This lesson (Lesson 8) follows modules on solar system formation and isotopic tracers; it precedes lessons
+  applying similar evidence-based reasoning to exoplanet atmosphere modeling and astrobiology search strategies.
+
+  "
+audience:
+  "AI engineers familiar with data-driven hypothesis testing, basic chemistry, and prior course coverage of planetary
+  science who want to deepen skills in evaluating competing scientific models.
+
+  "
+concepts_from_previous_lessons:
+  - Isotopic ratios (D/H) as forensic tracers for material provenance
+  - Early solar system dynamics including Kuiper Belt, asteroid belt, and late heavy bombardment
+  - Enstatite chondrites as analogs for Earth's bulk composition
+concepts_for_future_lessons:
+  - Exoplanet atmosphere retention, sub-Neptune water inventories, and habitability conditions
+  - Multi-source synthesis in complex systems and implications for origin-of-life modeling
+sections:
+  - title: Introduction
+    target_words: 365
+    key_points:
+      - NASA Europa mission and Ada Limón poem as hook illustrating water's universal role in uniting search for life
+      - Surprising scientific uncertainty about Earth's ocean origins despite decades of solar-system exploration
+      - Historical preference for comets, shift to asteroids after D/H mismatches, and rise of indigenous water-production theory
+      - Role of spacecraft flybys, meteorite forensics, exoplanet statistics, and high-pressure lab experiments in reshaping the
+        narrative
+  - title: A Showdown Between Comets and Asteroids
+    target_words: 918
+    key_points:
+      - "Comets as early frontrunner: formation in Kuiper Belt/Oort cloud, high water yield, 'bang for buck' delivery potential"
+      - "D/H ratio diagnostic: Giotto Halley encounter, Hale-Bopp spectroscopy, and Rosetta 67P results all showing elevated deuterium
+        versus Earth"
+      - "Asteroid counter-case: frequent impacts, meteorite collections, Winchcombe D/H match, and Hayabusa2 Ryugu sample confirmation"
+      - "Persistent asteroid shortcomings: noble-gas tracer mismatches and dependence on debated late veneer bombardment"
+      - Pivot to radical alternative — Earth generating its own water internally rather than relying on exogenous delivery
+  - title: Hydrogen, Meet Magma
+    target_words: 821
+    key_points:
+      - Reevaluation of enstatite chondrites revealing hidden hydrogen in organics, silicates, and sulfides
+      - Inference of hydrogen-rich early atmospheres on rocky worlds drawn from exoplanet formation simulations
+      - "Core mechanism: high-pressure hydrogen reacting with oxygen in magma ocean under extreme conditions"
+      - Lab breakthroughs using diamond anvils and lasers to replicate sub-Neptune environments, yielding up to 1000× predicted
+        water
+      - "Applicability debate for Earth-mass planets: hydrogen retention limits, required pressure thresholds, and reaction timescale
+        sufficiency"
+      - Broad habitability implication that many rocky planets may be 'born water-rich' without external delivery
+  - title: Drowning in a Sea of Possibilities
+    target_words: 302
+    key_points:
+      - Comet resurgence via Hartley 2 Herschel data, reanalysis of Rosetta 67P dust contamination, and 12P/Pons-Brooks Earth-like
+        D/H
+      - "Mixed-source synthesis: probable combination of comets, asteroids, and indigenous production"
+      - Complicating factors of post-delivery geological, atmospheric, and biological processing that obscure original signatures
+      - "Parallel to origin-of-life question: increasing knowledge yields richer, more nuanced story rather than final certainty"
+golden_sources:
+  - title: Rosetta fuels debate on origin of Earth’s oceans
+    url: https://www.esa.int/Science_Exploration/Space_Science/Rosetta/Rosetta_fuels_debate_on_origin_of_Earth_s_oceans
+  - title: Earth’s water probably didn’t come from comets, Caltech researchers say
+    url: https://www.caltech.edu/about/news/earths-water-probably-didnt-come-comets-caltech-researchers-say-315
+  - title: Formation of water in magma oceans
+    url: https://www.nature.com/articles/s41586-023-05823-0
+  - title: High-pressure hydrogen-magma experiments
+    url: https://www.nature.com/articles/s41586-025-09630-7
+other_sources: []

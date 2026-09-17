@@ -1,0 +1,150 @@
+  (skipped 9 dir(s) with no article_oracle.json yet: 02_workflows_vs_agents, 02_workflows_vs_agents_OLD, 03_context_engineering, 05_workflow_patterns, 06_tools, 06_tools_OLD, 08_react_practice, 09_RAG ...)
+
+####################################################################################################
+REWARD-SIGNAL-QUALITY REPORT -- 24 TRAIN article-variant(s), N=3 draws each (1 production + 2 replicate(s))
+Generated 2026-08-15T18:31:07.991003+00:00
+####################################################################################################
+
+====================================================================================================
+STEP A: noise floor (per-cell reward sd across independent replicates)
+====================================================================================================
+Measured 684 (section, arm) cells across replicates [1, 2]
+  articles: ['02_workflows_vs_agents__var_minimal', '02_workflows_vs_agents__var_standard', '02_workflows_vs_agents__var_demanding', '03_context_engineering__var_minimal', '03_context_engineering__var_standard', '03_context_engineering__var_demanding', '05_workflow_patterns__var_minimal', '05_workflow_patterns__var_standard', '05_workflow_patterns__var_demanding', '06_tools__var_minimal', '06_tools__var_standard', '06_tools__var_demanding', '08_react_practice__var_minimal', '08_react_practice__var_standard', '08_react_practice__var_demanding', '09_RAG__var_minimal', '09_RAG__var_standard', '09_RAG__var_demanding', '10_memory_knowledge_access__var_minimal', '10_memory_knowledge_access__var_standard', '10_memory_knowledge_access__var_demanding', '11_multimodal__var_minimal', '11_multimodal__var_standard', '11_multimodal__var_demanding']
+
+REWARD NOISE (sd of the same section+arm across independent replicates):
+  mean sd     = 0.0645
+  median sd   = 0.0658
+  p75 sd      = 0.1114
+  p90 sd      = 0.1414
+  max sd      = 0.4632
+  share of cells with sd == 0 (perfectly stable): 40.6%
+
+REWARD NOISE (max-min range across replicates, same cell):
+  mean range  = 0.0913
+  median range= 0.0930
+  p90 range   = 0.2000
+
+ARM-DIFFERENCE noise (sd*sqrt(2), what a top1-vs-top2 margin is compared against):
+  1x diff-sd  = 0.0913
+  2x diff-sd  = 0.1825
+
+INTERPRETATION vs the current sigma_floor = 0.04:
+  46.2% of cells have replicate-noise sd BELOW 0.04
+  => a spread of 0.04 between two arms is 0.62x the mean per-cell noise sd
+
+Worst 12 cells by noise sd:
+  05_workflow_patterns__var_demanding standard  n=2 sd=0.4632 range=0.6550  S7::section-7-orchestrator-worker-patter
+  10_memory_knowledge_access__var_demanding light     n=2 sd=0.3889 range=0.5500  S6::section-6-real-world-lessons-challen
+  06_tools__var_demanding    standard  n=2 sd=0.3652 range=0.5165  S8::section-8-popular-tools-used-within-
+  05_workflow_patterns__var_demanding deep      n=2 sd=0.3276 range=0.4633  S7::section-7-orchestrator-worker-patter
+  11_multimodal__var_demanding deep      n=2 sd=0.3182 range=0.4500  S5::section-5-foundations-of-multimodal-
+  05_workflow_patterns__var_demanding light     n=2 sd=0.2864 range=0.4050  S6::section-building-a-basic-routing-wor
+  06_tools__var_standard     light     n=2 sd=0.2846 range=0.4025  S8::section-8-popular-tools-used-within-
+  09_RAG__var_demanding      standard  n=2 sd=0.2846 range=0.4025  S4::section-4-advanced-rag-techniques
+  09_RAG__var_standard       deep      n=2 sd=0.2828 range=0.4000  S5::section-5-agentic-rag
+  10_memory_knowledge_access__var_minimal standard  n=2 sd=0.2828 range=0.4000  S5::section-5-memory-implementations-wit
+  09_RAG__var_minimal        deep      n=2 sd=0.2569 range=0.3634  S5::section-5-agentic-rag
+  03_context_engineering__var_demanding deep      n=2 sd=0.2563 range=0.3625  S6::section-6-key-strategies-for-context
+
+====================================================================================================
+STEP B: section-level GRPO signal quality -- single-draw vs. averaged(N=3), all TRAIN sections
+====================================================================================================
+(SIGMA_FLOOR=0.04, NEAR_TIE_MARGIN=0.06 -- train_grpo.py's own defaults)
+
+  single-draw            n= 171  flat-drop=  0.0%  floored(kept)= 22.2%  near-tie= 58.5%  mean-margin=0.0974  median-margin=0.0393  mean-normAdv=1.200  dist=[sk50/li49/st38/de34]
+  averaged(N=3)          n= 171  flat-drop=  2.3%  floored(kept)= 25.7%  near-tie= 56.7%  mean-margin=0.0680  median-margin=0.0501  mean-normAdv=1.235  dist=[sk46/li54/st34/de37]
+
+Section-level raw oracle-argmax flip rate (single-draw arm vs. averaged arm, same section):
+  80/171 (46.8%) sections change their argmax arm under averaging
+
+====================================================================================================
+STEP C: defensible-section share (margin vs. noise-sd threshold)
+====================================================================================================
+thresholds: single-draw 1x=0.0913 2x=0.1825  |  averaged(N=3, sqrt(3)-shrunk) 1x=0.0527 2x=0.1054
+  margin > 1x noise-sd: single-draw 51/171 (29.8%)  ->  averaged 84/171 (49.1%)
+  margin > 2x noise-sd: single-draw 29/171 (17.0%)  ->  averaged 33/171 (19.3%)
+  (corpus context, all 282 production sections, single-draw only: OLD-noise-floor 1x share=45/282 (16.0%)  NEW-noise-floor 1x share=82/282 (29.1%))
+
+====================================================================================================
+STEP D: article-level production (single-draw) vs. averaged oracle_arm/margin
+====================================================================================================
+article                                    tier            | production   margin |  averaged   margin | votes
+-------------------------------------------------------------------------------------------------------------
+02_workflows_vs_agents__var_minimal        POLICY-FORCED   |      skip  -0.1479 |     light   0.0348 | light,light,deep   (hard-ruled)
+02_workflows_vs_agents__var_standard       CRITICAL        |     light  -0.0019 |     light   0.0836 | standard,light,light CONFIRMED
+02_workflows_vs_agents__var_demanding      MODERATE        |     light   0.0693 |     light   0.0028 | light,deep,standard CONFIRMED
+03_context_engineering__var_minimal        POLICY-FORCED   |      skip   0.0020 |      skip   0.0059 | skip,standard,standard (hard-ruled)
+03_context_engineering__var_standard       MODERATE        |  standard   0.0817 |  standard   0.0195 | standard,deep,light CONFIRMED
+03_context_engineering__var_demanding      CRITICAL        |     light   0.0241 |     light   0.0512 | light,light,light  CONFIRMED
+05_workflow_patterns__var_minimal          POLICY-FORCED   |      skip  -0.0059 |  standard   0.0120 | standard,light,standard (hard-ruled)
+05_workflow_patterns__var_standard         CRITICAL        |     light   0.0076 |     light   0.0384 | light,light,light  CONFIRMED
+05_workflow_patterns__var_demanding        HIGH            |     light   0.0302 |     light   0.0202 | light,standard,deep CONFIRMED
+06_tools__var_minimal                      POLICY-FORCED   |      skip   0.0240 |     light   0.0097 | skip,standard,deep (hard-ruled)
+06_tools__var_standard                     MODERATE        |      deep   0.0914 |      deep   0.0531 | deep,deep,light    CONFIRMED
+06_tools__var_demanding                    HIGH            |      deep   0.0304 |     light   0.0085 | deep,light,light   **FLIPPED**
+08_react_practice__var_minimal             POLICY-FORCED   |      skip   0.0982 |      skip   0.0173 | skip,light,light   (hard-ruled)
+08_react_practice__var_standard            COMFORTABLE     |     light   0.1752 |     light   0.0906 | light,deep,light   CONFIRMED
+08_react_practice__var_demanding           COMFORTABLE     |  standard   0.1189 |     light   0.0021 | standard,light,light **FLIPPED**
+09_RAG__var_minimal                        POLICY-FORCED   |      skip  -0.0136 |      deep   0.0059 | deep,light,skip    (hard-ruled)
+09_RAG__var_standard                       HIGH            |      deep   0.0469 |      deep   0.0311 | deep,standard,deep CONFIRMED
+09_RAG__var_demanding                      MANUAL-OVERRIDE |      deep   0.0101 |      deep   0.0647 | deep,deep,deep     (hard-ruled)
+10_memory_knowledge_access__var_minimal    POLICY-FORCED   |      skip  -0.0246 |     light   0.0203 | light,standard,deep (hard-ruled)
+10_memory_knowledge_access__var_standard   HIGH            |     light   0.0307 |     light   0.0109 | light,standard,light CONFIRMED
+10_memory_knowledge_access__var_demanding  CRITICAL        |  standard  -0.0275 |      deep   0.0327 | deep,deep,deep     **FLIPPED**
+11_multimodal__var_minimal                 POLICY-FORCED   |      skip  -0.0390 |     light   0.0562 | light,light,light  (hard-ruled)
+11_multimodal__var_standard                CRITICAL        |     light   0.0263 |      skip   0.0118 | light,skip,skip    **FLIPPED**
+11_multimodal__var_demanding               MANUAL-OVERRIDE |  standard  -0.0266 |  standard   0.0625 | deep,standard,standard (hard-ruled)
+-------------------------------------------------------------------------------------------------------------
+10 confirmed, 4 flipped, 10 hard-ruled (policy-forced/manual-override, immune to this comparison) out of 24
+
+Flip-rate by risk tier (of reward-decided articles only):
+  CRITICAL     2/5 flipped (40%)
+  HIGH         1/4 flipped (25%)
+  MODERATE     0/3 flipped (0%)
+  COMFORTABLE  1/2 flipped (50%)
+
+Confidence erosion (CONFIRMED same winner, but averaged margin < half the production margin, production margin was >= 0.06):
+  02_workflows_vs_agents__var_demanding      production=+0.0693  ->  averaged=+0.0028
+  03_context_engineering__var_standard       production=+0.0817  ->  averaged=+0.0195
+  08_react_practice__var_demanding           production=+0.1189  ->  averaged=+0.0021
+
+====================================================================================================
+STEP E: per-lesson and per-variant breakdown (section-level, Step B metrics)
+====================================================================================================
+
+By lesson (all 3 variants pooled):
+  02_workflows_vs_agents:
+  single-draw            n=  18  flat-drop=  0.0%  floored(kept)=  5.6%  near-tie= 55.6%  mean-margin=0.1222  median-margin=0.0341  mean-normAdv=1.245  dist=[sk2/li8/st5/de3]
+  averaged(N=3)          n=  18  flat-drop=  0.0%  floored(kept)= 11.1%  near-tie= 27.8%  mean-margin=0.0889  median-margin=0.0776  mean-normAdv=1.360  dist=[sk3/li8/st3/de4]
+  03_context_engineering:
+  single-draw            n=  24  flat-drop=  0.0%  floored(kept)= 41.7%  near-tie= 66.7%  mean-margin=0.0796  median-margin=0.0315  mean-normAdv=1.186  dist=[sk8/li7/st5/de4]
+  averaged(N=3)          n=  24  flat-drop=  8.3%  floored(kept)= 50.0%  near-tie= 79.2%  mean-margin=0.0447  median-margin=0.0365  mean-normAdv=1.140  dist=[sk4/li5/st10/de5]
+  05_workflow_patterns:
+  single-draw            n=  21  flat-drop=  0.0%  floored(kept)= 14.3%  near-tie= 57.1%  mean-margin=0.0607  median-margin=0.0564  mean-normAdv=1.079  dist=[sk4/li9/st4/de4]
+  averaged(N=3)          n=  21  flat-drop=  0.0%  floored(kept)= 23.8%  near-tie= 61.9%  mean-margin=0.0614  median-margin=0.0439  mean-normAdv=1.179  dist=[sk4/li8/st4/de5]
+  06_tools:
+  single-draw            n=  27  flat-drop=  0.0%  floored(kept)= 18.5%  near-tie= 63.0%  mean-margin=0.1138  median-margin=0.0436  mean-normAdv=1.210  dist=[sk6/li4/st9/de8]
+  averaged(N=3)          n=  27  flat-drop=  3.7%  floored(kept)= 26.9%  near-tie= 40.7%  mean-margin=0.0913  median-margin=0.0693  mean-normAdv=1.364  dist=[sk7/li9/st3/de8]
+  08_react_practice:
+  single-draw            n=  18  flat-drop=  0.0%  floored(kept)= 11.1%  near-tie= 38.9%  mean-margin=0.1712  median-margin=0.1000  mean-normAdv=1.365  dist=[sk7/li4/st3/de4]
+  averaged(N=3)          n=  18  flat-drop=  0.0%  floored(kept)= 33.3%  near-tie= 61.1%  mean-margin=0.0744  median-margin=0.0445  mean-normAdv=1.254  dist=[sk8/li6/st2/de2]
+  09_RAG:
+  single-draw            n=  18  flat-drop=  0.0%  floored(kept)= 27.8%  near-tie= 66.7%  mean-margin=0.0784  median-margin=0.0448  mean-normAdv=1.162  dist=[sk7/li5/st1/de5]
+  averaged(N=3)          n=  18  flat-drop=  0.0%  floored(kept)= 33.3%  near-tie= 83.3%  mean-margin=0.0416  median-margin=0.0364  mean-normAdv=1.091  dist=[sk5/li5/st2/de6]
+  10_memory_knowledge_access:
+  single-draw            n=  21  flat-drop=  0.0%  floored(kept)= 23.8%  near-tie= 57.1%  mean-margin=0.0728  median-margin=0.0486  mean-normAdv=1.226  dist=[sk6/li7/st6/de2]
+  averaged(N=3)          n=  21  flat-drop=  0.0%  floored(kept)=  9.5%  near-tie= 42.9%  mean-margin=0.0838  median-margin=0.0644  mean-normAdv=1.332  dist=[sk3/li8/st5/de5]
+  11_multimodal:
+  single-draw            n=  24  flat-drop=  0.0%  floored(kept)= 29.2%  near-tie= 58.3%  mean-margin=0.0908  median-margin=0.0315  mean-normAdv=1.153  dist=[sk10/li5/st5/de4]
+  averaged(N=3)          n=  24  flat-drop=  4.2%  floored(kept)= 17.4%  near-tie= 58.3%  mean-margin=0.0567  median-margin=0.0338  mean-normAdv=1.142  dist=[sk12/li5/st5/de2]
+
+By variant (all 8 lessons pooled):
+  var_minimal:
+  single-draw            n=  57  flat-drop=  0.0%  floored(kept)= 26.3%  near-tie= 59.6%  mean-margin=0.0961  median-margin=0.0564  mean-normAdv=1.214  dist=[sk26/li19/st3/de9]
+  averaged(N=3)          n=  57  flat-drop=  3.5%  floored(kept)= 30.9%  near-tie= 61.4%  mean-margin=0.0566  median-margin=0.0491  mean-normAdv=1.271  dist=[sk25/li18/st5/de9]
+  var_standard:
+  single-draw            n=  57  flat-drop=  0.0%  floored(kept)= 21.1%  near-tie= 59.6%  mean-margin=0.0957  median-margin=0.0325  mean-normAdv=1.157  dist=[sk14/li16/st14/de13]
+  averaged(N=3)          n=  57  flat-drop=  0.0%  floored(kept)= 21.1%  near-tie= 49.1%  mean-margin=0.0856  median-margin=0.0610  mean-normAdv=1.236  dist=[sk15/li16/st12/de14]
+  var_demanding:
+  single-draw            n=  57  flat-drop=  0.0%  floored(kept)= 19.3%  near-tie= 56.1%  mean-margin=0.1005  median-margin=0.0436  mean-normAdv=1.227  dist=[sk10/li14/st21/de12]
+  averaged(N=3)          n=  57  flat-drop=  3.5%  floored(kept)= 25.5%  near-tie= 59.6%  mean-margin=0.0619  median-margin=0.0439  mean-normAdv=1.198  dist=[sk6/li20/st17/de14]

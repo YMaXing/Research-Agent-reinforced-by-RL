@@ -1,0 +1,155 @@
+# Auto-extracted brief for: 14_agent_system_design
+# Source: article_ground_truth.md
+# REVIEW BEFORE USE — check all fields, especially those marked
+# '# TODO: review' which require course-context knowledge.
+# Then run:
+#   uv run python generate_article_guideline.py --article 14_agent_system_design
+
+lesson_number: 14
+title: LLM Agent System Design Considerations and Framework
+topic_summary:
+  "Introduce a reusable 7-step AI engineering decision framework for moving from problem statement to balanced
+  agent system design across capability, cost, latency, and reliability. Examine the four inference-time scaling levers (model
+  size, series reasoning, parallel runs, context volume) and how they multiply to create orders-of-magnitude differences,
+  illustrated by naive vs budgeted cost examples. Apply the framework to the capstone to produce a global two-agent architecture
+  (exploration-focused Nova vs execution-focused Brown), component flows, and a concrete decision matrix of defaults with
+  rationales. Emphasize separation of concerns, tool boundaries, HITL triggers, and artifact contracts.
+
+  "
+why_valuable:
+  "System-level choices around reasoning budgets, context control, orchestration style and HITL determine whether
+  agents become production systems or remain brittle demos; this lesson supplies AI engineers with a repeatable playbook and
+  concrete levers that can swing cost and latency by 1000x while preserving quality and debuggability.
+
+  "
+target_length_words: 3056
+theory_practice_ratio: 100% theory - 0% practice
+lesson_scope:
+  "Lesson 14 sits after capstone scoping and framework selection (Lessons 12-13) plus earlier coverage of context,
+  orchestration, and patterns (Lessons 2, 3, 9); it supplies the global design blueprint and decision matrix before hands-on
+  Nova implementation begins in Lesson 15 and Brown construction in Lessons 19-22.
+
+  "
+audience:
+  "AI engineers who have completed prior lessons on LLM fundamentals, RAG, agent patterns, LangGraph, MCP, and the
+  capstone outline and are now ready to learn architectural trade-offs before coding production agents.
+
+  "
+concepts_from_previous_lessons:
+  - Capstone scoping with Nova research agent and Brown writing workflow plus rationale for splitting exploration from drafting
+    (Lesson 12)
+  - Comparison of agent frameworks and selection of FastMCP for tools plus LangGraph for workflows (Lesson 13)
+  - Context-window limitations including the lost-in-the-middle performance drop and preference for selective retrieval or summarization
+    (Lessons 3, 9)
+  - Orchestration styles contrasting predictable workflows against dynamic agents and when to use each (Lesson 2)
+  - Agent architectural patterns such as evaluator-optimizer loops and orchestrator-worker decomposition (prior lessons)
+concepts_for_future_lessons:
+  - Hands-on construction of FastMCP server exposing research tools, client loop, and Nova's iterative research recipe (next
+    lesson)
+  - Implementation of LangGraph stateful workflows for Brown, exposure as MCP tools, and evaluator-optimizer cycles (Lessons
+    19-22)
+  - Practical integration of HITL gates, context strategies, artifact contracts, and evaluation loops into running code
+sections:
+  - title: Introduction
+    target_words: 192
+    key_points:
+      - Position system design as the layer above framework selection that controls whether agents feel like demos or dependable
+        products
+      - Core design variables and their order-of-magnitude impact on cost, latency, reasoning budget, context growth, and parallelization
+      - Preview of reusable 7-step decision playbook plus its direct application to the Nova/Brown capstone
+      - "Learning goals: deciding where to spend extra thinking tokens, when to add human gates, and how to keep context lean"
+  - title: A General AI Engineering Decision Framework
+    target_words: 949
+    key_points:
+      - "Step 1 of playbook: define value, success criteria, cost/latency targets and constraints using contrasting examples (real-time
+        support bot vs high-accuracy batch job)"
+      - "Model-family and capability-mix decision: closed APIs for SOTA/low-overhead vs open-weight for privacy/customization/data
+        locality"
+      - "Task-specific model routing: dedicated reasoning models for planning/exploration vs fast models for extraction/classification"
+      - "Context strategy choices: selective retrieval, summarization and sliding windows vs naive full-document dumps and the
+        lost-in-the-middle failure mode"
+      - "Orchestration-style decision tree: workflow for predictable/auditable steps, agent for open-ended tool use, hybrid for
+        complex systems"
+      - HITL triggers, confidence gates and custom evaluation design versus full autonomy based on error cost and risk
+      - Tool boundaries principle (LLM for intent, code for deterministic math/heavy lifting) plus MCP for portability across
+        clients and IDEs
+      - "Durability and observability requirements: resumability, checkpoints and tracing for long-running stateful jobs versus
+        stateless retry"
+  - title: Inference-Time Scaling and the Cost/Latency Calculus
+    target_words: 698
+    key_points:
+      - Four independent runtime levers (model size, series scaling via thinking tokens, parallel scaling via self-consistency,
+        input-context scaling) and how they multiply
+      - "Strategic budgeting of series scaling: treat extra reasoning as a dial to activate only for complex steps and cap to
+        bound spend/latency"
+      - "Parallel scaling trade-off: reliability gains from majority vote or self-consistency versus linear cost multiplier, and
+        research showing it can outperform serial scaling"
+      - "Context scaling economics: value of relevant information versus token-cost explosion, mitigated by RAG, summarization,
+        caching and selective retrieval"
+      - Toy cost-calculation contrast between naive design (large model, full document, parallel runs) and budgeted design (mini
+        model, RAG, single pass) showing ~1000x reduction
+      - Additional optimizations (reasoning caps, prompt caching, tool delegation) that keep LLM context small and focused
+    diagrams:
+      - Conceptual diagram of the four independent inference-time scaling levers together with per-lever optimization strategies
+        for balancing cost, latency and quality
+  - title: "Our Capstone: Global System Design"
+    target_words: 856
+    key_points:
+      - Core architectural principle of clean separation between unpredictable research (Nova MCP agent) and predictable drafting
+        (Brown LangGraph workflow)
+      - "Nova component design: MCP server supplying portable research tools, resources and master recipe prompt; lightweight
+        client running steerable ReAct-style loop with HITL and stop rules"
+      - "Brown component design: stateful durable LangGraph engine managing checkpoints and interrupts, fronted by coarse-grained
+        MCP tools for client interoperability"
+      - "Workflow patterns inside Brown: orchestrator-worker for media generation and evaluator-optimizer for iterative review-edit
+        cycles"
+      - Simple file-based handoff contract (research.md, .nova directory, article_guideline.md) enabling modularity, debuggability
+        and replay
+      - Critical importance of detailed human-authored article guidelines to anchor quality and prevent generic or empty AI-generated
+        content
+    diagrams:
+      - Global architecture diagram contrasting Nova (top, MCP-driven research agent) with Brown (bottom, LangGraph workflow)
+        and their file-based interfaces
+      - End-to-end flow diagram for Nova research agent illustrating query/scrape/transcribe loops, filtering, full-scrape selection
+        and research.md output
+      - Sequence diagram for Brown's Generate Article tool showing loading context, media generation, drafting, review-edit cycles
+        and human feedback paths
+  - title: Decision Matrix & Defaults for the Capstone
+    target_words: 82
+    key_points:
+      - Translation of abstract framework principles into specific, implementable defaults tailored to research and writing tasks
+      - Matrix structure that records each decision dimension, chosen default and explicit rationale linking back to cost, latency
+        or reliability goals
+      - Role of the matrix as a blueprint that prevents ad-hoc choices during subsequent implementation
+  - title: "Table 1: Decision matrix for the capstone project"
+    target_words: 8
+    key_points:
+      - Tiered model selection that reserves reasoning-capable models for planning while routing simple tasks to cheap models
+        or pure code
+      - Conservative defaults on reasoning budgets and parallel attempts, activated only for critical validation steps
+      - Strict context strategy using summaries, selective retrieval and caching to avoid lost-in-the-middle and control token
+        costs
+      - Hybrid orchestration default (MCP agent loop for Nova, LangGraph durability for Brown) plus MCP for tool portability
+      - Targeted HITL policy at research-query approval, full-scrape list and final article to balance autonomy with quality gates
+      - Stable artifact and contract design (file-based handoffs, on-disk layout) for decoupling, replayability and easier evaluation
+  - title: Conclusion
+    target_words: 271
+    key_points:
+      - Recap of the structured decision framework and its concrete application to produce the Nova/Brown global architecture
+      - System-level view as the foundation that turns prototypes into scalable, production-ready agent products
+      - Repeated reference to this lesson's decisions and diagrams when later implementation choices are presented
+      - Forward pointer to immediate hands-on Nova implementation followed by Brown workflow construction in later lessons
+golden_sources:
+  - title: LLM System Design & Model Selection
+    url: https://www.oreilly.com/radar/llm-system-design-and-model-selection/
+  - title: Extended thinking & interleaved thinking docs
+    url: https://docs.claude.com/en/docs/build-with-claude/extended-thinking
+  - title: Human-in-the-loop
+    url: https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/
+  - title: What is the Model Context Protocol (MCP)?
+    url: https://modelcontextprotocol.io/docs/getting-started/intro
+  - title: Revisiting the Test-Time Scaling of o1-like Models
+    url: https://arxiv.org/html/2502.12215v1
+  - title: API Pricing
+    url: https://openai.com/api/pricing/
+other_sources: []

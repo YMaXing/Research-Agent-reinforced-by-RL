@@ -1,0 +1,95 @@
+# Auto-extracted brief for: Bird_Eye_Extreme
+# Source: article_ground_truth.md
+# REVIEW BEFORE USE — check all fields, especially those marked
+# '# TODO: review' which require course-context knowledge.
+# Then run:
+#   uv run python generate_article_guideline.py --article Bird_Eye_Extreme
+
+lesson_number: 9
+title: How the Bird Eye Was Pushed to an Evolutionary Extreme
+topic_summary:
+  "Plan a lesson that resolves the long-standing paradox of how bird retinas sustain extreme metabolic activity
+  without blood vessels or oxygen. Contrast standard vertebrate aerobic retinal metabolism with birds' reliance on anaerobic
+  glycolysis, the supporting role of the pecten oculi for glucose influx and lactate efflux, and the experimental evidence
+  from microsensors and spatial transcriptomics. Trace the evolutionary origin via comparison to reptiles and discuss selective
+  pressures for sharper vision, plus implications for hypoxia-tolerant tissues.
+
+  "
+why_valuable:
+  "Extreme metabolic adaptations illustrate how evolution navigates trade-offs between efficiency, performance,
+  and physical constraints; AI engineers can draw analogies when designing systems that must optimize under conflicting demands
+  such as compute density, power limits, and latency.
+
+  "
+target_length_words: 1965
+theory_practice_ratio: 100% theory - 0% practice
+lesson_scope:
+  "Positioned after lessons on core cellular energy pathways and vertebrate sensory evolution, this lesson extends
+  those foundations into specialized adaptations before future lessons on bio-inspired optimization techniques for AI hardware
+  and resilient computing under resource constraints.
+
+  "
+audience:
+  "AI engineering students who possess foundational biology and metabolism knowledge from prior lessons and seek nature-derived
+  principles for building efficient, adaptive agentic systems.
+
+  "
+concepts_from_previous_lessons:
+  - "Great Oxidation Event: oxygen's role in unlocking efficient ATP production"
+  - Aerobic respiration vs anaerobic glycolysis efficiency trade-off
+  - High metabolic cost of neural tissues including the retina
+  - Basic vertebrate eye anatomy and conserved evolutionary origins
+concepts_for_future_lessons:
+  - Biomimetic design principles drawn from evolutionary tinkering
+  - Hypoxia tolerance mechanisms for fault-tolerant or low-power AI systems
+  - Translating metabolic extremes into energy-aware neural architectures
+sections:
+  - title: Introduction
+    target_words: 378
+    key_points:
+      - Retinal vascular occlusion in humans vs complete avascularity in birds despite superior vision
+      - "Retina as one of the most energy-hungry tissues: 2-3x brain metabolic rate"
+      - Historical paradox and assumption of unknown oxygen-acquisition mechanism in birds
+      - "Study resolution: chronic anoxia tolerated via anaerobic glycolysis, not novel oxygen adaptation"
+      - "Broader framing: evolutionary extremes of metabolically active tissue survival and medical translation"
+  - title: Oxygenated Life
+    target_words: 380
+    key_points:
+      - Cyanobacteria, photosynthesis, and the Great Oxidation Event's reshaping of life
+      - "Biochemical contrast: anaerobic glycolysis (2 ATP) vs aerobic respiration (up to 32 ATP per glucose)"
+      - "Evolutionary lock-in: oxygen dependence in complex multicellular organisms"
+      - "Anoxia tolerance spectrum: minutes for humans, 18 min for naked mole rats, years for certain turtles"
+      - "Failure modes: shutdown of energy-intensive processes in brain and retina without oxygen"
+      - Fructose-fueled anaerobic pathway in naked mole rats as comparative survival strategy
+  - title: A Mysterious Structure
+    target_words: 591
+    key_points:
+      - "Pecten oculi: 17th-century discovery of comb-like vascular structure and 30+ competing functional hypotheses"
+      - Direct physiological measurements with microsensors revealing zero oxygen in inner retina
+      - "Spatial transcriptomics: aerobic genes only in outer retina, anaerobic genes exclusively in inner retina"
+      - Glucose demand 2.5x higher in inner retina; pecten as glucose pump rather than oxygen deliverer
+      - Lactate transporter genes in pecten to prevent toxic buildup from lifelong anaerobic glycolysis
+      - Warburg-like metabolism parallel to cancer cells but sustained permanently in healthy tissue
+      - Confirmation that half the retina exists in chronic anoxia with no prior vertebrate precedent
+    diagrams:
+      - Conceptual cross-section of avian eye and retina layers contrasting vascular outer retina, avascular anoxic inner retina,
+        pecten oculi glucose/lactate flows, and metabolic pathway indicators
+  - title: Eyes Like a Hawk
+    target_words: 616
+    key_points:
+      - "Evolutionary timing: anoxic retina and pecten arose in theropod dinosaur lineage post-crocodilian split, coinciding with
+        retinal thickening"
+      - "Evolution as tinkerer (Jacob 1977): repurposing ancient vertebrate eye blueprint rather than inventing anew"
+      - "Hypothesized drivers: selection for high-acuity vision in predation, foraging, migration, and high-altitude flight"
+      - "Functional advantage: removal of light-scattering blood vessels to enable denser neuron packing and sharper resolution"
+      - "Limits of inference: results from non-migratory species; caution against universal claims for all birds"
+      - "Biomedical payoff: nature's solutions to anoxia (naked mole rats, birds) for insights into stroke and ischemia treatments"
+      - Open question on whether vessel-free retina is adaptation or evolutionary coincidence
+golden_sources:
+  - title: Bird retinas are surprisingly anoxic
+    url: https://www.nature.com/articles/s41586-025-09978-w
+  - title: Evolution and Tinkering
+    url: https://doi.org/10.1126/science.860134
+  - title: Naked mole-rat anoxia tolerance
+    url: https://doi.org/10.1126/science.aab3896
+other_sources: []

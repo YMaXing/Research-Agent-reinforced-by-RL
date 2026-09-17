@@ -1,7 +1,7 @@
 """LLM utilities for creating and managing chat models."""
 
 import logging
-from typing import Optional, Type
+from typing import Any, Optional, Type
 
 from langchain.chat_models import init_chat_model
 from langchain.chat_models.base import BaseChatModel
@@ -12,6 +12,31 @@ from ..config.settings import settings
 from .opik_utils import TrackedLangChainModel, TrackedTavilyTool, is_opik_enabled, track_langchain_model
 
 logger = logging.getLogger(__name__)
+
+
+def extract_text_content(content: Any) -> str:
+    """Return the plain text from a chat model response's ``.content``.
+
+    Most models return ``.content`` as a plain string. Some (e.g. gemini-3.7-flash)
+    return a list of content-block dicts instead (e.g. ``{"type": "text", "text": "..."}``).
+    This extracts the actual text from each block, dropping non-text blocks (e.g.
+    "thinking", tool-call signatures), so callers get a consistent string regardless
+    of which underlying model produced the response.
+    """
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        text_parts = []
+        for part in content:
+            if isinstance(part, dict):
+                block_type = part.get("type")
+                if block_type is not None and block_type != "text":
+                    continue
+                text_parts.append(part.get("text", ""))
+            else:
+                text_parts.append(str(part))
+        return "".join(text_parts)
+    return str(content)
 
 
 def get_chat_model(model_id: str, schema: Optional[Type[BaseModel]] = None) -> BaseChatModel | TrackedLangChainModel:

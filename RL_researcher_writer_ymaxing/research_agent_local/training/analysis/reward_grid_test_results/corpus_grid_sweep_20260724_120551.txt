@@ -1,0 +1,11 @@
+====================================================================================================
+CORPUS-WIDE C x D GRID SWEEP (all already-graded articles)
+====================================================================================================
+  Corpus size (already-graded, recomputable): 42 article-variant dirs
+
+  D_scale_compensate_083       flips=5/42  (thin-margin<0.06: 5, comfortable-margin>=0.06: 0)
+      05_workflow_patterns__var_minimal             skip     -> light    (orig_margin=+0.0388, thin)
+      06_tools__var_standard                        standard -> deep     (orig_margin=-0.0069, thin)
+      11_multimodal__var_demanding                  skip     -> standard (orig_margin=-0.0309, thin)
+      11_multimodal__var_standard                   skip     -> light    (orig_margin=+0.0236, thin)
+      14_agent_system_design                        light    -> standard (orig_margin=+0.0237, thin)

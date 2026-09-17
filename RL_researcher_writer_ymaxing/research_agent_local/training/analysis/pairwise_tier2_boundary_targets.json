@@ -1,0 +1,135 @@
+[
+  {
+    "article": "02_workflows_vs_agents__var_standard",
+    "section_title": "Choosing Your Path",
+    "dimension": "breadth",
+    "classification": "tier2_boundary_0v2",
+    "a_arm": "standard",
+    "b_arm": "deep",
+    "original_preference": "a_more",
+    "original_preferences_all_3": [
+      "a_more",
+      "a_more",
+      "a_more"
+    ],
+    "tag_margin": 0.8,
+    "pw_margin_3draw_mean": 0.2,
+    "cnt_std": 2,
+    "cnt_deep": 0,
+    "side_with_2_is_std": true
+  },
+  {
+    "article": "02_workflows_vs_agents__var_standard",
+    "section_title": "Exploring Common Patterns",
+    "dimension": "depth",
+    "classification": "tier2_boundary_0v2",
+    "a_arm": "standard",
+    "b_arm": "deep",
+    "original_preference": "a_more",
+    "original_preferences_all_3": [
+      "a_more",
+      "tie",
+      "b_more"
+    ],
+    "tag_margin": 0.8,
+    "pw_margin_3draw_mean": 0.0,
+    "cnt_std": 2,
+    "cnt_deep": 0,
+    "side_with_2_is_std": true
+  },
+  {
+    "article": "05_workflow_patterns__var_standard",
+    "section_title": "Introducing Dynamic Behavior: Routing and Conditional Logic",
+    "dimension": "depth",
+    "classification": "tier2_boundary_0v2",
+    "a_arm": "deep",
+    "b_arm": "standard",
+    "original_preference": "a_much_more",
+    "original_preferences_all_3": [
+      "a_much_more",
+      "a_much_more",
+      "a_much_more"
+    ],
+    "tag_margin": -0.8,
+    "pw_margin_3draw_mean": -0.45,
+    "cnt_std": 0,
+    "cnt_deep": 2,
+    "side_with_2_is_std": false
+  },
+  {
+    "article": "06_tools__var_demanding",
+    "section_title": "Implementing tool calls from scratch",
+    "dimension": "depth",
+    "classification": "tier2_boundary_0v2",
+    "a_arm": "standard",
+    "b_arm": "deep",
+    "original_preference": "b_more",
+    "original_preferences_all_3": [
+      "b_more",
+      "b_more",
+      "b_more"
+    ],
+    "tag_margin": -0.8,
+    "pw_margin_3draw_mean": -0.2,
+    "cnt_std": 0,
+    "cnt_deep": 2,
+    "side_with_2_is_std": false
+  },
+  {
+    "article": "14_agent_system_design",
+    "section_title": "Our Capstone: Global System Design",
+    "dimension": "breadth",
+    "classification": "tier2_boundary_0v2",
+    "a_arm": "standard",
+    "b_arm": "deep",
+    "original_preference": "tie",
+    "original_preferences_all_3": [
+      "tie",
+      "tie",
+      "tie"
+    ],
+    "tag_margin": 0.8,
+    "pw_margin_3draw_mean": 0.0,
+    "cnt_std": 2,
+    "cnt_deep": 0,
+    "side_with_2_is_std": true
+  },
+  {
+    "article": "Earth_Oceans_Origin",
+    "section_title": "Drowning in a Sea of Possibilities",
+    "dimension": "breadth",
+    "classification": "tier2_boundary_0v2",
+    "a_arm": "standard",
+    "b_arm": "deep",
+    "original_preference": "a_more",
+    "original_preferences_all_3": [
+      "a_more",
+      "a_more",
+      "a_more"
+    ],
+    "tag_margin": 0.8,
+    "pw_margin_3draw_mean": 0.2,
+    "cnt_std": 2,
+    "cnt_deep": 0,
+    "side_with_2_is_std": true
+  },
+  {
+    "article": "Insects_Consciousness",
+    "section_title": "A Growing Awareness",
+    "dimension": "breadth",
+    "classification": "tier2_boundary_0v2",
+    "a_arm": "standard",
+    "b_arm": "deep",
+    "original_preference": "tie",
+    "original_preferences_all_3": [
+      "tie",
+      "a_more",
+      "a_more"
+    ],
+    "tag_margin": 0.8,
+    "pw_margin_3draw_mean": 0.1333,
+    "cnt_std": 2,
+    "cnt_deep": 0,
+    "side_with_2_is_std": true
+  }
+]

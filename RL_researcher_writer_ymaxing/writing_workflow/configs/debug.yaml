@@ -15,53 +15,56 @@ context:
 memory:
   checkpointer: "in_memory"
 num_reviews: 1
+# Shared anchors merged into each node below via `<<:` (ignored by AppConfig's default extra="ignore").
+_defaults:
+  fake_model: &fake_model
+    model_id: "fake"
+  no_thinking: &no_thinking
+    include_thoughts: false
+    thinking_level: null
 nodes:
   generate_media_items:
-    model_id: "fake"
+    <<: *fake_model
     model_config:
+      <<: *no_thinking
       temperature: 0.0
-      include_thoughts: false
-      thinking_budget: null
     tools:
       mermaid_diagram_generator:
-        model_id: "fake"
+        <<: *fake_model
         config:
+          <<: *no_thinking
           temperature: 0.0
-          include_thoughts: false
-          thinking_budget: null
   write_article:
-    model_id: "fake"
+    <<: *fake_model
     model_config:
       temperature: 0.7
       include_thoughts: false
-      thinking_budget: 6144
+      thinking_level: "high"
   integrate_exploration:
-    model_id: "fake"
+    <<: *fake_model
     model_config:
       temperature: 1.0
       include_thoughts: true
-      thinking_budget: 8192
+      thinking_level: "high"
   review_article:
-    model_id: "fake"
+    <<: *fake_model
     model_config:
+      <<: *no_thinking
       temperature: 0.0
-      include_thoughts: false
-      thinking_budget: null
   edit_article:
-    model_id: "fake"
+    <<: *fake_model
     model_config:
       temperature: 0.1
       include_thoughts: false
-      thinking_budget: 8192
+      thinking_level: "high"
   review_selected_text:
-    model_id: "fake"
+    <<: *fake_model
     model_config:
+      <<: *no_thinking
       temperature: 0.0
-      include_thoughts: false
-      thinking_budget: null
   edit_selected_text:
-    model_id: "fake"
+    <<: *fake_model
     model_config:
       temperature: 0.1
       include_thoughts: false
-      thinking_budget: 8192
+      thinking_level: "high"

@@ -21,6 +21,7 @@ def _make_settings(enable_content_dedup: bool):
             "enable_content_dedup": enable_content_dedup,
             "maximum_exploration_rounds": 4,
             "maximum_sources_to_scrape": 6,
+            "user_plan_override_allowed": True,
         },
     )()
 
@@ -70,7 +71,7 @@ class TestResearchInstructionsPromptDeduEnabled:
 
         assert "{settings.maximum_exploration_rounds}" not in result
         assert "{n_max_round}" not in result
-        assert "maximum number of 4 rounds" in result
+        assert "the configured ceiling of 4 rounds" in result
 
     async def test_sources_to_scrape_substituted(self):
         from src.prompts.research_instructions_prompt import full_research_instructions_prompt
@@ -127,7 +128,7 @@ class TestResearchInstructionsPromptDeduDisabled:
             result = await full_research_instructions_prompt()
 
         assert "{n_max_round}" not in result
-        assert "maximum number of 4 rounds" in result
+        assert "the configured ceiling of 4 rounds" in result
 
     async def test_sources_to_scrape_substituted(self):
         from src.prompts.research_instructions_prompt import full_research_instructions_prompt

@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "nova-brown-composed": {
+    "composed-researcher-writer": {
       "url": "http://localhost:8003/mcp"
     }
   }

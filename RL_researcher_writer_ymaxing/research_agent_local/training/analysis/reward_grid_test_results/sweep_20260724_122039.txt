@@ -1,0 +1,20 @@
+====================================================================================================
+ARTICLE: 13_agent_framework
+====================================================================================================
+  baseline                     raw_argmax=skip     margin=+0.0600  R_w=[skip:0.0000  light:-0.0600  standard:-0.1200  deep:-0.1800]
+  E_simple_avg_explore         raw_argmax=skip     margin=+0.0600  R_w=[skip:0.0000  light:-0.0600  standard:-0.1200  deep:-0.1800]
+
+====================================================================================================
+ARTICLE: Dark_Dimension
+====================================================================================================
+  baseline                     raw_argmax=skip     margin=+0.0600  R_w=[skip:0.0000  light:-0.0600  standard:-0.1200  deep:-0.1800]
+  E_simple_avg_explore         raw_argmax=skip     margin=+0.0600  R_w=[skip:0.0000  light:-0.0600  standard:-0.1200  deep:-0.1800]
+
+====================================================================================================
+SUMMARY: winner/margin change vs baseline
+====================================================================================================
+  13_agent_framework  (baseline: skip, margin=+0.0600)
+    E_simple_avg_explore         skip     margin=+0.0600  Delta_margin=+0.0000
+  Dark_Dimension  (baseline: skip, margin=+0.0600)
+    E_simple_avg_explore         skip     margin=+0.0600  Delta_margin=+0.0000
+

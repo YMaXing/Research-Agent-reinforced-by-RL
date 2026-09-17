@@ -586,6 +586,15 @@ class TestArticleReviewer:
         assert "References section format" in ArticleReviewer.system_prompt_template
         assert "- [N] [Title or short description](url)" in ArticleReviewer.system_prompt_template
 
+    def test_article_reviewer_prompt_flags_orphaned_image_captions(self) -> None:
+        """Reviewer prompt instructs flagging any `Image N:` caption that is not immediately
+        preceded by a Mermaid closing fence or a `![alt text](url)` embed — i.e., a caption
+        whose image body is entirely missing and will not render for the reader.
+        """
+        assert "Orphaned image captions" in ArticleReviewer.system_prompt_template
+        assert "image body is missing" in ArticleReviewer.system_prompt_template
+        assert "![alt text](url)" in ArticleReviewer.system_prompt_template
+
     def test_article_reviewer_cot_word_count_excludes_citation_markers(self) -> None:
         """Reviewer Chain of Thoughts step 5b must list inline citation markers as an
         exclusion from the prose word count, consistent with the writer's definition.

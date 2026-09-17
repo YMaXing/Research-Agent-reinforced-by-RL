@@ -1,0 +1,59 @@
+{
+  "article": "14_agent_system_design",
+  "sections": {
+    "Our Capstone: Global System Design": {
+      "breadth": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "original_preference": "tie",
+        "classification": "tier2_boundary_0v2",
+        "repeats": [
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Robotics leader/executor multi-agent pattern analogy with citation [49]",
+              "Citation on emerging trend of combining LangGraph and MCP in multi-agent orchestration [50]"
+            ],
+            "b_instances": [
+              "Discussion of scalability limits of file-based handoff architecture at scale (codebases, hundreds of legal documents) and potential solutions like specialized file systems or shared memory, with citation [18]"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Robotics leader/executor agent pattern as an analogous domain application, cited to an academic robotics paper"
+            ],
+            "b_instances": [
+              "New subtopic on scalability limits of the file-based handoff at larger scale (codebases, legal documents) and potential need for specialized file systems/shared memory, cited to Amplify Partners blog"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Robotics 'leader/executor' multi-agent analogy (citation 49) drawing a parallel from robotics literature to justify the exploration/execution split"
+            ],
+            "b_instances": []
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [
+              "Robotics 'leader/executor' multi-agent analogy for splitting exploration and execution, with citation to Nayak et al. AURO25"
+            ],
+            "b_instances": [
+              "New sub-topic on scalability limits of the file-based architecture at larger scale (e.g., full codebases, hundreds of legal documents), citing need for specialized file systems or shared memory (citation 18)"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [
+              "Robotics leader/executor agent analogy (with citation) as precedent for the exploration/execution split"
+            ],
+            "b_instances": [
+              "Extended discussion of scalability limits of the file-based handoff at large scale (e.g., whole codebases, hundreds of legal documents) and pointer to alternative solutions like specialized file systems or shared memory, with citation"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

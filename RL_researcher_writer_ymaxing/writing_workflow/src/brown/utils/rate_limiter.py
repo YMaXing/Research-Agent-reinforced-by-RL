@@ -10,7 +10,7 @@ Usage (in workflow nodes):
 Configuration (call once at process startup, e.g. in rl_writing_generator.py):
 
     from brown.utils.rate_limiter import set_llm_concurrency
-    set_llm_concurrency(2)  # allow at most 2 concurrent LLM calls
+    set_llm_concurrency(3)  # allow at most 3 concurrent LLM calls
 """
 
 from __future__ import annotations
@@ -23,11 +23,11 @@ from typing import AsyncIterator
 
 _log = logging.getLogger(__name__)
 
-# Default: 3 concurrent LLM API calls across the entire process.
-# Gemini 2.5 Pro supports ~150 RPM and 2M TPM on the paid tier.
-# 3 concurrent calls is a safe default; raise via --llm-concurrency if you
+# Default: 5 concurrent LLM API calls across the entire process.
+# Gemini 2.5 Pro supports ~2,000 RPM and 8M TPM on Tier 3.
+# 5 concurrent calls is a safe default; raise via --llm-concurrency if you
 # have higher quota headroom.
-_DEFAULT_CONCURRENCY = 3
+_DEFAULT_CONCURRENCY = 5
 
 # After a 429 failure escapes (after tenacity gives up), we hold the semaphore
 # for this many extra seconds before releasing it to the next caller.
@@ -36,11 +36,11 @@ _DEFAULT_CONCURRENCY = 3
 _QUOTA_COOLDOWN_SECS: int = 90
 
 # Minimum seconds between successive LLM calls.
-# Gemini 2.5 Pro has a 150 RPM ceiling (~0.4 s/call theoretically), but each
-# article call consumes 100K-500K tokens so TPM is the binding constraint.
-# An 8 s gap keeps burst RPM well below 60 and spaces out token consumption
-# across the per-minute TPM window more evenly.
-_INTER_CALL_DELAY_SECS: float = 8.0
+# Gemini 2.5 Pro has a 2,000 RPM ceiling on Tier 3 (~0.03 s/call theoretically),
+# but each article call consumes 100K-500K tokens so TPM (8M on Tier 3) is the
+# binding constraint. A 5 s gap spaces out token consumption across the
+# per-minute TPM window while taking advantage of the larger Tier 3 headroom.
+_INTER_CALL_DELAY_SECS: float = 5.0
 
 # Module-level semaphore — lazily created the first time llm_throttle() is
 # entered so it is always bound to the running event loop.

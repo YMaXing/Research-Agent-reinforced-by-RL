@@ -1,0 +1,92 @@
+# Auto-extracted brief for: Insects_Consciousness
+# Source: article_ground_truth.md
+# REVIEW BEFORE USE — check all fields, especially those marked
+# '# TODO: review' which require course-context knowledge.
+# Then run:
+#   uv run python generate_article_guideline.py --article Insects_Consciousness
+
+lesson_number: 8
+title: Insects and Other Animals Have Consciousness, Experts Declare
+topic_summary:
+  "Plan a lesson introducing the 2024 New York Declaration on Animal Consciousness and the evidence shift that
+  now supports phenomenal consciousness in insects, cephalopods, decapod crustaceans and many other invertebrates. Contrast
+  prior assumptions that required complex mammalian-like brains with new behavioral data from play, pain, memory, anxiety-like
+  states and environmental interaction. Explore why simpler or radically different neural architectures can still support
+  subjective experience and preview downstream ethical questions for how humans relate to these animals.
+
+  "
+why_valuable:
+  "AI engineers building agentic systems must grapple with questions of sentience and moral patienthood; seeing
+  how the bar for consciousness has been lowered in biology supplies humility and a richer conceptual vocabulary when evaluating
+  whether today's or tomorrow's AI could cross the same threshold.
+
+  "
+target_length_words: 1820
+theory_practice_ratio: 100% theory - 0% practice
+lesson_scope:
+  "This lesson follows modules on the philosophy of mind, Nagel’s bat argument, and the 2012 Cambridge Declaration;
+  it precedes lessons that apply similar evidentiary standards to evaluate possible machine consciousness in large language
+  models and agentic architectures.
+
+  "
+audience:
+  "Practicing AI engineers who already work with LLMs and tool-using agents, understand basic concepts of emergence
+  and scaling, but have not yet deeply examined comparative cognition or the expanding scientific consensus on nonhuman sentience.
+
+  "
+concepts_from_previous_lessons:
+  - Phenomenal consciousness defined via Nagel’s 'what it is like' criterion
+  - 2012 Cambridge Declaration on Consciousness and its focus on mammals and birds
+  - Distinction between basic sentience and higher-order self-awareness or metacognition
+concepts_for_future_lessons:
+  - Cautious epistemic stance when assessing possible AI consciousness
+  - Ethical design implications when agents might warrant moral consideration
+  - Research programs that could test for consciousness in artificial systems
+sections:
+  - title: Introduction
+    target_words: 577
+    key_points:
+      - Bumblebee play with wooden balls as paradigmatic example of behavior decoupled from survival or reward
+      - "Core claim of the New York Declaration: realistic possibility of consciousness in all vertebrates plus key invertebrate
+        clades"
+      - Phenomenal consciousness as minimal 'what-it-is-like' capacity versus richer self-awareness
+      - Signatories spanning neuroscience, philosophy, animal cognition to signal new interdisciplinary consensus
+      - Contrast with earlier scientific caution that limited consciousness to animals with nervous systems resembling our own
+      - Explicit contrast between shared animal experience and current large language models like ChatGPT
+    diagrams:
+      - Conceptual timeline diagram contrasting the 2012 Cambridge Declaration with the 2024 New York Declaration and the widening
+        circle of species now considered possibly conscious
+  - title: A Growing Awareness
+    target_words: 807
+    key_points:
+      - "Rapid accumulation of behavioral evidence over the last 10–15 years: octopus pain, cuttlefish episodic-like memory, fish
+        mirror-test variants, bee play, crayfish anxiety modulated by anxiolytics"
+      - "Why the field moved from informal agreement to public declaration: need to communicate consensus to policymakers and
+        the broader scientific community"
+      - Comparison of wording and scope between Cambridge 2012 and New York 2024 declarations
+      - "Rejection of the 'neural complexity barrier' hypothesis: bee brain with ~1 M richly arborized neurons versus human
+        86 B"
+      - Distributed versus centralized nervous systems illustrated by octopus arm autonomy after severance
+      - "Cerebral cortex not required: analogous functions performed by different brain architectures in fish, birds, reptiles
+        and invertebrates"
+  - title: Mindful Relations
+    target_words: 436
+    key_points:
+      - Ethical obligations extend beyond absence of pain to positive enrichment that lets animals exercise species-typical behaviors
+        and sociality
+      - "Practical tensions when granting consciousness to insects: crop pests, disease vectors, and the inevitability of antagonistic
+        human–insect relations"
+      - "Overlooked welfare gap in laboratory research: routine use of Drosophila and other insects without sentience protocols"
+      - "Policy translation precedent: UK legislative changes for cephalopods and decapods following sentience reviews"
+      - "Cautionary parallel to machine consciousness: current AI unlikely to be conscious, yet animal findings counsel epistemic
+        humility"
+      - Call for redirecting existing lab infrastructure to consciousness research on nematodes and fruit flies already present
+        on every campus
+golden_sources:
+  - title: The New York Declaration on Animal Consciousness
+    url: http://www.nydeclaration.com/
+  - title: Cambridge Declaration on Consciousness
+    url: http://fcmconference.org/img/CambridgeDeclarationOnConsciousness.pdf
+  - title: What is it like to be a bat?
+    url: https://www.sas.upenn.edu/~cavitch/pdf-library/Nagel_Bat.pdf
+other_sources: []

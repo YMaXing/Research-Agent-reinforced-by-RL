@@ -5,15 +5,12 @@ from langchain_core.messages import AIMessage
 from langchain_core.runnables import Runnable
 from loguru import logger
 
-from brown.config_app import get_app_config
 from brown.entities.guidelines import ArticleGuideline
 from brown.entities.research import Research
 from brown.models import FakeModel
 from brown.utils.rate_limiter import llm_throttle
 
 from .base import Node, ToolCall, Toolkit
-
-app_config = get_app_config()
 
 
 class MediaGeneratorOrchestrator(Node):

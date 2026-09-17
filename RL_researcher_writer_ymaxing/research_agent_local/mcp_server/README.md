@@ -35,13 +35,16 @@ Optional: `FIRECRAWL_API_KEY_2` (round-robin), `GITHUB_TOKEN`,
 
 ## Tools, prompts, and resources
 
-14 tools / 1 prompt / 2 resources, grouped into content discovery,
-AI-powered analysis, and content curation. Full list and per-tool semantics:
-see [../README.md](../README.md#use-the-server-from-other-mcp-clients).
+16 tools / 1 prompt / 2 resources, covering golden-source ingestion,
+exploitation-phase research, the production RL preset decision
+(`predict_exploration_preset_tool` — RL policy + deterministic guard, no LLM
+call), the exploration phase, and final research-file assembly. Full list
+and per-tool semantics: see
+[../README.md](../README.md#available-tools-and-resources-16-tools-1-prompt-2-resources).
 
 ## Where this fits
 
 - Workflow, env vars, and end-to-end usage: [../README.md](../README.md).
 - Project-level context and pipeline diagram: [../../../README.md](../../../README.md).
 - Composed HTTP deployment fronting this server + the writing server:
-  [../../agents_integration_local/mcp_client/README.md](../../agents_integration_local/mcp_client/README.md).
+  [../../agents_integration_local/README.md](../../agents_integration_local/README.md).

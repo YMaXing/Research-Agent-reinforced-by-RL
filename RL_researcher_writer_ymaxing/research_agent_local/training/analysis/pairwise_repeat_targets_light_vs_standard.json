@@ -1,0 +1,90 @@
+[
+  {
+    "article": "09_RAG__var_standard",
+    "section_title": "Introduction",
+    "dimension": "breadth",
+    "classification": "strong_disagree",
+    "a_arm": "standard",
+    "b_arm": "light",
+    "original_preference": "b_more",
+    "tag_margin": 0.3575,
+    "pairwise_margin_single_draw": -0.2
+  },
+  {
+    "article": "06_tools__var_standard",
+    "section_title": "The downsides of running tools in a loop",
+    "dimension": "depth",
+    "classification": "strong_disagree",
+    "a_arm": "light",
+    "b_arm": "standard",
+    "original_preference": "b_more",
+    "tag_margin": -0.2,
+    "pairwise_margin_single_draw": 0.2
+  },
+  {
+    "article": "13_agent_framework",
+    "section_title": "Framework Choice Under Uncertainty",
+    "dimension": "depth",
+    "classification": "strong_disagree",
+    "a_arm": "light",
+    "b_arm": "standard",
+    "original_preference": "b_more",
+    "tag_margin": -0.55,
+    "pairwise_margin_single_draw": 0.2
+  },
+  {
+    "article": "08_react_practice__var_demanding",
+    "section_title": "Control Loop: Messages, Scratchpad, and Orchestration",
+    "dimension": "depth",
+    "classification": "strong_disagree",
+    "a_arm": "light",
+    "b_arm": "standard",
+    "original_preference": "b_much_more",
+    "tag_margin": -0.55,
+    "pairwise_margin_single_draw": 0.45
+  },
+  {
+    "article": "09_RAG__var_standard",
+    "section_title": "The RAG Pipeline: Ingestion and Retrieval",
+    "dimension": "depth",
+    "classification": "strong_agree",
+    "a_arm": "standard",
+    "b_arm": "light",
+    "original_preference": "b_much_more",
+    "tag_margin": -0.3575,
+    "pairwise_margin_single_draw": -0.45
+  },
+  {
+    "article": "06_tools__var_standard",
+    "section_title": "Implementing tool calls from scratch",
+    "dimension": "depth",
+    "classification": "strong_agree",
+    "a_arm": "light",
+    "b_arm": "standard",
+    "original_preference": "b_much_more",
+    "tag_margin": 0.8,
+    "pairwise_margin_single_draw": 0.45
+  },
+  {
+    "article": "13_agent_framework",
+    "section_title": "Framework Deep Dive: CrewAI",
+    "dimension": "breadth",
+    "classification": "strong_agree",
+    "a_arm": "standard",
+    "b_arm": "light",
+    "original_preference": "a_more",
+    "tag_margin": 0.55,
+    "pairwise_margin_single_draw": 0.2
+  },
+  {
+    "article": "08_react_practice__var_demanding",
+    "section_title": "Introduction",
+    "dimension": "depth",
+    "classification": "strong_agree",
+    "a_arm": "light",
+    "b_arm": "standard",
+    "original_preference": "b_more",
+    "tag_margin": 0.55,
+    "pairwise_margin_single_draw": 0.2
+  }
+]

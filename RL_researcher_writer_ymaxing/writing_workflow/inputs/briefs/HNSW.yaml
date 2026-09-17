@@ -1,0 +1,125 @@
+# Auto-extracted brief for: HNSW
+# Source: article_ground_truth.md
+# REVIEW BEFORE USE — check all fields, especially those marked
+# '# TODO: review' which require course-context knowledge.
+# Then run:
+#   uv run python generate_article_guideline.py --article HNSW
+
+lesson_number: 4
+title: Hierarchical Navigable Small Worlds (HNSW)
+topic_summary:
+  "Introduce HNSW as a leading graph-based ANN method for vector similarity search that delivers SOTA recall
+  and speed. Cover its foundations in probability skip lists (multi-layer linked lists for fast search/insert) and navigable
+  small world graphs (long/short-range links enabling logarithmic greedy routing). Detail the hierarchical layering that combines
+  these ideas, the iterative graph construction algorithm, and how search traverses from long-range top layers to precise
+  bottom layers. Explore Faiss implementation details, key parameters (M, efConstruction, efSearch), observed tradeoffs, and
+  techniques like PQ or IVF to tune memory and speed.
+
+  "
+why_valuable:
+  "HNSW powers high-performance vector databases and retrieval systems used in production RAG and semantic search
+  applications. AI engineers who master its layered proximity graph mechanics and parameter effects can make better decisions
+  on index selection, optimize the recall-latency-memory tradeoff, and debug or extend ANN systems effectively.
+
+  "
+target_length_words: 2529
+theory_practice_ratio: 70% theory - 30% practice
+lesson_scope:
+  "This lesson follows earlier coverage of simpler ANN indexes (flat, LSH, IVF) in the vector search series and
+  precedes lessons on composite indexes (IVF+HNSW) and quantization methods that further tune HNSW tradeoffs.
+
+  "
+audience:
+  "AI engineers and developers experienced with vector embeddings, basic similarity search, and Faiss who want to
+  master advanced graph-based indexes for scalable, low-latency retrieval.
+
+  "
+concepts_from_previous_lessons:
+  - ANN algorithm categories (trees, hashes, graphs) and proximity graphs
+  - Greedy routing, local minima, and recall vs. speed vs. memory tradeoffs in vector indexes
+  - Faiss index construction patterns and parameter setting
+concepts_for_future_lessons:
+  - Composite indexes that wrap HNSW with IVF or other clusterings
+  - Product quantization to compress vectors and reduce HNSW memory footprint
+  - Systematic benchmarking of HNSW against other ANN methods on real workloads
+sections:
+  - title: Introduction
+    target_words: 106
+    key_points:
+      - "HNSW popularity drivers: state-of-the-art recall, sub-millisecond search speeds on large vector sets"
+      - Why HNSW internals are hard to understand despite widespread adoption in vector DBs
+      - Article roadmap contrasting foundations, construction, search mechanics, Faiss implementation, and parameter tuning
+    diagrams:
+      - "Conceptual overview diagram: multi-layer HNSW graph highlighting entry point, long-range top-layer links, and denser
+        bottom layers"
+  - title: Foundations of HNSW
+    target_words: 897
+    key_points:
+      - "Positioning HNSW in ANN landscape: graph category, proximity graphs where edges reflect Euclidean closeness"
+      - "Probability skip lists: layered linked-list structure enabling both fast search (top-layer long jumps) and fast insertion"
+      - "Navigable Small World graphs: long-range plus short-range friend-list links producing logarithmic greedy-routing complexity"
+      - "Greedy routing details: zoom-out (low-degree vertices) vs zoom-in (high-degree) phases, local-minima stopping condition
+        and early-stop risk"
+      - "Hierarchy as the key innovation: skip-list layering applied to NSW so search begins with long links and progressively
+        refines accuracy"
+      - "Degree vs. performance tradeoff: higher average degree improves recall but raises network complexity and query time"
+    diagrams:
+      - "Probability skip list diagram: top layer with long skips descending to bottom layer with single-step links, illustrating
+        search path"
+      - "NSW search flowchart: entry-point start, iterative greedy moves to nearest friend, termination at local minimum"
+      - High-degree vs low-degree vertex contrast showing impact on routing phases and early stopping probability
+      - "HNSW layered graph: longest links at top layer (entry point), progressively shorter and denser links at lower layers"
+      - "Full HNSW search process: start at top layer, greedy traversal per layer, descend on local minimum until layer 0"
+  - title: Graph Construction
+    target_words: 342
+    key_points:
+      - Iterative one-by-one vector insertion and role of L (max layers) with probabilistic layer assignment
+      - Level multiplier m_L (~1/ln(M)) and its effect on minimizing neighbor overlap across layers while controlling traversal
+        count
+      - "Construction search phases: initial ef=1 greedy traversal to locate insertion layer, then efConstruction for richer candidate
+        set"
+      - "Link selection from candidates: choose M nearest, respect M_max and M_max0 caps (doubled for base layer)"
+      - How construction mirrors search but uses higher efConstruction to improve connectivity before final layer-0 local minimum
+        stop
+    diagrams:
+      - Probability function plot across layers showing exponential decay and insertion likelihood per level
+      - Link assignment diagram illustrating M neighbors, M_max cap, M_max0 doubling for layer 0, and effect on vertex degrees
+  - title: Implementation of HNSW
+    target_words: 1184
+    key_points:
+      - Faiss IndexHNSWFlat initialization with vector dimension and M (neighbors per vertex)
+      - Automatic derivation of layer probabilities, M_max/M_max0, and entry-point selection inside set_default_probas
+      - "Inspecting built index: max_level, level distribution histogram, and entry-point vector ID"
+      - Reproducing probability and random_level logic to reveal why most vectors land in layer 0 and highest layer always has
+        an entry point
+      - Parameter sweep on Sift1M (M, efConstruction, efSearch) measuring effects on recall@1, latency, and memory footprint
+      - "Observed tradeoffs: high M and efSearch drive recall but explode latency and RAM; efConstruction helps recall with modest
+        latency cost at low query volumes"
+      - "Mitigation strategies when HNSW memory is prohibitive: add PQ compression or IVF clustering for composite indexes"
+    diagrams:
+      - Layer distribution histogram comparing Faiss implementation to equivalent Python probability logic
+      - Recall@1 heatmap across M, efConstruction, and efSearch parameter grid
+      - Search-time (log-scale) heatmap showing latency impact of same parameter combinations on 1000 queries
+      - Memory-usage curve demonstrating linear growth with M (ef parameters have zero effect)
+golden_sources:
+  - title: ANN Benchmarks
+    url: https://github.com/erikbern/ann-benchmarks
+  - title: "Skip lists: a probabilistic alternative to balanced trees"
+    url: https://15721.courses.cs.cmu.edu/spring2018/papers/08-oltpindexes1/pugh-skiplists-cacm1990.pdf
+  - title: Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs
+    url: https://arxiv.org/abs/1603.09320
+  - title: Approximate Nearest Neighbor Search Small World Approach
+    url: https://www.iiis.org/CDs2011/CD2011IDI/ICTA_2011/PapersPdf/CT175ON.pdf
+  - title:
+      Scalable Distributed Algorithm for Approximate Nearest Neighbor Search Problem in High Dimensional General Metric
+      Spaces
+    url: https://www.researchgate.net/publication/262334462_Scalable_Distributed_Algorithm_for_Approximate_Nearest_Neighbor_Search_Problem_in_High_Dimensional_General_Metric_Spaces
+  - title: Approximate nearest neighbor algorithm based on navigable small world graphs
+    url: https://publications.hse.ru/mirror/pubs/share/folder/x5p6h7thif/direct/128296059
+  - title: Navigability of complex networks
+    url: https://arxiv.org/abs/0709.0303
+  - title: Growing homophilic networks are natural navigable small worlds
+    url: https://arxiv.org/abs/1507.06529
+  - title: Faiss HNSW Implementation
+    url: https://github.com/facebookresearch/faiss/blob/main/faiss/impl/HNSW.cpp
+other_sources: []

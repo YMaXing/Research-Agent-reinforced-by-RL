@@ -15,6 +15,56 @@ async def full_research_instructions_prompt() -> str:
         The complete research instructions as a string
     """
     dedup_enabled = settings.enable_content_dedup
+    override_allowed = settings.user_plan_override_allowed
+
+    # Shown when the user asks to change the recommended plan (True branch) or gives an unprompted
+    # override at any point (both branches) — moved here from the now-removed guidance tool.
+    override_guidance_block = f"""
+        This is the guidance for overriding the recommended exploration plan.
+         🎛️ What's overridable: 🔢 total round count (0 up to the configured ceiling of
+         {settings.maximum_exploration_rounds} rounds — 0 means step 4 is skipped entirely, same as
+         preset P0), 🎯 each round's focus (depth / breadth / balanced), ⚖️ an optional depth-vs-breadth
+         split for a balanced round (e.g. "70% depth"), and/or 🔍 a query count per round. A full
+         replacement plan or a relative adjustment to the recommended recipe (e.g. "add one more depth
+         round", "drop the last round", "make round 2 breadth instead") are both fine. Requesting more
+         rounds than the ceiling is capped automatically, with a note to the user.
+
+         Examples: "run 2 rounds: depth then breadth" · "just 1 round, focus on breadth" · "skip
+         exploration entirely" · "balanced round with a 70%/30% depth/breadth split" · "run 3 rounds:
+         80/20, then 30/70, then pure depth" · "use 6 queries per round" · "add one more depth round" ·
+         "drop the last round"
+"""
+
+    # Step 3.4's stop-and-confirm behavior, gated by user_plan_override_allowed.
+    plan_confirmation_block = f"""
+      b. STOP. Present the recommendation to the user in plain language before doing anything else:
+         the preset name (skip/light/standard/deep) from llm_recommendation.name, its reasoning, and —
+         if llm_recommendation.risk_flags contains "AMBIGUOUS" — the specific guard rationale from
+         "Ambiguous policy-guard cases" below, making clear this pick is a guard default rather than a
+         confident RL vote. State plainly that this is the recommended exploration plan (mapped through
+         the preset-mapping table below) and ask the user to confirm it or change it. Do not call any
+         further tool until they answer.
+      c. If the user's reply does not request any change (confirms, says proceed, or is otherwise not a
+         change request): the recommended plan is FINAL as-is. Say so in one line and move on to step 4.
+      d. If the user's reply requests a change (in any form — "use more rounds", "skip exploration",
+         "focus on breadth", etc.): show them the following, then wait for their specific plan:
+{override_guidance_block}
+      e. Once the user states an overriding plan, restate it back in one precise line — total round
+         count and each round's focus/depth_vs_breadth_ratio/n_queries — and ask if that's final. If
+         they adjust it again, repeat this restate-and-ask with the new plan. Keep looping for as long
+         as the user keeps adjusting it; only stop once they explicitly say the plan is final / good to
+         go / proceed. Only then move to step 4 with that plan.
+""" if override_allowed else """
+      b. Determine the exploration plan directly from llm_recommendation.preset (mapped through the
+         preset-mapping table below), UNLESS llm_recommendation.risk_flags contains "AMBIGUOUS" — in
+         that case, and only in that case, STOP and ask the user explicitly: for a "capped" guard,
+         proceed with light (the default) or override to skip? For a "required" guard, proceed with
+         light (the default) or override to standard or deep? Wait for their answer; if they don't
+         state a preference, proceed with light. (user_plan_override_allowed=False: do not otherwise
+         ask the user anything here — proceed straight to step 4 with the resolved plan. An unprompted
+         override from the user, given at any point, is still always honoured — see "What is
+         overridable" below.)
+"""
 
     dedup_step_number = 7   # step number assigned to dedup when enabled
     # Paragraph shown inside the write step describing how DEDUPLICATED_RESEARCH_FILE is used
@@ -71,16 +121,27 @@ If the user doesn't provide a research directory, you should ask for it before e
     1.3 Extract the URLs from the ARTICLE_GUIDELINE_FILE with the "extract_guidelines_urls" tool. This tool reads the
     ARTICLE_GUIDELINE_FILE and categorises all references by the H2 section they appear in:
 
-    **Golden sources** (from "Golden Sources", "Article Code", "Lesson Code", or any other section):
+    **Golden sources** (from "Golden Sources", or any independent code/notebook block such as "Article Code",
+    "Lesson Code", "Notebooks", etc. — matched by "code"/"notebook" appearing in the header):
     • "github_urls" - GitHub links that are golden sources;
     • "youtube_videos_urls" - YouTube video links that are golden sources;
     • "other_urls" - all other HTTP/HTTPS links (including arXiv papers) that are golden sources;
     • "local_files" - relative paths to local files mentioned in the guidelines.
 
-    **Exploitation sources** (from "Other Sources" section only):
-    • "exploitation_github_urls" - GitHub links listed under "Other Sources";
-    • "exploitation_youtube_videos_urls" - YouTube links listed under "Other Sources";
-    • "exploitation_other_urls" - all other HTTP/HTTPS links (including arXiv papers) listed under "Other Sources".
+    **Exploitation sources** (from "Other Sources", "Documentation", or any other section not matched as golden above):
+    • "exploitation_github_urls" - GitHub links listed under a non-golden section;
+    • "exploitation_youtube_videos_urls" - YouTube links listed under a non-golden section;
+    • "exploitation_other_urls" - all other HTTP/HTTPS links (including arXiv papers) listed under a non-golden section.
+
+    Each list above is de-duplicated. If the same URL/local-file appears under both a golden and a
+    non-golden section (e.g. quoted inline in a lesson section and also formally listed under "Golden
+    Sources"), it is only ever reported once, as golden.
+
+    **Reference-only URLs** (blocklisted from scraping):
+    • "local_file_reference_urls" - URLs commented out (``<!-- [Title](URL) -->``) directly above a
+      quoted local-file reference. The file content is supplied locally, so these URLs are recorded
+      only so the pipeline can exclude them from the exploitation/exploration phases and from step 6
+      full-scraping — they are never scraped or selected as research sources.
 
     Only extensions allowed for local files are: ".py", ".ipynb", and ".md".
     The extracted data is saved to the GUIDELINES_FILENAMES_FILE within the RESEARCH_OUTPUT_DIRECTORY directory.
@@ -122,6 +183,15 @@ If the user doesn't provide a research directory, you should ask for it before e
 
 3. Exploitation Phase, repeat the following research loop for 3 rounds:
 
+    **Scope of step 3 (lookup-only):** This phase is *exclusively* prescribed coverage. Every query in this phase
+    must be derived from a concrete anchor named verbatim in the ARTICLE_GUIDELINE_FILE (an H2/H3 heading, a
+    bullet point, or an explicitly named entity such as a library, paper, or technique). Depth and breadth
+    exploration — limitations, latest advancements, theoretical foundations, real-world case studies, future
+    directions, cross-domain analogies, history, adjacent technologies — are *forbidden* in this phase. They are
+    handled exclusively in step 4. The dedup tool will reject any exploitation query that drifts into those
+    categories. If you notice a generated batch contains exploration-flavored queries, that is a generator bug;
+    do not paper over it by accepting them here.
+
     For each of the 3 exploitation rounds:
 
     3.1. Run the "generate_next_queries" tool to analyze the ARTICLE_GUIDELINE_FILE, the already-scraped guideline
@@ -135,67 +205,133 @@ If the user doesn't provide a research directory, you should ask for it before e
     3.3. Run the "run_tavily_research" tool with the new queries in NEXT_QUERIES_FILE. This tool executes the queries with
     Tavily and appends the results to the TAVILY_RESULTS_FILE within RESEARCH_OUTPUT_DIRECTORY.
 
-3.4. Exploration Planning (RL Meta-Reasoner + Grok 4.2 Planner):
+3.4. Exploration Planning (RL Meta-Reasoner + deterministic policy guard). After completing all 3
+    exploitation rounds, do the following in order:
 
-    After completing all 3 exploitation rounds, run the "predict_exploration_preset" tool with the research
-    directory. The tool runs a two-stage pipeline internally:
+      a. Run the "predict_exploration_preset" tool with the research directory. Always run this
+         first, even if the user already told you what exploration plan they want — the tool still
+         determines external_evidence_policy, which the guard logic below depends on.
+{plan_confirmation_block}
+    The "predict_exploration_preset" tool runs a two-stage pipeline internally:
       Stage 1 — Qwen3-4B RL model: infers a per-section preset vote from the exploitation digest,
-                 aggregates via weighted vote, and applies an entropy-gated floor correction.
-      Stage 2 — Grok 4.2 reasoning model: reviews the RL output together with the article guideline
-                 and the digest gap profile, then either confirms or overrides the RL preset and
-                 returns a structured JSON decision.
+                 aggregates via weighted vote, applies an entropy-gated floor correction, and a
+                 deterministic cost-sensitive rule.
+      Stage 2 — Deterministic policy guard (no LLM call): clamps the RL model's own pick to satisfy
+                 the article's external-evidence policy (forbidden → P0 skip, required → ≥ P1 light,
+                 capped → ≤ P1 light). There is no LLM-planner stage in this tool at all — the RL
+                 recommendation is authoritative except where this hard policy constraint requires a
+                 clamp, or an explicit user-directed override applies (see below).
 
     The tool returns:
-    - grok_recommendation.preset (P0–P5) — the authoritative preset chosen by Grok 4.2 (null if
-      XAI_API_KEY is not set or the Grok call fails, in which case fall back to rl_recommendation)
-    - grok_recommendation.name — human-readable name for the preset
-    - grok_recommendation.reasoning — Grok 4.2's one-sentence justification
-    - grok_recommendation.override — True if Grok 4.2 disagreed with the RL model
-    - grok_recommendation.override_reason — reason for the override (null when override is False)
-    - rl_recommendation.preset (P0–P5) — the Qwen3-4B RL model's aggregate recommendation
+    - llm_recommendation.preset (0–3) — the recommended preset: the RL model's own pick, clamped
+      only by the deterministic policy guard above (the field name is a historical artifact; no LLM
+      is involved at all)
+    - llm_recommendation.name — human-readable name: skip | light | standard | deep
+    - llm_recommendation.reasoning — a short deterministic description of the guard's decision
+    - llm_recommendation.override — True only if the policy guard changed the RL model's own pick
+    - llm_recommendation.override_reason — which policy guard fired and why (null when override
+      is False)
+    - llm_recommendation.decision_drivers — short list of signals that drove the choice
+    - llm_recommendation.risk_flags — short list of reasons this decision could be wrong
+    - rl_recommendation.preset (0–3) — the Qwen3-4B RL model's aggregate recommendation
+    - rl_recommendation.name — human-readable name for the RL preset
     - rl_recommendation.confidence — probability mass on the chosen preset (0.0–1.0)
-    - rl_recommendation.entropy_bits — spread of the distribution (lower = more confident)
-    - rl_recommendation.floor_correction_applied — True if a deep-section override fired
-    - section_signals — per-section preset, top-2 probs, and preset name
+    - rl_recommendation.entropy_bits — spread of the 4-preset distribution (lower = more confident)
+    - rl_recommendation.floor_correction_applied — True if the max-preset floor heuristic fired
+    - section_signals — per-section list of preset, name, and top-2 probabilities
     - guidance — one-sentence synthesis from the RL stage
 
-    Preset mapping (use this to configure step 4):
-      P0 → Skip the exploration phase entirely (step 4 is not run)
-      P1 → 1 round, balanced focus
-      P2 → 2 rounds: round 1 balanced, round 2 depth-focused
-      P3 → 2 rounds: round 1 depth-focused, round 2 breadth-focused
-      P4 → 3 rounds: round 1 balanced, round 2 depth-focused, round 3 breadth-focused
-      P5 → 3 rounds: round 1 depth-focused, round 2 breadth-focused, round 3 depth-focused
+    Preset mapping (use this EXACT fixed recipe to configure step 4 — this is the same recipe the RL
+    model's own training data was generated with; do NOT adjust it per-section or per-article, since
+    doing so would make step 4's live exploration diverge from what the model was calibrated against):
+      P0 skip     → Skip the exploration phase entirely (step 4 is not run)
+      P1 light    → 1 round, focus="balanced" (~50% depth / 50% breadth)
+      P2 standard → 2 rounds: round 1 focus="depth", round 2 focus="breadth"
+      P3 deep     → 3 rounds: round 1 focus="depth", round 2 focus="breadth", round 3 focus="depth"
 
-    **Default behaviour**: Use grok_recommendation.preset as the authoritative preset. If
-    grok_recommendation is null (Grok call unavailable), fall back to rl_recommendation.preset.
-    Use the section_signals breakdown to guide the "focus" parameter of each exploration round
-    in step 4 (target the weakest sections flagged in section_signals for depth/breadth rounds).
-    If grok_recommendation.override is True, note the override_reason — it may highlight specific
-    article sections that need extra attention.
+    **What is overridable**, mapped onto step 4's actual mechanics — this applies whether the user
+    overrides in response to step (b)/(d) above, or unprompted at any other point in the conversation
+    (before step 3.4 even runs, or mid-way through step 4's loop):
+      - Total round count: 0 up to the configured ceiling of {settings.maximum_exploration_rounds} rounds.
+        0 means step 4 is not run at all, the same as preset P0.
+      - Each round's focus: "depth", "breadth", or "balanced" — the exact values
+        generate_next_complementary_queries_tool's "focus" argument accepts. If the user requests a specific
+        depth/breadth split for a "balanced" round (e.g. "70% depth"), pass it as that round's
+        depth_vs_breadth_ratio (0.0–1.0); this is the one case where setting depth_vs_breadth_ratio in step
+        4.1 is appropriate.
+      - Each round's query count (n_queries), only if the user states one; otherwise use
+        settings.n_exploration_queries_per_round as usual.
+    An override may be a FULL replacement plan ("run exactly 2 rounds: depth, then breadth") or a RELATIVE
+    adjustment to the recommended recipe ("add one more depth round", "drop the last round", "make round
+    2 breadth instead"). For a relative adjustment, the baseline is always llm_recommendation's fixed
+    per-round recipe from the preset-mapping table above — not an ad-hoc reinterpretation of it, and not
+    the raw rl_recommendation before any policy-guard clamp.
 
-    **User override**: The user may specify their own round count and focus at any time. If the
-    user says "run 2 rounds, focus on breadth" or any equivalent, skip the tool's preset and
-    follow the user's instructions instead.
+    If given unprompted (not in direct response to step (b)/(d) above — e.g. before step 3.4 even runs,
+    or mid-way through step 4's loop): when it is fully specified (round count and every affected
+    round's focus are explicit), restate the resulting plan in one line and proceed without waiting for
+    further confirmation — the user already told you to do it. When it is ambiguous or only partly
+    specified (e.g. "focus more on breadth" with no round count), ask ONE targeted clarifying question
+    before proceeding. Either way, if it conflicts with a fired policy guard (llm_recommendation.override
+    is True), give a single brief heads-up citing override_reason (e.g. "note: this article's guideline
+    marks external evidence as forbidden — research from this exploration may not be usable in the final
+    article"), then proceed as instructed — do not block on this or raise it twice. If the requested round
+    count exceeds {settings.maximum_exploration_rounds}, cap it there and say so. If the user changes or
+    cancels the exploration plan mid-way through step 4's loop (e.g. "stop here, that's enough"), honor
+    it at the next round boundary — never run a now-unwanted round just because it was part of the
+    confirmed plan.
 
-    **When to apply your own judgement on top**:
-    - grok_recommendation is null AND rl_recommendation.entropy_bits > 1.5 → RL model is
-      uncertain; rely on section_signals individually rather than the aggregate preset
-    - rl_recommendation.floor_correction_applied is True → if grok_recommendation did not
-      already address it, focus additional rounds on the sections that triggered the floor
-      (the highest-preset sections in section_signals)
-    - The article guideline clearly calls for a specific depth of research that contradicts
-      both the RL and Grok recommendations
+    **Ambiguous policy-guard cases**: two policy guards can move the preset to an arm the data does not
+    clearly support, and both are ALWAYS tagged "AMBIGUOUS" in llm_recommendation.risk_flags when they
+    fire — check specifically for that tag, then read which guard fired from the risk_flags text itself
+    ("policy=capped ..." or "policy=required ..."):
+      - **capped, RL votes standard or deep**: the guard ALWAYS clamps the preset down to P1 light — this
+        is unconditional, by design, regardless of what the RL model's own probability split between skip
+        and light says (the "residual" left after standard/deep are excluded; a corpus-wide check found
+        zero confirmed cases of skip actually beating light in this population, so the residual is not
+        trusted in either direction). policy=capped with a skip/light RL vote does NOT produce this tag.
+      - **required, RL votes skip**: the guard ALWAYS elevates the preset up to P1 light — likewise
+        unconditional. A corpus-wide check of "required"-policy articles found no consistent winner among
+        light/standard/deep once skip is excluded: light was clearly best in some cases, but in others
+        standard or deep won by a wide margin, and in one case light was even the WORST of the three
+        eligible arms (worse than skip itself). There is no data-confirmed default here either, so light is
+        used only as a conservative, single-level-escalation placeholder, not a confident pick.
+    When this tag is present, always surface the specific guard and its rationale from the bullets above
+    when presenting or discussing the recommendation (step (b) above, or the targeted question below when
+    user_plan_override_allowed is False) — the user should know this pick is a guard default, not a
+    confident RL vote.
 
-4. Exploration Phase, repeat the following research loop for an indefinite number of rounds with a configurable maximum number of {settings.maximum_exploration_rounds} rounds:
+    Outside of an explicit user override and (when user_plan_override_allowed is False) the
+    ambiguous-policy-guard question, do NOT second-guess llm_recommendation.preset on your own
+    initiative — not because of confidence, entropy, section_signals, or your own reading of the article
+    guideline (the guideline is already an input to the digest and RL model that produced this preset;
+    re-applying it yourself would duplicate or fight a decision already made more reliably upstream).
+    That kind of ad-hoc judgement was tried in an earlier LLM-planner design and found unreliable; it is
+    not part of the current pipeline.
 
-    The number of rounds and the per-round focus are determined by the preset chosen in step 3.4
-    (or by the user's explicit override if provided). If preset is P0, skip this step entirely.
+4. Exploration Phase: execute the exploration plan established in step 3.4 (see "Determining the exploration
+    plan for step 4") — run exactly its round count, each with its specified focus. The round count is fixed
+    at plan time, 0 up to the ceiling of {settings.maximum_exploration_rounds} rounds; it is never open-ended
+    and is never decided during step 4 itself. If the plan's round count is 0, skip this step entirely.
+
+    **Scope of step 4 (gap-driven exploration only):** This phase is *exclusively* depth and breadth exploration
+    around the anchors that step 3 already covered. Every query here must target a depth or breadth category
+    (motivation, theoretical foundations, technical nuances, latest advancements, limitations/failure modes,
+    implementation challenges, real-world case studies, future implications, adjacent concepts, cross-domain
+    analogies, historical context, enabling/disrupting technologies, applications in other industries, emerging
+    trends in adjacent fields). Pure-coverage "What is X?" / "How does X work?" queries on guideline-named
+    concepts are *forbidden* here — those belong to step 3. The dedup tool will reject any exploration query that
+    is pure coverage of a guideline-anchored concept.
 
     For each exploration round:
 
-    4.1. Run "generate_next_complementary_queries_tool" (where you should choose the value for the arguments "focus" and/or "depth_vs_breadth_ratio") 
-        to analyzes the article guidelines, already-scraped content, and existing Tavily results. The tool dives deeper into the content already covered 
+    4.1. Run "generate_next_complementary_queries_tool" with the "focus" argument set verbatim to this
+        round's focus value from the exploration plan established in step 3.4. Leave "depth_vs_breadth_ratio"
+        unset unless the plan specifies a depth/breadth split for this "balanced" round; the default recipe
+        uses pure focus modes only, matching how the RL model's training data was generated. Likewise, pass
+        "n_queries" only when the plan specifies a per-round count for this round, else leave it at its
+        default. Use the tool to analyze the article guidelines, already-scraped content, and existing Tavily
+        results. The tool dives deeper into the content already covered
         in past research, and/or explores other uncovered aspects that are closely related to past research and may expand the research scope, 
         then propose new web-search questions, and writes them - together with a rationale explaining why it's important and what additional value 
         it brings for the article for each - to NEXT_QUERIES_FILE within RESEARCH_OUTPUT_DIRECTORY.
@@ -203,7 +339,7 @@ If the user doesn't provide a research directory, you should ask for it before e
     4.2. Run "deduplicate_new_queries_tool" with query_source="complementary" to remove semantic duplicates among the queries generated in this round and against the full query history.
     The deduplicated queries are saved back to NEXT_QUERIES_FILE and also appended to FULL_QUERIES_FILE.
 
-    4.3 Run the "run_tavily_research" tool with the new complementary queries in NEXT_QUERIES_FILE. This tool executes the queries with
+    4.3. Run the "run_tavily_research" tool with the new complementary queries in NEXT_QUERIES_FILE. This tool executes the queries with
     Tavily and appends the results to the TAVILY_RESULTS_FILE within RESEARCH_OUTPUT_DIRECTORY.
 
 5. Filter Tavily results by quality:
@@ -288,6 +424,9 @@ After running the complete workflow, the research directory will contain the fol
 ```
 research_directory/
 ├── ARTICLE_GUIDELINE_FILE                              # Input: Article guidelines and requirements
+├── research_digest.md                                  # Step 3.4 — Exploitation digest, auto-generated by predict_exploration_preset if absent
+├── guideline_features.json                             # Step 3.4 — Extracted guideline features (e.g. external_evidence_policy) backing the digest
+├── digest_section_placeholder.json                     # Step 3.4 — Digest-stage per-section placeholder data (diagnostic only)
 ├── RESEARCH_OUTPUT_FOLDER/                             # Hidden directory containing all research data
 │   ├── GUIDELINES_FILENAMES_FILE                       # Step 1.3 — Extracted URLs and local files from guidelines
 │   ├── LOCAL_FILES_FROM_RESEARCH_FOLDER/               # Step 2.1 — Copied local files referenced in guidelines
@@ -300,8 +439,9 @@ research_directory/
 │   │   └── [youtube_transcripts...]
 │   ├── URLS_FROM_GUIDELINES_EXPLOITATION_FOLDER/       # Step 2.5 — Scraped "Other Sources" (exploitation, non-golden)
 │   │   └── [exploitation_sources...]
-│   ├── FULL_QUERIES_FILE                               # Steps 3.2 / 4.2 — Cumulative history of all deduplicated queries
 │   ├── NEXT_QUERIES_FILE                               # Steps 3.1 / 4.1 — Proposed queries for the current round
+│   ├── FULL_QUERIES_FILE                               # Steps 3.2 / 4.2 — Cumulative history of all deduplicated queries
+│   ├── REJECTED_QUERIES_FILE                           # Steps 3.2 / 4.2 — Rejected duplicate queries with reasons (written only if any were removed)
 │   ├── TAVILY_RESULTS_FILE                             # Steps 3.3 / 4.3 — Complete results from all Tavily rounds
 │   ├── TAVILY_SOURCES_SELECTED_FILE                    # Step 5.1 — Accepted source IDs after quality filtering
 │   ├── TAVILY_RESULTS_SELECTED_FILE                    # Step 5.1 — Filtered Tavily results (accepted sources only)
@@ -309,7 +449,7 @@ research_directory/
 │   ├── URL_PHASES_FILE                                 # Step 6.1 — URL → phase mapping (exploitation / exploration)
 │   ├── URLS_FROM_RESEARCH_FOLDER/                      # Step 6.2 — Fully scraped content from selected research URLs
 │   │   └── [full_research_sources...]
-    │   └── DEDUPLICATED_RESEARCH_FILE                      # Step 7.1 — Phase-aware deduplicated knowledge base (omitted when dedup disabled)
+│   └── DEDUPLICATED_RESEARCH_FILE                      # Step 7.1 — Phase-aware deduplicated knowledge base (omitted when dedup disabled)
 └── RESEARCH_MD_FILE                                    # Step {write_step_number}.1 — Final comprehensive research compilation
 ```
 

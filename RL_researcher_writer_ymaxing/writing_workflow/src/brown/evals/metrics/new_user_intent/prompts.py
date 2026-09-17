@@ -12,6 +12,7 @@ from brown.evals.metrics.base import (
     SectionCriteriaScores,
 )
 
+from . import word_count
 from .types import (
     UserIntentArticleScores,
     UserIntentCriteriaScores,
@@ -109,7 +110,15 @@ three criteria:
         (minimum ±25 words): if the prose-only word count falls more than that tolerance below the target, or exceeds
         the target by more than that tolerance, assign a score of 0. For example, a 400-word target allows 360–440
         words (±40); a 250-word target allows 225–275 words (±25); a 700-word target allows 630–770 words (±70).
-        - **Prose-only word count:** When the unit is words, count prose words only — exclude fenced code blocks
+        - **Prose-only word count is pre-computed for you — do not recount words yourself.** Counting words precisely
+        in long text is error-prone even for careful readers, so the exact, deterministic prose-only word count for
+        every H2-delimited section of the generated article is provided in `<generated_article_section_word_counts>`
+        below. Those counts already exclude fenced code blocks, Mermaid diagram blocks, table cell text,
+        image/diagram captions, and inline citation markers (e.g. `[[N]](url)` tokens) — this is the same
+        prose-only definition given below, just computed for you. Look up the count for whichever generated section
+        you associated with the expected section (match by title), and compare that exact number against the
+        tolerance range. Never substitute your own estimate for the provided count, and never recompute it by eye.
+        - **Prose-only word count (definition, for reference):** count prose words only — exclude fenced code blocks
         (all content between opening and closing ``` delimiters), Mermaid diagram blocks, table cell
         text, image/diagram captions, and inline citation markers (e.g. `[[N]](url)` tokens).
    2. **Research Anchoring**: For each expected section in the article guideline, you will evaluate whether the generated 
@@ -173,6 +182,12 @@ from the research material, and explain whether the generated section drew from 
     Since media can take many forms such as Mermaid diagrams, images, or URLs, you will completely ignore the 
     content of the media. Based on the section guideline, you will check whether the media is present in the 
     correct place. Based on the caption of the media, you will check whether it is properly anchored in the research.
+   - **Mermaid diagrams satisfy image/figure requirements.** The article guideline explicitly requires Mermaid
+    diagrams as the visual format for all figures. Therefore, a Mermaid diagram block (` ```mermaid ... ``` `)
+    in the generated section at the correct position fully satisfies any "Image N: [caption]" or figure
+    requirement from the guideline. Do not penalize a generated section for using a Mermaid diagram where the
+    guideline specifies an image, provided the diagram appears at the correct narrative position. A figure
+    requirement is only unmet when no visual element of any kind is present where the guideline requires one.
 
 ## CHAIN OF THOUGHT
 
@@ -202,23 +217,37 @@ section guideline.
 material to determine whether golden sources were preferentially used when both types of sources cover the same topic.
 
 **Assigning Scores:**
-3.1. Based on each section expected from the article guideline, assign a binary score of either 0 or 1 
-for all evaluation criteria listed in the instructions:
-    - Score 1 if the section clearly follows the requirements detailed in the instructions.
-    - Score 0 if it fails to follow the requirements detailed in the instructions.
-3.2. Justify why you assigned a score of 0 or 1 with a brief explanation that highlights the reasoning behind the score
-based on the given criterion.
+3.1. For each section and criterion, write your reasoning first: explain what is present, what is
+missing or violated, and what conclusion you reach. Do NOT write the score yet.
+3.2. Based solely on the conclusion you stated in 3.1, derive the binary score:
+    - Score **1** if your reasoning concluded the section satisfies the criterion.
+    - Score **0** if your reasoning concluded the section violates or fails the criterion.
+    The score must be the mechanical output of your stated conclusion — not a separate judgment.
+3.3. **[Mandatory self-check]** After assigning all scores, for each section-criterion pair, read
+your 3.1 reasoning and your 3.2 score together. Verify: does the score match the conclusion you
+wrote? If you wrote "no conflict exists" or "requirements are met" but scored 0, correct the score
+to 1. If you wrote "requirement is violated" or "element is missing" but scored 1, correct the
+score to 0. Never leave a score that contradicts your own written conclusion.
 
 ## WHAT TO AVOID
 
 - Do not provide scores using the generated output as the reference point to divide into sections. You must always 
 use the article guideline as the reference point to divide into sections.
-- Do not let other sections influence the score of a section. The score of each section must be determined in complete 
-isolation from any other section.
+- Do not let other sections influence the score of a section. The score and reasoning for each section must be
+based SOLELY on the content of that specific section. Never cite the absence or presence of a different section
+as evidence when scoring a given section. Each section must stand entirely on its own.
 - Do not use the URLs or file paths from the article guideline to determine golden-source content. Always use the 
 `<golden_source>` XML tags in the research material.
 - Do not penalize complementary exploration-phase content in guideline adherence if it is closely related to the 
 section's expected main idea or topic.
+- **Your score must be consistent with your reasoning.** Before finalizing a score for a section, re-read
+your reasoning for that section. If your reasoning concludes that requirements are satisfied, or that no
+conflict/violation/gap exists, you MUST assign score **1**. If your reasoning concludes that a requirement
+is violated, a conflict exists, or a missing element is identified, you MUST assign score **0**. A score
+that contradicts the explicit conclusion of your own reasoning is always a fatal error — it means your
+score is wrong. In particular: never write "no priority conflict exists" in your reasoning and then score 0;
+never write "all requirements are met" and then score 0; never conclude a section is compliant and score 0.
+The score reflects your conclusion, not a separate judgment.
 
 ## FEW-SHOT EXAMPLES
 
@@ -240,6 +269,14 @@ Here are few-shot examples demonstrating how to compute the scores for each sect
 <output>
 {output}
 </output>
+
+<generated_article_section_word_counts>
+Exact, pre-computed prose-only word counts for each H2-delimited section of the generated article
+(<output>) above, using the same section boundaries described in point 8. Use these counts directly
+for the length check in Guideline Adherence instead of counting words yourself.
+
+{section_word_counts}
+</generated_article_section_word_counts>
 
 Think through your answer step by step, and provide the requested evaluation.
 """
@@ -996,9 +1033,11 @@ def get_eval_prompt(
     few_shot_examples: UserIntentMetricFewShotExamples,
 ) -> str:
     """Generate the evaluation prompt for the user intent metric."""
+    section_word_counts = word_count.to_prompt_block(word_count.compute_section_word_counts(output))
     return SYSTEM_PROMPT.format(
         examples=few_shot_examples.to_context(),
         input=input,
         context=context,
         output=output,
+        section_word_counts=section_word_counts,
     )

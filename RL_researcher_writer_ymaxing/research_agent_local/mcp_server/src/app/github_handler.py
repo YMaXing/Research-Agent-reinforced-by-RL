@@ -64,12 +64,30 @@ def _normalize_github_url(url: str) -> str:
 
 
 async def process_github_url(url: str, dest_folder: Path, token: str | None, title: str = "") -> bool:
-    """Fetch a GitHub repository (or file) with gitingest and write a Markdown report."""
+    """Fetch a GitHub repository (or file) with gitingest and write a Markdown report.
+
+    For a single-file ``/blob/<ref>/path`` URL, the exact file is ingested first. Only if
+    that fails (e.g. the file didn't exist at gitingest's pinned commit) do we fall back
+    to ingesting its parent directory via :func:`_normalize_github_url`, so unrelated
+    sibling files are pulled in only when strictly necessary.
+    """
     ingestion_succeeded = False
-    ingest_url = _normalize_github_url(url)
-    try:
-        summary, tree, content = await ingest_async(ingest_url, exclude_patterns="*.lock", token=token)
-        ingestion_succeeded = True
+    fallback_url = _normalize_github_url(url)
+    attempt_urls = [url, fallback_url] if fallback_url != url else [url]
+
+    summary = tree = content = None
+    last_error: Exception | None = None
+    for attempt_url in attempt_urls:
+        try:
+            summary, tree, content = await ingest_async(attempt_url, exclude_patterns="*.lock", token=token)
+            ingestion_succeeded = True
+            break
+        except Exception as e:
+            last_error = e
+            if attempt_url != attempt_urls[-1]:
+                logger.warning(f"Ingesting {attempt_url!r} failed ({e}); falling back to {fallback_url!r}")
+
+    if ingestion_succeeded:
         heading = title if title else f"Repository analysis for {url}"
         md = (
             f"# {heading}\n\n"
@@ -77,9 +95,9 @@ async def process_github_url(url: str, dest_folder: Path, token: str | None, tit
             f"## File tree\n```{tree}\n```\n\n"
             f"## Extracted content\n{content}"
         )
-    except Exception as e:
-        md = f"# Error processing {url}\n\n{e}"
-        logger.error(f"Error processing repository {url}: {e}", exc_info=True)
+    else:
+        md = f"# Error processing {url}\n\n{last_error}"
+        logger.error(f"Error processing repository {url}: {last_error}", exc_info=True)
 
     # Regex for markdown-style base64 images: ![...](data:image/...)
     md = re.sub(r"!\[[^\]]*\]\(data:image/[^;]+;base64,[^\)]+\)", "[... base64 image removed ...]", md)

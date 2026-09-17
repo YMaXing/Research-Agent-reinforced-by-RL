@@ -1,0 +1,580 @@
+{
+  "article": "11_multimodal__var_demanding",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Financial analysis consequence specified as 'incomplete or biased summaries' (deepens the financial-chart point)",
+              "Medical imaging depth: specific tasks named \u2014 outlining tumors, identifying abnormalities in X-rays and CT scans (more granular than A's generic X-ray claim)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Enterprise data breadth: technical diagrams, building sketches, and audio logs as inherently multimodal enterprise data types [38]",
+              "Object detection and image captioning as tasks impossible without vision [41]"
+            ],
+            "b_instances": [
+              "Film industry use of multimodal AI for CGI characters, rotoscoping, and de-aging actors [3]"
+            ]
+          },
+          "reasoning": "Both documents share the same narrative core (the OCR-pipeline frustration story, the 'treat documents as images' insight, and the lossy-text-conversion argument) plus overlapping breadth examples of financial analysis and medical imaging use cases, so these do not differentiate the two. For depth, B adds more granular, source-attributed specifics on the shared examples (naming the 'biased summaries' consequence for financial analysis, and naming tumor outlining/CT scans for medical imaging), giving B a modest edge. For breadth, A introduces two subtopics B lacks (the detailed enterprise data catalog including building sketches/audio logs, and the object detection/image captioning use case), while B introduces one unique subtopic (the film industry CGI/rotoscoping/de-aging example), giving A a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": [
+              "biased/incomplete financial summaries as consequence of text-only limitation"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "object detection and image captioning as tasks impossible without visual input, cited via multimodal LLM survey [41]"
+            ],
+            "b_instances": [
+              "film industry use of multimodal AI for CGI, rotoscoping, and actor de-aging, cited via Medium article [3]"
+            ]
+          },
+          "reasoning": "Both documents share the core financial-chart and medical-imaging examples with nearly identical citations, so those are not differentiators. For breadth, each document introduces one distinct new application example not found in the other: A cites object detection/image captioning as an impossible-without-vision task, while B cites the film industry's use of multimodal AI (CGI, rotoscoping, de-aging). These are comparable in substance and citation quality, yielding a breadth tie. For depth, neither document meaningfully deepens an existing point with new mechanism/quantitative detail beyond the shared examples; B's mention of 'biased or incomplete summaries' is a minor elaboration but not substantial enough to tip the balance, so depth is also judged a tie."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "More specific medical imaging tasks (tumor outlining, abnormality detection in X-ray/CT scans) than A's generic X-ray diagnosis mention",
+              "Specific consequence of text-only financial analysis (incomplete or biased summaries) citing source [1]"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Broader list of enterprise multimodal data types beyond finance: technical diagrams, building sketches, audio logs (citation 38)",
+              "Additional vision-dependent tasks cited: object detection and image captioning (citation 41)"
+            ],
+            "b_instances": [
+              "Film industry use case: multimodal AI for CGI characters, rotoscoping, and de-aging actors (citation 3)"
+            ]
+          },
+          "reasoning": "Both documents share the same core narrative (OCR pipeline frustration, treating documents as images, lossy text normalization). For depth, B adds more granular, source-attributed detail on existing points\u2014naming specific medical imaging tasks (tumor outlining, CT scans) and a specific negative consequence of ignoring visual data in finance (biased summaries)\u2014while A's medical/financial mentions stay generic, giving B a modest edge. For breadth, A introduces a wider set of new example categories (technical diagrams, building sketches, audio logs, plus object detection/image captioning) that B does not mention, whereas B's unique breadth contribution is limited to one new domain (film industry visual effects/CGI). This gives A a modest edge on breadth, roughly balancing B's depth advantage."
+        }
+      ]
+    },
+    "Limitations of traditional document processing": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific orchestration tools named: Unstructured.io using YOLOX for layout detection and table transformers for tabular parsing",
+              "Enterprise OCR API accuracy quantified at 96-98% vs open-source at 88-94%"
+            ],
+            "b_instances": [
+              "Quantified speed comparison: ColPali processes a page in <0.5s, over 18x faster than the traditional pipeline",
+              "PaddleOCR named alongside Tesseract as an example OCR engine",
+              "Mechanistic detail that raw OCR output is fragmented text blocks requiring coordinate-based heuristics to reassemble reading order",
+              "Sequential pipeline architecture prevents efficient parallelization, adding to latency",
+              "Building sketch failure explained via loss of spatial relationships and symbolic language, not just 'hard to parse'"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core critique of OCR pipelines (multi-step fragility, cascade errors, DPI/tilt/CER stats, 7-second latency, building sketch example, rigidity to templates) with no genuinely new adjacent subtopics introduced by either side, so breadth is a tie. On depth, both add some unique technical specifics: A uniquely names Unstructured.io's use of YOLOX and table transformers and cites enterprise API accuracy (96-98%), while B goes further with a quantified ColPali speed comparison (18x faster), naming PaddleOCR, explaining the OCR reassembly heuristics problem, noting the lack of pipeline parallelization, and giving a more mechanistic explanation of why sketches fail (loss of spatial/symbolic relationships). B's set of unique depth instances is larger and slightly more technically substantive, giving it a modest edge on depth while breadth remains tied."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Detailed latency breakdown by stage (0.81s layout, 2.67s OCR, 3.71s captioning)",
+              "Enterprise API OCR accuracy figure (96-98%) contrasted with open-source accuracy"
+            ],
+            "b_instances": [
+              "ColPali speed comparison (<0.5s, 18x faster than traditional pipeline)",
+              "Mechanism detail: raw OCR output is fragmented text blocks requiring coordinate-based heuristics to reassemble reading order",
+              "Concrete rigidity example: minor invoice format change breaks template-driven extraction, requiring manual rule updates",
+              "Concrete example: system trained on single-column reports misinterprets multi-column layouts",
+              "Technical cause of slowness: sequential pipeline prevents efficient parallelization",
+              "Deeper explanation of building-sketch failure: inability to capture spatial relationships and symbolic language"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core narrative (OCR pipeline steps, cascading errors, accuracy stats, DPI/tilt/CER figures, building sketch example) with no genuinely new adjacent sub-topics introduced by either side, so breadth is a tie. For depth, document B adds substantially more concrete, source-attributed elaboration on existing points: a specific ColPali speed benchmark, a mechanistic explanation of why raw OCR output is jumbled (coordinate-based heuristics), and multiple concrete illustrative examples (invoice template breakage, multi-column misread, lack of parallelization, richer explanation of the building-sketch failure). Document A's unique depth contributions are narrower: the granular per-stage latency breakdown and the enterprise-API accuracy figure. The volume and specificity of B's additional depth content clearly exceeds A's, warranting b_much_more on depth."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Named orchestration tools (Unstructured.io, YOLOX, table transformers) for pipeline steps",
+              "Detailed per-stage timing breakdown (0.81s layout, 2.67s OCR, 3.71s captioning)",
+              "Enterprise API OCR accuracy figure (96-98% on clean forms)"
+            ],
+            "b_instances": [
+              "Quantified ColPali speed comparison (<0.5s vs 7s, 18x faster)",
+              "PaddleOCR named alongside Tesseract as another OCR engine tested",
+              "Concrete invoice-format-change example showing template brittleness",
+              "Concrete multi-column vs single-column misinterpretation example",
+              "Technical detail on raw OCR output being fragmented and needing coordinate-based heuristics to reorder",
+              "Explicit mechanism noting lack of parallelization in sequential pipeline as a cause of latency",
+              "More specific elaboration on building sketch failure citing lack of spatial-relationship and symbolic-language understanding"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core limitations (OCR pipeline steps, rigidity, latency, cascading errors, accuracy degradation, building-sketch example) and neither introduces a genuinely new adjacent subtopic beyond this core scope, so breadth is tied. On depth, however, B provides considerably more granular, source-attributed elaboration: a quantified ColPali speed benchmark, a named additional OCR engine (PaddleOCR), concrete examples of rigidity (invoice format changes, multi-column misreads), a technical explanation of raw OCR fragmentation requiring heuristic reassembly, an explicit parallelization limitation, and a more specific explanation of why building sketches defeat OCR (spatial/symbolic reasoning). A contributes fewer but still substantive depth instances: naming specific orchestration tools (Unstructured.io, YOLOX, table transformers), a detailed per-stage timing breakdown, and an enterprise API accuracy statistic. Given B's larger number of distinct, concrete depth instances, B is judged much more enhanced on depth, while breadth remains a tie."
+        }
+      ]
+    },
+    "Foundations of Multimodal LLMs": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Theoretical explanation that projection maps modalities to a shared latent semantic space where image/text are different views of the same concept (cites ACL paper)",
+              "Explanation of contrastive learning mechanism underlying CLIP/OpenCLIP/SigLIP alignment",
+              "Specific GPQA benchmark score (~88.4%) for GPT-5 in addition to AIME score"
+            ],
+            "b_instances": [
+              "Quantitative detail on multi-million-token context windows for Gemini 2.5 Pro and Llama 4 Scout"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Robotics sensor fusion analogy (LiDAR, inertial units, early/late fusion terminology) as a framing for multimodal data fusion"
+            ],
+            "b_instances": [
+              "NVIDIA STORM spatiotemporal modeling research applied to enrich visual tokens with temporal dynamics, suggested as future direction for document layout analysis"
+            ]
+          },
+          "reasoning": "Both documents cover the same core architecture material (two architecture types, ViT, CLIP/SigLIP, NVLM study, model landscape, diffusion vs. multimodal LLM). For depth, A adds more rigor to existing points: a theoretical explanation of the projection/latent space, an explicit contrastive-learning mechanism for encoders, and an extra quantitative benchmark (GPQA score), whereas B only adds one deeper quantitative detail (context window sizes). For breadth, each document introduces exactly one genuinely new adjacent topic not covered by the other: A brings in the robotics sensor-fusion analogy (early/late fusion terminology), while B brings in NVIDIA's STORM spatiotemporal research as a forward-looking connection to video/document layout analysis. These are comparably substantive, yielding a tie on breadth, while A has a modest edge on depth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Contrastive learning as the training mechanism behind CLIP/OpenCLIP/SigLIP alignment",
+              "Theoretical framing of projection as mapping to a shared latent semantic space (cited academic paper)",
+              "Specific GPT-5 benchmark figures (~94.6% AIME, ~88.4% GPQA)",
+              "MoE mechanism detail: DeepSeek V3.1 and Llama 4 achieving high performance with lower active parameter counts"
+            ],
+            "b_instances": [
+              "Bidirectional semantic search example (text-to-image and image-to-text retrieval) as an elaboration of shared embedding space use"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Robotics sensor-fusion analogy (LiDAR/cameras/inertial units) framing early vs. late fusion"
+            ],
+            "b_instances": [
+              "NVIDIA STORM spatiotemporal modeling research and its potential application to document layout analysis",
+              "Long context window capability as a new dimension of model advancement (Gemini 2.5 Pro, Llama 4 Scout multi-million token windows)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core architectural material (unified embedding vs. cross-attention, ViT encoders, NVLM study, extension to audio/video, diffusion vs. LLM distinction) almost identically, so most of that is shared. For depth, Document A adds more rigor to existing points: it explains the contrastive-learning training mechanism behind CLIP-style encoders, cites a theoretical paper on latent semantic space alignment, gives precise GPT-5 benchmark numbers, and details the MoE efficiency mechanism for specific models. Document B's main depth addition is the bidirectional semantic-search example, which is a smaller, single elaboration. For breadth, Document B introduces two genuinely new sub-topics not touched by A: NVIDIA's STORM spatiotemporal research applied speculatively to document layout analysis, and long-context-window capability as a distinct axis of model advancement. Document A's breadth addition is the robotics sensor-fusion analogy. Overall, A leads modestly on depth while B leads modestly on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Theoretical framing of the projection module aligning modalities into a shared latent semantic space, citing an academic paper (source [9])",
+              "Specific quantitative benchmark figures for GPT-5 (~94.6% AIME, ~88.4% GPQA)",
+              "Specific MoE efficiency example naming DeepSeek V3.1 and Llama 4 achieving high performance with lower active parameter counts"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Robotics sensor-fusion analogy (LiDAR, inertial units, early vs. late fusion) linking multimodal LLM fusion strategies to a different field",
+              "Mention of HuBERT as an additional/alternative audio encoder"
+            ],
+            "b_instances": [
+              "NVIDIA STORM spatiotemporal modeling research applied as a potential future improvement for document layout/spatial analysis",
+              "Multi-million-token context window capability highlighted for Gemini 2.5 Pro and Llama 4 Scout as a distinct model capability axis"
+            ]
+          },
+          "reasoning": "Both documents cover the same core architectural material (unified embedding vs. cross-attention, ViT encoders, CLIP/SigLIP, NVLM hybrid, modality extension, diffusion vs. LLM contrast) almost identically, so most content is shared. On depth, A adds more rigor to existing points: a theoretical latent-space justification for the projection module (with an academic citation) and more specific quantitative benchmark numbers for GPT-5, plus a more concrete MoE example naming specific models; B lacks comparably specific deepening content, so A leads on depth. On breadth, A contributes a robotics sensor-fusion analogy and a passing mention of HuBERT, while B introduces two more distinctive new subtopics: NVIDIA's STORM spatiotemporal research as a forward-looking adjacent application, and a discussion of multi-million-token context windows as a separate capability dimension. B's breadth additions are somewhat more novel and specific, giving B a modest edge on breadth."
+        }
+      ]
+    },
+    "Applying Multimodal LLMs to Images and Documents": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Specific corruption mechanisms named (encoding errors, silent data truncation) rather than generic 'incorrect encoding'",
+              "Concrete quantitative example of Base64 size increase (1MB image becomes ~1.33MB)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Gemini 2.5 documented failure mode of looping and outputting thousands of newlines/spaces until token limit (sourced via LinkedIn post)",
+              "'Context collapse' failure mode on large documents causing the model to lose track of instructions (sourced)",
+              "Requests hanging indefinitely without returning an error, and resulting production reliability/monitoring implications (sourced via Google AI dev forum)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core content: raw bytes vs Base64 vs URL trade-offs, code walkthroughs for image/PDF handling with Gemini, object detection via Pydantic schemas, and the ColPali PDF-as-image concept. On depth, B adds slightly more rigor with a concrete numeric example of Base64 overhead (1MB->1.33MB) and more specific failure mechanisms for raw byte storage (encoding errors, silent truncation) versus A's more generic description, giving B a modest edge. On breadth, B introduces an entirely new, well-sourced subtopic absent from A: documented production failure modes of Gemini 2.5 (infinite newline/space loops, context collapse on large documents, and indefinitely hanging requests), each backed by external citations. A contains no comparable new subtopic beyond the shared core content, so B has a clear and substantial breadth advantage."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Concrete quantification of base64 overhead with a worked example (1MB image becomes ~1.33MB), adding numeric rigor to the storage-size tradeoff point"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Discussion of production failure modes of Gemini 2.5 in real deployments: infinite newline/space-output loops until token limit, 'context collapse' on large documents, and indefinitely hanging requests, each with distinct citations ([62],[63],[64]), introducing a new reliability/robustness sub-topic not covered in A"
+            ]
+          },
+          "reasoning": "Both documents cover the same core material (raw bytes vs Base64 vs URL tradeoffs, and the Gemini code walkthrough for images, object detection, and PDFs including the ColPali reference), so most content is shared and not differentiating. For depth, B adds a small but concrete numeric example (1MB -> 1.33MB) that A lacks, giving B a modest edge; A has no unique depth instances not already present in B. For breadth, B introduces an entirely new sub-topic absent from A: documented production failure modes of Gemini 2.5 (infinite output loops, context collapse, hanging requests), backed by three distinct citations, which meaningfully broadens the section's scope into API reliability concerns. A has no comparable unique breadth content, making this a clear, substantial advantage for B."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "specific failure mechanisms for raw-byte corruption (encoding errors vs silent truncation)",
+              "concrete quantitative example of Base64 size increase (1MB\u21921.33MB)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Gemini 2.5 production failure modes (infinite newline/space loops, context collapse on large documents, indefinite hanging requests) with three separate citations"
+            ]
+          },
+          "reasoning": "Both documents cover the same core content (raw bytes vs Base64 vs URL, Gemini code examples, object detection, PDF handling, ColPali citation) almost identically, so most instances are shared. On depth, B adds more granular failure mechanisms for raw-byte corruption (encoding errors, silent truncation) and a concrete quantitative example (1MB\u21921.33MB) that A lacks; A has no unique depth additions beyond what B also covers. On breadth, B introduces an entirely new subtopic absent from A: documented production reliability failure modes of Gemini 2.5 (infinite output loops, context collapse, hanging requests), backed by three distinct citations, which meaningfully broadens the section's scope into operational risk management. A contains no comparable unique breadth content, since its ColPali citation is matched in B."
+        }
+      ]
+    },
+    "Foundations of Multimodal RAG": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "ColPali's VLM is based on PaliGemma and SigLIN encoder (specific base models named)",
+              "Indexing speed comparison: ColPali processes a page in 0.39s vs 7.22s for standard pipeline (18x faster)",
+              "Practical limitations: retrieves whole pages (inefficient when relevant info is scattered) and lacks native multi-vector support in many vector DBs (engineering overhead)"
+            ],
+            "b_instances": [
+              "Embedding size comparison: ColPali page embedding ~257.5 KB vs 8.6 KB for BGE-M3 text embedding",
+              "Binary quantization technique converting float vectors to binary for hamming distance, reducing MaxSim latency up to 3.5x at scale",
+              "Finance-domain robust ColPali variant shows 25-30% nDCG@5 improvement on rephrased-query benchmarks"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Generative design workflows in creative industries using natural-language search over video/asset libraries"
+            ]
+          },
+          "reasoning": "Both documents cover the same core RAG architecture and ColPali explanation, with comparable depth: A adds base-model naming, a speed benchmark (0.39s vs 7.22s, 18x), and explicit practical limitations of ColPali, while B adds quantitative embedding-size comparisons, a binary quantization/hamming-distance scaling mechanism, and a finance-specific benchmark improvement \u2014 roughly balanced in number and substantiveness, so depth is a tie. For breadth, B introduces a genuinely new adjacent application (generative design/creative asset search using multimodal embeddings) that A lacks, while A's own breadth candidates (Google Photos example, finance/technical manual applications) largely overlap with content also present in B, giving B a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "ColPali indexing speed advantage: 18x faster, 0.39s vs 7.22s per page",
+              "Practical limitations of ColPali: page-level retrieval inefficiency and lack of native vector-DB support for multi-vector late interaction"
+            ],
+            "b_instances": [
+              "Embedding size comparison: 257.5KB per page for ColPali vs 8.6KB for BGE-M3",
+              "Binary quantization technique converting float vectors to binary for faster hamming-distance MaxSim computation, reducing latency up to 3.5x",
+              "Finance-domain-specific benchmark showing 25-30% nDCG@5 improvement on rephrased queries"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Hybrid search specifically naming BM25 as the keyword-based retrieval algorithm"
+            ],
+            "b_instances": [
+              "Generative design/creative industry use case for searching video/visual asset libraries via natural language"
+            ]
+          },
+          "reasoning": "Both documents share the core ColPali explanation (multi-vector bag-of-embeddings, MaxSim late interaction, ViDoRe 81.3 vs 67.0 nDCG@5, reranking use, OCR bypass) and the Google Photos-style search example, so these are not differentiators. For depth, A adds ColPali's indexing speed numbers and practical deployment limitations (page granularity, vector DB support), while B adds three technical details: embedding size overhead, binary quantization/hamming-distance optimization for scaling, and a finance-specific quantitative benchmark\u2014giving B a modest edge in depth due to the added technical rigor around scaling trade-offs. For breadth, A uniquely names BM25 as a specific hybrid-search technique while B uniquely introduces a creative-industry/generative-design application; these are comparably substantive single instances, resulting in a tie for breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "ColPali indexing speed benchmark (18x faster, 0.39s vs 7.22s per page)",
+              "Limitation: whole-page retrieval inefficient when relevant info is scattered across pages",
+              "Limitation: vector databases lack native support for multi-vector/late-interaction, adding engineering overhead"
+            ],
+            "b_instances": [
+              "Embedding size comparison: 257.5 KB per page for ColPali vs 8.6 KB for BGE-M3",
+              "Binary quantization technique enabling hamming distance instead of dot product, reducing latency up to 3.5x",
+              "Domain-specific (finance) robustness benchmark showing 25-30% nDCG@5 improvement on rephrased queries"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Application example: analyzing financial reports and technical manuals with complex tables/diagrams"
+            ],
+            "b_instances": [
+              "Application example: generative design/creative industries searching video segments and visual styles via natural language"
+            ]
+          },
+          "reasoning": "Both documents cover the same core RAG architecture and ColPali mechanism. On depth, A adds a concrete indexing-speed benchmark and two qualitative limitations (page-level retrieval granularity and vector-DB engineering overhead), while B adds three quantitatively grounded technical details: embedding size comparison, a binary quantization mechanism with a specific latency reduction figure, and a domain-specific (finance) performance benchmark. B's instances are slightly more numerous and consistently quantitative/mechanistic, giving it a modest edge in depth. On breadth, each document introduces exactly one new adjacent application beyond the core document-RAG use case (A: financial reports/technical manuals; B: creative-industry generative design search), making breadth a tie."
+        }
+      ]
+    },
+    "Implementing Multimodal RAG for Images, PDFs and Text": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Specifies embedding vector dimensionality (3072-dim)",
+              "Names HNSW as the specific indexing algorithm used by production vector DBs",
+              "Names Pinecone as an additional vector-DB alternative",
+              "Lists Cohere Embed and SigLIP as additional multimodal embedding model alternatives beyond Voyage AI/CLIP"
+            ],
+            "b_instances": [
+              "Cites a specific external source (Milvus blog, ref 31) for choosing an embedding model in production",
+              "Explains that image/text embeddings share a common vector space enabling direct similarity comparisons"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Detailed, source-cited example of multimodal RAG for real-time video surveillance with frame-by-frame querying"
+            ],
+            "b_instances": [
+              "Specific technique of translating audio into spectrograms for indexing as an additional modality"
+            ]
+          },
+          "reasoning": "Both documents cover the same core mini-project (image/PDF indexing, description-based embedding workaround, cosine-similarity search, same two test queries). On depth, A adds a few more concrete technical specifics -- the 3072-dimensional embedding size, the HNSW algorithm name, and extra named tool alternatives (Pinecone, Cohere Embed, SigLIP) -- giving it a modest edge, while B counters with a citation to a source on embedding model selection and a conceptual note about shared vector space, which are fewer and slightly less concrete. On breadth, A's video-surveillance extension is more elaborated and carries an external citation, whereas B's video mention is vague but it adds a distinct, technique-specific new instance (audio-to-spectrogram indexing) not present in A; these roughly balance out into a tie."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Specifies exact embedding vector dimensionality (3072-d)",
+              "Names specialized indexing algorithm (HNSW) used by production vector DBs",
+              "Lists additional named alternative embedding models (Cohere Embed, SigLIP) beyond Voyage AI/CLIP"
+            ],
+            "b_instances": [
+              "Explains ColPali-style rationale for treating PDF pages as images",
+              "Explains that production multimodal embeddings share a vector space enabling direct similarity comparison",
+              "Cites a source (Milvus blog) on choosing an embedding model for RAG"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Elaborated real-time video surveillance use case (frame-by-frame description querying) with a specific citation"
+            ],
+            "b_instances": [
+              "Brief mention of extending the approach to audio via spectrogram indexing"
+            ]
+          },
+          "reasoning": "Both documents cover the same core mini-project (image/PDF ingestion, Gemini description+embedding workaround, in-memory vector index, cosine-similarity search, two example queries). Beyond this shared core, A adds a few concrete technical depth details not in B: the exact 3072-dimensional embedding size, the HNSW indexing algorithm used by production vector DBs, and extra named alternative embedding models (Cohere Embed, SigLIP). B counters with its own depth additions: an explicit ColPali-style rationale for treating PDFs as images, an explanation of shared vector-space comparability in production multimodal setups, and a citation to a Milvus blog on embedding model choice. These are roughly comparable in number but A's are slightly more concrete/quantitative, giving A a modest edge on depth. For breadth, A offers a well-developed, citation-backed example of applying multimodal RAG to real-time video surveillance, while B only briefly mentions extending to audio via spectrograms (and video, which overlaps with A). A's breadth instance is more substantive and specific, giving it a modest edge there as well."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "specific 3072-dimensional embedding vector detail",
+              "mentions HNSW indexing algorithm used by production vector DBs",
+              "lists additional alternative multimodal embedding models (Cohere Embed, SigLIP) beyond CLIP/Voyage"
+            ],
+            "b_instances": [
+              "names ColPali design as rationale for treating PDF pages as images",
+              "cites external source/guide for choosing an embedding model",
+              ": {"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "specific real-time video surveillance application (frame-by-frame querying) with citation"
+            ],
+            "b_instances": [
+              "extension to audio data via spectrogram indexing as a new modality"
+            ]
+          },
+          "reasoning": "Both documents largely mirror each other in core content (same code, same test queries, same production caveats about multimodal embedding models and vector databases). For depth, A adds a couple more concrete technical specifics: the exact embedding dimensionality (3072) and a named indexing algorithm (HNSW) used by production vector DBs, plus extra alternative embedding models (Cohere Embed, SigLIP), giving it a modest edge. B's unique depth additions are the ColPali design justification and a citation for choosing embedding models, which are fewer and slightly less concrete. For breadth, each document introduces one distinct new adjacent topic not covered by the other: A elaborates on a specific real-time video surveillance application with a citation, while B briefly extends the approach to audio-to-spectrogram indexing; both are single, comparably specific extensions, resulting in a tie for breadth."
+        }
+      ]
+    },
+    "Building Multimodal AI Agents": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "ReAct agent tool hallucination failure mode causing wasted retries and cascading failures on later transient errors [19]"
+            ]
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Support centers using agents to read error screenshots for faster customer issue resolution [38]",
+              "Agent analyzing live manufacturing line video feed for quality control [17]",
+              "Autonomous robotics fusing camera/LiDAR/radar data for scene understanding [68]",
+              "Logic-RAG augmenting models with visual-spatial formal logic for autonomous driving reasoning [69]",
+              "Edge AI hardware/NPUs enabling on-device multimodal inference for private, responsive agents [71][72]"
+            ],
+            "b_instances": [
+              "SocialMind AR multimodal agents analyzing gaze/verbal cues/social context for proactive guidance [20]"
+            ]
+          },
+          "reasoning": "Both documents cover the same core ReAct+multimodal RAG agent build with nearly identical code and example. For breadth, Document A pulls in substantially more distinct, source-attributed adjacent applications (customer support screenshot diagnosis, manufacturing QC video analysis, autonomous robotics sensor fusion, Logic-RAG for autonomous driving, and edge AI/NPU on-device inference), while Document B only adds one new adjacent domain (SocialMind AR agents), giving A a clear breadth advantage. For depth, Document B adds a concrete, source-attributed technical limitation (ReAct tool hallucination exhausting retry budgets) that deepens understanding of the agent's failure modes, whereas Document A offers no comparable source-attributed depth enhancement to its existing points, giving B a modest depth edge."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "tool hallucination failure mode wasting retry budget on non-recoverable errors, causing cascading failures on transient issues like network timeouts"
+            ]
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "support centers using agents to read error-message screenshots for faster customer issue resolution",
+              "autonomous robotics fusing camera/LiDAR/radar data for scene understanding",
+              "Logic-RAG augmenting models with visual-spatial formal logic for autonomous driving reasoning",
+              "edge AI hardware/NPUs enabling on-device multimodal inference for private, responsive agents",
+              "agent analyzing live manufacturing video feed for quality control detection"
+            ],
+            "b_instances": [
+              "SocialMind system using multimodal agents to analyze gaze/social cues for proactive AR guidance"
+            ]
+          },
+          "reasoning": "Both documents build the same ReAct+RAG multimodal agent example with nearly identical code. For depth, B uniquely adds a technical limitation discussion (tool hallucination causing retry-budget exhaustion and cascading failures), which digs deeper into an existing topic (ReAct agent robustness); A has no comparable depth addition. For breadth, A cites several distinct new application domains and technologies (support-center screenshot triage, robotics sensor fusion, Logic-RAG for autonomous driving, edge AI/NPU hardware, manufacturing QC video), while B offers only one new adjacent domain (SocialMind AR guidance). Hence A has much greater breadth coverage while B has slightly greater depth coverage."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Support centers deploying agents to diagnose screenshots of error messages (cited example)"
+            ],
+            "b_instances": [
+              "Tool hallucination failure mode in ReAct agents that burns retry budget and causes cascading failures on transient errors (cited)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Manufacturing line video feed used for real-time quality control detection",
+              "Autonomous robotics fusing camera, LiDAR, and radar data for scene understanding",
+              "Logic-RAG framework augmenting models with visual-spatial knowledge via formal logic for autonomous driving",
+              "Edge AI hardware/NPUs enabling on-device multimodal agent inference"
+            ],
+            "b_instances": [
+              "SocialMind AR multimodal agents analyzing verbal cues, gaze, and social context for proactive guidance"
+            ]
+          },
+          "reasoning": "Both documents cover the same core ReAct+RAG multimodal agent build with nearly identical code and example. For depth, each adds one substantive elaboration: A cites a real-world support-center screenshot-diagnosis use case reinforcing the 'agent sees screenshot' point, while B introduces the specific technical failure mode of tool hallucination depleting retry budgets in ReAct agents \u2014 these are comparably substantive, yielding a tie. For breadth, A introduces four distinct new adjacent domains/technologies (manufacturing QC video analysis, autonomous robotics sensor fusion, Logic-RAG for autonomous driving, and edge AI/NPU hardware enabling on-device agents), while B introduces only one new adjacent domain (SocialMind for AR social interaction guidance). This gives A a much larger and more varied breadth expansion."
+        }
+      ]
+    },
+    "Conclusion": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "mentions 'workflows vs agents' as a topic covered"
+            ],
+            "b_instances": [
+              "mentions memory and RAG as topics covered",
+              "names capstone project explicitly"
+            ]
+          },
+          "reasoning": "Both conclusions are largely recap/summary text without concrete external sourcing, mechanisms, or statistics, so neither shows meaningful depth enhancement (tie). For breadth, both simply list slightly different prior-lesson topics as recap items (A includes 'workflows vs agents'; B includes 'memory' and 'RAG' and names the capstone project), but these are recap mentions rather than substantive new sub-topic exploration, so the difference is minor and roughly balances out to a tie."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "mentions workflows vs. agents distinction as a topic covered in the course"
+            ],
+            "b_instances": [
+              "mentions memory as a topic covered in the course",
+              "mentions RAG as a topic covered in the course"
+            ]
+          },
+          "reasoning": "Both conclusions are near-identical recaps with no added technical depth (no new mechanisms, stats, or edge cases beyond the shared framing of multimodal LLMs replacing OCR pipelines) \u2014 depth ties. For breadth, A uniquely references the 'workflows vs. agents' distinction as a covered topic, while B uniquely references two additional distinct topics (memory and RAG) as prior course content, giving B a modest edge in breadth of named subtopics."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": [
+              "mentions memory and RAG as additional course topics recapped"
+            ]
+          },
+          "reasoning": "Both conclusions are near-identical in structure and content, summarizing the multimodal lesson and recapping the course. Neither adds concrete technical depth (mechanisms, statistics, named studies) beyond the section's core recap. B's mention of 'memory, RAG' as prior topics is a minor breadth nod to adjacent subtopics, but it's just a topic label without substantive elaboration, so it barely qualifies and doesn't shift the overall balance much; overall both dimensions are essentially tied."
+        }
+      ]
+    }
+  }
+}

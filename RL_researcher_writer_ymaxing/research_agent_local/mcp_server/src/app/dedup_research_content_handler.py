@@ -16,7 +16,7 @@ from ..config.constants import (
 
 from ..config.settings import settings
 from ..utils.file_utils import read_file_safe
-from ..utils.llm_utils import get_chat_model
+from ..utils.llm_utils import extract_text_content, get_chat_model
 from ..utils.markdown_utils import build_research_results_section
 from ..app.tavily_handler import extract_tavily_chunks, group_tavily_by_query
 from typing import Dict, List, Tuple
@@ -144,7 +144,9 @@ async def deduplicate_research_content(research_path:Path, output_path:Path) -> 
         chat_llm = get_chat_model(settings.content_dedup_model)
         logger.info("Invoking LLM for content deduplication...")
         response = await chat_llm.ainvoke(prompt)
-        deduplicated_md = response.content.strip() if hasattr(response, "content") else str(response).strip()
+        deduplicated_md = (
+            extract_text_content(response.content).strip() if hasattr(response, "content") else str(response).strip()
+        )
 
         if not deduplicated_md:
             raise ValueError("LLM returned empty deduplicated content")

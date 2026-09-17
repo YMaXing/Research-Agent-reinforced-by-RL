@@ -1,0 +1,44 @@
+====================================================================================================
+ARTICLE: 13_agent_framework
+====================================================================================================
+  baseline                     raw_argmax=light    margin=+0.0076  R_w=[skip:0.6446  light:0.6522  standard:0.5891  deep:0.5880]
+  E_simple_avg_explore         raw_argmax=light    margin=+0.0034  R_w=[skip:0.6446  light:0.6481  standard:0.5865  deep:0.5927]
+  E_plus_D_explore_083         raw_argmax=light    margin=+0.0207  R_w=[skip:0.6446  light:0.6855  standard:0.6339  deep:0.6648]
+
+====================================================================================================
+ARTICLE: Dark_Dimension
+====================================================================================================
+  baseline                     raw_argmax=light    margin=+0.0550  R_w=[skip:0.6700  light:0.7250  standard:0.6650  deep:0.6436]
+  E_simple_avg_explore         raw_argmax=light    margin=+0.0183  R_w=[skip:0.6700  light:0.6883  standard:0.6283  deep:0.5917]
+  E_plus_D_explore_083         raw_argmax=light    margin=+0.0362  R_w=[skip:0.6700  light:0.7543  standard:0.6943  deep:0.7182]
+
+====================================================================================================
+ARTICLE: 09_RAG__var_standard
+====================================================================================================
+  baseline                     raw_argmax=light    margin=+0.0263  R_w=[skip:0.3719  light:0.4181  standard:0.3913  deep:0.3918]
+  E_simple_avg_explore         raw_argmax=light    margin=+0.0379  R_w=[skip:0.3719  light:0.4098  standard:0.3481  deep:0.3702]
+  E_plus_D_explore_083         raw_argmax=light    margin=+0.0241  R_w=[skip:0.3719  light:0.5003  standard:0.4192  deep:0.4762]
+
+====================================================================================================
+ARTICLE: 06_tools__var_standard
+====================================================================================================
+  baseline                     raw_argmax=standard margin=+0.0069  R_w=[skip:0.3715  light:0.5022  standard:0.5723  deep:0.5654]
+  E_simple_avg_explore         raw_argmax=standard margin=+0.0299  R_w=[skip:0.3715  light:0.4921  standard:0.5335  deep:0.5037]
+  E_plus_D_explore_083         raw_argmax=standard margin=+0.0034  R_w=[skip:0.3715  light:0.5141  standard:0.6061  deep:0.6028]
+
+====================================================================================================
+SUMMARY: winner/margin change vs baseline
+====================================================================================================
+  13_agent_framework  (baseline: light, margin=+0.0076)
+    E_simple_avg_explore         light    margin=+0.0034  Delta_margin=-0.0042
+    E_plus_D_explore_083         light    margin=+0.0207  Delta_margin=+0.0131
+  Dark_Dimension  (baseline: light, margin=+0.0550)
+    E_simple_avg_explore         light    margin=+0.0183  Delta_margin=-0.0367
+    E_plus_D_explore_083         light    margin=+0.0362  Delta_margin=-0.0188
+  09_RAG__var_standard  (baseline: light, margin=+0.0263)
+    E_simple_avg_explore         light    margin=+0.0379  Delta_margin=+0.0117
+    E_plus_D_explore_083         light    margin=+0.0241  Delta_margin=-0.0022
+  06_tools__var_standard  (baseline: standard, margin=+0.0069)
+    E_simple_avg_explore         standard margin=+0.0299  Delta_margin=+0.0230
+    E_plus_D_explore_083         standard margin=+0.0034  Delta_margin=-0.0035
+

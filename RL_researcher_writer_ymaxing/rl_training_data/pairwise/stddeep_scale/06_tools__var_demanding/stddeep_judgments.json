@@ -1,0 +1,584 @@
+{
+  "article": "06_tools__var_demanding",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "mentions building tool calling from scratch to production APIs and limitations leading to advanced agentic patterns"
+            ],
+            "b_instances": [
+              "gives concrete example tool applications: browsing the web, running code, interacting with APIs",
+              "adds monitoring as a production skill beyond building/debugging"
+            ]
+          },
+          "reasoning": "Both are generic recap/intro paragraphs with little source-attributed technical depth, so depth ties. For breadth, B slightly edges out A by naming concrete tool use-cases (web browsing, code execution, API interaction) and adding 'monitoring' as a production skill, giving marginally more distinct scope than A's more generic mention of 'production-ready APIs' and 'limitations leading to advanced patterns.' Neither difference is dramatic, so it's a modest preference rather than 'much more.'"
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "gives concrete examples of tool-enabled agent capabilities (browsing the web, running code, interacting with APIs), broadening the scope beyond the abstract concept of tools"
+            ]
+          },
+          "reasoning": "Both documents are largely recap/framing text for an introduction and contain little source-attributed, concrete enhancement content. Neither cites named studies, frameworks, or quantitative details, so depth is tied at zero qualifying instances for both. For breadth, document B adds a modestly more concrete set of examples of what tool-using agents can do (browsing the web, running code, calling APIs), which touches new adjacent ground not present in A's more abstract description; document A's mention of 'from scratch' implementation vs. production APIs is more of a structural preview than a substantive new sub-topic, so it does not offset this. The difference is modest, giving B a slight edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents are generic introductory/recap paragraphs without any named studies, statistics, specific technical mechanisms, or named tools/frameworks that would qualify as substantive, source-attributed enhancement content. Document B adds slightly more descriptive language (e.g., LLMs being 'confined to text', tools letting agents 'browse the web, run code, or interact with APIs') but these are illustrative generalities rather than concrete, source-attributed instances, so they don't meet the bar for depth or breadth. Both sections are essentially equivalent in scope and specificity, yielding ties on both dimensions."
+        }
+      ]
+    },
+    "Why Agents Need Tools": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Cognitive architecture framework grounding the brain/tools analogy in cognitive science research (with citation)"
+            ],
+            "b_instances": [
+              "Naming specific concrete database technologies (PostgreSQL, Neo4j) for the memory/database access point"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Historical evolution of tool use via Toolformer and native function calling as a structured action space",
+              "Multimodal tool use enabling agents to process images, audio, and video (e.g., Gemini)",
+              "New tool category: external system interaction via enterprise APIs (email, calendar, project management)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core content (LLM limitations, brain/hands analogy, and a list of common tool categories: APIs, databases/memory, code execution). Document A adds one clear depth instance not in B: it grounds the brain/tools analogy in cognitive science 'cognitive architectures' research with a specific citation, adding theoretical rigor. Document B adds a comparatively minor depth instance -- naming specific database technologies (PostgreSQL, Neo4j) within its existing 'database access' point -- which is less substantive than A's theoretical grounding, so depth favors A modestly. On breadth, however, B substantially outpaces A: it introduces the historical evolution of tool-calling (Toolformer, native function calling as a structured action space), a new sub-topic on multimodal tool use (agents processing images/audio/video via models like Gemini), and an entirely new tool category (external system interaction such as email, calendar, and project management APIs). A contains no comparable new sub-topics beyond its core list, making breadth strongly favor B."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Cognitive architecture framing linking LLM-tool relationship to cognitive science theory (citing alignmentforum)"
+            ],
+            "b_instances": [
+              "Historical mechanism of tool invocation via Toolformer and native function calling, explaining how models autonomously call APIs (citing IBM/Medium sources)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Multimodal tool use enabling agents to process images, audio, and video (citing Gemini/CSET)",
+              "External system interaction category: connecting to enterprise APIs for emails, calendar events, and project management tasks"
+            ]
+          },
+          "reasoning": "Both documents cover the same core explanation (LLM limitations, brain/hands analogy, and a list of tool-use categories like APIs, databases, memory, code execution). For depth, A uniquely elaborates the brain analogy via the 'cognitive architectures' concept from cognitive science (source-attributed), while B uniquely explains the mechanistic evolution of tool invocation via Toolformer and native function calling (source-attributed) \u2014 these are roughly comparable in substance, yielding a tie. For breadth, A does not introduce any genuinely new sub-topics beyond the shared core list, whereas B introduces two new adjacent sub-topics not present in A: multimodal tool use (images/audio/video via Gemini, citing CSET) and external system interaction (enterprise APIs for email, calendar, project management). This gives B a moderate edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Cognitive architecture framing (cognitive science model) giving academic grounding to the brain/tools analogy"
+            ],
+            "b_instances": [
+              "Named specific database technologies (PostgreSQL, Neo4j) adding technical specificity to the memory/database bullet"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Historical evolution of tool use: Toolformer and native function calling, and shift from rigid workflows to dynamic orchestration",
+              "Multimodal tool use enabling agents to perceive/act on images, audio, and video (e.g., Gemini)",
+              "External system interaction category: connecting to enterprise APIs for emails, calendar events, project management tasks"
+            ]
+          },
+          "reasoning": "Both documents cover the same core claims (LLM limitations, brain/hands analogy, bullet list of tool categories like APIs, databases, code execution). For depth, A adds one substantive elaboration (grounding the brain/tools analogy in cognitive-architecture research), while B adds one substantive elaboration (naming specific database technologies like PostgreSQL and Neo4j) -- these are roughly comparable in scope, so depth is a tie. For breadth, B introduces three genuinely new sub-topics not covered by A at all: the historical evolution of tool-calling mechanisms (Toolformer, function calling, workflow-to-agent shift), multimodal tool use extending beyond text to images/audio/video, and a new category of external system interaction (emails, calendar, project management). A does not introduce any comparable new sub-topics beyond its core list, so B clearly leads on breadth."
+        }
+      ]
+    },
+    "Implementing tool calls from scratch": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "explanation that tool invocation decision is fundamentally a classification problem (respond directly, ask for clarification, or call a tool) as part of supervised fine-tuning discussion"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "case study of an agent with 53 tools showing naive tool-listing causes hallucinated tool names/wrong tool use",
+              "concept of 'tool scoping' middleware layer that filters tools shown to the model based on context to protect attention budget",
+              "citation to Anthropic 'Building Effective Agents' and Composio field guide on tool descriptions"
+            ]
+          },
+          "reasoning": "Both documents are structurally near-identical implementations of the same tool-calling walkthrough (same code, same document, same prompts, same flow diagram concept). Document A adds no source-attributed content beyond the core walkthrough beyond a single footnote referencing instruction fine-tuning. Document B includes the same footnote reference but expands it with a more detailed mechanistic explanation framing tool invocation as a classification decision (respond/clarify/call), which is a depth addition. More significantly, Document B introduces a genuinely new adjacent sub-topic not touched by A: a case study of scaling to 53 tools, the resulting hallucination problem, and the 'tool scoping' middleware solution, backed by additional citations (Anthropic, Composio, dev.to case study). This is clear breadth content extending beyond the core scratch-implementation topic. A has no comparable unique instances in either dimension."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Frames the model's decision to call a tool as fundamentally a classification problem (answer directly vs. ask for clarification vs. call a tool), adding mechanistic depth to how tool-call training works via supervised fine-tuning on judgment, not just format"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Cites a case study of an agent with 53 tools showing that exposing all tool descriptions at once causes hallucinated tool names, and introduces the 'tool scoping' middleware solution that filters tools shown to the model based on context"
+            ]
+          },
+          "reasoning": "The two documents are otherwise nearly identical (same code, same DOCUMENT, same schemas, same system prompt, same walkthrough steps and same final LLM summary). Document B adds two distinct enhancement instances beyond A: (1) a depth addition explaining tool-call decision-making as a classification problem trained via supervised fine-tuning covering judgment as well as format (deepens the existing point about how the model decides to call tools), and (2) a breadth addition describing a concrete 53-tool case study and the 'tool scoping' middleware technique for managing many tools, which is a new sub-topic not covered by A's brief mention of scaling to many tools. Document A contains no qualifying instances that B lacks for either dimension, so both dimensions favor B by a modest-to-moderate margin."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "53-tools case study showing naive tool exposure causes hallucinated tool names and attention competition, solved via 'tool scoping' middleware layer that limits visible tools to a relevant subset",
+              "Framing of tool-call generation as a classification problem (answer directly, ask for clarification, or call a tool) resulting from supervised fine-tuning on judgment, not just output format"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents implement the identical from-scratch tool-calling example (same document, functions, schemas, system prompt, and test prompts), so there is essentially no unique breadth content in either \u2014 both stick strictly to the same core walkthrough. On depth, document B adds two substantive, source-attributed elaborations beyond A: a concrete case study of an agent with 53 tools illustrating how naive tool exposure causes hallucinated tool calls and how a 'tool scoping' middleware mitigates it (citing a specific blog source), and a more specific technical framing of tool-call generation as a classification decision arising from supervised fine-tuning. Document A lacks these and offers no comparable additional depth instances of its own, so B is moderately ahead on depth while breadth ties."
+        }
+      ]
+    },
+    "Implementing a small tool calling framework from scratch": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Explanation that auto-generated schema prevents mismatches when parameter names change (mechanism benefit of automation)",
+              "Naming LangChain and Pydantic AI (with citations 28,29) as additional frameworks using decorator-based auto schema generation"
+            ],
+            "b_instances": [
+              "Detail on how LangGraph's decorator turns functions into graph nodes that are orchestrated into workflows",
+              "Explanation of MCP's client-server architecture and framing their own framework as analogous to building a single MCP server",
+              "Citation of openai-agents-python (21) as another library implementing this decorator pattern"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Historical/industry trend: LangChain and LlamaIndex were needed to work around older models' small context windows and weak function-calling, with a citation-backed claim that the field is now shifting toward direct model APIs and lighter agent SDKs"
+            ],
+            "b_instances": [
+              "Robotics analogy: abstracting away low-level tool implementation lets an embodied agent focus on high-level reasoning and planning, backed by a robotics citation"
+            ]
+          },
+          "reasoning": "Both documents share the same core code and walkthrough. On depth, B adds slightly more mechanistic detail beyond the shared content: specifics on how LangGraph turns tools into graph nodes, an explanation of MCP's client-server model with the 'single MCP server' framing, and an extra library citation (openai-agents-python). A only adds two comparable depth details: the mismatch-prevention rationale for auto-schema generation and a citation of LangChain/Pydantic AI as further examples. This gives B a modest edge on depth. On breadth, each document introduces exactly one genuinely new subtopic not covered by the other: A discusses the historical evolution of agent frameworks and the shift toward lighter SDKs, while B draws a robotics analogy about abstraction benefits for embodied agents. Both are single, comparably substantive, citation-backed points, so breadth is a tie."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Automatic schema regeneration prevents mismatches when a function's parameter names change"
+            ],
+            "b_instances": [
+              "LangGraph's decorator mechanism converts functions into graph nodes for orchestration in agentic workflows",
+              "MCP is described as standardizing the interface between agent clients and tool servers, creating an interoperable ecosystem",
+              "The custom framework is likened specifically to building a single MCP server"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Historical/industry-trend discussion of how early frameworks (LangChain, LlamaIndex) compensated for small context windows and poor native tool-calling, and how the field is now shifting toward lighter agent SDKs, citing a specific industry article"
+            ],
+            "b_instances": [
+              "Analogy to robotics, where abstracting low-level tool implementation lets embodied agents focus on high-level reasoning and planning, citing a research paper"
+            ]
+          },
+          "reasoning": "Both documents share the same core code and most explanatory text (DRY principle, decorator mechanics, MCP as schema-generation motivator). For depth, B adds several elaborations that dig deeper into the mechanisms already introduced: how LangGraph's decorator turns functions into graph nodes, how MCP standardizes the client-server interface into an interoperable ecosystem, and an explicit analogy of the built framework to an MCP server. A's unique depth contribution is more modest (the schema staying in sync with parameter renames). For breadth, each document introduces exactly one genuinely new adjacent topic: A brings in the industry-trend narrative about frameworks like LangChain/LlamaIndex becoming less necessary as models improve, while B brings in a robotics/embodied-agent analogy. These are comparably substantive and specific (each with a citation), so breadth is a tie, while depth favors B due to its extra elaborations on existing mechanisms."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Automatic schema regeneration when parameter names change prevents mismatches (specific mechanism benefit of the DRY approach)"
+            ],
+            "b_instances": [
+              "LangGraph's decorator converts functions into graph nodes that get orchestrated into workflows (specific mechanism detail)",
+              "MCP standardizes the client-server interface between agents and tool servers, creating an interoperable ecosystem (deeper mechanism detail on MCP)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Cites LangChain and Pydantic AI (with two citations) as additional named frameworks using the same automatic-schema-generation pattern",
+              "Extended discussion of the broader industry shift from heavy frameworks like LangChain/LlamaIndex (built for older, weaker models) toward direct model APIs and lighter agent SDKs, with citation"
+            ],
+            "b_instances": [
+              "Robotics analogy: abstracting low-level tool implementation lets embodied agents focus on high-level reasoning/planning, with citation to a robotics thesis"
+            ]
+          },
+          "reasoning": "Both documents share the same core code and narrative. On depth, B adds two more specific mechanistic details beyond the shared text: how LangGraph's decorator turns functions into graph nodes for orchestration, and how MCP standardizes the client-server interface into an interoperable ecosystem; A only adds one depth point about automatic schema updates preventing parameter mismatches. On breadth, A pulls ahead by naming additional frameworks (LangChain, Pydantic AI) with citations and, more substantially, adding a developed paragraph about the industry-wide shift away from heavy agent frameworks toward lighter SDKs and direct model APIs as models improved -- a genuinely new sub-topic with citation. B's breadth addition is a single robotics analogy sentence, which is new territory but less developed and singular. Net: B modestly leads on depth, A modestly leads on breadth."
+        }
+      ]
+    },
+    "Implementing production-level tool calls with Gemini": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Explanation of tool_config function calling modes: 'ANY' forces a call vs default 'AUTO' lets model decide, with citation [39]"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Cost-performance trade-off guidance: using gemini-1.5-flash for simple/high-frequency tasks vs gemini-1.5-pro for complex reasoning, with citation [81]"
+            ],
+            "b_instances": [
+              "Comparison to LangChain's AgentExecutor as a higher-level abstraction, with code example showing @tool decorator, bind_tools, create_tool_calling_agent, and discussion of control-vs-convenience trade-off"
+            ]
+          },
+          "reasoning": "Both documents cover the same core Gemini native tool-calling workflow (tools/config setup, function_call parsing, automatic schema generation from Python functions) with largely equivalent code. For depth, A adds a citation-backed explanation of the 'ANY' vs default 'AUTO' function-calling mode behavior that B omits, giving A a modest edge. For breadth, A introduces a distinct sub-topic of model selection for cost-performance (flash vs pro) with a citation, while B introduces a more developed new sub-topic: a full LangChain AgentExecutor comparison with code and a discussion of the control/convenience trade-off. Since B's breadth addition is more substantive and detailed than A's single-sentence model-selection point, B gets a modest edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Explains function calling mode 'ANY' forces a call vs default 'AUToly' lets model decide (with citation)",
+              "Notes provider updates underlying prompts with each model release, reducing maintenance burden"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Discusses cost-performance trade-off of selecting gemini-1.5-flash vs gemini-1.5-pro for different task complexities (citation)"
+            ],
+            "b_instances": [
+              "Introduces LangChain's AgentExecutor as a higher-level abstraction, with code example and comparison of control vs convenience trade-offs relative to native SDK"
+            ]
+          },
+          "reasoning": "Document A adds two depth-oriented details not in B: an explanation of the tool_config 'ANY' vs 'AUTO' modes and a note about providers maintaining/updating prompts across model releases, reducing developer maintenance burden. B has no comparable depth additions beyond the shared core steps. For breadth, both documents introduce one new adjacent sub-topic: A briefly mentions model selection (flash vs pro) for cost-performance trade-offs, while B introduces an entirely new framework (LangChain's AgentExecutor) with a code example and a substantive discussion of control-vs-convenience trade-offs versus the native SDK. B's breadth instance is more elaborated and substantive, giving it a slight edge on breadth, while A leads modestly on depth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Explanation of tool_config function-calling modes 'ANY' vs 'AUTO' with citation to Gemini docs",
+              "Claim that providers can update underlying prompts with each model release, reducing maintenance burden for developers"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Cost-performance model selection guidance: using gemini-1.5-flash for low-complexity/high-frequency tasks vs gemini-1.5-pro for complex reasoning, with citation"
+            ],
+            "b_instances": [
+              "Comparison with LangChain's AgentExecutor as a higher-level abstraction over the native SDK, including code example and discussion of control-vs-convenience trade-off"
+            ]
+          },
+          "reasoning": "Both documents cover the same core Gemini tool-calling refactor (tools/config setup, function_call parsing, automatic schema generation, call_tool implementation). For depth, Document A adds two source-attributed elaborations not present in B: a specific explanation of the 'ANY' vs 'AUTO' function-calling modes (with citation) and a claim about providers maintaining/updating prompts across model releases to reduce developer burden. B offers no comparable depth-adding detail beyond what's shared. For breadth, each document introduces one genuinely new adjacent sub-topic: A discusses selecting between gemini-1.5-flash and gemini-1.5-pro for cost-performance trade-offs (with citation), while B introduces LangChain's AgentExecutor as an alternative higher-level framework, complete with a code example and a discussion of the control-vs-convenience trade-off. B's LangChain example is more elaborated and substantive (full code walkthrough plus explicit trade-off discussion), giving it a slight edge on breadth."
+        }
+      ]
+    },
+    "Using Pydantic models as tools for on-demand structured outputs": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Pydantic AI's specific mechanism of registering each Union output member as a separate tool to simplify schema (cited source [50])",
+              "explicit 'fail-fast' validation rationale for production reliability"
+            ],
+            "b_instances": [
+              "conditional check for function_call attribute before accessing it (minor code hardening detail)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core pattern (Pydantic model as tool, agentic loop, code walkthrough) with nearly identical code and example agentic flow, so breadth is tied\u2014neither introduces a genuinely new sub-topic beyond the shared example. On depth, Document A adds a specific technical detail (Pydantic AI registering each Union member as a separate tool, with citation) and articulates a 'fail-fast' rationale for validation reliability, which Document B lacks. Document B's differences (defensive hasattr check, pretty-print formatting, slightly reworded pipeline example) are stylistic/implementation nuances rather than substantive new depth. This gives A a modest edge on depth while breadth remains tied."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Pydantic AI registers each Union output member as a separate tool to simplify schema and improve correctness (specific technical mechanism)",
+              "'Fail-fast' validation framing explicitly tied to preventing corrupted/malformed data reaching downstream production systems"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents follow the same tutorial flow (define model, create tool, call it, validate) with nearly identical code and example output, so breadth is tied\u2014neither introduces a genuinely new sub-topic beyond the core Pydantic-as-tool pattern. On depth, Document A adds two source-attributed technical details not present in B: the specific mechanism of Pydantic AI registering each Union member as a distinct tool (citing the docs) and an explicit 'fail-fast' rationale tied to preventing malformed data in production. Document B's differences (extra code robustness like hasattr check, pretty-print formatting) are stylistic rather than substantive research-derived content, so it contributes no distinct qualifying instances."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "explains 'fail-fast' validation pattern preventing corrupted/malformed data downstream",
+              "notes Pydantic AI registers each Union output type as a separate tool to simplify schema and improve model accuracy, with citation"
+            ],
+            "b_instances": [
+              "adds hasattr check for function_call attribute to handle edge case where model doesn't return a function call"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents present the same core tutorial (Pydantic model as tool) with nearly identical code and example outputs, so breadth is tied \u2014 neither introduces a genuinely new sub-topic; the differing illustrative agent examples (web search+summarization vs. search+calculation) are equivalent restatements of the same pattern, not new scope. For depth, Document A adds two source-attributed technical points not in B: the 'fail-fast' validation rationale for production reliability, and the specific Pydantic AI mechanism of registering each Union member as a separate tool (with citation) to simplify schemas. Document B's differentiator is a minor implementation nicety (checking hasattr for function_call) which is a smaller, less substantive addition. This gives A a modest edge in depth."
+        }
+      ]
+    },
+    "The downsides of running tools in a loop": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "robotics example of correcting mistakes via intermediate reasoning (referencing wrong object name)",
+              "complex tool dependency example in API orchestration/robotic control (output of one tool affecting parameters of another)",
+              "specific failure modes of stuck loops: cycling and regression, detected via tracking code/test history"
+            ],
+            "b_instances": [
+              "Air Canada chatbot real-world case study illustrating consequences of no intermediate reasoning"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "tool scoping: middleware dynamically filtering available tools by context",
+              "modular agent design: routing tasks to specialized agents with focused toolsets"
+            ]
+          },
+          "reasoning": "Both documents cover the same core limitations (no intermediate reasoning, limited planning, risk of loops) and both mention parallel tool calling as a shared aside, so that instance is not a differentiator. For depth, Document A goes noticeably further by attaching concrete technical elaborations to each core limitation: a robotics-grounded reasoning-correction example, a specific dependent-tool-parameter example for planning, and named failure modes (cycling, regression) with a mechanism for detecting them. Document B's only comparable depth addition is the Air Canada chatbot case study, which deepens the 'no reasoning' point but doesn't extend to the other limitations. This gives A a clear depth advantage. For breadth, Document B introduces two genuinely new adjacent subtopics not covered by A: tool scoping (dynamic filtering of available tools) and modular multi-agent design (routing to specialized agents), while A does not introduce any new subtopic beyond the shared parallel-calling aside, giving B the edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Robotics-grounded mechanism: agents reasoning over intermediate results to correct mistakes like referencing an incorrect object name",
+              "API orchestration example where one tool's output dynamically affects another tool's parameters (tool dependency mechanics)",
+              "Named failure modes 'cycling' and 'regression' in iterative code loops, with note on tracking code/test history to detect them",
+              "Specific claim that Gemini natively supports parallel function calling"
+            ],
+            "b_instances": [
+              "Air Canada chatbot legal case: tribunal held the airline liable for the bot's incorrect bereavement-fare information despite lack of guardrails/reasoning"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Tool scoping: middleware dynamically filters available tools based on conversational context to avoid overwhelming the model",
+              "Modular agent design: routing complex tasks to specialized agents each with a small, focused toolset"
+            ]
+          },
+          "reasoning": "Both documents cover the same core loop implementation and the same high-level limitations (no intermediate reasoning, limited planning, risk of loops, parallel calling mention, ReAct teaser). For depth, Document A adds several distinct, source-attributed technical elaborations of the loop's limitations: a robotics-derived reasoning mechanism, an API-orchestration dependency example, and named failure modes (cycling/regression) with a detection method, plus a minor detail about Gemini's native parallel function calling. Document B's depth addition is narrower but still substantive: the concrete Air Canada tribunal case illustrating real-world consequences of the 'no reasoning' limitation. Given A's greater number of distinct technical depth instances, A is judged much more depth-rich. For breadth, Document B introduces two genuinely new sub-topics not covered by A: tool scoping (context-based tool filtering middleware) and modular multi-agent design routing tasks to specialized agents\u2014both named, sourced patterns extending beyond the sequential-loop discussion. Document A does not introduce comparable new breadth topics beyond the shared parallel-calling point, so B is judged moderately ahead on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Robotics example: agents reasoning over intermediate results to correct mistakes like referencing an incorrect object name (arxiv citation)",
+              "Complex tool dependencies in API orchestration/robotic control where one tool's output dynamically affects another's parameters (citation)",
+              "Specific failure-mode taxonomy: cycling (oscillating between broken implementations) and regression (fix breaking other functionality), requiring tracking of code/test history (citation)"
+            ],
+            "b_instances": [
+              "Air Canada chatbot bereavement-fare tribunal case as a concrete real-world illustration of the 'no reasoning' limitation"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Tool scoping: middleware dynamically filtering available tools based on conversation context (citation)",
+              "Modular agent design: routing complex tasks to specialized agents each with a focused toolset (citation)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core loop-limitations content (no reasoning, limited planning, risk of loops) and both mention parallel tool calling as a mitigation, which is shared and not a differentiator. For depth, A elaborates the limitations with three distinct, citation-backed technical specifics (robotics correction mechanism, tool dependency complexity, cycling/regression failure modes), while B substitutes a single but substantive real-world case study (Air Canada tribunal ruling) deepening the 'no reasoning' point. A's greater number of distinct technical elaborations gives it a modest edge on depth. For breadth, B introduces two genuinely new adjacent subtopics not covered in A -- tool scoping and modular/multi-agent design -- while A offers no unique breadth instances beyond what's shared, giving B a clear edge on breadth."
+        }
+      ]
+    },
+    "Popular tools used within the industry": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Graph DB traversal example enriching SEC filing analysis with company products/personnel/risk factors",
+              "OWASP Top 10 prompt injection risk with real-world case of hijacked agents exfiltrating data after processing compromised documents"
+            ],
+            "b_instances": [
+              "RAG-based tools resolving conflicts between agent's internal knowledge and external tool outputs by grounding in retrieved evidence",
+              "2025 McGill University study quantifying browsing-tool accuracy (0%-75%) as evidence of unreliability",
+              "Ethical/technical scraping considerations (respecting robots.txt, rate-limiting delays)",
+              "Security-performance trade-off in sandboxing: simple containers vs. gVisor/Firecracker microVMs for enterprise-grade isolation",
+              "Tool-call gatekeeper mechanism in finance with concrete constraints (max trade sizes, rate-limiting) before human approval"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Mention that code execution pattern can be adapted to other languages like JavaScript beyond Python",
+              "Finance-domain safety guardrail example (tool-call gatekeepers) as a new adjacent application area"
+            ]
+          },
+          "reasoning": "Both documents cover the same core categories (knowledge/memory tools, web search/browsing, code execution, other enterprise tools), but B integrates more distinct, source-attributed depth content: a specific RAG conflict-resolution mechanism, a quantitative McGill study on browsing tool unreliability, scraping ethics details, a nuanced sandboxing security-performance trade-off (gVisor vs. containers), and a concrete finance-domain gatekeeper mechanism. A contributes fewer unique depth instances: the graph DB SEC-filing traversal example and the OWASP prompt-injection real-world hijack case. For breadth, A introduces no genuinely new sub-topics beyond the core categories, while B adds a brief mention of language-agnostic code execution (JavaScript) and a new finance-specific safety-guardrail application, giving B a modest edge in both dimensions."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Detailed sandboxing tech stack (Docker, Wasm, resource limits for DoS prevention)",
+              "OWASP Top 10 LLM risks and named real-world prompt-injection data-exfiltration case",
+              "SEC filing example showing graph traversal pulling connected structured data (products, personnel, risk factors)"
+            ],
+            "b_instances": [
+              "McGill University study finding 0-75% accuracy variance for AI browsing tools",
+              "Ethical scraping practices (respecting robots.txt, rate-limiting delays)",
+              "Security-performance tradeoff detail contrasting simple containers vs gVisor/Firecracker isolation",
+              "Finance-specific 'tool-call gatekeeper' example with concrete constraints (max trade size, API rate limits) before human approval"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "RAG used to resolve conflicts between agent's internal knowledge and external tool outputs",
+              "Mention that code execution pattern can extend to other languages like JavaScript beyond Python"
+            ]
+          },
+          "reasoning": "Both documents cover the same four tool categories, but each adds distinct source-attributed depth. Document A adds specific sandboxing technology detail (Docker/Wasm/resource limits), a named OWASP framework plus a real-world prompt-injection exfiltration case, and a concrete SEC-filing example illustrating graph traversal value. Document B adds a named empirical study (McGill, 0-75% accuracy range) on browsing reliability, ethical scraping practices, a security-performance tradeoff discussion (gVisor vs Firecracker vs simple containers), and a finance-specific 'tool-call gatekeeper' example with concrete numeric constraints. These are roughly comparable in number but B's inclusion of an empirical study and a more elaborated safety mechanism nudges depth slightly toward B. For breadth, B introduces two genuinely new adjacent subtopics -- using RAG to resolve knowledge/tool-output conflicts, and extending code execution to other languages like JavaScript -- while A does not introduce any comparably new adjacent subtopic, making B moderately ahead on breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Sandboxing specifics (Docker, Wasm, Firecracker microVMs) with resource limits to prevent DoS",
+              "OWASP Top 10 prompt injection risks plus real-world hijacking/data-exfiltration case study",
+              "Concrete SEC-filing example of graph traversal pulling connected structured data (products, personnel, risk factors)",
+              "Human-in-the-loop requirement specifically for high-stakes actions like database modification"
+            ],
+            "b_instances": [
+              "McGill University study finding 0%-75% accuracy for browsing-enabled AI agents",
+              "Ethical scraping considerations: respecting robots.txt and rate-limiting delays",
+              "Security-performance trade-off in sandboxing: simple containers share host kernel vs. gVisor/Firecracker microVMs for stronger isolation",
+              "RAG mechanism resolving conflicts between an agent's internal knowledge and external tool outputs",
+              "Tool-call gatekeeper pattern in finance enforcing hard constraints (max trade size, rate limits) before human approval"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Finance-specific safety guardrail framework ('tool-call gatekeepers') as a new adjacent application domain"
+            ]
+          },
+          "reasoning": "Both documents cover the same core tool categories (knowledge/memory, web search, code execution, other tools), but each adds distinct depth-oriented detail. A goes deeper into code-execution security (specific sandboxing tech, OWASP prompt-injection risks with a real hijacking case, human-in-the-loop for DB changes) and gives a concrete SEC-filing example for graph traversal. B goes deeper with a quantitative reliability study for web browsing, ethical scraping practices, a nuanced sandboxing security-performance trade-off (gVisor vs. containers), and a RAG-based conflict-resolution mechanism. B has slightly more distinct depth instances (5 vs 4), giving it a modest edge. For breadth, neither document introduces many genuinely new sub-topics beyond the core tool list, but B's mention of finance-specific 'tool-call gatekeepers' as a safety framework introduces a new adjacent application domain not present in A, giving B a modest breadth edge as well."
+        }
+      ]
+    },
+    "Conclusion": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both conclusions are brief, generic wrap-up statements restating the section's core themes (tool calling as foundational, from-scratch vs. API implementation, transition to ReAct/planning in the next lesson). Neither introduces a named study, statistic, specific technical mechanism, or new sub-topic beyond what the lesson already covers. Document A mentions 'limitations of simple tool chaining' and B mentions 'reactive loops' vs strategic reasoning, but these are vague framing statements rather than concrete, source-attributed enhancements. No qualifying depth or breadth instances were found in either document, resulting in ties on both dimensions."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents are generic conclusion paragraphs that restate the section's core topic (tool calling as foundational, elevating LLMs to agents, preview of next lesson on planning/ReAct) without introducing any concrete, source-attributed technical details, named studies, statistics, or new adjacent sub-topics. Neither adds mechanistic depth (e.g., specific technical limitations or quantitative details) nor breadth (new named tools, frameworks, or applications) beyond the shared summary content. Both are equivalent in scope and specificity, so both dimensions tie with empty instance lists."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents are generic conclusion summaries restating the section's core topic (tool calling as foundational for agents, transition to ReAct/planning in next lesson) without introducing any concrete, source-attributed technical details, named studies, statistics, or new sub-topics. Neither adds depth (no specific mechanisms or quantitative details beyond what's already covered) nor breadth (no new adjacent topics). Both are equivalent in scope and specificity, differing only in phrasing/tone, so both dimensions are a tie."
+        }
+      ]
+    }
+  }
+}

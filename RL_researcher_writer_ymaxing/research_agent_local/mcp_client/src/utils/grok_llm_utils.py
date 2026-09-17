@@ -9,17 +9,19 @@ from .opik_handler import track_openai_client
 
 
 def build_llm_config_with_tools(
-    mcp_tools: List, thinking_enabled: bool = True, thinking_budget: Optional[int] = None
+    mcp_tools: List, thinking_enabled: bool = True, params: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Build Grok config with all MCP tools converted to OpenAI-compatible format.
 
     Args:
         mcp_tools: List of MCP tool objects with name, description, and inputSchema.
         thinking_enabled: Whether to enable extended reasoning (Grok-3+ only).
+        params: Per-model params from orchestrator_configs (temperature, reasoning_effort).
 
     Returns:
         A dict of kwargs to spread into chat.completions.create().
     """
+    params = params or {}
     grok_tools = [
         {
             "type": "function",
@@ -36,6 +38,10 @@ def build_llm_config_with_tools(
         "tools": grok_tools,
         "tool_choice": "auto",
     }
+    if "temperature" in params:
+        config["temperature"] = params["temperature"]
+    if "reasoning_effort" in params:
+        config["reasoning_effort"] = params["reasoning_effort"]
 
     return config
 
@@ -75,12 +81,13 @@ def extract_first_function_call(response: openai.types.chat.ChatCompletion):
 class LLMClient:
     """Grok (xAI) LLM client using the OpenAI-compatible API."""
 
-    def __init__(self, model_id: str, llm_config: Dict[str, Any]):
+    def __init__(self, model_id: str, llm_config: Dict[str, Any], params: Optional[Dict[str, Any]] = None):
         """Initialize the Grok client.
 
         Args:
-            model_id: The Grok model identifier (e.g., 'grok-3-beta').
+            model_id: The Grok model identifier (e.g., 'grok-4.6').
             llm_config: Tool/config kwargs from build_llm_config_with_tools().
+            params: Per-model params from orchestrator_configs (max_retries).
 
         Raises:
             ValueError: If the model is not a supported Grok model.
@@ -93,10 +100,12 @@ class LLMClient:
 
         self.model_id = model_id
         self.llm_config = llm_config
-        
+        params = params or {}
+
         base_client = openai.AsyncOpenAI(
             api_key=settings.xai_api_key.get_secret_value(),
             base_url=settings.xai_base_url,
+            max_retries=params.get("max_retries", 2),  # 2 matches the openai SDK's own default
         )
         self.client = track_openai_client(base_client)
 

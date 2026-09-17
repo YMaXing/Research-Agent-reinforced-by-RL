@@ -1,0 +1,42 @@
+{
+  "article": "09_RAG__var_standard",
+  "sections": {
+    "Advanced RAG Techniques": {
+      "breadth": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "original_preference": "tie",
+        "classification": "strong_agree",
+        "repeats": [
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Hybrid search's technique lineage traced to pre-LLM search engine pipelines balancing recall/precision"
+            ],
+            "b_instances": [
+              "New failure mode for chunking: enterprise KBs with scanned PDFs/OCR errors causing silent retrieval failures"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "New subtopic on chunking failure modes with noisy real-world documents (OCR errors, scanned PDFs) causing silent retrieval failures",
+              "GraphRAG framed via semantic web principles, offering structured/deterministic retrieval paths as an adjacent conceptual angle"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          }
+        ]
+      }
+    }
+  }
+}

@@ -10,12 +10,14 @@ from ..app.tavily_handler import (
     compute_next_source_id,
     append_tavily_results,
 )
+from ..app.guideline_extractions_handler import load_reference_url_blocklist
 
 from ..config.constants import (
     RESEARCH_OUTPUT_FOLDER,
     TAVILY_RESULTS_FILE,
 )
 from ..utils.file_utils import validate_research_folder
+from ..utils.url_utils import normalize_url_for_match
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +32,7 @@ def append_search_results_to_file(
     queries: List[str],
     search_results: List[Tuple],
     phase: str = "[EXPLOITATION]",
+    blocklist: set[str] | None = None,
 ) -> int:
     """
     Process search results and append them to the results file.
@@ -39,14 +42,26 @@ def append_search_results_to_file(
         queries: List of search queries
         search_results: List of search results from run_tavily_search
         phase: Phase label to tag each source ("[EXPLOITATION]" or "[EXPLORATION]")
+        blocklist: Optional set of normalised reference-only URLs to skip. Any
+            citation whose URL normalises into this set is dropped so that
+            locally-supplied sources are never recorded as research sources.
 
     Returns:
         Total number of sources added
     """
     next_global_id = compute_next_source_id(results_path)
     total_sources = 0
+    dropped = 0
 
     for query, (_, answer_by_source, citations) in zip(queries, search_results):
+        if blocklist and citations:
+            kept: Dict[int, str] = {}
+            for local_id, url in citations.items():
+                if normalize_url_for_match(url) in blocklist:
+                    dropped += 1
+                    continue
+                kept[local_id] = url
+            citations = kept
         if citations:
             next_global_id = append_tavily_results(
                 results_path,
@@ -58,6 +73,11 @@ def append_search_results_to_file(
             )
             total_sources += len(citations)
             logger.info(f"Appended results for query: '{query}' (added {len(citations)} source section(s)).")
+
+    if dropped:
+        logger.info(
+            f"Skipped {dropped} reference-only source(s) matching the local-file blocklist."
+        )
 
     return total_sources
 
@@ -85,6 +105,10 @@ async def run_tavily_research_tool(
         Dict with status, processing results, and file paths
     """
     logger.info(f"Running Tavily research for directory: {research_directory}")
+
+    # Load reference-only URL blocklist (local files whose URLs are for reference
+    # only) so they are never recorded as research sources in this phase.
+    blocklist = load_reference_url_blocklist(research_directory)
 
     # Convert to Path object
     research_path = Path(research_directory)
@@ -138,7 +162,9 @@ async def run_tavily_research_tool(
         }
 
     # Process and append search results to file
-    total_sources = append_search_results_to_file(results_path, good_queries, search_results, phase=phase)
+    total_sources = append_search_results_to_file(
+        results_path, good_queries, search_results, phase=phase, blocklist=blocklist
+    )
 
     failed_count = len(queries) - len(good_queries)
     processed_queries_count = len(good_queries)

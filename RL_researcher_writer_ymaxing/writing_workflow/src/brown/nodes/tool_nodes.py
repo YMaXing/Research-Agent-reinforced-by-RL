@@ -6,15 +6,12 @@ from langchain_core.runnables import Runnable
 from loguru import logger
 from pydantic import BaseModel, Field
 
-from brown.config_app import get_app_config
 from brown.entities.exceptions import InvalidOutputTypeException
 from brown.entities.media_items import MermaidDiagram
 from brown.models import FakeModel
 from brown.utils.rate_limiter import llm_throttle
 
 from .base import ToolNode
-
-app_config = get_app_config()
 
 
 class GeneratedMermaidDiagram(BaseModel):

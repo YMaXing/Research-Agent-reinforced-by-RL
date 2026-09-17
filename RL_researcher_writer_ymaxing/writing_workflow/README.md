@@ -21,10 +21,13 @@ This README shows how to:
 - Use the **RL data generators** that turn Brown into Phase 2 of the
   GRPO training pipeline
 
+For the evaluation/grading framework (how generated articles get scored, and
+how that feeds the RL reward), see **[EVALS.md](EVALS.md)**.
+
 > [!NOTE]
 > This subproject is independent of the rest of the repository — it has its
 > own `uv` env. For the composed *research → write* deployment, see
-> [`../agents_integration_local/mcp_client/README.md`](../agents_integration_local/mcp_client/README.md).
+> [`../agents_integration_local/README.md`](../agents_integration_local/README.md).
 
 ---
 
@@ -34,6 +37,7 @@ From the repository root (`Research-Agent-reinforced-by-RL`):
 
 ```bash
 RL_researcher_writer_ymaxing/writing_workflow/
+  ├── EVALS.md               # Evaluation-framework reference (metrics, judge config, reward feed)
   ├── configs/              # YAML configuration files
   │   ├── course.yaml       # Production config
   │   └── debug.yaml        # Testing config (fake models)
@@ -55,8 +59,12 @@ RL_researcher_writer_ymaxing/writing_workflow/
   │       ├── models/       # LLM model configuration and wrappers
   │       ├── evals/        # Evaluation framework
   │       └── observability/ # Observability infrastructure (tracing, monitoring, evals)
-  ├── rl_writing_generator.py   # Phase 2a — generate article.md per (article × preset)
-  ├── rl_grading_generator.py   # Phase 2b — grade each article.md (9-dim scores.json)
+  ├── rl_pipeline/          # RL training-data pipeline driver scripts
+  │   ├── rl_writing_generator.py   # Phase 2a — generate article.md per (article × preset)
+  │   ├── rl_grading_generator.py   # Phase 2b — grade each article.md (9-dim scores.json)
+  │   ├── generate_article_guideline.py   # Phase 0b — synthesize guidelines from briefs
+  │   ├── generate_guideline_variants.py  # Phase 0 — minimal/standard/demanding variants
+  │   └── rl_pairwise_*.py  # Pairwise depth/breadth-enhancement grading investigation scripts
   └── tests/                # Test suite
 ```
 
@@ -265,6 +273,14 @@ This runs the evaluation using the `follows_gt` metric (checks if generated arti
 - Results are cached in `outputs/evals/` for faster re-runs
 - Uses 1 worker for sequential processing
 
+This is a lightweight sanity check. The same `FollowsGTMetric` class (plus a
+second, `UserIntentMetric`) also drives the much more thorough **Phase 2b
+grading** below, which produces the 9-dimension scores that train the RL
+policy. See **[EVALS.md](EVALS.md)** for the full evaluation-framework
+reference: all 9 graded dimensions, the 2-pass `FollowsGTMetric` grading
+mechanic, judge-model configuration, and exactly how grading feeds the RL
+reward formula.
+
 ---
 
 ## 7. RL data generation (Phases 2a & 2b)
@@ -282,10 +298,10 @@ has a `research.md` from Phase 1.
 
 ```bash
 cd RL_researcher_writer_ymaxing/writing_workflow
-uv run python rl_writing_generator.py                # all articles, all presets
-uv run python rl_writing_generator.py --dry-run
-uv run python rl_writing_generator.py --articles 02_workflows_vs_agents,09_RAG
-uv run python rl_writing_generator.py --presets 0,1,4
+uv run python rl_pipeline/rl_writing_generator.py                # all articles, all presets
+uv run python rl_pipeline/rl_writing_generator.py --dry-run
+uv run python rl_pipeline/rl_writing_generator.py --articles 02_workflows_vs_agents,09_RAG
+uv run python rl_pipeline/rl_writing_generator.py --presets 0,1,4
 ```
 
 Implementation notes:
@@ -308,10 +324,10 @@ and writes `scores.json` per episode.
 
 ```bash
 cd RL_researcher_writer_ymaxing/writing_workflow
-uv run python rl_grading_generator.py                # all articles, all presets
-uv run python rl_grading_generator.py --dry-run
-uv run python rl_grading_generator.py --articles 06_tools
-uv run python rl_grading_generator.py --presets 0,2,5
+uv run python rl_pipeline/rl_grading_generator.py                # all articles, all presets
+uv run python rl_pipeline/rl_grading_generator.py --dry-run
+uv run python rl_pipeline/rl_grading_generator.py --articles 06_tools
+uv run python rl_pipeline/rl_grading_generator.py --presets 0,2,5
 ```
 
 Implementation notes:
@@ -324,8 +340,10 @@ Implementation notes:
   - `context["research"]` = `episode_dir/research.md`
 - Sentinel: existence of `scores.json` → skip.
 
-The 9 stored dimensions feed the reward formula in
-[`../../Plan_of_attack.md`](../../Plan_of_attack.md#phase-2b---grading-rl_grading_generatorpy---next).
+The 9 stored dimensions feed the reward formula documented in
+[`../research_agent_local/training/README.md`](../research_agent_local/training/README.md#the-production-reward-formula).
+For the grading mechanics themselves (which metric grades what, 2-pass
+scoring, judge configuration), see [EVALS.md](EVALS.md).
 
 ---
 
@@ -633,7 +651,7 @@ Once configured, you can use Brown directly in Cursor's AI chat:
 
 For HTTP transport (used by the composed deployment), launch Brown with
 `--transport streamable-http --port 8002` instead. See
-[`../agents_integration_local/mcp_client/README.md`](../agents_integration_local/mcp_client/README.md).
+[`../agents_integration_local/README.md`](../agents_integration_local/README.md).
 
 ---
 
@@ -699,11 +717,11 @@ Now that you have Brown set up, you can:
 3. **Customize the configuration**: Adjust models, review iterations, and other settings in `configs/course.yaml`
 4. **Integrate with your IDE**: Set up Brown as an MCP server in Cursor or Claude Desktop
 5. **Run the composed pipeline**: pair Brown with the research agent via
-   [`../agents_integration_local/mcp_client/README.md`](../agents_integration_local/mcp_client/README.md)
+   [`../agents_integration_local/README.md`](../agents_integration_local/README.md)
 6. **Generate RL training data**: see §7 above
 7. **Reproduce the held-out RL test results**: see the top-level
-   [README — *Reproduce the held-out test results*](../../README.md#reproduce-the-held-out-test-results-l2-l6-l9)
+   [README — *How the RL+guards policy is evaluated*](../../README.md#how-the-rlguards-policy-is-evaluated)
 
 For project context, the GRPO training math, and the held-out evaluation, see
-the top-level [README.md](../../README.md), [Plan_of_attack.md](../../Plan_of_attack.md),
-and [presentation.md](../../presentation.md).
+the top-level [README.md](../../README.md) and
+[research_agent_local/training/README.md](../research_agent_local/training/README.md).

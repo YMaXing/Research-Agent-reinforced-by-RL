@@ -1,0 +1,141 @@
+# Auto-extracted brief for: 31_CI
+# Source: article_ground_truth.md
+# REVIEW BEFORE USE — check all fields, especially those marked
+# '# TODO: review' which require course-context knowledge.
+# Then run:
+#   uv run python generate_article_guideline.py --article 31_CI
+
+lesson_number: 31
+title: Continuous Integration for AI Engineering
+topic_summary:
+  "Introduce Continuous Integration as automated infrastructure to keep AI agent codebases maintainable and prevent
+  regressions. Cover core CI principles alongside AI-specific challenges like non-deterministic LLM outputs, frequent prompt
+  changes, and evolving schemas. Present the three-tier model (fast formatting/linting, deterministic mocked tests, selective
+  expensive AI evals) as the central framework balancing cost, speed, and quality. Detail practical implementation using pre-commit
+  hooks, Ruff, FakeModel test patterns, GitHub Actions workflows, and AI evals as regression tests.
+
+  "
+why_valuable:
+  "AI agent code evolves rapidly with prompt tweaks, model swaps, and discovered edge cases, making manual quality
+  control unsustainable and prone to regressions that impact semantic output quality. CI adapted for AI provides fast feedback,
+  enforces consistency, eliminates flaky tests, and selectively applies expensive evals, enabling engineering teams to scale
+  development while maintaining production reliability.
+
+  "
+target_length_words: 4212
+theory_practice_ratio: 60% theory - 40% practice
+lesson_scope:
+  "Lesson 31 following recent coverage of agent observability (Opik), offline evaluation datasets, and evaluation-driven
+  development; precedes topics on production deployment, monitoring, and full CI/CD pipelines.
+
+  "
+audience:
+  "AI engineers who have built prototype agents with LangChain-style frameworks, understand basic LLM integration
+  and Python development, and are now focused on productionizing systems with robust engineering practices like testing and
+  automation.
+
+  "
+concepts_from_previous_lessons:
+  - Observability with Opik for tracing and capturing agent runs
+  - Building and using offline evaluation datasets
+  - Evaluation-driven development framework for iterative improvement
+concepts_for_future_lessons:
+  - Full CI/CD integration including automated deployment triggers
+  - Production monitoring and alerting built on observability foundations
+  - Cost optimization strategies for evaluation and inference workloads
+sections:
+  - title: Introduction
+    target_words: 61
+    key_points:
+      - Callback to prior lessons on seeing system behavior via observability and evals as prerequisite for CI
+      - Core shift from prototype experimentation to maintainable production-ready agent codebases
+      - "AI-unique challenges: prompt volatility, schema changes, non-deterministic outputs"
+      - Three failure modes that emerge without CI (formatting inconsistency, skipped checks, flaky LLM tests)
+      - Preview of adapted three-tier CI model and lesson focus on daily practical techniques
+  - title: What is Continuous Integration?
+    target_words: 573
+    key_points:
+      - "Standard CI definition: frequent merges into shared repo with automated checks to catch integration issues early"
+      - Contrast traditional software CI vs AI agent needs given non-determinism, prompt iteration, and API costs
+      - Three typical failure modes without CI and their impact on team velocity and review quality
+      - "Three-tier model calibrated by cost and speed: Tier 1 always-on linting, Tier 2 mocked unit tests, Tier 3 selective AI
+        evals"
+      - Positioning of AI evaluations as Tier 3 regression tests unique to semantic quality verification
+      - "Lesson scope boundaries: focus on CI essentials, exclude broad DevOps topics like Kubernetes"
+    diagrams:
+      - "Conceptual architecture diagram of three-tier CI model for AI agents: commit triggers Tier 1 (formatting/linting always),
+        Tier 2 (unit tests with mocks always), Tier 3 (AI evals manual/release only) with cost/speed/latency callouts"
+  - title: "Pre-commit Hooks: Automated Local Guardrails"
+    target_words: 376
+    key_points:
+      - Pre-commit hooks as Git-based local guardrails delivering immediate feedback before commits
+      - Declarative YAML config (.pre-commit-config.yaml) that references community-maintained external hooks
+      - "Brown agent's specific hook selection: pyproject validation, prettier for configs, ruff check+format with auto-fix behavior"
+      - "Installation and workflow: uv sync, pre-commit install, automatic run on git commit with tight fix loop"
+      - Contrast local seconds-scale feedback against waiting for remote CI failures under time pressure
+  - title: "Ruff: Fast Python Linting and Formatting"
+    target_words: 505
+    key_points:
+      - Ruff as Rust-based high-speed consolidated replacement for Black, isort, Flake8 and similar older tools
+      - Core distinction between formatting (automatic opinionated style enforcement) and linting (bug detection, best-practice
+        violations)
+      - "Key configuration dimensions: target Python version, line length, selected rule categories (F, E, I), first-party import
+        grouping"
+      - Makefile convenience targets that wrap uv run for format-fix, lint-fix, format-check, lint-check operations
+      - "Hands-on patterns: creating intentionally broken code then using check and auto-fix commands to demonstrate value"
+  - title: Unit Tests for Agent Repos
+    target_words: 731
+    key_points:
+      - Role of unit tests in verifying deterministic agent logic (parsing, schema validation, routing, utilities)
+      - "Core challenge of LLM non-determinism: why real API calls make tests slow, expensive, and flaky"
+      - Pragmatic blurring of unit vs integration test boundaries for agent nodes that combine multiple components
+      - Mocking strategies with emphasis on response injection via compatible fake model class
+      - "FakeModel pattern architecture: debug config flag, model factory selection, structured output handling in ainvoke"
+      - "Test writing recipe: inject scripted responses, instantiate nodes, assert deterministic outputs and structures"
+      - Running test suite under debug.yaml to guarantee no real LLM calls occur
+  - title: "CI Workflows: Automated Enforcement"
+    target_words: 1317
+    key_points:
+      - "GitHub Actions as CI platform: triggers on PR/push, job isolation, parallel execution for fast feedback"
+      - "Complete ci.yml anatomy: on triggers, shared QA_FOLDERS env, separate qa and tests jobs with identical local commands"
+      - "QA job breakdown: uv setup, format-check, lint-check steps and why dev dependencies are included"
+      - "Tests job breakdown: non-dev sync, debug config injection, pytest execution that stays fast and deterministic"
+      - "Setup consistency principles: .python-version file, identical Makefile commands locally and in CI to avoid 'works on
+        my machine'"
+      - Interpreting failure outputs, local reproduction steps, and iterative fix workflow (format-fix, lint-fix, re-push)
+      - "Manual workflow dispatch for experimentation: intentionally breaking formatting or tests to observe enforcement"
+  - title: AI Evaluations as Regression Tests
+    target_words: 508
+    key_points:
+      - "Purpose of AI evals in CI: catching semantic quality regressions that unit tests cannot detect"
+      - "Why evals are AI-unique Tier 3: latency and cost of real LLM calls (example dataset cost math)"
+      - Manual-only workflow_dispatch pattern in eval.yml to prevent accidental expensive runs on every commit
+      - Production config usage, secret management for API keys, and integration with prior Opik-based eval scripts
+      - "Decision framework for eval frequency: early dev (weekly), active changes (pre-merge), mature releases (gate)"
+      - Contrast with always-on tiers and guidance on project maturity stages
+  - title: Daily Development Workflow
+    target_words: 81
+    key_points:
+      - End-to-end daily sequence integrating coding, local checks, pre-commit, CI enforcement, and selective evals
+      - "Timing of different quality gates: periodic lint/format, post-logic-change tests, commit hooks, PR CI, pre-release evals"
+      - Emphasis on seconds-scale local loops versus automated remote enforcement to maintain velocity
+  - title: Conclusion
+    target_words: 60
+    key_points:
+      - Summary of three-tier CI model as adaptation of traditional practices to LLM-powered agent realities
+      - "Value proposition: investment pays off by catching regressions before customers see quality drops"
+      - Positioning CI as foundational step from prototype toward reliable, maintainable production agents
+golden_sources:
+  - title: pre-commit
+    url: https://pre-commit.com/
+  - title: Ruff Linter
+    url: https://docs.astral.sh/ruff/linter/
+  - title: Ruff pre-commit
+    url: https://github.com/astral-sh/ruff-pre-commit
+  - title: GitHub Actions documentation
+    url: https://docs.github.com/en/actions
+  - title: LLM evaluation for CI/CD pipelines
+    url: https://www.deepchecks.com/llm-evaluation/ci-cd-pipelines/
+  - title: Testing
+    url: https://docs.langchain.com/oss/python/langchain/test
+other_sources: []

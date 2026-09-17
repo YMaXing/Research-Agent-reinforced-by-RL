@@ -1,0 +1,241 @@
+# Auto-extracted brief for: State_of_LLM_Reasoning
+# Source: article_ground_truth.md
+# REVIEW BEFORE USE — check all fields, especially those marked
+# '# TODO: review' which require course-context knowledge.
+# Then run:
+#   uv run python generate_article_guideline.py --article State_of_LLM_Reasoning
+
+lesson_number: 9
+title: The State of LLM Reasoning Model Inference
+topic_summary:
+  "Survey the post-DeepSeek-R1 landscape of techniques for enhancing LLM reasoning capabilities, with primary
+  emphasis on inference-time compute scaling. Introduce the four core categories of reasoning improvement approaches and explain
+  how training and inference compute interact. Summarize 14 recent papers illustrating diverse methods for regulating and
+  scaling test-time computation, from token-based controls to search, optimization, and dynamic depth strategies.
+
+  "
+why_valuable:
+  "AI Engineers must track inference-time scaling advances to make informed decisions on balancing model size,
+  training costs, latency, and accuracy when building agentic systems. These methods enable smaller models to rival much larger
+  ones on complex reasoning tasks, directly impacting production trade-offs in cost, speed, and capability.
+
+  "
+target_length_words: 4321
+theory_practice_ratio: 100% theory - 0% practice
+lesson_scope:
+  "This lesson builds directly on the prior lesson introducing reasoning LLMs and the four improvement categories,
+  providing a 2025 research update focused on inference-time methods; a future lesson will address train-time scaling approaches
+  including advanced RL and distillation in depth.
+
+  "
+audience:
+  "Practicing AI engineers who understand core LLM concepts, chain-of-thought prompting, basic search strategies,
+  and the reasoning model categories from previous lessons and who wish to apply the latest research to agentic AI architectures.
+
+  "
+concepts_from_previous_lessons:
+  - "Four main categories for developing reasoning models: inference-time compute scaling, pure reinforcement learning, RL plus
+    supervised fine-tuning, and supervised fine-tuning with distillation"
+  - DeepSeek-R1 training process, its implicit inference scaling via longer responses, and its view of explicit inference-time
+    methods as unsuccessful
+  - Classic chain-of-thought prompting, majority voting, beam search, and process reward model usage
+  - Distinction between sequential versus parallel inference-time scaling techniques
+concepts_for_future_lessons:
+  - Train-time compute scaling methods including advanced reinforcement learning, hybrid RL+SFT, and distillation approaches
+  - Cost-performance math for choosing between small models with heavy inference scaling versus larger models with lighter scaling
+  - Integration of reasoning improvements into production agentic workflows and 'thinking on demand' deployment patterns
+sections:
+  - title: Introduction
+    target_words: 127
+    key_points:
+      - Why stronger LLM reasoning is a top priority in 2025 for tackling complex user tasks
+      - Recent research surge combining inference-time scaling, RL, SFT, and distillation techniques
+      - Article focus on post-DeepSeek-R1 inference-time compute scaling papers
+      - High-level preview of the four reasoning improvement categories and their overlaps
+    diagrams:
+      - Overview figure summarizing the four main categories of reasoning model development approaches
+  - title: "Implementing and improving reasoning in LLMs: The four main categories"
+    target_words: 865
+    key_points:
+      - Definition of reasoning models that generate explicit or internal intermediate thought processes versus direct-answer
+        LLMs
+      - Core contrast between increasing training compute versus increasing inference compute
+      - How most practical systems combine heavy train-time preparation with test-time thinking for best results
+      - Breakdown of four categories including pure RL challenges like reward hacking, RL+SFT hybrids, SFT with distillation,
+        and pure inference-time scaling
+      - DeepSeek-R1 perspective on inference-time methods as unsuccessful attempts yet implicit scaling via longer outputs
+      - Inherent linkage between training methods that produce longer responses and resulting inference costs
+    diagrams:
+      - Side-by-side contrast of basic one-line LLM answers versus reasoning LLM explanatory traces
+      - Plot contrasting accuracy gains from training compute versus test-time compute scaling
+      - Diagram listing synonymous terms for inference-time scaling and test-time compute
+      - Summary figure of the four categories of reasoning model development
+      - Flowchart of the DeepSeek reasoning model development process
+  - title: Inference-time compute scaling methods
+    target_words: 188
+    key_points:
+      - Core idea that extra inference compute lets models think longer, analogous to humans taking more time
+      - Classic prompt engineering approaches like chain-of-thought and their impact on token count and cost
+      - Search and voting strategies such as majority voting and beam search guided by process reward models
+      - Distinction between sequential (one-token-at-a-time extension) and parallel (multiple independent generations) scaling
+    diagrams:
+      - Example of classic chain-of-thought prompting from the 2022 zero-shot reasoners paper
+      - Annotated diagram of search-based methods that rely on process reward models to pick the best answer
+  - title: "s1: Simple test-time scaling"
+    target_words: 429
+    key_points:
+      - Hybrid approach using curated 1k-example SFT dataset of reasoning traces plus inference-time length control
+      - Mechanism of 'wait' tokens to encourage self-verification and self-correction versus end-of-thinking delimiters
+      - Budget forcing as a sequential scaling technique contrasted with parallel methods like majority voting
+      - Observed correlation between generated response length and accuracy on reasoning benchmarks
+      - Limitations and desired comparisons to beam search, lookahead, compute-optimal search, and basic CoT
+      - Connection to DeepSeek-R1 'Aha moment' and empirical comparison of 'Wait' versus 'Hmm' tokens
+    diagrams:
+      - Illustration of wait token insertion, self-correction, and budget forcing to control output length
+      - Plot showing correlation between response length and accuracy improvements
+      - Comparison figure of performance between Wait and Hmm tokens
+  - title: Other noteworthy research papers on inference-time compute scaling
+    target_words: 141
+    key_points:
+      - Rationale for keeping summaries brief given the high volume of recent papers
+      - Common pattern that many papers blend some training with explicit control of inference-time compute
+      - Differentiation from distillation or SFT approaches that merely produce longer outputs without active length regulation
+        during inference
+  - title: Test-Time Preference Optimization
+    target_words: 122
+    key_points:
+      - Iterative on-the-fly alignment process that avoids changing underlying model weights
+      - Use of reward model to select chosen and rejected responses then generate textual critiques and suggestions
+      - Four-step loop of generation, scoring, critique, and refinement that repeats to improve outputs
+    diagrams:
+      - Flow diagram of the Test-Time Preference Optimization iterative feedback and refinement process
+  - title: Thoughts Are All Over the Place
+    target_words: 100
+    key_points:
+      - Underthinking phenomenon in o1-like models where frequent reasoning path switches reduce accuracy
+      - Thought Switching Penalty (TIP) method that modifies logits to discourage premature path transitions
+      - No-fine-tuning approach that improves accuracy on challenging benchmarks by promoting deeper exploration of promising
+        paths
+    diagrams:
+      - Visualization of the Thought Switching Penalty mechanism for penalizing early reasoning path changes
+  - title: Trading Inference-Time Compute for Adversarial Robustness
+    target_words: 126
+    key_points:
+      - How increased inference-time compute generally reduces successful attack rates without adversarial training
+      - Important exceptions and limited gains in policy ambiguity or loophole exploitation scenarios
+      - New attack strategies like Think Less and Nerd Sniping that can counteract robustness gains
+      - Conclusion that inference scaling helps but is not a complete standalone solution for LLM safety
+    diagrams:
+      - Analysis figure showing trade-off between inference compute and adversarial robustness across attack types
+  - title: Chain-of-Associated-Thoughts
+    target_words: 73
+    key_points:
+      - Combination of Monte Carlo Tree Search with associative memory acting as dynamic knowledge base
+      - Benefit of associative memory for recalling earlier reasoning paths and incorporating evolving information
+      - How the framework aids exploration of reasoning pathways during inference
+    diagrams:
+      - Framework visualization of Chain-of-Associated-Thoughts integrating MCTS with associative memory
+  - title: Step Back to Leap Forward
+    target_words: 169
+    key_points:
+      - Self-backtracking mechanism that teaches models when and where to revise suboptimal paths
+      - Training with special backtrack token versus the key inference-time tree-based search contribution
+      - Advantage of not requiring external reward models unlike standard process-reward-guided search
+      - Dynamic adjustment of search depth and breadth using the learned backtracking ability
+    diagrams:
+      - Diagram of the self-backtracking mechanism including training with backtrack token and inference-time search
+  - title: Scaling up Test-Time Compute with Latent Reasoning
+    target_words: 108
+    key_points:
+      - Recurrent depth approach that iterates in latent space instead of generating more tokens
+      - Hidden-state-like behavior similar to RNNs for refining reasoning without increasing output length
+      - Major drawback of missing explicit reasoning steps that aid human interpretability
+    diagrams:
+      - Visualization of recurrent depth block for scaling test-time compute in latent space
+  - title: Can a 1B LLM Surpass a 405B LLM?
+    target_words: 146
+    key_points:
+      - Systematic study of interactions between inference-time scaling, process reward models, and problem difficulty
+      - Compute-optimal scaling strategy that adapts to PRM choice, policy model size, and task complexity
+      - Evidence that a 1B model with proper scaling can outperform 405B Llama 3 without scaling
+      - Broader implication that right inference budget lets small models surpass much larger unscaled models
+    diagrams:
+      - Comparison plot of compute-optimal test-time scaling showing small models outperforming large ones
+  - title: Learning to Reason from Feedback at Test-Time
+    target_words: 157
+    key_points:
+      - Challenge of classifying as pure inference-time or training-time since it updates weights during inference
+      - OpTune optimizer that adjusts model weights based on previous mistakes without storing failed attempts in context
+      - Contrast with sequential revision (adding attempts to prompt) and parallel sampling approaches
+      - Benefit of remembering errors via weight updates rather than growing context length
+    diagrams:
+      - Diagram of the OpTune optimizer that performs test-time weight updates from feedback
+  - title: Inference-Time Computations for LLM Reasoning and Planning
+    target_words: 98
+    key_points:
+      - Benchmark evaluating CoT, Tree-of-Thought, Reasoning as Planning, and other techniques across eleven tasks
+      - Tasks spanning arithmetic, logical, commonsense, algorithmic reasoning, and planning domains
+      - Key insight that no single inference-time technique dominates across all task types
+      - Analysis of computational cost versus performance trade-offs
+    diagrams:
+      - Benchmark results figure comparing multiple inference-time methods across diverse reasoning tasks
+  - title: Inner Thinking Transformer
+    target_words: 94
+    key_points:
+      - Dynamic depth scaling instead of fixed transformer layer count for every token
+      - Adaptive Token Routing that sends difficult tokens through the same layer multiple times
+      - How this selectively increases inference compute budget for harder tokens
+    diagrams:
+      - Mechanism diagram of Adaptive Token Routing in the Inner Thinking Transformer
+  - title: Test Time Scaling for Code Generation
+    target_words: 404
+    key_points:
+      - S* method specialized for code that combines parallel generation and sequential iterative debugging
+      - "Two-stage process: generation with execution feedback on public test cases followed by adaptive selection"
+      - Use of execution results and errors to iteratively repair candidate solutions
+      - Adaptive input synthesis to create discriminating test cases that distinguish between passing solutions
+      - Connection to Google's earlier optimal test-time compute scaling research
+    diagrams:
+      - Overview diagram of the two-stage S* approach for test-time scaling in code generation
+  - title: Chain of Draft
+    target_words: 181
+    key_points:
+      - Observation that humans use concise drafts rather than verbose step-by-step explanations
+      - Chain of Draft prompting that generates minimal yet informative intermediate steps
+      - Efficiency gains from reduced token count while retaining accuracy comparable to full CoT
+      - "Trade-off discussion: loss of human-readable reasoning traces versus faster generation"
+    diagrams:
+      - Side-by-side comparison of standard prompting, CoT, and Chain of Draft verbosity versus accuracy
+  - title: Better Feedback and Edit Models
+    target_words: 131
+    key_points:
+      - Challenge of applying inference scaling to open-ended tasks lacking verifiable answers like math or code
+      - Specialized architecture with separate generator, feedback model, and edit model
+      - Training of feedback and edit models on large human-annotated datasets of responses and critiques
+      - How dedicated models produce higher-quality feedback and refinements during inference
+    diagrams:
+      - System architecture diagram showing dedicated feedback and edit models for open-ended inference-time scaling
+  - title: Conclusion
+    target_words: 662
+    key_points:
+      - Inference-time compute scaling as a major 2025 research direction that avoids weight modification
+      - Range of techniques from simple wait tokens to sophisticated search, optimization, and dynamic routing
+      - Recurring finding that small models with proper scaling can rival or exceed much larger models
+      - Important caveats around increased inference costs, latency impact, and lack of universally best technique
+      - Industry trend toward thinking-on-demand toggles that dial inference compute up or down
+      - Prediction that explicit reasoning will become the default rather than optional feature
+      - Teaser for upcoming article covering train-time compute scaling methods
+    diagrams:
+      - Cost comparison plot illustrating trade-offs between heavy inference scaling and larger base models
+golden_sources:
+  - title: "s1: Simple Test-Time Scaling"
+    url: https://arxiv.org/abs/2501.19393
+  - title: Understanding Reasoning LLMs
+    url: https://magazine.sebastianraschka.com/p/understanding-reasoning-llms
+  - title: Scaling LLM Test-Time Compute Optimally Can Be More Effective Than Scaling Model Parameters
+    url: https://arxiv.org/abs/2408.03314
+  - title: "Test-Time Preference Optimization: On-the-Fly Alignment via Iterative Textual Feedback"
+    url: https://arxiv.org/abs/2501.12895
+  - title: "Thoughts Are All Over the Place: On the Underthinking of o1-Like LLMs"
+    url: https://arxiv.org/abs/2501.18585
+other_sources: []

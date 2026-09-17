@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 from ..app.source_selection_handler import load_scraped_guideline_context, select_top_sources
+from ..app.guideline_extractions_handler import load_reference_url_blocklist
 from ..config.constants import (
     ARTICLE_GUIDELINE_FILE,
     RESEARCH_OUTPUT_FOLDER,
@@ -57,7 +58,10 @@ async def select_research_sources_to_scrape_tool(research_directory: str, max_so
     md_results_selected = read_file_safe(results_selected_path)
     guideline_ctx = load_scraped_guideline_context(research_directory)
 
-    selection_result = await select_top_sources(article_guidelines, guideline_ctx, md_results_selected, max_sources)
+    blocklist = load_reference_url_blocklist(research_directory)
+    selection_result = await select_top_sources(
+        article_guidelines, guideline_ctx, md_results_selected, max_sources, blocklist=blocklist
+    )
     top_urls = selection_result["selected_urls"]
     url_to_phase = selection_result["url_to_phase"]
     reasoning = selection_result["reasoning"]

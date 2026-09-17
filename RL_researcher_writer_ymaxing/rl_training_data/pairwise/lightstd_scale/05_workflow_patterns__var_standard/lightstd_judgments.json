@@ -1,0 +1,623 @@
+{
+  "article": "05_workflow_patterns__var_standard",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "light",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "references prior lesson on the 'agent landch to prior lesson on 'agent landscape'",
+              "references distinction between rule-based LLM workflows and autonomous agents",
+              "references prior lesson on structured outputs for reliable data extraction"
+            ]
+          },
+          "reasoning": "Both introductions largely restate the same core framing (single monolithic prompts are brittle; workflows solve this; four patterns: chaining, parallelization, routing, orchestrator-worker) without adding deeper technical mechanisms, statistics, or named studies, so neither shows meaningful depth-enhancement over the other (tie). For breadth, Document B references several additional adjacent sub-topics from prior lessons (the agent landscape, the rule-based-workflow-vs-autonomous-agent distinction, and structured outputs) that Document A does not mention, giving B a modest edge in breadth, though these are recap references rather than deep new technical content."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "95% claim that four patterns solve most production LLM problems"
+            ],
+            "b_instances": [
+              "reference to prior lesson on structured outputs for reliable data extraction",
+              "reference to prior lesson distinguishing agent landscape: rule-based workflows vs autonomous agents"
+            ]
+          },
+          "reasoning": "Both intros largely restate the same core framing (single monolithic prompts are brittle; solution is modular workflows: chaining, parallelization, routing, orchestrator-worker). Neither adds much technical depth to any single mechanism -- A's '95%' figure is a vague unsupported claim rather than a substantive mechanism, so depth is a tie with no qualifying instances on either side. For breadth, B references two additional prior-lesson topics not mentioned in A (structured outputs, and the agent-landscape/rule-based-vs-autonomous-agent distinction), which are adjacent named subtopics broadening context beyond A's single mention of context engineering. This gives B a modest edge in breadth, though the difference is not dramatic."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": [
+              "mentions rule-based workflows vs autonomous agents distinction from prior lesson",
+              "mentions structured outputs topic from prior lesson"
+            ]
+          },
+          "reasoning": "Both documents are generic lesson introductions that list the same four workflow patterns (prompt chaining, parallelization, routing, orchestrator-worker) without any named studies, statistics, or specific technical mechanisms that would count as depth enhancement. For breadth, document B references two additional prior-lesson topics (agent landscape/rule-based vs autonomous agents, and structured outputs) that A does not mention, but these are curriculum-orientation references rather than substantive, source-attributed new sub-topics, so they only marginally qualify. Overall the two documents are essentially comparable in enhancement content, with at most a slight, non-substantive edge to B on breadth."
+        }
+      ]
+    },
+    "The Challenge with Complex Single LLM Calls": {
+      "a_arm": "light",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Citation on accuracy dropping as number of requirements in a prompt increases [5]",
+              "Comparison of single multitask prompt vs. separate specialized prompts performance depending on model architecture [1]"
+            ],
+            "b_instances": [
+              "Specific stat: accuracy drop from 98.7% to 85% as instructions increase from 1 to 19 [3]",
+              "GPT-4 study: 52.9% error rate with 70%+ being parsing failures [2]",
+              "Quantitative token savings of 30-82% for multi-problem prompts but accuracy drops on format change [4]"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Citation of software engineering separation-of-concerns principle as rationale for modularity [35][36]"
+            ]
+          },
+          "reasoning": "Both documents cover the same core content (lost-in-the-middle mechanism via causal attention masking and positional encoding decay, debugging/modularity issues, and the same FAQ code demonstration), so this shared material does not count for either side. For depth, both add quantitative citations beyond the shared mechanism explanation: A cites a generic accuracy-drop study [5] and a single-vs-separate-prompt comparison [1], while B provides three distinct, more specific quantitative findings (98.7%->85% accuracy drop by instruction count [3], a GPT-4 52.9% error-rate/parsing-failure study [2], and token-savings figures of 30-82% [4]), giving B a modest edge in depth. For breadth, B additionally invokes a software-engineering 'separation of concerns' principle as a new adjacent framing not present in A, which relies purely on its FAQ example and standard debugging/modularity points; this gives B a slight edge in breadth as well, though the difference is modest in both dimensions."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Detailed explanation of causal attention masking mechanism (why early tokens get more attention)",
+              "Detailed explanation of positional encoding decay/RoPE creating an attentional 'dead zone' for middle tokens",
+              "Specific attribution of lost-in-the-middle research to Stanford, UC Berkeley, and Samaya AI",
+              "Note that single-prompt vs. separate-prompt performance depends heavily on model architecture [1]"
+            ],
+            "b_instances": [
+              "Specific quantitative accuracy drop stat (98.7% to 85%) as instructions increase from 1 to 19 [3]",
+              "GPT-4 study citing 52.9% error rate with 70%+ being parsing failures [2]",
+              "Quantitative token-efficiency benchmark showing 30-82% savings from multi-problem prompts but with accuracy tradeoffs [4]"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Framing the modularity problem via general software engineering principle of 'separation of concerns' with external citations [35][36]"
+            ]
+          },
+          "reasoning": "Both documents cover the same core challenges (debugging difficulty, lack of modularity, lost-in-the-middle problem, accuracy degradation, inefficiency) and use an identical FAQ code demo. For depth, A elaborates more on the architectural mechanism (naming RoPE, explaining causal attention masking and the 'dead zone' concept in detail) and cites specific institutions behind the lost-in-the-middle research, plus a note that architecture affects single-vs-separate prompt performance. B instead backs its claims with several concrete quantitative statistics (98.7%\u219285% accuracy drop, GPT-4's 52.9% error rate, 30-82% token savings tradeoff) that A lacks. The two sets are comparably substantive in number and specificity, yielding a tie on depth. For breadth, neither document strays far into genuinely new adjacent subtopics, but B uniquely invokes the general software-engineering principle of 'separation of concerns' (with citations) as an adjacent framing not present in A, giving B a modest edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Concrete demonstration of the missed-citation error in the actual generated FAQ output"
+            ],
+            "b_instances": [
+              "Specific study showing accuracy dropping from 98.7% to 85% as instructions increase from 1 to 19",
+              "GPT-4 study finding a 52.9% error rate with over 70% being parsing failures",
+              "Benchmark data showing multi-problem prompts yield 30-82% token savings but accuracy drops sharply when output format changes"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Citation of software engineering separation-of-concerns principle as rationale for modularity"
+            ]
+          },
+          "reasoning": "Both documents cover the same core claims (debugging difficulty, lack of modularity, lost-in-the-middle problem, causal attention masking, positional encoding decay) and use an identical code example. For depth, A adds a concrete demonstration of the missed-citation error using its own generated output, but B goes further with three distinct, quantitatively specific studies (98.7%\u219285% accuracy drop across 19 instructions, a GPT-4 52.9% error-rate breakdown, and 30-82% token-savings-vs-accuracy tradeoff data) that A lacks entirely, making B's depth substantially greater. For breadth, B introduces a new adjacent subtopic\u2014citing software engineering's separation-of-concerns principle to justify modularity\u2014which A does not touch, giving B a modest edge in breadth as well."
+        }
+      ]
+    },
+    "The Power of Modularity: Why Chain LLM Calls?": {
+      "a_arm": "light",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Quantitative claim that decomposition improves performance by over 15% (specific study citation)",
+              "Named 'compounding error effect' explaining how mistakes amplify through the chain (specific citation)"
+            ],
+            "b_instances": [
+              "Bounded rationality (cognitive science concept) used to explain why simpler prompts improve accuracy",
+              "Edge case: some tasks are not decomposable because instructions only make sense together, risking loss of crucial context",
+              "Edge case: a single multitask prompt can sometimes outperform a chain of single-task prompts depending on model architecture"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Discussion of production GenAI platform requirements beyond chaining itself: guardrails, caching, and observability (with specific source)"
+            ],
+            "b_instances": [
+              "Analogy to the pipeline design pattern from software engineering / 'assembly line for AI' framing",
+              "Analogy to traditional ETL (extract-transform-load) data pipelines",
+              "Ability to insert intermediate validation or traditional code/API calls between LLM calls to catch errors early"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (modularity rationale, accuracy/debugging/flexibility advantages, and trade-offs of latency, cost, and information loss), so much of the content is shared and not differentiating. On depth, A adds a specific 15% performance-improvement statistic and names the 'compounding error effect' as a distinct mechanism, while B adds the cognitive-science 'bounded rationality' explanation and two specific edge cases (non-decomposable tasks losing context, and multitask prompts sometimes outperforming chains) -- giving B a modest edge (3 vs 2 differentiating instances). On breadth, A only introduces the adjacent topic of production platform requirements (guardrails, caching, observability), whereas B introduces three genuinely new adjacent framings not present in A: the software-engineering pipeline design pattern/assembly-line analogy, the ETL data-pipeline analogy, and the capability to insert intermediate validation/code between LLM calls -- a substantially larger and more varied set of new sub-topics, warranting a much_more preference for B on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Cites a specific study showing >15% performance improvement from decomposing tasks vs monolithic prompts",
+              "Names and cites 'compounding error effect' as a specific mechanism for error amplification across chain steps",
+              "Names and cites 'context degradation' as a specific mechanism for how nuance is lost between chain steps"
+            ],
+            "b_instances": [
+              "Invokes 'bounded rationality' from cognitive science as a specific mechanism explaining why focused sub-tasks improve accuracy"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Discusses need for a full GenAI platform beyond chaining: guardrails, caching, and observability, citing a specific source"
+            ],
+            "b_instances": [
+              "Frames chaining as an instance of the 'pipeline design pattern'/'assembly line for AI' from software engineering, with citation",
+              "Compares LLM chaining to traditional ETL data pipeline workflows, citing developer observations",
+              "Introduces intermediate validation/checkpointing between chain steps as a distinct flexibility benefit",
+              "Notes that some tasks are not easily decomposable and splitting them can lose crucial context, a distinct limitation type",
+              "Cites the counterpoint that a single multitask prompt can sometimes outperform a chain, depending on model architecture"
+            ]
+          },
+          "reasoning": "Both documents cover the same core content (modularity, improved accuracy, easier debugging, flexibility, and trade-offs like latency/cost/error). On depth, Document A adds more rigor to points already made: a specific quantitative statistic (15% improvement), and two named, cited failure mechanisms (compounding error effect, context degradation) that go beyond B's more generic mention of information dilution. Document B's main depth addition is the 'bounded rationality' cognitive-science explanation for why simpler prompts work better. This gives A a clear depth edge (3 distinct sourced mechanisms vs B's 1). On breadth, Document B substantially outpaces A by introducing several genuinely new adjacent sub-topics: the software-engineering 'pipeline pattern'/assembly-line analogy, the ETL data-pipeline comparison, intermediate validation as a distinct capability, the limitation that some tasks resist decomposition, and the counterpoint that multitask prompts can sometimes outperform chains. Document A's only comparable breadth addition is its mention of surrounding platform infrastructure (guardrails, caching, observability). This makes B's breadth coverage much richer than A's."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Specific quantitative stat: >15% performance improvement from breaking tasks (cited study)",
+              "Named 'compounding error effect' phenomenon with dedicated source explaining error amplification",
+              "Named 'context degradation' phenomenon with dedicated source explaining nuance loss between steps"
+            ],
+            "b_instances": [
+              "Bounded rationality (cognitive science) explanation for why simpler prompts yield better accuracy",
+              "Specific mechanistic reasoning for why some tasks resist decomposition (instructions needing full context, loss of richness)",
+              "Nuance that a single multitask prompt can outperform chained prompts depending on model architecture",
+              "Note that chaining increases token usage/cost due to multiple calls (mechanistic detail)",
+              "named/sourced"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "placeholder"
+        }
+      ]
+    },
+    "Building a Sequential Workflow: FAQ Generation Pipeline": {
+      "a_arm": "light",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Connects the decomposition/prompt-chaining approach to Chain-of-Thought (CoT) prompting theory, explaining why step-by-step guidance improves performance [[41],[43]]",
+              "Explains the mechanistic cause of the pipeline's latency: two sequential LLM calls per question executed one-by-one, which is inefficient when sub-problems are independent"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Cites real-world case studies (AppFolio improving from 40% to 80% accuracy on a text-to-data task using LangGraph; Athena Intelligence generating research reports with accurate citations) as evidence for modular multi-agent workflows [[20]]"
+            ]
+          },
+          "reasoning": "Both documents present nearly identical code and pipeline structure (three-step sequential FAQ generation with QuestionList/SourceList Pydantic models), so the core content is a tie. Document B adds source-attributed enhancement content beyond the core: for depth, it explicitly ties the decomposition technique to Chain-of-Thought prompting theory (with citations) and gives a concrete mechanistic explanation for the pipeline's latency bottleneck (sequential LLM calls on independent sub-problems). For breadth, B introduces real-world industry case studies (AppFolio's 40%\u219280% accuracy gain via LangGraph, Athena Intelligence's citation-accurate research reports) that broaden the discussion beyond the toy example. Document A contains no comparable additional depth or breadth instances beyond the shared core implementation, so B leads on both dimensions, though not overwhelmingly since the additions are limited in number."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Highlights that the model now correctly identifies both sources, fixing an error from an earlier monolithic attempt (depth on source-accuracy reliability)"
+            ],
+            "b_instances": [
+              "Explains the specific mechanistic cause of the pipeline's latency: two sequential LLM calls per question executed one at a time (depth on why the bottleneck occurs)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Names 'decomposition' as the underlying technique with citation [[42]]",
+              "Draws explicit comparison to Chain-of-Thought (CoT) prompting as an analogous technique [[41],[43]]",
+              "Cites real-world case studies (AppFolio, Athena Intelligence) using LangGraph, including a specific 40%-to-80% performance improvement statistic [[20]]"
+            ]
+          },
+          "reasoning": "Both documents are near-identical in code and core workflow explanation. On depth, each adds one small mechanistic detail beyond the core: A notes the model now correctly finds both sources (fixing a prior error), while B explains the latency bottleneck as caused by two sequential per-question LLM calls -- roughly comparable in substance, so a tie. On breadth, B clearly introduces multiple new adjacent topics not touched by A: the 'decomposition' terminology, an explicit Chain-of-Thought comparison with citations, and concrete industry case studies (AppFolio, Athena Intelligence) with a specific performance statistic and named tool (LangGraph). A has no comparable breadth content, making B much stronger on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Names the sequential decomposition technique with citation [[42]]",
+              "Draws mechanistic analogy to Chain-of-Thought (CoT) prompting to explain why step-by-step decomposition improves performance, citing [[41],[43]]"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "AppFolio case study: performance boost from 40% to 80% in a text-to-data task using LangGraph for multi-agent workflows [[20]]",
+              "Athena Intelligence case study: using a similar modular stack to generate research reports with accurate source citations [[20]]"
+            ]
+          },
+          "reasoning": "Both documents implement the same three-function sequential pipeline (generate_questions, answer_question, find_sources) with nearly identical code and the same 22.20s timing result, so the core implementation content is equivalent. Document A adds no sourced enhancement beyond the core walkthrough (its only extra remark is a narrative callback to a prior lesson's error, which is not a substantive new fact). Document B adds source-attributed depth by explicitly naming the pattern as 'decomposition' [[42]] and drawing a citation-backed analogy to Chain-of-Thought prompting to explain the underlying mechanism of why sequential decomposition improves reliability [[41],[43]]. B also adds clear breadth via two concrete, named real-world case studies (AppFolio's 40%->80% performance gain using LangGraph, and Athena Intelligence's citation-accurate research report generation) [[20]], which introduce new adjacent examples not touched by A. This gives B a moderate depth advantage and a much larger breadth advantage."
+        }
+      ]
+    },
+    "Optimizing Sequential Workflows With Parallel Processing": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Quantitative benchmark: asyncio ~19.7x faster than sequential and outperforms threading due to lower OS context-switching overhead [[27],[28]]",
+              "Notes that parallel task isolation mitigates compounding errors seen in long sequential chains [[47]]"
+            ],
+            "b_instances": [
+              "Explains asyncio's superiority over OS threads via Python's Global Interpreter Lock (GIL) mechanism [[26]]",
+              "Specifies 'exponential backoff with full jitter' as the resilience technique, a more precise variant than generic jitter [[9]]",
+              "Adds guidance on catching exceptions from individual tasks so one failure doesn't crash the entire batch",
+              ">the same core setup and CLI/JSON outputs, but B adds this exception-isolation detail not present in A"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Explicitly names and cites the 'fan-out/gather' pattern as the general concurrency strategy being applied [[4]]"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents present nearly identical code and core explanation of converting to asyncio with gather. For depth, A adds a concrete quantitative benchmark (19.7x speedup, context-switching overhead) and a point about error isolation reducing compounding failures, while B adds a distinct technical mechanism (GIL explanation for why threads are inferior), a more specific backoff variant ('full jitter'), and guidance on isolating per-task exceptions to prevent batch-wide crashes\u2014giving B a modest edge in depth instances. For breadth, only A introduces a genuinely new adjacent concept, naming the general 'fan-out/gather' pattern as the umbrella strategy, which B does not mention; B's additional trade-off discussion and rate-limit specifics stay within the same core topics already covered by A, so A leads on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Names the pattern explicitly as 'fan-out/gather'",
+              "Cites specific quantitative benchmark: asyncio ~19.7x faster than sequential for 100 requests, and lower overhead from OS context switching vs threading",
+              "Parallel task isolation mitigates compounding errors seen in long sequential chains"
+            ],
+            "b_instances": [
+              "Explains threading overhead specifically via Python's GIL limitation",
+              "Names the specific backoff variant 'exponential backoff with full jitter' with a dedicated production-resilience source",
+              "Recommends handling exceptions from individual tasks so one failure doesn't crash the whole batch",
+              "Notes rate limits are often stricter on free API tiers, with a dedicated source on rate-limiting challenges"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core async/asyncio.gather implementation with nearly identical code. For depth, A adds a named pattern term (fan-out/gather), a concrete quantitative asyncio-vs-sequential/threading benchmark, and a point about parallel isolation reducing compounding errors; B adds a GIL-based technical explanation for threading overhead, a specifically named 'full jitter' backoff technique with its own source, a recommendation on per-task exception handling, and a note about stricter free-tier rate limits with its own source. B has slightly more distinct attributed technical details, giving it a modest edge on depth, though A's benchmark is a strong individual data point. For breadth, both documents raise essentially the same secondary topic (debugging/complexity trade-off between sequential and parallel approaches, and rate-limit/backoff handling), so once overlapping points are excluded neither side introduces a genuinely new adjacent sub-topic beyond what the other covers, resulting in a tie."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "quantitative asyncio benchmark (19.7x faster than sequential, outperforms threading due to lower OS context-switching overhead)",
+              "explains parallel isolation mitigates compounding errors seen in long sequential chains"
+            ],
+            "b_instances": [
+              "explains threads' overhead partly due to Python's Global Interpreter Lock (GIL)",
+              "specific operational advice to handle exceptions per-task so one failure doesn't crash the entire batch"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "names and frames the technique as the general 'fan-out/gather' pattern used for batch processing of independent items"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core async/asyncio.gather implementation with nearly identical code. On depth, A adds a quantitative benchmark (19.7x speedup, context-switching overhead) and a point about parallel isolation reducing compounding errors, while B adds a technical explanation of the GIL as a reason threads are less efficient and specific advice about isolating exception handling per task\u2014roughly comparable in number and substance, yielding a tie. On breadth, A uniquely names the general 'fan-out/gather' pattern, giving it a broader conceptual frame not present in B, while B's additions (sequential-vs-parallel debugging trade-off, free-tier rate limits) stay within the section's core scope rather than introducing a genuinely new sub-topic, so A has a modest edge in breadth."
+        }
+      ]
+    },
+    "Introducing Dynamic Behavior: Routing and Conditional Logic": {
+      "a_arm": "light",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Cascade pattern combining vector embeddings, fine-tuned classifier, and LLM in tiered fallback for cost/performance optimization",
+              "Specific confidence threshold example (80%) for routing decisions with clarification fallback"
+            ],
+            "b_instances": [
+              "Best practice of including a default/catch-all route for queries that don't fit predefined categories"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Rule-based routing (e.g., based on query length)",
+              "Confidence-based routing (escalating to a more powerful model)",
+              "Semantic routing using vector embeddings"
+            ],
+            "b_instances": [
+              "Concrete customer support example with technical, billing, and store-hours routing categories"
+            ]
+          },
+          "reasoning": "Both sections cover the core LLM-classifier routing pattern similarly. For depth, Document A adds two source-attributed refinements to the routing mechanism itself: the cascade architecture (embeddings -> classifier -> LLM fallback) and a specific confidence-threshold example (80%) for triggering clarification, giving it a slight edge over B's single depth addition (the catch-all/default route best practice). For breadth, Document A introduces three distinct alternative routing strategies (rule-based, confidence-based, semantic/vector-based) that broaden the topic beyond the single LLM-classifier approach, whereas Document B contributes one new concrete example (customer support ticket routing). This gives A a modest edge in breadth as well, though B's example is a legitimate, if singular, addition."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Confidence threshold example (e.g., 80% threshold) for triggering routing vs. clarification question, adding quantitative mechanism detail to the classification step"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Enumeration of alternative routing strategies beyond LLM classifiers: rule-based (query length), confidence-based (escalation to stronger model), and semantic routing via vector embeddings",
+              "Cascade pattern architecture combining multiple routing methods in a tiered fallback sequence for cost/performance optimization"
+            ],
+            "b_instances": [
+              "Concrete customer support example with technical/billing/general query categories illustrating router application",
+              "Best practice of including a default or catch-all route for unclassified queries"
+            ]
+          },
+          "reasoning": "Document A adds a distinct depth instance not found in B: a specific confidence-threshold example (80%) that deepens the mechanics of the classifier-based routing decision. Document B offers no comparably specific mechanism-level detail, so depth favors A modestly. For breadth, both documents introduce new sub-topics: A discusses several alternative routing strategies (rule-based, confidence-based, semantic/embedding-based) and a cascade/tiered architecture pattern, both sourced and substantive; B introduces a concrete customer-support routing example (technical/billing/general categories) and the best practice of a catch-all/default route. Both sides have two breadth instances, but A's additions (multiple named routing techniques plus an architectural pattern) are somewhat more technically substantive than B's largely illustrative example and a single best-practice note, giving A a slight edge on breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Cascade pattern: tiered combination of embeddings\u2192classifier\u2192LLM fallback for cost/performance optimization",
+              "Confidence threshold specifics (e.g., 80% threshold) with clarification-question fallback for low-confidence classifications"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Rule-based routing (e.g., based on query length)",
+              "Confidence-based routing (escalating to a more powerful model if a cheaper one is uncertain)",
+              "Semantic routing using vector embeddings"
+            ],
+            "b_instances": [
+              "Concrete customer-support example routing technical/billing/store-hours queries to distinct handlers",
+              "Best practice of including a default/catch-all route for queries that don't fit predefined categories"
+            ]
+          },
+          "reasoning": "Document A goes noticeably deeper into the routing mechanism itself: it describes a cascade/tiered architecture combining multiple routing methods for cost-performance optimization and gives a concrete confidence-threshold mechanism (80% example, clarification fallback) -- neither of which B mentions, giving A a strong depth advantage. On breadth, A lists three distinct routing strategies beyond the core LLM-classifier approach (rule-based, confidence-based, semantic), while B introduces two different new elements: a concrete customer-support routing example and the catch-all/default-route best practice. Both broaden scope, but A's three techniques edge out B's two additions, yielding a modest breadth edge for A."
+        }
+      ]
+    },
+    "Building a Basic Routing Workflow": {
+      "a_arm": "light",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "escalation to a human agent as fallback for low-confidence routing (beyond just asking for clarification)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "explicit framing as an instance of the Coordinator/Dispatcher agent pattern, referencing a broader agentic architecture concept"
+            ]
+          },
+          "reasoning": "Both documents share the same core code (Enum/Pydantic classifier, specialized prompts, handle_query router) and both extend the reliability discussion with a confidence-threshold fallback mechanism (A: UNCERTAIN intent category; B: confidence score with fallback). These are largely equivalent, though B adds one extra depth detail -- escalating to a human agent, not just re-prompting the user -- giving it a slight edge on depth. On breadth, B introduces a genuinely new adjacent concept, naming the pattern as an application of the 'Coordinator/Dispatcher agent pattern' with a citation, which broadens the section's conceptual framing; A has no comparable breadth-adding reference (its citation on intent detection is background support for the core explanation, not a new sub-topic). Overall B shows modest additional enhancement on both dimensions."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Citation-backed explanation of intent classifier as dispatcher decoupling unstructured input from structured app logic (cited vellum.ai source)"
+            ],
+            "b_instances": [
+              "Confidence-based routing elaborated with explicit 'confidence score' output and fallback escalation to a human agent (two citations)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Introduces the Coordinator/Dispatcher agent pattern as the broader architectural pattern this workflow exemplifies (cited source)"
+            ]
+          },
+          "reasoning": "Both documents largely mirror each other's core content (same code, same handler prompts, same routing logic). For depth, A adds a cited explanation of why intent classification decouples unstructured input from structured logic, while B adds a more detailed confidence-based routing extension that names 'confidence score' explicitly and adds fallback escalation to a human agent (two citations) beyond A's simpler UNCERTAIN-category idea (which itself overlaps with B's concept) \u2014 these are roughly comparable in substantiveness, yielding a tie. For breadth, B uniquely introduces the named 'Coordinator/Dispatcher' agentic design pattern with a citation, situating the routing workflow within a broader architectural concept not mentioned in A; A has no comparable new adjacent sub-topic (its second example query/response is just a repeat of the same core topic, not a new topic), so B leads on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Extending IntentEnum with an UNCERTAIN category and confidence threshold to reduce misrouting"
+            ],
+            "b_instances": [
+              "Confidence-based routing where the classifier outputs an explicit confidence score, with fallback options including both clarification and escalation to a human agent"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Framing the workflow as an instance of the Coordinator/Dispatcher agent design pattern, connecting it to a broader multi-agent architecture concept"
+            ]
+          },
+          "reasoning": "Both documents share nearly identical core code and explanation. On depth, both add a reliability enhancement to intent classification: A introduces an UNCERTAIN category with a confidence threshold, while B describes a similar confidence-based routing mechanism but adds more specific detail (explicit confidence score output plus two fallback options: clarification or human escalation), giving B a slight edge in depth. On breadth, B explicitly names and cites the Coordinator/Dispatcher agent pattern, situating the routing workflow within a broader multi-agent design vocabulary -- a genuinely new sub-topic A does not mention (A's citation only supports the existing intent-classification point without introducing new scope). Both remain close in overall enhancement level, but B edges out A modestly on both dimensions."
+        }
+      ]
+    },
+    "Orchestrator-Worker Pattern: Dynamic Task Decomposition": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Quantitative motivation stat: GPT-4 as low as 14% success on complex benchmarks vs >90% human success, underscoring need for dynamic decomposition",
+              "Explicit trade-off discussion: orchestration adds latency and risks over-engineering, sacrificing contextual richness LLMs benefit from"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Scaling the pattern via event-driven architecture using Apache Kafka, with orchestrator publishing tasks as events and workers as independent consumers",
+              "New challenge noted when scaling: managing long-term context efficiently as interactions grow over time"
+            ],
+            "b_instances": [
+              "Dynamic worker model selection: routing simple sub-tasks to fast/cheap models and complex reasoning to powerful models to balance cost and capability"
+            ]
+          },
+          "reasoning": "Document A adds two depth-oriented enhancements not found in B: a concrete benchmark statistic (14% vs 90%) motivating the need for dynamic decomposition, and an explicit discussion of the orchestration trade-off (latency, over-engineering, loss of contextual richness). For breadth, A introduces two new sub-topics beyond the core pattern -- scaling via Kafka-based event-driven architecture and the resulting long-term context management challenge -- while B introduces one new sub-topic, dynamic per-task model selection based on cost/capability. B's OS-scheduler analogy and additional citation links do not add distinct substantive content beyond what's already covered. Overall A shows a modest edge in both depth and breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Quantitative motivation for dynamic decomposition (GPT-4 ~14% success vs >90% human on complex benchmarks, citation 18)",
+              "Specific tradeoff mechanism: over-engineering orchestration risks sacrificing contextual richness LLMs benefit from (citation 19)"
+            ],
+            "b_instances": [
+              "OS-scheduler analogy explaining orchestrator's dynamic task-routing role, tied to external source (54)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Production-scaling extension via event-driven architecture using Kafka, orchestrator publishing tasks as queue events (citation 22)",
+              "Benefits of decoupled event-driven design: automatic scaling, fault tolerance, resilient processing (citation 23)",
+              "New challenge introduced at scale: managing long-term context as interactions grow (citation 24)"
+            ],
+            "b_instances": [
+              "Dynamic worker model selection: routing simple sub-tasks to cheap/fast models and complex reasoning to powerful models to balance cost and capability"
+            ]
+          },
+          "reasoning": "Both documents cover the same core orchestrator-worker-synthesizer implementation with nearly identical code. Document A adds two depth-oriented enhancements not in B: a concrete quantitative stat motivating the need for dynamic decomposition and an explicit tradeoff about over-engineering/context loss. B's only comparable depth addition is an OS-scheduler analogy tied to a source. On breadth, A extends significantly further into production concerns (Kafka-based event-driven scaling, decoupling benefits, and long-term context management challenges), while B contributes one new breadth-relevant idea: dynamically selecting worker model tiers based on task complexity/cost. Since A has more and comparably or more substantive instances in both dimensions, A is judged moderately ahead on both depth and breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Quantitative stat on GPT-4's low success rate (14%) vs human performance (90%) on complex benchmarks, motivating need for dynamic decomposition",
+              "Detailed trade-off discussion: orchestration adds latency and risk of over-engineering, sacrificing contextual richness LLMs benefit from"
+            ],
+            "b_instances": [
+              "Analogy comparing orchestrator's dynamic task breakdown to an OS scheduler acting as traffic controller for computational jobs, cited to a task-scheduling article"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Discussion of scaling the pattern via event-driven architecture using Apache Kafka, with orchestrator publishing tasks as queue events",
+              "Note on new challenge of managing long-term context efficiently as interactions grow when scaling the pattern"
+            ],
+            "b_instances": [
+              "Dynamic worker model selection strategy: routing simple sub-tasks to fast/cheap models and complex reasoning to powerful models to balance cost and capability"
+            ]
+          },
+          "reasoning": "Both documents cover the same core orchestrator-worker implementation with nearly identical code and example. Document A adds two source-attributed depth enhancements (a concrete GPT-4 vs. human benchmark statistic motivating dynamic decomposition, and a specific discussion of the pattern's trade-offs including latency and loss of contextual richness), whereas Document B's only comparable depth addition is a fairly generic OS-scheduler analogy tied to a citation, which is less concrete/technical. For breadth, Document A introduces two new adjacent sub-topics (event-driven/Kafka-based scaling architecture and the challenge of long-term context management at scale), while Document B introduces one new sub-topic (dynamic selection of different worker models based on cost/capability trade-offs). Both dimensions favor A by a modest margin, so 'a_more' is appropriate rather than 'a_much_more'."
+        }
+      ]
+    },
+    "Conclusion": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "specific application domains named (customer support, creative media production)"
+            ],
+            "b_instances": [
+              "caching as a technique to manage costs",
+              "observability for end-to-end request tracing",
+              "function calling as specific mechanism for tool use"
+            ]
+          },
+          "reasoning": "Neither document adds deeper technical mechanism detail to the core workflow patterns already covered, so depth is a tie. For breadth, A adds one concrete instance (application domains: customer support and creative media). B introduces three distinct, concretely named adjacent sub-topics not covered elsewhere in the section: caching for cost management, observability for tracing, and function calling as the specific next-lesson mechanism (versus A's more generic 'tools'). This gives B a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "mentions caching as a production platform component to manage costs",
+              "mentions observability for tracing requests end-to-end"
+            ]
+          },
+          "reasoning": "Both conclusions are largely recaps of the lesson's core patterns (chaining, parallelization, routing, orchestration) and forward-looking previews of the next lesson, neither of which adds new depth to already-covered mechanisms, so depth is a tie. For breadth, Document B introduces two concrete, adjacent production-platform components (caching for cost management and observability for end-to-end tracing) that are not part of the section's core coverage, giving it a modest breadth edge. Document A's mention of 'customer support to creative media production' is too vague/generic to count as a concrete new sub-topic instance."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Mentions application domains ranging from customer support to creative media production"
+            ],
+            "b_instances": [
+              "Introduces caching as a production platform component for managing costs",
+              "Introduces observability as a production platform component for tracing requests end-to-end"
+            ]
+          },
+          "reasoning": "Both conclusions mainly restate the core chaining/parallelization/routing/orchestration content already covered, so neither adds meaningful depth (no new mechanisms, statistics, or technical rigor beyond what was taught) \u2014 tie on depth. For breadth, Document A gestures at broader application domains (customer support, creative media) but this is a generic, non-technical aside. Document B introduces two more concrete, named adjacent concepts \u2014 caching (for cost control) and observability (for request tracing) \u2014 as components of a production GenAI platform, which are genuinely new sub-topics not covered elsewhere in the section. This gives B a modest edge in breadth."
+        }
+      ]
+    }
+  }
+}

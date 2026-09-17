@@ -1,0 +1,105 @@
+{
+  "article": "06_tools__var_standard",
+  "sections": {
+    "Understanding why agents need tools": {
+      "depth": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "original_preference": "tie",
+        "classification": "strong_agree",
+        "repeats": [
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Explains that LLMs' inability to maintain state stems from finite context windows and fragile prompt-based state management (arxiv 2604.08224)",
+              "Cites research showing fact recall degrades for rare/less-common information due to insufficient training examples, creating an upper bound on factual grounding (arxiv 2511.12869)"
+            ],
+            "b_instances": [
+              "Elaborates on why math tools are needed: LLMs handle basic arithmetic but struggle with complex math, so calculator/code interpreter tools offload tasks from simple sorting/filtering to advanced algebra"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Architecture-based statelessness explanation: finite context windows and fragility of prompt-based state management as root cause of LLMs' inability to maintain external state",
+              "Fact recall degradation for less common/rare entities due to insufficient training examples, creating an upper limit on factual grounding"
+            ],
+            "b_instances": [
+              "Elaboration on code/calculator tool offloading complex math (sorting, filtering, advanced algebra) to ensure accuracy, going beyond A's basic 'can't do math reliably' claim",
+              "Long-term memory mechanism specified as vector or graph databases tied to RAG systems, more technically specific than A's generic 'long-term memory' mention"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Mechanistic explanation of state limitation: finite context windows and fragility of prompt-based state management prevent persistent external state (arxiv 2604.08224)",
+              "Research showing factual recall degrades for less common entities due to insufficient training examples, creating an upper limit on factual grounding (arxiv 2511.12869)"
+            ],
+            "b_instances": [
+              "RAG systems framed as key application connecting long-term memory tools to vector/graph databases",
+              "Elaboration that LLMs struggle with complex math (algebra) despite basic arithmetic, justifying calculator/code-interpreter offloading"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "architecture-rooted state limitation: finite context windows and fragility of prompt-based state management explain why LLMs can't maintain persistent state",
+              "fact recall degrades for rare/long-tail information due to insufficient training examples, creating an upper bound on factual grounding"
+            ],
+            "b_instances": [
+              "elaboration on math limitation distinguishing basic arithmetic (which LLMs can do) from complex math (which requires offloading to a calculator/code interpreter for accuracy)"
+            ]
+          }
+        ]
+      }
+    },
+    "Using Pydantic models as tools for on-demand structured outputs": {
+      "depth": {
+        "a_arm": "deep",
+        "b_arm": "standard",
+        "original_preference": "a_more",
+        "classification": "strong_agree",
+        "repeats": [
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Latency vs. reliability trade-off explanation with citation on managing context growth [32]",
+              "Clarification that overhead comes from extra LLM call not Pydantic validation itself, citing validation efficiency [33]"
+            ],
+            "b_instances": [
+              "Pydantic AI frameworks registering each output type as a separate tool to reduce schema complexity and improve correctness, with citation [17]"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "latency-vs-reliability tradeoff explanation citing context growth/error prevention benefits (source 32)",
+              "clarification that overhead comes from the extra LLM call rather than Pydantic itself, which validates efficiently (source 33)"
+            ],
+            "b_instances": [
+              "mention that Pydantic AI frameworks register each output type as a separate tool to reduce schema complexity and boost correct-response likelihood (source 17)"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "latency vs reliability trade-off with citation on managing context growth and preventing errors in complex workflows",
+              "clarification that validation overhead comes from the extra LLM call rather than Pydantic itself, with efficiency citation"
+            ],
+            "b_instances": []
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Latency-vs-reliability trade-off from extra LLM call needed for tool-based structured extraction, with citation on managing context growth/errors [32]",
+              "Clarification that computational overhead comes from the extra LLM call rather than Pydantic itself, which validates efficiently, with citation [33]"
+            ],
+            "b_instances": [
+              "Pydantic AI frameworks register each output type as a separate tool to reduce schema complexity and increase correct-response likelihood, with citation [17]"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

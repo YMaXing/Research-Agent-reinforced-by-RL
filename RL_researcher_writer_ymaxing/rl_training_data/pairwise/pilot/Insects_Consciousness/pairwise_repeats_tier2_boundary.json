@@ -1,0 +1,66 @@
+{
+  "article": "Insects_Consciousness",
+  "sections": {
+    "A Growing Awareness": {
+      "breadth": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "original_preference": "tie",
+        "classification": "tier2_boundary_0v2",
+        "repeats": [
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Crab decision-making study showing 'common currency' tradeoff between shock aversion and light aversion",
+              "Parallel debate over 'plant neurobiology' and why plants lack sufficient organizational complexity for consciousness"
+            ],
+            "b_instances": [
+              "Mirror-test controversy: Gordon Gallup's critique of cleaner wrasse self-recognition and follow-up experiments addressing it",
+              "Critics' pushback on the New York Declaration itself as a 'broad overstatement' that could stifle debate"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Crab decision-making study showing a 'common currency' for weighing shock aversion against light aversion",
+              "Parallel discussion of the 'plant neurobiology' debate as a contrasting case that helps bound the consciousness consensus"
+            ],
+            "b_instances": [
+              "Discussion of critics who call the declaration a 'broad overstatement' that could prematurely shut down scientific debate"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Crab decision-making study showing a 'common currency' for weighing shock vs. light aversion",
+              "Tenfold increase in animal sentience publications before the 2012 Cambridge Declaration",
+              "Parallel debate over 'plant neurobiology' and why plants lack sufficient neural complexity for consciousness"
+            ],
+            "b_instances": [
+              "Critics calling the declaration a 'broad overstatement' that could prematurely shut down scientific debate"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Crab decision-making study showing a 'common currency' trade-off between shock aversion and light aversion",
+              "Parallel discussion of the 'plant neurobiology' debate as a contrasting case that helps bound the consciousness argument"
+            ],
+            "b_instances": [
+              "Critics' argument that the declaration is a 'broad overstatement' that could prematurely shut down scientific debate"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [
+              "Parallel debate over 'plant neurobiology' and why plants lack sufficient neural complexity for consciousness, used to bound the invertebrate case"
+            ],
+            "b_instances": [
+              "Coverage of researcher/critic pushback that the Declaration is a 'broad overstatement' that could prematurely close scientific debate"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

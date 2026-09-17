@@ -1,0 +1,249 @@
+# Methods and Strategies for Building and Refining Reasoning Models
+
+In AI engineering, we have seen specialization trends emerge and mature. First came Retrieval-Augmented Generation (RAG), which connected LLMs to external knowledge. Then, domain-specific fine-tuning taught models the nuances of specialized fields like finance or law. Now, in 2025, a new trend is taking center stage: reasoning models. This specialization moves beyond just knowledge; it targets the development of robust, multi-step logical capabilities.
+
+<https://substackcdn.com/image/fetch/$s_!QwUc!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fd6ebc5c9-461f-4d3a-889b-b8ea4e14e5ba_1600x830.png>
+Image 1: Stages 1-3 are the common steps to developing LLMs, while Stage 4 specializes them for use cases like reasoning. (Source [magazine.sebastianraschka.com](https://magazine.sebastianraschka.com/p/state-of-llm-reasoning-and-inference-scaling))
+
+Reasoning models are designed for complex tasks that require decomposition and logical inference, such as mathematical proofs, puzzles, and competitive programming. This focus makes them distinct from general-purpose LLMs used for tasks like summarization or simple question-answering. However, these advanced capabilities come with trade-offs. Reasoning models often have higher inference latency and cost due to longer, more detailed outputs. They also risk "overthinking" simple problems, where a standard model might be more efficient. Furthermore, gains in reasoning can sometimes come at the expense of performance in other areas.
+
+This article will provide a comprehensive overview of reasoning models. We will cover the following topics:
+
+1.  Explain the meaning of "reasoning model"
+2.  Discuss the advantages and disadvantages of reasoning models
+3.  Outline the methodology behind DeepSeek R1
+4.  Describe the four main approaches to building and improving reasoning models
+5.  Share thoughts on the LLM landscape following the DeepSeek V3 and R1 releases
+6.  Provide tips for developing reasoning models on a tight budget
+
+Having set the context and roadmap, we will now establish a working definition of a "reasoning model" that you can use to evaluate future systems and research.
+
+## How do we define "reasoning model"?
+
+A reasoning model is an LLM designed to solve multi-step problems by generating intermediate steps or "thoughts" before arriving at a final answer. This process can be explicit, where the model outputs its reasoning trace for the user to see, or implicit, where the thinking happens internally. This contrasts with standard LLMs that often provide direct, single-pass answers, which is sufficient for simpler queries but falls short on complex problems. For example, asking "What is the capital of France?" requires simple fact retrieval, while a math problem like "If a train travels at 60 mph for 3 hours, how far does it go?" benefits from a step-by-step breakdown.
+
+<https://substackcdn.com/image/fetch/$s_!8oZo!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff2987079-25f4-45fb-a020-1ac936ed16cb_1424x820.png>
+Image 2: A regular LLM may provide a short answer, whereas a reasoning model often shows its work. (Source [magazine.sebastianraschka.com](https://magazine.sebastianraschka.com/p/state-of-llm-reasoning-and-inference-scaling))
+
+All modern LLMs possess some level of reasoning, which can be enhanced with techniques like Chain-of-Thought (CoT) prompting. However, specialized reasoning models are built to excel at difficult benchmarks, such as math Olympiad problems or formal proofs, where standard models fail.
+
+These intermediate steps manifest in two primary ways. The first is through visible thought traces, where the model's output includes a step-by-step explanation of its process. The second is through invisible internal iterations, where the model allocates more computational resources at inference time to "think" longer without exposing every step to the user. This latter approach is rumored to be part of how models like OpenAI's o1 operate. The distinction is not just about what the user sees; it's about how the model processes information. One generates a rationale as part of its output, while the other performs internal computations to refine its answer before generating a final response.
+
+<https://substackcdn.com/image/fetch/$s_!DyRP!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F35712d0e-0f40-4855-8d81-dcea9405ce_1538x810.png>
+Image 3: Reasoning can be an internal process for generating the answer or an explicit part of the final output. (Source [magazine.sebastianraschka.com](https://magazine.sebastianraschka.com/p/state-of-llm-reasoning-and-inference-scaling))
+
+With a clear definition established, we can now examine the practical question of when deploying these more expensive reasoning models makes sense for an AI engineer.
+
+## When should we use reasoning models?
+
+Before diving into the technical details, it is important to understand the trade-offs. Reasoning models deliver the highest return on investment for tasks that require decomposition, logical deduction, or self-correction, such as puzzles, advanced mathematics, and competitive coding. For tasks like summarization, simple factual question-answering, or creative writing, a general-purpose model is usually more efficient and cost-effective.
+
+The practical downsides of reasoning models are significant. They introduce higher latency and token costs because of their verbose, step-by-step outputs. This extended "thinking time" can frustrate users in conversational applications who expect quick responses. There is also the risk of overthinking, where a model might introduce unnecessary complexity into a straightforward problem, leading to incorrect answers that a simpler model would have gotten right.
+
+<https://substackcdn.com/image/fetch/$s_!lnf2!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F46dbe029-ab7d-4278-8dfe-7bc4af79a103_1352x524.png>
+Image 4: The key strengths and weaknesses of reasoning models. (Source [magazine.sebastianraschka.com](https://magazine.sebastianraschka.com/p/state-of-llm-reasoning-and-inference-scaling))
+
+Understanding when to deploy reasoning models leads naturally to studying a concrete, open pipeline that demonstrates how such capabilities are created at scale.
+
+## A brief look at the DeepSeek training pipeline
+
+The DeepSeek-R1 series provides a transparent case study of how reasoning models are built. The project includes three key models, each representing a different stage or approach in the development pipeline [[1]](https://arxiv.org/abs/2501.12948).
+
+<https://substackcdn.com/image/fetch/$s_!z-dr!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fdb19df56-c5bf-4a0c-aafb-4629a39b13f5_1542x1166.png>
+Image 5: The development process for DeepSeek's three reasoning models. (Source [magazine.sebastianraschka.com](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms))
+
+First is **DeepSeek-R1-Zero**, a model created using a "cold-start" approach. It applies pure reinforcement learning (RL) directly to the DeepSeek-V3 base model, skipping the conventional supervised fine-tuning (SFT) stage that typically precedes RL. This method relies on strong, automatically verifiable reward signals from domains like math and coding to guide the model's learning. The goal is to see if reasoning capabilities can emerge without being constrained by human-written examples.
+
+Next is **DeepSeek-R1**, the flagship reasoning model. It builds on the insights from R1-Zero but follows a more refined, multi-stage training process. This pipeline starts with a "cold-start" SFT on a small set of high-quality reasoning examples, followed by several iterations of RL and further SFT. This hybrid approach aims to combine the exploratory power of RL with the stability and alignment of SFT to create a more robust and user-friendly model.
+
+Finally, the **DeepSeek-R1-Distill** models are smaller, more efficient versions created by transferring the capabilities of the large R1 model. This is not classical knowledge distillation, which often involves matching the output probabilities (logits) of a teacher model. Instead, it is a form of data-level distillation where smaller open-source models like Llama 3 and Qwen 2.5 are fine-tuned on a large dataset of high-quality, chain-of-thought outputs generated by DeepSeek-R1. This makes the powerful reasoning patterns discovered by the large model accessible in a more computationally efficient package.
+
+The DeepSeek pipeline incorporates all four main techniques for building reasoning models, which we will now examine in depth. This allows for a direct comparison of their mechanisms and outcomes.
+
+## The 4 main ways to build and improve reasoning models
+
+Current techniques for enhancing LLM reasoning can be grouped into four main categories. While the exact workings of proprietary models like OpenAI's o1 and o3 remain undisclosed, they are rumored to combine several of these training and inference-time strategies.
+
+### 1) Inference-time scaling
+
+Inference-time scaling refers to techniques that improve a model's performance by allocating more computational resources during inference, without altering the model's weights. The core idea is analogous to giving a human more time to think about a difficult problem. This is also known as test-time compute scaling [[2]](https://arxiv.org/abs/2408.03314).
+
+One of the simplest methods is Chain-of-Thought (CoT) prompting, where adding a phrase like "Let's think step by step" encourages the model to generate intermediate reasoning steps, often leading to more accurate answers on complex tasks [[3]](https://arxiv.org/abs/2205.11916).
+
+<https://substackcdn.com/image/fetch/$s_!VFAa!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F523eee5e-afb6-4019-a11b-e0a291d2c286_1600x419.png>
+Image 6: An example of CoT prompting from the paper "Large Language Models are Zero-Shot Reasoners". (Source [arxiv.org](https://arxiv.org/abs/2205.11916))
+
+More advanced techniques involve search and voting strategies. In **Best-of-N sampling**, the model generates multiple independent answers, and a verifier or reward model selects the best one. **Majority voting** is similar but selects the most common answer among the generated responses. **Beam search** and **Monte Carlo Tree Search (MCTS)** are more structured search algorithms that explore a tree of possible reasoning paths, pruning unpromising branches to focus computation on the most likely solutions. These search-based methods often rely on a Process Reward Model (PRM), which evaluates the correctness of each intermediate step in a reasoning chain, providing a more granular signal than a simple outcome-based reward [[2]](https://arxiv.org/abs/2408.03314).
+
+<https://substackcdn.com/image/fetch/$s_!YGJO!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5cb10e5a-738b-4c9e-ba65-5850d4793706_1600x919.png>
+Image 7: Different search-based methods rely on a process-reward-based model to select the best answer. (Source [arxiv.org](https://arxiv.org/abs/2408.03314))
+
+Interestingly, the DeepSeek R1 technical report categorized common inference-time scaling methods like PRM-based search and MCTS under "unsuccessful attempts" during their training exploration [[1]](https://arxiv.org/abs/2501.12948). This suggests that their final model's reasoning ability relies more on the knowledge baked in during training rather than explicit search at inference. However, it is possible that DeepSeek still applies these techniques at the application layer, as they are independent of the model itself.
+
+This trade-off between training-time and inference-time compute also helps explain why models like OpenAI's o1 are more expensive than GPT-4o. The o1 models spend more time "thinking," which requires more computation and leads to higher costs and latency [[37]](https://www.uctoday.com/unified-communications/chatgpt-4o-vs-o1-which-openai-model-is-best), [[38]](https://neoteric.eu/blog/gpt-o1-vs-gpt-4o-comparison). For example, GPT-o1's input costs are six times higher than GPT-4o's, and its output costs are also six times more expensive per million tokens [[38]](https://neoteric.eu/blog/gpt-o1-vs-gpt-4o-comparison).
+
+### 2) Pure reinforcement learning (RL)
+
+Pure RL aims to develop reasoning capabilities directly from a base model without an initial SFT stage, a method exemplified by DeepSeek-R1-Zero. This "cold-start" approach differs from traditional RLHF, which typically fine-tunes a model that has already undergone SFT. Instead of relying on a reward model trained on human preferences, pure RL uses automatically verifiable reward signals from domains like math and coding.
+
+<https://substackcdn.com/image/fetch/$s_!_9Z-!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa5bb6ecc-7e46-45fe-abff-1eb02e6b0e3a_1556x1162.png>
+Image 8: The development process of the DeepSeek-R1-Zero model. (Source [magazine.sebastianraschka.com](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms))
+
+In the case of DeepSeek-R1-Zero, the reward system has two main components [[1]](https://arxiv.org/abs/2501.12948), [[23]](https://www.nature.com/articles/s41586-025-09422-z):
+1.  **Accuracy rewards:** The model receives a positive reward if its final answer is correct. This can be checked automatically for math problems with a single solution or for code that can be executed against test cases.
+2.  **Format rewards:** The model is rewarded for structuring its output correctly, such as by placing its reasoning process within `<think>` and `</think>` tags.
+
+During this process, researchers observed an "Aha moment," where the model spontaneously began to generate long, detailed reasoning traces and use words like "Wait" to signal self-correction and reflection [[1]](https://arxiv.org/abs/2501.12948), [[7]](https://www.lesswrong.com/posts/a9GR7m4nyBsqjjL8d/deepseek-r1-for-beginners). This emergent behavior was not explicitly taught but arose from the RL process, demonstrating that models can learn to reason and self-correct without human-annotated examples.
+
+<https://substackcdn.com/image/fetch/$s_!Prn2!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F30f8e37b-ba60-49d2-a95e-9c06b2033ee4_1600x1019.png>
+Image 9: An example of the "Aha moment" from the DeepSeek R1 technical report, where the model learns to rethink its approach. (Source [arxiv.org](https://arxiv.org/abs/2501.12948))
+
+This "emergence," however, may be more of an amplification than a creation. Recent research suggests that self-reflection is a latent feature that develops during pre-training and is simply unlocked or amplified by the RL process [[49]](https://arxiv.org/html/2506.12217v1), [[50]](https://magazine.sebastianraschka.com/p/the-state-of-llm-reasoning-model-training). This self-reflection can be understood as a form of metaprompting, where the model analyzes its own reasoning to identify and correct mistakes, often guided by an implicit validator that checks for success or failure [[48]](https://arxiv.org/html/2505.24726v1). The RL process, with its clear reward signals, provides the perfect environment to encourage this latent ability.
+
+The success of R1-Zero was a significant milestone, as it was the first demonstration that a model could develop sophisticated reasoning capabilities through pure RL, driven only by outcome-based rewards.
+
+### 3) Supervised finetuning and reinforcement learning (SFT + RL)
+
+The hybrid SFT + RL approach, used to create the flagship DeepSeek-R1 model, combines the stability of supervised learning with the exploratory power of reinforcement learning. This multi-stage process aims to build on the raw reasoning capabilities developed through pure RL while making the model more aligned with human preferences and easier to use [[1]](https://arxiv.org/abs/2501.12948).
+
+<https://substackcdn.com/image/fetch/$s_!19pK!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fdf7f99f0-d154-49e5-b60a-4d148e0a61be_1548x1154.png>
+Image 10: The multi-stage development process of the DeepSeek-R1 model. (Source [magazine.sebastianraschka.com](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms))
+
+The pipeline for DeepSeek-R1 consists of four main stages:
+1.  **"Cold Start" Finetuning (SFT):** The process begins by fine-tuning the base model on a small dataset of several thousand high-quality, human-validated reasoning examples with detailed CoT. This initial step gives the model a solid foundation in generating coherent, human-readable reasoning traces, preventing the instability that can occur in the early stages of pure RL [[4]](https://thelmbook.com/articles#!./DeepSeek-R1.md).
+2.  **Reasoning-Focused RL:** The model then undergoes intensive RL training using automatically verifiable problems from math, coding, and logic. In addition to accuracy and format rewards, a **language consistency reward** is introduced to penalize the model for mixing languages (e.g., Chinese and English) in a single response. While this slightly degraded performance on some tasks, it improved readability and user experience [[1]](https://arxiv.org/abs/2501.12948), [[27]](https://www.nature.com/articles/s41586-025-09422-z).
+3.  **General-Purpose SFT:** In this stage, the training data is expanded to include non-reasoning examples for tasks like writing and role-playing. This data is generated using a combination of techniques, including rejection sampling on the model's own outputs and reusing SFT data from the DeepSeek-V3 pipeline. This step broadens the model's capabilities beyond pure reasoning.
+4.  **Preference Optimization RL:** The final stage uses RL again, this time with a focus on general-purpose preference optimization. This phase combines verifiable rewards for reasoning tasks with feedback from a reward model trained on human preferences for helpfulness and harmlessness, polishing the model for broader use.
+
+This staged approach results in a model that excels at reasoning while also being a capable and aligned general-purpose assistant. On benchmarks, DeepSeek-R1 achieves performance comparable to or even exceeding that of leading closed-source models like OpenAI's o1, particularly in math and coding [[1]](https://arxiv.org/abs/2501.12948).
+
+<https://substackcdn.com/image/fetch/$s_!22Cm!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff7f73f16-db4e-4047-89b0-823f16cefb33_1556x490.png>
+Image 11: Benchmark comparison of OpenAI o1 and DeepSeek R1 models. (Source [arxiv.org](https://arxiv.org/abs/2501.12948))
+
+### 4) Pure supervised finetuning (SFT) and distillation
+
+Inference-time scaling offers a way to boost performance without retraining, pure RL can unlock emergent behaviors, and the SFT+RL hybrid provides a stable path to a production-ready model. The fourth approach, pure SFT and distillation, offers the most efficient way to transfer these hard-won reasoning capabilities to smaller, more accessible models.
+
+DeepSeek used this method to create its R1-Distill series. Instead of a complex RL pipeline, they simply fine-tuned smaller, existing open-source models (like Qwen 2.5 and Llama 3) on a large dataset of 800,000 high-quality reasoning examples generated by the flagship DeepSeek-R1 model [[1]](https://arxiv.org/abs/2501.12948), [[14]](https://www.bentoml.com/blog/the-complete-guide-to-deepseek-models-from-v3-to-r1-and-beyond). This is a form of data-level distillation, where the "knowledge" is transferred through the teacher's outputs rather than its internal probabilities (logits), which is a common approach for language models [[13]](https://redwerk.com/blog/what-is-model-distillation).
+
+<https://substackcdn.com/image/fetch/$s_!xUjE!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7db7c46b-fe67-49f4-9f65-b0e7b7e5ac08_1444x1174.png>
+Image 12: The development process of the DeepSeek-R1-Distill models. (Source [magazine.sebastianraschka.com](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms))
+
+This approach was motivated by two key factors. First, it makes powerful reasoning capabilities accessible. The 671B-parameter R1 model is too large for most to run, so distillation allows its abilities to be deployed on more consumer-grade hardware [[11]](https://medium.com/data-science-in-your-pocket/what-are-deepseek-r1-distilled-models-329629968d5d). Second, it is highly efficient. The distillation process involves only SFT, which is much simpler and less computationally intensive than a full RL pipeline [[14]](https://www.bentoml.com/blog/the-complete-guide-to-deepseek-models-from-v3-to-r1-and-beyond).
+
+The results are impressive. Even the smallest 1.5B distilled model surpassed strong, non-reasoning baselines like GPT-4o and Claude 3.5 Sonnet on math benchmarks. As the size of the student model increased, performance continued to improve, demonstrating the effectiveness of this distillation strategy [[1]](https://arxiv.org/abs/2501.12948).
+
+<https://substackcdn.com/image/fetch/$s_!XwZe!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Febc749fb-6a79-483f-bcda-b219f284bc09_1168x604.png>
+Image 13: Benchmark comparison of distilled versus non-distilled models. (Source [arxiv.org](https://arxiv.org/abs/2501.12948))
+
+The DeepSeek report also provides a direct comparison between distillation and pure RL on a smaller 32B model. The distilled model significantly outperformed a model of the same size that was trained with the pure RL "cold-start" method. This suggests that for smaller models, it is more effective to distill knowledge from a powerful teacher than to try to develop reasoning from scratch via RL. The emergent reasoning behaviors seen in massive models like R1-Zero may not appear at smaller scales without the guidance of a more capable teacher [[1]](https://arxiv.org/abs/2501.12948).
+
+<https://substackcdn.com/image/fetch/$s_!5_5L!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F05514c9f-eb04-496b-bd98-bb4710c65b14_1448x408.png>
+Image 14: Benchmark comparison of distillation and RL on a smaller 32B model. (Source [arxiv.org](https://arxiv.org/abs/2501.12948))
+
+This phenomenon is explained by what researchers call the "Small Model Learnability Gap." Models under a certain size (e.g., 3B parameters) have a constrained capacity that prevents them from internalizing long, multi-step logic, even when it is provided by a larger teacher model [[51]](https://arxiv.org/html/2502.12143v3). Complex chain-of-thought reasoning appears to be an emergent property of models with over 100 billion parameters; it cannot be fully transferred to smaller models that lack the fundamental capacity for it [[52]](https://ojs.aaai.org/index.php/AAAI/article/view/29821/31426). Instead, smaller models learn better from shorter, simpler reasoning chains that align with their intrinsic capabilities.
+
+This insight is valuable, but the comparison could have been even more informative. It would be useful to see how a distilled model compares to a model of the same size that has undergone the full SFT+RL pipeline. Additionally, comparing the performance of a distilled model to its own base model (e.g., DeepSeek-R1-Distill-Qwen-7B vs. the original Qwen2.5-Math-7B) would clarify how much of the performance gain comes from the distillation process versus the strength of the base model itself.
+
+After dissecting the four techniques and seeing them embodied in DeepSeek-R1, we can step back to evaluate the release's broader significance and limitations.
+
+## Thoughts about DeepSeek R1
+
+The release of the DeepSeek-R1 models is a significant event for the AI community. The open MIT license, combined with an unusually detailed technical report, provides an invaluable resource for researchers and engineers. It offers one of the first concrete demonstrations that pure reinforcement learning from a "cold start" can lead to the emergence of complex reasoning and self-correction behaviors without the need for supervised examples to warm up the model.
+
+When compared to OpenAI's o1, DeepSeek-R1 shows comparable performance on key math and coding benchmarks while appearing to be more efficient at inference. This suggests different philosophical bets: DeepSeek invested heavily in a complex, multi-stage training process to bake reasoning capabilities into the model's weights, while o1 seems to rely more on scaling up computation at inference time.
+
+However, a direct, fair comparison is difficult. OpenAI has not disclosed key details about o1, such as its model size, whether it uses a Mixture-of-Experts (MoE) architecture, or the exact mix of training techniques employed. Without this information, it is impossible to definitively attribute performance differences to specific architectural or training choices.
+
+There is also ambiguity around the true cost of training. While some reports have circulated figures, the DeepSeek team has not disclosed the exact GPU hours or total cost specifically for the R1 reasoning specialization. The widely cited figure of $294,000 likely covers the entire R1 pipeline, but this excludes prior expenses for developing the V3 base model [[42]](https://www.reuters.com/world/china/chinas-deepseek-says-its-hit-ai-model-cost-just-294000-train-2025-09-18). The incremental cost to add reasoning capabilities remains an open question.
+
+Despite these limitations, DeepSeek-R1 stands as a milestone for open-weight reasoning models. It proves that high-level reasoning is not the exclusive domain of closed-source labs and provides a blueprint that will accelerate research and development across the field.
+
+## Developing reasoning models on a limited budget
+
+The development costs associated with large-scale reasoning models can be discouraging for teams with limited budgets. However, recent open-source projects have demonstrated that it is possible to achieve impressive results without massive computational resources.
+
+One practical approach is distillation, as demonstrated by the **Sky-T1** project from UC Berkeley's Sky Computing Lab [[17]](https://techcrunch.com/2025/01/11/researchers-open-source-sky-t1-a-reasoning-ai-model-that-can-be-trained-for-less-than-450). By generating and curating a dataset of reasoning examples from a more powerful model and using it to fine-tune a smaller one, they were able to train a 32-billion-parameter model for less than $450. This model is competitive with an early preview version of OpenAI's o1 on several key benchmarks, illustrating that distillation is a highly effective, budget-conscious strategy [[17]](https://techcrunch.com/2025/01/11/researchers-open-source-sky-t1-a-reasoning-ai-model-that-can-be-trained-for-less-than-450), [[19]](https://campustechnology.com/articles/2025/01/15/uc-berkeley-announces-sky-t1-32b-open-source-ai-model.aspx?s=ct_in_070225).
+
+<https://substackcdn.com/image/fetch/$s_!Y8HI!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F8865a313-2326-4f07-a6dc-72cc94cb2ebe_1364x570.png>
+Image 15: Benchmark results for the budget-friendly Sky-T1 model. (Source [novasky-ai.github.io](https://novasky-ai.github.io/posts/sky-t1/))
+
+Even pure RL is becoming accessible at a smaller scale. The **TinyZero** project successfully replicated the "cold-start" RL approach on a 3-billion-parameter model for under $30 [[20]](https://github.com/Jiayi-Pan/TinyZero), [[21]](https://www.dailycal.org/news/campus/research-and-ideas/campus-researchers-replicate-disruptive-chinese-ai-for-30/article_a1cc5cd0-dee4-11ef-b8ca-171526dfb895.html). While trained on simpler tasks like the Countdown numbers game, the model still exhibited emergent self-verification and reasoning traces, reinforcing the idea that the core principles of RL-driven reasoning can be explored without massive compute.
+
+<https://substackcdn.com/image/fetch/$s_!Ykdn!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6111f4b4-cfb9-494c-8390-ec251702914b_1600x955.png>
+Image 16: An example from the TinyZero project showing the model's ability to self-verify. (Source [github.com](https://github.com/Jiayi-Pan/TinyZero))
+
+Another promising, low-cost technique is **journey learning**. This concept, explored in the O1 Replication Journey report, contrasts with "shortcut learning," where models are trained only on perfect, "golden path" solutions [[47]](https://arxiv.org/abs/2410.18982). Journey learning involves training the model on the entire problem-solving process, including incorrect paths, dead ends, self-corrections, and reflections.
+
+This approach has a strong parallel in cognitive science known as "Productive Failure." This educational theory finds that students often learn concepts more deeply when they are first allowed to struggle and fail at solving a problem before being given direct instruction [[53]](https://aclanthology.org/2025.findings-acl.1348.pdf). Just as with humans, exposing a model to initial failures and the process of correction appears to build a more robust and flexible understanding than simply showing it the correct answer from the start.
+
+<https://substackcdn.com/image/fetch/$s_!TxCO!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7a0bfcd0-6d93-4c91-a0d6-28178839b7cf_1492x724.png>
+Image 17: Journey learning includes incorrect solution paths in the training data, unlike traditional shortcut learning. (Source [arxiv.org](https://arxiv.org/abs/2410.18982))
+
+By exposing the model to mistakes and how to recover from them during SFT, journey learning helps build more robust self-correction mechanisms. Models trained only on perfect solutions can be brittle; when they encounter a novel error, they lack a learned strategy for backtracking. Journey-style data teaches them to recognize and navigate these failures. Remarkably, one study found that training on just 327 journey learning examples improved performance on the MATH dataset by over 8% compared to training on the same number of "shortcut" examples [[47]](https://arxiv.org/abs/2410.18982).
+
+Looking ahead, the most effective budget-conscious approaches will likely be hybrids. By combining insights from these projects—using distillation to transfer knowledge (Sky-T1), applying pure RL to elicit emergent behaviors at a manageable scale (TinyZero), and incorporating journey learning to build robust self-correction—teams can create powerful reasoning models that balance cost, performance, and reliability.
+
+## Conclusion
+
+We have explored the four primary approaches to building and improving reasoning models. **Inference-time scaling** offers a way to boost performance on existing models at the cost of higher latency and serving expenses. **Pure RL** from a cold start, as demonstrated by DeepSeek-R1-Zero, is a powerful research tool for discovering emergent reasoning behaviors. The **SFT+RL hybrid** used for DeepSeek-R1 provides a production-ready blueprint for creating stable, high-performing models. Finally, **distillation** offers an efficient method for transferring these capabilities to smaller, more accessible models, though their performance is ultimately derivative of the teacher.
+
+The future of reasoning models is likely a hybrid one. We suspect the most capable systems, like OpenAI's o1 and future o3-class models, will combine robust SFT+RL training pipelines with sophisticated inference-time scaling techniques. This allows them to have strong foundational reasoning baked into their weights while also being able to "think longer" on particularly difficult problems.
+
+For AI engineers, the key is to match the technique to the constraints of the project. There is no one-size-fits-all solution. Instead of defaulting to the largest proprietary model, you should consider the specific demands of your task. Do you need state-of-the-art performance on novel, complex problems, or is a distilled model sufficient? Can your application tolerate higher latency in exchange for better accuracy? By understanding the trade-offs between training cost, inference cost, performance, and reliability, you can make informed decisions and build AI systems that are not only powerful but also practical.
+
+## References
+
+- [1] Guo, D., Yang, D., Zhang, H., Song, J., Zhang, R., Xu, R., Zhu, Q., Ma, S., Wang, P., Bi, X., et al. (2025). Deepseek-r1: Incentivizing reasoning capability in llms via reinforcement learning. arXiv preprint arXiv:2501.12948. [https://arxiv.org/abs/2501.12948](https://arxiv.org/abs/2501.12948)
+- [2] Snell, C., Lee, J., Xu, K., & Kumar, A. (2024). Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters. arXiv preprint arXiv:2408.03314. [https://arxiv.org/abs/2408.03314](https://arxiv.org/abs/2408.03314)
+- [3] Kojima, T., Gu, S. S., Reid, M., Matsuo, Y., & Iwasawa, Y. (2022). Large Language Models are Zero-Shot Reasoners. arXiv preprint arXiv:2205.11916. [https://arxiv.org/abs/2205.11916](https://arxiv.org/abs/2205.11916)
+- [4] DeepSeek R1 and R1-Zero Explained. (n.d.). The LLM Book. [https://thelmbook.com/articles#!./DeepSeek-R1.md](https://thelmbook.com/articles#!./DeepSeek-R1.md)
+- [5] Hugging Face. (n.d.). Mini-R1 and the Countdown Game. [https://huggingface.co/blog/open-r1/mini-r1-contdown-game](https://huggingface.co/blog/open-r1/mini-r1-contdown-game)
+- [6] Schmid, P. (n.d.). How to train a Mini-DeepSeek-R1 with RL. [https://www.philschmid.de/mini-deepseek-r1](https://www.philschmid.de/mini-deepseek-r1)
+- [7] DeepSeek R1 for Beginners. (n.d.). LessWrong. [https://www.lesswrong.com/posts/a9GR7m4nyBsqjjL8d/deepseek-r1-for-beginners](https://www.lesswrong.com/posts/a9GR7m4nyBsqjjL8d/deepseek-r1-for-beginners)
+- [8] Liu, Z., Chen, C., Li, W., Qi, P., Pang, T., Du, C., Lee, W. S., & Lin, M. (2025). Understanding R1-Zero-Like Training: A Critical Perspective. arXiv preprint arXiv:2503.20783v1. [https://arxiv.org/html/2503.20783v1](https://arxiv.org/html/2503.20783v1)
+- [9] There May Not be Aha Moment in R1-Zero-like Training — A Pilot Study. (n.d.). GitHub. [https://github.com/sail-sg/oat-zero](https://github.com/sail-sg/oat-zero)
+- [10] Kandpal, N. (2024, May 22). What Are DeepSeek R1 Distilled Models? [Video]. YouTube. [https://www.youtube.com/watch?v=jrf76uNs77k](https://www.youtube.com/watch?v=jrf76uNs77k)
+- [11] Sharma, A. (2024, October 11). What are DeepSeek-R1-Distilled models? Medium. [https://medium.com/data-science-in-your-pocket/what-are-deepseek-r1-distilled-models-329629968d5d](https://medium.com/data-science-in-your-pocket/what-are-deepseek-r1-distilled-models-329629968d5d)
+- [12] Balarabe, T. (2024, October 11). DeepSeek R1 Explained: Chain-of-Thought, Reinforcement Learning, and Model Distillation. Medium. [https://medium.com/@tahirbalarabe2/deepseek-r1-explained-chain-of-thought-reinforcement-learning-and-model-distillation-0eb165d928c9](https://medium.com/@tahirbalarabe2/deepseek-r1-explained-chain-of-thought-reinforcement-learning-and-model-distillation-0eb165d928c9)
+- [13] What Is Model Distillation? How Teams Are Cloning GPT-Class AI Into Models 10x Cheaper. (n.d.). Redwerk. [https://redwerk.com/blog/what-is-model-distillation](https://redwerk.com/blog/what-is-model-distillation)
+- [14] The Complete Guide to DeepSeek Models: From V3 to R1 and Beyond. (n.d.). BentoML. [https://www.bentoml.com/blog/the-complete-guide-to-deepseek-models-from-v3-to-r1-and-beyond](https://www.bentoml.com/blog/the-complete-guide-to-deepseek-models-from-v3-to-r1-and-beyond)
+- [15] Masood, M. A. (2025, January 12). Researchers open source Sky-T1, a reasoning AI model that can be trained for less than $450. LinkedIn. [https://www.linkedin.com/posts/muhammad-ali-masood-phd_researchers-open-source-sky-t1-a-reasoning-activity-7285536292493299712-M8b5](https://www.linkedin.com/posts/muhammad-ali-masood-phd_researchers-open-source-sky-t1-a-reasoning-activity-7285536292493299712-M8b5)
+- [16] Vlaevski, I. (2025, January 13). AI Models Go Cheaper: NovaSky T1 Sets a New Standard. [https://ivan.vlaevski.com/ai-models-go-cheaper-novasky-t1-sets-a-new-standard](https://ivan.vlaevski.com/ai-models-go-cheaper-novasky-t1-sets-a-new-standard)
+- [17] Wiggers, K. (2025, January 11). Researchers open source Sky-T1, a ‘reasoning’ AI model that can be trained for less than $450. TechCrunch. [https://techcrunch.com/2025/01/11/researchers-open-source-sky-t1-a-reasoning-ai-model-that-can-be-trained-for-less-than-450](https://techcrunch.com/2025/01/11/researchers-open-source-sky-t1-a-reasoning-ai-model-that-can-be-trained-for-less-than-450)
+- [18] Sky-T1: Open-Source AI Model for Advanced Reasoning You Can Train for Less Than $450. (2025, January 14). Technology.org. [https://www.technology.org/2025/01/14/sky-t1-open-source-ai-model-for-advanced-reasoning-you-can-train-for-less-than-450](https://www.technology.org/2025/01/14/sky-t1-open-source-ai-model-for-advanced-reasoning-you-can-train-for-less-than-450)
+- [19] UC Berkeley Announces Sky-T1-32B Open Source AI Model. (2025, January 15). Campus Technology. [https://campustechnology.com/articles/2025/01/15/uc-berkeley-announces-sky-t1-32b-open-source-ai-model.aspx?s=ct_in_070225](https://campustechnology.com/articles/2025/01/15/uc-berkeley-announces-sky-t1-32b-open-source-ai-model.aspx?s=ct_in_070225)
+- [20] Pan, J. (n.d.). TinyZero. GitHub. [https://github.com/Jiayi-Pan/TinyZero](https://github.com/Jiayi-Pan/TinyZero)
+- [21] Campus researchers replicate ‘disruptive’ Chinese AI for $30. (2024, August 29). The Daily Californian. [https://www.dailycal.org/news/campus/research-and-ideas/campus-researchers-replicate-disruptive-chinese-ai-for-30/article_a1cc5cd0-dee4-11ef-b8ca-171526dfb895.html](https://www.dailycal.org/news/campus/research-and-ideas/campus-researchers-replicate-disruptive-chinese-ai-for-30/article_a1cc5cd0-dee4-11ef-b8ca-171526dfb895.html)
+- [22] The LM Book. (n.d.). DeepSeek R1 and R1-Zero Explained. [https://thelmbook.com/articles#!./DeepSeek-R1.md](https://thelmbook.com/articles#!./DeepSeek-R1.md)
+- [23] Guo, D., et al. (2025). DeepSeek-R1: Incentivizing reasoning capability in LLMs via reinforcement learning. Nature, s41586-025-09422-z. [https://www.nature.com/articles/s41586-025-09422-z](https://www.nature.com/articles/s41586-025-09422-z)
+- [24] Snell, N. L. (2025, January 21). DeepSeek R1's recipe to replicate o1 and the future of reasoning LMs. Interconnects. [https://www.interconnects.ai/p/deepseek-r1-recipe-for-o1](https://www.interconnects.ai/p/deepseek-r1-recipe-for-o1)
+- [25] Gor, A. (2025, January 25). Paper Review: DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning. Medium. [https://artgor.medium.com/paper-review-deepseek-r1-incentivizing-reasoning-capability-in-llms-via-reinforcement-learning-edf4343dcf3a](https://artgor.medium.com/paper-review-deepseek-r1-incentivizing-reasoning-capability-in-llms-via-reinforcement-learning-edf4343dcf3a)
+- [26] The Layman’s Introduction to DeepSeek-R1. (2025, January 24). Transitions. [https://transitions.substack.com/p/the-laymans-introduction-to-deepseek](https://transitions.substack.com/p/the-laymans-introduction-to-deepseek)
+- [27] Guo, D., Yang, D., Zhang, H., Song, J., Zhang, R., Xu, R., Zhu, Q., Ma, S., Wang, P., Bi, X., et al. (2025). DeepSeek-R1: Incentivizing reasoning capability in LLMs via reinforcement learning. Nature. [https://www.nature.com/articles/s41586-025-09422-z](https://www.nature.com/articles/s41586-025-09422-z)
+- [28] Liu, R., Gao, J., Zhao, J., Zhang, K., Li, X., Qi, B., Ouyang, W., & Zhou, B. (2025a). Can 1B LLM Surpass 405B LLM? Rethinking Compute-Optimal Test-Time Scaling. AAAI. [https://ojs.aaai.org/index.php/AAAI/article/view/40797/44758](https://ojs.aaai.org/index.php/AAAI/article/view/40797/44758)
+- [29] Raschka, S. (2025, March 8). The State of LLM Reasoning Model Inference. Ahead of AI. [https://magazine.sebastianraschka.com/p/state-of-llm-reasoning-and-inference-scaling](https://magazine.sebastianraschka.com/p/state-of-llm-reasoning-and-inference-scaling)
+- [30] Sachin, T. (2025, February 19). Breaking the LLM Bottleneck: GenPRM’s Approach to Scale Test-Time Compute via Generative Reasoning. Medium. [https://medium.com/@techsachin/breaking-the-llm-bottleneck-genprms-approach-to-scale-test-time-compute-via-generative-reasoning-0e90e3ffa71e](https://medium.com/@techsachin/breaking-the-llm-bottleneck-genprms-approach-to-scale-test-time-compute-via-generative-reasoning-0e90e3ffa71e)
+- [31] Hugging Face. (n.d.). Papers with "Process Reward Models (PRMs)". [https://huggingface.co/papers?q=Process+Reward+Models+%28PRMs%29](https://huggingface.co/papers?q=Process+Reward+Models+%28PRMs%29)
+- [32] Liu, R. (n.d.). GenPRM. GitHub. [https://github.com/RyanLiu112/GenPRM](https://github.com/RyanLiu112/GenPRM)
+- [33] ChatGPT-4o vs o1: Which OpenAI Model is Best? (2024, December 20). UC Today. [https://www.uctoday.com/unified-communications/chatgpt-4o-vs-o1-which-openai-model-is-best](https://www.uctoday.com/unified-communications/chatgpt-4o-vs-o1-which-openai-model-is-best)
+- [34] GPT-o1 vs GPT-4o: Comparison. (2024, December 20). Neoteric. [https://neoteric.eu/blog/gpt-o1-vs-gpt-4o-comparison](https://neoteric.eu/blog/gpt-o1-vs-gpt-4o-comparison)
+- [35] Will GPT4o become cheaper after o1 models are released? (2024, December 20). OpenAI Community. [https://community.openai.com/t/will-gpt4o-become-cheaper-after-o1-models-are-released/941370](https://community.openai.com/t/will-gpt4o-become-cheaper-after-o1-models-are-released/941370)
+- [36] Petracci, F. (2024, December 20). OpenAI GPT-o1 API Pricing: A Comprehensive Guide. Medium. [https://francpetracci.medium.com/openai-gpt-o1-api-pricing-a-comprehensive-guide-b93fdaed217c](https://francpetracci.medium.com/openai-gpt-o1-api-pricing-a-comprehensive-guide-b93fdaed217c)
+- [37] Analysis: OpenAI o1 vs GPT-4o. (2024, December 19). Vellum AI Blog. [https://www.vellum.ai/blog/analysis-openai-o1-vs-gpt-4o](https://www.vellum.ai/blog/analysis-openai-o1-vs-gpt-4o)
+- [38] China's DeepSeek says its hit AI model cost just $294,000 to train. (2025, September 18). Reuters. [https://www.reuters.com/world/china/chinas-deepseek-says-its-hit-ai-model-cost-just-294000-train-2025-09-18](https://www.reuters.com/world/china/chinas-deepseek-says-its-hit-ai-model-cost-just-294000-train-2025-09-18)
+- [39] What went into training DeepSeek R1. (2025, September 18). Epoch AI. [https://epoch.ai/gradient-updates/what-went-into-training-deepseek-r1](https://epoch.ai/gradient-updates/what-went-into-training-deepseek-r1)
+- [40] Research exposes DeepSeek AI training cost deception. (2025, September 18). Yahoo News. [https://www.yahoo.com/news/research-exposes-deepseek-ai-training-165025904.html](https://www.yahoo.com/news/research-exposes-deepseek-ai-training-165025904.html)
+- [41] AI Markets were deceived to believe in DeepSeek’s low training costs. (2025, September 18). HardForum. [https://hardforum.com/threads/ai-markets-were-deceived-to-believe-in-deepseeks-low-training-costs-they-are-actually-400-times-higher-than-the-reported-figure.2039555](https://hardforum.com/threads/ai-markets-were-deceived-to-believe-in-deepseeks-low-training-costs-they-are-actually-400-times-higher-than-the-reported-figure.2039555)
+- [42] DeepSeek R1: Cost, Pricing, and Speed. (2025, September 18). 16x Engineer. [https://prompt.16x.engineer/blog/deepseek-r1-cost-pricing-speed](https://prompt.16x.engineer/blog/deepseek-r1-cost-pricing-speed)
+- [43] Pan, J., Zhang, J., Wang, X., Yuan, L., Peng, H., & Suhr, A. (2025). TinyZero. GitHub. [https://github.com/Jiayi-Pan/TinyZero](https://github.com/Jiayi-Pan/TinyZero)
+- [44] Sheng, G., Zhang, C., Ye, Z., Wu, X., Zhang, W., Zhang, R., Peng, Y., Lin, H., & Wu, C. (2024). HybridFlow: A Flexible and Efficient RLHF Framework. arXiv preprint arXiv:2409.19256. [https://arxiv.org/abs/2409.19256v2](https://arxiv.org/abs/2409.19256v2)
+- [45] Qin, Y., Li, X., Zou, H., Liu, Y., Xia, S., Huang, Z., Ye, Y., Yuan, W., Liu, H., Li, Y., & Liu, P. (2024). O1 Replication Journey: A Strategic Progress Report – Part 1. arXiv preprint arXiv:2410.18982. [https://arxiv.org/abs/2410.18982](https://arxiv.org/abs/2410.18982)
+- [46] What is cold-start pure RL in DeepSeek R1-Zero? (n.d.). Vellum AI. [https://www.vellum.ai/blog/the-training-of-deepseek-r1-and-ways-to-use-it](https://www.vellum.ai/blog/the-training-of-deepseek-r1-and-ways-to-use-it)
+- [47] Qin, Y., et al. (2024). O1 Replication Journey: A Strategic Progress Report – Part 1. arXiv:2410.18982. [https://arxiv.org/abs/2410.18982](https://arxiv.org/abs/2410.18982)
+- [48] Liu, Z., et al. (2025). What is the "Self-reflection" in Large Language Models?. arXiv preprint arXiv:2505.24726. [https://arxiv.org/html/2505.24726v1](https://arxiv.org/html/2505.24726v1)
+- [49] Zhang, T., et al. (2025). Where Does Self-Correction Come From? Investigating the Emergence of Reflective Reasoning in Large Language Models. arXiv preprint arXiv:2506.12217. [https://arxiv.org/html/2506.12217v1](https://arxiv.org/html/2506.12217v1)
+- [50] Raschka, S. (2025). The State of LLM Reasoning Model Training. Ahead of AI. [https://magazine.sebastianraschka.com/p/the-state-of-llm-reasoning-model-training](https://magazine.sebastianraschka.com/p/the-state-of-llm-reasoning-model-training)
+- [51] Zhang, S., et al. (2025). Why Small Language Models Cannot Be Taught to Reason. arXiv preprint arXiv:2502.12143. [https://arxiv.org/html/2502.12143v3](https://arxiv.org/html/2502.12143v3)
+- [52] Davis, E., & Marcus, G. (2024). A very preliminary analysis of D. Guos et al., DeepSeek-R1. AAAI. [https://ojs.aaai.org/index.php/AAAI/article/view/29821/31426](https://ojs.aaai.org/index.php/AAAI/article/view/29821/31426)
+- [53] Chaffar, S., et al. (2025). StratL: A Framework for Steering Large Language Models to Act as Tutors that Comply with a Target Pedagogy. Findings of the Association for Computational Linguistics: ACL 2025. [https://aclanthology.org/2025.findings-acl.1348.pdf](https://aclanthology.org/2025.findings-acl.1348.pdf)

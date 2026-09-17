@@ -1,0 +1,438 @@
+{
+  "article": "29_evaluation_metrics",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Cites GrowthBook source detailing why vibe checks fail at scale: no accounting for edge cases, regressions, or large-scale user preference validation"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Introduces TDD-to-EDD (Evaluation-Driven Development) analogy from traditional software engineering, citing a Medium article as a new conceptual framework"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (recap of prior lessons, critique of 'vibe checks', cost of investing in evals, lesson roadmap). Document A adds depth by citing a specific source (GrowthBook) that enumerates concrete reasons vibe checks are statistically flawed (edge cases, regressions, large-scale user preference), which B lacks. Document B instead introduces a genuinely new adjacent topic -- the TDD-to-EDD parallel from software engineering, backed by a distinct citation -- which broadens the section's scope beyond what A covers, making it a breadth advantage for B. Neither document has multiple additional instances beyond these, so both differentials are modest (a_more for depth, b_more for breadth) rather than 'much more'."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Specific elaboration that vibe checks fail to account for edge cases, regressions, or large-scale user preferences (cited to growthbook.io)"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Introduction of Evaluation-Driven Development (EDD) as a named framework, drawing an explicit parallel to TDD's binary pass/fail vs. EDD's statistical nuance (cited to Medium article)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core introduction content (Opik/observability recap, vibe checks critique, evals-as-north-star framing, and the same bullet list of topics). Document A adds a source-attributed depth detail by citing a growthbook.io article that specifically explains why vibe checks fail (edge cases, regressions, large-scale user preferences), which B lacks. Document B instead introduces a genuinely new adjacent concept -- Evaluation-Driven Development (EDD) as a named framework paralleling Test-Driven Development, cited to a Medium article -- which broadens the section's scope beyond what A covers. Each document has one distinct enhancement instance in a different dimension, making depth lean toward A and breadth lean toward B, with neither difference being dramatic (single instance each)."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Growthbook citation explaining vibe checks fail due to edge cases, regressions, and large-scale user preference issues"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "TDD-to-EDD analogy from software engineering, framing evaluation as 'Evaluation-Driven Development' with cited source"
+            ]
+          },
+          "reasoning": "Both intros cover the same core narrative (recap of prior lessons, vibe-check critique, cost of investing in evals, and lesson roadmap). Document A adds a depth-oriented citation (Growthbook) explaining specifically why informal vibe checks fail (edge cases, regressions, user preference at scale), which B lacks. Document B introduces a genuinely new adjacent concept\u2014the TDD-to-EDD (Evaluation-Driven Development) framework analogy with its own citation\u2014broadening the section's scope in a way A does not. Each document thus leads on a different dimension: A on depth, B on breadth, with roughly one substantive unique instance each, making both differences modest rather than large."
+        }
+      ]
+    },
+    "Using Evals Through the Optimization Flywheel": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Probabilistic vs. deterministic systems explanation for why evals are necessary (citation to DataRobot)",
+              "Inter-agent misalignment: cascading failures in agentic systems when isolating one variable (arXiv citation)",
+              "Regression-suite depth: measuring reasoning trace quality, tool-selection accuracy, and error recovery for agents"
+            ],
+            "b_instances": [
+              "Control theory SISO systems analogy to justify single-variable changes (Wikipedia citation)",
+              "RAG chunking strategy as a concrete example of an isolated optimization change",
+              "Explicit technical distinction between statistical significance (unlikely by chance) and practical significance (effect size matters)",
+              "Dataset composition detail: mix of real production traces plus targeted synthetic data (referencing Lesson 28)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Continuous evaluation in production monitoring for performance degradation and concept drift, closing the offline/online loop"
+            ],
+            "b_instances": [
+              "Need for an automated evaluation harness/tooling to make re-evaluation fast and repeatable",
+              "Reference to major agent development frameworks (AWS, Microsoft) building in continuous evaluation and operational readiness"
+            ]
+          },
+          "reasoning": "Both documents cover the same core flywheel steps, regression-testing process, and statistical-vs-practical significance discussion with a similar checkout-error example (treated as shared, not a differentiator despite A's more precise numbers). On depth, each side adds a comparable number of substantive technical elaborations: A deepens the discussion with the probabilistic-systems rationale, the named 'inter-agent misalignment' phenomenon, and expanded regression metrics (reasoning trace, tool selection, error recovery), while B deepens it with a control-theory analogy, a concrete RAG-chunking example, a sharper statistical/practical significance definition, and dataset composition detail -- roughly balanced, hence a tie. On breadth, A introduces one genuinely new adjacent topic (continuous evaluation/concept-drift monitoring in production), whereas B introduces two (automated evaluation harness infrastructure and references to industry agent frameworks like AWS/Microsoft), giving B a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "explanation of agents as probabilistic systems (unpredictable outputs on identical inputs) with DataRobot citation as rationale for rigorous evals",
+              "worked quantitative example of business impact ($15/failure x 10,000 fewer failures = $150,000/year from a 0.5% checkout-error reduction)",
+              "specific list of what a robust agent regression suite measures beyond final output: reasoning trace quality, tool-selection accuracy, error recovery",
+              "explicit mechanism of continuous evaluation catching concept drift as production data distributions shift over time"
+            ],
+            "b_instances": [
+              "need for an automated evaluation harness to make re-scoring fast and repeatable, avoiding a development bottleneck",
+              "explicit definition distinguishing statistical significance (unlikely by chance) from practical significance (effect size matters in the real world)",
+              "alternative decision criteria of keeping a 'same-score' change if it offers reduced cost or latency"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "inter-agent misalignment as a named failure mode where a prompt change causes cascading/emergent failures in multi-agent systems (arXiv citation)"
+            ],
+            "b_instances": [
+              "analogy to classical control theory's single-input single-output (SISO) systems for justifying single-variable isolation",
+              "observation that continuous evaluation is becoming a standardized feature in major agent development frameworks (citing AWS and Microsoft agent architecture guidance)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core flywheel steps and regression-testing process almost identically, so most content is shared. On depth, A adds a bit more rigor: it explains agent nondeterminism as a rationale for evals, works through a concrete dollar-value calculation for the checkout example, lists specific sub-metrics for agent regression suites (reasoning trace, tool selection, error recovery), and explains concept drift as the mechanism behind continuous evaluation. B's depth additions are real but fewer: the need for an automated evaluation harness, an explicit statistical-vs-practical-significance definition, and cost/latency as an alternative acceptance criterion. This gives A a modest edge on depth. On breadth, A introduces one new adjacent topic (inter-agent misalignment in multi-agent systems), while B introduces two (a control-theory/SISO analogy and the trend of continuous evaluation becoming standardized in major agent frameworks like AWS and Microsoft's), giving B a modest edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Explanation of AI agents as probabilistic vs. deterministic systems as rationale for evals (cites DataRobot)",
+              "Inter-agent misalignment as a specific failure mode when isolating single-variable changes in agentic systems (cites arXiv)"
+            ],
+            "b_instances": [
+              "RAG chunking strategy as a concrete example of an isolated variable to test"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Continuous evaluation in production monitoring for performance degradation/concept drift (cites Datagrid)",
+              "Granular agent-specific eval metrics beyond final output: reasoning trace quality, tool-selection accuracy, error recovery (cites agility-at-scale)"
+            ],
+            "b_instances": [
+              "Analogy to classical control theory / single-input single-output (SISO) systems for variable isolation (cites Wikipedia)",
+              "Reference to major agent development frameworks (AWS, Microsoft) building in continuous evaluation and operational readiness features"
+            ]
+          },
+          "reasoning": "Both documents cover the same core flywheel steps, regression testing process, and statistical-vs-practical significance discussion almost identically, so most content overlaps. For depth, A adds two source-backed elaborations not in B (the probabilistic/deterministic systems rationale and the inter-agent misalignment failure mode), while B adds one concrete elaboration (RAG chunking as an example isolated variable) \u2014 giving A a modest edge. For breadth, each document introduces two genuinely new adjacent subtopics not covered by the other: A brings in production-level concept-drift monitoring and granular agent-quality sub-metrics (reasoning trace, tool selection, error recovery), while B brings in a control-theory analogy and references to named industry agent frameworks (AWS, Microsoft) adopting continuous evaluation. These are comparably substantive and roughly equal in number, resulting in a tie for breadth."
+        }
+      ]
+    },
+    "Exploring Possible Metric Types": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Named and defined position bias (favoring answers that appear first)",
+              "Named and defined self-enhancement bias (favoring same-model-family outputs)"
+            ],
+            "b_instances": [
+              "Concrete SQL-query-join example illustrating BERTScore's inability to verify business logic",
+              "Concrete legal-summary/citation-format example illustrating LLM judge's ability to check domain-specific rules",
+              "More specific calibration mechanism: comparing against a gold-standard human-scored dataset and using insights to build few-shot examples"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same three metric families (BLEU/ROUGE, BERTScore, LLM-as-judge) with essentially the same core points (semantic blindness, comparison-based limits, judge biases, calibration), so breadth is tied with no genuinely new sub-topics introduced by either side. On depth, A adds slightly more technical specificity by explicitly naming and defining two additional judge biases (position bias, self-enhancement bias) beyond verbosity bias. B, however, adds three depth-enhancing specifics: a concrete SQL-join example showing BERTScore's business-logic blind spot, a concrete legal-summary/citation example showing LLM judge capability, and a more mechanistic description of the calibration process (using gold-standard comparisons to build few-shot examples). B's three added specifics slightly outweigh A's two, giving B a modest edge on depth, while breadth remains a tie."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Specific named LLM-judge biases beyond verbosity (position bias, self-enhancement bias) with technical framing",
+              "BERTScore's additional limitations: higher computational cost and inheriting biases from underlying embedding model"
+            ],
+            "b_instances": [
+              "Concrete SQL-query-join example illustrating BERTScore's inability to verify business logic",
+              "Concrete legal-summary/citation-format example illustrating LLM judge's ability to check domain-specific rules"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same three metric families (BLEU/ROUGE, BERTScore, LLM judges) plus a comparison table and calibration discussion, with no genuinely new adjacent subtopics introduced by either side (breadth ties at zero instances each). On depth, A adds slightly more technical granularity by naming three distinct LLM-judge biases (verbosity, position, self-enhancement) and citing extra BERTScore limitations (compute cost, embedding-model bias inheritance), while B adds two concrete illustrative examples (SQL join failure for BERTScore, legal-summary citation check for LLM judges) that deepen understanding of existing limitations/capabilities. Both calibration process descriptions (A: labeled data + iterative review; B: gold-standard dataset + few-shot refinement) cover the same underlying point with different specifics and are treated as shared coverage rather than distinct instances. With two comparably substantive depth instances on each side, the dimension is a tie."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Named specific LLM-judge biases beyond verbosity: position bias (favoring first-shown answers) and self-enhancement bias (favoring same-model outputs)"
+            ],
+            "b_instances": [
+              "Extends the BLEU/ROUGE 'successful/succeeded' example into BERTScore section to explicitly illustrate embedding-level semantic closeness"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "New example: checking if a generated SQL query correctly joins two specific tables, as a business-rule case BERTScore can't verify",
+              "New example: evaluating a legal summary for correct citation format via LLM judge"
+            ]
+          },
+          "reasoning": "Both documents cover the same three metric families (BLEU/ROUGE, BERTScore, LLM judges) with largely overlapping core explanations, limitations, and a similar trade-off table. On depth, A goes slightly further by naming two additional specific LLM-judge biases (position bias, self-enhancement bias) beyond the shared verbosity bias, while B only reuses its earlier paraphrase example to illustrate BERTScore's semantic sensitivity, a minor addition. Both describe a calibration process for judges (labeled data / gold-standard comparison and iterative refinement) in comparable depth, so that is shared and not counted. On breadth, B introduces two genuinely new adjacent examples not present in A: a SQL-query-joining-tables example illustrating BERTScore's inability to verify business logic, and a legal-summary-citation-format example illustrating LLM judge capability in a new domain. A offers no comparable new adjacent examples, giving B a moderate edge in breadth."
+        }
+      ]
+    },
+    "Why Business Metrics Over Benchmarks": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Burning-ropes puzzle example showing model rigidly applying memorized solution and failing on a variant (specific overfitting edge case)",
+              "Iterative prompt engineering/benchmark-driven development described as a subtler form of training-on-eval-data mechanism"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "History of benchmark saturation from GLUE to SuperGLUE requiring ever-harder tasks",
+              "Discussion of offline evals as proxies needing validation against online business metrics, including metric drift"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (benchmarks as marketing artifacts, data contamination, overfitting/teaching-to-test, and task mismatch with GSM8K/creative writing/legal analysis examples), so these overlapping points are not counted as differentiators. Document B adds two depth-enhancing specifics not in A: the concrete 'burning ropes' puzzle example illustrating how overfit models fail on variations, and the added mechanism of prompt engineering/benchmark-driven development acting like implicit training on eval data. B also introduces two breadth-expanding subtopics absent from A: the historical arc of benchmark saturation (GLUE to SuperGLUE) and a discussion of offline-vs-online eval validity and metric drift. Document A contains no unique depth or breadth instances beyond what B also covers, making B modestly ahead on both dimensions."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "iterative prompt engineering/benchmark-driven development as a subtle form of overfitting to evals",
+              "concrete 'burning ropes' puzzle example showing memorized solution pattern failing on variation",
+              "offline eval scores as proxies that can drift and lose correlation with real-world business outcomes, requiring constant validation"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "history of ML benchmarks (GLUE to SuperGLUE) illustrating rapid saturation and obsolescence of test sets"
+            ]
+          },
+          "reasoning": "Both documents cover the same core argument (benchmarks as marketing artifacts/contamination, and task mismatch with business needs), sharing the memorization/fine-tuning-on-test-set point and the GSM8K mismatch example. Document B adds several additional depth-oriented specifics: a mechanism describing iterative prompt engineering as a subtle overfitting vector, a concrete illustrative example (burning ropes puzzle) showing how overfit reasoning fails on variations, and a point about offline evals drifting and losing correlation with real business outcomes over time. Document A contains no comparable additional depth beyond what B also covers. For breadth, B introduces the GLUE-to-SuperGLUE benchmark history as a new adjacent subtopic about benchmark evolution and saturation, which A does not touch. A has no unique breadth instances. Overall B provides more substantive source-attributed enhancement on both dimensions, decisively so for depth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Concrete example of overfitting failure mode via the 'burning ropes' puzzle variation",
+              "Iterative prompt engineering/benchmark-driven development acting as implicit training on eval data"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "History of benchmark saturation and evolution (GLUE to SuperGLUE)",
+              "Discussion of offline eval validity drifting from online business metrics, requiring constant correlation checks"
+            ]
+          },
+          "reasoning": "Both documents cover the same core two-reason argument (benchmarks as marketing artifacts/contamination, and task mismatch with business workloads) with shared citations. Document A adds no clearly distinct depth or breadth instances beyond this shared core -- its point about models being 'fine-tuned on the test set' is essentially the same contamination point B also makes. Document B, however, adds two depth-level instances not in A: a concrete failure-mode example (the burning ropes puzzle variant showing rigid memorized reasoning) and a mechanism describing iterative prompt engineering as implicit training on eval data. B also adds two breadth-level instances: the historical narrative of benchmark saturation (GLUE to SuperGLUE) and a new subtopic about offline evals needing ongoing validation against online business metrics due to drift. These give B a moderate edge on both depth and breadth."
+        }
+      ]
+    },
+    "Why Custom Business Metrics Over Generic Metrics": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Human evaluation remains critical for capturing subjective qualities like creativity, humor, empathy (citing galileo.ai)"
+            ],
+            "b_instances": [
+              "Real estate assistant example illustrating generic helpfulness score missing functional failure (wrong showing times)"
+            ]
+          },
+          "reasoning": "Both documents are nearly identical in structure, argument, and shared examples (Brown writing agent hallucination example, verbosity/similarity/BERTScore exploratory uses, dashboard critique). For depth, neither adds a distinct mechanism, statistic, or technical elaboration beyond the other -- the content overlaps almost verbatim, so it's a tie. For breadth, each document contributes one distinct new element: A cites a source-attributed point about human evaluation being critical for subjective qualities (creativity, humor, empathy) that B omits, while B introduces a concrete new example (a real estate assistant scenario) illustrating how generic metrics miss functional failures, which A omits. These are roughly comparable in substantiveness and count (one each), yielding a tie for breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Real estate assistant example illustrating a generic 'helpfulness' score missing a functional scheduling conflict",
+              "Naming RAGAS-style 'faithfulness' as a specific generic metric example"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Human evaluation as a critical complement capturing subjective qualities like creativity, humor, empathy (citing Galileo.ai)"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core argument and the same three exploratory-use cases (verbosity, similarity score, BERTScore) almost identically. B adds two depth-oriented enhancements not in A: a concrete real estate assistant scenario that deepens the illustration of generic metrics missing functional constraints, and explicit naming of RAGAS-style 'faithfulness' as a specific generic metric type. A, in turn, includes a breadth-oriented point absent from B: the role of human evaluation as a distinct complementary practice for capturing subjective qualities like creativity, humor, and empathy, sourced to Galileo.ai. Given one modest but concrete pair of additions on each side, depth tilts toward B and breadth tilts toward A, both by a modest margin."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Concrete real estate assistant example illustrating generic metric failure (showing times when agent unavailable)",
+              "Naming RAGAS-style 'faithfulness' as a specific generic metric framework"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Human evaluation as a necessary complement capturing subjective qualities like creativity, humor, empathy (cited to Galileo)"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both sections cover the same core argument almost identically (mirage of generic metrics, dashboard example, hallucination ambiguity example, three exploratory uses of generic metrics). For depth, B adds a concrete illustrative case (real estate assistant with unavailable showing times) that deepens the claim about generic metrics failing despite high scores, and also names a specific tool (RAGAS-style faithfulness) adding specificity absent in A. A has no comparable depth-adding detail. For breadth, A introduces a distinct new subtopic\u2014human evaluation as a critical complementary practice capturing subjective qualities like creativity, humor, and empathy, backed by a citation\u2014which B does not mention at all. Both documents otherwise closely mirror each other in structure and content."
+        }
+      ]
+    },
+    "Choosing Binary Metrics Over Anything Else": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "specific sample-size figures (about 350 test cases for Likert 3.2\u21923.5 vs about 150 for binary 60%\u219270%) quantifying the statistical noise problem"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "limitation of granular binary checks: they can miss high-level failures like 'incomplete narrative' in complex creative tasks, citing an MDPI study and a LinkedIn example of an AI writing agent"
+            ]
+          },
+          "reasoning": "Both documents cover the same core argument for binary over Likert metrics and the same four-check writing-agent example. Document A adds a concrete quantitative detail (specific sample sizes needed to detect score movement) that deepens the statistical-noise point, which B lacks in specific numeric form. Document B, conversely, introduces a genuinely new sub-topic not covered in A: the caveat that even granular binary checks can miss holistic failures like an 'incomplete narrative' in creative tasks, supported by two distinct citations (an MDPI study and a LinkedIn post example). This is a breadth expansion into a new consideration (limits of decomposition) rather than a deepening of an existing point. Hence A leads slightly on depth while B leads slightly on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "specific hypothetical sample-size figures (350 vs 150 test cases) for statistical noise comparison",
+              "concrete LLM judge example question contrasting binary Yes/No vs 1-5 scalar rating"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "acknowledges limitation of granular binary checks for complex creative tasks, citing an 'incomplete narrative' edge case requiring careful dataset design (MDPI study, LinkedIn post about AI writing agent)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core argument for binary over Likert metrics and use identical granular-check example. Document A adds two depth-enhancing specifics: concrete numeric sample sizes (350 vs 150 test cases) illustrating statistical noise, and a concrete example contrasting binary vs scalar LLM judge questions in the aside. Document B does not include these numeric or example specifics but introduces a new breadth topic: the limitation of binary checks for complex creative tasks, citing an MDPI study and a LinkedIn post about an AI agent's 'incomplete narrative' failure, which A does not mention. Hence A leads modestly on depth while B leads modestly on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "specific quantitative sample-size comparison (~350 test cases needed to detect 3.2\u21923.5 average shift vs ~150 for 60%\u219270% pass rate shift)"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "acknowledgment that granular binary checks can still miss high-level failures like 'incomplete narrative' in complex creative tasks, citing an MDPI paper and a real-world Substack AI agent example"
+            ]
+          },
+          "reasoning": "Both documents cover the same core arguments (Likert problems, binary benefits, granular decomposition example) nearly identically. For depth, Document A adds a concrete quantitative detail (specific sample sizes: ~350 vs ~150 test cases) to substantiate the statistical noise argument, while Document B only vaguely references 'a much larger sample size' without figures, giving A a modest depth edge. For breadth, Document B introduces a genuinely new sub-topic not covered in A: the limitation that even granular binary checks can miss holistic failures like an 'incomplete narrative' in creative tasks, supported by two external citations (an MDPI study and a real-world Substack agent anecdote). This is a distinct adjacent point about edge cases in binary metric design, giving B a modest breadth edge. Neither difference is dramatic, so both are 'more' rather than 'much more'."
+        }
+      ]
+    },
+    "Conclusion": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both conclusions are brief summary paragraphs restating the section's core argument (moving from vibe checks/leaderboards to evaluation-driven development, binary pass/fail metrics reducing noise) and both end with the identical forward-reference to implementing custom LLM judges for the Brown writing workflow. Neither document introduces a named study, statistic, technical mechanism, or new sub-topic beyond restating the lesson's core thesis in slightly different phrasing. B adds a generic claim about building 'confidence in complex, probabilistic systems,' but this is a vague rhetorical flourish, not a concrete, source-attributed enhancement. No qualifying depth or breadth instances exist in either document, so both dimensions are ties."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both conclusions are pure recaps of the section's core argument (shift to evaluation-driven development, binary pass/fail metrics vs scalar noise) with no new named studies, statistics, mechanisms, or adjacent sub-topics introduced. Document B adds a generic rhetorical flourish ('confidence in complex, probabilistic systems') but this is not a concrete, source-attributed enhancement\u2014just restated emphasis. Neither document contains qualifying depth or breadth instances, so both dimensions tie.5"
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both conclusions simply restate the section's core themes (moving away from vibe checks/leaderboards toward evaluation-driven development, binary pass/fail metrics, and a preview of the next lesson) without introducing any new named studies, statistics, mechanisms, or adjacent sub-topics. Document B adds a slightly more elaborated framing ('disciplined approach... build confidence in complex, probabilistic systems') but this is a rhetorical restatement rather than a concrete, source-attributed enhancement. Neither document offers qualifying depth or breadth instances, so both dimensions are ties."
+        }
+      ]
+    }
+  }
+}

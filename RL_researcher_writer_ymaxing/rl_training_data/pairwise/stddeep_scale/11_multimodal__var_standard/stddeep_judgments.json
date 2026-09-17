@@ -1,0 +1,628 @@
+{
+  "article": "11_multimodal__var_standard",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "specific mechanism of information loss when converting visual data to text (spatial relationships, colors, context)",
+              "detailed narrative of the failed OCR pipeline (chained OCR engines, layout detection models, image classifiers) illustrating why text conversion breaks"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "mention of audio logs as a specific enterprise data type",
+              "mention of building sketches as a specific enterprise data type"
+            ],
+            "b_instances": [
+              "citation-backed example of medical diagnostics from images (Lenovo/NVIDIA white paper)",
+              "citation-backed example of e-commerce multimodal recommendation systems detecting image-text mismatches to filter low-quality listings (eBay case study)"
+            ]
+          },
+          "reasoning": "Both sections cover the same core pitch: text-only pipelines fail on multimodal data, and native multimodal processing is superior. On depth, Document A goes further into the mechanics of why text conversion is lossy (losing spatial relationships/colors) and narrates the specific technical pipeline (OCR + layout detection + classifiers) that made the old approach brittle, giving more rigor to the core claim than B, which mostly asserts the same point without elaborating the underlying mechanism. On breadth, both introduce a couple of unique adjacent examples not in the other: A adds audio logs and building sketches as data types, while B adds two well-sourced, more elaborated new application domains (medical imaging diagnostics and e-commerce recommendation systems with mismatch detection), each backed by a distinct citation. Because B's breadth additions are more substantive and citation-grounded than A's brief mentions, B edges ahead on breadth, while A's more detailed mechanistic explanations give it the edge on depth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Detailed technical breakdown of failed OCR pipeline approach (OCR engines + layout detection models + separate classifiers)",
+              "Citation [8] specifically supporting the claim that text-only methods miss visual context (charts, diagrams, tables)"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Cited example of financial report chart analysis application [26]",
+              "Cited example of medical diagnostic imaging application [27]",
+              "Cited example of e-commerce multimodal product recommendation and mismatch detection [15]"
+            ]
+          },
+          "reasoning": "Both documents cover the same core intro point (moving from lossy text normalization to native multimodal processing), but they diverge in enhancement type. Document A adds depth by detailing the specific failed technical pipeline (OCR + layout detection + classifiers) and citing a source [8] to substantiate the claim about lost visual context, giving more rigor to the existing argument. Document B, in contrast, does not add comparable technical depth beyond a generic mention of OCR. However, Document B substantially outpaces A on breadth: it introduces three distinct, source-attributed adjacent examples (financial report analysis [26], medical imaging diagnostics [27], and e-commerce recommendation/mismatch detection [15]) that broaden the scope beyond the core discussion, whereas A's examples (financial reports, diagrams, building sketches, audio logs) are generic and uncited, not qualifying as new sourced breadth instances."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Detailed description of the multi-stage OCR pipeline (OCR engines + layout detection models + classifiers chained together) illustrating why the old text-conversion approach was fragile",
+              "Specific mechanism of information loss when converting diagrams/charts to text (loss of spatial relationships, colors, and context)"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Audio as a distinct multimodal input type (audio logs) alongside images and documents"
+            ],
+            "b_instances": [
+              "Medical diagnostics from images as a new application domain, with citation [[27]]",
+              "E-commerce multimodal product recommendation systems detecting image-text mismatches to filter low-quality listings, with citation [[15]]"
+            ]
+          },
+          "reasoning": "Document A goes deeper into the mechanics of why the old text-only pipeline failed, giving specific technical detail about chaining OCR engines, layout detection models, and classifiers, and explaining precisely what visual information (spatial relationships, colors, context) is lost when converting diagrams to text -- neither of these granular mechanistic points appears in B, which only briefly mentions OCR and image-description without elaborating on the pipeline's components or the nature of the information loss. This gives A the edge on depth. On breadth, B introduces two genuinely new, source-backed sub-topics not present in A: medical imaging diagnostics (with a citation) and e-commerce multimodal recommendation systems that detect image-text mismatches (with a citation). A's only comparable breadth addition is a brief mention of audio logs as a data type, which is less developed and lacks supporting citation. This gives B a modest edge on breadth."
+        }
+      ]
+    },
+    "The need for multimodal AI": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Claim that data ingestion pipeline (not embedding model) is the main bottleneck, per industrial RAG research [5]",
+              "Specific stat: accuracy drops below 60% on complex real-world documents requiring manual correction [3]"
+            ],
+            "b_instances": [
+              "Mentions PaddleOCR alongside Tesseract as another engine hitting 88-94% accuracy ceiling",
+              "Handwriting Character Error Rate (CER) of 3-5% considered 'good' but insufficient for high-stakes use without human review [1]",
+              "Detail on how OCR fails to reconstruct table structure, dumping cells into a flat text stream, losing spatial relationships [31]",
+              "Specific technical-drawing OCR failure modes: misreading symbols like '\u00d8' for diameter and confusing similar characters ('O'/'D', '3'/'8') [34]"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "New sub-topic on how visual layout itself carries meaning (financial report charts, technical manual diagrams, architectural blueprints) that is lost when flattened to text"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (traditional OCR pipeline limitations motivating multimodal AI) with largely overlapping stats (88-94% Tesseract accuracy, 15% WER from tilt, 20% drop from low DPI, cascade error effect, rigidity/fragility). For depth, A adds a unique claim about ingestion pipelines being the RAG bottleneck and a '<60% accuracy on complex docs' stat, but B adds several more granular technical details not in A: PaddleOCR mention, a specific CER threshold for handwriting, a concrete explanation of table-structure loss (flat text stream), and specific character/symbol confusion examples (\u00d8, O/D, 3/8) \u2014 giving B more depth instances. For breadth, A stays within the OCR-limitations topic, while B introduces a genuinely new sub-topic: the idea that visual layout itself (in financial reports, technical manuals, blueprints) carries meaning that text extraction destroys, which A does not address. Hence B leads modestly on both dimensions, more so on depth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Research citation that ingestion pipeline (not embedding model) is the main bottleneck in industrial RAG systems",
+              "Complex real-world documents can drop below 60% accuracy, requiring manual correction"
+            ],
+            "b_instances": [
+              "PaddleOCR named alongside Tesseract as achieving 88-94% accuracy",
+              "Handwriting OCR Character Error Rate of 3-5% considered 'good' but insufficient for high-stakes use",
+              "OCR fails to reconstruct spatial relationships in tables, flattening cell contents into a text stream",
+              "OCR struggles with special technical symbols (e.g., '\u00d8') and confuses similar characters (O/D, 3/8)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "New argument that visual layout itself carries meaning (financial charts, technical diagrams, architectural blueprints) that is lost when flattened to text, beyond just OCR accuracy issues"
+            ]
+          },
+          "reasoning": "Both documents cover the same core critique of traditional OCR/layout pipelines with largely overlapping quantitative stats (88-94% Tesseract accuracy, 300 DPI/20% drop, 5-degree tilt/15% WER, cascading errors). For depth, A adds two distinct attributed claims not in B (the ingestion-pipeline-as-bottleneck research finding, and the sub-60% accuracy on complex documents), while B adds several distinct technical specifics not in A (PaddleOCR mention, a quantified handwriting CER benchmark, the specific failure mode of OCR losing table structure, and OCR's confusion of similar characters/symbols). B's additions are somewhat more numerous and technically granular, giving it a modest edge on depth. For breadth, B introduces a genuinely new adjacent point -- that visual layout itself (charts, diagrams, blueprints) carries meaning that is lost on flattening, independent of raw OCR accuracy -- which A does not raise; A's only extra content (the building-sketch image) merely illustrates the existing complexity point rather than opening new topical ground, so B has a modest edge on breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Claim that data ingestion pipeline (not embedding model) is the primary bottleneck in industrial retrieval systems",
+              "Stat that complex real-world documents can see OCR accuracy drop below 60%, requiring manual correction"
+            ],
+            "b_instances": [
+              "Handwriting OCR Character Error Rate of 3-5% considered 'good' but insufficient for high-stakes use without human review",
+              "OCR's failure to preserve table structure, dumping cell contents into a flat text stream losing spatial relationships",
+              "OCR confusion with technical symbols and characters (e.g., '\u00d8' for diameter, mixing up O/D or 3/8)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "New sub-topic on how visual layout itself carries essential meaning across domains (financial report charts, technical manual diagrams, architectural blueprints), which is lost when flattened to text"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative about fragile multi-step OCR pipelines and shared OCR accuracy statistics (88-94% baseline, 300 DPI/5-degree tilt effects). For depth, Document A contributes two unique specific claims (ingestion-pipeline-as-bottleneck research finding, and the <60% accuracy stat on complex documents), while Document B contributes three unique, more granular technical details (handwriting CER thresholds, loss of table spatial structure, confusion of specific technical symbols), giving B a modest edge. For breadth, Document A's building-sketch image is merely illustrative of the same complexity point already discussed, whereas Document B introduces a genuinely new sub-topic -- the idea that visual layout itself (in financial reports, technical manuals, blueprints) carries meaning that is lost upon flattening, which is a distinct angle beyond OCR error rates. This gives B a modest edge in breadth as well."
+        }
+      ]
+    },
+    "Limitations of traditional document processing": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Data ingestion pipeline cited as the main bottleneck rather than the embedding model (arXiv 2407.01449)",
+              "Claim that accuracy on complex real-world documents can drop below 60%, requiring significant manual correction"
+            ],
+            "b_instances": [
+              "Named PaddleOCR alongside Tesseract as achieving 88-94% accuracy on simple layouts",
+              "Handwriting Character Error Rate (CER) of 3-5% cited as 'good' but insufficient for high-stakes use without human review",
+              "OCR's failure to reconstruct spatial relationships in tables, flattening cell contents into a text stream and losing structure",
+              "OCR confusion with technical symbols (e.g., '\u00d8' for diameter) and similar-looking characters (O/D, 3/8)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "New sub-topic on semantic/meaning loss when visual layout is flattened to text, illustrated with financial report charts, technical manual diagrams, and architectural blueprints"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (multi-step OCR pipeline, rigidity, cascading errors, DPI/tilt accuracy stats), but B adds several additional depth-level technical specifics not found in A: naming PaddleOCR, a CER statistic for handwriting, a specific mechanism of table structure loss, and a concrete example of symbol/character confusion. A contributes two depth points B lacks (the ingestion-bottleneck citation and the sub-60% accuracy claim), but B's set is larger and comparably substantive, giving B the edge on depth. On breadth, B introduces a genuinely new sub-topic -- that flattening visual documents to text loses semantic meaning (not just extraction accuracy), illustrated with financial reports, technical manuals, and blueprints -- which A does not address at all, giving B the edge on breadth as well."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Arxiv-cited finding that data ingestion pipeline (not embedding model) is main bottleneck in industrial RAG systems",
+              "Specific stat: accuracy can drop below 60% on complex real-world documents requiring manual correction"
+            ],
+            "b_instances": [
+              "Character Error Rate of 3-5% for handwriting OCR considered 'good' but often insufficient for high-stakes use",
+              "OCR fails to reconstruct spatial relationships in tables, dumping cell contents into a flat text stream",
+              "OCR struggles with technical symbols like '\u00d8' and confuses similar characters (O/D, 3/8)",
+              "Rule-based/template-dependent systems break with minor layout changes (named mechanism for rigidity)",
+              "PaddleOCR named alongside Tesseract as an example OCR engine with similar accuracy ceiling"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "New subtopic: visual layout itself carries meaning in financial reports, technical manuals, and blueprints, which is lost when flattened to text"
+            ]
+          },
+          "reasoning": "Both documents cover the same core pipeline description and share several OCR statistics (Tesseract 88-94% baseline, 5-degree tilt +15% WER, <300 DPI -20% accuracy). For depth, A adds a unique arxiv-sourced claim about ingestion pipelines being the main bottleneck and a <60% accuracy stat on complex documents, but B goes further with several additional technical specifics: CER 3-5% for handwriting, loss of table structure when OCR flattens cells, confusion between visually similar characters and failure on technical symbols like '\u00d8', and the mechanistic point about rule-based/template-dependent systems breaking with layout changes. This gives B a clear edge in depth instance count and technical specificity. For breadth, A only illustrates existing points with an image example (building sketch), while B introduces a genuinely new sub-topic -- that visual layout itself encodes meaning in financial reports, technical manuals, and blueprints, which is lost upon flattening to text -- giving B a modest breadth advantage as well."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "citation to arxiv paper claiming ingestion pipeline (not embedding model) is main bottleneck in industrial RAG systems",
+              "specific stat: accuracy on complex documents can drop below 60%, requiring manual correction"
+            ],
+            "b_instances": [
+              "Character Error Rate (CER) of 3-5% considered 'good' for handwriting, still insufficient for high-stakes use without review",
+              "OCR fails to reconstruct spatial relationships in tables, dumping cell contents into a flat text stream and losing structure",
+              "OCR struggles with special technical symbols (e.g., '\u00d8' for diameter) and confuses similar characters (O/D, 3/8)",
+              "naming PaddleOCR alongside Tesseract as an example of engines topping out at 88-94% accuracy"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "discussion of how visual layout carries core meaning across document types (financial report charts, technical manual diagrams, architectural blueprints) and is lost when flattened to text"
+            ]
+          },
+          "reasoning": "Both documents cover the same core narrative (traditional OCR pipeline steps, rigidity/fragility, error cascade, shared stats on tilt/DPI/baseline OCR accuracy). For depth, document B adds several additional quantitative/technical details not in A: a CER benchmark for handwriting, an explicit point about OCR destroying table structure, examples of symbol/character confusion in technical drawings, and naming PaddleOCR as a second engine example. Document A's unique depth contributions are the arxiv-cited claim that ingestion pipelines (not embedding models) are the main bottleneck, and the specific 'below 60% accuracy on complex documents' stat. B's unique depth list is longer and comparably substantive, giving B a moderate edge (b_more). For breadth, document B introduces a genuinely new sub-topic -- the idea that visual layout itself carries essential meaning across various document types (financial charts, technical diagrams, architectural blueprints) that is lost when documents are flattened to text -- which A does not address; A's content stays within the core OCR/pipeline failure narrative. This gives B a breadth edge as well (b_more)."
+        }
+      ]
+    },
+    "Foundations of multimodal LLMs": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Two-stage training process for unified embedding architecture (frozen-LLM projector pretraining, then SFT unfreezing)",
+              "Detailed mechanism of contrastive learning via positive/negative image-caption pairs",
+              "Specific hybrid architecture example (NVIDIA NVLM-H: low-res thumbnail tokens + high-res patches via cross-attention)",
+              "Specific quantitative detail on context windows (up to 10 million tokens in Llama 4 Scout)",
+              "Mention of Mixture-of-Experts (MoE) architectures used in open-source multimodal models",
+              "Specific mechanism distinguishing autoregressive image generation (GPT-4o) from diffusion's iterative denoising",
+              "Named Whisper as a concrete audio encoder example converting sound into embeddings"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core architectural content (unified embedding vs. cross-modality attention, ViT-based image encoders, CLIP/SigLIP contrastive alignment, OCR/efficiency trade-offs, extension to audio/video, and the diffusion-vs-understanding distinction), so most content is shared. On depth, Document A adds several concrete, source-attributed technical details absent from B: the two-stage training regimen (frozen projector pretraining then SFT), an explicit explanation of contrastive learning via positive/negative pairs, a specific hybrid-architecture example (NVLM-H's thumbnail+cross-attention design), a quantitative context-window figure (10M tokens for Llama 4 Scout), a mention of MoE architectures in SOTA open models, a clearer autoregressive-vs-diffusion generation mechanism, and a named audio encoder (Whisper). B does not introduce comparable additional depth on any of these already-covered points, making A clearly stronger on depth. On breadth, B's mention of 'multimodal RAG' for cross-modal semantic search substantially overlaps conceptually with A's own statement that shared embedding alignment 'enables cross-modal semantic search... and vice versa,' so this is treated as shared coverage rather than a distinct new sub-topic. Neither document introduces other genuinely new adjacent sub-topics beyond what the other already touches (both extend to audio/video and both distinguish diffusion generation from LLM understanding), so breadth is a tie."
+        },
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Detailed two-stage training process for unified embedding architecture (frozen-LLM pretraining of projector, then SFT unfreezing)",
+              "Detailed mechanism of contrastive learning via positive/negative image-text pairs",
+              "Specific NVLM-H hybrid architecture example (low-res thumbnail tokens + high-res patches via cross-attention)",
+              "Specific quantitative detail: up to 10 million token context window in Llama 4 Scout",
+              "Mixture-of-Experts (MoE) architectural detail for open-source multimodal models",
+              "Autoregressive image-generation mechanism of GPT-4o explicitly contrasted with diffusion's denoising process",
+              "Whisper named as a specific audio encoder example",
+              "DeepSeek V3 named as an additional specific open-source multimodal model"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Multimodal embeddings' use in multimodal RAG / semantic search across data types (new application subtopic)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core architectural content (unified embedding vs cross-attention, ViT patching, projectors/contrastive learning, trade-offs, current model landscape, audio/video extension, diffusion vs LLM distinction) almost identically, often from the same source. On depth, Document A adds substantially more granular, source-attributed technical detail: the two-stage training regimen for the unified architecture, an explicit explanation of contrastive learning's positive/negative pair mechanism, a concrete NVLM-H hybrid example, a specific 10M-token context window figure, MoE architecture mention, an explicit autoregressive-vs-diffusion mechanism for GPT-4o, and named examples (Whisper, DeepSeek V3) that sharpen already-covered points. Document B contains essentially no comparable depth-adding details beyond what A also has. On breadth, Document B introduces one genuinely new adjacent subtopic -- the use of multimodal embeddings for multimodal RAG/semantic search -- which A does not mention, giving B a modest edge in breadth while A shows no unique breadth-only additions."
+        },
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Detailed contrastive learning mechanism (positive/negative pairs, maximizing/minimizing similarity)",
+              "Two-stage training process for unified embedding decoder (pretraining frozen LLM with projector, then SFT unfreezing)",
+              "NVIDIA NVLM-H hybrid architecture specifics (low-res thumbnail tokens + high-res patches via cross-attention)",
+              "Explanation of autoregressive vs. diffusion (iterative denoising) generation mechanisms for GPT-4o vs Stable Diffusion/Midjourney",
+              "MoE architecture detail and long-context specifics (up to 10M tokens in Llama 4 Scout) for state-of-the-art models",
+              "Named specific encoders for other modalities (Whisper for audio, video transformer for video)"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Mention of multimodal RAG and cross-modal semantic search as an application of these encoders"
+            ]
+          },
+          "reasoning": "Both documents cover the same core subtopics (two architectures, image encoders/ViT, projector alignment, trade-offs, modern multimodal landscape, beyond-images extension, and diffusion vs. LLM generation), but Document A consistently adds more granular, source-attributed mechanistic detail: it explains contrastive learning's positive/negative pair mechanism, the two-stage training process, NVIDIA's NVLM-H hybrid design, autoregressive vs. diffusion generation mechanics, MoE/long-context specifics, and named audio/video encoders (Whisper, video transformer) \u2014 none of which appear in B. This gives A a decisive depth advantage. For breadth, neither document introduces many genuinely new subtopics beyond the shared outline, but B uniquely mentions multimodal RAG and semantic search as an application of the same encoders, a subtopic A does not touch, giving B a modest breadth edge."
+        }
+      ]
+    },
+    "Applying multimodal LLMs to images and PDFs": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Detailed ReAct paper breakdown showing the Thought\u2192Action\u2192Observation loop with concrete action examples (search[entity], lookup[string], go to cabinet 1, finish[answer])",
+              "More granular PDF summary of the Transformer paper naming specific technical components (dispensing with recurrence/convolutions, Scaled Dot-Product/Multi-Head Attention, parallelization benefits)",
+              "Note that Gemini currently works best with GCS URIs specifically for private data lake access"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Citation of the ColPali paper (arXiv 2407.01449) showing VLMs can retrieve documents by visually 'looking' at them rather than extracting text, tying the PDF-as-image technique to a named research result"
+            ],
+            "b_instances": [
+              "Mention that Base64 encoding is commonly used to embed images directly on websites, a new use-case beyond database storage"
+            ]
+          },
+          "reasoning": "Both documents cover the same core code and workflow (raw bytes, Base64, URLs, object detection, PDF handling) almost identically, so most content is shared. On depth, Document B goes noticeably further by unpacking the ReAct paper's Thought/Action/Observation mechanism with concrete examples and by giving a much more technical, itemized summary of the Transformer paper's contents, plus a minor technical note about GCS URI compatibility \u2014 none of which A matches with comparable specificity. On breadth, each document contributes one distinct new sub-topic: A cites the ColPali paper to justify treating PDF pages as images for retrieval, while B notes Base64's common use for embedding images on websites; these are roughly comparable in substance, yielding a tie for breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Detailed ReAct output breaking down Thought/Action/Observation cycle with concrete examples (search[entity], lookup[string], go to cabinet 1, take pepper shaker 1)",
+              "More technical PDF summary detailing specific mechanisms (Scaled Dot-Product Attention, Multi-Head Attention, elimination of recurrence/convolution, parallelization benefits)",
+              "Specific technical note that Gemini currently works best with GCS URIs for private data lakes"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Citation of the ColPali paper (arXiv 2407.01449) showing VLMs can retrieve documents by visually 'looking' at them rather than extracting text, introducing document-retrieval as a new application"
+            ],
+            "b_instances": [
+              "Mention that Base64 encoding is commonly used to embed images directly on websites, a new use-case beyond database storage"
+            ]
+          },
+          "reasoning": "Document B goes noticeably deeper on topics both sections already cover: it shows the full, more mechanistic ReAct output (Thought/Action/Observation cycle with concrete action examples) versus A's truncated version, gives a more technical breakdown of the Transformer paper's contents (naming specific attention mechanisms and parallelization benefits) versus A's shorter summary, and adds a specific caveat about GCS URIs being the best-supported private storage option. A has no comparably deeper technical instances, giving B a clear depth advantage. For breadth, A introduces a genuinely new, well-sourced sub-topic via the ColPali citation (VLM-based document retrieval as an application beyond the core image/PDF processing), which is a substantive, specifically attributed claim. B's breadth addition (Base64 for website image embedding) is a new but comparatively minor and less rigorously sourced point. Since both have one instance but A's is more substantive, A takes a slight edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Detailed ReAct mechanism breakdown (Thought/Action/Observation cycle, example actions like Wikipedia search[entity]/lookup, finish[answer])",
+              "Detailed Transformer/PDF summary breakdown (dispensing with recurrence/convolutions, Scaled Dot-Product & Multi-Head Attention, parallelization/training efficiency)",
+              "I/O bottleneck rationale for URL-based data transfer"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Reference to the ColPali paper (arXiv 2407.01449) and its finding that VLMs can retrieve documents by visually 'looking' at them rather than extracting text"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core code walkthrough for raw bytes, Base64, URLs, object detection, and PDF processing with nearly identical snippets. For depth, Document B goes noticeably further by fully reproducing and elaborating on the ReAct paper's Thought-Action-Observation mechanism with concrete examples, giving a more detailed breakdown of the Transformer paper's core contributions (attention types, parallelization benefits), and adding a brief technical rationale (I/O bottlenecks) for URL-based transfer\u2014none of which A matches in comparable specificity (A's equivalent outputs are truncated or generic). For breadth, Document A uniquely introduces the ColPali paper and its finding about VLM-based document retrieval via visual 'looking' rather than text extraction, a genuinely new adjacent sub-topic not present in B, which instead closes with a generic claim about lossy text conversion without citing a specific study. Thus B leads substantially on depth while A leads modestly on breadth via the single ColPali citation."
+        }
+      ]
+    },
+    "Foundations of multimodal RAG": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "ColPali's lineage traced to specific named building blocks (PaliGemma VLM + ColBERT's late-interaction mechanism)",
+              "Storage/memory scaling problem quantified (1000+ patch vectors/page, terabyte-scale index for million-page corpus)",
+              "Binary quantization technique explained in detail (128-dim float\u2192128-bit binary, 32x storage reduction, hamming distance for billions of docs)",
+              "Specific benchmark claim: 2-10x faster indexing than OCR and outperforms on ViDoRe benchmark"
+            ],
+            "b_instances": [
+              "MaxSim's full differentiability enabling end-to-end training with contrastive loss",
+              "Specific quantitative indexing latency comparison (>7s/page OCR vs <0.4s/page ColPali)",
+              "Interpretability benefit via late-interaction heatmaps showing salient patches per query term",
+              "Named limitation: weaker performance on noisy scans/handwritten documents due to training data",
+              "Specific memory footprint quantification (~256KB per page) and lack of native vector-DB support",
+              "Open research direction on vector pooling and quantization techniques to sustain sub-second latency at billion-scale"
+            ]
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "E-commerce/product search application (eBay) as a new adjacent use case",
+              "Consumer application examples (Google Images, Apple Photos) as new domains",
+              "Extension of multi-vector retrieval techniques to dynamic video content"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core RAG and ColPali/MaxSim material, but they diverge in where they add extra content. Document B adds more depth-oriented detail: specific quantitative benchmarks (7s vs 0.4s indexing), interpretability via heatmaps, a concrete limitation (handwritten/noisy scans), a precise memory footprint figure, vector-database compatibility issues, and an open research direction on pooling/quantization for scaling\u2014giving it a moderate edge on depth over A's four depth instances (model lineage, scale challenge figures, binary quantization technique, ViDoRe benchmark claim). On breadth, however, A clearly pulls ahead: it introduces genuinely new adjacent topics/applications not touched by B, including e-commerce product search (eBay), consumer application examples (Google Images, Apple Photos), and an explicit forward-looking extension of multi-vector retrieval to video streams. B contains no comparable breadth-expanding content, staying tightly focused on the core RAG/ColPali topic."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Names specific underlying models (Google's PaliGemma VLM and the ColBERT model) as the basis for ColPali's late interaction",
+              "Quantifies scaling challenge: >1,000 patch vectors per page leading to terabyte-scale indexes and storage/memory pressure",
+              "Describes binary quantization technique in detail: converting 128-dim float vectors to 128-bit binary, yielding up to 32x storage reduction and faster hamming-distance computation"
+            ],
+            "b_instances": [
+              "Notes MaxSim's late-interaction score is fully differentiable, enabling end-to-end training with a contrastive loss",
+              "Specific limitation: ColPali trained mainly on clean PDF-like docs, may underperform on noisy scans/handwritten notes",
+              "Quantifies multi-vector memory footprint at ~256 KB per page",
+              "Notes lack of native support for multi-vector representations in many vector databases, causing engineering overhead"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Cites e-commerce/enterprise product search (eBay) and consumer apps (Google Images, Apple Photos) as applications of shared embedding space retrieval",
+              "Mentions research extending multi-vector techniques from static documents to dynamic video streams"
+            ],
+            "b_instances": [
+              "Introduces interpretability angle: visualizing late-interaction heatmaps to see which patches were salient for each query term"
+            ]
+          },
+          "reasoning": "Both documents cover the same core ColPali/MaxSim architecture, but they diverge in supplementary detail. On depth, Document A adds specific technical grounding (naming PaliGemma/ColBERT), a quantitative scaling problem (patch counts, terabyte indexes), and a detailed binary quantization mechanism, while Document B adds distinct depth via the differentiability/contrastive-loss training detail, a specific limitation about noisy/handwritten documents, a quantitative memory footprint figure, and a note on vector-database support gaps -- giving B slightly more distinct depth instances (4 vs 3). On breadth, Document A pulls in two genuinely new adjacent topics (e-commerce/consumer search applications and extension of multi-vector retrieval to video), whereas Document B contributes only one new sub-topic (interpretability via attention heatmaps), so A shows more breadth. Both sides' claims about ColPali's speed advantage over OCR (A's 2-10x figure vs B's 7s-to-0.4s figure) make the same underlying point and were treated as shared, non-differentiating content."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "ColPali's technical basis in PaliGemma VLM and ColBERT's late-interaction origin",
+              "Patch-vector storage scale problem (1000+ patches/page, terabyte-scale index for million-page corpus)",
+              "Binary quantization technique details (128-dim float to 128-bit binary, 32x storage reduction, hamming distance for billions of docs)"
+            ],
+            "b_instances": [
+              "Differentiability of MaxSim enabling end-to-end training with contrastive loss",
+              "Memory footprint detail (~256KB per page for multi-vector representation)",
+              "Technical limitation: ColPali trained on clean PDFs, degrades on noisy scans/handwritten notes",
+              "Vector pooling as an emerging scaling technique for latency at billion-document scale"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "E-commerce/enterprise application example (eBay multimodal product search)",
+              "Extension of multi-vector retrieval techniques to dynamic video content"
+            ],
+            "b_instances": [
+              "Interpretability via late-interaction heatmaps showing salient image patches per query term"
+            ]
+          },
+          "reasoning": "Both documents cover the same core ColPali/MaxSim mechanism and multimodal RAG architecture, but diverge in their added depth and breadth. On depth, A adds specifics about ColPali's architectural lineage (PaliGemma+ColBERT) and a detailed engineering discussion of storage scale problems and binary quantization, while B adds different depth points: differentiability/contrastive training, a specific memory footprint figure, a stated failure mode (noisy/handwritten docs), and mention of vector pooling as a scaling technique -- giving B a slightly larger, more varied set of depth instances. On breadth, A introduces two genuinely new adjacent topics (the eBay e-commerce application and extension of multi-vector retrieval to video), whereas B introduces only one new subtopic (interpretability via attention heatmaps), giving A the edge in breadth. Both documents share overlapping speed-comparison claims (A's 2-10x/ViDoRe vs B's 7s-vs-0.4s), which make the same underlying point and are therefore treated as shared coverage rather than differentiators."
+        }
+      ]
+    },
+    "Implementing multimodal RAG for images, PDFs and text": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "explicit embedding dimensionality (3072) shown via vector_index[0]['embedding'].shape",
+              "aside includes concrete code snippet illustrating how a true multimodal embedding step would replace the description-generation step"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "explicit mention that the example omits image patching and late-interaction mechanisms like ColPali, naming a specific advanced technique not otherwise covered",
+              "closing note that the same unified-embedding pattern could extend to video frames or audio spectrograms, a new adjacent application domain"
+            ],
+            "b_instances": [
+              "mentions OpenAI's CLIP as an alternative multimodal embedding model (minor, overlaps with A's own list of alternative embedding providers)"
+            ]
+          },
+          "reasoning": "Both documents present essentially the same core multimodal RAG walkthrough (image description generation via Gemini, text embedding, cosine-similarity search, same two example queries). Document A adds a few extra technical specifics: it explicitly shows the 3072-dim embedding shape and includes a code snippet inside the aside illustrating how a true multimodal embedding model would replace the description step, giving slightly more depth. For breadth, A uniquely introduces ColPali and the concept of image patching/late-interaction as an acknowledged simplification, and closes with a forward-looking extension of the technique to video frames and audio spectrograms -- both genuinely new adjacent topics not present in B. B's only differentiator is naming CLIP as an alternative embedding model, which largely overlaps with A's own list of alternative providers (Voyage, Cohere, Google) and doesn't add a distinct new instance. Overall A shows modestly more depth and breadth enhancement, though the difference is not dramatic (no side reaches 3+ clear-cut unique instances)."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Mentions ColPali's late interaction mechanism and image patching as a more advanced technique being deliberately skipped for simplicity"
+            ],
+            "b_instances": [
+              "Reports exact cosine similarity score (0.811) for the kitten-robot query"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Notes the technique could be extended to video frames or audio spectrograms as new modalities"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents share nearly identical core code and explanation for the multimodal RAG pipeline (image description generation, embedding, cosine similarity search, same two example queries). For depth, A adds a specific technical aside about ColPali's late-interaction/image-patching mechanism as a more rigorous alternative approach, while B adds a concrete quantitative detail (exact similarity score for the second query) that A omits qualitatively ('high similarity score'); these are roughly comparable but A's technical mechanism reference is slightly more substantive, giving A a modest edge. For breadth, A uniquely mentions extending the same technique to new adjacent modalities (video frames, audio spectrograms), a genuinely new sub-topic not present in B, giving A a modest edge on breadth as well. Neither document strays much further beyond these points, so differences remain modest rather than dramatic."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "explicit note that image patching/late-interaction (ColPali) is intentionally omitted, explaining a technical limitation of the simplified approach",
+              "code snippet illustrating how the pipeline would differ with a true multimodal embedding model (skipping the description step)",
+              "concrete output details on embedding dimensionality (3072) and description content shown after index creation"
+            ],
+            "b_instances": [
+              "reports a specific similarity score (0.811) for the kitten-robot query"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "mentions ColPali as a named alternative advanced multimodal retrieval technique",
+              "suggests extending the same technique to new adjacent modalities: video frames and audio spectrograms"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents implement the same core multimodal RAG pipeline with nearly identical code. Document A adds more depth: it explicitly notes the omission of image patching/late-interaction methods (naming ColPali), includes a code snippet contrasting the simplified approach with a true multimodal embedding model, and shows concrete output details (embedding shape, description snippet) that add technical rigor. Document B's only comparable depth addition is reporting a specific similarity score (0.811) for the second query, which A only describes qualitatively. On breadth, A uniquely mentions ColPali as an adjacent technique and closes with a broader generalization about extending the pattern to video frames and audio spectrograms\u2014genuinely new adjacent application areas not present in B. B does not introduce any comparable new sub-topics beyond swapping one named embedding provider (CLIP vs Vertex AI) within an otherwise equivalent list, which does not rise to a distinct new instance. Overall, A shows moderately more source-attributed enhancement content in both dimensions."
+        }
+      ]
+    },
+    "Building multimodal AI agents": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "edge deployment of multimodal agents (smartphones, factory cameras, in-vehicle computers) for latency/privacy benefits, cited source",
+              "federated learning as enabling technique for on-device agent learning without centralizing data, cited source"
+            ]
+          },
+          "reasoning": "Both documents cover the same core content (ReAct + multimodal RAG tool, agent code, kitten example) with comparable technical depth\u2014no additional depth-adding mechanisms or edge cases beyond the core topic appear in either, so depth ties. For breadth, document B adds a genuinely new adjacent subtopic not present in A: the trend of deploying multimodal agents on edge devices (NPUs, federated learning) with two external citations, broadening the section's scope beyond the core agent-building topic. Document A contains no comparable breadth-expanding content, so B leads on breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "edge deployment of agents on devices like smartphones/factory cameras/in-vehicle computers, citing NPUs for local processing (source [24])",
+              "federated learning as a technique for collective learning without centralizing private data (source [25])"
+            ]
+          },
+          "reasoning": "Both documents cover the same core content: building a ReAct agent with a multimodal search tool, the same code implementation, and the same kitten example/output. Neither adds distinct depth (deeper mechanism/technical detail) to the core RAG-agent-integration topic beyond what's already covered, so depth is a tie. For breadth, Document B introduces a genuinely new adjacent sub-topic not touched by A: the trend of deploying multimodal agents on edge devices (smartphones, factory cameras, in-vehicle computers) for latency/privacy benefits enabled by NPUs, and federated learning as a related technique, each backed by a citation. Document A has no comparable breadth additions, so B is preferred for breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Edge deployment trend for multimodal agents (smartphones, factory cameras, in-vehicle computers) with latency/privacy benefits, cited source [24]",
+              "Enabling technologies: specialized NPUs and federated learning for on-device collective learning, cited source [25]"
+            ]
+          },
+          "reasoning": "Both documents cover essentially the same core content: extending multimodal RAG into a ReAct agent, defining the search tool, building the agent, and testing with the kitten question. Neither adds meaningfully deeper technical detail beyond the shared core (depth ties, as both merely restate the same mechanism with similar code/output). For breadth, Document B introduces a genuinely new adjacent sub-topic not covered in A: the trend of deploying multimodal agents on edge devices (smartphones, factory cameras, vehicles) for latency and privacy benefits, backed by a citation, plus the enabling technologies of NPUs and federated learning, backed by another citation. This is new topical ground unrelated to the core RAG-agent mechanics covered in both documents, giving B a clear breadth advantage."
+        }
+      ]
+    },
+    "Conclusion": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "VideoRAG framework for efficient reasoning over long video content without processing every frame, cited to a specific source"
+            ]
+          },
+          "reasoning": "Both documents cover the same core conclusion content (summary of the lesson, transition to Part 2) with no deeper technical elaboration on existing points, so depth is a tie. For breadth, document B introduces a new adjacent sub-topic -- the VideoRAG framework for video-content retrieval -- with a specific source citation, which is genuinely new scope not touched by document A. Document A contains no comparable new sub-topic. This gives B a modest edge on breadth, though it is a single instance so not a dramatic difference."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "VideoRAG framework extending multimodal RAG to video content via retrieval instead of frame-by-frame processing"
+            ]
+          },
+          "reasoning": "Both documents largely recap the lesson and preview Part 2 in similar terms, with no additional depth-oriented technical detail beyond the core content in either. For breadth, document B introduces a genuinely new adjacent topic -- the VideoRAG framework for reasoning over video content -- with a source citation, which document A does not mention. This gives B a modest edge on breadth while depth remains tied."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "mentions emerging VideoRAG framework for efficient reasoning over video content without processing every frame, with citation"
+            ]
+          },
+          "reasoning": "Both conclusions largely restate the section's core content and preview Part 2 without adding technical depth to already-covered points, so depth is a tie. For breadth, document B introduces a genuinely new adjacent topic -- the VideoRAG framework for retrieval-based video reasoning, backed by a citation -- extending the discussion beyond images/PDFs into video modality, which document A does not mention at all. This gives B a modest edge on breadth."
+        }
+      ]
+    }
+  }
+}

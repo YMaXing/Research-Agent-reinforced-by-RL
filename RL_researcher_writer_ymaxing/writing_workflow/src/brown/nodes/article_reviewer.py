@@ -186,8 +186,10 @@ pre-generated item appears in the correct section per its declared `<location>`:
 
 ## Research Context
 
-The following information about the research used to write the article is provided to help you
-check exploration-phase source integration:
+The following is the full research content used to write the article, together with format-specific
+guidance. Use it for two purposes: (1) cross-referencing article claims against golden/exploitation
+source material for the golden/exploitation citation completeness check below, and (2) checking
+exploration-phase source integration where applicable:
 
 {research_context}
 
@@ -198,8 +200,13 @@ number of required reviews. In other words, for each requirement, you will creat
 requirement 100%, you will not create any reviews for it. If it doesn't follow the requirement, you will create as many reviews 
 as required to ensure the article follows the requirement.
 
+**You MUST return at most {max_reviews} reviews in total across all requirements.** Prioritize the most impactful issues first,
+following the reviewing rules priority order below. If there are more issues than the limit allows, focus on the highest-priority
+ones and omit the least significant.
+
 Remember that these reviews will further be used to edit the article, ensuring it follows all the requirements. Thus, it's
-important to make a thorough review, covering all the requirements and not missing any detail.
+important to make a thorough review, covering all the requirements and not missing any detail, while staying within the limit
+of {max_reviews} reviews.
 
 ## Reviewing Rules
 
@@ -232,6 +239,37 @@ No.1 focus.
     Memory`, `### 2. Episodic Memory`), flag a `structure` review: the list number is a guideline
     position marker only and must not appear in the rendered heading — the heading should read
     `### Semantic Memory`, `### Episodic Memory`, etc.
+  - **Uncited golden/exploitation content (applies regardless of research format):** Scan every
+    paragraph whose content is traceable to a golden source (highest-priority sources explicitly
+    referenced in the guideline — `<golden_source>` tags in Format B, or golden-tagged material in
+    the Format A deduplicated body) or an exploitation-phase source (`<research_source
+    phase="exploitation">` tags in Format B, or exploitation-tagged material in the Format A
+    deduplicated body). Every sentence or passage built from that content — a fact, data point,
+    quantitative claim, or example — MUST carry an inline citation `[[N]](url)` to its source. If
+    golden- or exploitation-derived content appears without a citation, flag a `citation` review
+    specifying the paragraph and, if identifiable from the `<research>`, the missing source. Treat
+    this with the same strictness as uncited exploration content below: an uncited claim is treated
+    as unchecked and indistinguishable from a hallucination regardless of how heavily the article
+    otherwise relies on that source tier — do not assume golden or exploitation content is "obviously
+    sourced" and therefore exempt from this check. Because golden and exploitation sources are used
+    the most throughout the article, expect this check to surface the largest number of citation
+    instances to verify — do not let that volume cause paragraphs to be skimmed instead of checked
+    individually.
+  - **Citation-to-reference mismatch (applies regardless of research format):** A citation being
+    present inline is a separate question from whether it points to the *correct* entry. For every
+    distinct identifier `N` used inline as `[[N]](url)`, find the corresponding `## References` entry
+    `- [N] [Title](url)` and check two things: (1) the entry's `url` is identical to the `url` used
+    by every inline `[[N]](...)` occurrence — flag a `citation` review if they differ; (2) the entry's
+    `Title` genuinely describes the source actually located at that `url` (cross-check against the
+    `<research>` content), not a different, unrelated source — flag a `citation` review specifying
+    the identifier, the inline location(s), and what the entry currently says versus what it should
+    say. This is a distinct failure mode from a missing citation: the inline citation can be fully
+    present and well-grounded in real research content while the References entry for its identifier
+    describes an unrelated source (e.g., because the identifier collided with a different source
+    during incremental edits, or because a similarly-numbered sub-source inside a `tavily_results`
+    block in the `<research>` was mistaken for the article's own citation identifier). Treat this with
+    the same strictness as a missing citation — do not treat "a citation exists at that location" as
+    sufficient without confirming the References entry actually matches it.
   - **Exploration integration (Format B only):** When the research is in Format B, the `## Research
     Context` section above provides the actual `<exploration_sources>` that were available to the writer.
     Use these sources to perform a direct cross-reference between source content and article content.
@@ -327,6 +365,14 @@ No.1 focus.
     shows. Multi-sentence captions that narrate or walk through a diagram's content are never
     acceptable; that explanatory text belongs in the prose adjacent to the diagram, not in the
     caption itself.
+  - **Orphaned image captions**: Scan every `Image N:` caption line in the article. Each one MUST
+    be immediately preceded (with at most one blank line between) by either a closing Mermaid
+    fence (` ``` `) or a standard Markdown image embed (`![alt text](url)`). If an `Image N:`
+    caption has no such preceding element, flag a `structure_profile` review at the exact location.
+    An orphaned caption means the image body is missing — nothing renders for the reader. The
+    fix is to insert `![<concise alt text>](<url from research>)` immediately before the caption
+    using a URL from the `<research>` content; if no suitable URL exists, the caption must be
+    removed entirely rather than left as a broken placeholder.
 - **The fourth most important rule:** The adherence to the rest of the requirements.
 
 Other more generic rules:
@@ -371,15 +417,27 @@ or "Implementing GraphRAG - Third paragraph"
       (360–440); a 700-word target → ±70 words (630–770).
    Each section is evaluated independently — a long section does not offset a short one.
 6. Carefully compare the article against the requirements as instructed by the rules above.
-7. If the research is in Format B and exploration sources are provided, perform two passes:
+7. **Golden/exploitation citation check (always performed, regardless of research format):** Walk
+   through the article paragraph by paragraph. For every paragraph whose content is traceable to a
+   golden or exploitation source, confirm it carries an inline `[[N]](url)` citation. Flag every
+   instance that does not, per the "Uncited golden/exploitation content" rule above.
+7a. **Citation-to-reference mismatch check (always performed, regardless of research format):**
+    Build a list of every distinct identifier `N` used inline as `[[N]](url)` and the `url` it is
+    paired with at each occurrence. For each identifier, locate its `## References` entry and verify
+    the entry's `url` matches every inline occurrence, and that the entry's `Title` actually describes
+    the source at that `url` (not a different, unrelated source from the `<research>`). Flag every
+    mismatch per the "Citation-to-reference mismatch" rule above — do this even for citations that
+    already passed the checks in step 7, since a citation can be present and well-grounded inline
+    while still pointing to a wrong References entry.
+8. If the research is in Format B and exploration sources are provided, perform two passes:
    a. **Coverage check:** For each exploration source, assess whether it qualifies by the depth/breadth
       criteria. If it qualifies and its content does not appear anywhere in the article, flag the
       specific section(s) where integration would have been appropriate.
    b. **Quality check:** For every section where exploration content does appear, cross-reference against
       the source and verify narrative primacy, placement, self-contained integration, and cumulative
       focus.
-8. For each requirement, create 0 to N reviews.
-9. Return the reviews of the article.
+9. For each requirement, create 0 to N reviews (up to {max_reviews} total).
+10. Return the reviews of the article.
 """
 
     selected_text_system_prompt_template = """
@@ -418,7 +476,7 @@ steps, but continue to apply all Reviewing Rules from the system prompt above:
    b. **Quality check:** For any exploration content that does appear in the selected text, cross-reference
       against the source and verify narrative primacy, placement, self-contained integration, and
       cumulative focus.
-7. For each requirement, create 0 to N reviews.
+7. For each requirement, create 0 to N reviews (up to {max_reviews} total).
 8. Carefully compare the selected text against the requirements as instructed by the rules above.
 9. Return the reviews of the selected text.
 """
@@ -432,6 +490,7 @@ steps, but continue to apply all Reviewing Rules from the system prompt above:
         human_feedback: HumanFeedback | None = None,
         research: Research | None = None,
         media_items: MediaItems | None = None,
+        max_reviews: int = 5,
     ) -> None:
         self.to_review = to_review
         self.article_guideline = article_guideline
@@ -439,6 +498,7 @@ steps, but continue to apply all Reviewing Rules from the system prompt above:
         self.human_feedback = human_feedback
         self.research = research
         self.media_items = media_items
+        self.max_reviews = max_reviews
 
         super().__init__(model, toolkit=Toolkit(tools=[]))
 
@@ -478,6 +538,7 @@ steps, but continue to apply all Reviewing Rules from the system prompt above:
             if self.research
             else "Research was not provided to the reviewer. Skip all exploration integration checks.",
             media_items=self.media_items.to_context() if self.media_items else "No pre-generated media items were provided.",
+            max_reviews=self.max_reviews,
         )
         user_input_content = self.build_user_input_content(inputs=[system_prompt])
         inputs = [
@@ -491,7 +552,9 @@ steps, but continue to apply all Reviewing Rules from the system prompt above:
                 [
                     {
                         "role": "user",
-                        "content": self.selected_text_system_prompt_template.format(selected_text=self.to_review.to_context()),
+                        "content": self.selected_text_system_prompt_template.format(
+                            selected_text=self.to_review.to_context(), max_reviews=self.max_reviews
+                        ),
                     }
                 ]
             )

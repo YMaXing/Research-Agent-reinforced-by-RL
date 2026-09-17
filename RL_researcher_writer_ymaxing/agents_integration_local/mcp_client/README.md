@@ -19,7 +19,7 @@ uv sync
 You'll also want `uv sync` in the sibling directories whose servers this
 client talks to:
 
-- [`../mcp_server/`](../mcp_server) — the composed server
+- [`../mcp_server/`](../mcp_server/README.md) — the composed server
 - [`../../research_agent_local/mcp_server/`](../../research_agent_local/mcp_server) — research backend
 - [`../../writing_workflow/`](../../writing_workflow) — writing backend
 
@@ -82,6 +82,8 @@ The two HTTP configs in the parent directory:
 
 ## Where this fits
 
+- Composed-deployment overview (architecture diagram, launcher, config):
+  [`../README.md`](../README.md).
 - Project pipeline overview and quickstart:
   [../../../README.md](../../../README.md).
 - Research agent details: [`../../research_agent_local/README.md`](../../research_agent_local/README.md).

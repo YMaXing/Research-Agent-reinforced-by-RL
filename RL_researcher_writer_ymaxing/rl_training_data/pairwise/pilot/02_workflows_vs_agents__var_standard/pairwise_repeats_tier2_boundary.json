@@ -1,0 +1,134 @@
+{
+  "article": "02_workflows_vs_agents__var_standard",
+  "sections": {
+    "Choosing Your Path": {
+      "breadth": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "original_preference": "a_more",
+        "classification": "tier2_boundary_0v2",
+        "repeats": [
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "healthcare robotics domain example with two-phase workflow structure (task planning then command generation)",
+              "logistics domain example: workflows automate shipment tracking, exception handling, invoice auditing"
+            ],
+            "b_instances": [
+              "new use case: high-frequency scenarios where cost-per-request outweighs need for sophisticated reasoning, favoring workflows"
+            ]
+          },
+          {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Healthcare robotics workflow example with two-phase task-planning/command-generation structure",
+              "Logistics/supply-chain workflow example (shipment tracking, exception handling, invoice auditing)"
+            ],
+            "b_instances": [
+              "High-frequency, low-latency use case where cost-per-request outweighs sophisticated reasoning"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Healthcare robotics workflow example: rigid two-phase task planning + command generation process",
+              "Logistics/supply-chain workflow example: shipment tracking, exception handling, invoice auditing"
+            ],
+            "b_instances": [
+              "New use case: high-frequency scenarios where cost-per-request outweighs need for sophisticated reasoning"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "healthcare robotics example with rigid two-phase workflow (task planning + command generation)",
+              "logistics workflow example (shipment tracking, exception handling, invoice auditing)"
+            ],
+            "b_instances": [
+              "new use-case: high-frequency scenarios where cost-per-request matters more than sophisticated reasoning"
+            ]
+          },
+          {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Healthcare robotics workflow example: rigid multi-phase task planning + command generation process, cited to a robotics-specific source",
+              "Logistics/supply-chain workflow example: shipment tracking, exception handling, invoice auditing, cited to a supply-chain source"
+            ],
+            "b_instances": [
+              "High-frequency, low-latency scenarios where cost-per-request outweighs sophisticated reasoning as a workflow use case"
+            ]
+          }
+        ]
+      }
+    },
+    "Exploring Common Patterns": {
+      "depth": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "original_preference": "a_more",
+        "classification": "tier2_boundary_0v2",
+        "repeats": [
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Orchestrator-worker operational metrics: >95% handoff success rate and context-maintenance requirement (cited)",
+              "Reflexion framework detail: structured memory and verbal reinforcement mechanism for self-correction (cited)"
+            ],
+            "b_instances": [
+              "Orchestrator-worker quantitative speedup claim: 5-20x faster than sequential processing (cited)",
+              "Chaining pattern downside: fixed/inflexible sequence (cited)"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [
+              "Operational production metrics for orchestrator-worker: >95% handoff success rate and context-maintenance across long interactions",
+              "Reflexion framework detail: structured memory and verbal reinforcement mechanism for self-reflection"
+            ],
+            "b_instances": [
+              "Explicit downside of chaining: fixed, inflexible sequence",
+              "Quantified orchestrator-worker speedup: 5 to 20x over sequential processing",
+              "Long-term memory specifics: vector database example for factual retrieval"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "I/O-bound rationale for why orchestrators can run dozens of workers in parallel",
+              "Production-level operational metrics for orchestrator-worker (handoff success rate >95%, context maintenance over long interactions)",
+              "Reflexion framework specifics (structured memory + verbal reinforcement for self-reflection)"
+            ],
+            "b_instances": [
+              "Explicit downside of chaining: fixed sequence reduces flexibility",
+              "Quantified speed improvement for orchestrator-worker parallelization (5-20x over sequential processing)"
+            ]
+          },
+          {
+            "preference": "a_more",
+            "a_instances": [
+              "Orchestrator-worker operational benchmarks: handoff success rate >95% and context maintenance across long interactions",
+              "Reflexion framework mechanism details: structured memory and verbal reinforcement for self-improvement",
+              "I/O-bound explanation for why a single orchestrator can manage dozens of workers in parallel"
+            ],
+            "b_instances": [
+              "Explicit downside of chaining: lack of flexibility due to fixed pre-defined sequence",
+              "Quantified speedup for orchestrator-worker parallelization: 5 to 20 times over sequential processing"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [
+              "Orchestrator-worker operational metrics: >95% handoff success rate and context maintenance across long interactions (cited)",
+              "Reflexion framework specifics: structured memory and verbal reinforcement for self-reflection (cited)"
+            ],
+            "b_instances": [
+              "Orchestrator-worker parallelism quantified as 5-20x speed improvement over sequential processing (cited)",
+              "Evaluator-optimizer loop grounded in control theory/feedback control loop mechanism (cited)",
+              "Chaining's key limitation described: fixed sequence reduces flexibility (cited)"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

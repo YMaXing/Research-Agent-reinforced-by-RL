@@ -13,6 +13,7 @@ from ..config.constants import (
     RESEARCH_OUTPUT_FOLDER,
     URLS_FROM_GUIDELINES_FOLDER,
 )
+from ..utils.scraping_cache_utils import copy_cached_files, find_cached_web_files
 from ..utils.file_utils import (
     read_file_safe,
     validate_guidelines_file,
@@ -169,35 +170,56 @@ async def scrape_and_clean_other_urls_tool(research_directory: str, concurrency_
     output_dir = research_output_path / URLS_FROM_GUIDELINES_FOLDER
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Scrape URLs concurrently
-    completed_results = await scrape_urls_concurrently(other_urls, article_guidelines, concurrency_limit)
+    # --- Sibling-episode cache lookup ---
+    # Reuse files already scraped in other presets of the same article.
+    all_web_urls = other_urls + arxiv_urls
+    other_urls_set = set(other_urls)
+    arxiv_urls_set = set(arxiv_urls)
+    cached_web, uncached_all = find_cached_web_files(all_web_urls, research_path)
+    uncached_other = [u for u in uncached_all if u in other_urls_set]
+    uncached_arxiv = [u for u in uncached_all if u in arxiv_urls_set]
+    cached_filenames = copy_cached_files(cached_web, output_dir)
+    if cached_filenames:
+        logger.info(
+            f"Reused {len(cached_filenames)} already-scraped file(s) from sibling episodes "
+            f"(skipped redundant scraping)."
+        )
 
-    if arxiv_urls:
-        logger.info(f"Starting arXiv scraping of {len(arxiv_urls)} paper(s)...")
+    # Scrape only the URLs not found in any sibling episode.
+    completed_results = await scrape_urls_concurrently(uncached_other, article_guidelines, concurrency_limit)
+
+    if uncached_arxiv:
+        logger.info(f"Starting arXiv scraping of {len(uncached_arxiv)} paper(s)...")
         chat_model = get_chat_model(settings.scraping_model)
         arxiv_tasks = [
-            scrape_arxiv_url(url, article_guidelines, chat_model) for url in arxiv_urls
+            scrape_arxiv_url(url, article_guidelines, chat_model) for url in uncached_arxiv
         ]
         arxiv_results = await asyncio.gather(*arxiv_tasks, return_exceptions=True)
         completed_results.extend(arxiv_results)
         arxiv_success = sum(1 for r in arxiv_results if not isinstance(r, BaseException) and r.get("success", False))
-        logger.info(f"Processed {arxiv_success}/{len(arxiv_urls)} arXiv papers with arxiv2markdown.")
+        logger.info(f"Processed {arxiv_success}/{len(uncached_arxiv)} arXiv papers with arxiv2markdown.")
 
-    # Write all results (other URLs + arxiv) in a single pass so filenames are
+    # Write all freshly-scraped results in a single pass so filenames are
     # deduplicated correctly and files are not written twice.
     saved_files, successful_scrapes = write_scraped_results_to_files(completed_results, output_dir, url_titles=url_titles)
 
+    # Include cache hits in the totals reported back to the agent.
+    total_files_saved = saved_files + cached_filenames
+    total_success = successful_scrapes + len(cached_filenames)
     total_attempted = len(other_urls) + len(arxiv_urls)
     return {
-        "status": "success" if successful_scrapes > 0 else "warning",
-        "urls_processed": successful_scrapes,
+        "status": "success" if total_success > 0 else "warning",
+        "urls_processed": total_success,
         "urls_total": total_attempted,
-        "files_saved": len(saved_files),
+        "cache_hits": len(cached_filenames),
+        "files_saved": len(total_files_saved),
         "output_directory": str(output_dir.resolve()),
-        "saved_files": saved_files,
+        "saved_files": total_files_saved,
         "message": (
-            f"Scraped and cleaned {successful_scrapes}/{total_attempted} URLs from {GUIDELINES_FILENAMES_FILE} "
-            f"in '{research_directory}'.\nSaved {len(saved_files)} files to {URLS_FROM_GUIDELINES_FOLDER} folder: "
-            f"{', '.join(saved_files)}"
+            f"Processed {total_success}/{total_attempted} URLs from {GUIDELINES_FILENAMES_FILE} "
+            f"in '{research_directory}' "
+            f"({len(cached_filenames)} reused from sibling episodes, {successful_scrapes} freshly scraped)."
+            f"\nSaved {len(total_files_saved)} files to {URLS_FROM_GUIDELINES_FOLDER} folder: "
+            f"{', '.join(total_files_saved)}"
         ),
     }

@@ -1,0 +1,51 @@
+{
+  "article": "06_tools__var_demanding",
+  "sections": {
+    "Implementing tool calls from scratch": {
+      "depth": {
+        "a_arm": "standard",
+        "b_arm": "deep",
+        "original_preference": "b_more",
+        "classification": "tier2_boundary_0v2",
+        "repeats": [
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Explains tool invocation as a classification problem where the model must decide to answer directly, ask for clarification, or call a tool, tied to supervised fine-tuning training detail"
+            ]
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "53-tool case study showing naive tool exposure causes hallucination, solved via 'tool scoping' middleware layer that restricts visible tools per context, with citation",
+              "framing tool invocation decision as a classification problem (answer directly, ask for clarification, or call a tool) resulting from supervised fine-tuning on judgment, not just format"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "framing tool-call decision as a classification problem (answer directly, ask for clarification, or call a tool)"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Framing tool-call decision as a three-way classification problem (answer directly, ask for clarification, or call a tool), tied to supervised fine-tuning training methodology"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Framing tool-call generation as a classification problem (answer directly vs. clarify vs. call tool), citing model training on judgment of when/how to invoke tools"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

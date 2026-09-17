@@ -1,0 +1,96 @@
+{
+  "article": "08_react_practice__var_demanding",
+  "sections": {
+    "Control Loop: Messages, Scratchpad, and Orchestration": {
+      "depth": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "original_preference": "b_much_more",
+        "classification": "strong_disagree",
+        "repeats": [
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Explains prefix caching mechanism (KV cache reuse) to mitigate GPU memory/prefill latency growth from accumulating scratchpad, citing arXiv source"
+            ],
+            "b_instances": [
+              "Details context-compression techniques (summarization, metadata stripping) and LangChain's file-system offloading of large tool outputs to manage scratchpad growth/token cost",
+              "Explains max_turns as a specific safety mechanism against runaway loops, citing production cost/latency risk",
+              "Describes a 'tool call repair' mechanism where a failed tool call's error is fed back so the agent can self-correct in the next turn",
+              "one deeper solution track (compression) than A's single prefix-caching mitigation, plus two more distinct mechanisms (max_turns rationale, tool repair)"
+            ]
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "KV cache growth and prefill latency mechanism, mitigated by prefix caching (citation 32)"
+            ],
+            "b_instances": [
+              "Token usage/cost compounding motivates context compression techniques like summarization (citations 8,9)",
+              "LangChain's approach of offloading large tool outputs to a file system with a reference in the scratchpad (citation 10)",
+              "max_turns explained as a safety feature against runaway loops, budget burn, and latency spikes (citation 11)"
+            ]
+          },
+          {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Prefix caching / KV cache reuse mechanism to reduce redundant computation and memory overhead as scratchpad grows (cited study)"
+            ],
+            "b_instances": [
+              "Context compression techniques (summarizing early conversation, stripping non-essential metadata) to manage token usage/cost as scratchpad grows (cited sources)",
+              "LangChain's approach of offloading large tool outputs to a file system and referencing them in the scratchpad",
+              "Deeper rationale for max_turns as a production safety feature preventing runaway loops, budget burn, and latency spikes (cited source)",
+              "Tool call repair concept: using a failed tool call's error observation to let the agent reason and correct its next call (cited source)"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [
+              "Prefix caching mechanism explained (reuses KV cache for shared context, reduces GPU memory/prefill latency) [32]"
+            ],
+            "b_instances": [
+              "Context compression techniques (summarizing early conversation, stripping non-essential metadata) [9]",
+              "LangChain's technique of offloading large tool outputs to a file system with a reference in the scratchpad [10]"
+            ]
+          }
+        ]
+      }
+    },
+    "Introduction": {
+      "depth": {
+        "a_arm": "light",
+        "b_arm": "standard",
+        "original_preference": "b_more",
+        "classification": "strong_agree",
+        "repeats": [
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "cites Anthropic engineering research that top AI customers succeed with simple composable LLM patterns rather than complex frameworks, reinforcing the rationale for building from scratch"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Anthropic's engineering observation that top AI customers prefer simple composable LLM API patterns over complex frameworks, citing a specific source to deepen the argument for building from scratch"
+            ]
+          },
+          {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Cites Anthropic's engineering blog observation that top AI labs' successful customers build with simple composable LLM API patterns rather than complex frameworks, specifying that frameworks obscure prompts and complicate debugging"
+            ]
+          },
+          {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          }
+        ]
+      }
+    }
+  }
+}

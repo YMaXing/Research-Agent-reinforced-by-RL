@@ -122,17 +122,48 @@ class TestNormalizeGithubUrl:
 
 
 class TestProcessGithubUrlUsesNormalizedUrl:
-    """Verify that process_github_url feeds the normalised URL to ingest_async."""
+    """Verify process_github_url tries the exact file first, falling back only on failure."""
 
-    async def test_blob_url_is_normalised_before_ingest(self, dest_folder):
+    async def test_blob_url_succeeds_directly_without_fallback(self, dest_folder):
         blob_url = "https://github.com/towardsai/agentic-ai-engineering-course/blob/dev/lessons/09_memory_knowledge_access/notebook.ipynb"
-        expected_ingest_url = "https://github.com/towardsai/agentic-ai-engineering-course/tree/dev/lessons/09_memory_knowledge_access"
 
         with patch(_PATCH_INGEST, new_callable=AsyncMock, return_value=("s", "t", "c")) as mock_ingest:
-            await process_github_url(blob_url, dest_folder, "tok")
+            result = await process_github_url(blob_url, dest_folder, "tok")
 
-        actual_url = mock_ingest.call_args.args[0]
-        assert actual_url == expected_ingest_url
+        assert result is True
+        assert mock_ingest.call_count == 1
+        assert mock_ingest.call_args.args[0] == blob_url
+
+    async def test_blob_url_falls_back_to_parent_dir_on_failure(self, dest_folder):
+        blob_url = "https://github.com/towardsai/agentic-ai-engineering-course/blob/dev/lessons/09_memory_knowledge_access/notebook.ipynb"
+        expected_fallback_url = "https://github.com/towardsai/agentic-ai-engineering-course/tree/dev/lessons/09_memory_knowledge_access"
+
+        with patch(
+            _PATCH_INGEST,
+            new_callable=AsyncMock,
+            side_effect=[ValueError("notebook.ipynb cannot be found"), ("s", "t", "c")],
+        ) as mock_ingest:
+            result = await process_github_url(blob_url, dest_folder, "tok")
+
+        assert result is True
+        assert mock_ingest.call_count == 2
+        assert mock_ingest.call_args_list[0].args[0] == blob_url
+        assert mock_ingest.call_args_list[1].args[0] == expected_fallback_url
+
+    async def test_blob_url_fails_both_attempts(self, dest_folder):
+        blob_url = "https://github.com/towardsai/agentic-ai-engineering-course/blob/dev/lessons/09_memory_knowledge_access/notebook.ipynb"
+
+        with patch(
+            _PATCH_INGEST,
+            new_callable=AsyncMock,
+            side_effect=[ValueError("cannot be found"), RuntimeError("still failing")],
+        ) as mock_ingest:
+            result = await process_github_url(blob_url, dest_folder, "tok")
+
+        assert result is False
+        assert mock_ingest.call_count == 2
+        md = (dest_folder / "towardsai_agentic-ai-engineering-course.md").read_text(encoding="utf-8")
+        assert "Error processing" in md
 
     async def test_repo_url_passed_through_unchanged(self, dest_folder):
         repo_url = "https://github.com/owner/repo"
@@ -140,5 +171,6 @@ class TestProcessGithubUrlUsesNormalizedUrl:
         with patch(_PATCH_INGEST, new_callable=AsyncMock, return_value=("s", "t", "c")) as mock_ingest:
             await process_github_url(repo_url, dest_folder, None)
 
+        assert mock_ingest.call_count == 1
         actual_url = mock_ingest.call_args.args[0]
         assert actual_url == repo_url

@@ -174,11 +174,14 @@ class TestSelectSources:
         assert sorted(result) == [1, 2]
 
     async def test_none_selection(self):
+        # When LLM returns "none" for exploitation sources, the handler falls back to
+        # accepting all exploitation sources (source 1) to enforce the 70-90% acceptance
+        # rate policy.  Exploration "none" is honoured → source 2 is dropped.
         selection = SourceSelection(selection_type="none", source_ids=[])
         model = _FakeSourceSelectionModel(selection)
         with patch(_PATCH_TARGET, return_value=model):
             result = await select_sources("guidelines", _SAMPLE_RESULTS_MD)
-        assert result == []
+        assert result == [1]
 
     async def test_empty_results_returns_empty(self):
         # No mocking needed — function short-circuits on empty input
@@ -248,3 +251,26 @@ class TestSelectTopSources:
         # Fallback returns first N source URLs from the file
         assert len(result["selected_urls"]) > 0
         assert "failed" in result["reasoning"].lower() or "falling back" in result["reasoning"].lower()
+
+    async def test_blocklist_excludes_candidate_before_selection(self):
+        response = TopSourceSelection(selected_urls=["https://b.com"], reasoning="ok")
+        model = _FakeTopSourceSelectionModel(response)
+        # Blocklist a.com so only b.com remains a candidate.
+        with patch(_PATCH_TARGET, return_value=model):
+            result = await select_top_sources(
+                "g", "", _SAMPLE_RESULTS_MD, max_sources=5, blocklist={"a.com"}
+            )
+        assert "https://a.com" not in result["selected_urls"]
+
+    async def test_blocklist_backstops_llm_selection(self):
+        # LLM erroneously returns a blocklisted URL; it must be dropped afterwards.
+        response = TopSourceSelection(
+            selected_urls=["https://a.com", "https://b.com"], reasoning="ok"
+        )
+        model = _FakeTopSourceSelectionModel(response)
+        with patch(_PATCH_TARGET, return_value=model):
+            result = await select_top_sources(
+                "g", "", _SAMPLE_RESULTS_MD, max_sources=5, blocklist={"a.com"}
+            )
+        assert result["selected_urls"] == ["https://b.com"]
+

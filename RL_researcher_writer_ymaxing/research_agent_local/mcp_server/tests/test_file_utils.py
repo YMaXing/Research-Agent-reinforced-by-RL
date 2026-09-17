@@ -64,6 +64,10 @@ class TestValidateResearchFolder:
     def test_valid_directory_does_not_raise(self, tmp_path: Path):
         validate_research_folder(tmp_path)  # should not raise
 
+    def test_relative_path_raises_value_error(self):
+        with pytest.raises(ValueError, match="absolute path"):
+            validate_research_folder(Path("relative/research_dir"))
+
     def test_nonexistent_path_raises_value_error(self, tmp_path: Path):
         with pytest.raises(ValueError, match="does not exist"):
             validate_research_folder(tmp_path / "nonexistent_folder")

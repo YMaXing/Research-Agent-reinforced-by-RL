@@ -91,6 +91,30 @@ class TestAppendSearchResultsToFile:
         content = results_path.read_text(encoding="utf-8")
         assert "[EXPLORATION]" in content
 
+    def test_blocklist_drops_matching_citations(self, tmp_path):
+        results_path = tmp_path / "results.md"
+        results_path.write_text("", encoding="utf-8")
+
+        queries = ["q"]
+        # Two citations: one blocklisted (arXiv reference-only), one kept.
+        search_results = [
+            (
+                "a",
+                {1: "blocked answer", 2: "kept answer"},
+                {1: "https://arxiv.org/pdf/2205.12293v2", 2: "https://keep.com/x"},
+            )
+        ]
+        blocklist = {"arxiv.org/abs/2205.12293"}
+
+        total = append_search_results_to_file(
+            results_path, queries, search_results, blocklist=blocklist
+        )
+
+        assert total == 1
+        content = results_path.read_text(encoding="utf-8")
+        assert "https://keep.com/x" in content
+        assert "2205.12293" not in content
+
 
 # ---------------------------------------------------------------------------
 # run_tavily_research_tool (async, mock tavily search)

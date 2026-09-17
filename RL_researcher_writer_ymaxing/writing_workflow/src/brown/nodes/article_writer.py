@@ -73,6 +73,19 @@ class ArticleWriter(Node):
     that bridges into the next section as part of any length-trimming step — section-closing
     transition sentences are protected content.
   - Confirm that every factual claim traceable to a research source carries a citation.
+  - **Golden and exploitation citation completeness** *(applies on every pass, including the core
+    article draft — do not skip this one):* Scan every paragraph that contains a fact, data point,
+    example, or claim drawn from a golden source (`<golden_source>` in Format B, or golden-tagged
+    content in the Format A deduplicated body) or an exploitation-phase source
+    (`<research_source phase="exploitation">` in Format B, or exploitation-tagged content in the
+    Format A deduplicated body). Every such sentence or passage MUST end with an inline citation
+    `[[N]](url)` pointing to that source. A golden- or exploitation-sourced claim without a citation
+    must be either cited immediately (by assigning the next available citation identifier and adding
+    the source to the References section) or rewritten to rely only on already-cited material —
+    uncited golden or exploitation content is indistinguishable from hallucinated content and is
+    never acceptable, exactly like the exploration case below. Golden and exploitation sources are
+    the highest-priority, most heavily-used tiers, so this check typically has the most instances
+    to verify — do not let its volume cause it to be skimmed.
   - **Exploration citation completeness** *(skip this check during the core article draft pass — it
     applies only after exploration sources have been integrated):* Scan every paragraph that contains
     content drawn from an exploration-phase source. Every such sentence or passage MUST end with an
@@ -81,6 +94,21 @@ class ArticleWriter(Node):
     cited immediately (by assigning the next available citation identifier and adding the source to
     the References section) or removed — uncited exploration content is indistinguishable from
     hallucinated content and is never acceptable.
+  - **Citation-to-reference mapping accuracy:** A citation being present inline is not sufficient —
+    it must also point to the correct entry in `## References`. For every distinct identifier `N`
+    used inline as `[[N]](url)`, locate the `## References` entry `- [N] [Title](url)` and verify
+    two things: (1) its `url` is character-for-character identical to the `url` used by every
+    inline `[[N]](...)` occurrence, and (2) its `Title` genuinely describes the source at that `url`
+    (not a different, unrelated source). This mismatch is easy to introduce when the `<research>`
+    contains many similarly-numbered sub-sources (e.g., `### Source [58]:` inside a `tavily_results`
+    block) whose internal numbering has nothing to do with the article's own citation identifiers —
+    never let that internal numbering leak into which title gets written for `N`. Because the
+    References section is edited incrementally as citations are added across the core draft,
+    exploration integration, and any review-driven edits, re-verify this mapping on every pass, not
+    only when a new citation is first added. A correctly-placed, well-grounded inline citation whose
+    References entry names an unrelated source is just as broken as an outright missing citation —
+    fix the References entry to describe the true source at its `url`; never edit the inline `url`
+    to match a wrong entry instead.
   - Scan every paragraph opener for bold-label patterns from guideline structural
     artifacts: `**Best Practice:**`, `**The Best Practice:**`, `**The Challenge:**`,
     `**The Old Challenge:**`, `**The New Reality:**`, or any bold label ending in `:` that
@@ -105,18 +133,35 @@ class ArticleWriter(Node):
   - Scan the `## References` section: if its entries use a numbered list format (e.g., `1.`, `2.`),
     reformat every entry as a bulleted list item following `- [N] [Title or short description](url)`,
     preserving each citation identifier `N` to match the inline citations already present in the article.
-  - **Image rendering syntax:** Scan every image in the article. Images sourced from a URL MUST be
-    rendered using standard Markdown image syntax: `![alt text](url)`. A raw URL on its own line
-    (not wrapped in `![]()`) will NOT display as an image — it renders as a plain hyperlink. If a
-    bare URL followed by a caption line is found, rewrite it as:
+  - **Image rendering syntax:** Scan every `Image N:` caption line in the article. Each one MUST
+    be immediately preceded (with at most one blank line between) by either (a) a closing Mermaid
+    fence (` ``` `), or (b) a standard Markdown image embed (`![alt text](url)`). If an `Image N:`
+    caption is preceded by anything else — including a bare URL, a blank line with no embed above
+    it, or nothing at all — that caption is **orphaned** and must be fixed before returning.
+
+    Two cases to fix:
+
+    **Case 1 — bare URL + caption:** A raw URL on its own line is not wrapped in `![]()` and will
+    NOT display as an image. Rewrite as:
     ```
     ![<concise alt text>](<url>)
 
-    *<caption text>*
+    Image N: <caption text>
     ```
-    The alt text should be a short description of what the image shows (used when the image cannot
-    load). The caption line below must follow the `Image N:` format required by the structure
-    profile and be italicised. Never leave an image URL as a raw standalone line.
+
+    **Case 2 — orphaned caption (no URL at all):** An `Image N:` caption with no preceding embed
+    and no preceding URL means the image body was never written. Go back to the `<research>` and
+    find the most appropriate image URL for the required illustration. Then insert:
+    ```
+    ![<concise alt text>](<url from research>)
+
+    Image N: <caption text>
+    ```
+    If no suitable URL exists in the research, remove the caption entirely and incorporate the
+    image description into the surrounding prose — do not leave a caption with no visible image.
+
+    In all cases the alt text should be a short description of what the image shows. Never leave
+    an `Image N:` caption without a preceding Mermaid block or `![…](…)` embed.
   - Scan every diagram and image caption (lines beginning with `Image N:` or `Table N:`). A caption
     must be a single concise sentence of no more than 30 words that identifies what the diagram or
     table shows — not a multi-sentence walkthrough of its content. If a caption exceeds one sentence
@@ -471,8 +516,14 @@ Your output must satisfy all of the following:
 - **Citations:** Every factual claim drawn from the `<research>` must be cited following the citation
   rules in the `<structure_profile>`. Common-knowledge statements may be left uncited, but any claim
   a reader would want to verify — or that derives directly from a golden, exploitation, or exploration
-  source — must carry a `[[N]](url)` reference. This applies equally to all research tiers. Err on
-  the side of citing rather than omitting when a claim is clearly traceable to a provided source.
+  source — must carry a `[[N]](url)` reference. This applies equally to all research tiers, without
+  exception: golden-source and exploitation-source content is used the most heavily throughout the
+  article, so it must never be assumed "safe to leave uncited" just because it is highest-priority —
+  highest-priority sourcing makes citing it more important, not less. Err on the side of citing rather
+  than omitting when a claim is clearly traceable to a provided source. As you write each section,
+  cite golden and exploitation facts inline in the same sentence or clause where you state them —
+  do not defer citing them to a later cleanup pass, and never let a paragraph built from golden or
+  exploitation material reach the end of the section without its `[[N]](url)` markers already in place.
   **First-person anecdotes are not exempt.** If you adapt a story, scenario, or experience drawn
   from a research source into first-person "we" voice as a narrative hook, you must still cite the
   original source. Rewriting content into the course voice does not make it uncitable; an uncited

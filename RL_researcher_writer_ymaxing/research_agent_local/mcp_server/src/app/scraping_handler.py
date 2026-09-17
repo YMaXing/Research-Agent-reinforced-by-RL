@@ -6,14 +6,15 @@ import re
 from typing import List
 from urllib.parse import urlparse
 
+import httpx
 from firecrawl import AsyncFirecrawl
-from firecrawl.v2.utils.error_handler import WebsiteNotSupportedError
+from firecrawl.v2.utils.error_handler import PaymentRequiredError, WebsiteNotSupportedError
 from langchain.chat_models.base import BaseChatModel
 from arxiv2md import ingest_paper
 
 from ..config.prompts import PROMPT_CLEAN_ARXIV_MARKDOWN, PROMPT_CLEAN_MARKDOWN
 from ..config.settings import settings
-from ..utils.llm_utils import get_chat_model
+from ..utils.llm_utils import extract_text_content, get_chat_model
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +25,163 @@ MAX_AGE_ONE_WEEK = 604800000  # 1 week in milliseconds for 500% faster scraping
 
 # LLM cleaning uses settings.scraping_model (default: gemini-2.5-flash) which has a
 # 1M token context window and handles all article sizes in a single pass.
+
+# ---------------------------------------------------------------------------
+# Jina.ai Reader — used for PDF URLs (avoids Firecrawl 2-column PDF artifacts)
+# ---------------------------------------------------------------------------
+JINA_BASE_URL = "https://r.jina.ai/"
+JINA_TIMEOUT_SECONDS = 60
+JINA_HEADERS = {
+    "Accept": "text/plain",
+    "X-Return-Format": "markdown",
+}
+
+
+def _build_jina_headers() -> dict:
+    """Build Jina.ai request headers, adding Authorization when an API key is configured."""
+    headers = dict(JINA_HEADERS)
+    if settings.jina_api_key:
+        headers["Authorization"] = f"Bearer {settings.jina_api_key.get_secret_value()}"
+    return headers
+
+
+def is_pdf_url(url: str) -> bool:
+    """Return True if the URL points to a PDF document.
+
+    Detects:
+    - URLs whose path ends with ``.pdf`` (e.g. http://example.com/paper.pdf)
+    - arXiv PDF URLs (https://arxiv.org/pdf/<id>)
+    """
+    parsed = urlparse(url)
+    if parsed.path.lower().endswith(".pdf"):
+        return True
+    if "arxiv.org" in parsed.netloc and parsed.path.startswith("/pdf/"):
+        return True
+    return False
+
+
+async def scrape_katex_article(url: str, firecrawl_app: AsyncFirecrawl) -> dict:
+    """Scrape a KaTeX/MathJax-heavy page, preserving LaTeX formulas.
+
+    Standard scraping (Firecrawl markdown) loses math because it converts the
+    *visual* KaTeX HTML span to garbled unicode rather than reading the embedded
+    LaTeX source.  This function instead:
+
+    1. Requests the raw JS-rendered HTML from Firecrawl (``rawHtml`` format).
+    2. Uses BeautifulSoup to locate every ``.katex-display`` (block) and
+       ``.katex`` (inline) span and replaces each with the original LaTeX text
+       stored in the hidden ``<annotation encoding="application/x-tex">`` tag.
+    3. Converts the cleaned HTML to Markdown via ``html2text``.
+
+    Falls back to the normal ``scrape_url`` path if rawHtml is unavailable.
+    """
+    import html2text as _h2t
+    from bs4 import BeautifulSoup
+
+    # Ask Firecrawl for the full JS-rendered HTML (includes KaTeX annotations).
+    try:
+        res = await firecrawl_app.scrape(url, formats=["rawHtml"])
+        raw_html: str | None = getattr(res, "rawHtml", None) or getattr(res, "raw_html", None)
+        title: str = (
+            res.metadata.title
+            if res and res.metadata and res.metadata.title
+            else "N/A"
+        )
+    except Exception as exc:
+        logger.error(f"Firecrawl rawHtml request failed for {url}: {exc}")
+        return {"url": url, "title": "Scraping Failed", "markdown": str(exc), "success": False}
+
+    if not raw_html:
+        logger.warning(f"rawHtml empty for {url} — falling back to standard scrape.")
+        return await scrape_url(url, firecrawl_app)
+
+    soup = BeautifulSoup(raw_html, "html.parser")
+
+    # Step 1: replace display math blocks ($$...$$) first — katex-display spans
+    # wrap a child katex span, so we must replace outer before inner.
+    for span in soup.find_all("span", class_="katex-display"):
+        annotation = span.find("annotation", {"encoding": "application/x-tex"})
+        if annotation:
+            latex = annotation.get_text()
+            span.replace_with(soup.new_string(f"\n\n$$\n{latex}\n$$\n\n"))
+
+    # Step 2: replace remaining inline math spans ($...$).
+    for span in soup.find_all("span", class_="katex"):
+        annotation = span.find("annotation", {"encoding": "application/x-tex"})
+        if annotation:
+            latex = annotation.get_text()
+            span.replace_with(soup.new_string(f"${latex}$"))
+
+    # Step 3: target the main article body; fall back to <body>.
+    main = (
+        soup.find("article")
+        or soup.find("main")
+        or soup.find("div", class_="post-content")
+        or soup.find("div", class_="content")
+        or soup.body
+    )
+    cleaned_html = str(main) if main else str(soup)
+
+    # Step 4: HTML → Markdown.
+    converter = _h2t.HTML2Text()
+    converter.ignore_links = False
+    converter.ignore_images = True   # images are URLs, not useful as ground-truth text
+    converter.body_width = 0         # no hard line-wrapping
+    converter.protect_links = True
+    markdown = converter.handle(cleaned_html)
+
+    # Collapse runs of 3+ blank lines to 2.
+    markdown = re.sub(r"\n{3,}", "\n\n", markdown)
+
+    logger.info(
+        f"✅ KaTeX-aware scrape: {url}  "
+        f"({len(markdown.splitlines())} lines, LaTeX preserved)"
+    )
+    return {"url": url, "title": title, "markdown": markdown, "success": bool(markdown.strip())}
+
+
+async def scrape_with_jina(url: str) -> dict:
+    """Scrape a URL using the Jina.ai Reader API.
+
+    Handles PDFs natively and returns clean structured markdown without the
+    2-column layout artifacts that Firecrawl produces for PDF documents.
+    No LLM post-processing is required for the output.
+
+    Returns:
+        dict with keys: url, title, markdown, success
+    """
+    jina_url = JINA_BASE_URL + url
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                jina_url,
+                headers=_build_jina_headers(),
+                timeout=JINA_TIMEOUT_SECONDS,
+                follow_redirects=True,
+            )
+            response.raise_for_status()
+            raw = response.text.strip()
+
+        # Strip Jina metadata preamble (Title / URL Source / Published Time /
+        # Number of Pages / "Markdown Content:" header) so the body starts at
+        # the actual document content.
+        if "Markdown Content:" in raw:
+            raw = raw[raw.index("Markdown Content:") + len("Markdown Content:"):].strip()
+
+        # Extract title from response header, then fall back to first H1 in body.
+        title = response.headers.get("x-title", "").strip()
+        if not title:
+            for line in raw.splitlines():
+                if line.strip().startswith("# "):
+                    title = line.strip()[2:].strip()
+                    break
+        title = title or "N/A"
+
+        logger.info(f"✅ Jina.ai scraped: {url} ({len(raw.splitlines())} lines)")
+        return {"url": url, "title": title, "markdown": raw, "success": bool(raw)}
+    except Exception as exc:
+        logger.error(f"Jina.ai scraping failed for {url}: {exc}")
+        return {"url": url, "title": "Scraping Failed", "markdown": str(exc), "success": False}
 
 
 def slugify(text: str, max_length: int = 60) -> str:
@@ -47,13 +205,14 @@ def build_filename(title: str, url: str, existing_names: set) -> str:
     return f"{candidate}.md"
 
 
-async def scrape_url(url: str, firecrawl_app: AsyncFirecrawl) -> dict:
+async def scrape_url(url: str, firecrawl_app: AsyncFirecrawl, use_cache: bool = True) -> dict:
     """
     Scrape a URL using Firecrawl with retries and return a dict with url, title, markdown.
 
     Uses maxAge=1 week for 500% faster scraping by leveraging cached data when available.
     This optimization significantly improves performance for documentation, articles, and
     relatively static content while maintaining freshness within acceptable limits.
+    Pass use_cache=False to bypass the Firecrawl cache (e.g. on a no-content retry).
     """
     max_retries = 3
     base_delay = 5  # seconds
@@ -62,13 +221,19 @@ async def scrape_url(url: str, firecrawl_app: AsyncFirecrawl) -> dict:
     for attempt in range(max_retries):
         try:
             # Add timeout to individual Firecrawl request
-            # Use maxAge=1 week for 500% faster scraping with cached data
-            res = await firecrawl_app.scrape(
-                url, formats=["markdown"], maxAge=MAX_AGE_ONE_WEEK, timeout=timeout_seconds
-            )
+            # Use maxAge=1 week for 500% faster scraping with cached data (unless bypassed)
+            scrape_kwargs: dict = {"formats": ["markdown"], "timeout": timeout_seconds}
+            if use_cache:
+                scrape_kwargs["maxAge"] = MAX_AGE_ONE_WEEK
+            res = await firecrawl_app.scrape(url, **scrape_kwargs)
             title = res.metadata.title if res and res.metadata and res.metadata.title else "N/A"
             markdown_content = res.markdown if res and res.markdown else ""
             return {"url": url, "title": title, "markdown": markdown_content, "success": True}
+        except PaymentRequiredError as e:
+            # No credits left — retrying will never help, fail immediately.
+            msg = f"⚠️ Firecrawl credits exhausted, skipping {url}: {e}"
+            logger.error(msg)
+            return {"url": url, "title": "Payment Required", "markdown": msg, "success": False}
         except WebsiteNotSupportedError as e:
             # Unsupported sites (e.g. x.com/Twitter) will never succeed — skip immediately.
             msg = f"⚠️ Skipping unsupported URL {url}: {e}"
@@ -137,16 +302,6 @@ def arxiv_html_url(arxiv_id: str) -> str:
 # arXiv special handler (added for high-quality paper scraping)
 # ─────────────────────────────────────────────────────────────
 
-# Tiny private helper for fallback (keeps the main function clean)
-async def _fallback_firecrawl_scrape(url: str) -> dict:
-    """Fallback using a fresh Firecrawl instance (uses first available key)."""
-    key = settings.firecrawl_api_key or settings.firecrawl_api_key_2
-    if key is None:
-        raise ValueError("No Firecrawl API key configured")
-    firecrawl_app = AsyncFirecrawl(api_key=key.get_secret_value())
-    return await scrape_url(url, firecrawl_app)
-
-
 async def scrape_arxiv_url(
     url: str,
     article_guidelines: str,
@@ -156,8 +311,8 @@ async def scrape_arxiv_url(
     Dedicated handler for arXiv URLs.
     1. Uses arxiv2markdown (best quality).
     2. Runs a lightweight LLM cleanup to fix any remaining LaTeX quirks.
-    3. Falls back to Firecrawl if arxiv2markdown fails.
-    4. Then runs the normal clean_markdown step.
+    3. Falls back to Jina.ai (PDF URL) if arxiv2markdown fails — handles papers
+       whose HTML version is unavailable without Firecrawl 2-column artifacts.
     """
     logger.info(f"🔬 Detected arXiv URL, using arxiv2markdown: {url}")
 
@@ -200,7 +355,7 @@ async def scrape_arxiv_url(
             )
             try:
                 response = await chat_model.ainvoke(clean_prompt)
-                cleaned_md = response.content if hasattr(response, "content") else str(response)
+                cleaned_md = extract_text_content(response.content) if hasattr(response, "content") else str(response)
                 cleaned_md = _strip_outer_code_fence(cleaned_md)
                 logger.info(f"✅ arXiv LaTeX cleanup completed for {url}")
             except Exception as e:
@@ -216,18 +371,14 @@ async def scrape_arxiv_url(
             "success": True,
         }
     except Exception as e:
-        logger.warning(f"arxiv2markdown failed for {url}: {e}. Falling back to Firecrawl.")
-        scraped = await _fallback_firecrawl_scrape(url)
-        # Run the regular web-page cleaning step only for the Firecrawl fallback path,
-        # since arxiv2markdown output does not contain web-page boilerplate and the
-        # PROMPT_CLEAN_ARXIV_MARKDOWN step already handled all necessary cleanup.
-        # Skipping this for the primary path prevents a second full-paper LLM pass
-        # that would truncate long articles due to output-token limits.
-        if scraped.get("success", False):
-            final_cleaned = await clean_markdown(
-                scraped["markdown"], article_guidelines, url, chat_model
-            )
-            scraped["markdown"] = final_cleaned
+        logger.warning(f"arxiv2markdown failed for {url}: {e}. Falling back to Jina.ai.")
+        # Use the explicit PDF URL so Jina.ai fetches the full paper content rather
+        # than the abstract landing page (handles papers without an HTML version).
+        arxiv_id_fb = extract_arxiv_id(url)
+        pdf_url = f"https://arxiv.org/pdf/{arxiv_id_fb}" if arxiv_id_fb else url
+        scraped = await scrape_with_jina(pdf_url)
+        # Correct url field back to the originally requested arXiv URL.
+        scraped["url"] = url
 
     return scraped
 
@@ -280,10 +431,7 @@ async def clean_markdown(
     try:
         # Add timeout to LLM API call
         response = await asyncio.wait_for(chat_model.ainvoke(prompt_text), timeout=timeout_seconds)
-        cleaned_content = response.content if hasattr(response, "content") else str(response)
-
-        if isinstance(cleaned_content, list):
-            cleaned_content = "".join(str(part) for part in cleaned_content)
+        cleaned_content = extract_text_content(response.content) if hasattr(response, "content") else str(response)
 
         # Strip outer code fence if the LLM wrapped its output (e.g. ```markdown\n...\n```)
         cleaned_content = _strip_outer_code_fence(cleaned_content)
@@ -301,7 +449,22 @@ async def clean_markdown(
 
 
 async def scrape_and_clean(url: str, article_guidelines: str, firecrawl_app: AsyncFirecrawl, chat_model) -> dict:
-    """Scrape and clean a single URL, returning dict with url, title, markdown."""
+    """Scrape and clean a single URL, returning dict with url, title, markdown.
+
+    PDF URLs are routed directly to Jina.ai Reader, which handles PDF layout
+    natively and returns clean structured markdown without 2-column artifacts.
+    LLM cleaning is skipped for Jina.ai output.
+
+    For all other URLs, Firecrawl is used followed by an LLM cleaning step.
+    If cleaning reveals the scraped content was pure boilerplate (LLM returns
+    <!-- NO_CONTENT -->), a single no-cache retry is attempted so that a stale
+    Firecrawl cache entry for JS-heavy SPAs doesn't permanently block the page.
+    """
+    # Route PDF URLs to Jina.ai — avoids Firecrawl 2-column layout artifacts.
+    if is_pdf_url(url):
+        logger.info(f"📄 PDF URL detected, routing to Jina.ai: {url}")
+        return await scrape_with_jina(url)
+
     scraped = await scrape_url(url, firecrawl_app)
     status_marker = "✓" if scraped["success"] else "✗"
     number_of_tokens = chat_model.get_num_tokens(scraped["markdown"])
@@ -309,6 +472,46 @@ async def scrape_and_clean(url: str, article_guidelines: str, firecrawl_app: Asy
     logger.info(f"📥 Scraped: {url} {status_marker}{token_info}")
     if scraped["success"]:
         cleaned_md = await clean_markdown(scraped["markdown"], article_guidelines, url, chat_model)
+
+        # Detect the boilerplate-only marker from PROMPT_CLEAN_MARKDOWN.
+        # When Firecrawl returned a stale cached shell (JS SPA not yet hydrated),
+        # the LLM will emit <!-- NO_CONTENT -->. Retry without cache once.
+        if cleaned_md.strip() == "<!-- NO_CONTENT -->":
+            logger.warning(
+                f"⚠️  Clean step found only boilerplate for {url} — retrying without cache."
+            )
+            scraped_nocache = await scrape_url(url, firecrawl_app, use_cache=False)
+            nc_tokens = chat_model.get_num_tokens(scraped_nocache["markdown"])
+            logger.info(f"📥 Re-scraped (no-cache): {url} ({'✓' if scraped_nocache['success'] else '✗'}) ({nc_tokens} tokens)")
+            if scraped_nocache["success"] and scraped_nocache["markdown"].strip():
+                cleaned_md = await clean_markdown(scraped_nocache["markdown"], article_guidelines, url, chat_model)
+                scraped = scraped_nocache
+
+        if cleaned_md.strip() == "<!-- NO_CONTENT -->":
+            # Both Firecrawl attempts (cached + no-cache) returned only boilerplate.
+            # This typically means the page is a JS SPA whose content is injected
+            # after the initial HTML loads (e.g. openai.com/api/pricing/).
+            # Fall back to Jina.ai, which handles client-rendered pages better.
+            logger.warning(
+                f"⚠️  Both Firecrawl attempts returned only boilerplate for {url} "
+                f"— falling back to Jina.ai."
+            )
+            jina_result = await scrape_with_jina(url)
+            if jina_result["success"] and jina_result["markdown"].strip():
+                jina_tokens = chat_model.get_num_tokens(jina_result["markdown"])
+                logger.info(f"📥 Jina.ai scraped: {url} (✓) ({jina_tokens} tokens)")
+                jina_cleaned = await clean_markdown(jina_result["markdown"], article_guidelines, url, chat_model)
+                if jina_cleaned.strip() and jina_cleaned.strip() != "<!-- NO_CONTENT -->":
+                    scraped = jina_result
+                    cleaned_md = jina_cleaned
+                    logger.info(f"✅ Jina.ai fallback succeeded for {url}")
+                else:
+                    logger.warning(f"⚠️  Jina.ai fallback also returned no content for {url} — leaving empty.")
+                    cleaned_md = ""
+            else:
+                logger.warning(f"⚠️  Jina.ai fallback failed for {url} — leaving empty.")
+                cleaned_md = ""
+
         scraped["markdown"] = cleaned_md
         number_of_tokens = chat_model.get_num_tokens(scraped["markdown"])
         token_info = f" (tokens: {number_of_tokens})"
@@ -330,30 +533,20 @@ async def scrape_urls_concurrently(
     Returns:
         List of scraping results, each containing the scraped data or error information
     """
-    # Build one AsyncFirecrawl client per available API key (1 or 2).
-    # Each client gets its own semaphore so their rate limits stay independent.
-    # URLs are distributed round-robin across clients.
-    api_keys = [
-        k for k in [settings.firecrawl_api_key, settings.firecrawl_api_key_2]
-        if k is not None
-    ]
-    if not api_keys:
+    if not settings.firecrawl_api_key:
         raise ValueError("No Firecrawl API key configured (set FIRECRAWL_API_KEY in .env)")
 
-    clients = [AsyncFirecrawl(api_key=k.get_secret_value()) for k in api_keys]
-    semaphores = [asyncio.Semaphore(concurrency_limit) for _ in clients]
-    n_clients = len(clients)
+    client = AsyncFirecrawl(api_key=settings.firecrawl_api_key.get_secret_value())
+    semaphore = asyncio.Semaphore(concurrency_limit)
 
     chat_model = get_chat_model(settings.scraping_model)
     logger.info(
-        f"Starting scraping of {len(other_urls)} URL(s) with {n_clients} Firecrawl key(s), "
-        f"concurrency limit {concurrency_limit} per key..."
+        f"Starting scraping of {len(other_urls)} URL(s), concurrency limit {concurrency_limit}..."
     )
 
     async def scrape_with_semaphore(url: str, idx: int) -> dict:
-        client_idx = idx % n_clients
-        async with semaphores[client_idx]:
-            return await scrape_and_clean(url, article_guidelines, clients[client_idx], chat_model)
+        async with semaphore:
+            return await scrape_and_clean(url, article_guidelines, client, chat_model)
 
     # Process URLs concurrently
     tasks = [scrape_with_semaphore(url, i) for i, url in enumerate(other_urls)]

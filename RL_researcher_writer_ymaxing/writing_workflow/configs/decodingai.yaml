@@ -15,59 +15,60 @@ context:
 memory:
   checkpointer: "in_memory"
 num_reviews: 2
+# Shared anchors merged into each node below via `<<:` to avoid repeating the same
+# model_id/thinking defaults on every node (ignored by AppConfig's default extra="ignore").
+_defaults:
+  flash_model: &flash_model
+    model_id: "google_genai:gemini-3.7-flash"
+  no_thinking: &no_thinking
+    include_thoughts: false
+    thinking_level: null
 nodes:
   generate_media_items:
-    model_id: "google_genai:gemini-2.5-flash"
+    <<: *flash_model
     model_config:
+      <<: *no_thinking
       temperature: 0.0
-      include_thoughts: false
-      thinking_budget: null
     tools:
       mermaid_diagram_generator:
-        model_id: "google_genai:gemini-2.5-flash"
+        <<: *flash_model
         config:
+          <<: *no_thinking
           temperature: 0.0
-          include_thoughts: false
-          thinking_budget: null
   write_article:
-    model_id: "google_genai:gemini-2.5-pro"
+    <<: *flash_model
     model_config:
+      <<: *no_thinking
       temperature: 0.7
-      include_thoughts: false
-      thinking_budget: null
       max_retries: 1
   integrate_exploration:
-    model_id: "google_genai:gemini-2.5-flash"
+    <<: *flash_model
     model_config:
       temperature: 1.0
       include_thoughts: true
-      thinking_budget: 8192
+      thinking_level: "high"
       max_retries: 1
   review_article:
-    model_id: "google_genai:gemini-2.5-pro"
+    <<: *flash_model
     model_config:
+      <<: *no_thinking
       temperature: 0.0
-      include_thoughts: false
-      thinking_budget: null
       max_retries: 1
   edit_article:
-    model_id: "google_genai:gemini-2.5-pro"
+    <<: *flash_model
     model_config:
+      <<: *no_thinking
       temperature: 0.1
-      include_thoughts: false
-      thinking_budget: null
       max_retries: 1
   review_selected_text:
-    model_id: "google_genai:gemini-2.5-pro"
+    <<: *flash_model
     model_config:
+      <<: *no_thinking
       temperature: 0.0
-      include_thoughts: false
-      thinking_budget: null
       max_retries: 1
   edit_selected_text:
-    model_id: "google_genai:gemini-2.5-pro"
+    <<: *flash_model
     model_config:
+      <<: *no_thinking
       temperature: 0.1
-      include_thoughts: false
-      thinking_budget: null
       max_retries: 1

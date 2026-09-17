@@ -1,0 +1,96 @@
+# Auto-extracted brief for: Distinct_AI_Models
+# Source: article_ground_truth.md
+# REVIEW BEFORE USE — check all fields, especially those marked
+# '# TODO: review' which require course-context knowledge.
+# Then run:
+#   uv run python generate_article_guideline.py --article Distinct_AI_Models
+
+lesson_number: 5
+title: Distinct AI Models Seem To Converge On How They Encode Reality
+topic_summary:
+  'Plan a lesson exploring how and why distinct AI models (vision, language, and others) develop increasingly
+  similar internal representations of the world despite different training data and architectures. Introduce the Platonic
+  representation hypothesis as an explanation for this convergence, drawing on Plato''s cave allegory to frame models as observers
+  of data "shadows" from the same underlying reality. Cover geometric techniques for measuring representational similarity
+  across models and review empirical evidence that similarity grows with model scale and capability. Address debates, experimental
+  caveats, and potential engineering implications of shared representations.
+
+  '
+why_valuable:
+  "AI engineers building agentic systems must understand when and why models converge on shared world models,
+  as this enables cross-modal knowledge transfer, unified embeddings, and more robust multi-modal agents rather than siloed
+  single-modality tools.
+
+  "
+target_length_words: 1884
+theory_practice_ratio: 100% theory - 0% practice
+lesson_scope:
+  "This lesson sits after foundational coverage of embeddings, vector spaces, and single-model representation
+  learning, and before lessons on practical multi-modal agent architectures that exploit representation alignment for cross-modal
+  reasoning and tool use.
+
+  "
+audience:
+  "Intermediate AI engineers who already understand neural network training, high-dimensional embeddings, and basic
+  vector similarity but have not yet explored systematic similarities across independently trained models or modalities.
+
+  "
+concepts_from_previous_lessons:
+  - Vector embeddings as geometric representations of concepts and semantic similarity via direction/proximity
+  - How neural networks form internal activations that encode input features during training
+  - Scaling laws and why larger models trained on more data tend to perform better
+concepts_for_future_lessons:
+  - Cross-modal representation translation techniques for building unified multi-modal agents
+  - Leveraging convergent representations to improve knowledge transfer and reduce modality-specific biases in agentic workflows
+sections:
+  - title: Introduction
+    target_words: 513
+    key_points:
+      - "Core puzzle: do language models and vision models share a unified concept of 'dog' despite different training data
+        types"
+      - "Platonic representation hypothesis: models converge on shared 'ideal forms' behind the data shadows they observe"
+      - Evidence that representational similarity increases with model capability and scale
+      - "Community split on the hypothesis: obvious to some, obviously wrong to others, and why the ambiguity is productive"
+      - "Plato's cave allegory adapted to AI: real world vs. data streams vs. model internal representations"
+      - "Why measuring convergence matters: hints at universal structures AI systems are discovering"
+  - title: The Company Being Kept
+    target_words: 614
+    key_points:
+      - Neural network representations as high-dimensional activation vectors rather than human-interpretable features
+      - "Geometric comparison of representations: vectors pointing in similar directions imply conceptual similarity"
+      - "Firth's linguistic principle applied to AI: 'you shall know a representation by the company it keeps'"
+      - "Measuring similarity of similarities: comparing relative cluster geometries of concepts across separate models"
+      - "Anna Karenina scenario contrast: successful models converge while unsuccessful models diverge idiosyncratically"
+      - Early representational similarity research focused on vision models and its limitations before language models arrived
+  - title: Convergent Evolution
+    target_words: 331
+    key_points:
+      - "Existential questions during the LLM scaling era: does scale improve performance by better approximating the true world
+        or by memorizing dataset quirks"
+      - "Hierarchy of convergence evidence: same-data models, different-data models, then cross-modality (vision vs language)"
+      - Experimental design contrasting vision models on images with language models on corresponding captions
+      - "Prediction of Platonic hypothesis: representational similarity should increase monotonically with model capability"
+      - Distinguishing convergence toward dataset artifacts versus genuine universals of the underlying reality
+  - title: Find the Universals
+    target_words: 426
+    key_points:
+      - "Experimental degrees of freedom that complicate similarity claims: layer choice, comparison metric, dataset selection"
+      - Critique that aligned Wikipedia-style datasets artificially inflate apparent convergence
+      - Contrast between seeking universals (Isola) versus studying where and why models systematically differ (Efros)
+      - "Practical payoffs even from partial alignment: representation translation between models and joint multi-modal training"
+      - Tension between simple Platonic explanations and the irreducible complexity of trillion-parameter systems (Clune)
+      - Science as the pursuit of explanatory commonalities rather than exhaustive cataloging of differences
+golden_sources:
+  - title: The Platonic Representation Hypothesis
+    url: https://arxiv.org/abs/2405.07987
+other_sources:
+  - title: The 'Anna Karenina' Hypothesis for Representational Similarity
+    url: https://arxiv.org/abs/2106.07682
+  - title: GETTING ALIGNED ON REPRESENTATIONAL ALIGNMENT
+    url: https://arxiv.org/abs/2310.13018
+  - title: Layers at Similar Depths Generate Similar Activations Across LLM Architectures
+    url: https://arxiv.org/abs/2504.08775
+  - title: "Better Together: Leveraging Unpaired Multimodal Data for Stronger Unimodal Models"
+    url: https://arxiv.org/abs/2510.08492
+  - title: Harnessing the Universal Geometry of Embeddings
+    url: https://arxiv.org/abs/2505.12540

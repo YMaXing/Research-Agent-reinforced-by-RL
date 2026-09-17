@@ -1,0 +1,1320 @@
+[
+  {
+    "article": "06_tools__var_standard",
+    "sections": {
+      "Introduction": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          }
+        }
+      },
+      "Understanding why agents need tools": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.8,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.36331041742047976,
+            "deep": 0.28025393901516404
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.19867767507647777
+          }
+        }
+      },
+      "Implementing tool calls from scratch": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.8,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.8,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.3790993717311931,
+            "deep": 0.5119897371796982
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.19867767507647777,
+            "deep": 0.0
+          }
+        }
+      },
+      "Implementing a tool calling framework from scratch": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 1.0,
+            "breadth": 0.3575
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.13075227788559593,
+            "deep": 0.5128120785500478
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0006578730962797102
+          }
+        }
+      },
+      "Implementing production-level tool calls with Gemini": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.55,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.13157461925594557,
+            "deep": 0.26446498470445057
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0664451827242525,
+            "deep": 0.0
+          }
+        }
+      },
+      "Using Pydantic models as tools for on-demand structured outputs": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.55,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.13157461925594557,
+            "deep": 0.26446498470445057
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.132890365448505,
+            "deep": 0.0
+          }
+        }
+      },
+      "The downsides of running tools in a loop": {
+        "tag": {
+          "light": {
+            "depth": 1.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.8,
+            "breadth": 0.55
+          },
+          "deep": {
+            "depth": 1.0,
+            "breadth": 0.55
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 1.0,
+            "standard": 1.0,
+            "deep": 1.0
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.19801980198019808,
+            "deep": 0.19801980198019808
+          }
+        }
+      },
+      "Popular tools used within the industry": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.8
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.21594684385382065,
+            "deep": 0.0
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.19867767507647777,
+            "deep": 0.0
+          }
+        }
+      },
+      "Conclusion": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          }
+        }
+      }
+    }
+  },
+  {
+    "article": "08_react_practice__var_demanding",
+    "sections": {
+      "Introduction": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.55,
+            "breadth": 0.55
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.55
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.28025393901516404,
+            "deep": 0.36331041742047976
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.26446498470445057,
+            "deep": 0.13157461925594557
+          }
+        }
+      },
+      "Setup and Environment": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0664451827242525
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          }
+        }
+      },
+      "Tool Layer: Mock Search Implementation": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.13157461925594557,
+            "deep": 0.26446498470445057
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          }
+        }
+      },
+      "Thought Phase: Prompt Construction and Generation": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.13157461925594557,
+            "deep": 0.26446498470445057
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.19867767507647777
+          }
+        }
+      },
+      "Action Phase: Function Calling and Parsing": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.132890365448505
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0664451827242525,
+            "deep": 0.0
+          }
+        }
+      },
+      "Control Loop: Messages, Scratchpad, and Orchestration": {
+        "tag": {
+          "light": {
+            "depth": 0.55,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.55,
+            "standard": 0.9133104174204799,
+            "deep": 0.8302539390151642
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.36396829051675944,
+            "deep": 0.08157626393868628
+          }
+        }
+      },
+      "Tests and Traces: Success and Graceful Fallback": {
+        "tag": {
+          "light": {
+            "depth": 0.3575,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.55,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.8,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.3575,
+            "standard": 0.6556809808887869,
+            "deep": 0.3068437715864611
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          }
+        }
+      },
+      "Conclusion": {
+        "tag": {
+          "light": {
+            "depth": 0.3575,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.55,
+            "breadth": 0.55
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.55
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.3575,
+            "standard": 0.42328730962797284,
+            "deep": 0.4897324923522254
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.36396829051675944,
+            "deep": 0.08157626393868628
+          }
+        }
+      }
+    }
+  },
+  {
+    "article": "09_RAG__var_standard",
+    "sections": {
+      "Introduction": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.3575
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.55
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0006578730962797102
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.132890365448505
+          }
+        }
+      },
+      "The RAG System: Core Components": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.19867767507647777,
+            "deep": 0.0
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0006578730962797102
+          }
+        }
+      },
+      "The RAG Pipeline: Ingestion and Retrieval": {
+        "tag": {
+          "light": {
+            "depth": 0.3575,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.3575,
+            "standard": 0.0,
+            "deep": 0.1436912437090885
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          }
+        }
+      },
+      "Advanced RAG Techniques": {
+        "tag": {
+          "light": {
+            "depth": 0.55,
+            "breadth": 0.55
+          },
+          "standard": {
+            "depth": 1.0,
+            "breadth": 0.55
+          },
+          "deep": {
+            "depth": 1.0,
+            "breadth": 0.3575
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.55,
+            "standard": 0.7480198019801982,
+            "deep": 0.7480198019801982
+          },
+          "breadth": {
+            "light": 0.55,
+            "standard": 0.6164451827242526,
+            "deep": 0.4835548172757476
+          }
+        }
+      },
+      "Agentic RAG": {
+        "tag": {
+          "light": {
+            "depth": 0.55,
+            "breadth": 0.55
+          },
+          "standard": {
+            "depth": 0.55,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 1.0,
+            "breadth": 0.55
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.55,
+            "standard": 0.680752277885596,
+            "deep": 1.0
+          },
+          "breadth": {
+            "light": 0.55,
+            "standard": 0.41710963455149513,
+            "deep": 0.6828903654485051
+          }
+        }
+      },
+      "Conclusion": {
+        "tag": {
+          "light": {
+            "depth": 0.55,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.3575
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.55,
+            "standard": 0.48421269037202747,
+            "deep": 0.4177675076477749
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          }
+        }
+      }
+    }
+  },
+  {
+    "article": "13_agent_framework",
+    "sections": {
+      "Introduction": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          }
+        }
+      },
+      "Framework Choice Under Uncertainty": {
+        "tag": {
+          "light": {
+            "depth": 0.55,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.55
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.55,
+            "standard": 0.6828903654485051,
+            "deep": 0.41710963455149513
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.19867767507647777
+          }
+        }
+      },
+      "A Theory for Choosing: Decision Axes": {
+        "tag": {
+          "light": {
+            "depth": 0.55,
+            "breadth": 0.3575
+          },
+          "standard": {
+            "depth": 0.86,
+            "breadth": 0.3575
+          },
+          "deep": {
+            "depth": 0.55,
+            "breadth": 0.55
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.55,
+            "standard": 0.9970247689220753,
+            "deep": 0.5485197855333709
+          },
+          "breadth": {
+            "light": 0.3575,
+            "standard": 0.2910548172757476,
+            "deep": 0.4239451827242525
+          }
+        }
+      },
+      "The Landscape Today: Frameworks, Philosophies & Adoption Snapshot": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.132890365448505
+          }
+        }
+      },
+      "Framework Deep Dive: LangGraph": {
+        "tag": {
+          "light": {
+            "depth": 0.7125,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.55,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.55,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.7125,
+            "standard": 0.6467126903720275,
+            "deep": 0.5802675076477749
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          }
+        }
+      },
+      "Framework Deep Dive: OpenAI Agents SDK": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.55,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.19867767507647777
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.13223249235222528,
+            "deep": 0.06578730962797279
+          }
+        }
+      },
+      "Framework Deep Dive: AgentKit": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.55,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          }
+        }
+      },
+      "Framework Deep Dive: CrewAI": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.55,
+            "breadth": 0.55
+          },
+          "deep": {
+            "depth": 0.3575,
+            "breadth": 0.3575
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.13223249235222528,
+            "deep": 0.06578730962797279
+          }
+        }
+      },
+      "Framework Deep Dive: PydanticAI": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.3575,
+            "breadth": 0.3575
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0006578730962797102
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.06578730962797279,
+            "deep": 0.13223249235222528
+          }
+        }
+      },
+      "Framework Deep Dive: AutoGen": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.3575
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.19867767507647777
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          }
+        }
+      },
+      "Framework Deep Dive: Claude Agent SDK": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          }
+        }
+      },
+      "Framework Deep Dive: FastMCP": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.3575
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.3575
+          },
+          "deep": {
+            "depth": 0.55,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0664451827242525,
+            "deep": 0.0
+          },
+          "breadth": {
+            "light": 0.3575,
+            "standard": 0.35684212690372036,
+            "deep": 0.5561776750764779
+          }
+        }
+      },
+      "Choosing for Your Project: Decision Matrix & Tentative Forecasts": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.55,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.19867767507647777,
+            "deep": 0.0
+          }
+        }
+      },
+      "Our Capstone Pivots": {
+        "tag": {
+          "light": {
+            "depth": 0.55,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.55,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.55,
+            "standard": 0.3513223249235224,
+            "deep": 0.5506578730962798
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          }
+        }
+      },
+      "Conclusion": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.3575
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.017269168777342834
+          }
+        }
+      }
+    }
+  },
+  {
+    "article": "Dark_Dimension",
+    "sections": {
+      "Introduction": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.2817341534817935
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.13223249235222528,
+            "deep": 0.06578730962797279
+          }
+        }
+      },
+      "Dark Interactions": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.55,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.42975560014473224,
+            "deep": 0.21380875629091156
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.06578730962797279,
+            "deep": 0.13223249235222528
+          }
+        }
+      },
+      "A Dark Dimension": {
+        "tag": {
+          "light": {
+            "depth": 1.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 1.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 1.0,
+            "breadth": 0.55
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 1.0,
+            "standard": 1.0,
+            "deep": 1.0
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.5128120785500478,
+            "deep": 0.13075227788559593
+          }
+        }
+      }
+    }
+  },
+  {
+    "article": "HNSW",
+    "sections": {
+      "Introduction": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.3575
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.3575
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0006578730962797102,
+            "deep": 0.0
+          },
+          "breadth": {
+            "light": 0.3575,
+            "standard": 0.22460963455149507,
+            "deep": 0.4903903654485051
+          }
+        }
+      },
+      "Foundations of HNSW": {
+        "tag": {
+          "light": {
+            "depth": 0.7125,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.7125,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.8,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.7125,
+            "standard": 0.5809253807440545,
+            "deep": 0.4480350152955495
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0664451827242525
+          }
+        }
+      },
+      "Graph Construction": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.3575,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.26446498470445057,
+            "deep": 0.13157461925594557
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.13157461925594557,
+            "deep": 0.26446498470445057
+          }
+        }
+      },
+      "Implementation of HNSW": {
+        "tag": {
+          "light": {
+            "depth": 0.55,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.93,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.86,
+            "breadth": 0.3575
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.55,
+            "standard": 0.5500000000000002,
+            "deep": 0.5500000000000002
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.5128120785500478,
+            "deep": 0.13075227788559593
+          }
+        }
+      },
+      "Conclusion": {
+        "tag": {
+          "light": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "standard": {
+            "depth": 0.0,
+            "breadth": 0.0
+          },
+          "deep": {
+            "depth": 0.0,
+            "breadth": 0.0
+          }
+        },
+        "pairwise": {
+          "depth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          },
+          "breadth": {
+            "light": 0.0,
+            "standard": 0.0,
+            "deep": 0.0
+          }
+        }
+      }
+    }
+  }
+]

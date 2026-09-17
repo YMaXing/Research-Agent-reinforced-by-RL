@@ -523,79 +523,75 @@ def register_mcp_tools(mcp: FastMCP) -> None:
 
     @mcp.tool()
     @opik.track(type="tool", project_name=settings.opik_project_name)
-    async def predict_exploration_preset(research_directory: str, grok_only: bool = False) -> Dict[str, Any]:
+    async def predict_exploration_preset(research_directory: str) -> Dict[str, Any]:
         """
-        Predict the optimal exploration preset using the GRPO-trained RL model.
+        Predict the exploration preset using the GRPO-trained RL model + deterministic policy guard.
 
-        Reads exploitation_digest.md from the research directory and runs two-stage
-        inference:
+        Reads research_digest.md from the research directory and runs two-stage inference:
 
         Stage 1 — RL model (Qwen3-4B + LoRA, NF4 quantised):
           Splits the digest into per-section excerpts and runs a word-count-weighted
           probability vote to produce an aggregate preset recommendation.
-          A max-preset floor heuristic fires when the aggregate vote is P0–P2 and at
+          A max-preset floor heuristic fires when the aggregate vote is P0–P1 and at
           least one section individually predicts a higher preset, preventing short
           intro sections from masking deep technical sections.
 
-        Stage 2 — Grok 4.2 planner:
-          Uses the RL signals plus article guideline and coverage gap profile to make
-          the final preset decision. Set grok_only=True to skip Stage 1 entirely and
-          have Grok decide from the article guideline and gap profile alone (useful as
-          a baseline to measure the RL model's marginal contribution).
+        Stage 2 — Deterministic policy guard (no LLM call):
+          Clamps the RL model's own pick to satisfy the article's external-evidence
+          policy (forbidden → P0 skip, required → ≥ P1 light, capped → ≤ P1 light).
+          The RL pick is authoritative except where this guard fires — there is no
+          LLM-planner stage in this tool at all. The only other sanctioned deviation is
+          an explicit user-directed override (see research_instructions_prompt.py step 3.4).
 
         Signal semantics:
-          preset (int 0–5):
-            0 – no exploration
-            1 – 1 round, balanced
-            2 – 2 rounds, balanced then depth
-            3 – 2 rounds, depth then breadth
-            4 – 3 rounds, balanced then depth then breadth
-            5 – 3 rounds, depth then breadth then depth
+          preset (int 0–3):
+            0 – skip     no exploration
+            1 – light    1 round, balanced (~50% depth / 50% breadth)
+            2 – standard 2 rounds: depth → breadth
+            3 – deep     3 rounds: depth → breadth → depth
 
           confidence (float 0–1):
             Probability mass on the chosen preset.
             ≥0.70 → decisive.  0.40–0.70 → check section signals.  <0.40 → uncertain.
 
           entropy_bits (float):
-            H = −∑ p·log₂(p+ε) over the 6-preset distribution.
-            <0.5 → very confident.  0.5–1.5 → moderate.  >1.5 → uncertain, override.
+            H = −∑ p·log₂(p+ε) over the 4-preset distribution.
+            <0.5 → very confident.  0.5–1.5 → moderate.  >1.5 → uncertain (informational only,
+            not a basis to self-override).
 
           floor_correction_applied (bool):
             True when the floor heuristic raised the aggregate vote.
 
           section_signals[i].top2:
             [["P3", 0.81], ["P2", 0.11]] — large gap means high section confidence.
-            [["P3", 0.35], ["P4", 0.32]] — small gap means ambiguous section.
+            [["P2", 0.45], ["P3", 0.40]] — small gap means ambiguous section.
 
           guidance (str):
             One-sentence synthesis.  Use this as your reasoning seed.
 
         Note: the RL model loads on the first call (~3 min on GPU) and is then cached
-        for the lifetime of the server process. When grok_only=True the RL model is
-        not loaded at all.
+        for the lifetime of the server process.
 
         Args:
             research_directory: Path to the research directory containing
-                                exploitation_digest.md at its root.
-            grok_only: When True, skip the RL inference stage. Grok 4.2 decides
-                       solely from the article guideline and coverage gap profile.
-                       rl_recommendation will be None in the returned dict.
+                                research_digest.md at its root.
 
         Returns:
             Dict[str, Any]:
                 - status: "success" or "error"
                 - rl_recommendation: dict with preset, name, confidence,
                                      entropy_bits, floor_correction_applied
-                                     (None when grok_only=True)
                 - section_signals: list of per-section dicts with title, preset,
-                                   name, top2 (empty when grok_only=True)
+                                   name, top2
                 - guidance: one-sentence synthesis for the client LLM
-                - grok_recommendation: dict with preset, name, reasoning
-                                       (and override, override_reason when grok_only=False)
+                - llm_recommendation: the FINAL authoritative decision (the field name is a
+                                       historical artifact; no LLM is involved) — dict with preset,
+                                       name, reasoning, override, override_reason, decision_drivers,
+                                       risk_flags
                 - message: human-readable summary
         """
         opik_context.update_thread_id()
-        result = await predict_exploration_preset_tool(research_directory, grok_only=grok_only)
+        result = await predict_exploration_preset_tool(research_directory)
         return result
 
     # ============================================================================

@@ -38,17 +38,27 @@ brown-edit-selected-text: # Run the Brown MCP client to a selected text section 
 
 # --- RL Training Data ---
 
+# Phase 0: Guideline variant generation (creates minimal/standard/demanding variants per article).
+rl-variants-generate: # Phase 0: Generate all 3 guideline variants for every eval article.
+	uv run python rl_pipeline/generate_guideline_variants.py
+
+rl-variants-dry-run: # Phase 0 dry run: Show variant plan without LLM calls or file writes.
+	uv run python rl_pipeline/generate_guideline_variants.py --dry-run
+
+rl-variants-force: # Phase 0: Regenerate all variants, overwriting existing guideline files.
+	uv run python rl_pipeline/generate_guideline_variants.py --force-regen
+
 rl-writing-generate: # Phase 2a: Generate article.md for all RL training episodes.
-	uv run python rl_writing_generator.py
+	uv run python rl_pipeline/rl_writing_generator.py
 
 rl-writing-dry-run: # Phase 2a dry run: Show plan without executing.
-	uv run python rl_writing_generator.py --dry-run
+	uv run python rl_pipeline/rl_writing_generator.py --dry-run
 
 rl-grading-generate: # Phase 2b: Grade article.md episodes and write scores.json.
-	uv run python rl_grading_generator.py
+	uv run python rl_pipeline/rl_grading_generator.py
 
 rl-grading-dry-run: # Phase 2b dry run: Show grading plan without LLM calls.
-	uv run python rl_grading_generator.py --dry-run
+	uv run python rl_pipeline/rl_grading_generator.py --dry-run
 
 # --- Evals ---
 

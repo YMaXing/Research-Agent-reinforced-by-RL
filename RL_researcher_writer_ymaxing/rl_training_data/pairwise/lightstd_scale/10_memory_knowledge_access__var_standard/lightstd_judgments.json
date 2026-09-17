@@ -1,0 +1,484 @@
+{
+  "article": "10_memory_knowledge_access__var_standard",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Claim that best practice now favors less compression, treating raw conversational history as source of truth containing emotional subtext and relational dynamics"
+            ],
+            "b_instances": [
+              "Specific arxiv citation attributing the continual learning limitation to a named study"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Preview naming specific long-term memory subtypes (Semantic, Episodic, Procedural) to be covered"
+            ]
+          },
+          "reasoning": "Both documents cover the same core points (continual learning limitation, context window as working memory, lost-in-the-middle effect, historical context-window growth with the same YouTube citation). On depth, A adds a distinct technical claim about the shifting compression best-practice and the value of raw unstructured history (emotional subtext/relational dynamics), while B's differentiator is merely an added citation (arxiv paper) for the already-stated continual learning claim, which is thinner added depth\u2014giving A a slight edge. On breadth, B explicitly previews and names three specific long-term memory categories (Semantic, Episodic, Procedural) plus mentions of storage trade-offs and real-world challenges, which introduces new named subtopics not present in A's more generic mention of 'specialized memory tools and frameworks,' giving B a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Claim that raw, unstructured conversational history retains emotional subtext and relational dynamics lost in summaries",
+              "Explicit best-practice shift toward less compression given larger context windows"
+            ],
+            "b_instances": [
+              "Specific arXiv citation (2510.17281v2) grounding the continual learning limitation"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Preview naming specific long-term memory subtypes (Semantic, Episodic, Procedural) as new topics to be covered",
+              "Mention of forthcoming code examples and real-world implementation challenges as distinct content areas"
+            ]
+          },
+          "reasoning": "Both intros cover the same core narrative (continual learning limitation, context-window-as-working-memory, lost-in-the-middle, historical context-size evolution, memory tools as solution). For depth, A adds two extra elaborations not in B: the claim that raw conversation history preserves emotional/relational nuance, and an explicit statement that best practice now favors less compression; B's only unique depth addition is a specific arXiv citation for the continual-learning claim. This gives A a modest edge on depth. For breadth, B explicitly previews new adjacent subtopics the article will cover\u2014naming Semantic, Episodic, and Procedural memory types, plus mentioning code examples and real-world challenges\u2014content areas A's introduction does not name at all (A only vaguely gestures at 'specialized memory tools and frameworks'). This gives B a modest edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Claim that best practice now favors less compression, with raw unstructured conversation history as the ultimate source of truth containing emotional subtext and relational dynamics"
+            ],
+            "b_instances": [
+              "Citation-backed claim on continual learning limitation (arXiv 2510.17281)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Explicit preview naming specific long-term memory types: Semantic, Episodic, and Procedural memory",
+              "Mention of trade-offs between different storage approaches as an upcoming topic",
+              "Mention of prior lesson on getting reliable structured outputs"
+            ]
+          },
+          "reasoning": "Both documents add one comparable depth instance: A elaborates on a specific stance (less compression now favored, raw history preserves emotional/relational nuance) while B adds a specific citation backing the continual-learning claim; these roughly balance out, yielding a tie on depth. On breadth, B pulls ahead by explicitly naming the specific long-term memory sub-types (Semantic, Episodic, Procedural) it will cover and previewing additional adjacent topics (storage trade-offs, prior lesson on structured outputs) that A's introduction does not mention, giving B a modest edge in breadth."
+        }
+      ]
+    },
+    "The Layers of Memory: Internal, Short-Term, and Long-Term": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Retrieval pipeline mechanism detail: memory types queried in parallel and ranked before being fed to the model",
+              "Speculative future capability of models updating their own weights from experience"
+            ],
+            "b_instances": [
+              "Concrete example of internal knowledge capacity: models know entire books without needing them in context window",
+              "Added 'compressing' as an explicit memory-management technique alongside pruning and consolidating"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core three-layer memory framework and write-manage-read loop with no new adjacent subtopics introduced (breadth tie, both empty). For depth, A adds a specific mechanistic detail about parallel querying/ranking in the retrieval pipeline and a speculative note about future self-updating weights, while B adds a concrete illustrative example (models storing entire books) and an extra management technique (compressing). Both sides contribute roughly two modest, comparably substantive depth-enhancing details, yielding a tie on depth as well."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Retrieval pipeline detail: memory types queried in parallel and ranked before reaching the model"
+            ],
+            "b_instances": [
+              "Internal knowledge can store entire books' worth of information without needing it in the context window",
+              "Short-term memory 'simulates the feeling of learning' during a session, sourced to IBM",
+              "Manage phase includes compressing information in addition to pruning/consolidating"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same three-layer memory taxonomy and write-manage-read loop with comparable core content and diagrams. On depth, A adds one distinct mechanistic detail (parallel querying/ranking in the retrieval pipeline) not present in B, while B adds several more granular elaborations: a concrete claim about internal knowledge capacity (whole books without context window), a source-attributed nuance about short-term memory 'simulating learning,' and an added compressing step in memory management. This gives B a modest edge on depth. Neither document introduces a genuinely new adjacent subtopic beyond the core three-layer framework (the 'four memory types' framing in B is asserted but not elaborated here), so breadth is a tie."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Speculation that future models might learn to update their own weights from experience",
+              "Concrete mechanism detail: retrieval pipeline queries multiple memory types in parallel and ranks results before delivery to the model",
+              "Specific negative consequences of skipping the 'manage' step: noise, contradiction, and bloated context"
+            ],
+            "b_instances": [
+              "Concrete illustrative example that internal knowledge lets models 'know entire books' without needing them in context, concretizing internal-knowledge capacity",
+              "Addition of 'compressing' as a distinct memory-management technique alongside pruning/consolidating",
+              "Framing short-term memory as the model's 'only reality' during inference / RAM analogy for volatility"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both sections cover the same three-layer taxonomy and write-manage-read loop with near-identical structure and roughly the same number of citations. Neither introduces a genuinely new adjacent sub-topic (e.g., episodic/semantic memory types, new tools), so breadth is a tie with no qualifying instances on either side. On depth, A adds a concrete retrieval-pipeline mechanism (parallel querying/ranking) and a specific list of negative consequences from neglecting memory management, plus a speculative note about future self-updating weights. B counters with a concrete 'entire books' example illustrating internal knowledge capacity, an added 'compressing' step in memory management, and framing short-term memory as the model's 'only reality' (RAM analogy). The two sets are comparable in number and substantiveness, so depth is also judged a tie."
+        }
+      ]
+    },
+    "Long-Term Memory: Semantic, Episodic, and Procedural": {
+      "a_arm": "light",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "RAG integration mechanism for domain-expert (law/medicine) agents to access knowledge beyond training data",
+              "Case-based reasoning framing describing how agent consults past 'case studies' from episodic memory",
+              "Procedural memory benefit framed as reducing repetitive deliberation so reasoning focuses on novel situations"
+            ],
+            "b_instances": [
+              "Explicit curation warning that uncurated semantic memory becomes a 'junk drawer' of unsorted information",
+              "Procedural memory benefit framed as reducing errors and improving consistency/task completion over time"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same three memory types with essentially identical core examples (vegetarian fact, brother/Mark episode, monthly report procedure) and no genuinely new adjacent subtopics, so breadth is a tie. On depth, A adds a specific mechanism (RAG integration for legal/medical domain-expert agents) and a case-based-reasoning framing for episodic memory not found in B, plus a distinct rationale for procedural memory (freeing reasoning for novel situations). B adds a distinct curation/quality-control point ('junk drawer' warning) and a distinct procedural memory benefit (reduced errors, consistency over time) not found in A. A has slightly more distinct, substantive depth instances (3 vs 2), giving it a modest edge on depth while breadth remains tied."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "RAG integration mechanism for domain-expert agents in law/medicine, enabling knowledge beyond model training",
+              "Case-based reasoning: agent consults past 'case studies' from episodic memory for refined decisions",
+              "Procedural memory reduces repetitive deliberation, freeing reasoning capacity for novel situations"
+            ],
+            "b_instances": [
+              "Explicit warning that without curation, semantic memory becomes a 'junk drawer of unsorted information'",
+              "Claim that procedural memory reduces errors and improves task completion consistency over time",
+              "Explicit mapping of agent type to memory reliance (personal assistant\u2192episodic, finance domain expert\u2192semantic)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same three memory types with comparable core content and near-identical examples (monthly report procedure, brother/Mark episodic example). Neither introduces genuinely new adjacent subtopics beyond the semantic/episodic/procedural framework, so breadth ties with no qualifying instances on either side. On depth, A adds a few specific deepening details not in B: the RAG-integration mechanism for domain-expert agents, the named 'case-based reasoning' concept for episodic memory, and the deliberation-reduction rationale for procedural memory. B counters with its own depth additions: an explicit curation-failure warning ('junk drawer'), a claim about procedural memory reducing errors/improving consistency over time, and an explicit statement linking agent type to memory-type reliance. Both sets are comparably specific and substantive in number and quality, resulting in a tie on depth as well."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "RAG integration explanation for domain-expert agents (law/medicine) augmenting base model knowledge",
+              "Explicit case-based reasoning framing for episodic memory",
+              "Procedural memory reduces repetitive deliberation so reasoning can focus on novel situations"
+            ],
+            "b_instances": [
+              "Curation risk warning: uncurated semantic memory becomes a 'junk drawer' of unsorted information",
+              "Procedural memory improves task completion over time by reducing errors and ensuring consistency"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same three memory types with largely overlapping explanations and examples (vegetarian fact, dog named George, brother/Mark episode, monthly report procedure). For depth, A adds a few extra technical/mechanistic details not in B: explicit mention of RAG integration for domain-expert semantic memory, a named 'case-based reasoning' framing for episodic memory, and a specific rationale about procedural memory freeing reasoning capacity for novel situations. B counters with its own depth additions: a caution about semantic memory becoming a 'junk drawer' without curation, and a point about procedural memory enabling learning/improvement over time that reduces errors. A has slightly more distinct depth instances (3 vs 2), giving it a modest edge, but neither dominates. For breadth, neither document introduces a genuinely new sub-topic or adjacent concept beyond the semantic/episodic/procedural framework and its standard examples, so this dimension is a tie."
+        }
+      ]
+    },
+    "Storing Memories: Pros and Cons of Different Approaches": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "extended two-hop graph traversal example (HAS_BROTHER -> WORKS_AS) showing more elaborate relationship chain"
+            ],
+            "b_instances": [
+              "explanation that growing interaction logs degrade retrieval speed/reliability over time (cited to Microsoft research blog)",
+              "multi-hop reasoning capability of graphs explicitly named as enabling connection of multiple facts (cited)",
+              "specific mention of temporal knowledge graphs and a Neo4j conference talk on dynamic memory representations, deepening the temporal-awareness point",
+              "added detail that converting text to graph triples introduces latency in ingestion pipelines"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "naming of specific storage technologies for entity memories (document databases or SQL databases)",
+              "naming of Neo4j as a concrete graph database implementation for knowledge graph memory"
+            ]
+          },
+          "reasoning": "Both documents cover the same three storage approaches (raw strings, JSON entities, knowledge graphs) with nearly identical pros/cons structure and even share several citations (e.g., the 'brother's job' retrieval example, the summarization drift/attention dilution point, the cat-liking example). Document B adds more depth: it cites a Microsoft research blog on log growth degrading retrieval quality, elaborates on multi-hop reasoning enabled by graphs, cites a Neo4j conference talk specifically on temporal knowledge graphs, and notes ingestion latency from triple conversion \u2014 none of which appear in A. Document A's only depth addition is a slightly more elaborate two-hop graph traversal example. On breadth, B mentions concrete technology choices (SQL/document databases for entities, Neo4j for graphs) that A does not name, giving B a modest breadth edge, though neither document introduces a wholly new subtopic beyond the three canonical storage methods."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Retrieval quality degrades as raw-string logs grow with irrelevant content (cited Microsoft research)",
+              "Knowledge graphs enable multi-hop reasoning beyond simple relationship lookup",
+              "Graph triple conversion adds latency to ingestion pipelines"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Named Neo4j as a specific graph database technology",
+              "Mentions SQL databases as an alternative structured storage backend for entity memories"
+            ]
+          },
+          "reasoning": "Both documents cover the same three storage approaches (raw strings, JSON entities, knowledge graphs) with largely overlapping pros/cons (imprecise retrieval, update difficulty, schema rigidity, summarization drift, attention dilution, temporal awareness, auditability, complexity/cost). Document B adds several depth-oriented mechanisms not present in A: a cited explanation of how raw-string retrieval degrades as logs grow, the concept of multi-hop reasoning as a specific capability of knowledge graphs, and the detail that graph-triple extraction adds latency to ingestion pipelines. B also introduces breadth by naming Neo4j as a concrete graph database technology and mentioning SQL databases as an alternative entity-storage backend. Document A does not introduce any distinct depth or breadth content beyond what B covers; its examples (e.g., the brother/job query, Barry/Claude example, cat-liking memory) are matched in B. Thus B shows moderately more enhancement on both dimensions."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Growing interaction logs fill with irrelevant content, degrading retrieval speed and reliability over time",
+              "Converting unstructured text into graph triples adds latency to ingestion pipelines"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Named specific graph database technology (Neo4j) as implementation example",
+              "Named specific storage backends for entity memories (document databases, SQL databases)"
+            ]
+          },
+          "reasoning": "Both documents cover the same three storage approaches (raw strings, entities, knowledge graph) with essentially identical pros/cons (imprecise retrieval, Barry/Claude temporal example, schema rigidity, subtext loss, temporal graph awareness, auditability, complexity/cost, overkill for simple cases) \u2014 these are shared and not differentiators. Document B adds a couple of deeper technical points not found in A: a mechanism explaining how growing raw-string logs degrade retrieval over time, and a note that converting to graph triples adds ingestion latency. B also introduces slightly broader coverage by naming concrete technologies (Neo4j for graphs, document/SQL databases for entity storage) that A never specifies. Document A contains no additional depth or breadth instances beyond what B already covers, so B modestly leads on both dimensions without a dramatic gap."
+        }
+      ]
+    },
+    "Memory Implementations with Code Examples": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Citation grounding the RAG-vs-memory distinction via a neuroscience-inspired memory system source",
+              "Specific mention of mem0's automatic created_at timestamp field for temporal filtering, with citation"
+            ],
+            "b_instances": [
+              "mem0's architecture described as dynamically extracting, consolidating, and retrieving salient information (cited)",
+              "Concrete book_flight() named example illustrating developer-defined procedures",
+              "Episodic memory elaboration on storing raw conversation turns with timestamp vs. LLM-summarized episodes as alternative creation methods"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents share the same core code and structure (setup, semantic/episodic/procedural memory sections) with near-identical examples (facts list, dialogue summarization, monthly_report procedure, learn_procedure prompt). Neither introduces a genuinely new sub-topic beyond the three memory types and mem0 basics, so breadth is a tie. On depth, A adds a distinct citation grounding the RAG-vs-memory distinction and a specific technical detail about mem0's automatic timestamp field. B adds a bit more granularity: a cited description of mem0's internal extract/consolidate/retrieve architecture, a concrete book_flight() example for developer-defined procedures, and an explicit alternative (raw vs. summarized) for creating episodic memories. B's instances are slightly more numerous and technically specific, giving it a modest edge on depth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "RAG-vs-memory distinction backed by a specific external source (neuroscience-inspired memory paper) explaining memory as a persistent evolving model",
+              "mem0's automatic 'created_at' timestamp mechanism cited to mem0 docs, explaining temporal filtering support"
+            ],
+            "b_instances": [
+              "mem0 architecture described as dynamically extracting, consolidating, and retrieving salient information (adds a 'consolidation' step not mentioned in A)",
+              "Episodic retrieval nuance that semantic 'what was I worried about' queries are likely ranked by recency",
+              "able content largely equivalent otherwise"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same three memory types (semantic, episodic, procedural) with nearly identical code and explanatory text, so overlap dominates. On depth, A adds two source-attributed technical details not in B: a citation grounding the RAG-vs-memory distinction in a neuroscience-inspired framework, and a citation for mem0's automatic created_at timestamp mechanism. B counters with its own depth additions: a slightly more detailed description of mem0's architecture (extract/consolidate/retrieve) and a recency-ranking nuance for episodic semantic search. These are roughly comparable in number and substantiveness, yielding a tie on depth. Neither document introduces a genuinely new adjacent sub-topic beyond the section's core scope (both merely reference upcoming RAG/hybrid-search lessons as forward pointers, which doesn't count as breadth), so breadth is a tie as well, with both lists empty."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Neuroscience-inspired memory system citation (dev.to) supporting the RAG-vs-memory distinction",
+              "mem0's automatic created_at timestamp detail cited to mem0 docs for temporal filtering"
+            ],
+            "b_instances": [
+              "mem0 architecture description of dynamically extracting, consolidating, and retrieving salient information from conversations (arxiv citation)",
+              "Alternative episodic storage approach: raw conversation turns with timestamp vs. LLM-summarized episode",
+              "Named concrete example of a developer-defined procedure (book_flight()) illustrating procedural memory creation"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core content (semantic, episodic, procedural memory with mem0 code) with nearly identical code blocks and only differ in minor prose elaborations. For depth, A adds a citation grounding the RAG-vs-memory conceptual distinction and a citation about mem0's automatic timestamping used for temporal retrieval. B adds a slightly more technical description of mem0's internal architecture (extract/consolidate/retrieve) with its own citation, mentions raw-vs-summarized storage as an alternative episodic memory implementation, and includes a concrete named example (book_flight()) for developer-defined procedures. This gives B a modest edge in depth instances (3 vs 2). Neither document introduces genuinely new sub-topics or adjacent examples beyond the three memory types and their implementation, so breadth is a tie with no qualifying differentiators found in either document."
+        }
+      ]
+    },
+    "Real-World Lessons: Challenges and Best Practices": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Specific quantitative benchmarks for compression trade-off (17s p95 latency for full-context, 91% latency reduction, 90% token reduction, ~6pp accuracy cost for selective memory)",
+              "Staleness framed as distinct from decay - detecting when high-relevance facts become invalid as an open research problem",
+              "Named 'memory corruption' failure mode (poisoned data persisting across sessions)",
+              "Named 'hallucination cascades' failure mode (fabricated fact chaining into further errors)",
+              "Autonomous memory consolidation during idle time (review/merge/clean mechanism)"
+            ],
+            "b_instances": [
+              "Detailed rationale for shifting toward less compression: raw conversational log preserves emotional subtext/relational dynamics, million-token context economics",
+              "Named 'self-reinforcing errors' mechanism where autonomous correction can corrupt worldview over time",
+              "Named 'silent orchestration failures' mechanism (paging/eviction/archival policies degrading quality without throwing errors)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Contradiction-resolution strategies as a new subtopic: temporal versioning, source attribution, flagging for review",
+              "Memory reconsolidation concept borrowed from neuroscience as a mechanism for adaptive memory updating"
+            ]
+          },
+          "reasoning": "Both documents share the core lesson structure (compression trade-offs, product-fit design, human factor/autonomy, staleness and failure modes) and overlap on summarization drift and the 'garden your agent's memories' point. On depth, A adds more distinct rigor-adding details: concrete benchmark numbers for the compression trade-off, a staleness-vs-decay distinction framed as unsolved research, and two named failure mechanisms (corruption, hallucination cascades) plus an autonomous consolidation mechanism, totaling five unique depth instances vs B's three (compression rationale, self-reinforcing errors, silent orchestration failures) \u2014 giving A a modest edge. On breadth, B introduces two genuinely new subtopics not present in A at all: concrete contradiction-resolution strategies (versioning, source attribution, flagging) and the neuroscience-inspired 'memory reconsolidation' concept, while A contributes no comparable new-subtopic content, giving B the clear edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific benchmark quantitative trade-offs (17s p95 latency, 6pp accuracy loss, 91% latency reduction, 90% token reduction)",
+              "Autonomous memory consolidation mechanism (idle-time review/merge/cleanup)"
+            ],
+            "b_instances": [
+              "Deeper compression-era detail: million-token context windows, raw log as ground truth, emotional subtext/relational dynamics lost during extraction",
+              "Self-reinforcing errors mechanism where autonomous correction corrupts worldview over time",
+              "Memory reconsolidation neuroscience mechanism (retrieval-induced malleability enabling updates)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Memory staleness as a distinct unsolved problem separate from normal decay",
+              "Memory corruption failure mode (poisoned/incorrect data persisting across sessions)",
+              "Hallucination cascades failure mode (fabricated fact triggering chain of errors)"
+            ],
+            "b_instances": [
+              "Contradiction-resolution strategies (temporal versioning, source attribution, flagging for review)",
+              "Silent orchestration failures in paging/eviction/archival policies"
+            ]
+          },
+          "reasoning": "Both documents share the core lessons (compression re-evaluation, product-driven architecture, human factor/autonomous management), so those are not differentiators. On depth, B adds slightly more rigorous technical detail: a richer picture of why less compression is now favored (raw log as ground truth, emotional subtext) plus two specific mechanisms (self-reinforcing errors, memory reconsolidation via neuroscience), while A only adds the specific benchmark numbers and the idle-time consolidation mechanism -- fewer but still substantive, giving B a modest edge. On breadth, A introduces three new challenge topics (staleness distinct from decay, memory corruption, hallucination cascades) versus B's two (contradiction-resolution strategies, silent orchestration failures), giving A a modest edge in breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Quantitative benchmark trade-off data comparing full-context vs selective memory (17s p95 latency, 91% latency reduction, 90% fewer tokens, ~6pp accuracy cost)",
+              "Autonomous memory consolidation mechanism using idle time to review, merge, and clean up memories"
+            ],
+            "b_instances": [
+              "Shift toward less compression given million-token context windows, treating raw conversational log as ground truth preserving emotional subtext/relational dynamics"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Memory corruption failure mode: poisoned/incorrect data persisting across sessions",
+              "Hallucination cascades: fabricated fact triggering chain of downstream errors",
+              "Memory staleness as a distinct, unsolved problem separate from normal decay (detecting invalid high-relevance facts)"
+            ],
+            "b_instances": [
+              "Self-reinforcing errors: agent treats a faulty corrected memory as ground truth, corrupting its worldview",
+              "Contradiction-resolution strategies: temporal versioning, source attribution, flagging conflicts for review",
+              "Memory reconsolidation: neuroscience-inspired theory that retrieved memories become malleable and can be updated",
+              "Silent orchestration failures: paging/eviction/archival policies silently degrading performance without errors"
+            ]
+          },
+          "reasoning": "Both documents cover the same four core lessons (compression trade-offs, product-driven architecture, human factor/autonomy, and outdated/corrupted memory risks), but each adds different source-attributed specifics. On depth, A goes further by citing concrete benchmark numbers (latency, token, and accuracy trade-offs) and a specific autonomous consolidation mechanism, while B's main depth addition is the reversal toward less compression with the raw-log-as-truth rationale, giving A a modest edge. On breadth, B introduces several genuinely new sub-topics not touched by A -- self-reinforcing errors, structured contradiction-resolution strategies, the neuroscience-based memory reconsolidation concept, and silent orchestration failures -- slightly outnumbering A's new failure-mode topics (memory corruption, hallucination cascades, and staleness-as-distinct-problem), giving B a modest edge in breadth."
+        }
+      ]
+    },
+    "Conclusion": {
+      "a_arm": "standard",
+      "b_arm": "light",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both conclusions are generic recaps without concrete, source-attributed details (no named studies, tools, or statistics). A previews 'monitoring and evaluation' and B previews 'multimodal processing' as future topics, but these are vague forward-references rather than substantive, concrete enhancement instances, so neither qualifies under the criteria. No mechanism-level depth or new sub-topic with specifics is introduced by either side, resulting in ties on both dimensions."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "context window engineering as the mechanism enabling memory-based learning",
+              "trade-offs between different storage architectures"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "future lessons will cover monitoring and evaluation"
+            ],
+            "b_instances": [
+              "future lessons will touch on multimodal processing"
+            ]
+          },
+          "reasoning": "Both conclusions largely restate the lesson's core content. For depth, B adds a specific technical framing (context window engineering as the mechanism behind memory-based learning) and mentions storage architecture trade-offs, giving it a modest edge; A offers no comparable technical elaboration. For breadth, each document teases a different upcoming topic beyond RAG (A: monitoring and evaluation; B: multimodal processing), which are roughly equivalent single mentions, resulting in a tie."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "describes memory mechanism as 'engineering the context window\u2014the LLM's reality', giving a more specific technical framing of how memory enables adaptation"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "previews future lessons covering monitoring and evaluation topics"
+            ],
+            "b_instances": [
+              "previews future lessons covering multimodal processing to expand agent capabilities"
+            ]
+          },
+          "reasoning": "Both conclusions are largely restatements of core lesson content (memory layers, semantic/episodic/procedural memory, RAG as next lesson) with no deep technical elaboration beyond that already covered. B adds a slightly more specific mechanistic framing ('engineering the context window') that gives marginally more depth to how memory enables learning, which A lacks. For breadth, each document gestures toward a different future topic (A: monitoring/evaluation; B: multimodal processing) as forward-looking teasers, but neither elaborates with concrete detail, so these roughly offset as comparably minor breadth mentions, resulting in a tie for breadth."
+        }
+      ]
+    }
+  }
+}

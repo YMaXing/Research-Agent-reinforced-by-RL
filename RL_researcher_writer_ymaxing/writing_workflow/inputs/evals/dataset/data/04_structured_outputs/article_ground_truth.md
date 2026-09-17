@@ -428,7 +428,7 @@ This pattern will be a recurring theme throughout this course. In our next lesso
 - [1] [Systematic evaluation of large language models for data extraction from unstructured and semi-structured electronic health records](https://pmc.ncbi.nlm.nih.gov/articles/PMC11751965/)
 - [2] [Direct vs. Indirect Information Extraction using LLM-based Function Generation](https://arxiv.org/html/2506.21585v1)
 - [3] [Pydantic vs. Dataclasses: A Clear Winner for SDKs](https://www.speakeasy.com/blog/pydantic-vs-dataclasses)
-- [4] [Pydantic vs. Dataclasses: a battle of validators in Python](https://codetain.com/blog/validators-approach-in-python-pydantic-vs-dataclasses/)
+- [4] [Pydantic vs. Dataclasses: a battle of validators in Python](https://codetain.com/blog/   s-approach-in-python-pydantic-vs-dataclasses/)
 - [5] [Automating Knowledge Graphs with LLM Outputs](https://www.prompts.ai/en/blog-details/automating-knowledge-graphs-with-llm-outputs)
 - [6] [Structured Outputs](https://humanloop.com/blog/structured-outputs)
 - [7] [Structured Outputs in vLLM: Guiding AI Responses with Precision](https://developers.redhat.com/articles/2025/06/03/structured-outputs-vllm-guiding-ai-responses)

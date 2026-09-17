@@ -5,12 +5,47 @@ import re
 from typing import List, Tuple, Literal
 from pathlib import Path
 
-from ..config.prompts import PROMPT_GENERATE_QUERIES_AND_REASONS, PROMPT_GENERATE_COMPLEMENTARY_QUERIES_AND_REASONS
+from ..config.prompts import (
+    PROMPT_GENERATE_QUERIES_AND_REASONS,
+    PROMPT_GENERATE_COMPLEMENTARY_QUERIES_AND_REASONS,
+    PROMPT_SHORTEN_QUERY,
+)
 from ..config.settings import settings
-from ..models.query_models import GeneratedQueries
+from ..models.query_models import GeneratedQueries, _MAX_QUERY_CHARS
 from ..utils.llm_utils import get_chat_model
 
 logger = logging.getLogger(__name__)
+
+
+async def _shorten_query_if_needed(question: str) -> str:
+    """Iteratively ask the LLM to paraphrase *question* until it fits within
+    _MAX_QUERY_CHARS.  Falls back to a hard word-boundary cut if the model
+    still does not comply after three attempts."""
+    if len(question) <= _MAX_QUERY_CHARS:
+        return question
+
+    shorten_llm = get_chat_model(settings.query_generation_model)
+    current = question
+    max_attempts = 3
+    attempt = 0
+    while len(current) > _MAX_QUERY_CHARS and attempt < max_attempts:
+        attempt += 1
+        prompt = PROMPT_SHORTEN_QUERY.format(query=current, max_chars=_MAX_QUERY_CHARS)
+        result = await shorten_llm.ainvoke(prompt)
+        current = getattr(result, "content", str(result)).strip().strip('"').strip("'")
+        logger.info(
+            f"Shorten attempt {attempt}/{max_attempts}: {len(current)} chars → {current!r}"
+        )
+
+    if len(current) > _MAX_QUERY_CHARS:
+        # Hard fallback: cut at the last word boundary before the limit.
+        # Reserve 1 char for the trailing '?' so the result never exceeds _MAX_QUERY_CHARS.
+        cut = current[:_MAX_QUERY_CHARS - 1]
+        last_space = cut.rfind(" ")
+        current = (cut[:last_space] if last_space > 0 else cut).rstrip(".,;:") + "?"
+        logger.warning(f"Query still too long after {max_attempts} shorten attempts; hard-cut to: {current!r}")
+
+    return current
 
 def append_generated_queries_with_reasons(
         full_queries_path: Path,
@@ -81,6 +116,10 @@ async def generate_queries_with_reasons(
                     continue
                 raise RuntimeError(f"LLM returned unexpected type: {type(response)} after {max_llm_retries} attempts")
 
+            # Shorten any overlong questions before returning.
+            for item in response.queries:
+                item.question = await _shorten_query_if_needed(item.question)
+
             queries_and_reasons = [(item.question, item.reason) for item in response.queries]
 
             if len(queries_and_reasons) < n_queries:
@@ -138,6 +177,10 @@ async def generate_complementary_queries_with_reasons(
                 if attempt < max_llm_retries - 1:
                     continue
                 raise RuntimeError(f"LLM returned unexpected type: {type(response)} after {max_llm_retries} attempts")
+
+            # Shorten any overlong questions before returning.
+            for item in response.queries:
+                item.question = await _shorten_query_if_needed(item.question)
 
             queries_and_reasons = [(item.question, item.reason) for item in response.queries]
 

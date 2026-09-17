@@ -1,0 +1,239 @@
+# Auto-extracted brief for: 13_agent_framework
+# Source: article_ground_truth.md
+# REVIEW BEFORE USE — check all fields, especially those marked
+# '# TODO: review' which require course-context knowledge.
+# Then run:
+#   uv run python generate_article_guideline.py --article 13_agent_framework
+
+lesson_number: 13
+title: Agent Frameworks Overview & Comparison
+topic_summary:
+  "Guide engineers in choosing agent frameworks under uncertainty by distinguishing runtimes, protocols (MCP),
+  and tooling layers. Introduce four decision axes (control-flow explicitness vs autonomy, reliability primitives, abstraction/DX
+  level, tooling interoperability) to replace hype-driven or brand-based selection. Survey the current landscape with adoption
+  metrics, then deep-dive into philosophies, core abstractions, strengths, and trade-offs of major options (LangGraph, OpenAI
+  Agents SDK, AgentKit, CrewAI, PydanticAI, AutoGen, Claude Agent SDK, FastMCP). Anchor evaluation in capstone needs: flexible
+  MCP-driven research agent vs auditable LangGraph-driven writing agent, with a decision matrix and real pivots as concrete
+  illustration.
+
+  "
+why_valuable:
+  "Framework choice directly impacts production viability—poor selections create brittleness, missing durability
+  features, vendor lock-in, or excessive overhead. This equips AI engineers with principle-based axes and highlights MCP as
+  a portability layer, allowing tools to outlive specific runtimes in a fast-changing ecosystem.
+
+  "
+target_length_words: 4471
+theory_practice_ratio: 100% theory - 0% practice
+lesson_scope:
+  "Lesson 13 follows lesson 12's introduction of the two capstone projects and precedes lesson 14's system-design
+  framework for models/cost/latency/HITL; it supplies the conceptual scaffolding used in lessons 16-24 when the capstones
+  are built end-to-end.
+
+  "
+audience:
+  "AI engineers who have built basic LLM tool-calling loops and been introduced to the course capstones but need structured
+  principles for evaluating production frameworks amid a crowded, evolving landscape.
+
+  "
+concepts_from_previous_lessons:
+  - "Two capstone projects: adaptable/interactive research agent and reliable/auditable writing agent"
+  - High-level capstone architecture using hybrid orchestration and portable tools
+concepts_for_future_lessons:
+  - System-design decision framework covering model selection, cost/latency trade-offs, and HITL gate placement
+  - End-to-end Nova implementation as FastMCP server with Perplexity loops and research artifacts
+  - End-to-end Brown implementation as LangGraph workflow exposing coarse MCP tools
+  - Tools-as-workflows pattern combining durability with IDE-native portability
+sections:
+  - title: Introduction
+    target_words: 257
+    key_points:
+      - Capstone projects as concrete anchor for all framework comparisons and pivots
+      - "Risks of late or wrong framework choice: brittle abstractions or stalled progress in fast-moving ecosystem"
+      - "Core concepts to track: LangGraph interrupts/checkpoints for resumable auditability vs MCP as universal interoperability
+        layer"
+      - High-level architecture preview showing research agent as lightweight MCP server and writing agent as durable workflow
+        calling MCP tools
+      - Lesson focus on philosophies, abstractions, and production trade-offs rather than raw API details
+    diagrams:
+      - High-level architecture diagram illustrating the two capstone builds, their client-server interactions, and hybrid MCP+LangGraph
+        usage
+  - title: Framework Choice Under Uncertainty and Why Some Selection Strategies Fail in Production
+    target_words: 349
+    key_points:
+      - Distinction between runtime (orchestration/state), protocol (standardization/portability), and tooling framework (implementation/servers)
+      - "Production problems solved by each layer: durable execution vs tool lock-in vs ready-to-deploy transports"
+      - "Common failure modes when selecting via hype or hello-world demos: picking too-simple (missing reliability) or too-complex
+        (unneeded overhead)"
+      - "Capstone pivot example: why static graph failed for divergent research but succeeded for repeatable writing"
+      - Interactive vs deterministic workloads as lens for initial framework fit assessment
+    diagrams:
+      - Block diagram showing distinct roles and relationships among runtime, protocol (MCP), and tooling framework layers
+  - title: "A Theory for Choosing: Decision Axes Instead of Brands"
+    target_words: 425
+    key_points:
+      - "Control-flow explicitness vs LLM-driven autonomy: graph-based determinism for auditability vs lightweight loops for exploration"
+      - "Reliability primitives axis: checkpointing, time-travel replay, HITL interrupts, and durable execution across restarts"
+      - "Abstraction level and DX axis: minimal primitives (more boilerplate, more flexibility) vs opinionated constructs (faster
+        start, less adaptable)"
+      - "Tooling interoperability axis: MCP as USB-C equivalent to prevent rewriting tools when switching runtimes"
+      - "Mapping the four axes onto capstone requirements: autonomy+portability for research, explicit control+reliability for
+        writing"
+    diagrams:
+      - Diagram visualizing the four decision axes as spectra or quadrants for framework evaluation
+  - title: "The Landscape Today: Frameworks, Philosophies & Adoption Snapshot"
+    target_words: 794
+    key_points:
+      - "LangGraph philosophy: stateful graph model with native checkpoints/interrupts for auditable workflows and contrast to
+        broader LangChain toolkit"
+      - "OpenAI Agents SDK: minimal surface area (agents/tools/guardrails/handoffs/sessions) favoring lightweight Python-native
+        loops"
+      - "AgentKit as full lifecycle extension: visual builder, connectors, ChatKit embedding, and evals layered on top of the
+        SDK"
+      - "CrewAI duality: role-based autonomous crews for collaboration vs event-driven flows for deterministic control, plus CLI/YAML
+        DX"
+      - PydanticAI emphasis on type safety, schema-driven validation, and durable execution integrations (Temporal/DBOS)
+      - "AutoGen layered approach: Studio GUI for exploration (explicitly not production) feeding into AgentChat or core libraries"
+      - "Claude Agent SDK: model-family-specific tight integration, tool-use strengths, but smaller ecosystem trade-offs"
+      - "FastMCP as non-runtime tooling: build once, run anywhere via MCP servers/clients with auth and cloud features"
+      - "Adoption metrics as maturity proxy: download trends and GitHub stars to gauge hiring risk and ecosystem health"
+      - "Warning against single-framework dogma: common patterns combine FastMCP tools inside LangGraph or migrate from AutoGen
+        prototypes"
+    diagrams:
+      - Series of pepy.tech download trend charts showing adoption trajectories for LangGraph, OpenAI Agents SDK, CrewAI, PydanticAI,
+        AutoGen, and FastMCP
+      - Bar chart comparing GitHub star counts across all frameworks as of early 2026 to illustrate relative ecosystem momentum
+  - title: "Framework Deep Dive: LangGraph"
+    target_words: 253
+    key_points:
+      - Graph-based modeling where nodes are functions and edges are explicit transitions for complex multi-step logic
+      - "Core production primitives: interrupts for HITL, persistence/checkpointing for resumability and time-travel debugging"
+      - Trade-off between two definition styles (explicit vs decorator-based) and resulting learning curve vs determinism payoff
+      - "When LangGraph is overkill: simple scripts vs repeatable auditable processes like the writing agent"
+      - "Contrast with lighter loops: steeper modeling cost but built-in safety and observability"
+  - title: "Framework Deep Dive: OpenAI Agents SDK"
+    target_words: 292
+    key_points:
+      - Philosophy of minimal primitives to reduce conceptual surface while still enabling powerful agentic applications
+      - Core concepts (agents with instructions/tools, guardrails for safety, handoffs, sessions for history) and their relationships
+      - "Execution model contrast: direct Python control flow (if/else, loops) vs compiled state machines in graph systems"
+      - Strength for fast production path when team prefers lightweight orchestration and good defaults
+      - "Reliability trade-off: must implement durable pause/resume features that come built-in elsewhere"
+    diagrams:
+      - Conceptual diagram of OpenAI Agents SDK primitives (agents, tools, guardrails, handoffs, sessions) and their interconnections
+  - title: "Framework Deep Dive: AgentKit"
+    target_words: 244
+    key_points:
+      - "Positioning as complete lifecycle toolkit on top of OpenAI Agents SDK: design, deployment, optimization"
+      - "Key components: visual Agent Builder canvas with versioning, Connector Registry for data sources including MCP, ChatKit
+        for UI embedding, and evals/RFT infrastructure"
+      - How visual composition and evaluation tools support safe multi-agent systems at scale
+      - "Ecosystem optimization trade-off: strongest inside OpenAI stack but growing MCP connector support for broader interoperability"
+      - "When AgentKit adds value over raw SDK: teams needing no-code workflow design and continuous improvement loops"
+    diagrams:
+      - Example workflow diagram (Homework Helper) showing agent collaboration, query rewriting, intent classification, and routing
+  - title: "Framework Deep Dive: CrewAI"
+    target_words: 273
+    key_points:
+      - "Dual architecture: crews for role-based autonomous collaboration vs flows for event-driven deterministic orchestration"
+      - "Progression pattern: start autonomous for prototyping then layer flows for structure as requirements firm up"
+      - "DX focus: CLI scaffolding, YAML agent/task definitions, and memory/persistence configuration options"
+      - Sweet spot in multi-agent handoff scenarios (researcher to writer) where role clarity accelerates development
+      - "Trade-off of opinionated constructs: rapid start but configuration overhead and reduced flexibility at edge cases"
+    diagrams:
+      - Visual editor screenshot illustrating role/goal/model assignment for autonomous agents in CrewAI Studio
+  - title: "Framework Deep Dive: PydanticAI"
+    target_words: 179
+    key_points:
+      - "FastAPI-like philosophy: type safety and Pydantic models create compile-time contracts between code and LLM"
+      - "Production features: durable execution via Temporal/DBOS/Prefect integrations plus built-in graph support for non-linear
+        flows"
+      - "Ergonomics wins: automatic schema generation from type hints/docstrings and structured output with auto-retries"
+      - Up-front schema investment as both strength (correctness) and potential learning-curve cost for new teams
+      - Best fit when structured data correctness and long-running resumable tasks are paramount
+    diagrams:
+      - Diagram capturing PydanticAI design philosophy centered on type safety, validation, and durable execution
+  - title: "Framework Deep Dive: AutoGen"
+    target_words: 217
+    key_points:
+      - "Layered design separating experimentation from production: Studio GUI for no-code prototyping, AgentChat for conversational
+        apps, Core for custom primitives"
+      - "Typical workflow: explore/validate ideas visually in Studio then harden into code using lower layers"
+      - Explicit disclaimer that Studio is research prototype only, not production-ready
+      - Strength as R&D lab for multi-agent conversation patterns and termination conditions
+      - "Trade-off: high flexibility for exploration requires re-implementing reliability, security, and observability for production"
+    diagrams:
+      - Visual multi-agent workflow diagram in AutoGen Studio showing agents, models, termination conditions, and conversation
+        flows
+  - title: "Framework Deep Dive: Claude Agent SDK"
+    target_words: 135
+    key_points:
+      - "Tight integration philosophy leveraging Claude model strengths: large context, reasoning, and low-level tool-use control"
+      - Focus on ergonomic tool calling and orchestration tailored to Anthropic family
+      - "Trade-offs of newer entrant: smaller community, fewer third-party integrations, rapidly evolving API"
+      - "Opportunity vs risk: early adoption for model-optimized applications balanced against ecosystem maturity"
+      - "When to consider: teams already committed to Anthropic stack seeking native performance"
+  - title: "Framework Deep Dive: FastMCP"
+    target_words: 254
+    key_points:
+      - "Non-runtime role: build MCP-compliant servers and clients so tools become portable across any speaking runtime or IDE"
+      - "Interoperability benefit: write tools once, reuse everywhere (LangGraph, OpenAI SDK, Cursor, Claude Code)"
+      - "Production extensions beyond protocol: authentication, server composition, cloud deployment"
+      - "Capstone usage pattern: research agent as FastMCP server, writing agent workflows exposed as coarse-grained MCP tools"
+      - Simple Pythonic DX via decorators for schema generation and transport handling
+    diagrams:
+      - Architecture and interoperability diagram showing FastMCP servers/clients connecting runtimes, IDEs, and tools via MCP
+  - title: "Choosing for Your Project: Decision Matrix & Tentative Forecasts"
+    target_words: 239
+    key_points:
+      - Decision matrix mapping project needs (durability/HITL, typed contracts, minimal primitives, role-based teams, exploration
+        lab, tool portability) to framework strengths
+      - "Forecasts: LangGraph/PydanticAI for reliability-heavy workflows, OpenAI SDK for lightweight simplicity, AgentKit for
+        visual/eval needs"
+      - CrewAI for rapid multi-agent prototyping, FastMCP as universal tooling substrate, AutoGen as R&D starting point
+      - "Common hybrid patterns: FastMCP tools inside LangGraph, migrate from AutoGen Studio to hardened runtime, expose graphs
+        as MCP commands for IDE experience"
+      - "Evolving nature caveat: treat matrix as snapshot and re-evaluate against decision axes as libraries change"
+  - title: Our Capstone Pivots
+    target_words: 273
+    key_points:
+      - "Initial plan (LangGraph for both) vs reality: research interactivity required flexible MCP tools over rigid graphs"
+      - "Opposite needs for writing agent: repeatable process demanded LangGraph checkpoints, HITL, and replay"
+      - "Hybrid outcome: Nova as FastMCP server (any client can steer), Brown as LangGraph workflow whose entry points are coarse
+        MCP tools"
+      - Pattern of wrapping complex workflows as single MCP commands to gain portability without sacrificing durability
+      - "Why OpenAI SDK was considered but deprioritized: lacked first-class persistence and MCP depth needed for long-running
+        capstone tasks"
+  - title: Conclusion
+    target_words: 287
+    key_points:
+      - "Core takeaway: prioritize concepts (stateful graphs, typed contracts, durable execution, MCP standardization) over transient
+        brands"
+      - "MCP specification as high-leverage reading: one-time investment yields portability across every stack"
+      - "Practical selection process: apply decision axes, start with smallest viable stack, keep tooling portable via MCP"
+      - "Migration path example: AutoGen Studio exploration to FastMCP tools to LangGraph/PydanticAI production anchor"
+      - Forward look to next lesson on system design and later hands-on capstone builds using the chosen hybrid stack
+golden_sources:
+  - title: Workflows and agents
+    url: https://docs.langchain.com/oss/python/langgraph/workflows-agents
+  - title: Persistence
+    url: https://docs.langchain.com/oss/python/langgraph/persistence
+  - title: OpenAI Agents SDK
+    url: https://openai.github.io/openai-agents-python/
+  - title: Introduction
+    url: https://docs.crewai.com/introduction
+  - title: Quickstart
+    url: https://docs.crewai.com/quickstart
+  - title: Build your first Flow
+    url: https://docs.crewai.com/guides/flows/first-flow
+  - title: Durable Execution
+    url: https://ai.pydantic.dev/durable_execution/overview/
+  - title: AutoGen
+    url: https://microsoft.github.io/autogen/stable/
+  - title: AutoGen Studio User Guide
+    url: https://microsoft.github.io/autogen/stable/user-guide/autogenstudio-user-guide/index.html
+  - title: FastMCP
+    url: https://gofastmcp.com/
+  - title: Quickstart
+    url: https://gofastmcp.com/getting-started/quickstart
+other_sources: []

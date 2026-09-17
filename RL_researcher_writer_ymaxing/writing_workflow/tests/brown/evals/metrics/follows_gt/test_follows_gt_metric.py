@@ -4,8 +4,12 @@ from brown.evals.metrics.base import CriterionScore, SectionCriteriaScores
 from brown.evals.metrics.new_follows_gt import prompts as follows_gt_prompts
 from brown.evals.metrics.new_follows_gt.metric import FollowsGTMetric
 from brown.evals.metrics.new_follows_gt.types import (
+    CorePreservationArticleScores,
+    CorePreservationSectionScore,
     FollowsGTArticleScores,
     FollowsGTCriteriaScores,
+    FollowsGTMetricExample,
+    FollowsGTMetricFewShotExamples,
 )
 from brown.models import ModelConfig, SupportedModels
 
@@ -88,8 +92,21 @@ def mock_article_scores_empty_sections() -> FollowsGTArticleScores:
 def mock_article_metric(mock_article_scores_perfect: FollowsGTArticleScores) -> FollowsGTMetric:
     """
     Fixture for a FollowsGTMetric instance with a mocked perfect response.
+    Provides both pass-1 (FollowsGTArticleScores) and pass-2 (CorePreservationArticleScores) mocks.
     """
-    model_config = ModelConfig(mocked_response=mock_article_scores_perfect)
+    core_pres_scores = CorePreservationArticleScores(
+        sections=[
+            CorePreservationSectionScore(
+                title="Introduction",
+                core_preservation=CriterionScore(score=1, reason="Perfect core preservation."),
+            ),
+            CorePreservationSectionScore(
+                title="Body",
+                core_preservation=CriterionScore(score=1, reason="Perfect core preservation."),
+            ),
+        ]
+    )
+    model_config = ModelConfig(mocked_response=[mock_article_scores_perfect, core_pres_scores])
     return FollowsGTMetric(model=SupportedModels.FAKE_MODEL, model_config=model_config)
 
 
@@ -97,8 +114,22 @@ def mock_article_metric(mock_article_scores_perfect: FollowsGTArticleScores) -> 
 def mock_article_metric_mixed(mock_article_scores_mixed: FollowsGTArticleScores) -> FollowsGTMetric:
     """
     Fixture for a FollowsGTMetric instance with a mocked mixed response.
+    Pass-2 core_preservation scores mirror the values already set in the pass-1 mock
+    so that every criterion averages to 0.5 across the two sections.
     """
-    model_config = ModelConfig(mocked_response=mock_article_scores_mixed)
+    core_pres_scores = CorePreservationArticleScores(
+        sections=[
+            CorePreservationSectionScore(
+                title="Introduction",
+                core_preservation=CriterionScore(score=1, reason="Good core preservation."),
+            ),
+            CorePreservationSectionScore(
+                title="Body",
+                core_preservation=CriterionScore(score=0, reason="Bad core preservation."),
+            ),
+        ]
+    )
+    model_config = ModelConfig(mocked_response=[mock_article_scores_mixed, core_pres_scores])
     return FollowsGTMetric(model=SupportedModels.FAKE_MODEL, model_config=model_config)
 
 
@@ -106,19 +137,28 @@ def mock_article_metric_mixed(mock_article_scores_mixed: FollowsGTArticleScores)
 def mock_article_metric_empty_sections(mock_article_scores_empty_sections: FollowsGTArticleScores) -> FollowsGTMetric:
     """
     Fixture for a FollowsGTMetric instance with a mocked empty sections response.
+    Pass-2 mock is also empty to match pass-1's section count.
     """
-    model_config = ModelConfig(mocked_response=mock_article_scores_empty_sections)
+    core_pres_scores = CorePreservationArticleScores(sections=[])
+    model_config = ModelConfig(mocked_response=[mock_article_scores_empty_sections, core_pres_scores])
     return FollowsGTMetric(model=SupportedModels.FAKE_MODEL, model_config=model_config)
 
 
 def test_article_metric_perfect_score(mock_article_metric: FollowsGTMetric) -> None:
     """
     Test that FollowsGTMetric returns perfect scores when mocked with a perfect response.
+
+    exploration_sources is passed (non-empty) so the depth/breadth zero-mandate for
+    'no exploration sources' does not interfere with this generic aggregation test.
     """
     output = "This is a well-written article."
     expected_output = "This is the ideal article."
 
-    results = mock_article_metric.score(output=output, expected_output=expected_output)
+    results = mock_article_metric.score(
+        output=output,
+        expected_output=expected_output,
+        exploration_sources="- https://example.com/source \u2014 An exploration-phase source.",
+    )
 
     assert isinstance(results, list) and len(results) == 6
     for result in results:
@@ -129,11 +169,18 @@ def test_article_metric_perfect_score(mock_article_metric: FollowsGTMetric) -> N
 def test_article_metric_mixed_scores(mock_article_metric_mixed: FollowsGTMetric) -> None:
     """
     Test that FollowsGTMetric returns mixed scores when mocked with a mixed response.
+
+    exploration_sources is passed (non-empty) so the depth/breadth zero-mandate for
+    'no exploration sources' does not interfere with this generic aggregation test.
     """
     output = "This article has some issues."
     expected_output = "This is the ideal article."
 
-    results = mock_article_metric_mixed.score(output=output, expected_output=expected_output)
+    results = mock_article_metric_mixed.score(
+        output=output,
+        expected_output=expected_output,
+        exploration_sources="- https://example.com/source \u2014 An exploration-phase source.",
+    )
 
     assert isinstance(results, list) and len(results) == 6
 
@@ -141,6 +188,29 @@ def test_article_metric_mixed_scores(mock_article_metric_mixed: FollowsGTMetric)
     for result in results:
         assert result.value == 0.5
         assert result.name.startswith("ground_truth_")
+
+
+def test_article_metric_no_exploration_sources_forces_depth_breadth_zero(
+    mock_article_metric: FollowsGTMetric,
+) -> None:
+    """
+    Hard mandate: when exploration_sources is not provided (None/omitted), depth_enhancement
+    and breadth_enhancement must be forced to 0.0 for every section regardless of what the
+    (mocked) judge model returned — here the mock returns a perfect response (all sixes = 1),
+    so this isolates the code-level override from the LLM's own score.
+    """
+    output = "This is a well-written article."
+    expected_output = "This is the ideal article."
+
+    # exploration_sources intentionally omitted (defaults to None).
+    results = mock_article_metric.score(output=output, expected_output=expected_output)
+
+    results_by_name = {result.name: result for result in results}
+    assert results_by_name["ground_truth_depth_enhancement"].value == 0.0
+    assert results_by_name["ground_truth_breadth_enhancement"].value == 0.0
+    # The other four dimensions are unaffected by the mandate and keep their mocked perfect score.
+    for name in ("ground_truth_core_content", "ground_truth_flow", "ground_truth_structure", "ground_truth_core_preservation"):
+        assert results_by_name[name].value == 1.0
 
 
 def test_article_metric_empty_sections(mock_article_metric_empty_sections: FollowsGTMetric) -> None:
@@ -236,8 +306,9 @@ def test_system_prompt_contains_non_qualifying_addition_flow_rule() -> None:
     """
     The Flow accepted-differences bullet must state that non-qualifying
     additions (depth=0 AND breadth=0) are not covered by the accepted-
-    difference rule, and that a disproportionately long non-qualifying
-    addition constitutes a Flow=0 failure.
+    difference rule, and that a large such addition is resolved via the
+    three-way crowding boundary test (CoreContent/Flow/neither), not a
+    length calculation.
     """
     assert "non-qualifying addition" in follows_gt_prompts.SYSTEM_PROMPT
     assert "Flow=0" in follows_gt_prompts.SYSTEM_PROMPT
@@ -246,10 +317,11 @@ def test_system_prompt_contains_non_qualifying_addition_flow_rule() -> None:
 def test_system_prompt_contains_non_qualifying_addition_core_preservation_rule() -> None:
     """
     The WHAT TO AVOID section must state that non-qualifying additions must
-    not trigger CorePreservation=0 and that their penalty belongs to Flow.
+    not trigger CorePreservation=0, and that a large such addition is resolved
+    via the three-way crowding boundary test rather than a length calculation.
     """
     assert "CorePreservation=0" in follows_gt_prompts.SYSTEM_PROMPT
-    assert "belongs exclusively to Flow" in follows_gt_prompts.SYSTEM_PROMPT
+    assert "Three-Way Crowding Boundary" in follows_gt_prompts.SYSTEM_PROMPT
 
 
 def test_system_prompt_flow_does_not_own_missing_topics() -> None:
@@ -299,17 +371,45 @@ def test_get_eval_prompt_injects_few_shot_examples() -> None:
 
 def test_get_eval_prompt_no_unfilled_placeholders() -> None:
     """
-    The rendered prompt must contain none of the three known template
-    placeholders ({examples}, {output}, {expected_output}) in their
-    raw, unsubstituted form.
+    The rendered prompt must contain none of the four known template
+    placeholders ({examples}, {output}, {expected_output}, {exploration_sources})
+    in their raw, unsubstituted form.
     """
     rendered = follows_gt_prompts.get_eval_prompt(
         output="output",
         expected_output="expected",
         few_shot_examples=follows_gt_prompts.DEFAULT_FEW_SHOT_EXAMPLES,
     )
-    for placeholder in ("{examples}", "{output}", "{expected_output}"):
+    for placeholder in ("{examples}", "{output}", "{expected_output}", "{exploration_sources}"):
         assert placeholder not in rendered, f"Unfilled placeholder found: {placeholder}"
+
+
+def test_get_eval_prompt_exploration_sources_injected() -> None:
+    """
+    When exploration_sources is provided, it must appear verbatim in the
+    rendered prompt inside an <exploration_sources> block.
+    """
+    sources = "- https://example.com/paper — Some exploration source"
+    rendered = follows_gt_prompts.get_eval_prompt(
+        output="output",
+        expected_output="expected",
+        few_shot_examples=follows_gt_prompts.DEFAULT_FEW_SHOT_EXAMPLES,
+        exploration_sources=sources,
+    )
+    assert sources in rendered
+
+
+def test_get_eval_prompt_exploration_sources_not_provided_fallback() -> None:
+    """
+    When exploration_sources is None (default), the rendered prompt must
+    contain the 'Not provided' fallback string instead of the raw placeholder.
+    """
+    rendered = follows_gt_prompts.get_eval_prompt(
+        output="output",
+        expected_output="expected",
+        few_shot_examples=follows_gt_prompts.DEFAULT_FEW_SHOT_EXAMPLES,
+    )
+    assert "Not provided" in rendered
 
 
 # ---------------------------------------------------------------------------
@@ -347,10 +447,504 @@ def test_core_preservation_default_one_scores_correctly(
     When both depth_enhancement and breadth_enhancement are 0, core_preservation
     defaults to 1. The metric must return 1.0 for core_preservation in that case.
     """
-    model_config = ModelConfig(mocked_response=mock_article_scores_no_enhancements)
+    core_pres_scores = CorePreservationArticleScores(
+        sections=[
+            CorePreservationSectionScore(
+                title="Introduction",
+                core_preservation=CriterionScore(score=1, reason="Default 1: no qualifying additions to evaluate."),
+            ),
+        ]
+    )
+    model_config = ModelConfig(mocked_response=[mock_article_scores_no_enhancements, core_pres_scores])
     metric = FollowsGTMetric(model=SupportedModels.FAKE_MODEL, model_config=model_config)
 
     results = metric.score(output="output", expected_output="expected")
 
     core_preservation_result = next(r for r in results if "core_preservation" in r.name)
     assert core_preservation_result.value == 1.0
+
+
+# ---------------------------------------------------------------------------
+# FollowsGTCriteriaScores.to_context() — pass-1 serialisation
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def sample_criteria_scores() -> FollowsGTCriteriaScores:
+    return FollowsGTCriteriaScores(
+        core_content=CriterionScore(score=1, reason="Good core content."),
+        flow=CriterionScore(score=0, reason="Bad flow."),
+        structure=CriterionScore(score=1, reason="Good structure."),
+        depth_enhancement=CriterionScore(score=1, reason="Good depth."),
+        breadth_enhancement=CriterionScore(score=0, reason="No breadth."),
+        core_preservation=CriterionScore(score=1, reason="Core preserved."),
+    )
+
+
+def test_criteria_scores_to_context_excludes_core_preservation(
+    sample_criteria_scores: FollowsGTCriteriaScores,
+) -> None:
+    """
+    FollowsGTCriteriaScores.to_context() must NOT include core_preservation — it is
+    evaluated in pass 2 and must not appear in pass-1 few-shot examples.
+    """
+    context = sample_criteria_scores.to_context()
+    assert "core_preservation" not in context
+
+
+def test_criteria_scores_to_context_includes_all_pass1_fields(
+    sample_criteria_scores: FollowsGTCriteriaScores,
+) -> None:
+    """
+    FollowsGTCriteriaScores.to_context() must include all five pass-1 criteria.
+    """
+    context = sample_criteria_scores.to_context()
+    for field in ("core_content", "flow", "structure", "depth_enhancement", "breadth_enhancement"):
+        assert field in context, f"Missing pass-1 field: {field}"
+
+
+def test_criteria_scores_to_context_includes_scores_and_reasons(
+    sample_criteria_scores: FollowsGTCriteriaScores,
+) -> None:
+    """
+    FollowsGTCriteriaScores.to_context() must embed the score values and reason
+    text for each pass-1 field.
+    """
+    context = sample_criteria_scores.to_context()
+    assert "Good core content." in context
+    assert "Bad flow." in context
+    assert "Good depth." in context
+
+
+# ---------------------------------------------------------------------------
+# FollowsGTMetricExample.to_core_preservation_context()
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def sample_example() -> FollowsGTMetricExample:
+    return FollowsGTMetricExample(
+        output="Generated article text.",
+        expected_output="Ground truth article text.",
+        scores=FollowsGTArticleScores(
+            sections=[
+                SectionCriteriaScores(
+                    title="Intro",
+                    scores=FollowsGTCriteriaScores(
+                        core_content=CriterionScore(score=1, reason="OK."),
+                        flow=CriterionScore(score=1, reason="OK."),
+                        structure=CriterionScore(score=1, reason="OK."),
+                        depth_enhancement=CriterionScore(score=1, reason="Depth added."),
+                        breadth_enhancement=CriterionScore(score=0, reason="No breadth."),
+                        core_preservation=CriterionScore(score=1, reason="Core intact."),
+                    ),
+                ),
+            ]
+        ),
+    )
+
+
+def test_to_core_preservation_context_contains_enhancement_scores(
+    sample_example: FollowsGTMetricExample,
+) -> None:
+    """
+    to_core_preservation_context() must embed depth_enhancement and
+    breadth_enhancement scores (mirroring _build_section_scores_context format).
+    """
+    ctx = sample_example.to_core_preservation_context()
+    assert "depth_enhancement" in ctx
+    assert "breadth_enhancement" in ctx
+    assert "Depth added." in ctx
+    assert "No breadth." in ctx
+
+
+def test_to_core_preservation_context_contains_core_preservation_judgment(
+    sample_example: FollowsGTMetricExample,
+) -> None:
+    """
+    to_core_preservation_context() must embed the expected core_preservation score
+    and reason so the LLM sees the correct judgment for this example.
+    """
+    ctx = sample_example.to_core_preservation_context()
+    assert "core_preservation" in ctx
+    assert "Core intact." in ctx
+
+
+def test_to_core_preservation_context_contains_articles(
+    sample_example: FollowsGTMetricExample,
+) -> None:
+    """
+    to_core_preservation_context() must embed both the generated and expected
+    articles verbatim.
+    """
+    ctx = sample_example.to_core_preservation_context()
+    assert "Generated article text." in ctx
+    assert "Ground truth article text." in ctx
+
+
+def test_to_core_preservation_context_contains_core_content_and_flow(
+    sample_example: FollowsGTMetricExample,
+) -> None:
+    """
+    to_core_preservation_context() must embed core_content and flow scores/reasons
+    (the corrected CorePreservation test uses them as its anchor), mirroring
+    _build_section_scores_context format.
+    """
+    ctx = sample_example.to_core_preservation_context()
+    assert "core_content" in ctx
+    assert "flow" in ctx
+    assert "OK." in ctx
+
+
+def test_to_core_preservation_context_does_not_contain_structure(
+    sample_example: FollowsGTMetricExample,
+) -> None:
+    """
+    to_core_preservation_context() must NOT include the structure criterion —
+    only core_content, flow, depth_enhancement, and breadth_enhancement are
+    relevant upstream context for CorePreservation.
+    """
+    ctx = sample_example.to_core_preservation_context()
+    assert "<structure>" not in ctx
+    assert "structure:" not in ctx
+
+
+# ---------------------------------------------------------------------------
+# FollowsGTMetricFewShotExamples.to_core_preservation_context()
+# ---------------------------------------------------------------------------
+
+
+def test_few_shot_examples_core_preservation_context_wraps_examples(
+    sample_example: FollowsGTMetricExample,
+) -> None:
+    """
+    to_core_preservation_context() must wrap each example with <example_N> tags,
+    matching the pattern used by BaseFewShotExamples.to_context() for pass 1.
+    """
+    examples = FollowsGTMetricFewShotExamples(examples=[sample_example, sample_example])
+    ctx = examples.to_core_preservation_context()
+    assert "<example_1>" in ctx
+    assert "</example_1>" in ctx
+    assert "<example_2>" in ctx
+    assert "</example_2>" in ctx
+
+
+def test_few_shot_examples_core_preservation_context_no_example_3_for_two_examples(
+    sample_example: FollowsGTMetricExample,
+) -> None:
+    """
+    When there are exactly two examples, <example_3> must not appear.
+    """
+    examples = FollowsGTMetricFewShotExamples(examples=[sample_example, sample_example])
+    ctx = examples.to_core_preservation_context()
+    assert "<example_3>" not in ctx
+
+
+# ---------------------------------------------------------------------------
+# get_core_preservation_prompt rendering tests
+# ---------------------------------------------------------------------------
+
+
+def test_get_core_preservation_prompt_no_unfilled_placeholders(
+    mock_article_scores_perfect: FollowsGTArticleScores,
+) -> None:
+    """
+    The rendered core-preservation prompt must contain none of the known template
+    placeholders in their raw, unsubstituted form.
+    """
+    rendered = follows_gt_prompts.get_core_preservation_prompt(
+        output="output",
+        expected_output="expected",
+        article_scores=mock_article_scores_perfect,
+        few_shot_examples=follows_gt_prompts.DEFAULT_FEW_SHOT_EXAMPLES,
+    )
+    for placeholder in ("{examples}", "{output}", "{expected_output}", "{section_scores}"):
+        assert placeholder not in rendered, f"Unfilled placeholder found: {placeholder}"
+
+
+def test_get_core_preservation_prompt_injects_output_and_expected_output(
+    mock_article_scores_perfect: FollowsGTArticleScores,
+) -> None:
+    """
+    get_core_preservation_prompt must embed output and expected_output verbatim.
+    """
+    output = "GENERATED_ARTICLE_CP"
+    expected_output = "EXPECTED_ARTICLE_CP"
+    rendered = follows_gt_prompts.get_core_preservation_prompt(
+        output=output,
+        expected_output=expected_output,
+        article_scores=mock_article_scores_perfect,
+        few_shot_examples=follows_gt_prompts.DEFAULT_FEW_SHOT_EXAMPLES,
+    )
+    assert output in rendered
+    assert expected_output in rendered
+
+
+def test_get_core_preservation_prompt_injects_section_scores(
+    mock_article_scores_perfect: FollowsGTArticleScores,
+) -> None:
+    """
+    get_core_preservation_prompt must embed the per-section depth/breadth scores
+    from the pass-1 article_scores object.
+    """
+    rendered = follows_gt_prompts.get_core_preservation_prompt(
+        output="output",
+        expected_output="expected",
+        article_scores=mock_article_scores_perfect,
+        few_shot_examples=follows_gt_prompts.DEFAULT_FEW_SHOT_EXAMPLES,
+    )
+    # Section titles from mock_article_scores_perfect
+    assert "Introduction" in rendered
+    assert "Body" in rendered
+    assert "depth_enhancement" in rendered
+    assert "breadth_enhancement" in rendered
+
+
+def test_get_core_preservation_prompt_injects_few_shot_examples(
+    mock_article_scores_perfect: FollowsGTArticleScores,
+) -> None:
+    """
+    get_core_preservation_prompt must embed the core-preservation few-shot examples,
+    i.e. the {examples} placeholder is substituted with at least one known section title.
+    """
+    rendered = follows_gt_prompts.get_core_preservation_prompt(
+        output="output",
+        expected_output="expected",
+        article_scores=mock_article_scores_perfect,
+        few_shot_examples=follows_gt_prompts.DEFAULT_FEW_SHOT_EXAMPLES,
+    )
+    assert "{examples}" not in rendered
+    # A known section title from the Lesson 4 example must appear
+    assert "Why Structured Outputs Are Critical" in rendered
+
+
+def test_get_core_preservation_prompt_examples_contain_core_preservation_scores(
+    mock_article_scores_perfect: FollowsGTArticleScores,
+) -> None:
+    """
+    The few-shot examples embedded in get_core_preservation_prompt must include
+    core_preservation judgments (score + reason), not just enhancement scores.
+    """
+    rendered = follows_gt_prompts.get_core_preservation_prompt(
+        output="output",
+        expected_output="expected",
+        article_scores=mock_article_scores_perfect,
+        few_shot_examples=follows_gt_prompts.DEFAULT_FEW_SHOT_EXAMPLES,
+    )
+    assert "core_preservation" in rendered
+
+
+def test_get_core_preservation_prompt_uses_default_examples_when_not_specified(
+    mock_article_scores_perfect: FollowsGTArticleScores,
+) -> None:
+    """
+    When few_shot_examples is omitted, get_core_preservation_prompt must fall back
+    to DEFAULT_FEW_SHOT_EXAMPLES (no KeyError or unfilled placeholder).
+    """
+    rendered = follows_gt_prompts.get_core_preservation_prompt(
+        output="output",
+        expected_output="expected",
+        article_scores=mock_article_scores_perfect,
+    )
+    assert "{examples}" not in rendered
+    assert "core_preservation" in rendered
+
+
+# ---------------------------------------------------------------------------
+# CoT structure regression tests
+# Verify the reasoning-before-score chain-of-thought ordering and mandatory
+# self-check step introduced to prevent score/reasoning contradictions.
+# ---------------------------------------------------------------------------
+
+
+def test_system_prompt_reasoning_before_score_step() -> None:
+    """
+    Step 3.1 must instruct the evaluator to write reasoning first and explicitly
+    prohibit writing the score before the reasoning is complete.
+    """
+    assert "write your reasoning first" in follows_gt_prompts.SYSTEM_PROMPT
+    assert "Do NOT write the score yet" in follows_gt_prompts.SYSTEM_PROMPT
+
+
+def test_system_prompt_score_derived_from_conclusion() -> None:
+    """
+    Step 3.2 must state that the score is derived mechanically from the
+    conclusion stated in 3.1, not as a separate judgment.
+    """
+    assert "mechanical output of your stated conclusion" in follows_gt_prompts.SYSTEM_PROMPT
+
+
+def test_system_prompt_mandatory_self_check_step() -> None:
+    """
+    The SYSTEM_PROMPT must contain the mandatory self-check step (3.3) that
+    requires the evaluator to verify score/reasoning consistency after all
+    scores are assigned and correct any contradictions before proceeding.
+    """
+    assert "Mandatory self-check" in follows_gt_prompts.SYSTEM_PROMPT
+    assert "Never leave a score that contradicts your own written conclusion" in follows_gt_prompts.SYSTEM_PROMPT
+
+
+def test_system_prompt_traceability_check_is_step_3_4() -> None:
+    """
+    The traceability check for depth/breadth additions must be labeled step 3.4
+    (renumbered from 3.3 after the mandatory self-check was inserted as 3.3).
+    """
+    assert "3.4." in follows_gt_prompts.SYSTEM_PROMPT
+    # The old number must no longer label the traceability check
+    assert "3.3." in follows_gt_prompts.SYSTEM_PROMPT  # 3.3 is the self-check
+
+
+def test_criteria_scores_to_context_reason_before_score(
+    sample_criteria_scores: FollowsGTCriteriaScores,
+) -> None:
+    """
+    FollowsGTCriteriaScores.to_context() must output <reason> before <score>
+    for each criterion so that the few-shot examples demonstrate the same
+    reasoning-first ordering mandated by step 3.1.
+    """
+    context = sample_criteria_scores.to_context()
+    for field in ("core_content", "flow", "structure", "depth_enhancement", "breadth_enhancement"):
+        reason_pos = context.find("<reason>")
+        score_pos = context.find("<score>")
+        assert reason_pos < score_pos, f"<reason> must appear before <score> in to_context() output for field '{field}'"
+
+
+# ---------------------------------------------------------------------------
+# Enhancement instance-count + quality tag regression tests
+#
+# depth_enhancement/breadth_enhancement stay binary (0/1) in `score`, but the
+# reason field must now additionally report every qualifying instance and its
+# quality tier via a `[instances=N; quality=tier1,tier2,...]` tag, so that
+# generate_episode_oracles.py can credit multi-instance sections beyond the old
+# "first instance maxes the score" ceiling. See run13_rl_grok_pipeline_analysis.md
+# Part 5 (sections 25-27) for the bias this fixes.
+# ---------------------------------------------------------------------------
+
+
+def test_system_prompt_documents_enhancement_tag_format() -> None:
+    """
+    The SYSTEM_PROMPT must mandate the `[instances=N; quality=...]` tag for
+    depth_enhancement/breadth_enhancement, including the exact bracket syntax.
+    """
+    assert "[instances=N; quality=tier1,tier2,...]" in follows_gt_prompts.SYSTEM_PROMPT
+    assert "[instances=0]" in follows_gt_prompts.SYSTEM_PROMPT
+
+
+def test_system_prompt_documents_strong_standard_quality_rubric() -> None:
+    """
+    The SYSTEM_PROMPT must define both quality tiers ("strong" and "standard")
+    with a rubric distinguishing them, for both DepthEnhancement and
+    BreadthEnhancement criteria.
+    """
+    assert "**strong**" in follows_gt_prompts.SYSTEM_PROMPT
+    assert "**standard**" in follows_gt_prompts.SYSTEM_PROMPT
+    assert "substantive, specific addition" in follows_gt_prompts.SYSTEM_PROMPT
+
+
+def test_system_prompt_instructs_enumerating_all_instances() -> None:
+    """
+    The SYSTEM_PROMPT must explicitly instruct the judge to keep evaluating
+    every candidate addition rather than stopping once one instance qualifies.
+    """
+    assert "do not stop enumerating once one instance qualifies" in follows_gt_prompts.SYSTEM_PROMPT.lower()
+
+
+def test_system_prompt_documents_multi_instance_tag_example() -> None:
+    """
+    The SYSTEM_PROMPT must include a worked example of a multi-instance tag
+    (not just the single-instance and zero-instance cases), so the judge has
+    a concrete pattern to imitate for sections with several qualifying additions.
+    """
+    assert "[instances=3; quality=strong,strong,standard]" in follows_gt_prompts.SYSTEM_PROMPT
+
+
+def test_system_prompt_requires_strongest_first_quality_ordering() -> None:
+    """
+    The SYSTEM_PROMPT must instruct the judge to order the quality list
+    strongest-first (all "strong" entries before any "standard" entries) rather
+    than in prose-discussion order, so that when a section has more qualifying
+    instances than fit in the (at most 5) reported list, a genuinely stronger
+    instance is never dropped in favor of a weaker one that was merely discussed
+    earlier. Downstream, enhancement_reward.enhancement_credit() also re-sorts
+    defensively, but the grader should not rely on that as the only safeguard.
+    """
+    assert "ordered strongest-first" in follows_gt_prompts.SYSTEM_PROMPT
+    assert "not in the order they were discussed" in follows_gt_prompts.SYSTEM_PROMPT
+
+
+def test_system_prompt_documents_seven_instance_ordering_example() -> None:
+    """
+    The SYSTEM_PROMPT must include a worked example with more qualifying
+    instances (7) than the reported quality-list slot limit (5), demonstrating
+    that strong instances are listed before standard ones are used to fill the
+    remaining slots.
+    """
+    assert "[instances=7; quality=strong,strong,strong,strong,standard]" in follows_gt_prompts.SYSTEM_PROMPT
+
+
+def test_system_prompt_cot_step_finalizes_enhancement_tag() -> None:
+    """
+    The chain-of-thought section must include a step (3.5) that finalizes the
+    instances/quality tag after the 3.4 traceability check, for both score-0
+    and score-1 depth_enhancement/breadth_enhancement entries.
+    """
+    assert "3.5." in follows_gt_prompts.SYSTEM_PROMPT
+    assert "finalize the `[instances=N; quality=...]` tag" in follows_gt_prompts.SYSTEM_PROMPT
+
+
+def test_default_few_shot_examples_contain_enhancement_tags() -> None:
+    """
+    DEFAULT_FEW_SHOT_EXAMPLES must have been retrofitted with the new tag: at
+    least one zero-instance, one single-instance, and the quality vocabulary
+    must all appear in the rendered few-shot context.
+    """
+    rendered = follows_gt_prompts.DEFAULT_FEW_SHOT_EXAMPLES.to_context()
+    assert "[instances=0]" in rendered
+    assert "[instances=1; quality=strong]" in rendered
+    assert "[instances=1; quality=standard]" in rendered
+
+
+def test_get_eval_prompt_examples_carry_enhancement_tags() -> None:
+    """
+    The fully-rendered pass-1 evaluation prompt (as actually sent to the judge
+    model) must carry the retrofitted enhancement tags via the embedded
+    few-shot examples.
+    """
+    rendered = follows_gt_prompts.get_eval_prompt(
+        output="output",
+        expected_output="expected",
+        few_shot_examples=follows_gt_prompts.DEFAULT_FEW_SHOT_EXAMPLES,
+    )
+    assert "[instances=" in rendered
+
+
+def test_no_exploration_sources_reason_contains_zero_instances_tag() -> None:
+    """
+    The hard-zero mandate's fixed reason string (used to override the judge's
+    depth_enhancement/breadth_enhancement score to 0 when no exploration
+    sources were gathered) must itself carry the `[instances=0]` tag, so
+    downstream parsing sees a consistent, tagged reason regardless of whether
+    the 0 came from the judge or from this code-level override.
+    """
+    from brown.evals.metrics.new_follows_gt import metric as follows_gt_metric
+
+    assert "[instances=0]" in follows_gt_metric._NO_EXPLORATION_SOURCES_REASON
+
+
+def test_no_exploration_sources_mandate_reason_is_tagged(
+    mock_article_metric: FollowsGTMetric,
+) -> None:
+    """
+    End-to-end: when exploration_sources is omitted, the code-level override
+    must produce a reason string carrying the `[instances=0]` tag (not just a
+    plain "no sources" sentence), keeping the override consistent with the new
+    judge-authored tag format for any downstream parser.
+    """
+    output = "This is a well-written article."
+    expected_output = "This is the ideal article."
+
+    results = mock_article_metric.score(output=output, expected_output=expected_output)
+
+    results_by_name = {result.name: result for result in results}
+    assert "[instances=0]" in results_by_name["ground_truth_depth_enhancement"].reason
+    assert "[instances=0]" in results_by_name["ground_truth_breadth_enhancement"].reason

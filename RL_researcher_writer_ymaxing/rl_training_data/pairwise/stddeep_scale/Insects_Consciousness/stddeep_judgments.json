@@ -1,0 +1,243 @@
+{
+  "article": "Insects_Consciousness",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific five-part behavioral criteria used to classify bumblebee ball-rolling as genuine play (voluntary, intrinsically rewarding, differs from functional behavior, repeated but not stereotyped, occurs in stress-free conditions)"
+            ],
+            "b_instances": [
+              "Critics' alternative interpretation that the ball-rolling could be instinctual behavior or a form of stress relief rather than genuine play",
+              "Study authors' explicit caveat that the behavior does not imply humanlike reasoning",
+              "Elaborated, more concrete illustration of phenomenal consciousness via specific sensory examples (pain, hunger satisfaction, warmth of a sunbeam)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core narrative (bumblebee play study, NY Declaration details, phenomenal consciousness via Nagel, AI contrast, Cambridge Declaration comparison) with no genuinely new adjacent sub-topics introduced by either side, so breadth is a tie. For depth, Document A adds one substantive detail not in B -- the specific five-part scientific criteria used to classify the behavior as play. Document B, however, adds three distinct depth-enhancing details absent from A: skeptical/critical interpretations of the bumblebee findings (instinct or stress relief), the authors' own caution against over-interpreting the finding as humanlike reasoning, and a more concrete, example-based elaboration of what phenomenal consciousness entails. This gives B a modest edge in depth, while breadth remains tied."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Enumerates the five specific scientific criteria used to classify the ball-rolling as play (voluntary, intrinsically rewarding, differs from functional behavior, repeated but not stereotyped, occurs in stress-free conditions)"
+            ],
+            "b_instances": [
+              "Notes critics who argue the ball-rolling could be instinctual or a form of stress relief rather than genuine play",
+              "Notes the study authors' own caveat that the behavior does not imply humanlike reasoning",
+              "Expands on phenomenal consciousness with concrete sensory examples (sting of pain, satisfaction of hunger, warmth of a sunbeam) to deepen the Nagel definition"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core narrative (2022 bumblebee play study, 2024 NY Declaration, Nagel's phenomenal consciousness, contrast with AI, and reference to the 2012 Cambridge Declaration), so there is little genuine breadth differentiation -- neither introduces a new adjacent subtopic the other lacks; the Cambridge Declaration appears in both (diagram in A, text in B) and is treated as shared. On depth, A adds a distinctive specific detail: the five formal criteria used to classify play behavior. B, however, adds several distinct depth-oriented elaborations not in A: critics' alternative explanations for the behavior (instinct/stress relief), the study authors' own caveat about not implying humanlike reasoning, and more concrete illustrative examples of phenomenal consciousness. Since B has three qualifying depth instances against A's one, B shows moderately greater depth enhancement, while breadth is a tie for both."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Explicit enumeration of the five established scientific criteria for play behavior (voluntary, intrinsically rewarding, differs from functional behavior, repeated but not stereotyped, stress-free conditions)"
+            ],
+            "b_instances": [
+              "Critics' alternative explanation that the ball-rolling could be instinctual or stress relief rather than genuine play",
+              "Study authors' caveat that the behavior does not imply humanlike reasoning",
+              "Explanation of the declaration's 'two-fold nature' (grounded in decade of evidence but forcing philosophical re-evaluation)",
+              "Mention that LLMs lack the underlying biological machinery, not just behavioral evidence, for subjective states"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core narrative (bee play study, NY Declaration, phenomenal consciousness via Nagel, AI contrast, Cambridge Declaration comparison) with no genuinely new adjacent subtopics in either, so breadth is a tie. On depth, Document A adds one substantive detail not in B: the explicit five-criteria checklist for play behavior. Document B, however, adds several depth-enhancing caveats and nuances not in A: critics' alternative (instinct/stress-relief) explanation, the study authors' own caution against overinterpreting the behavior as humanlike reasoning, an elaboration on why the declaration's dual scientific-philosophical nature matters, and a specific mention of LLMs lacking biological machinery as a mechanistic reason for the human/AI distinction. This gives B a modest edge in depth instances (roughly 4 vs 1), while breadth remains equivalent between the two."
+        }
+      ]
+    },
+    "A Growing Awareness": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "crab study showing 'common currency' trade-off between shock aversion and light aversion",
+              "quantified tenfold increase in animal-sentience publications before the 2012 Cambridge Declaration",
+              "explicit naming of the 'problem of other minds' as the philosophical challenge",
+              "specific detail that a bee neuron may be as structurally complex as an oak tree",
+              "Godfrey-Smith's claim that consciousness arises from electrical oscillations in living brains",
+              "zebrafish mirror-test example with specific species detail"
+            ],
+            "b_instances": [
+              "specific naming of lidocaine as the analgesic used in the octopus place-preference test",
+              "cuttlefish memory specifically labeled 'source memory'",
+              "mirror-test controversy involving Gordon Gallup's skepticism and researchers' follow-up rebuttal experiments",
+              "crayfish anxiety-like state mechanistically tied to serotonin",
+              "comparison of bee's ~1 million neurons to human's 86 billion neurons"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "parallel debate over 'plant neurobiology' and whether plants can be conscious"
+            ],
+            "b_instances": [
+              "critics' meta-level objection that the declaration itself is a 'broad overstatement' that could prematurely shut down scientific debate"
+            ]
+          },
+          "reasoning": "Both documents cover the same core evidentiary base (octopus pain, cuttlefish memory, mirror test, insect sleep, crayfish anxiety, neuron-count objections, cortex-free consciousness). For depth, A adds several distinct rigor-enhancing details not in B (crab common-currency study, quantified publication growth trend, the named 'problem of other minds' framework, the oak-tree neuron complexity detail, and Godfrey-Smith's electrical-oscillation mechanism), giving it a modest edge in quantity and mechanistic specificity, while B contributes its own valuable depth (lidocaine naming, 'source memory' terminology, the Gallup mirror-test controversy and rebuttal, serotonin mechanism for crayfish anxiety, and the 86-billion-neuron comparison). The lists are comparable in substance but A's is slightly larger and more varied, warranting 'a_more'. For breadth, each document introduces exactly one genuinely new adjacent sub-topic: A discusses the parallel 'plant neurobiology' consciousness debate, while B raises the meta-scientific controversy over whether the declaration itself is an irresponsible overstatement. These are roughly equivalent in novelty and substantiveness, yielding a tie on breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Detailed philosophical 'problem of other minds' framing distinguishing genuine feeling from unconscious reflex, with dedicated citations",
+              "Vivid detail on bee neuron network density (each neuron as complex as an oak tree)"
+            ],
+            "b_instances": [
+              "Serotonin identified as the neurochemical mechanism underlying crayfish anxiety-like states",
+              "Explicit numeric comparison of bee's ~1 million neurons vs human's 86 billion neurons",
+              "Naming/defining the memory capacity as 'source memory' for cuttlefish",
+              "antance"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Crab decision-making study showing a 'common currency' trade-off between electric shock aversion and light aversion",
+              "Parallel debate over 'plant neurobiology' and critics' rebuttal about lack of neurons/organizational complexity",
+              "Quantifiable historical trend: tenfold increase in animal sentience publications in two decades before 2012 Cambridge Declaration"
+            ],
+            "b_instances": [
+              "Controversy over the cleaner wrasse mirror test, including Gordon Gallup's skepticism and follow-up experiments addressing it",
+              "Critique from other researchers that the declaration itself is a 'broad overstatement' that could stifle scientific debate"
+            ]
+          },
+          "reasoning": "Both documents cover the same core evidentiary base (octopus pain, cuttlefish memory, fish mirror test, insect sleep, crayfish anxiety, neuron-count/cortex arguments), so most content overlaps and is not counted as differentiating. For depth, A adds the 'problem of other minds' epistemic framing and a vivid neuron-density detail, while B adds a specific neurochemical mechanism (serotonin), a concrete neuron-count comparison to humans, and a named memory concept ('source memory'); these are roughly comparable in number and substance, yielding a tie. For breadth, A introduces two clearly new sub-topics not touched by B at all\u2014the crab 'common currency' trade-off study and the plant neurobiology debate\u2014plus a quantifiable historical trend about sentience publications, while B contributes two new sub-topics (the mirror-test methodological controversy and critics calling the declaration an overstatement). A's three breadth instances, including the substantial plant-neurobiology tangent, give it a modest edge over B's two."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "'Problem of other minds' distinction between genuine feeling and unconscious reflex, with epistemic caveat",
+              "Quantified tenfold increase in animal sentience publications over two decades before 2012",
+              "Bee neuron network described as densely connected, each neuron as complex as an oak tree"
+            ],
+            "b_instances": [
+              "Cuttlefish memory specifically named 'source memory' as a technical mechanism",
+              "Cleaner wrasse mirror-test controversy: named critic Gordon Gallup's skepticism and researchers' follow-up experiments addressing it",
+              "Crayfish anxiety-like state mechanistically tied to serotonin before benzodiazepine reversal",
+              "Comparison of bee's ~1 million neurons to human's 86 billion neurons as deeper neuron-count context",
+              "], "
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Crab decision-making study showing a 'common currency' for weighing shock aversion against light aversion",
+              "Parallel plant neurobiology debate as a boundary case for consciousness criteria"
+            ],
+            "b_instances": [
+              "Critics calling the declaration a 'broad overstatement' that could hinder scientific debate"
+            ]
+          },
+          "reasoning": "Both documents cover the same core evidentiary narrative (octopus pain, cuttlefish memory, mirror test, fruit fly sleep, bumblebee play, crayfish anxiety, neuron-count and distributed-brain objections, cortex/pallium/vertical-lobe convergence, Cambridge vs NY Declaration comparison). For depth, B goes further into several already-covered points: it names the 'source memory' mechanism in cuttlefish, adds the Gordon Gallup mirror-test controversy and subsequent rebuttal studies, specifies the serotonin mechanism behind crayfish anxiety, and gives the human 86-billion-neuron comparison for context. A's unique depth additions are the 'problem of other minds' epistemic caveat, the tenfold publication-growth statistic, and the oak-tree neuron-complexity detail\u2014slightly fewer and less individually weighty than B's set, giving B a modest edge. For breadth, A introduces two genuinely new adjacent topics not found in B: the crab 'common currency' decision-making study and the parallel plant neurobiology debate, both meaningfully broadening scope. B's only clear breadth addition is the mention of critics calling the declaration an 'overstatement,' a single new adjacent topic (meta-criticism of the declaration). This gives A a modest edge in breadth."
+        }
+      ]
+    },
+    "Mindful Relations": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "AI mimicking sentience convincingly (mimicry risk) with undark citation",
+              "Note that evidence-based evaluation of machine consciousness is needed rather than compelling performance alone"
+            ],
+            "b_instances": [
+              "Quantitative detail: UK Sentience Bill amendment followed a 2021 review of over 300 scientific studies",
+              "Cephalopod welfare gap: lack of standardized welfare metrics as more scientists enter the field",
+              "AI framework needing probabilistic judgments rather than waiting for absolute certainty",
+              "Jonathan Birch's concept of 'minimal consciousness' and C. elegans' 302 neurons as a specific technical detail",
+              "Use of powerful genetic tools in nematodes/fruit flies to test hypotheses about neural underpinnings of consciousness"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Pollinator welfare as an economic concern in sustainable agriculture, contrasted with crop pests"
+            ],
+            "b_instances": [
+              "Industrial insect farming for food/feed, use of 'biomass'/'harvesting' terminology creating legal/ethical gray area",
+              "Extension of laboratory welfare gap explicitly to C. elegans nematodes, not just fruit flies"
+            ]
+          },
+          "reasoning": "Both documents cover the same core beats (Sebo's welfare argument, Godfrey-Smith's antagonism point, Gibbons' lab welfare quote, UK Sentience Bill, AI caution, Andrews' call to action), but B integrates more granular, source-attributed depth: a specific study count (300+ studies) backing the UK policy shift, a named welfare-metrics gap for cephalopods, a probabilistic-judgment framework for AI moral status, and Jonathan Birch's 'minimal consciousness' concept tied to C. elegans' 302 neurons plus genetic-tool applications. A only adds two comparable depth instances (AI mimicry risk, evidence-based evaluation citation), making B's depth advantage substantial. On breadth, B introduces a genuinely new adjacent topic (industrial insect farming as 'biomass'/'harvesting') and extends the lab-welfare discussion to C. elegans specifically, while A contributes one distinct new sub-topic (pollinator economics vs. crop pests). This gives B a modest edge in breadth as well, though less pronounced than in depth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific pollinator-vs-pest economic tension in sustainable agriculture (bees vs crop pests)",
+              "AI's capacity to convincingly mimic sentience without actually being conscious"
+            ],
+            "b_instances": [
+              "Cephalopod welfare research still lacks standardized welfare metrics despite growing protections",
+              "Specific detail that the LSE review examined over 300 scientific studies before the 2021 UK Sentience Bill amendment",
+              "C. elegans genetic tools and Jonathan Birch's concept of 'minimal consciousness' in a worm with only 302 neurons"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Industrial insect farming for food/feed treating insects as 'biomass' with 'harvesting' terminology creating legal/ethical gray area"
+            ]
+          },
+          "reasoning": "Both documents cover the same core beats (Sebo on enrichment, Godfrey-Smith on antagonism, Gibbons on lab welfare, UK Sentience Bill, AI caution, Andrews' call to action). For depth, A adds a specific pollinator-vs-pest economic angle and the AI-mimicry mechanism, while B adds more numerous and slightly more technical elaborations: the cephalopod welfare-metrics gap, the '300 studies' quantitative detail on the LSE review, and the C. elegans/302-neuron 'minimal consciousness' detail from Birch \u2014 giving B a modest edge in depth. For breadth, B introduces a genuinely new adjacent subtopic (industrial insect farming and the 'biomass'/'harvesting' framing) that A does not touch at all, while A introduces no comparable new subtopic, giving B the edge in breadth as well, though not overwhelmingly so since only one new breadth instance is present."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Bees vs. crop pests economic distinction sharpening the insect welfare tension",
+              "AI mimicking sentience/evidence-based evaluation over performance (citations 58,59)"
+            ],
+            "b_instances": [
+              "LSE review specifics: over 300 scientific studies reviewed for the 2021 UK sentience bill",
+              "Noted lack of standardized welfare metrics for cephalopods as an ongoing gap",
+              "Call for probabilistic (rather than absolute-certainty) frameworks for AI moral patienthood",
+              "Jonathan Birch's concept of 'minimal consciousness' applied to C. elegans' 302-neuron nervous system",
+              "Use of genetic tools in model organisms to test hypotheses about neural underpinnings of consciousness"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Industrial insect farming for food/feed, with insects treated as 'biomass' and 'harvested,' creating a legal/ethical gray area",
+              "Explicit inclusion of C. elegans as a second invertebrate lab model alongside fruit flies"
+            ]
+          },
+          "reasoning": "Both documents share the same core narrative (ethical obligations, insect conflicts, lab welfare gap, UK policy, AI caution, future research call), but B adds several source-attributed depth details not in A: precise LSE review scope (300+ studies), a named critical gap in cephalopod welfare metrics, a probabilistic-judgment framing for AI moral status, Jonathan Birch's 'minimal consciousness' concept tied to C. elegans' 302 neurons, and mention of genetic tools for testing consciousness hypotheses. A's unique depth contributions are more modest: the bee-vs-pest economic distinction and the AI-mimicry/evidence-over-performance point. On breadth, B introduces a genuinely new adjacent topic\u2014industrial insect farming and the 'biomass'/'harvesting' framing\u2014plus a secondary invertebrate model (C. elegans) not present in A, while A introduces no comparably new subtopic. Overall B shows clearly greater depth enhancement and modestly greater breadth enhancement."
+        }
+      ]
+    }
+  }
+}

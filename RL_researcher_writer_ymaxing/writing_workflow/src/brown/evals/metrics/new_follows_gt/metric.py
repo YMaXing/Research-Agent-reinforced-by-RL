@@ -9,11 +9,20 @@ from typing import Any, cast
 
 from opik.evaluation.metrics import score_result
 
-from brown.evals.metrics.base import BrownBaseMetric
-from brown.models import ModelConfig, SupportedModels
+from brown.evals.metrics.base import BrownBaseMetric, CriterionScore
+from brown.models import ModelConfig, SupportedModels, get_model, structured_output_kwargs
 
 from . import prompts
-from .types import FollowsGTArticleScores
+from .types import (
+    CorePreservationArticleScores,
+    FollowsGTArticleScores,
+)
+
+_NO_EXPLORATION_SOURCES_REASON = (
+    "[instances=0] No exploration-phase sources were gathered for this episode, so this score is mandated to 0: "
+    "depth_enhancement and breadth_enhancement only credit additions traceable to an exploration-phase "
+    "source, and none exist to trace to."
+)
 
 
 class FollowsGTMetric(BrownBaseMetric):
@@ -79,6 +88,7 @@ class FollowsGTMetric(BrownBaseMetric):
         self,
         output: str,
         expected_output: str,
+        exploration_sources: str | None = None,
         **ignored_kwargs: Any,
     ) -> list[score_result.ScoreResult]:
         """Asynchronously calculate the ground-truth evaluation scores across six dimensions.
@@ -97,6 +107,10 @@ class FollowsGTMetric(BrownBaseMetric):
         Args:
             output: The generated article content to be evaluated.
             expected_output: The expected article content to compare against.
+            exploration_sources: Optional formatted string listing the exploration-phase
+                sources for this episode. When provided, DepthEnhancement and
+                BreadthEnhancement scores only credit additions traceable to these
+                sources. When None, falls back to standard criteria (backward compatible).
             **ignored_kwargs: Additional keyword arguments that are ignored to maintain
                 compatibility with the base metric interface.
 
@@ -116,29 +130,74 @@ class FollowsGTMetric(BrownBaseMetric):
             instance across threads.
 
         """
-        # Initialize the model client at the function level to avoid coroutine reuse issues when running in
-        # multiple threads due to sharing the same model instance across threads.
-        model_client = self.init_model()
-
-        llm_query = prompts.get_eval_prompt(
+        # Pass 1: evaluate the five independent criteria. The SYSTEM_PROMPT does not include the
+        # CorePreservation criterion definition, so the LLM's core_preservation output here is a
+        # placeholder that will be overwritten by pass 2.
+        pass1_client = get_model(self.model, self.model_config).with_structured_output(
+            FollowsGTArticleScores, **structured_output_kwargs(self.model)
+        )
+        pass1_query = prompts.get_eval_prompt(
             output=output,
             expected_output=expected_output,
             few_shot_examples=self.few_shot_examples,
+            exploration_sources=exploration_sources,
         )
-
-        article_response = cast(
+        pass1_response = cast(
             FollowsGTArticleScores,
-            await model_client.ainvoke(
+            await pass1_client.ainvoke(
                 [
                     {
                         "role": "user",
-                        "content": llm_query,
+                        "content": pass1_query,
                     }
                 ]
             ),
         )
 
-        if not article_response:
-            raise ValueError("Model failed to return a structured response.")
+        if not pass1_response:
+            raise ValueError("Model failed to return a structured response for pass 1.")
 
-        return article_response.to_score_result(self.name)
+        # Hard mandate (code-level, not just prompt-level): depth_enhancement and breadth_enhancement
+        # only credit additions traceable to an exploration-phase source. When no exploration sources
+        # were gathered for this episode, no instance can ever be traceable, so both scores must be 0
+        # regardless of what the judge model returned. This is enforced here rather than relying solely
+        # on prompt instructions, since an LLM judge can still mis-score despite explicit instructions.
+        # Applied BEFORE the core-preservation pass so pass 2 sees the corrected (zeroed) scores as context.
+        if not exploration_sources:
+            for section in pass1_response.sections:
+                if section.scores.depth_enhancement.score != 0:
+                    section.scores.depth_enhancement = CriterionScore(score=0, reason=_NO_EXPLORATION_SOURCES_REASON)
+                if section.scores.breadth_enhancement.score != 0:
+                    section.scores.breadth_enhancement = CriterionScore(score=0, reason=_NO_EXPLORATION_SOURCES_REASON)
+
+        # Pass 2: evaluate core_preservation with the finalised depth/breadth scores as context.
+        # Sequential execution guarantees the judge builds on the actual pass-1 enhancement scores
+        # regardless of whether they are 0 or 1.
+        core_pres_client = get_model(self.model, self.model_config).with_structured_output(
+            CorePreservationArticleScores, **structured_output_kwargs(self.model)
+        )
+        core_pres_query = prompts.get_core_preservation_prompt(
+            output=output,
+            expected_output=expected_output,
+            article_scores=pass1_response,
+            few_shot_examples=self.few_shot_examples,
+        )
+        core_pres_response = cast(
+            CorePreservationArticleScores,
+            await core_pres_client.ainvoke(
+                [
+                    {
+                        "role": "user",
+                        "content": core_pres_query,
+                    }
+                ]
+            ),
+        )
+
+        # Overwrite the pass-1 core_preservation placeholders with the pass-2 scores.
+        # Matching by index is robust against minor title paraphrasing by the LLM.
+        if core_pres_response and len(core_pres_response.sections) == len(pass1_response.sections):
+            for section, core_pres_section in zip(pass1_response.sections, core_pres_response.sections):
+                section.scores.core_preservation = core_pres_section.core_preservation
+
+        return pass1_response.to_score_result(self.name)

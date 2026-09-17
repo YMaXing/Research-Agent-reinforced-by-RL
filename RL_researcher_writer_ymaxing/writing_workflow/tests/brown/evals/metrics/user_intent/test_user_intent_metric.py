@@ -369,3 +369,57 @@ def test_system_prompt_word_count_tolerance_aligned_with_writer() -> None:
     """
     assert "±10%" in user_intent_prompts.SYSTEM_PROMPT
     assert "minimum ±25 words" in user_intent_prompts.SYSTEM_PROMPT
+
+
+# ---------------------------------------------------------------------------
+# CoT structure regression tests
+# Verify the reasoning-before-score chain-of-thought ordering and mandatory
+# self-check step introduced to prevent score/reasoning contradictions.
+# ---------------------------------------------------------------------------
+
+
+def test_system_prompt_reasoning_before_score_step() -> None:
+    """
+    Step 3.1 must instruct the evaluator to write reasoning first and explicitly
+    prohibit writing the score before the reasoning is complete.
+    """
+    assert "write your reasoning first" in user_intent_prompts.SYSTEM_PROMPT
+    assert "Do NOT write the score yet" in user_intent_prompts.SYSTEM_PROMPT
+
+
+def test_system_prompt_score_derived_from_conclusion() -> None:
+    """
+    Step 3.2 must state that the score is derived mechanically from the
+    conclusion stated in 3.1, not as a separate judgment.
+    """
+    assert "mechanical output of your stated conclusion" in user_intent_prompts.SYSTEM_PROMPT
+
+
+def test_system_prompt_mandatory_self_check_step() -> None:
+    """
+    The SYSTEM_PROMPT must contain the mandatory self-check step (3.3) that
+    requires the evaluator to verify score/reasoning consistency after all
+    scores are assigned and correct any contradictions before proceeding.
+    """
+    assert "Mandatory self-check" in user_intent_prompts.SYSTEM_PROMPT
+    assert "Never leave a score that contradicts your own written conclusion" in user_intent_prompts.SYSTEM_PROMPT
+
+
+def test_scores_to_context_reason_before_score() -> None:
+    """
+    UserIntentCriteriaScores.to_context() must output <reason> before <score>
+    for each criterion so that the few-shot examples demonstrate the same
+    reasoning-first ordering mandated by step 3.1.
+    """
+    from brown.evals.metrics.base import CriterionScore
+    from brown.evals.metrics.new_user_intent.types import UserIntentCriteriaScores
+
+    scores = UserIntentCriteriaScores(
+        guideline_adherence=CriterionScore(score=1, reason="Guideline met."),
+        research_anchoring=CriterionScore(score=0, reason="Anchoring failed."),
+        golden_source_priority=CriterionScore(score=1, reason="Priority correct."),
+    )
+    context = scores.to_context()
+    reason_pos = context.find("<reason>")
+    score_pos = context.find("<score>")
+    assert reason_pos < score_pos, "<reason> must appear before <score> in to_context() output"

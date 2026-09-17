@@ -1,0 +1,500 @@
+{
+  "article": "14_agent_system_design",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Cites arXiv source [41] to support claim that agentic systems represent a fundamental shift where the agent generates its own logic at runtime, contrasted with static human-coded logic"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents largely restate the same core scope-recap and playbook-preview content expected of an introduction; neither includes quantitative or mechanistic detail that would count as depth, so depth is a tie. For breadth, Document A adds a distinct, source-cited claim (arXiv [41]) framing agentic systems as a paradigm shift where the agent itself generates logic at runtime versus static human-coded logic\u2014a new conceptual point not covered in B. Document B instead elaborates on core scope items (e.g., HITL policies, orchestration styles, component interaction diagrams) but these are restatements/details of the section's own core content rather than externally sourced new sub-topics, so they don't qualify as distinct enhancement instances. This gives A a modest edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "citation-backed claim (arXiv 2606.05608) that agents represent a paradigm shift where the agent generates its own logic at runtime, contrasted with decades of static human-coded logic"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "introduces human-in-the-loop (HITL) policies as a core design variable",
+              "introduces orchestration styles as a distinct design variable",
+              "adds component interaction diagrams as a new deliverable of the lesson"
+            ]
+          },
+          "reasoning": "Both introductions are largely parallel restatements of prior lessons and the upcoming 7-step playbook. Document A includes a source-cited claim (arXiv 2606.05608) elaborating the mechanism behind the 'agent as software' paradigm shift, giving it a depth edge no equivalent appears in B. Document B, however, broadens scope by naming additional design variables (HITL policies, orchestration styles) and a new deliverable (component interaction diagrams) that A never mentions, giving B a clear breadth advantage with multiple new sub-topics versus none in A."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "citation-backed claim that agents generate their own logic at runtime (arXiv 41), framing agentic systems as a shift in software engineering"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "adds human-in-the-loop (HITL) policies as a core design variable",
+              "adds orchestration styles as a design variable",
+              "mentions component interaction diagrams as a deliverable of the lesson"
+            ]
+          },
+          "reasoning": "Both intros are largely paraphrases of the same recap and framing content. Document A uniquely adds a source-attributed technical claim (citation 41) about agents generating logic at runtime, giving it a modest depth edge. Document B, however, introduces several new adjacent sub-topics not present in A\u2014HITL policies, orchestration styles, and component interaction diagrams\u2014broadening the scope of what the lesson will cover, giving it a breadth edge. Neither difference is dramatic, so both preferences are 'more' rather than 'much more'."
+        }
+      ]
+    },
+    "A General AI Engineering Decision Framework": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "AV safety analogy for HITL: agent-specific vs generic-agnostic feedback protocols",
+              "Mature HITL escalation triggers detail: financial thresholds, reputational risk, multi-agent complexity degrading reliability, centralized policy engine",
+              "Orchestration trade-off criteria elaborated (latency, governance, cost, team skills) with choreography-vs-orchestration example",
+              "Deterministic orchestration detail via Microsoft Conductor / workflow-first vs code-first vs hybrid framing",
+              "Monolith-to-microservices analogy elaborated with bounded context and contracts for tool boundaries",
+              "Explicit MCP integration math: N\u00d7M reduced to N+M",
+              "Quantitative 90% confidence threshold example for HITL escalation"
+            ],
+            "b_instances": [
+              "Mechanistic explanation of lost-in-the-middle: U-shaped curve, primacy/recency effects tied to attention mechanism",
+              "LangGraph interrupt() function implementation detail for pausing/resuming HITL workflow",
+              "LangGraph checkpointer 'super-step' boundary detail for state saving"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Decision matrix / Pugh Matrix methodology for formalizing trade-off evaluation",
+              "Inference-time distillation: teacher-student model pattern with cascade mechanism for cost/accuracy balance",
+              "Agent failure mode taxonomy: cascading failure and silent failure as distinct concepts",
+              "Concrete named product examples for orchestration styles (Orkes Conductor's agentic_research workflow, Perplexity/Gemini deep research agents)",
+              "Cost observability as a subtopic: attributing spend to requests/agents, unbounded RAG searches and verbose logging inflating costs"
+            ]
+          },
+          "reasoning": "On depth, Document A more thoroughly elaborates several points already introduced in both documents -- the AV-safety HITL analogy, detailed escalation-trigger taxonomy, deterministic orchestration frameworks, the microservices analogy for tool boundaries, and explicit N\u00d7M-to-N+M MCP math -- giving it roughly seven distinct deepening instances versus Document B's three (mechanistic lost-in-the-middle explanation, LangGraph interrupt() mechanics, and checkpointer super-step detail). Both sets are reasonably substantive, but A's list is clearly longer, so A wins depth by a wide margin. On breadth, Document B introduces multiple genuinely new sub-topics absent from A: formal decision-matrix methodology, inference-time distillation (teacher-student cascade), an agent failure-mode taxonomy (cascading/silent failures), concrete named product examples for orchestration (Orkes Conductor, Perplexity, Gemini deep research), and a cost-observability sub-topic. Document A introduces no comparable new sub-topics, relying instead on deepening existing points, so B wins breadth decisively."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "HITL lessons from autonomous vehicle safety research on agent-specific vs generic feedback protocols",
+              "Centralized policy engine architecture to replace hardcoded per-agent guardrails",
+              "Microservices/monolith analogy deepening the tool-boundary separation-of-concerns argument",
+              "Detailed orchestration-vs-choreography trade-off criteria (latency, governance, cost, team skills) plus deterministic/inspectable workflow rationale for auditability"
+            ],
+            "b_instances": [
+              "Mechanistic explanation of lost-in-the-middle via primacy/recency cognitive-bias effects producing a U-shaped attention curve",
+              "Decision matrix / Pugh Matrix method with weighted criteria scoring for formalizing constraint trade-offs",
+              "LangGraph interrupt() function mechanics for pausing graph state during HITL review"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Inference-time distillation pattern: teacher model guiding cheaper student model with confidence-based cascade",
+              "Specific agent failure-mode taxonomy: cascading failure vs silent failure",
+              "Real-time cost observability practice of attributing spend to specific requests/agents to prevent silent cost inflation",
+              "Concrete product examples of workflows vs agents (Orkes Conductor agentic_research workflow; Perplexity/Gemini deep research agents)"
+            ]
+          },
+          "reasoning": "Both documents cover the same seven-step framework with substantial overlap (lost-in-the-middle citations, sliding-window/RAG, MCP N\\u00d7M problem, LangGraph checkpointing). On depth, A adds slightly more rigor to existing points: autonomous-vehicle-derived HITL protocol design, a centralized policy-engine architecture, a microservices analogy for tool boundaries, and a more elaborated orchestration trade-off framework. B adds three solid depth instances (primacy/recency mechanism behind lost-in-the-middle, a Pugh/decision-matrix method for constraint formalization, and the LangGraph interrupt() mechanism), giving A a modest edge overall. On breadth, B is clearly stronger, introducing several genuinely new sub-topics absent from A: inference-time distillation as a model-strategy pattern, a specific taxonomy of agent failure modes (cascading/silent failures), real-time cost observability practices, and concrete named product examples (Orkes Conductor, Perplexity/Gemini deep research) illustrating workflow vs agent use cases. A contains no comparable breadth-expanding instances, making B's breadth advantage substantial."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "HITL lesson from autonomous vehicle safety on agent-specific vs generic feedback protocols",
+              "Mature HITL escalation triggers detail (financial thresholds, reputational risk, multi-agent complexity degrading reliability, centralized policy engine)",
+              "Microservices analogy for tool boundaries (monolith-to-microservices evolution, bounded context contracts)",
+              "Detailed orchestration trade-off criteria (latency, governance, cost, team skills; choreography for high-throughput vs orchestration for regulated industries; hybrid combining both for main workflow vs internal ops)"
+            ],
+            "b_instances": [
+              "Mechanistic explanation of lost-in-the-middle as primacy/recency cognitive bias producing U-shaped attention curve",
+              "Specific agent failure taxonomy: cascading failure vs silent failure",
+              "LangGraph interrupt() function implementation detail for pausing/resuming workflows"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Decision matrix / Pugh Matrix methodology for formalizing trade-off evaluation",
+              "Inference-time distillation pattern (teacher-student model with confidence-based cascade)",
+              "Real-time cost observability as a distinct concern (attributing spend to requests/agents, unbounded RAG search cost inflation)",
+              "Concrete product examples for orchestration styles (Orkes Conductor agentic_research workflow; Perplexity/Gemini deep research agents)"
+            ]
+          },
+          "reasoning": "Both documents cover the same seven-step framework with substantial overlap. On depth, A adds a few technical elaborations not in B: the autonomous-vehicle-safety-derived point about agent-specific vs generic HITL feedback, a more detailed escalation-trigger taxonomy, a microservices analogy for tool boundaries, and richer orchestration trade-off criteria. B counters with its own depth additions: a mechanistic explanation of the lost-in-the-middle effect (primacy/recency bias, U-shaped curve), a specific failure-mode taxonomy (cascading vs silent failures), and concrete LangGraph interrupt() implementation detail. The two sides are close, with A having a slight edge in number/substantiveness. On breadth, B is clearly stronger: it introduces several genuinely new sub-topics absent from A, including formal decision-matrix/Pugh-matrix methodology for trade-off analysis, inference-time distillation (teacher-student cascade) as a cost-optimization pattern, real-time cost observability as a distinct concern, and named product examples (Orkes Conductor, Perplexity/Gemini deep research) illustrating orchestration choices. A does not introduce comparable new adjacent topics, making breadth a clear win for B."
+        }
+      ]
+    },
+    "Inference-Time Scaling and the Cost/Latency Calculus": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Specific 750x cost multiplier between GPT-4.5 and Gemini 2.5 Flash-Lite input pricing",
+              "o1-like models: longer CoT can degrade accuracy due to limited self-revision capability (citation 40)",
+              "7B parameter model can outperform a 70B model with sufficient thinking time (citation 48)",
+              "Lost-in-the-middle citation reinforcing why more context doesn't guarantee better performance (citation 1)"
+            ],
+            "b_instances": [
+              "Self-conditioning effect: models become more likely to err after observing their own prior mistakes (citation 16)",
+              "Sequential test-time compute significantly outperforms parallel compute specifically for long-horizon task execution (citation 16)",
+              "Diminishing single-step accuracy gains compounding into exponential gains in task length an agent can complete",
+              "Specific failure modes from unbudgeted reasoning: task derailment, step repetition, loss of conversation history (citation 17)",
+              "Parallel scaling outperforms serial reasoning specifically when a model's self-revision capability is weak (citation 3)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Interleaved thinking: model thinks, calls a tool, then thinks again about the result (citation 7)",
+              "Cascade pattern: routing low-self-consistency samples from a cheap model up to an expensive model (citation 42)"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same four levers and near-identical worked cost examples. On depth, B offers more numerous and mechanistically specific elaborations (self-conditioning effect, long-horizon sequential-vs-parallel research finding, diminishing-to-exponential returns framing, concrete failure modes of unbudgeted reasoning, and a conditional nuance on when parallel beats serial), giving it a modest edge over A's four solid depth instances (750x price gap, o1 self-revision degradation, 7B-outperforms-70B claim, lost-in-the-middle citation). On breadth, A introduces two genuinely new sub-topics not touched by B at all -- interleaved thinking (tool-calling mid-reasoning) and cascade-based model routing on disagreement -- while B's differences (different example domains like legal contracts, mention of 'selective retrieval') are largely restatements of the same core points rather than new sub-topics, giving A a clear edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Specific 750x cost differential between GPT-4.5 and Gemini 2.5 Flash-Lite input tokens",
+              "o1-like model research showing longer CoT doesn't consistently improve accuracy due to limited self-revision (arXiv 2502.12215)",
+              "Claim that a well-tuned 7B model can outperform a 70B model given sufficient thinking time",
+              "Lost-in-the-middle citation (arXiv 2307.03172) as specific mechanism for why more context doesn't help"
+            ],
+            "b_instances": [
+              "'Self-conditioning' effect where models become more error-prone after observing their own prior mistakes (arXiv 2509.09677)",
+              "Specific failure modes from unbudgeted thinking: task derailment, step repetition, loss of conversation history (arXiv 2503.13657)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Interleaved thinking concept (model thinks, calls tool, then thinks again about result)",
+              "Cascade technique: routing disagreeing cheap-model samples to an expensive model to optimize cost-accuracy tradeoff"
+            ],
+            "b_instances": [
+              "New sub-topic of long-horizon agentic task execution where sequential test-time compute compounds into exponential gains in achievable task length, distinct from single-step accuracy"
+            ]
+          },
+          "reasoning": "Both documents cover the same four levers and provide an illustrative cost comparison, but they diverge in which extra research-backed details they add. On depth, Document A supplies four distinct quantitative/mechanistic details not found in B (the 750x cost multiplier, o1-model chain-of-thought degradation via limited self-revision, the 7B-outperforms-70B claim, and the lost-in-the-middle citation), while B contributes two novel mechanisms (self-conditioning effect and specific failure modes from unbounded thinking budgets). This gives A a modest edge in depth (4 vs 2 instances). On breadth, A introduces two new sub-topics beyond the core scaling discussion (interleaved thinking and cascade-based routing), while B introduces one new sub-topic (long-horizon task-length scaling benefits of sequential compute). This gives A a modest edge in breadth as well (2 vs 1). Overall, A shows somewhat more enhancement content on both dimensions, though the gap is not dramatic since B also contributes distinct, well-sourced additions."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Specific 750x price differential between GPT-4.5 and Gemini 2.5 Flash-Lite input tokens",
+              "Citation of 'lost-in-the-middle' phenomenon as concrete mechanism behind context-scaling limits",
+              "o1-like models study showing longer chains-of-thought can degrade accuracy due to limited self-revision capability",
+              "Specific claim that a well-designed 7B model can outperform a 70B model given sufficient thinking time",
+              "Explanation of 'interleaved thinking' (think-tool call-think again) as a specific mechanism",
+              "Cascade pattern mechanism: escalating to an expensive model only when cheap-model samples disagree"
+            ],
+            "b_instances": [
+              "'Self-conditioning' effect where models become more error-prone after observing their own prior mistakes on long tasks",
+              "Finding that sequential test-time compute outperforms parallel compute specifically for long-horizon task execution",
+              "Specific failure modes from unbounded thinking budgets: task derailment, step repetition, loss of conversation history",
+              "Nuance that parallel scaling is especially effective precisely when a model's self-revision capability is weak"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Legal contract analysis cited as a concrete high-value/high-stakes use case example, broadening beyond generic 'high-stakes tasks' framing"
+            ]
+          },
+          "reasoning": "Both documents cover the same four levers and cost-calculus framework, but each adds distinct source-attributed depth. Document A goes deeper with a quantified price-ratio example, the lost-in-the-middle citation, the o1-model self-revision degradation study, the 7B-vs-70B thinking-time claim, the interleaved-thinking mechanism, and the cascade escalation pattern -- six distinct depth instances. Document B counters with its own deep, well-cited additions: the self-conditioning effect, the long-horizon sequential-vs-parallel compute finding, specific failure modes from unbudgeted thinking, and a nuanced self-revision/parallel-scaling link -- four distinct instances. A's set is somewhat larger and equally substantive, giving it a modest edge on depth. On breadth, neither document expands much beyond the four-lever core topic, but B introduces a concrete legal-contract-analysis example as a new use-case domain, which A lacks an equivalent for, giving B a slight breadth edge."
+        }
+      ]
+    },
+    "Our Capstone: Global System Design": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Explains LangGraph+MCP hybrid as overcoming limitations of simpler agent loops, citing an external analysis of multi-agent orchestration trends",
+              "Elaborates on file-based contract as enabling human inspection/editing at each handoff point, citing sources on AI agent artifacts"
+            ],
+            "b_instances": [
+              "Specifies concrete final output artifacts of the Brown workflow (article.md, asset folder, structured review artifacts) and that .nova/ contains raw data/intermediate artifacts"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Robotics leader/executor multi-agent analogy (citing a robotics research paper) as inspiration for the Nova/Brown separation"
+            ],
+            "b_instances": [
+              "Discussion of scalability limits of the file-based approach at large scale (e.g., codebases, hundreds of legal documents) and need for specialized file systems/shared memory, citing an external blog post"
+            ]
+          },
+          "reasoning": "Both documents cover the same core Nova/Brown architecture. On depth, A adds two source-backed elaborations not in B: the LangGraph+MCP synergy explanation (overcoming limits of simple agent loops) and the file-based contract rationale (human review/edit at handoffs). B's comparable citations (MCP intro, LangGraph HITL docs) are more generic backing without added technical specificity, though B does add a modest depth detail specifying the concrete output artifacts (article.md, assets, review artifacts). This gives A a modest edge on depth. On breadth, each document introduces exactly one genuinely new adjacent topic: A brings in a robotics leader/executor multi-agent analogy with citation, while B introduces a distinct discussion of scalability limitations and production-scale file system alternatives with citation. These are comparably substantive new sub-topics, resulting in a tie for breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "LangGraph+MCP framed as an emerging trend overcoming limitations of simple agent loops, backed by citation",
+              "File-based contract citation explaining it enables human review/editing at each handoff point"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Robotics-derived leader/executor agent analogy for separation of concerns, with citation"
+            ],
+            "b_instances": [
+              "Discussion of scalability limits of the file-based approach at production scale (e.g., codebases, legal documents) and potential solutions like specialized file systems/shared memory, with citation"
+            ]
+          },
+          "reasoning": "Both documents cover the same core architecture (Nova/Brown, MCP client, LangGraph, file-based handoff) almost identically. A adds two depth-oriented enhancements not in B: a citation-backed claim that combining LangGraph and MCP reflects an emerging orchestration trend that overcomes limits of simpler agent loops, and a citation-backed elaboration that the file-based contract explicitly enables human review/editing at handoff points. B lacks comparable depth-only additions (its added citations for MCP portability and LangGraph HITL are largely restatements). For breadth, A introduces a genuinely new adjacent domain reference (the robotics leader/executor pattern) while B introduces a genuinely new subtopic -- the scalability limitations of the file-based approach at production scale and possible solutions (specialized file systems, shared memory) -- which the core text does not address. These are roughly comparable in novelty and substantiveness, yielding a tie on breadth, while A's extra depth-oriented citations give it a modest edge on depth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Citation-backed claim that combining LangGraph+MCP overcomes limitations of simpler agent loops (citing an orchestration article)",
+              "Citation-backed claim that the file-based contract is explicit/inspectable, allowing human review/edit at each handoff (two citations)"
+            ],
+            "b_instances": [
+              "Added specific detail on final outputs of the Brown workflow (article.md, folder of assets, structured review artifacts)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "Robotics 'leader/executor' agent analogy explaining the exploration/execution separation, with citation to a robotics paper"
+            ],
+            "b_instances": [
+              "Discussion of scalability limits of the file-based handoff at scale (e.g., codebases, hundreds of legal documents) and potential solutions like specialized file systems or shared memory, with citation"
+            ]
+          },
+          "reasoning": "Both documents cover the same core architecture (Nova/Brown, MCP, LangGraph, file-based handoff) with very similar wording. For depth, Document A adds two citation-backed elaborations not in B: a claim about LangGraph+MCP overcoming limitations of simpler agent loops, and a claim that the file-based contract is inspectable/reviewable by humans. Document B's comparable additions (MCP protocol citation, HITL citation) are largely restatements with generic references rather than new specific mechanisms, though it does add a concrete detail about the final output artifacts (article.md, assets, review artifacts), giving it one modest depth instance. Net effect favors A moderately on depth. For breadth, each document introduces exactly one genuinely new sub-topic: A discusses a robotics leader/executor analogy (citation-backed) as a framing for the separation-of-concerns principle, while B introduces a new discussion of scalability limits of the file-based approach at larger workloads, with specific examples (codebases, legal documents) and potential solutions (specialized file systems, shared memory), also citation-backed. Both are comparably substantive single instances, resulting in a tie on breadth."
+        }
+      ]
+    },
+    "Decision Matrix & Defaults for the Capstone": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Model family/tier tiering (Gemini 2.5 Pro for reasoning, cheap models for tools, mid-tier for writing)",
+              "Reasoning budget defaults (medium effort, capped thinking tokens, parallel attempts off)",
+              "Context strategy specifics (summaries, selective retrieval, caching, lost-in-the-middle problem)",
+              "Orchestration & portability choices (MCP/FastMCP for Nova, LangGraph for Brown)",
+              "HITL policy specifics (approval gates, critical stop on 0/N scrape failures)",
+              "Artifacts & contracts (file-based handoffs like research.md, article.md, stable on-disk layout)"
+            ]
+          },
+          "reasoning": "Document A only provides a generic, abstract description of the decision matrix's purpose without any concrete decision dimensions, defaults, or rationales. Document B includes a fully realized table with six distinct decision dimensions (model tiering, reasoning budgets, context strategy, orchestration/portability, HITL policy, artifacts/contracts), each with specific named tools, models, and mechanisms (e.g., Gemini 2.5 Pro, FastMCP, LangGraph, lost-in-the-middle problem, 0/N scrape failure threshold). Since A has no baseline coverage of these specific dimensions for B to 'deepen,' these additions are best classified as breadth (new subtopics) rather than depth, giving B a much_more breadth advantage while depth remains tied at essentially zero for both."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "specific reasoning effort default (Medium, capped thinking tokens, parallel attempts off) tied to Series/Parallel Scaling lever",
+              "specific model tiering (Gemini 2.5 Pro for research reasoning, cheap models for tools, mid-tier for writing) tied to Model Size Scaling lever",
+              "specific context strategy details (strict summaries, selective retrieval, caching) tied to Input Context Scaling lever and 'lost-in-the-middle' problem"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "orchestration architecture split: MCP-driven agent loop for Nova vs LangGraph for Brown, with portability/durability rationale",
+              "HITL policy specifics: approval checkpoints (queries, scrape URLs, final article) and critical stop conditions",
+              "artifacts & contracts: file-based handoffs (research.md, article.md, assets, reviews) with stable on-disk layout for modularity/debuggability"
+            ]
+          },
+          "reasoning": "Document A is a brief generic paragraph describing the purpose of the decision matrix without any concrete content, so it contains no qualifying depth or breadth instances. Document B includes an actual detailed table with named models (Gemini 2.5 Pro), specific scaling levers (Model Size, Series/Parallel, Input Context Scaling) explained with rationale (depth), plus entirely new sub-topics like orchestration architecture (MCP vs LangGraph), HITL approval policy, and file-based artifact contracts (breadth). This gives B a decisive advantage on both dimensions."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "specific model choices with technical rationale (Gemini 2.5 Pro with budgeted thinking for research reasoning; fast/cheap or non-LLM tools; mid-tier reliable model for writing) tied to model-size scaling lever",
+              "reasoning effort/token budget specifics (medium effort, capped thinking tokens, parallel attempts off by default) tied to series/parallel scaling lever",
+              "context strategy specifics (strict summaries, selective retrieval, caching for boilerplate prompts) and explicit mention of the 'lost-in-the-middle' problem",
+              "specific HITL checkpoints (approve research queries, full-scrape URL list, final article) and a concrete failure trigger (critical stop on 0/N scrapes successful)",
+              "concrete artifact/file contract details (research.md, article.md, assets, reviews, stable on-disk layout) enabling replayability/auditing"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Orchestration & Portability as a distinct decision dimension: MCP-driven agent loop for research (Nova) vs LangGraph with FastMCP for writing (Brown), addressing portability and durability separately",
+              "explicit differentiation of decisions by agent role (Nova research vs Brown writing) rather than a single generic blueprint",
+              "introduction of named decision dimensions not mentioned at all in A (Model Family & Tiers, Reasoning Budgets, Context Strategy, HITL Policy, Artifacts & Contracts) as a structured new scope of coverage"
+            ]
+          },
+          "reasoning": "Document A is a brief, purely abstract description of what the matrix will contain, with no actual rows, named tools, models, or mechanisms\u2014so it yields zero qualifying depth or breadth instances. Document B includes the full six-row decision matrix with named models (Gemini 2.5 Pro), specific budget policies, context management techniques (including the 'lost-in-the-middle' problem), HITL checkpoints, file-based artifact contracts, and an orchestration split between MCP (Nova) and LangGraph (Brown). These provide numerous concrete, source-attributed technical details that both deepen the treatment of decision rationale (depth) and introduce genuinely new subtopics like orchestration architecture and role-specific tooling (breadth). Because A has essentially no substantive content beyond a generic framing sentence, B is judged much more comprehensive on both dimensions."
+        }
+      ]
+    },
+    "Table 1: Decision matrix for the capstone project": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "citation to arxiv study on task derailment/step repetition informing reasoning budget defaults",
+              "reference to the 'lost-in-the-middle' phenomenon justifying context strategy choices"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Document A actually renders the requested decision matrix and layers in two concrete, source-attributed technical details that deepen existing points: a citation on task derailment/step-repetition failure modes justifying conservative reasoning budgets, and the 'lost-in-the-middle' context-window phenomenon justifying the context strategy. These are specific mechanisms adding rigor to existing rows, so A leads on depth. Document B is a narrative wrap-up/preview of future lessons rather than the matrix itself; its single citation [41] is a vague framing statement about AI engineering as a discipline, not a concrete mechanism or statistic, so it doesn't add depth. Neither document introduces a genuinely new adjacent sub-topic outside the matrix's established dimensions (model tiers, reasoning budgets, context, orchestration, HITL, artifacts) with specific backing -- B's mention of upcoming lessons is course logistics rather than a substantive new topic -- so breadth is a tie."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "Citation [17] on task derailment and step repetition failure modes as rationale for conservative reasoning budgets",
+              "Explicit naming and explanation of the 'lost-in-the-middle' phenomenon as rationale for context strategy"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Preview of the next lesson's hands-on build of the FastMCP server/client loop and multi-round research/filtering process producing research.md",
+              "Forward reference to Brown workflow implementation timeline across Lessons 19-22, plus citation [41] on dynamically-generated decision logic as a new engineering paradigm"
+            ]
+          },
+          "reasoning": "Document A delivers the actual decision-matrix table content and backs a couple of its rationale cells with concrete technical specifics (an arXiv citation on task derailment/step repetition, and the named 'lost-in-the-middle' context problem), giving it a modest depth edge since these add mechanistic rigor to points the table already makes. Document B, in contrast, is a wrap-up/transition passage that does not restate the table's specifics but instead broadens scope by previewing new adjacent territory -- the concrete next-lesson build of the FastMCP server/client loop and multi-round research process, plus a forward reference to the Brown implementation timeline (Lessons 19-22) and a citation about dynamically generated decision logic -- giving B a modest breadth edge. Neither side shows dramatic (3+) differentiation in either dimension, so both preferences are set to the moderate 'more' level rather than 'much more'."
+        },
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Specific 'lost-in-the-middle' problem cited as rationale for context strategy",
+              "Citation [17] noting task derailment and step repetition as failure modes controlled by reasoning budgets",
+              "LangGraph checkpoints/resumability described as the specific durability mechanism",
+              "Cost-performance optimization rationale via reserving expensive models only for complex reasoning tasks"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Mention of three supporting architecture diagrams (Nova-vs-Brown global architecture) as a new artifact type",
+              "Forward-looking roadmap detailing next lesson's FastMCP server/client build and multi-round research/filtering process producing research.md",
+              "Specific timeline for Brown workflow implementation across Lessons 19-22",
+              "Citation [41] framing the paradigm shift to runtime-generated (vs. pre-encoded) decision logic as core AI engineering skill"
+            ]
+          },
+          "reasoning": "Document A is the actual decision matrix table and provides depth via concrete technical justifications for each row (lost-in-the-middle problem, cited failure modes like task derailment/step repetition, LangGraph checkpointing, cost-performance tiering), none of which appear in B. Document B, however, is a narrative wrap-up that does not reproduce the matrix but instead broadens scope with new adjacent content: mention of supporting diagrams, a concrete forward-looking implementation roadmap (FastMCP build, Brown lessons 19-22), and a cited conceptual point about runtime-generated decision logic\u2014none of which A touches. Hence A dominates on depth while B dominates on breadth."
+        }
+      ]
+    },
+    "Conclusion": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Citation to arXiv source ([[41]]) backing the claim that decision logic is now generated dynamically at runtime rather than pre-coded"
+            ],
+            "b_instances": [
+              "Naming the specific technology (LangGraph) and characterizing the Brown workflow as 'durable and stateful' for the upcoming implementation lessons"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both conclusions are close paraphrases of the same core content (recap of 7-step framework, forward pointer to FastMCP/Brown lessons, restatement of the system-level trade-off philosophy). Neither introduces a genuinely new sub-topic (breadth ties at zero instances each). On depth, A adds a source-attributed citation to an arXiv paper supporting its claim about dynamically-generated decision logic, while B adds a concrete technical detail naming LangGraph and describing the Brown workflow as durable/stateful. These are roughly comparable single-instance additions on each side, so depth is also a tie."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": [
+              "mention of LangGraph as the tool for implementing the durable/stateful Brown workflow"
+            ]
+          },
+          "reasoning": "Both conclusions largely restate the section's core recap (7-step framework, Nova-vs-Brown architecture, diagrams, decision matrix, next lesson on FastMCP server) without adding technical depth (no new mechanisms, statistics, or edge cases beyond what's already established). Document A includes a citation [[41]] but it's attached to a generic claim about AI engineering skill, not a concrete new fact, so it doesn't count as a qualifying depth or breadth instance. Document B adds one small breadth-relevant detail by naming LangGraph as the specific framework for the Brown workflow implementation, which is a concrete new detail not present in A. This is a minor, single differentiator, so breadth leans slightly B but not strongly. Depth is tied as neither document goes deeper into any mechanism or quantitative detail beyond restating the lesson's outcomes."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": [
+              "mention of LangGraph as the tool for implementing Brown's durable stateful workflow"
+            ]
+          },
+          "reasoning": "Both conclusions are largely restatements/summaries of the lesson's content with no new technical mechanisms, statistics, or named studies that would count as depth enhancements\u2014both cite the same framework, diagrams, and decision matrix without adding rigor beyond the core recap, so depth is a tie. For breadth, document B adds one specific new detail not in A: naming 'LangGraph' as the specific technology for the Brown workflow implementation, which is a concrete, source-attributed addition (a named framework) that slightly broadens scope. Document A's closing citation [[41]] is generic and doesn't add a distinct new sub-topic. This single instance is modest, not dramatic, so breadth preference is a tie overall given the minor nature of the difference, though B has a slight edge\u2014still too small to count as more than a tie given it's just one framework name mention."
+        }
+      ]
+    }
+  }
+}

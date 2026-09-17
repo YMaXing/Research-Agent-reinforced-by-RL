@@ -21,12 +21,13 @@ the call, the patch returns either:
 import pytest
 from unittest.mock import patch, AsyncMock
 
-from tests.conftest import FAKE_QUERIES_5, FakeStructuredModel, RecordingModel
+from tests.conftest import FAKE_QUERIES_5, FakeAIMessage, FakePlainModel, FakeStructuredModel, RecordingModel
 from src.app.generate_queries_handler import (
+    _shorten_query_if_needed,
     generate_complementary_queries_with_reasons,
     generate_queries_with_reasons,
 )
-from src.models.query_models import GeneratedQueries
+from src.models.query_models import GeneratedQueries, _MAX_QUERY_CHARS
 
 _PATCH_TARGET = "src.app.generate_queries_handler.get_chat_model"
 
@@ -253,3 +254,135 @@ class TestGenerateComplementaryQueriesWithReasons:
             )
 
         assert "alternative implementation perspectives" in recording.last_prompt
+
+
+# ---------------------------------------------------------------------------
+# _shorten_query_if_needed (unit tests)
+# ---------------------------------------------------------------------------
+
+_LONG_QUERY = "A" * (_MAX_QUERY_CHARS + 50)       # 250 chars — over the limit
+_SHORT_ANSWER = "What is the best tool description practice?"  # 43 chars
+
+
+class TestShortenQueryIfNeeded:
+    """Direct unit tests for the _shorten_query_if_needed helper."""
+
+    async def test_short_query_returned_unchanged(self):
+        """A query at or below _MAX_QUERY_CHARS must be returned as-is with no LLM call."""
+        short = "x" * _MAX_QUERY_CHARS
+        with patch(_PATCH_TARGET) as mock_get:
+            result = await _shorten_query_if_needed(short)
+        mock_get.assert_not_called()
+        assert result == short
+
+    async def test_long_query_shortened_on_first_attempt(self):
+        """LLM returns a short-enough reply on the first attempt."""
+        plain_model = FakePlainModel(_SHORT_ANSWER)
+        with patch(_PATCH_TARGET, return_value=plain_model):
+            result = await _shorten_query_if_needed(_LONG_QUERY)
+        assert result == _SHORT_ANSWER
+        assert len(result) <= _MAX_QUERY_CHARS
+
+    async def test_long_query_requiring_two_attempts(self):
+        """LLM returns an over-long reply on attempt 1, then a valid reply on attempt 2."""
+        still_long = "B" * (_MAX_QUERY_CHARS + 10)
+        replies = iter([still_long, _SHORT_ANSWER])
+
+        class TwoStepModel:
+            async def ainvoke(self, *a, **kw):
+                return FakeAIMessage(next(replies))
+
+        with patch(_PATCH_TARGET, return_value=TwoStepModel()):
+            result = await _shorten_query_if_needed(_LONG_QUERY)
+        assert result == _SHORT_ANSWER
+
+    async def test_hard_fallback_after_max_attempts(self):
+        """If the LLM never shortens enough, result is hard-cut to <= _MAX_QUERY_CHARS."""
+        always_long = FakePlainModel("Z" * (_MAX_QUERY_CHARS + 100))
+        with patch(_PATCH_TARGET, return_value=always_long):
+            result = await _shorten_query_if_needed(_LONG_QUERY)
+        assert len(result) <= _MAX_QUERY_CHARS
+
+    async def test_hard_fallback_ends_with_question_mark(self):
+        """The hard-cut fallback always appends a '?' at the end."""
+        always_long = FakePlainModel("word " * (_MAX_QUERY_CHARS // 5 + 10))
+        with patch(_PATCH_TARGET, return_value=always_long):
+            result = await _shorten_query_if_needed(_LONG_QUERY)
+        assert result.endswith("?")
+
+    async def test_hard_fallback_cuts_at_word_boundary(self):
+        """Hard-cut should not split in the middle of a word."""
+        # Build a string of 5-char words followed by spaces so a mid-word cut is possible
+        repeated = ("hello " * 50)[:(_MAX_QUERY_CHARS + 50)]
+        always_long = FakePlainModel(repeated)
+        with patch(_PATCH_TARGET, return_value=always_long):
+            result = await _shorten_query_if_needed(_LONG_QUERY)
+        # Remove the trailing '?' before checking — the word before it must be complete
+        body = result.rstrip("?")
+        assert not body.endswith("hell") and not body.endswith("hel")  # no mid-word split
+
+
+# ---------------------------------------------------------------------------
+# Shorten integration: long query from model is shortened before return
+# ---------------------------------------------------------------------------
+
+class TestShortenIntegration:
+    """Integration tests verifying _shorten_query_if_needed is wired into the
+    generation functions and that its output reaches the caller.
+
+    Pydantic enforces ``max_length=200`` at construction time, so we use
+    ``QueryAndReason.model_construct`` (which bypasses validation) inside a
+    custom fake model to simulate a structured-output parser that returns an
+    over-length query before the shorten step runs.
+    """
+
+    def _make_overlong_model(self, long_q: str) -> FakeStructuredModel:
+        """Return a fake model whose first query is intentionally over the char limit.
+
+        ``model_construct`` bypasses Pydantic field validation, mirroring how a
+        LangChain JSON parser might produce a raw object before schema checks.
+        """
+        from src.models.query_models import QueryAndReason, GeneratedQueries
+
+        first = QueryAndReason.model_construct(question=long_q, reason="reason1")
+        rest = [QueryAndReason(question=q, reason=r) for q, r in FAKE_QUERIES_5[1:]]
+
+        class _Model:
+            async def ainvoke(self, *a, **kw):
+                return GeneratedQueries.model_construct(queries=[first] + rest)
+
+        return _Model()
+
+    async def test_long_query_from_model_is_shortened_exploitation(self):
+        """generate_queries_with_reasons must shorten any query that exceeds _MAX_QUERY_CHARS."""
+        long_q = "How does this work exactly? " * 12  # well over 200 chars
+        overlong_model = self._make_overlong_model(long_q)
+        plain_model = FakePlainModel(_SHORT_ANSWER)
+
+        # First get_chat_model call → overlong model; second (shorten) → plain model
+        with patch(_PATCH_TARGET, side_effect=[overlong_model, plain_model]):
+            result = await generate_queries_with_reasons("g", "p", "f", "s", n_queries=5)
+
+        assert result[0][0] == _SHORT_ANSWER
+        assert len(result[0][0]) <= _MAX_QUERY_CHARS
+
+    async def test_short_queries_not_shortened_exploitation(self):
+        """When all generated queries are short, get_chat_model is called exactly once."""
+        structured_model = FakeStructuredModel(FAKE_QUERIES_5)
+        with patch(_PATCH_TARGET, return_value=structured_model) as mock_get:
+            await generate_queries_with_reasons("g", "p", "f", "s", n_queries=5)
+        mock_get.assert_called_once()
+
+    async def test_long_query_from_model_is_shortened_complementary(self):
+        """generate_complementary_queries_with_reasons must also shorten overlong queries."""
+        long_q = "Explain in detail the motivation and mechanics of tool calling? " * 5
+        overlong_model = self._make_overlong_model(long_q)
+        plain_model = FakePlainModel(_SHORT_ANSWER)
+
+        with patch(_PATCH_TARGET, side_effect=[overlong_model, plain_model]):
+            result = await generate_complementary_queries_with_reasons(
+                "g", "p", "f", "s", n_queries=5
+            )
+
+        assert result[0][0] == _SHORT_ANSWER
+        assert len(result[0][0]) <= _MAX_QUERY_CHARS

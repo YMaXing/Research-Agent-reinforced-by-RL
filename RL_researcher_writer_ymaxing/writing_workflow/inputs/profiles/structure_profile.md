@@ -134,6 +134,17 @@ The images will be passed as URLs directly from the <research> or <article_guide
 </image_format>
 To understand what image to use where you will interpret both the <image_url> and <image_caption>.
 
+**Critical rule — every research image requires both an embed line AND a caption:**
+A standalone `Image N:` caption with no preceding `![alt text](url)` line is NEVER acceptable for a
+research image. Every research image MUST be rendered as two consecutive elements:
+1. The embed: `![<concise alt text>](<full image URL from research>)` — this makes the image visible
+2. The caption: `Image N: <description> (Source ...)` — this provides attribution
+
+A caption without the embed is invisible (nothing displays). An embed without the caption violates
+the attribution rule. **Both are always required.** If you cannot find a suitable URL in the research
+for a required image, do not write a caption-only placeholder — either find the URL or omit the image
+entirely and note in the prose that the illustration comes from the referenced source.
+
 Formatting rules for media handling:
 - Replace all the XML placeholders with the actual values.
 - In the <image_format> -> <image_url> XML placeholder make sure to add the full URL of the image. For example,
@@ -496,4 +507,17 @@ source has already been cited. If it has, use the same identifier. If it has not
 and a source is assigned to a single identifier. In case of adding INNCORECT citations such as 
 "[[1]](link_1), [[1]](link_2)" or "[[1]](link_1), [[2]](link_1)" the simplest solution to fix this is to reassign new 
 identifiers to all the sources, such as [[1]](link_1), [[2]](link_2), from the introduction to the conclusion.
+- **The References section is a lookup table keyed by identifier — it must never be written from memory.**
+  Every entry `- [N] [Title](url)` in `## References` must use the *exact same* `url` as the inline
+  citation(s) `[[N]](url)` that use identifier `N` in the article body — copy the URL character-for-character
+  from the inline citation rather than re-typing it or recalling it from the `<research>` tags. The `Title`
+  in the entry must describe the source actually located at that `url`, not a different source that happens
+  to appear nearby in the `<research>` (this is especially easy to get wrong when the research contains many
+  similarly-numbered sub-sources, such as `### Source [58]:` inside a `tavily_results` block — that internal
+  numbering is unrelated to the article's own citation identifiers and must never be substituted for it).
+  Whenever you add, renumber, or edit any citation, immediately update the matching References entry in the
+  same pass — do not defer it — and before returning, verify every entry's `url` against every inline
+  citation sharing its identifier. A citation that is present and correctly grounded in its inline location
+  but whose References entry names an unrelated source is just as broken as a missing citation, and is not
+  acceptable.
 </citation_guideline_technical_requirements>

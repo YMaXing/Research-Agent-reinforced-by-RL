@@ -4,10 +4,12 @@ from pathlib import Path
 from typing import TypedDict, cast
 
 from langchain_core.runnables import RunnableConfig
+from langchain_core.tools import BaseTool
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.config import get_stream_writer
 from langgraph.func import entrypoint, task
 from langgraph.types import RetryPolicy
+from pydantic import ValidationError
 
 from brown.base import Loader
 from brown.builders import build_article_renderer, build_loaders, build_model
@@ -22,8 +24,6 @@ from brown.nodes.article_reviewer import ArticleReviewer
 from brown.nodes.article_writer import ArticleWriter
 from brown.nodes.media_generator import MediaGeneratorOrchestrator
 from brown.workflows.types import WorkflowProgress
-
-app_config = get_app_config()
 
 
 def _retry_non_quota(exc: Exception) -> bool:
@@ -60,6 +60,7 @@ class GenerateArticleInput(TypedDict):
 
 
 async def _generate_article_workflow(inputs: GenerateArticleInput, config: RunnableConfig) -> str:
+    app_config = get_app_config()
     dir_path = inputs["dir_path"]
     dir_path.mkdir(parents=True, exist_ok=True)
 
@@ -104,7 +105,7 @@ async def _generate_article_workflow(inputs: GenerateArticleInput, config: Runna
         p_review = int(25 + step_size * (base_step_index + 1))
         p_review = min(p_review, 99)
         writer(
-            WorkflowProgress(progress=p_review, message=f"Rewiewing article [Iteration {i} / {app_config.num_reviews}]").model_dump(
+            WorkflowProgress(progress=p_review, message=f"Reviewing article [Iteration {i} / {app_config.num_reviews}]").model_dump(
                 mode="json"
             )
         )
@@ -317,8 +318,31 @@ def _filter_comparison_matrix_media_items(
     return filtered
 
 
+def _is_valid_tool_call_args(tool: BaseTool, args: dict, writer) -> bool:
+    """Return True if *args* satisfies the tool's required argument schema.
+
+    LLM-generated tool calls occasionally omit a required field (e.g. the model
+    calls `mermaid_diagram_generator_tool` with only `section_title`, missing
+    `description_of_the_diagram`). Left unchecked, that raises a pydantic
+    ValidationError deep inside `tool.ainvoke()`, which aborts the whole
+    `asyncio.gather()` batch and burns a full langgraph retry attempt (a costly,
+    rate-limited re-run of every diagram in the batch) for a single bad call.
+    Validating eagerly lets us skip just the malformed call instead.
+    """
+    args_schema = getattr(tool, "args_schema", None)
+    if args_schema is None:
+        return True
+    try:
+        args_schema.model_validate(args)
+    except ValidationError as exc:
+        writer(f"⚠️ Warning: Skipping malformed tool call for '{tool.name}' — {exc}")
+        return False
+    return True
+
+
 @task(retry_policy=retry_policy)
 async def generate_media_items(article_guideline: ArticleGuideline, research: Research) -> MediaItems:
+    app_config = get_app_config()
     writer = get_stream_writer()
 
     model, toolkit = build_model(app_config, node="generate_media_items")
@@ -346,6 +370,8 @@ async def generate_media_items(article_guideline: ArticleGuideline, research: Re
         if tool is None:
             writer(f"⚠️ Warning: Unknown tool '{tool_name}', skipping...")
             continue
+        if not _is_valid_tool_call_args(tool, media_item_to_generate_job["args"], writer):
+            continue
         coroutine = tool.ainvoke(media_item_to_generate_job["args"])
         coroutines.append(coroutine)
 
@@ -369,6 +395,7 @@ async def write_article(
     media_items: MediaItems,
     article_examples: ArticleExamples,
 ) -> Article:
+    app_config = get_app_config()
     model, _ = build_model(app_config, node="write_article")
     article_writer = ArticleWriter(
         article_guideline=article_guideline,
@@ -392,6 +419,7 @@ async def integrate_exploration(
     media_items: MediaItems,
     exploration_examples: ArticleExamples,
 ) -> Article:
+    app_config = get_app_config()
     model, _ = build_model(app_config, node="integrate_exploration")
     article_writer = ArticleWriter(
         article_guideline=article_guideline,
@@ -411,6 +439,7 @@ async def integrate_exploration(
 async def generate_reviews(
     article: Article, article_guideline: ArticleGuideline, article_profiles: ArticleProfiles, research: Research, media_items: MediaItems
 ) -> ArticleReviews:
+    app_config = get_app_config()
     model, _ = build_model(app_config, node="review_article")
     article_reviewer = ArticleReviewer(
         to_review=article,
@@ -419,6 +448,7 @@ async def generate_reviews(
         research=research,
         media_items=media_items,
         model=model,
+        max_reviews=app_config.max_reviews_per_iteration,
     )
     reviews = await article_reviewer.ainvoke()
 
@@ -434,6 +464,7 @@ async def edit_based_on_reviews(
     article_examples: ArticleExamples,
     reviews: ArticleReviews,
 ) -> Article:
+    app_config = get_app_config()
     model, _ = build_model(app_config, node="edit_article")
     article_writer = ArticleWriter(
         article_guideline=article_guideline,

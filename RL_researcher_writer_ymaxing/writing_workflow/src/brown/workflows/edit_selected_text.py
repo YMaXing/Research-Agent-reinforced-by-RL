@@ -20,8 +20,6 @@ from brown.nodes.article_reviewer import ArticleReviewer
 from brown.nodes.article_writer import ArticleWriter
 from brown.workflows.types import WorkflowProgress
 
-app_config = get_app_config()
-
 retry_policy = RetryPolicy(max_attempts=3, retry_on=Exception)
 
 
@@ -47,6 +45,7 @@ class EditSelectedTextInput(TypedDict):
 
 
 async def _edit_selected_text_workflow(inputs: EditSelectedTextInput, config: RunnableConfig) -> str:
+    app_config = get_app_config()
     writer = get_stream_writer()
 
     # Progress: Loading context
@@ -101,6 +100,7 @@ async def generate_reviews(
     article_profiles: ArticleProfiles,
     research: Research,
 ) -> SelectedTextReviews:
+    app_config = get_app_config()
     model, _ = build_model(app_config, node="review_selected_text")
     selected_text_reviewer = ArticleReviewer(
         to_review=selected_text,
@@ -109,6 +109,7 @@ async def generate_reviews(
         article_profiles=article_profiles,
         research=research,
         model=model,
+        max_reviews=app_config.max_reviews_per_iteration,
     )
     reviews = await selected_text_reviewer.ainvoke()
 
@@ -123,6 +124,7 @@ async def edit_based_on_reviews(
     article_examples: ArticleExamples,
     reviews: SelectedTextReviews,
 ) -> SelectedText:
+    app_config = get_app_config()
     model, _ = build_model(app_config, node="edit_selected_text")
     article_writer = ArticleWriter(
         article_guideline=article_guideline,

@@ -7,12 +7,15 @@ structure, depth_enhancement, breadth_enhancement, core_preservation).
 
 from pathlib import Path
 
+import pydantic
+
 from brown.evals.metrics.base import (
     ArticleScores,
     BaseExample,
     BaseFewShotExamples,
     CriteriaScores,
     CriterionScore,
+    SectionsCoercionMixin,
 )
 
 
@@ -36,7 +39,33 @@ class FollowsGTCriteriaScores(CriteriaScores):
     structure: CriterionScore
     depth_enhancement: CriterionScore
     breadth_enhancement: CriterionScore
-    core_preservation: CriterionScore
+    # Optional with a placeholder default: pass-1's SYSTEM_PROMPT deliberately omits the
+    # core_preservation criterion definition (it's graded in a dedicated pass-2 call), so
+    # some providers (e.g. Anthropic tool-calling) may not populate this field at all even
+    # though it's part of the shared FollowsGTArticleScores schema used for structured
+    # output. Making it optional avoids a pydantic ValidationError in that case; the
+    # placeholder is always overwritten with the real pass-2 score in FollowsGTMetric.ascore().
+    core_preservation: CriterionScore = pydantic.Field(
+        default_factory=lambda: CriterionScore(score=0, reason="placeholder -- pending pass 2")
+    )
+
+    def to_context(self) -> str:
+        """Serialize the five pass-1 criteria only.
+
+        core_preservation is excluded because it is evaluated in a dedicated
+        second pass and must not appear in the pass-1 few-shot examples
+        (SYSTEM_PROMPT no longer defines that criterion).
+        """
+        _PASS1_FIELDS = ("core_content", "flow", "structure", "depth_enhancement", "breadth_enhancement")
+        scores_xml = ""
+        for field_name in _PASS1_FIELDS:
+            field_score = getattr(self, field_name)
+            scores_xml += f"""    <{field_name}>
+        <reason>{field_score.reason}</reason>
+        <score>{field_score.score}</score>
+    </{field_name}>
+"""
+        return scores_xml
 
 
 class FollowsGTArticleScores(ArticleScores[FollowsGTCriteriaScores]):
@@ -55,21 +84,33 @@ class FollowsGTMetricExample(BaseExample):
     Attributes:
         output: The generated article content.
         expected_output: The expected (ground-truth) article content.
+        exploration_sources: Optional formatted string listing the exploration-phase
+            sources available when the example was generated. When provided, the judge
+            is expected to verify depth/breadth additions against these sources.
         scores: The FollowsGTArticleScores associated with this example.
     """
 
     output: str
     expected_output: str
+    exploration_sources: str | None = None
     scores: FollowsGTArticleScores
 
     @classmethod
-    def from_markdown(cls, output_file: Path, expected_output_file: Path, scores: FollowsGTArticleScores) -> "FollowsGTMetricExample":
+    def from_markdown(
+        cls,
+        output_file: Path,
+        expected_output_file: Path,
+        scores: FollowsGTArticleScores,
+        exploration_sources: str | None = None,
+    ) -> "FollowsGTMetricExample":
         """Create a FollowsGTMetricExample instance from markdown files.
 
         Args:
             output_file: Path to the generated article content.
             expected_output_file: Path to the expected article content.
             scores: The FollowsGTArticleScores associated with this example.
+            exploration_sources: Optional formatted string of exploration-phase sources
+                used to calibrate depth/breadth scoring in this example.
 
         Returns:
             An instance of FollowsGTMetricExample populated with content from files and scores.
@@ -77,22 +118,83 @@ class FollowsGTMetricExample(BaseExample):
         output = output_file.read_text()
         expected_output = expected_output_file.read_text()
 
-        return cls(output=output, expected_output=expected_output, scores=scores)
+        return cls(
+            output=output,
+            expected_output=expected_output,
+            exploration_sources=exploration_sources,
+            scores=scores,
+        )
 
     def to_context(self) -> str:
         """Convert the example to a formatted string for use as context in prompts.
 
         Returns:
-            A string representation of the example, including output, expected output, and scores.
+            A string representation of the example, including output, expected output,
+            optional exploration sources, and scores.
         """
+        sources_block = f"\n<exploration_sources>\n{self.exploration_sources}\n</exploration_sources>" if self.exploration_sources else ""
         return f"""
 <output>
 {self.output}
 </output>
 <expected_output>
 {self.expected_output}
-</expected_output>
+</expected_output>{sources_block}
 {self.scores.to_context()}
+"""
+
+    def to_core_preservation_context(self) -> str:
+        """Convert the example to a formatted string for use in the pass-2 core preservation prompt.
+
+        The format mirrors the CORE_PRESERVATION_PROMPT structure: core_content/flow/enhancement scores
+        first, then the articles, then the expected core_preservation judgments. This teaches the LLM
+        how to evaluate CorePreservation given the already-determined upstream scores.
+
+        Returns:
+            A string representation suitable for embedding as a few-shot example in
+            get_core_preservation_prompt.
+        """
+        # Build upstream scores block (same format as _build_section_scores_context)
+        score_lines: list[str] = []
+        for section in self.scores.sections:
+            cc = section.scores.core_content
+            fl = section.scores.flow
+            d = section.scores.depth_enhancement
+            b = section.scores.breadth_enhancement
+            score_lines.append(f'Section: "{section.title}"')
+            score_lines.append(f'  core_content:        score={cc.score}, reason="{cc.reason}"')
+            score_lines.append(f'  flow:                score={fl.score}, reason="{fl.reason}"')
+            score_lines.append(f'  depth_enhancement:   score={d.score}, reason="{d.reason}"')
+            score_lines.append(f'  breadth_enhancement: score={b.score}, reason="{b.reason}"')
+            score_lines.append("")
+        enhancement_scores_text = "\n".join(score_lines)
+
+        # Build expected core_preservation output XML
+        cp_xml_parts: list[str] = []
+        for section in self.scores.sections:
+            cp = section.scores.core_preservation
+            cp_xml_parts.append(
+                f"    <section>\n"
+                f"        <section_title>{section.title}</section_title>\n"
+                f"        <core_preservation>\n"
+                f"            <score>{cp.score}</score>\n"
+                f"            <reason>{cp.reason}</reason>\n"
+                f"        </core_preservation>\n"
+                f"    </section>"
+            )
+        cp_xml = "\n".join(cp_xml_parts)
+
+        return f"""<upstream_scores>
+{enhancement_scores_text}</upstream_scores>
+<output>
+{self.output}
+</output>
+<expected_output>
+{self.expected_output}
+</expected_output>
+<core_preservation_scores>
+{cp_xml}
+</core_preservation_scores>
 """
 
 
@@ -103,4 +205,51 @@ class FollowsGTMetricFewShotExamples(BaseFewShotExamples[FollowsGTMetricExample]
     language model in evaluating articles against ground truth content.
     """
 
-    pass
+    def to_core_preservation_context(self) -> str:
+        """Convert examples to a formatted string for the pass-2 core preservation prompt.
+
+        Serializes each example using to_core_preservation_context(), which exposes the
+        depth/breadth scores alongside the articles and expected core_preservation judgments.
+
+        Returns:
+            A string containing all examples formatted for insertion into CORE_PRESERVATION_PROMPT.
+        """
+        examples = "\n\n".join(
+            [
+                f"<example_{i + 1}>\n{example.to_core_preservation_context()}\n</example_{i + 1}>\n"
+                for i, example in enumerate(self.examples)
+            ]
+        )
+        return examples
+
+
+class CorePreservationSectionScore(pydantic.BaseModel):
+    """Core preservation score for a single section.
+
+    Used as the response type for the second-pass core_preservation evaluation,
+    where depth_enhancement and breadth_enhancement scores are provided explicitly
+    as context so the LLM can build on them when grading core_preservation.
+
+    Attributes:
+        title: The title of the section, matching the title from the first pass.
+        core_preservation: The core preservation score and reason for this section.
+    """
+
+    title: str = pydantic.Field(description="The title of the section being evaluated.")
+    core_preservation: CriterionScore = pydantic.Field(description="The core preservation score for this section.")
+
+
+class CorePreservationArticleScores(SectionsCoercionMixin):
+    """Article-level core preservation scores for all sections.
+
+    Used as the structured-output response type for the second LLM call in the
+    two-pass FollowsGT evaluation. Sections must be returned in the same order
+    as they were listed in the prompt.
+
+    Attributes:
+        sections: One CorePreservationSectionScore per article section, in order.
+    """
+
+    sections: list[CorePreservationSectionScore] = pydantic.Field(
+        description="Core preservation scores for each section, in the same order as the input."
+    )

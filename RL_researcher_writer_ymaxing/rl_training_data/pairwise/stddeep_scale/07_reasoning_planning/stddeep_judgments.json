@@ -1,0 +1,622 @@
+{
+  "article": "07_reasoning_planning",
+  "model": "anthropic:claude-sonnet-5",
+  "n_draws": 3,
+  "sections": {
+    "Introduction": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "mentions goal decomposition and self-correction as advanced capabilities unlocked"
+            ],
+            "b_instances": [
+              "frames agents as beneficial for debugging system design"
+            ]
+          },
+          "reasoning": "Both documents are introductory framing sections that recap prior lessons and preview the same core topics (Chain-of-Thought, ReAct, Plan-and-Execute) without citing specific studies, mechanisms, or statistics -- so there is no meaningful depth content in either. For breadth, A adds a brief mention of goal decomposition and self-correction as capabilities these patterns unlock, while B adds a brief note about improved debugging as a benefit of understanding these patterns. Both are minor, roughly equivalent in substance, and neither provides a source-attributed or concrete enough addition to tip the balance meaningfully, so breadth is also a tie."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [
+              "car/engine metaphor for tools vs planning",
+              "preview of goal decomposition and self-correction capabilities"
+            ],
+            "b_instances": [
+              "framing agents as enabling adaptation/exploration/learning from mistakes",
+              "benefit of improved debugging from understanding patterns"
+            ]
+          },
+          "reasoning": "Both documents are introductory framing text without concrete, source-attributed technical claims, statistics, named studies, or specific mechanisms -- so neither qualifies strongly for depth (both empty). For breadth, both introduce similar adjacent framing ideas (metaphors and previews of what's to come) but these are generic conceptual framing rather than substantive, source-attributed new sub-topics; each side has a couple of unique framing phrases (A's car/engine metaphor and mention of goal decomposition/self-correction; B's emphasis on adaptation/exploration and debugging benefits), but these are roughly comparable in number and shallow in substance, so breadth is also a tie."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both introductions are largely framing/orientation text rehearsing prior lessons and previewing the current one; neither cites a specific study, statistic, named framework beyond the already-core topics (ReAct, Plan-and-Execute, Chain-of-Thought, which are core to this section), or any concrete mechanism that would count as a qualifying enhancement. Document A adds a car/engine metaphor and mentions goal decomposition and self-correction as unlocked capabilities, but these are vague framing devices rather than source-attributed, concrete depth or breadth content. Document B adds a slightly different framing (predictable vs. adaptive processes, debugging benefit) but similarly offers no concrete named source, statistic, or mechanism beyond the core topic. Neither document introduces a genuinely new sub-topic or deepens an existing point with specific technical detail. Hence both dimensions tie with no qualifying instances on either side."
+        }
+      ]
+    },
+    "What a Non-Reasoning Model Does And Why It Fails on Complex Tasks": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core narrative (the Technical Research Assistant Agent example, single-pass generation, lack of self-correction, missing sub-goal decomposition) using nearly identical framing. Neither introduces a named study, statistic, or technical mechanism that goes deeper into an existing point -- the bracketed citations ([[1]], [[3]] in A; [[1]] with a URL in B) are attached to the same generic claims about missed verification/cross-referencing rather than adding new substantive detail. Stylistic additions like B's 'student writing an essay without an outline' analogy or 'fails to see the forest for the trees' idiom are rhetorical flourishes, not qualifying depth or breadth instances (no new named concept, mechanism, or sub-topic). Similarly, A's phrasing about 'not stopping to verify credibility' or 'iterating on its own draft' mirrors B's content without adding a genuinely new angle. As a result, neither document introduces qualifying depth (deeper mechanism/quantitative detail) or breadth (new adjacent sub-topic) content relative to the other, making both dimensions a tie."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core content (the Technical Research Assistant Agent example, single-pass generation, lack of self-correction, missing sub-goal decomposition, and the transition to reasoning traces) using similar levels of generality. Neither introduces a genuinely new technical mechanism, named study with specifics, or quantitative detail beyond a citation marker ([[1]] in A referencing pattern matching claim, [[1]] in B referencing the superficial report claim) -- both citations are used to support restatements of the same core point rather than adding a distinct, traceable enhancement (e.g., no specific study findings, statistics, or named frameworks are discussed). B's added similes ('student who starts writing an essay without an outline,' 'fails to see the forest for the trees') are stylistic elaborations, not substantive source-attributed content. Neither document introduces a new adjacent sub-topic or deepens an existing point with concrete technical detail. Thus both depth and breadth are ties, as neither side has qualifying instances beyond the shared core coverage."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core content (Technical Research Assistant Agent example, one-shot generation limitation, missing verification/cross-referencing, lack of sub-goal decomposition, transition to reasoning traces) using similar framing without introducing distinct, source-attributed deeper mechanisms or new adjacent sub-topics. Document B adds a citation link and a vivid analogy ('student without an outline', 'fails to see forest for trees'), but these are stylistic/rhetorical rather than substantive, concrete, source-attributed enhancement instances (no named study findings, statistics, or technical mechanisms beyond the shared citation marker). Document A similarly lacks additional depth or breadth beyond the shared narrative. Neither document introduces qualifying new depth (specific mechanism/quantitative detail) or breadth (new sub-topic) beyond what's already covered by both, so both dimensions tie."
+        }
+      ]
+    },
+    "Teaching Models to \u201cThink\u201d Chain-of-Thought and Its Limits": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "increased token usage, cost, and latency from long reasoning chains",
+              "reasoning can be coherent yet entirely incorrect (illusion of correctness)"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents describe CoT prompting, apply it to the research assistant example, and note the same core limitation (planning and answering intertwined in one text block, no iterative execution loop). Document A adds two additional depth-oriented points not found in B: the increased token usage/cost/latency tradeoff of long reasoning chains, and the specific failure mode where a reasoning trace can be coherent yet still wrong. Document B's additional wording (e.g., 'not a sophisticated planning algorithm', 'static' plan) is essentially a rephrasing of the same iterative-loop limitation already covered by A, not a new substantive instance. Neither document introduces a genuinely new adjacent subtopic beyond CoT's limitations and the transition to ReAct/Plan-and-Execute, so breadth is tied at zero qualifying instances for both."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "explicit note that CoT increases token usage, cost, and latency",
+              "point that reasoning trace can be coherns coherent but entirely wrong (correctness failure mode)"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "naming ReAct and Plan-and-Execute as the two key patterns that resolve CoT's limitations"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core CoT explanation, example prompt, and generic limitations (single-block generation, lack of iterative execution). Document A adds two extra depth-oriented points not found in B: the token/cost/latency overhead of long reasoning chains, and the specific failure mode where a coherent-sounding trace can still be wrong. Document A also adds a breadth-oriented pointer by explicitly naming ReAct and Plan-and-Execute as the next agent design patterns, giving readers a concrete forward link to new sub-topics, whereas B only vaguely gestures at needing more control without naming any specific approach. B's content is largely a rephrasing of the same points with a slightly more detailed plan example, but that elaboration deepens the existing example rather than adding a new substantive claim, so it does not count as an additional depth instance."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "notes CoT increases token usage, cost, and latency as a distinct technical limitation",
+              "highlights that reasoning can be coherent yet completely wrong (specific failure mode)"
+            ],
+            "b_instances": [
+              "frames CoT as lacking sophistication as a planning algorithm (vague, not clearly a new mechanism)"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "explicitly names ReAct and Plan-and-Execute as the two key patterns to be introduced next"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core CoT example and note the same static-plan limitation. Document A adds two depth-level details not in B: the token/cost/latency overhead of long reasoning chains, and the specific failure mode of coherent-but-wrong reasoning, each attributed to citations. For breadth, A explicitly names the upcoming patterns (ReAct and Plan-and-Execute), giving a concrete pointer to new sub-topics, while B only vaguely gestures at needing separation of planning and answering without naming any specific technique. B's own citation (apxml.com) is reused for both its limitation claims rather than introducing new substantive content, so it does not add distinct instances beyond what A already covers. Overall A shows modestly more substantive enhancement content on both dimensions."
+        }
+      ]
+    },
+    "Separating Planning from Answering: Foundations of ReAct and Plan-and-Execute": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "draws an explicit comparison to neuro-symbolic AI, where symbolic structures guide planning/task decomposition and neural nets handle pattern recognition, citing source [[37]]"
+            ]
+          },
+          "reasoning": "Both documents cover the same core explanation of separating planning/reasoning from action and introduce ReAct and Plan-and-Execute similarly, with no additional depth-adding mechanism or quantitative detail in either (tie on depth). For breadth, document B adds a genuinely new adjacent topic by linking the reasoning/action separation to neuro-symbolic AI principles with a specific citation, which document A does not include, giving B a modest edge on breadth."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Connects the reasoning/action separation to neuro-symbolic AI principles, citing a specific source [[37]] for symbolic task decomposition vs neural pattern recognition"
+            ]
+          },
+          "reasoning": "Both documents cover the core ReAct vs Plan-and-Execute distinction similarly without adding new mechanistic depth beyond the base description (no unique quantitative or technical depth instances in either). For breadth, document B introduces a genuinely new adjacent concept -- the connection to neuro-symbolic AI architectures, with a citation -- that document A does not mention, giving B a modest edge in breadth. The other content (e.g., mention of modern reasoning models internalizing these steps) is too vague/uncited to count as a qualifying instance."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Connection to neuro-symbolic AI framework (symbolic task decomposition + neural pattern recognition) with citation [37]"
+            ]
+          },
+          "reasoning": "Both documents cover the same core contrast between ReAct and Plan-and-Execute with similar levels of detail; neither adds a deeper technical mechanism, quantitative detail, or named study beyond the core explanation, so depth is a tie. For breadth, Document B introduces a genuinely new adjacent topic\u2014the connection to neuro-symbolic AI, where symbolic structures handle planning and neural networks handle pattern recognition, backed by a citation [37]\u2014which Document A does not mention. This gives B a modest edge in breadth, though it is only a single distinct instance."
+        }
+      ]
+    },
+    "ReAct in Depth: Loop, Evolving Example, Pros and Cons": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "ReAct's single-step reasoning makes it struggle to form a coherent strategy for long-term planning tasks (cited)",
+              "Infinite loop failure mode where agent repeatedly retries a failing tool call or misinterprets output (cited)"
+            ],
+            "b_instances": [
+              "'Context rot' causing long-horizon drift as growing context buries early critical info (cited)",
+              "Brittle error recovery leading to non-terminating loops on structural failures like a hallucinated tool (cited)",
+              "No consequence awareness: loop doesn't distinguish safe vs irreversible actions, posing safety risk (cited)",
+              "Thought-action divergence: model generates expected action format even when reasoning concluded otherwise (cited)",
+              "Grounded reasoning via external observations reduces hallucination risk vs pure CoT (cited)",
+              "Thought phase described as a private reasoning trace enabling task decomposition, progress tracking, and exception handling (cited)"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core ReAct loop and worked example, and both end with an identical pointer to Plan-and-Execute as an alternative (no real elaboration, so breadth ties with no qualifying new subtopics in either). On depth, Document A adds only two specific limitations (long-term planning weakness, infinite-loop failure mode), while Document B substantially deepens the cons/pros discussion with a structured table citing four distinct named failure modes (context rot, brittle error recovery from structural failures, lack of consequence awareness, thought-action divergence) plus a grounded-reasoning/hallucination-reduction point and a deeper mechanistic description of the Thought phase as an internal reasoning trace. This gives B a much larger, more substantive set of depth instances, while breadth remains tied since neither document meaningfully expands into new adjacent subtopics beyond the brief Plan-and-Execute mention."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Computational cost/latency from multiple LLM calls in the ReAct loop",
+              "Long-term planning weakness attributed to ReAct's single-step reasoning focus (cited)"
+            ],
+            "b_instances": [
+              "'Context rot' as the specific mechanism behind long-horizon drift/information loss (cited)",
+              "Claim that grounding via observations reduces hallucination relative to pure CoT (cited)"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "No-consequence-awareness / safety risk distinguishing reversible vs irreversible actions (cited)",
+              "Thought-action divergence: format-learned action generation disconnected from actual reasoning (cited)"
+            ]
+          },
+          "reasoning": "Both documents cover the same core loop, worked example, and pros/cons, but they add different depth details: A cites computational cost from multiple LLM calls and a single-step-reasoning-based long-term planning weakness, while B cites the more specific 'context rot' mechanism for long-horizon drift and a grounding-reduces-hallucination claim versus CoT -- roughly comparable in number and specificity, so depth is a tie. For breadth, B introduces two genuinely new sub-topics absent from A: safety/consequence-awareness for irreversible actions, and thought-action divergence from format overfitting; A does not introduce any comparably new sub-topic beyond what B also covers, so B leads on breadth."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "ReAct struggles with tasks requiring long-term planning/coherent strategy (cited arxiv 2505.09970)"
+            ],
+            "b_instances": [
+              "'Context rot' mechanism explaining long-horizon drift as thoughts/observations accumulate (cited [41])",
+              "Thought-Action Divergence: model learns action format so well it executes an action disconnected from its actual reasoning (cited [41])",
+              "Detailed explanation of Thought phase's internal role (task decomposition, progress tracking, exception handling) as private reasoning trace (cited [15])"
+            ]
+          },
+          "breadth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "No Consequence Awareness: ReAct loop doesn't distinguish safe vs irreversible actions (e.g., deleting a file), raising a safety/guardrail concern (cited [41])"
+            ]
+          },
+          "reasoning": "Both documents cover the same core loop, evolving example, and pros/cons. Document A adds one distinct depth point about ReAct's difficulty with long-term planning, and its 'infinite loop' failure mode is essentially the same underlying phenomenon Document B describes in more technical detail (non-terminating loops from structural failures), so it does not count as a unique instance. Document B goes deeper on cons with two specific, citation-backed mechanisms (context rot, thought-action divergence) not present in A, plus more detail on the internal function of the Thought step, giving it a modest depth edge. For breadth, B introduces a genuinely new sub-topic -- safety/consequence-awareness regarding irreversible actions -- that A never touches, giving B a modest breadth edge as well."
+        }
+      ]
+    },
+    "Plan-and-Execute in Depth: Plan, Execution, Pros and Cons": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Plan-and-Act framework: generates synthetic training data by annotating trajectories with plans to fine-tune a dedicated planner model for long-horizon tasks",
+              "Specific mechanism explanation: Plan-and-Execute reduces 'token bloat' and 'context rot' by only giving the executor context for its current sub-task, unlike ReAct's cumulative context",
+              "Additional con detail: 'Limited Grounding in Early Stages' \u2014 the plan is created without real-world feedback, risking inaccurate assumptions",
+              "Additional con detail: 'Requires Re-planning Mechanisms' \u2014 system needs a robust mechanism to detect plan failure and trigger re-planning, adding complexity"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "ReWOO (Reasoning Without Observation) variant, formalizing planner/workers/solver modules",
+              "Using different models for planning vs. execution phases (e.g., a powerful reasoning model for planning, cheaper model for execution)",
+              "Mention of hybrid systems combining an initial high-level plan with smaller ReAct-style loops for execution"
+            ]
+          },
+          "reasoning": "Both documents cover the same core Plan-and-Execute material (planner/executor split, the Technical Research Assistant example plan, execution phase behavior, and general pros/cons around efficiency, predictability, and inflexibility for exploratory tasks) with no unique depth or breadth instances found in A beyond this shared core. Document B adds several distinct, source-attributed enhancements: for depth, it introduces the Plan-and-Act framework's synthetic-training-data technique for fine-tuning planners, a specific mechanistic explanation of how the pattern avoids ReAct's token bloat/context rot, and two additional nuanced cons (limited grounding in early stages, need for re-planning detection mechanisms). For breadth, B introduces the ReWOO variant (planner/workers/solver), the idea of using different models for planning vs. execution, and the mention of hybrid plan+ReAct systems. These are all traceable to specific named frameworks or mechanisms and are absent from A, making B clearly richer on both dimensions."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [],
+            "b_instances": [
+              "Specific mechanism (token bloat, sequential bottlenecks, 'context rot') explaining why Plan-and-Execute structurally solves ReAct's context-growth limitations, with citation [41]"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Orchestrator/manager agent delegating execution to specialized worker agents"
+            ],
+            "b_instances": [
+              "ReWOO (Reasoning Without Observation) variant with planner/workers/solver modules [[17]]",
+              "Plan-and-Act framework generating synthetic training data to fine-tune planner models [[16]]",
+              "Using different models for planning vs. execution phases (stage ownership/specialization)",
+              "'Limited Grounding in Early Stages' as a distinct con about lack of real-world feedback during planning",
+              "Hybrid systems combining upfront plans with ReAct-style loops for step execution"
+            ]
+          },
+          "reasoning": "Both documents cover the same core Plan-and-Execute description, example plan, and basic pros/cons, so most content is shared. For depth, document B adds a genuinely deeper technical explanation of why this pattern addresses ReAct's limitations (token bloat, sequential bottlenecks, 'context rot', citation [41]), which A lacks; A has no comparable deeper elaboration of an existing point beyond the core description, giving B a modest edge on depth. For breadth, B introduces several distinct new sub-topics not present in A: the ReWOO variant with its three named modules, the Plan-and-Act framework for synthetic training data, the idea of using different models for planning vs execution, a new con about limited grounding in early planning, and the mention of hybrid ReAct+Plan-and-Execute systems. A only contributes one distinct breadth instance (orchestrator agents delegating to specialized worker agents). This asymmetry makes B's breadth coverage substantially larger, warranting a 'b_much_more' rating, while depth is only modestly in B's favor."
+        },
+        {
+          "depth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "specific mechanism of ReAct's token bloat/context-append bottleneck that P&E structurally solves",
+              "context rot avoidance via reduced context overload in executor sub-tasks",
+              "Plan-and-Act framework's synthetic training data / trajectory annotation to fine-tune planner models"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "manager/orchestrator delegating to specialized worker agents for modularity and parallel execution"
+            ],
+            "b_instances": [
+              "ReWOO variant formalizing planner/workers/solver modules",
+              "using different models for planning vs execution (reasoning model vs cheaper execution model)",
+              "hybrid systems combining plan-and-execute with ReAct-style loops for sub-steps"
+            ]
+          },
+          "reasoning": "Document A stays close to the core plan/execute/pros-cons narrative, adding only one moderately new point (orchestrator delegating to worker agents for modularity/parallelism) which counts as breadth; it offers no clear depth-enhancing technical detail beyond the standard example. Document B integrates several distinct, source-attributed enhancements: for depth, it grounds the motivation for P&E in concrete ReAct limitations (token bloat, context rot) and cites the Plan-and-Act framework's synthetic-data fine-tuning technique for improving planners; for breadth, it introduces the ReWOO variant with its three-module structure, the idea of using different models for planning vs execution, and the notion of hybrid ReAct/Plan-and-Execute systems. Across both dimensions B contains more numerous and more substantive, source-cited instances, so B is preferred much more strongly on both depth and breadth."
+        }
+      ]
+    },
+    "Where This Shows Up in Practice: Deep Research\u2013Style Systems": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Plan-and-Execute periodic re-planning checks when info contradicts initial strategy"
+            ],
+            "b_instances": [
+              "automatic spawning of new sub-task to find a third source when a conflict arises during verification"
+            ]
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "legal reasoning agentic systems using controller-coordinator architecture for case analysis/litigation strategy sub-agents",
+              "multimodal expansion of research agents to interpret charts, graphs, and images"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core content: Deep Research-style systems as instantiations of ReAct-like loops and Plan-and-Execute, decomposing queries into sub-goals, iterative search/verify cycles, and hallucination-reduction policies. On depth, each offers one modestly more specific mechanism not in the other (A's periodic re-planning trigger vs B's conflict-triggered sub-task spawning for third-source verification), making these roughly comparable, hence a tie. On breadth, Document A introduces two genuinely new adjacent domains absent from B -- the application of controller-coordinator agentic architectures to legal reasoning tasks (case analysis, litigation strategy) and the emerging trend of multimodal deep research agents interpreting charts/graphs/images -- giving A a clear breadth advantage, while B stays focused solely on the web-research use case."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "Scratchpad note-updating mechanism during micro-cycles"
+            ],
+            "b_instances": [
+              "Spawning a new sub-task to find a third verifying source when conflicts arise",
+              "Citing explicit hallucination-reduction policies from OpenAI's system card"
+            ]
+          },
+          "breadth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "Application of agentic planning patterns to legal reasoning via controller-coordinator architecture managing case-analysis/litigation-strategy sub-agents [38]",
+              "Expansion of these agents into multimodal domains interpreting charts, graphs, and images [43]"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core mapping of ReAct/Plan-and-Execute patterns onto deep-research agents like OpenAI's Deep Research, with similarly detailed micro-cycle examples (A's scratchpad update vs B's sub-task spawning and system-card-cited hallucination policies), making depth roughly a tie. However, Document A uniquely broadens the discussion into two new adjacent domains -- legal reasoning agentic systems and multimodal (chart/graph/image) research capabilities -- each backed by a distinct citation, while Document B stays entirely within the web-research/ReAct-Plan-and-Execute scope without introducing any new sub-topics, giving A a clear breadth advantage."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [
+              "updating internal scratchpad/notes as verification mechanism"
+            ],
+            "b_instances": [
+              "spawning a new sub-task to find a third source when conflicting claims arise",
+              "explicit policies documented in system card to reduce hallucinations"
+            ]
+          },
+          "breadth": {
+            "preference": "a_more",
+            "a_instances": [
+              "application to legal reasoning via controller-coordinator architecture managing sub-agents for case analysis/litigation strategy",
+              "emerging multimodal expansion of research agents interpreting charts/graphs/images"
+            ],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core content: OpenAI Deep Research as an exemplar, decomposition into sub-goals, and a blended ReAct/Plan-and-Execute iterative search-verify-synthesize loop. For depth, each adds a slightly different granular mechanism\u2014A mentions scratchpad note-taking while B specifies spawning verification sub-tasks and cites an explicit hallucination-reduction policy from the system card\u2014roughly balancing out to a tie. For breadth, document A clearly extends beyond the core web-research topic into two new domains: legal reasoning agents (controller-coordinator sub-agent architecture) and multimodal research capabilities (charts/graphs/images), neither of which appears in B. Document B stays tightly focused on the research-assistant example without introducing new adjacent sub-topics, so A has a breadth advantage."
+        }
+      ]
+    },
+    "Modern Reasoning Models: Thinking vs. Answer Streams and Interleaved Thinking": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "LLM-generated summary of thinking process shown to users instead of raw thoughts",
+              "Concrete worked example of interleaved thinking (writing report intro, pausing to search for a statistic, weaving it in)",
+              "Quantitative claim that extended thinking with tool use costs 5-10x more tokens",
+              "Specific API technical detail: budget_tokens parameter set independently of max_tokens",
+              "Quantitative claim that full chain-of-thought can require up to 100x more compute than single-shot reply"
+            ],
+            "b_instances": [
+              "Specific 'dual view' mechanism where thinking and response streams attend to each other's tokens as they are generated"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [
+              "Programmatically toggling reasoning on/off depending on query complexity as an engineering practice"
+            ],
+            "b_instances": [
+              "Real-time safety checks performed via background reasoning without delaying benign responses",
+              "Voice assistant application enabled by asynchronous reasoning",
+              "Paradox that advanced reasoning models hallucinate more, citing OpenAI o3's 33% hallucination rate on PersonQA benchmark",
+              "Streaming the thinking process to a UI for real-time visibility into agent progress (e.g., 'Now searching for X...')"
+            ]
+          },
+          "reasoning": "Both documents cover the same core ground (thinking/answer streams, <think>/<answer> tags, training-free RoPE-based concurrent streams, interleaved thinking, Claude's API support). For depth, Document A adds more rigor to the existing points it shares with B: it provides a concrete worked example of interleaved thinking, a specific API detail (budget_tokens vs max_tokens), and two distinct quantitative cost claims (5-10x tokens, 100x compute) that B lacks entirely. B's only unique depth addition is the more specific 'dual view' attention mechanism between the two streams. This gives A a clear depth advantage. For breadth, Document B substantially broadens scope beyond A: it introduces the hallucination paradox in reasoning models with a specific benchmark statistic (o3/PersonQA, 33%), real-time safety-check applications, voice assistant use cases, and UI-streamed debugging visibility -- four distinct new sub-topics. A only adds one new breadth point (toggling reasoning on/off based on complexity), giving B a clear breadth advantage."
+        },
+        {
+          "depth": {
+            "preference": "a_much_more",
+            "a_instances": [
+              "LLM-generated summary of thinking process instead of raw thoughts (transparency mechanism)",
+              "API budget_tokens parameter set independently of max_tokens for output",
+              "Extended thinking with tool use can consume 5-10x more tokens than standard response",
+              "Full chain-of-thought pass can require up to 100x more compute than single-shot reply, enabling programmatic toggling"
+            ],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "Reasoning models paradoxically hallucinate more; OpenAI o3 hallucinated on 33% of PersonQA questions, ~2x prior models",
+              "Asynchronous reasoning technique applied to real-time safety checks running in background",
+              "Asynchronous/dual-stream reasoning applied to voice assistant use case for natural real-time interaction",
+              "Streaming thinking stream to UI for real-time progress display (e.g., 'Now searching for X...') as debugging/trust mechanism"
+            ]
+          },
+          "reasoning": "Both documents cover the same core architecture (thinking vs answer streams, tag-based separation, interleaved thinking, and the training-free RoPE-based concurrent-stream technique), so this shared content is not differentiating. On depth, Document A adds several concrete technical/quantitative details not in B: the LLM-generated thinking summary, the budget_tokens vs max_tokens API distinction, and two specific cost multipliers (5-10x tokens, up to 100x compute) that deepen the discussion of interleaved thinking's costs. Document B lacks comparable quantitative depth on the core mechanisms. On breadth, Document B introduces several genuinely new sub-topics absent from A: the hallucination paradox in reasoning models with a specific OpenAI o3/PersonQA statistic, application of asynchronous reasoning to voice assistants and to background safety checks, and a concrete UI-streaming debugging use case. Document A does not introduce comparable new adjacent topics beyond the core thinking/answer/interleaved-thinking mechanics. Hence A leads clearly on depth while B leads clearly on breadth."
+        },
+        {
+          "depth": {
+            "preference": "a_more",
+            "a_instances": [
+              "LLM-generated summary of thinking process instead of raw thoughts for transparency",
+              "Quantified token/compute cost of extended thinking (5-10x tokens with tools, up to 100x compute for full CoT) and budget_tokens API parameter separate from max_tokens",
+              "Concrete worked example of interleaved thinking (writing report intro, pausing to fetch a statistic via tool, weaving it back in)"
+            ],
+            "b_instances": [
+              "Dual-view mechanism detail: thinking and response streams attend to each other's tokens as they're generated",
+              "Debugging/UX detail: streaming thinking stream to a UI showing status messages like 'Now searching for X...'"
+            ]
+          },
+          "breadth": {
+            "preference": "b_much_more",
+            "a_instances": [],
+            "b_instances": [
+              "New subtopic: reasoning models paradoxically hallucinate more, citing OpenAI o3 33% hallucination rate on PersonQA benchmark",
+              "New application: real-time safety checks performed via background reasoning without delaying benign responses",
+              "New application: asynchronous/interleaved thinking benefiting voice assistant interactions for more natural real-time feel"
+            ]
+          },
+          "reasoning": "Both documents cover the same core ground (thinking/answer streams, <think>/<answer> tags, training-free rotary-embedding-based concurrent streaming, interleaved thinking, and Claude's API support), so this shared material doesn't differentiate them. On depth, A adds more quantitative rigor to the interleaved-thinking cost story (5-10x token overhead, ~100x compute for full CoT, budget_tokens parameter) plus a concrete worked example and the LLM-generated-summary transparency mechanism, while B adds mainly the 'dual view' attention detail and a debugging/UI streaming detail -- giving A a modest edge. On breadth, B introduces genuinely new subtopics absent from A: the counterintuitive rise in hallucination rates in reasoning models (with the specific o3/PersonQA 33% statistic), background real-time safety-checking use cases, and voice-assistant applications of asynchronous reasoning -- three distinct new angles that A does not touch at all, so B is clearly ahead on breadth."
+        }
+      ]
+    },
+    "Advanced Agent Capabilities Enabled by Planning": {
+      "a_arm": "standard",
+      "b_arm": "deep",
+      "draws": [
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Detailed hierarchical decomposition example (gather sources -> search academic databases/industry news)",
+              "Self-correction limitation: models struggle to critique own work and stubbornly adhere to incorrect conclusions (cites DeCRIM paper)"
+            ],
+            "b_instances": [
+              "Control-theory framing of self-correction as closed-loop control system (LLM as plant, error signal, control input) [42]",
+              "Entropy/complexity of reasoning path causing 'policy collapse' that limits self-correction [44]"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core goal-decomposition and self-correction content with the identical adoption-rate example, so no breadth-expanding new sub-topics appear in either (forward references to later lessons don't count as within-section breadth). For depth, A adds a concrete sub-decomposition example and cites a source on models' inability to self-critique, while B adds two more technically rich mechanisms -- framing self-correction via control theory and explaining how reasoning-path entropy can cause 'policy collapse' that limits correction. Both sides have two distinct depth instances, but B's are somewhat more novel and mechanistically detailed, giving it a modest edge on depth while breadth remains tied."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Self-correction limitation: models struggle to critique their own work and stubbornly retain incorrect conclusions (cites DECRIM paper [18])"
+            ],
+            "b_instances": [
+              "Control-theory framing of self-correction as a closed-loop control system (LLM as plant, error signal, control input) [42]",
+              "Entropy-driven 'policy collapse' limitation: long/complex CoT paths degrade self-correction effectiveness [44]"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core goal-decomposition and self-correction content, including the identical conflicting-adoption-rate example. For depth, A adds one substantive technical limitation (models' inability to self-critique, citing a DECRIM paper) while B adds two distinct technical elaborations on self-correction: a control-theory analogy framing the correction loop as a closed-loop control system, and an entropy-based 'policy collapse' failure mode for long CoT paths. Both these B instances deepen the same self-correction mechanism with distinct, source-attributed technical detail, giving B a modest edge in depth. Neither document introduces genuinely new adjacent sub-topics or applications beyond the core discussion of decomposition and correction, so breadth is a tie."
+        },
+        {
+          "depth": {
+            "preference": "b_more",
+            "a_instances": [
+              "Detailed decomposition example breaking 'gather sources' into 'search academic databases' and 'search industry news'",
+              "Specific citation on LLM self-correction difficulty via DECRIM paper (struggling to critique own work, stubborn adherence to wrong conclusions)"
+            ],
+            "b_instances": [
+              "Control theory framing of self-correction as closed-loop control system (LLM as plant, error signal, control input) with citation [42]",
+              "Entropy-driven 'policy collapse' limiting self-correction in long CoT paths, with citation [44]"
+            ]
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both documents cover the same core topics (goal decomposition and self-correction) without introducing genuinely new adjacent sub-topics, so breadth is a tie (both effectively zero qualifying breadth instances; the forward-looking lesson previews are not enhancement content). For depth, A adds a slightly more granular decomposition example and cites a specific paper on self-correction difficulty, while B introduces two more technically sophisticated and distinct mechanisms -- a control-theory analogy for self-correction and an entropy/policy-collapse limitation -- each backed by citations, giving B a modest edge in depth."
+        }
+      ]
+    },
+    "Conclusion": {
+      "a_arm": "deep",
+      "b_arm": "standard",
+      "draws": [
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both conclusions are purely summary/synthesis passages that restate the section's core topics (Chain-of-Thought, ReAct, Plan-and-Execute, agent autonomy, the upcoming ReAct-building lesson) without introducing any new named studies, statistics, mechanisms, or adjacent sub-topics. Document B adds slightly more descriptive flavor (e.g., 'separating thinking from answering,' 'iterative loop' vs 'structured phases') but these are stylistic elaborations of already-covered concepts, not concrete, source-attributed depth or breadth additions. Neither document contains a qualifying instance for either dimension, so both are ties.'"
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "reasoning": "Both conclusions are purely summary/recap text restating the lesson's core content (Chain-of-Thought, ReAct, Plan-and-Execute) without introducing any new named studies, statistics, mechanisms, or adjacent sub-topics. Document B adds a slightly more elaborate framing (e.g., 'separating thinking from answering') but this is a rephrasing of the same point about models internalizing reasoning, not a distinct, source-attributed deepening or broadening instance. Neither document contains qualifying enhancement content for depth or breadth, resulting in a tie on both dimensions."
+        },
+        {
+          "depth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": []
+          },
+          "breadth": {
+            "preference": "tie",
+            "a_instances": [],
+            "b_instances": [
+              "mention of reasoning models separating 'thinking' from 'answering' as a distinct model evolution trend"
+            ]
+          },
+          "reasoning": "Both conclusions are largely restatements/summaries of the lesson's core content (Chain-of-Thought, ReAct, Plan-and-Execute) without introducing named studies, statistics, or new technical mechanisms, so depth is a tie with no qualifying instances on either side. For breadth, document B adds a brief but slightly more specific note about models separating internal 'thinking' from 'answering' as part of model evolution, which is a marginally new angle not present in A, but it's a minor, single instance rather than substantive new topic coverage, so breadth leans only slightly toward B rather than a strong preference."
+        }
+      ]
+    }
+  }
+}

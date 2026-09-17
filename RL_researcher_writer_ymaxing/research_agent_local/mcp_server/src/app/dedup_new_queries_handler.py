@@ -3,15 +3,24 @@
 import json
 import re
 from pathlib import Path
-from typing import List, Tuple, Literal
+from typing import List, NamedTuple, Tuple, Literal
 import logging
 
 from ..config.settings import settings
 from ..utils.file_utils import read_file_safe
-from ..utils.llm_utils import get_chat_model
+from ..utils.llm_utils import extract_text_content, get_chat_model
 from ..config.prompts import PROMPT_DEDUPLICATE_QUERIES
 
 logger = logging.getLogger(__name__)
+
+
+class DeduplicationResult(NamedTuple):
+    """Return value of deduplicate_new_queries_against_history."""
+
+    kept: List[Tuple[str, str]]      # (query, original_reason) pairs that survive dedup
+    rejected: List[Tuple[str, str]]  # (query, original_reason) pairs that were dropped
+    reasoning: str                   # LLM explanation of the most important decisions
+
 
 def parse_queries_from_file(file_path: Path) -> List[Tuple[str, str]]:
     """Parse numbered queries markdown file into (query, reason) tuples."""
@@ -62,10 +71,10 @@ async def deduplicate_new_queries_against_history(
     new_queries: List[Tuple[str, str]],
     full_queries_path: Path,
     query_source: Literal["exploitation", "complementary"] = "exploitation",
-) -> List[Tuple[str, str]]:
+) -> DeduplicationResult:
     """Semantic deduplication of new batch vs entire historical queries."""
     if not new_queries:
-        return []
+        return DeduplicationResult(kept=[], rejected=[], reasoning="")
 
     # Load history for context
     history = read_file_safe(full_queries_path) or "<none>"
@@ -73,18 +82,20 @@ async def deduplicate_new_queries_against_history(
     prompt = format_dedup_prompt_inputs(new_queries, history, query_source)
 
     chat_llm = get_chat_model(settings.query_generation_model)
-    response = await chat_llm.ainvoke(prompt)
 
     try:
+        response = await chat_llm.ainvoke(prompt)
         if hasattr(response, "content"):
-            result = json.loads(response.content)
+            result = json.loads(extract_text_content(response.content))
         else:
             result = json.loads(str(response))
         kept_texts = result.get("kept_queries", [])
+        reasoning = result.get("reasoning", "")
     except Exception as e:
-        logger.warning(f"Deduplication JSON parse failed: {e}. Keeping all new queries.")
-        return new_queries
+        logger.warning(f"Deduplication LLM call/parse failed: {e}. Keeping all new queries.")
+        return DeduplicationResult(kept=new_queries, rejected=[], reasoning="")
 
-    # Keep original reasons
-    kept = [(q, r) for q, r in new_queries if q.strip() in kept_texts]
-    return kept
+    kept_set = {t.strip() for t in kept_texts}
+    kept = [(q, r) for q, r in new_queries if q.strip() in kept_set]
+    rejected = [(q, r) for q, r in new_queries if q.strip() not in kept_set]
+    return DeduplicationResult(kept=kept, rejected=rejected, reasoning=reasoning)
