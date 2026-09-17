@@ -278,6 +278,12 @@ production LoRA adapter is already checked into
 `research_agent_local/rl_inference_service/checkpoints/production/` — no
 `--adapter-dir` flag needed for the default run.
 
+The adapter is also published on the Hugging Face Hub as
+[**xintelligence/qwen3-4b-research-planner-lora**](https://huggingface.co/xintelligence/qwen3-4b-research-planner-lora),
+and the full offline RL dataset (`bases/`, `episodes/`, `test_episodes/`) as
+[**xintelligence/research-agent-rl-episodes**](https://huggingface.co/datasets/xintelligence/research-agent-rl-episodes)
+— useful if you cloned the repo shallowly or just want the artifacts without the code.
+
 ### 3. Run the eval harness
 
 From `RL_researcher_writer_ymaxing/research_agent_local/`:

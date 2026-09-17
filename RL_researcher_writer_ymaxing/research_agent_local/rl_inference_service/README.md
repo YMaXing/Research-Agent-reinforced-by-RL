@@ -81,6 +81,12 @@ no `--adapter-dir` flag needed for the default run. It can be overridden via
 the `RL_INFER_ADAPTER_DIR` environment variable (read by `mcp_server`'s
 `preset_infer_handler.py`) or `infer.py --adapter-dir <path>` directly.
 
+Also published on the Hugging Face Hub as
+[**xintelligence/qwen3-4b-research-planner-lora**](https://huggingface.co/xintelligence/qwen3-4b-research-planner-lora)
+— useful if you only cloned the repo shallowly, or want to load it directly
+with `PeftModel.from_pretrained(base_model, "xintelligence/qwen3-4b-research-planner-lora")`
+instead of a local path.
+
 `infer.py` looks first at `RL_researcher_writer_ymaxing/models/Qwen3-4B/` for
 the base weights (falls back to downloading `Qwen/Qwen3-4B` from the Hugging
 Face Hub if missing).
