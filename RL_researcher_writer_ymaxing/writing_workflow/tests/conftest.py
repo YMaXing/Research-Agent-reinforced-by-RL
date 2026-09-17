@@ -30,9 +30,15 @@ from brown.models import ModelConfig
 
 @pytest.fixture(autouse=True, scope="session")
 def setup_config_file() -> None:
-    """Set CONFIG_FILE environment variable to use mocked config for all tests."""
+    """Set CONFIG_FILE environment variable to use mocked config for all tests.
 
-    config_path = Path("tests/fixtures/configs/mocked.yaml")
+    Resolved relative to this file (not the process cwd) so it works regardless
+    of the directory pytest is invoked from — pydantic's FilePath validates
+    existence against cwd, and a bare relative path breaks when pytest isn't
+    run from the writing_workflow/ directory.
+    """
+
+    config_path = Path(__file__).resolve().parent / "fixtures" / "configs" / "mocked.yaml"
     os.environ["CONFIG_FILE"] = str(config_path)
 
 
