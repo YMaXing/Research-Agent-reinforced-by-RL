@@ -1,10 +1,10 @@
 # Research-Agent-reinforced-by-RL
 
-An end-to-end **Research → Writing** agentic system whose exploratory-research-planning 
-step is fine-tuned with **offline GRPO**. A small Qwen3-4B + LoRA policy reads a
-structured *research digest* of an article topic and selects one of four
-**exploration presets** (skip / light / standard / deep) that drives how the
-research agent explores the web before the writing agent drafts the article.
+A local (cloud version in progress), file-based, end-to-end **Research → Writing**
+agentic system whose exploratory-research-planning step is fine-tuned with **offline GRPO**.
+A small Qwen3-4B + LoRA policy reads a structured *research digest* of an article topic
+and selects one of four **exploration presets** (skip / light / standard / deep) that drives
+how the research agent explores the web before the writing agent drafts the article.
 
 **Input and output:** The research workflow takes an `article_guideline.md`
 (plus any golden sources it names — see below) and produces a single
@@ -372,6 +372,29 @@ chance nor the majority-class significance bar. RL+guards beats both
 frontier-model baselines at conventional significance on every split except
 one (TRAIN vs. Grok 4.6, p=0.063 — still directionally favorable, just
 underpowered at n=24).
+
+**Beyond McNemar: rank-based, permutation, and bootstrap tests** (same 16 TEST
+articles, paired against the toughest constant baseline, guarded-`light`;
+exact one-sided tests throughout, since `n` is too small for a normal
+approximation):
+
+| test | quantity | n | statistic | p (one-sided) |
+|---|---|---:|---:|---:|
+| Wilcoxon signed-rank | MAE/dist reduction | 5 | W+=15.0 | 0.0312 |
+| Wilcoxon signed-rank | regret reduction | 6 | W+=19.0 | 0.0469 |
+| Sign-flip permutation | MAE/dist reduction | 5 | sum=7.0000 | 0.0312 |
+| Sign-flip permutation | regret reduction | 6 | sum=0.2692 | 0.0469 |
+| Paired bootstrap (B=100,000) | MAE/dist reduction | 16 | mean=0.4375, CI=[0.1250, 0.8125] | 0.0023 |
+| Paired bootstrap (B=100,000) | regret reduction | 16 | mean=0.0168, CI=[0.0024, 0.0346] | 0.0063 |
+
+All six clear the conventional 0.05 threshold. These two families ask
+different questions of the same 16 articles — Wilcoxon and the sign-flip
+permutation test use only the *direction* of each article's win or loss
+(discarding magnitude, hence the smaller `n` of discordant pairs), while the
+paired bootstrap uses the full *magnitude* of every article's difference
+across all 16 — and they corroborate rather than contradict each other here.
+The RL+guards exact-match rate itself carries a Wilson 95% confidence
+interval of **[57.0%, 93.4%]** on TEST (n=16).
 
 **Full derivation, TRAIN-split numbers, confusion matrices, and the
 multi-week investigation behind these results** (reward-formula calibration,
