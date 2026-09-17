@@ -1535,6 +1535,22 @@ def _splice_sections_into_coverage(digest: str, new_sections_xml: str) -> str:
     return digest.replace("</section_coverage>", inner + "\n</section_coverage>", 1)
 
 
+def _extract_anthropic_text(content_blocks) -> str:
+    """Return the concatenated text from Anthropic Messages API content blocks.
+
+    Reasoning-capable models can place a "thinking"/"redacted_thinking" block
+    before the final "text" block, so ``content[0]`` is not reliably the answer
+    text. Joins only the "text"-typed blocks, skipping anything else.
+    """
+    parts = []
+    for block in content_blocks:
+        block_type = getattr(block, "type", None)
+        if block_type is not None and block_type != "text":
+            continue
+        parts.append(getattr(block, "text", "") or "")
+    return "".join(parts)
+
+
 async def _generate_missing_sections_opus(
     article_title: str,
     context: str,
@@ -1566,7 +1582,7 @@ async def _generate_missing_sections_opus(
                 }
             ],
         )
-        return message.content[0].text.strip()
+        return _extract_anthropic_text(message.content).strip()
     finally:
         await opus_client.close()
 

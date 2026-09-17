@@ -1,8 +1,8 @@
-"""Shim — delegates to evaluation/test_grok_planner.py.
+"""Shim — delegates to evaluation/test_planner.py.
 
 Allows invoking the eval harness from the research_agent_local/ root:
 
-    uv run --project mcp_server python test_grok_planner.py [args...]
+    uv run --project mcp_server python test_planner.py [args...]
 
 without having to remember the evaluation/ subdirectory.
 """

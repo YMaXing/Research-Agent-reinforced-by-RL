@@ -4,9 +4,9 @@ tool (predict_exploration_preset_tool.py): RL model + deterministic policy guard
 only, no LLM call anywhere in this module.
 
 The eval-only LLM-planner path (render_evidence_brief, the policy/escalation guards,
-the planner prompts, and call_grok_planner/call_grok_planner_standalone) lives
+the planner prompts, and call_llm_planner/call_llm_planner_standalone) lives
 entirely in evaluation/preset_planner_handler_eval.py, used by
-evaluation/predict_exploration_preset_eval.py and evaluation/test_grok_planner.py.
+evaluation/predict_exploration_preset_eval.py and evaluation/test_planner.py.
 That eval module cross-imports build_article_evidence/fallback_aggregator FROM this
 file, but nothing in this file imports or calls anything eval-only.
 """

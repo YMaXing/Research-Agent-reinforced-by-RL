@@ -1,6 +1,6 @@
 """
 Exploration-preset LLM planner prompts (eval-only; see preset_planner_handler_eval.py's
-``call_grok_planner`` / ``call_grok_planner_standalone``, currently Grok 4.2).
+``call_llm_planner`` / ``call_llm_planner_standalone``, model configurable via --planner-model).
 
 Not part of the production predict_exploration_preset pipeline — moved out of
 mcp_server/src/config/prompts.py since nothing in mcp_server ever references these.

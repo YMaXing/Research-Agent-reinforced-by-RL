@@ -10250,6 +10250,148 @@ remaining uncertainty at 80% power against a strong effect needs **~40 TEST arti
 moderate effect, **~80**. Corpus and replicate expansion — not further training, threshold tuning, or
 adjudicating between strict and tie-aware conventions — is the binding constraint.
 
+---
+
+## A.24 Two fresh LLM-only baselines under the multi-model harness — Grok 4.6 and Claude Opus 5 (2026-09-10)
+
+**Context:** the eval harness's `--llm-only` mode was generalized this session to accept any
+`--planner-model` (previously hard-coded to a single Grok checkpoint; see the `--grok-only`→`--llm-only`
+rename). Both runs below are fresh, full re-executions of that generalized harness — `04.` all
+16 TEST articles and all 24 TRAIN variants, RL disabled, guards disabled, planner-only choice scored
+against the same `run33/ep81`-era, tied-arm-aware oracle used throughout A.22/A.23. These are **not**
+the same run as the archived "Grok-only" row quoted in A.23 §2.1 (an older, single-model harness
+snapshot) — they are new, independent evidence from the current codebase.
+
+**Note on the Grok 4.6 TRAIN block:** the raw run output for `Grok_4_6_only_...md` only printed a TEST
+summary; its TRAIN aggregate (confusion matrix, baselines, significance tests, MAE, regret) was **not**
+in the file and had to be reconstructed by hand from the 24 individual per-article TRAIN rows the file
+does contain (each row lists policy, chosen preset, oracle preset, and R_w for all four arms). As a
+correctness check on that reconstruction, the same by-hand procedure was independently re-applied to
+Grok 4.6's TEST split and to Claude Opus 5's TEST **and** TRAIN splits (both of which *do* have
+printed summaries) — in every case the reconstructed confusion matrix, baselines, McNemar/Poisson-binomial
+tests, and Wilson CI reproduced the file's own printed numbers exactly. One transcription slip
+(`29_evaluation_metrics`'s oracle) was caught and fixed by this cross-check before it could contaminate
+the derived Grok 4.6 TRAIN numbers below.
+
+### 1. Headline results
+
+| metric | RL+guards (production) | Grok 4.6 (LLM-only) | Claude Opus 5 (LLM-only) |
+|---|---:|---:|---:|
+| TEST exact | **13/16 (81.2%)** | 6/16 (37.5%) | 6/16 (37.5%) |
+| TEST near / miss | 3 (19%) / 0 (0%) | 9 (56%) / 1 (6%) | 10 (62%) / 0 (0%) |
+| TEST ordinal MAE | **0.188** | 0.688 | 0.625 |
+| TRAIN exact | **19/24 (79.2%)** | 14/24 (58.3%) | 12/24 (50.0%) |
+| TRAIN near / miss | 4 (17%) / 1 (4%) | 7 (29%) / 3 (12%) | 11 (46%) / 1 (4%) |
+| TRAIN ordinal MAE | **0.250** | 0.542 | 0.542 |
+| COMBINED exact (n=40) | **32/40 (80%)** | 20/40 (50%) | 18/40 (45%) |
+
+RL+guards leads both LLM-only baselines on every split, by a wide margin (roughly double the exact-hit
+rate on TEST, ~1.3–1.6× on TRAIN). Neither LLM-only model clears the majority-class baseline
+convincingly on its own (see §2); the gap to RL+guards is the more decisive comparison and is tested
+formally in §3.
+
+### 2. Each LLM-only baseline's own significance tests (vs. chance / majority-class)
+
+#### 2.1 Grok 4.6
+
+| split | exact | McNemar vs. majority-class | Poisson-binomial vs. chance | Wilson 95% CI |
+|---|---:|---|---|---|
+| TEST (n=16) | 6/16 (37.5%) | vs. `always-light` (50.0%): b=1 c=3 n=4, p=0.938 · none | observed 6/16, p=0.545 · none | [18.5%, 61.4%] |
+| TRAIN (n=24) | 14/24 (58.3%) | vs. `always-skip` (37.5%): b=6 c=1 n=7, p=0.063 · *suggestive* | observed 14/24, p=0.0005 · **strong** | [38.8%, 75.5%] |
+
+TRAIN confusion matrix (oracle rows × predicted columns; reconstructed):
+
+```
+Oracle ↓        skip   light  standard  deep
+P0 skip           8      0       1        0   (n=9)
+P1 light          0      5       4        0   (n=9)
+P2 standard       1      0       1        0   (n=2)
+P3 deep           0      1       3        0   (n=4)
+```
+
+TRAIN by variant type: `var_minimal` 8/8 exact (all `forbidden`-policy, regret n/a) · `var_standard`
+3/8 exact, 6/8 exact+near, regret mean=0.0537 max=0.1419 · `var_demanding` 3/8 exact, 7/8 exact+near,
+regret mean=0.0223 max=0.0592. TRAIN reward-regret (allowed/required only, n=16, 8 forbidden excluded):
+mean=0.0380, max=0.1419.
+
+On TRAIN, Grok 4.6 clears the "beats chance" bar decisively (p=0.0005) but only *suggestively* beats the
+majority-class constant (p=0.063) — consistent with the pattern seen throughout this document that
+"beats chance" is a much easier bar than "beats the best trivial constant guess." On TEST it clears
+neither.
+
+#### 2.2 Claude Opus 5
+
+| split | exact | McNemar vs. majority-class | Poisson-binomial vs. chance | Wilson 95% CI |
+|---|---:|---|---|---|
+| TEST (n=16) | 6/16 (37.5%) | vs. `always-light` (50.0%): b=2 c=4 n=6, p=0.891 · none | observed 6/16, p=0.545 · none | [18.5%, 61.4%] |
+| TRAIN (n=24) | 12/24 (50.0%) | vs. `always-skip` (37.5%): b=4 c=1 n=5, p=0.188 · *suggestive* | observed 12/24, p=0.0072 · **strong** | [31.4%, 68.6%] |
+
+TRAIN by variant type (from the run's own printed summary): `var_minimal` 8/8 exact (all
+`forbidden`-policy) · `var_standard` 3/8 exact, 7/8 exact+near, regret mean=0.0408 max=0.1385 ·
+`var_demanding` 1/8 exact, 8/8 exact+near, regret mean=0.0363 max=0.0592.
+
+Same qualitative pattern as Grok 4.6: decisively beats chance on TRAIN, only suggestively beats the
+majority-class constant, clears neither bar on TEST.
+
+**Neither new LLM-only baseline is a clean win over trivial constant guessing on the harder, genuinely
+out-of-domain TEST split** — both sit exactly at 37.5% exact, identical to the majority-class
+(`always-light`) baseline's own TEST rate, and both McNemar tests against that same constant come back
+firmly non-significant (p=0.94, p=0.89). This echoes A.23 §2.2's finding for the older Grok-only
+snapshot (p=0.746 vs. majority-class there) — the LLM-only mode's inability to beat a trivial constant
+guesser on TEST is not specific to one model or one harness version; it reproduces across an older
+snapshot and two new frontier models on the current codebase.
+
+### 3. New paired comparisons: RL+guards vs. each LLM-only baseline
+
+These are **paired** exact McNemar tests (`b` = RL+guards right / LLM-only wrong on the same article,
+`c` = the reverse), computed directly against each model's own per-article verdicts — not previously
+reported anywhere in this document.
+
+| comparison | split | b | c | n=b+c | one-sided p | tier |
+|---|---|---:|---:|---:|---:|---|
+| RL+guards vs. Grok 4.6 | TEST (n=16) | 7 | 0 | 7 | 0.0078 | **strong** |
+| RL+guards vs. Grok 4.6 | TRAIN (n=24) | 6 | 1 | 7 | 0.0625 | *suggestive* |
+| RL+guards vs. Grok 4.6 | COMBINED (n=40) | 13 | 1 | 14 | 0.0009 | **strong** |
+| RL+guards vs. Claude Opus 5 | TEST (n=16) | 8 | 1 | 9 | 0.0195 | **strong** |
+| RL+guards vs. Claude Opus 5 | TRAIN (n=24) | 8 | 1 | 9 | 0.0195 | **strong** |
+| RL+guards vs. Claude Opus 5 | COMBINED (n=40) | 16 | 2 | 18 | 0.0007 | **strong** |
+| (bonus) Grok 4.6 vs. Claude Opus 5 | TEST / TRAIN / COMBINED | 1 / 3 / 4 | 1 / 1 / 2 | 2 / 4 / 6 | 0.75 / 0.31 / 0.34 | none (all) |
+
+**RL+guards beats both LLM-only baselines at conventional significance on every split except one**
+(TRAIN vs. Grok 4.6, where it is still directionally favorable at p=0.063 and is strong on TEST and
+COMBINED). This is the strongest direct evidence yet in this document that the RL policy stage is doing
+real work beyond what an LLM planner alone provides — previous comparisons (A.23 §2.1–§2.2) only showed
+that the *older* Grok-only snapshot failed to beat trivial constants; this is the first time RL+guards
+has been paired head-to-head, article-by-article, against a **currently-running, multi-model-capable**
+LLM-only baseline, on both frontier models available today. The bonus Grok-vs-Claude row shows the two
+LLM baselines are statistically indistinguishable from each other (p≥0.31 on every split) — the
+RL+guards advantage is not an artifact of picking a weak LLM to compare against.
+
+### 4. Caveats (consistent with §4 above)
+
+- Same underpowered-McNemar caveat applies here as in §4a above: TRAIN's n=7 discordant pairs (RL+guards
+  vs. Grok 4.6) is small enough that a non-significant result (p=0.063) is only weak, not strong,
+  evidence of "no difference" — it sits just outside the conventional 0.05 line.
+- Multiple comparisons: this section alone runs 7 new paired tests; none of the individual "strong"
+  results were selected post hoc from a larger family run only for this purpose, but the usual multiple
+  comparisons caveat from §4b still applies if these are pooled with the rest of the document's test
+  count.
+- The Grok 4.6 TRAIN aggregate in §2.1 is a manual reconstruction, not harness output — see the
+  cross-validation note at the top of this section for why it is trusted, but it has not been re-verified
+  by re-running the harness with a TRAIN-summary-printing code path.
+
+### 5. Verdict
+
+**Both fresh LLM-only baselines land in the same place as the older, already-documented Grok-only
+snapshot: decisively better than blind chance, but not reliably better than the best trivial constant
+guess, and clearly behind RL+guards.** RL+guards' TEST exact rate (81.2%) is roughly double either LLM-only
+model's (37.5% each), and the new paired McNemar tests in §3 confirm this gap is statistically real on
+TEST and COMBINED for both models (p≤0.02), and directionally real but underpowered on TRAIN for Grok 4.6
+specifically (p=0.063). **This is now the third independent piece of evidence (A.23's archived Grok-only
+row, and these two new frontier-model runs) that the RL policy is load-bearing and not merely
+redundant with LLM reasoning** — the finding replicates across model providers (xAI, Anthropic) and
+across harness versions, not just within one snapshot.
+
 
 
 

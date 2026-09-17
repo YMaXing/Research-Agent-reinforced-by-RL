@@ -80,7 +80,7 @@ tied_arms             list  other arm(s) considered statistically indistinguisha
                       article except genuine dead-heats (e.g. Bird_Eye_Extreme). Purely
                       additive/informational: does NOT affect oracle_arm/margin/decision_path.
                       Consumers that want "either X or Y counts as a hit" (e.g.
-                      evaluation/test_grok_planner.py's verdict) should treat a prediction
+                      evaluation/test_planner.py's verdict) should treat a prediction
                       landing on oracle_arm OR any tied_arms entry as EXACT.
 tied_arm_indices      list  int indices (ARM_IDX) mirroring tied_arms
 n_sections            int

@@ -1,12 +1,12 @@
 """
 Preset planner test: predict_exploration_preset_eval (direct in-process call).
 
-This is the EVAL-ONLY function (grok_only/rl_only ablation switches, the disabled-by-default
+This is the EVAL-ONLY function (llm_only/rl_only ablation switches, the disabled-by-default
 LLM-planner stage) -- NOT the production predict_exploration_preset MCP tool, which has neither
 and is not exposed here at all. The function makes the final planning decision internally via
 two stages:
   Stage 1 — Qwen3-4B RL model      -> rl_recommendation
-  Stage 2 — LLM planner (currently Grok 4.2) -> llm_recommendation
+  Stage 2 — LLM planner (model configurable via --planner-model, default grok-4.6) -> llm_recommendation
 
 This is a plain workflow script (like training/rl_data_generator.py) that imports and calls
 predict_exploration_preset_eval() directly in-process — it does not start an MCP server or
@@ -44,10 +44,13 @@ Modes
   --rl-guards-only — RL aggregate + deterministic policy guards (forbidden→skip,
                      required→≥light, capped→≤light), no LLM planner call. The benchmark
                      the LLM planner must beat.
-  --grok-only      — reads llm_recommendation.preset (LLM planner standalone, no RL signals;
-                     always makes a real LLM call when XAI_API_KEY is set, regardless of
-                     PRESET_PLANNER_SKIP_LLM)
+  --llm-only       — reads llm_recommendation.preset (LLM planner standalone, no RL signals;
+                     always makes a real LLM call when an API key is set for --planner-model,
+                     regardless of PRESET_PLANNER_SKIP_LLM)
                      Use as a baseline to measure the RL model's marginal contribution.
+  --planner-model  — which LLM to use for the planner stage (any xAI model, e.g. "grok-4.6",
+                     or Anthropic model, e.g. "claude-opus-4-5"/"claude-sonnet-5"; provider +
+                     API key are resolved automatically from the model name). Default: grok-4.6.
 
 Reward-regret
 -------------
@@ -66,42 +69,45 @@ Split reporting
 Usage (from research_agent_local/, requires the mcp_server venv)
 ------------------------------------------------------------------
   # All articles — train variants + test held-outs (default)
-  uv run --project mcp_server python evaluation/test_grok_planner.py
+  uv run --project mcp_server python evaluation/test_planner.py
 
   # Test held-outs only (all 16)
-  uv run --project mcp_server python evaluation/test_grok_planner.py --test-only
+  uv run --project mcp_server python evaluation/test_planner.py --test-only
 
   # Training variants only
-  uv run --project mcp_server python evaluation/test_grok_planner.py --train-only
+  uv run --project mcp_server python evaluation/test_planner.py --train-only
 
   # RL model only — faster, no LLM planner call
-  uv run --project mcp_server python evaluation/test_grok_planner.py --rl-only
+  uv run --project mcp_server python evaluation/test_planner.py --rl-only
 
-  # LLM planner standalone baseline (currently Grok 4.2) — no RL section signals
-  uv run --project mcp_server python evaluation/test_grok_planner.py --grok-only
+  # LLM planner standalone baseline (default grok-4.6) — no RL section signals
+  uv run --project mcp_server python evaluation/test_planner.py --llm-only
+
+  # LLM planner standalone baseline using Claude Opus instead
+  uv run --project mcp_server python evaluation/test_planner.py --llm-only --planner-model claude-opus-4-5
 
   # Only demanding training variants
-  uv run --project mcp_server python evaluation/test_grok_planner.py --variants demanding
+  uv run --project mcp_server python evaluation/test_planner.py --variants demanding
 
   # Specific articles (bare test slug → no expansion; bare train slug → 3 variants)
-  uv run --project mcp_server python evaluation/test_grok_planner.py --articles 04_structured_outputs,09_RAG
+  uv run --project mcp_server python evaluation/test_planner.py --articles 04_structured_outputs,09_RAG
 
   # Save per-variant JSON results (written next to the checkpoint that
   # produced them: <adapter_dir>/rl_only_results|rl_guard_results|
-  # grok_only_results|rl_and_grok_results/, per RL_INFER_ADAPTER_DIR or the
+  # llm_only_results|rl_and_llm_results/, per RL_INFER_ADAPTER_DIR or the
   # current default checkpoint)
-  uv run --project mcp_server python evaluation/test_grok_planner.py --save-json
+  uv run --project mcp_server python evaluation/test_planner.py --save-json
 
   # Override which checkpoint the infer server loads, as a path relative to
   # rl_training_data/checkpoints/ (no need to edit _infer_config.py or export
   # RL_INFER_ADAPTER_DIR by hand) 
   For example, to test the run31_averaged_confidence/epoch_0109 checkpoint:
-  uv run --project mcp_server python evaluation/test_grok_planner.py \
+  uv run --project mcp_server python evaluation/test_planner.py \
       --adapter-dir tasks/run31_averaged_confidence/epochs/epoch_0109 \
       --rl-guards-only --save-json
 
   # Or, using the research_agent_local/ root shim (mirrors rl_data_generator.py):
-  uv run --project mcp_server python test_grok_planner.py --rl-only
+  uv run --project mcp_server python test_planner.py --rl-only
 """
 
 from __future__ import annotations
@@ -115,7 +121,7 @@ import sys as _sys
 from math import comb
 from pathlib import Path
 
-from predict_exploration_preset_eval import predict_exploration_preset_eval
+from predict_exploration_preset_eval import _DEFAULT_PLANNER_MODEL, predict_exploration_preset_eval
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
@@ -368,8 +374,9 @@ def _apply_policy_guards(
 async def run_variant(
     variant: str,
     rl_only: bool,
-    grok_only: bool = False,
+    llm_only: bool = False,
     rl_guards_only: bool = False,
+    planner_model: str = _DEFAULT_PLANNER_MODEL,
 ) -> dict:
     research_dir = _BASES_DIR / variant
     if not research_dir.exists():
@@ -379,11 +386,11 @@ async def run_variant(
     split = "TEST" if lesson in _TEST_LESSONS else "TRAIN"
 
     # --- Direct in-process call (no MCP protocol, no agent loop) ---
-    call_kwargs: dict = {}
-    if grok_only:
-        call_kwargs["grok_only"] = True
+    call_kwargs: dict = {"planner_model": planner_model}
+    if llm_only:
+        call_kwargs["llm_only"] = True
     if rl_only or rl_guards_only:
-        # Both modes evaluate the RL stage only; skip the Grok call.
+        # Both modes evaluate the RL stage only; skip the LLM planner call.
         call_kwargs["rl_only"] = True
     try:
         data = await predict_exploration_preset_eval(str(research_dir), **call_kwargs)
@@ -397,8 +404,8 @@ async def run_variant(
         }
 
 
-    rl = data.get("rl_recommendation")     # None when grok_only=True
-    grok = data.get("llm_recommendation") # None when rl_only / XAI unset / call failed
+    rl = data.get("rl_recommendation")     # None when llm_only=True
+    llm = data.get("llm_recommendation") # None when rl_only / API key unset / call failed
 
     # External-evidence policy (drives guards + regret accounting). Always present
     # in article_evidence regardless of mode.
@@ -411,21 +418,21 @@ async def run_variant(
     # guideline target_words -> word-weighted vote mass per preset, e.g.
     # rl_aggregate["deep_mass"]). Already computed by build_article_evidence() on
     # every request; captured here so --save-json persists it going forward
-    # instead of discarding it once this function returns (None in --grok-only
+    # instead of discarding it once this function returns (None in --llm-only
     # mode, where no RL section scoring runs).
     rl_aggregate = evidence.get("rl_aggregate")
     rl_section_signals = evidence.get("section_signals")
 
     # Determine which preset to evaluate
     guard_note: str | None = None
-    if grok_only:
-        if grok is None:
+    if llm_only:
+        if llm is None:
             return {
                 "variant": variant, "lesson": lesson, "split": split,
-                "error": "Grok standalone call failed or XAI_API_KEY not set",
+                "error": f"LLM standalone call failed or no API key set for {planner_model}",
             }
-        chosen_preset = grok["preset"]
-        chosen_by = "Grok-only"
+        chosen_preset = llm["preset"]
+        chosen_by = f"{planner_model}-only"
     elif rl_guards_only:
         if rl is None:
             return {
@@ -434,12 +441,12 @@ async def run_variant(
             }
         chosen_preset, guard_note = _apply_policy_guards(rl["preset"], policy, rl.get("agg_probs"))
         chosen_by = "RL+guards"
-    elif rl_only or grok is None:
+    elif rl_only or llm is None:
         chosen_preset = rl["preset"]
         chosen_by = "RL"
     else:
-        chosen_preset = grok["preset"]
-        chosen_by = "Grok4.2"
+        chosen_preset = llm["preset"]
+        chosen_by = planner_model
 
     # --- Oracle ---
     try:
@@ -450,8 +457,9 @@ async def run_variant(
             "lesson": lesson,
             "split": split,
             "policy": policy,
+            "planner_model": planner_model,
             "rl_preset": rl["preset"] if rl else None,
-            "grok_preset": grok["preset"] if grok else None,
+            "llm_preset": llm["preset"] if llm else None,
             "chosen_preset": chosen_preset,
             "chosen_by": chosen_by,
             "guard_note": guard_note,
@@ -465,9 +473,9 @@ async def run_variant(
             "rl_agg_probs": rl.get("agg_probs") if rl else None,
             "rl_aggregate": rl_aggregate,
             "rl_section_signals": rl_section_signals,
-            "grok_override": grok.get("override") if grok else None,
-            "grok_reasoning": grok.get("reasoning") if grok else None,
-            "grok_override_reason": grok.get("override_reason") if grok else None,
+            "llm_override": llm.get("override") if llm else None,
+            "llm_reasoning": llm.get("reasoning") if llm else None,
+            "llm_override_reason": llm.get("override_reason") if llm else None,
             "error": str(exc),
         }
 
@@ -507,8 +515,9 @@ async def run_variant(
         "lesson": lesson,
         "split": split,
         "policy": policy,
+        "planner_model": planner_model,
         "rl_preset": rl["preset"] if rl else None,
-        "grok_preset": grok["preset"] if grok else None,
+        "llm_preset": llm["preset"] if llm else None,
         "chosen_preset": chosen_preset,
         "chosen_by": chosen_by,
         "guard_note": guard_note,
@@ -526,11 +535,11 @@ async def run_variant(
         "rl_agg_probs": rl.get("agg_probs") if rl else None,
         "rl_aggregate": rl_aggregate,
         "rl_section_signals": rl_section_signals,
-        "grok_override": grok.get("override") if grok else None,
-        "grok_reasoning": grok.get("reasoning") if grok else None,
-        "grok_override_reason": grok.get("override_reason") if grok else None,
-        "grok_decision_drivers": grok.get("decision_drivers") if grok else None,
-        "grok_risk_flags": grok.get("risk_flags") if grok else None,
+        "llm_override": llm.get("override") if llm else None,
+        "llm_reasoning": llm.get("reasoning") if llm else None,
+        "llm_override_reason": llm.get("override_reason") if llm else None,
+        "llm_decision_drivers": llm.get("decision_drivers") if llm else None,
+        "llm_risk_flags": llm.get("risk_flags") if llm else None,
     }
 
 
@@ -552,7 +561,7 @@ def _print_variant_result(r: dict) -> None:
         return
 
     rl_p = r.get("rl_preset")
-    gp = r.get("grok_preset")
+    gp = r.get("llm_preset")
     chosen = r.get("chosen_preset")
     op = r.get("oracle_preset")
     verdict = r.get("verdict", "?")
@@ -560,7 +569,8 @@ def _print_variant_result(r: dict) -> None:
     conf = r.get("confidence")
     floor = r.get("floor_applied")
     chosen_by = r.get("chosen_by", "?")
-    is_grok_only = (chosen_by == "Grok-only")
+    planner_model = r.get("planner_model", "LLM")
+    is_llm_only = chosen_by.endswith("-only") and chosen_by != "RL+guards"
     is_guards = (chosen_by == "RL+guards")
 
     pol = r.get("policy")
@@ -571,8 +581,8 @@ def _print_variant_result(r: dict) -> None:
         floor_tag = "  [floor applied]" if floor else ""
         rl_name = _PRESET_NAMES.get(rl_p, "?")
         print(f"  RL model   : P{rl_p} {rl_name:<8}  conf={conf:.0%}  H={entropy:.2f}bits{floor_tag}")
-    elif is_grok_only:
-        print(f"  RL model   : (skipped — --grok-only baseline)")
+    elif is_llm_only:
+        print(f"  RL model   : (skipped — --llm-only baseline)")
 
     rl_agg = r.get("rl_aggregate")
     if rl_agg and rl_agg.get("section_vote_mass"):
@@ -588,19 +598,20 @@ def _print_variant_result(r: dict) -> None:
             print(f"               {note}{flag}")
     elif gp is not None:
         gp_name = _PRESET_NAMES.get(gp, "?")
-        if is_grok_only:
-            print(f"  Grok 4.2   : P{gp} {gp_name:<8}  [standalone, no RL input]")
+        label = f"{planner_model:<10}"
+        if is_llm_only:
+            print(f"  {label}: P{gp} {gp_name:<8}  [standalone, no RL input]")
         else:
-            override_tag = "  [OVERRIDE]" if r.get("grok_override") else "  [agrees with RL]"
-            print(f"  Grok 4.2   : P{gp} {gp_name:<8}{override_tag}")
-            if r.get("grok_override") and r.get("grok_override_reason"):
-                print(f"               reason: {r['grok_override_reason']}")
-        if r.get("grok_reasoning"):
-            print(f"               reasoning: {r['grok_reasoning']}")
-        if r.get("grok_decision_drivers"):
-            print(f"               drivers: {', '.join(r['grok_decision_drivers'])}")
+            override_tag = "  [OVERRIDE]" if r.get("llm_override") else "  [agrees with RL]"
+            print(f"  {label}: P{gp} {gp_name:<8}{override_tag}")
+            if r.get("llm_override") and r.get("llm_override_reason"):
+                print(f"               reason: {r['llm_override_reason']}")
+        if r.get("llm_reasoning"):
+            print(f"               reasoning: {r['llm_reasoning']}")
+        if r.get("llm_decision_drivers"):
+            print(f"               drivers: {', '.join(r['llm_decision_drivers'])}")
     else:
-        print(f"  Grok 4.2   : (skipped — --rl-only / --rl-guards-only or XAI_API_KEY not set)")
+        print(f"  {planner_model:<10}: (skipped — --rl-only / --rl-guards-only or no API key set)")
 
     if chosen is not None:
         print(f"  -> Chosen  : P{chosen} {_PRESET_NAMES.get(chosen, '?')}  (by {r.get('chosen_by', '?')})")
@@ -825,13 +836,13 @@ def _print_split_block(
     print(f"\n{sep}")
     print(f"  {label}  [{mode}]  (n={len(results)})")
     print(sep)
-    header = f"  {'Article':<46} {'Spl':>4}  {'RL':>4}  {'Grok':>4}  {'Chsn':>4}  → {'Orcl':<4}  Verdict"
+    header = f"  {'Article':<46} {'Spl':>4}  {'RL':>4}  {'LLM':>4}  {'Chsn':>4}  → {'Orcl':<4}  Verdict"
     print(header)
     print(f"  {'-'*76}")
 
     for r in results:
         rl_p = r.get("rl_preset")
-        gp = r.get("grok_preset")
+        gp = r.get("llm_preset")
         chosen = r.get("chosen_preset")
         op = r.get("oracle_preset")
         v = r.get("verdict", "ERROR")
@@ -904,17 +915,18 @@ def _print_split_block(
 def _print_summary(
     results: list[dict],
     rl_only: bool,
-    grok_only: bool = False,
+    llm_only: bool = False,
     rl_guards_only: bool = False,
 ) -> None:
+    planner_model = next((r.get("planner_model") for r in results if r.get("planner_model")), "LLM")
     if rl_only:
         mode = "RL-only"
     elif rl_guards_only:
         mode = "RL + deterministic policy guards"
-    elif grok_only:
-        mode = "Grok-only (standalone baseline)"
+    elif llm_only:
+        mode = f"{planner_model}-only (standalone baseline)"
     else:
-        mode = "RL + Grok 4.2"
+        mode = f"RL + {planner_model}"
 
     train_results = [r for r in results if r.get("split") == "TRAIN"]
     test_results  = [r for r in results if r.get("split") == "TEST"]
@@ -948,12 +960,12 @@ def _print_summary(
 _MODE_SUBDIR = {
     "rl_only": "rl_only_results",
     "rl_guards_only": "rl_guard_results",
-    "grok_only": "grok_only_results",
-    "rl_and_grok": "rl_and_grok_results",
+    "llm_only": "llm_only_results",
+    "rl_and_llm": "rl_and_llm_results",
 }
 
 
-def _resolve_output_dir(rl_only: bool, grok_only: bool, rl_guards_only: bool) -> Path:
+def _resolve_output_dir(rl_only: bool, llm_only: bool, rl_guards_only: bool) -> Path:
     """Save results next to the checkpoint that generated them rather than the
     shared grok_planner_test_results/ dir, so results from different
     checkpoints never get silently conflated (this is what made the
@@ -963,10 +975,10 @@ def _resolve_output_dir(rl_only: bool, grok_only: bool, rl_guards_only: bool) ->
         mode_key = "rl_only"
     elif rl_guards_only:
         mode_key = "rl_guards_only"
-    elif grok_only:
-        mode_key = "grok_only"
+    elif llm_only:
+        mode_key = "llm_only"
     else:
-        mode_key = "rl_and_grok"
+        mode_key = "rl_and_llm"
     return adapter_dir / _MODE_SUBDIR[mode_key]
 
 
@@ -1038,10 +1050,20 @@ async def main() -> None:
         ),
     )
     parser.add_argument(
-        "--grok-only", action="store_true",
+        "--llm-only", action="store_true",
         help=(
-            "LLM planner standalone baseline (currently Grok 4.2): no RL signals. "
+            "LLM planner standalone baseline (see --planner-model): no RL signals. "
             "Measures the LLM planner's marginal contribution vs. the RL model."
+        ),
+    )
+    parser.add_argument(
+        "--planner-model", type=str, default=_DEFAULT_PLANNER_MODEL,
+        metavar="MODEL",
+        help=(
+            "Which LLM to use for the planner stage (default: %(default)s). "
+            "Any xAI model (e.g. grok-4.6) or Anthropic model (e.g. claude-opus-4-5, "
+            "claude-sonnet-5) -- provider and API key are resolved automatically from "
+            "the model name."
         ),
     )
     parser.add_argument("--save-json", action="store_true", help="Save per-variant JSON results.")
@@ -1077,9 +1099,9 @@ async def main() -> None:
         global _BASES_DIR
         _BASES_DIR = resolved_bases_dir
 
-    n_modes = sum([args.rl_only, args.grok_only, args.rl_guards_only])
+    n_modes = sum([args.rl_only, args.llm_only, args.rl_guards_only])
     if n_modes > 1:
-        print("ERROR: --rl-only, --rl-guards-only and --grok-only are mutually exclusive.")
+        print("ERROR: --rl-only, --rl-guards-only and --llm-only are mutually exclusive.")
         return
     if args.train_only and args.test_only:
         print("ERROR: --train-only and --test-only are mutually exclusive.")
@@ -1116,16 +1138,17 @@ async def main() -> None:
             return
 
     rl_only = args.rl_only
-    grok_only = args.grok_only
+    llm_only = args.llm_only
     rl_guards_only = args.rl_guards_only
+    planner_model = args.planner_model
     if rl_only:
         mode = "RL-only (--rl-only)"
     elif rl_guards_only:
         mode = "RL + deterministic policy guards (--rl-guards-only)"
-    elif grok_only:
-        mode = "Grok-only standalone (--grok-only)"
+    elif llm_only:
+        mode = f"{planner_model}-only standalone (--llm-only)"
     else:
-        mode = "RL + Grok 4.2"
+        mode = f"RL + {planner_model}"
 
     print(f"\nPreset Planner Test  ({len(variant_list)} variants)")
     print(f"  Mode     : {mode}")
@@ -1142,14 +1165,14 @@ async def main() -> None:
         print(f"  Variant : {variant}  [{split}]")
         print("=" * 80)
 
-        result = await run_variant(variant, rl_only, grok_only, rl_guards_only)
+        result = await run_variant(variant, rl_only, llm_only, rl_guards_only, planner_model)
         results.append(result)
         _print_variant_result(result)
 
-    _print_summary(results, rl_only, grok_only, rl_guards_only)
+    _print_summary(results, rl_only, llm_only, rl_guards_only)
 
     if args.save_json:
-        out_dir = _resolve_output_dir(rl_only, grok_only, rl_guards_only)
+        out_dir = _resolve_output_dir(rl_only, llm_only, rl_guards_only)
         _save_results(results, out_dir)
 
 

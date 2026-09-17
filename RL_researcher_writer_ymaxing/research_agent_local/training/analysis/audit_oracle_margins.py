@@ -64,7 +64,7 @@ _TRAIN_BASE_ARTICLES = {
 }
 _TRAIN_VARIANTS = ("var_minimal", "var_standard", "var_demanding")
 
-# Mirrors test_grok_planner.py's 16 no-variant held-out test articles.
+# Mirrors test_planner.py's 16 no-variant held-out test articles.
 _TEST_ARTICLES = {
     "04_structured_outputs",
     "07_reasoning_planning",

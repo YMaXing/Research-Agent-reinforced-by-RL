@@ -131,7 +131,7 @@ def ensure_infer_server(adapter_dir: str | None = None) -> str:
     # Falling back to None here was the bug (2026-08-21): it made "no override
     # given" skip the stale-checkpoint check entirely, so editing infer.py's
     # _DEFAULT_ADAPTER_DIR and restarting a caller that never passes an
-    # explicit adapter_dir (e.g. test_grok_planner.py) kept reusing whatever
+    # explicit adapter_dir (e.g. test_planner.py) kept reusing whatever
     # checkpoint the server happened to load first.
     requested = adapter_dir or settings.rl_infer_adapter_dir or str(_INFER_DEFAULT_ADAPTER_DIR)
     requested_resolved = str(Path(requested).resolve())
@@ -168,7 +168,7 @@ def ensure_infer_server(adapter_dir: str | None = None) -> str:
             stderr=subprocess.PIPE,
         )
         # Without this, the child outlives an mcp_server process killed by its
-        # stdio client (e.g. test_grok_planner.py exiting) and becomes an
+        # stdio client (e.g. test_planner.py exiting) and becomes an
         # orphan still bound to the port for the next invocation to collide with.
         atexit.register(_terminate_infer_proc)
 

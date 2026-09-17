@@ -1,5 +1,5 @@
 """
-Eval-only LLM planner (currently Grok 4.2) for the exploration-preset pipeline.
+Eval-only LLM planner for the exploration-preset pipeline.
 
 Lives outside mcp_server/ entirely — nothing here is reachable from the production
 predict_exploration_preset tool, which only ever uses the deterministic RL pick +
@@ -44,9 +44,19 @@ from preset_planner_prompt_eval import (
 )
 
 # ---------------------------------------------------------------------------
-# Planner LLM model (currently Grok 4.2; swap to change the pipeline's LLM)
+# Planner LLM model. Default is xAI's current flagship; override per-call via
+# the ``model`` parameter of call_llm_planner/call_llm_planner_standalone to
+# use any other xAI (OpenAI-compatible) or Anthropic (Claude) model instead —
+# see _is_anthropic_model() below for how the provider is picked.
 # ---------------------------------------------------------------------------
-_PLANNER_MODEL = "grok-4.20-0309-reasoning"
+_DEFAULT_PLANNER_MODEL = "grok-4.6"
+
+_XAI_BASE_URL = "https://api.x.ai/v1"
+
+
+def _is_anthropic_model(model: str) -> bool:
+    """True for Claude models (e.g. 'claude-opus-4-5', 'claude-sonnet-5')."""
+    return model.strip().lower().startswith("claude")
 
 # ---------------------------------------------------------------------------
 # Calibrated escalation thresholds
@@ -480,16 +490,72 @@ def _extract_json_block(raw: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# LLM planner calls (currently Grok 4.2)
+# LLM planner calls (xAI/OpenAI-compatible or Anthropic, per ``model``)
 # ---------------------------------------------------------------------------
 
-async def call_grok_planner(
+def _extract_anthropic_text(content_blocks) -> str:
+    """Return the concatenated text from Anthropic Messages API content blocks.
+
+    Reasoning-capable models (e.g. claude-opus-5) can place a "thinking" or
+    "redacted_thinking" block before the final "text" block, so ``content[0]``
+    is not reliably the answer text. This scans all blocks and joins only the
+    "text"-typed ones, skipping anything else.
+    """
+    parts = []
+    for block in content_blocks:
+        block_type = getattr(block, "type", None)
+        if block_type is not None and block_type != "text":
+            continue
+        parts.append(getattr(block, "text", "") or "")
+    return "".join(parts)
+
+
+async def _call_llm(model: str, api_key: str, system: str, user_msg: str, max_tokens: int = 4096) -> str:
+    """Send one system+user turn to ``model`` and return the raw text response.
+
+    Anthropic (Claude) models use the native Messages API (system prompt as a
+    top-level ``system=`` argument; see :func:`_extract_anthropic_text` for how
+    the response text is pulled out of ``content``). Every other model is
+    assumed xAI/OpenAI-compatible (``base_url``-routed AsyncOpenAI client,
+    system prompt as a "system"-role message).
+    """
+    if _is_anthropic_model(model):
+        from anthropic import AsyncAnthropic  # noqa: PLC0415
+
+        client = AsyncAnthropic(api_key=api_key)
+        try:
+            message = await client.messages.create(
+                model=model,
+                max_tokens=max_tokens,
+                system=system,
+                messages=[{"role": "user", "content": user_msg}],
+            )
+            return _extract_anthropic_text(message.content).strip()
+        finally:
+            await client.close()
+
+    from openai import AsyncOpenAI  # noqa: PLC0415
+
+    client = AsyncOpenAI(api_key=api_key, base_url=_XAI_BASE_URL)
+    response = await client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": system},
+            {"role": "user", "content": user_msg},
+        ],
+        max_tokens=max_tokens,
+    )
+    return (response.choices[0].message.content or "").strip()
+
+
+async def call_llm_planner(
     api_key: str,
-    base_url: str,
     evidence: dict,
     article_guideline: str = "",
+    model: str = _DEFAULT_PLANNER_MODEL,
 ) -> dict:
-    """Call the planner LLM (currently Grok 4.2) for the final exploration-preset decision.
+    """Call the planner LLM (any xAI or Anthropic model, see ``model``) for the final
+    exploration-preset decision.
 
     The LLM receives the guided evidence brief rendered from ``evidence``.
     When ``article_guideline`` is provided it is appended verbatim as a
@@ -499,9 +565,6 @@ async def call_grok_planner(
     decision_drivers, risk_flags.  Falls back to ``fallback_aggregator`` on any
     parsing failure.
     """
-    from openai import AsyncOpenAI  # noqa: PLC0415
-
-    client = AsyncOpenAI(api_key=api_key, base_url=base_url)
     rl_preset = int(evidence["rl_aggregate"]["preset"])
     policy = evidence["guideline_context"]["external_evidence_policy"]
     user_msg = PROMPT_PRESET_PLANNER_USER_TEMPLATE.format(
@@ -510,15 +573,7 @@ async def call_grok_planner(
         )
     )
 
-    response = await client.chat.completions.create(
-        model=_PLANNER_MODEL,
-        messages=[
-            {"role": "system", "content": PROMPT_PRESET_PLANNER_SYSTEM},
-            {"role": "user", "content": user_msg},
-        ],
-        max_tokens=4096,
-    )
-    raw = (response.choices[0].message.content or "").strip()
+    raw = await _call_llm(model, api_key, PROMPT_PRESET_PLANNER_SYSTEM, user_msg)
 
     parsed = _extract_json_block(raw)
     try:
@@ -564,13 +619,14 @@ async def call_grok_planner(
         return fb
 
 
-async def call_grok_planner_standalone(
+async def call_llm_planner_standalone(
     api_key: str,
-    base_url: str,
     evidence: dict,
     article_guideline: str = "",
+    model: str = _DEFAULT_PLANNER_MODEL,
 ) -> dict | None:
-    """Call the planner LLM (currently Grok 4.2) with NO trained-scorer signal (the LLM-alone baseline).
+    """Call the planner LLM (any xAI or Anthropic model, see ``model``) with NO
+    trained-scorer signal (the LLM-alone baseline).
 
     The primary-source guideline appendix (when provided) is included identically
     to the full call so the only difference between the two modes is the RL signal.
@@ -578,9 +634,6 @@ async def call_grok_planner_standalone(
     Returns a dict with keys: preset, name, reasoning, decision_drivers,
     risk_flags.  Returns None on parsing failure.
     """
-    from openai import AsyncOpenAI  # noqa: PLC0415
-
-    client = AsyncOpenAI(api_key=api_key, base_url=base_url)
     policy = evidence["guideline_context"]["external_evidence_policy"]
     user_msg = PROMPT_PRESET_PLANNER_STANDALONE_USER_TEMPLATE.format(
         evidence_brief=render_evidence_brief(
@@ -588,15 +641,7 @@ async def call_grok_planner_standalone(
         )
     )
 
-    response = await client.chat.completions.create(
-        model=_PLANNER_MODEL,
-        messages=[
-            {"role": "system", "content": PROMPT_PRESET_PLANNER_STANDALONE_SYSTEM},
-            {"role": "user", "content": user_msg},
-        ],
-        max_tokens=4096,
-    )
-    raw = (response.choices[0].message.content or "").strip()
+    raw = await _call_llm(model, api_key, PROMPT_PRESET_PLANNER_STANDALONE_SYSTEM, user_msg)
 
     parsed = _extract_json_block(raw)
     try:

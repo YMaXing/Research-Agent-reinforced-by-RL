@@ -2,7 +2,7 @@
 through the SAME deterministic policy guard used by the real pipeline
 (forbidden -> P0 skip, required -> >= P1 light, capped -> <= P1 light), with
 no RL/LLM signal at all. Mirrors preset_planner_handler.py::_apply_policy_guards /
-test_grok_planner.py::_apply_policy_guards exactly.
+test_planner.py::_apply_policy_guards exactly.
 
 Purpose: isolate how much of RL+guards' edge over a plain "always-light"
 baseline is just the guard rule firing on forbidden/required articles, vs.
@@ -70,7 +70,7 @@ def _read_policy(article: str) -> str:
 
 
 def _apply_policy_guards(preset: int, policy: str) -> int:
-    """Mirrors preset_planner_handler.py / test_grok_planner.py's guard exactly.
+    """Mirrors preset_planner_handler.py / test_planner.py's guard exactly.
 
     capped's skip-vs-light choice defers to a real distribution in the other
     two mirrors; a fixed constant has none, so this is an unconditional

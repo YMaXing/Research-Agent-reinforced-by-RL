@@ -4,12 +4,12 @@ Meta-reasoner tool: RL-guided exploration preset prediction (PRODUCTION pipeline
 Uses a GRPO-trained Qwen3-4B + LoRA adapter to analyse the research digest and produce
 structured section-level signals, then applies a deterministic policy guard (external-evidence
 policy: forbidden/required/capped). This is the production pipeline: RL model + deterministic
-guard only — no LLM-planner stage, no grok_only/rl_only ablation switches. The only sanctioned
+guard only — no LLM-planner stage, no llm_only/rl_only ablation switches. The only sanctioned
 way to deviate from its recommendation is an explicit user-directed override (see
 research_instructions_prompt.py step 3.4) or the guard's own policy clamp.
 
-For the evaluation/ablation variant (grok_only, rl_only, the disabled-by-default LLM-planner
-stage) used by evaluation/test_grok_planner.py to measure the RL model's marginal
+For the evaluation/ablation variant (llm_only, rl_only, the disabled-by-default LLM-planner
+stage) used by evaluation/test_planner.py to measure the RL model's marginal
 contribution, see evaluation/predict_exploration_preset_eval.py. That variant is intentionally
 NOT part of this production pipeline and is not exposed on the production MCP server.
 

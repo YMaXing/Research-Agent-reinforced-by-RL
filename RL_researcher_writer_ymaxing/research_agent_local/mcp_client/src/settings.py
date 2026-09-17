@@ -36,6 +36,7 @@ class Settings(BaseSettings):
     google_api_key: SecretStr | None = Field(default=None, alias="GOOGLE_API_KEY", description="The Google API key for Gemini models")
     xai_api_key: SecretStr | None = Field(default=None, alias="XAI_API_KEY", description="The xAI API key for Grok models")
     xai_base_url: str = Field(default="https://api.x.ai/v1", alias="XAI_BASE_URL", description="The xAI API base URL")
+    anthropic_api_key: SecretStr | None = Field(default=None, alias="ANTHROPIC_API_KEY", description="The Anthropic API key for Claude models")
     # NOTE: both must be a key into orchestrator_configs below (not a raw API model string) —
     # handle_agent_loop_utils resolves the actual model id + params through that dict.
     orchestrator_key: str = Field(default="grok-4.6-reasoning", description="Default orchestrator model key")

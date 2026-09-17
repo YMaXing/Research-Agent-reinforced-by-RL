@@ -5,7 +5,7 @@ NOT part of the production MCP server — lives outside mcp_server/ so productio
 evaluation code stay in strictly separate directories, and is used exclusively by
 evaluation/test_planner.py to measure the RL model's marginal contribution and to
 regression-test the (disabled-by-default) LLM-planner stage against the deterministic policy
-guard. Adds the grok_only/rl_only ablation switches and the LLM-planner call that
+guard. Adds the llm_only/rl_only ablation switches and the LLM-planner call that
 mcp_server/src/tools/predict_exploration_preset_tool.py (the production tool) intentionally
 does not have.
 
@@ -52,13 +52,15 @@ from src.app.preset_planner_handler import (  # noqa: E402
     run_rl_stage,
 )
 from preset_planner_handler_eval import (
+    _DEFAULT_PLANNER_MODEL,
     _INCLUDE_GUIDELINE_IN_PLANNER,
-    call_grok_planner,
-    call_grok_planner_standalone,
+    _is_anthropic_model,
+    call_llm_planner,
+    call_llm_planner_standalone,
 )
 
 # ---------------------------------------------------------------------------
-# XAI API key (same mcp_client/.env the rest of the pipeline reads it from —
+# API keys (same mcp_client/.env the rest of the pipeline reads them from --
 # see training/audit_semantic_signals.py for the same convention).
 # ---------------------------------------------------------------------------
 _MCP_CLIENT_ENV = _AGENT_DIR / "mcp_client" / ".env"
@@ -83,6 +85,15 @@ def _resolve_xai_api_key() -> str | None:
     return os.environ.get("XAI_API_KEY") or _read_api_key_from_env_file("XAI_API_KEY", _MCP_CLIENT_ENV)
 
 
+def _resolve_anthropic_api_key() -> str | None:
+    return os.environ.get("ANTHROPIC_API_KEY") or _read_api_key_from_env_file("ANTHROPIC_API_KEY", _MCP_CLIENT_ENV)
+
+
+def _resolve_planner_api_key(model: str) -> str | None:
+    """Return the API key matching ``model``'s provider (Anthropic vs xAI)."""
+    return _resolve_anthropic_api_key() if _is_anthropic_model(model) else _resolve_xai_api_key()
+
+
 # Skip the LLM-planner call by default (measured evidence in
 # grok_planner_test_results/run13_rl_grok_pipeline_analysis.md A.17-A.17.9 shows it adds no
 # value over RL+guards on the current checkpoint). Set PRESET_PLANNER_SKIP_LLM=false to
@@ -94,21 +105,22 @@ _SKIP_LLM_DEFAULT = os.environ.get("PRESET_PLANNER_SKIP_LLM", "true").strip().lo
 
 async def predict_exploration_preset_eval(
     research_directory: str,
-    grok_only: bool = False,
+    llm_only: bool = False,
     rl_only: bool = False,
     skip_llm: bool = _SKIP_LLM_DEFAULT,
+    planner_model: str = _DEFAULT_PLANNER_MODEL,
 ) -> Dict[str, Any]:
     """
     Predict the exploration preset for an article, with evaluation/ablation switches.
 
     Same Stage 1 (RL model) as the production predict_exploration_preset tool, but
     additionally supports:
-      - grok_only=True: skip RL inference entirely and call the LLM planner (currently Grok 4.2)
-        from the article guideline + coverage gap profile alone, to measure the RL model's
-        marginal contribution.
+      - llm_only=True: skip RL inference entirely and call the LLM planner (see
+        ``planner_model``) from the article guideline + coverage gap profile alone, to
+        measure the RL model's marginal contribution.
       - rl_only=True: run RL inference but skip the LLM-planner/guard stage entirely, returning
         the raw RL recommendation with llm_recommendation=None, for the caller to apply its own
-        guard logic (as test_grok_planner.py's rl_guards_only mode does).
+        guard logic (as test_planner.py's rl_guards_only mode does).
       - Otherwise (both False): mirrors the historical combined RL+LLM-planner pipeline, gated by
         ``skip_llm`` (default True — deterministic fallback_aggregator; pass False, or set
         PRESET_PLANNER_SKIP_LLM=false, to re-enable the LLM-planner call for a future
@@ -116,10 +128,14 @@ async def predict_exploration_preset_eval(
 
     Args:
         research_directory: Path to the research directory (see predict_exploration_preset_tool.py).
-        grok_only: When True, skip RL inference; LLM-alone baseline. rl_recommendation is None.
+        llm_only: When True, skip RL inference; LLM-alone baseline. rl_recommendation is None.
         rl_only: When True, skip the LLM-planner/guard stage; llm_recommendation is None.
         skip_llm: When True (default), use the deterministic fallback_aggregator instead of a
-                  real LLM-planner call. Ignored when grok_only or rl_only is True.
+                  real LLM-planner call. Ignored when llm_only or rl_only is True.
+        planner_model: Which LLM to use for the planner stage — any xAI model (e.g.
+                       "grok-4.6") or Anthropic model (e.g. "claude-opus-4-5",
+                       "claude-sonnet-5"); provider + API key are resolved automatically
+                       from the model name (see _is_anthropic_model).
 
     Returns:
         Same shape as the production predict_exploration_preset tool's return dict.
@@ -145,33 +161,33 @@ async def predict_exploration_preset_eval(
     )
     digest_gap_profile = extract_gap_profile(digest)
 
-    xai_api_key = _resolve_xai_api_key()
+    planner_api_key = _resolve_planner_api_key(planner_model)
 
     # -----------------------------------------------------------------------
-    # Branch: LLM-alone baseline (no RL inference; currently Grok 4.2)
+    # Branch: LLM-alone baseline (no RL inference)
     # -----------------------------------------------------------------------
-    if grok_only:
+    if llm_only:
         # Digest-only evidence packet: same per-section gaps + economics the full
         # pipeline sees, but with no trained-scorer signal (rl_aggregate=None and
         # empty per-section RL fields). Isolates the section model's contribution.
         evidence = build_article_evidence(digest)
         llm_recommendation: dict | None = None
-        if xai_api_key is not None:
+        if planner_api_key is not None:
             try:
-                llm_recommendation = await call_grok_planner_standalone(
-                    api_key=xai_api_key,
-                    base_url="https://api.x.ai/v1",
+                llm_recommendation = await call_llm_planner_standalone(
+                    api_key=planner_api_key,
                     evidence=evidence,
                     article_guideline=(
                         article_guideline if _INCLUDE_GUIDELINE_IN_PLANNER else ""
                     ),
+                    model=planner_model,
                 )
                 if llm_recommendation:
-                    logger.info("LLM standalone chose P%d", llm_recommendation["preset"])
+                    logger.info("LLM standalone (%s) chose P%d", planner_model, llm_recommendation["preset"])
             except Exception:
                 logger.warning("LLM standalone planner call failed.")
         else:
-            logger.warning("XAI_API_KEY not set; cannot run LLM standalone planner.")
+            logger.warning("API key not set for planner_model=%s; cannot run LLM standalone planner.", planner_model)
 
         llm_preset = llm_recommendation["preset"] if llm_recommendation else "?"
         return {
@@ -187,7 +203,7 @@ async def predict_exploration_preset_eval(
             "message": (
                 f"LLM standalone (no RL) chose preset P{llm_preset}."
                 if llm_recommendation
-                else "LLM standalone call failed or XAI_API_KEY not set."
+                else "LLM standalone call failed or API key not set."
             ),
         }
 
@@ -204,18 +220,19 @@ async def predict_exploration_preset_eval(
     elif skip_llm:
         logger.info("skip_llm=True; using deterministic fallback aggregator.")
         llm_recommendation = fallback_aggregator(rl["evidence"])
-    elif xai_api_key is not None:
+    elif planner_api_key is not None:
         try:
-            llm_recommendation = await call_grok_planner(
-                api_key=xai_api_key,
-                base_url="https://api.x.ai/v1",
+            llm_recommendation = await call_llm_planner(
+                api_key=planner_api_key,
                 evidence=rl["evidence"],
                 article_guideline=(
                     article_guideline if _INCLUDE_GUIDELINE_IN_PLANNER else ""
                 ),
+                model=planner_model,
             )
             logger.info(
-                "LLM planner chose P%d (override=%s)",
+                "LLM planner (%s) chose P%d (override=%s)",
+                planner_model,
                 llm_recommendation["preset"],
                 llm_recommendation["override"],
             )
@@ -223,7 +240,7 @@ async def predict_exploration_preset_eval(
             logger.warning("LLM planner call failed; using deterministic fallback.")
             llm_recommendation = fallback_aggregator(rl["evidence"])
     else:
-        logger.warning("XAI_API_KEY not set; using deterministic fallback aggregator.")
+        logger.warning("API key not set for planner_model=%s; using deterministic fallback aggregator.", planner_model)
         llm_recommendation = fallback_aggregator(rl["evidence"])
 
     return assemble_result(digest_generated, rl, llm_recommendation, article_guideline, digest_gap_profile)
