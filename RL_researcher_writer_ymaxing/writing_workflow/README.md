@@ -55,8 +55,12 @@ RL_researcher_writer_ymaxing/writing_workflow/
   │       ├── models/       # LLM model configuration and wrappers
   │       ├── evals/        # Evaluation framework
   │       └── observability/ # Observability infrastructure (tracing, monitoring, evals)
-  ├── rl_writing_generator.py   # Phase 2a — generate article.md per (article × preset)
-  ├── rl_grading_generator.py   # Phase 2b — grade each article.md (9-dim scores.json)
+  ├── rl_pipeline/          # RL training-data pipeline driver scripts
+  │   ├── rl_writing_generator.py   # Phase 2a — generate article.md per (article × preset)
+  │   ├── rl_grading_generator.py   # Phase 2b — grade each article.md (9-dim scores.json)
+  │   ├── generate_article_guideline.py   # Phase 0b — synthesize guidelines from briefs
+  │   ├── generate_guideline_variants.py  # Phase 0 — minimal/standard/demanding variants
+  │   └── rl_pairwise_*.py  # Pairwise depth/breadth-enhancement grading investigation scripts
   └── tests/                # Test suite
 ```
 
@@ -282,10 +286,10 @@ has a `research.md` from Phase 1.
 
 ```bash
 cd RL_researcher_writer_ymaxing/writing_workflow
-uv run python rl_writing_generator.py                # all articles, all presets
-uv run python rl_writing_generator.py --dry-run
-uv run python rl_writing_generator.py --articles 02_workflows_vs_agents,09_RAG
-uv run python rl_writing_generator.py --presets 0,1,4
+uv run python rl_pipeline/rl_writing_generator.py                # all articles, all presets
+uv run python rl_pipeline/rl_writing_generator.py --dry-run
+uv run python rl_pipeline/rl_writing_generator.py --articles 02_workflows_vs_agents,09_RAG
+uv run python rl_pipeline/rl_writing_generator.py --presets 0,1,4
 ```
 
 Implementation notes:
@@ -308,10 +312,10 @@ and writes `scores.json` per episode.
 
 ```bash
 cd RL_researcher_writer_ymaxing/writing_workflow
-uv run python rl_grading_generator.py                # all articles, all presets
-uv run python rl_grading_generator.py --dry-run
-uv run python rl_grading_generator.py --articles 06_tools
-uv run python rl_grading_generator.py --presets 0,2,5
+uv run python rl_pipeline/rl_grading_generator.py                # all articles, all presets
+uv run python rl_pipeline/rl_grading_generator.py --dry-run
+uv run python rl_pipeline/rl_grading_generator.py --articles 06_tools
+uv run python rl_pipeline/rl_grading_generator.py --presets 0,2,5
 ```
 
 Implementation notes:

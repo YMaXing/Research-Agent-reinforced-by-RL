@@ -62,10 +62,10 @@ _PRESETS_FLAG  = $(if $(PRESETS),--presets $(PRESETS),)
 _RL_FLAGS      = $(_ARTICLES_FLAG) $(_PRESETS_FLAG)
 
 run-rl-gen-dry:
-	uv run --project mcp_server python training/rl_data_generator.py --dry-run $(_RL_FLAGS)
+	uv run --project mcp_server python training/pipeline/rl_data_generator.py --dry-run $(_RL_FLAGS)
 
 run-rl-gen:
-	uv run --project mcp_server python training/rl_data_generator.py $(_RL_FLAGS)
+	uv run --project mcp_server python training/pipeline/rl_data_generator.py $(_RL_FLAGS)
 
 # --------------------------------------------------------------------------- #
 # GRPO training  (Phase 2)

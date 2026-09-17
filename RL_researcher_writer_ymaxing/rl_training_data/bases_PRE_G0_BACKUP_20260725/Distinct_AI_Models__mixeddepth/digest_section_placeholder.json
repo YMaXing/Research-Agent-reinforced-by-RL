@@ -1,8 +1,0 @@
-{
-  "presets": {
-    "S1::section-1-introduction": "deep",
-    "S2::section-2-the-company-being-kept": "deep",
-    "S3::section-3-convergent-evolution": "deep",
-    "S4::section-4-find-the-universals": "deep"
-  }
-}
