@@ -13,6 +13,11 @@ for the harness that scores a checkpoint against it.
 `var_standard`/`var_demanding`) used for GRPO training, plus 16 held-out TEST
 articles (no variant expansion) never seen during training.
 
+**Also on the Hugging Face Hub**: the gitignored `bases/`, `episodes/`, and
+`test_episodes/` directories are mirrored at
+[**xintelligence/research-agent-rl-episodes**](https://huggingface.co/datasets/xintelligence/research-agent-rl-episodes)
+for anyone who'd rather download them than regenerate them locally.
+
 ## Contents
 
 - [Layout](#layout)
@@ -88,7 +93,8 @@ produced the current production checkpoint is `run33_averaged_confidence/`;
 its `best/` was **copied** (not moved — this directory remains the full
 historical record) to
 `research_agent_local/rl_inference_service/checkpoints/production/`, which is
-what actually serves in production.
+what actually serves in production — also published at
+[xintelligence/qwen3-4b-research-planner-lora](https://huggingface.co/xintelligence/qwen3-4b-research-planner-lora).
 
 ## `oracle_review/` — human near-tie reviews
 
