@@ -1,10 +1,10 @@
-# Research-Agent-reinforced-by-RL
+# Researcher-Writer-Agents-reinforced-by-RL
 
 A local (cloud version in progress), file-based, end-to-end **Research → Writing**
 agentic system whose exploratory-research-planning step is fine-tuned with **offline GRPO**.
-A small Qwen3-4B + LoRA policy reads a structured *research digest* of an article topic
-and selects one of four **exploration presets** (skip / light / standard / deep) that drives
-how the research agent explores the web before the writing agent drafts the article.
+The researcher agent, implemented using FastMCP, is built with clear and detailed prompts for both the individual tools and the instruction for research orchestration, a rich suite of tools, and read-only resources, all exposed on a Model-Context-Protocol(MCP) server one can connect to in in-memory, std-in or HTTP modes. The writer agent consists of writing and editing workflows built with LangGraph functional API and can also be exposed as tools on any MCP server. A combined server mounting both researcher and writer agents is also built to help facilitate more convenient usage of the full end-to-end research + writing workflow.
+
+For the exploration phase targeting depth and/or breadth enhancements during research, a small Qwen3-4B + LoRA policy reads a structured *research digest* of an article topic and selects one of four **exploration presets** (skip / light / standard / deep) that drives how the research agent explores the web before the writing agent drafts the article.
 
 **Input and output:** The research workflow takes an `article_guideline.md`
 (plus any golden sources it names — see below) and produces a single
@@ -64,6 +64,7 @@ The repository is a fork of the [Towards AI](https://academy.towardsai.net/cours
 ## Contents
 
 - [Pipeline at a glance](#pipeline-at-a-glance)
+- [Key prompts](#key-prompts)
 - [Repository layout](#repository-layout)
 - [Prerequisites](#prerequisites)
 - [Quickstart: use the agentic system](#quickstart-use-the-agentic-system)
@@ -142,6 +143,21 @@ rounds (0-3) actually run. A separate eval-only harness can additionally route
 the decision through an LLM planner (Grok, Claude, or any other model) to
 benchmark it against the RL policy, but that stage is disabled by default and
 is not part of production inference.
+
+---
+
+## Key prompts
+
+The workflow and utilization of the tools of both agents is driven by a handful of prompt files rather than
+scattered inline strings — these are the highest-leverage files to read if
+you want to understand *why* the agents act the way they do:
+
+| Prompt | What it drives | File |
+|---|---|---|
+| Research workflow instructions | The full numbered research workflow (setup → exploitation → RL preset decision → exploration → source filtering → write) that the research MCP client follows turn-by-turn | [`research_instructions_prompt.py`](RL_researcher_writer_ymaxing/research_agent_local/mcp_server/src/prompts/research_instructions_prompt.py) |
+| Research tool prompts | Per-tool prompts used by the research MCP server's individual tools (YouTube transcription, arXiv cleanup, query generation, source selection, content dedup, etc.) | [`config/prompts.py`](RL_researcher_writer_ymaxing/research_agent_local/mcp_server/src/config/prompts.py) |
+| Article writer | Brown's system prompt for drafting the article (and later integrating exploration content) from research + guideline + style profiles | [`nodes/article_writer.py`](RL_researcher_writer_ymaxing/writing_workflow/src/brown/nodes/article_writer.py) |
+| Graders (Phase 2b reward labeling) | The two LLM-as-judge metrics that grade every `(article × preset)` episode on 9 dimensions to produce both human-readable scores and reviews on article quality and the GRPO reward signal | [`FollowsGTMetric`](RL_researcher_writer_ymaxing/writing_workflow/src/brown/evals/metrics/new_follows_gt/prompts.py) · [`UserIntentMetric`](RL_researcher_writer_ymaxing/writing_workflow/src/brown/evals/metrics/new_user_intent/prompts.py) |
 
 ---
 
